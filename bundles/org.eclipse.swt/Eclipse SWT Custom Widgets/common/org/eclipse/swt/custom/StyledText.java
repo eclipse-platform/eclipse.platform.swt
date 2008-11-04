@@ -1651,15 +1651,14 @@ void claimRightFreeSpace() {
 		scrollHorizontal(newHorizontalOffset - horizontalScrollOffset, true);					
 	}
 }
-void clearBlockSelection(boolean reset) {
-	//TODO SEND SELECTION EVENT ?
+void clearBlockSelection(boolean reset, boolean sendEvent) {
 	if (reset) resetSelection();
 	blockXAnchor = blockYAnchor = -1;
 	blockXLocation = blockYLocation = -1;
 	caretDirection = SWT.NULL;
 	getCaret().setVisible(true);
-	//TODO draw too much
 	super.redraw();
+	if (sendEvent) sendSelectionEvent();
 }
 /**
  * Removes the widget selection.
@@ -2069,7 +2068,7 @@ public void cut() {
 	if (blockSelection && blockXLocation != -1) {
 		copy(DND.CLIPBOARD);
 		insertBlockSelectionText((char)0, SWT.NULL);
-		clearBlockSelection(true);
+		clearBlockSelection(true, true);
 		return;
 	}
 	int length = selection.y - selection.x;
@@ -2134,7 +2133,7 @@ void doAutoScroll(int direction, int distance) {
 						int y = blockYLocation - verticalScrollOffset;
 						int pixels = Math.max(-autoScrollDistance, -verticalScrollOffset);
 						if (pixels != 0) {
-							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels);
+							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels, true);
 							scrollVertical(pixels, true);
 						}
 					} else {
@@ -2156,7 +2155,7 @@ void doAutoScroll(int direction, int distance) {
 						int max = renderer.getHeight() - verticalScrollOffset - clientAreaHeight;
 						int pixels = Math.min(autoScrollDistance, Math.max(0,max));
 						if (pixels != 0) {
-							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels);
+							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels, true);
 							scrollVertical(pixels, true);
 						}
 					} else {
@@ -2177,7 +2176,7 @@ void doAutoScroll(int direction, int distance) {
 						int max = renderer.getWidth() - horizontalScrollOffset - (clientAreaWidth - leftMargin - rightMargin);
 						int pixels = Math.min(autoScrollDistance, Math.max(0,max));
 						if (pixels != 0) {
-							setBlockSelectionLocation(x + pixels, blockYLocation - getVerticalScrollOffset());
+							setBlockSelectionLocation(x + pixels, blockYLocation - getVerticalScrollOffset(), true);
 							scrollHorizontal(pixels, true);
 						}
 					} else {
@@ -2200,7 +2199,7 @@ void doAutoScroll(int direction, int distance) {
 						int x = blockXLocation - horizontalScrollOffset;
 						int pixels = Math.max(-autoScrollDistance, -horizontalScrollOffset);
 						if (pixels != 0) {
-							setBlockSelectionLocation(x + pixels, blockYLocation - getVerticalScrollOffset());
+							setBlockSelectionLocation(x + pixels, blockYLocation - getVerticalScrollOffset(), true);
 							scrollHorizontal(pixels, true);
 						}
 					} else {
@@ -2245,7 +2244,7 @@ void doBackspace() {
 	}
 }
 void doBlockColumn(boolean next) {
-	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset, false);
 	int x = blockXLocation - horizontalScrollOffset;
 	int y = blockYLocation - getVerticalScrollOffset();
 	int[] trailing = new int[1];
@@ -2262,19 +2261,19 @@ void doBlockColumn(boolean next) {
 		offset = newOffset != offset ? newOffset : -1;
 	}
 	if (offset != -1) {
-		setBlockSelectionOffset(offset);
+		setBlockSelectionOffset(offset, true);
 		showCaret();
 	} else {
 		int width = next ? renderer.averageCharWidth : -renderer.averageCharWidth;
 		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
 		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
-		setBlockSelectionLocation(x, y);
+		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
 		showLocation(rect, true);
 	}
 }
 void doBlockWord(boolean next) {
-	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset, false);
 	int x = blockXLocation - horizontalScrollOffset;
 	int y = blockYLocation - getVerticalScrollOffset();
 	int[] trailing = new int[1];
@@ -2298,25 +2297,25 @@ void doBlockWord(boolean next) {
 		offset = newOffset != offset ? newOffset : -1;
 	}
 	if (offset != -1) {
-		setBlockSelectionOffset(offset);
+		setBlockSelectionOffset(offset, true);
 		showCaret();
 	} else {
 		int width = (next ? renderer.averageCharWidth : -renderer.averageCharWidth) * 6;
 		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
 		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
-		setBlockSelectionLocation(x, y);
+		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
 		showLocation(rect, true);
 	}
 }
 void doBlockLineVertical(boolean up) {
-	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset, false);
 	int y = blockYLocation - getVerticalScrollOffset();
 	int lineIndex = getLineIndex(y);
 	if (up) {
 		if (lineIndex > 0) {
 			y = getLinePixel(lineIndex - 1);
-			setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y);
+			setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y, true);
 			if (y < topMargin) {
 				scrollVertical(y - topMargin, true);
 			}
@@ -2325,7 +2324,7 @@ void doBlockLineVertical(boolean up) {
 		int lineCount = content.getLineCount();
 		if (lineIndex + 1 < lineCount) {
 			y = getLinePixel(lineIndex + 2) - 1;
-			setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y);
+			setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y, true);
 			int bottom = clientAreaHeight - bottomMargin; 
 			if (y > bottom) {
 				scrollVertical(y - bottom, true);
@@ -2334,7 +2333,7 @@ void doBlockLineVertical(boolean up) {
 	}
 }
 void doBlockLineHorizontal(boolean end) {
-	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset, false);
 	int x = blockXLocation - horizontalScrollOffset;
 	int y = blockYLocation - getVerticalScrollOffset();
 	int lineIndex = getLineIndex(y);
@@ -2360,14 +2359,29 @@ void doBlockLineHorizontal(boolean end) {
 		if (!end) offset = lineOffset + lineLength;
 	}
 	if (offset != -1) {
-		setBlockSelectionOffset(offset);
+		setBlockSelectionOffset(offset, true);
 		showCaret();
 	} else {
 		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
 		x = (end ? maxWidth : 0) - horizontalScrollOffset;
-		setBlockSelectionLocation(x, y);
+		setBlockSelectionLocation(x, y, true);
 		Rectangle rect = new Rectangle(x, y, 0, 0);
 		showLocation(rect, true);
+	}
+}
+void doBlockSelection(boolean sendEvent) {
+	if (caretOffset > selectionAnchor) {
+		selection.x = selectionAnchor;
+		selection.y = caretOffset;
+	} else {
+		selection.x = caretOffset;
+		selection.y = selectionAnchor;
+	}
+	getCaret().setVisible(false);
+	setCaretLocation();
+	super.redraw();
+	if (sendEvent) {
+		sendSelectionEvent();
 	}
 }
 /**
@@ -2684,30 +2698,30 @@ void doMouseLocationChange(int x, int y, boolean select) {
 				if (offset != -1) {
 					if (x > left.x) {
 						offset = getWordNext(offset + trailing[0], SWT.MOVEMENT_WORD_END);
-						setBlockSelectionOffset(doubleClickSelection.x, offset);
+						setBlockSelectionOffset(doubleClickSelection.x, offset, true);
 					} else {
 						offset = getWordPrevious(offset + trailing[0], SWT.MOVEMENT_WORD_START);
-						setBlockSelectionOffset(doubleClickSelection.y, offset);
+						setBlockSelectionOffset(doubleClickSelection.y, offset, true);
 					}
 				} else {
 					if (x > left.x) {
-						setBlockSelectionLocation(left.x, left.y, x, y);
+						setBlockSelectionLocation(left.x, left.y, x, y, true);
 					} else {
 						Point right = getPointAtOffset(doubleClickSelection.y);
-						setBlockSelectionLocation(right.x, right.y, x, y);
+						setBlockSelectionLocation(right.x, right.y, x, y, true);
 					}
 				}
 			} else {
-				setBlockSelectionLocation(blockXLocation, y);
+				setBlockSelectionLocation(blockXLocation, y, true);
 			}
 		} else {
-			if (!select) clearBlockSelection(true);
+			if (!select) clearBlockSelection(true, false);
 			int[] trailing = new int[1]; 
 			int offset = getOffsetAtPoint(x, y, trailing, true);
 			if (offset != -1) {
-				setBlockSelectionOffset(offset + trailing[0]);
+				setBlockSelectionOffset(offset + trailing[0], true);
 			} else {
-				setBlockSelectionLocation(x, y);
+				setBlockSelectionLocation(x, y, true);
 			}
 		}
 		return;
@@ -5182,7 +5196,7 @@ public void insert(String string) {
 		replaceTextRange(sel.x, sel.y, string);
 	}
 }
-void insertBlockSelectionText(String text) {
+int insertBlockSelectionText(String text) {
 	int lineCount = 1;
 	for (int i = 0; i < text.length(); i++) {
 		char ch = text.charAt(i);
@@ -5226,7 +5240,7 @@ void insertBlockSelectionText(String text) {
 		firstLine = lastLine = getCaretLine();
 		left = right = getPointAtOffset(caretOffset).x;
 	}
-	int index = 0, end, lineIndex = firstLine;
+	int index = 0, end = caretOffset, lineIndex = firstLine;
 	while (lineIndex <= lastLine) {
 		start = getOffsetAtPoint(left, 0, lineIndex);
 		end = getOffsetAtPoint(right, 0, lineIndex);
@@ -5235,6 +5249,7 @@ void insertBlockSelectionText(String text) {
 		event.start = start;
 		event.end = end;
 		sendKeyEvent(event);
+		end = start + event.text.length();
 		lineIndex++;
 	}
 	while (index < lineCount) {
@@ -5252,9 +5267,11 @@ void insertBlockSelectionText(String text) {
 		event.start = start;
 		event.end = end;
 		sendKeyEvent(event);
+		end = start + event.text.length();
 		lineIndex++;
 		index++;
 	}
+	return end;
 }
 void insertBlockSelectionText(char key, int action) {
 	if (key == SWT.CR || key == SWT.LF) return;
@@ -5320,7 +5337,7 @@ void insertBlockSelectionText(char key, int action) {
 	}
 	int x = getPointAtOffset(offset).x;
 	int verticalScrollOffset = getVerticalScrollOffset();
-	setBlockSelectionLocation(x, blockYAnchor - verticalScrollOffset, x, blockYLocation - verticalScrollOffset);
+	setBlockSelectionLocation(x, blockYAnchor - verticalScrollOffset, x, blockYLocation - verticalScrollOffset, false);
 }
 /**
  * Creates content change listeners and set the default content model.
@@ -5724,7 +5741,7 @@ void handleMouseDown(Event event) {
 				setSelection(start, end - start, true, true);
 			} else {
 				if (blockSelection) {
-					setBlockSelectionLocation(leftMargin, event.y, clientAreaWidth - rightMargin, event.y);
+					setBlockSelectionLocation(leftMargin, event.y, clientAreaWidth - rightMargin, event.y, true);
 				} else {
 					int lineEnd = content.getCharCount();
 					if (lineIndex + 1 < content.getLineCount()) {
@@ -5926,7 +5943,9 @@ void handleTextChanged(TextChangedEvent event) {
 	// selection redraw would be flushed during scroll which is wrong.
 	// in some cases new text would be drawn in scroll source area even 
 	// though the intent is to scroll it.
-	updateSelection(lastTextChangeStart, lastTextChangeReplaceCharCount, lastTextChangeNewCharCount);
+	if (!blockSelection) {
+		updateSelection(lastTextChangeStart, lastTextChangeReplaceCharCount, lastTextChangeNewCharCount);
+	}
 	if (lastTextChangeReplaceLineCount > 0 || wordWrap) {
 		claimBottomFreeSpace();
 	}
@@ -6307,7 +6326,7 @@ boolean invokeBlockAction(int action) {
 		case ST.TEXT_END:
 		case ST.WINDOW_START:
 		case ST.WINDOW_END:
-			clearBlockSelection(true);
+			clearBlockSelection(true, blockXLocation != -1);
 			return false;
 		// Selection
 		case ST.SELECT_LINE_UP:
@@ -6460,7 +6479,7 @@ void modifyContent(Event event, boolean updateCaret) {
 		content.replaceTextRange(event.start, replacedLength, event.text);
 		// set the caret position prior to sending the modify event.
 		// fixes 1GBB8NJ
-		if (updateCaret) {
+		if (updateCaret && !blockSelection) {
 			// always update the caret location. fixes 1G8FODP
 			setSelection(event.start + event.text.length(), 0, true, false);
 			showCaret();
@@ -6502,8 +6521,9 @@ public void paste(){
 	String text = (String) getClipboardContent(DND.CLIPBOARD);
 	if (text != null && text.length() > 0) {
 		if (blockSelection) {
-			insertBlockSelectionText(text);
-			clearBlockSelection(true);
+			caretOffset = insertBlockSelectionText(text);
+			clearBlockSelection(true, true);
+			setCaretLocation();
 			return;
 		}
 		Event event = new Event();
@@ -7360,13 +7380,13 @@ public void setBlockSelection(boolean blockSelection) {
 		int start = selection.x;
 		int end = selection.y;
 		if (start != end) {
-			setBlockSelectionOffset(start, end);
+			setBlockSelectionOffset(start, end, false);
 		}
 	} else {
-		clearBlockSelection(false);
+		clearBlockSelection(false, false);
 	}
 }
-void setBlockSelectionLocation (int x, int y) {
+void setBlockSelectionLocation (int x, int y, boolean sendEvent) {
 	int verticalScrollOffset = getVerticalScrollOffset();
 	blockXLocation = x + horizontalScrollOffset;
 	blockYLocation = y + verticalScrollOffset;
@@ -7376,26 +7396,16 @@ void setBlockSelectionLocation (int x, int y) {
 		blockYAnchor = blockYLocation;
 		selectionAnchor = caretOffset;
 	}
-	if (caretOffset > selectionAnchor) {
-		selection.x = selectionAnchor;
-		selection.y = caretOffset;
-	} else {
-		selection.x = caretOffset;
-		selection.y = selectionAnchor;
-	}
-	getCaret().setVisible(false);
-	setCaretLocation();
-	//TODO REDRAW TOO MUCH
-	super.redraw();
+	doBlockSelection(sendEvent);
 }
-void setBlockSelectionLocation (int anchorX, int anchorY, int x, int y) {
+void setBlockSelectionLocation (int anchorX, int anchorY, int x, int y, boolean sendEvent) {
 	int verticalScrollOffset = getVerticalScrollOffset();
 	blockXAnchor = anchorX + horizontalScrollOffset;
 	blockYAnchor = anchorY + verticalScrollOffset;
 	selectionAnchor = getOffsetAtPoint(anchorX, anchorY);
-	setBlockSelectionLocation(x, y);
+	setBlockSelectionLocation(x, y, sendEvent);
 }
-void setBlockSelectionOffset (int offset) {
+void setBlockSelectionOffset (int offset, boolean sendEvent) {
 	Point point = getPointAtOffset(offset);
 	int verticalScrollOffset = getVerticalScrollOffset();
 	blockXLocation = point.x + horizontalScrollOffset;
@@ -7406,25 +7416,15 @@ void setBlockSelectionOffset (int offset) {
 		blockYAnchor = blockYLocation;
 		selectionAnchor = caretOffset;
 	}
-	if (caretOffset > selectionAnchor) {
-		selection.x = selectionAnchor;
-		selection.y = caretOffset;
-	} else {
-		selection.x = caretOffset;
-		selection.y = selectionAnchor;
-	}
-	getCaret().setVisible(false);
-	setCaretLocation();
-	//TODO REDRAW TOO MUCH
-	super.redraw();
+	doBlockSelection(sendEvent);
 }
-void setBlockSelectionOffset (int anchorOffset, int offset) {
+void setBlockSelectionOffset (int anchorOffset, int offset, boolean sendEvent) {
 	int verticalScrollOffset = getVerticalScrollOffset();
 	Point anchorPoint = getPointAtOffset(anchorOffset);
 	blockXAnchor = anchorPoint.x + horizontalScrollOffset;
 	blockYAnchor = anchorPoint.y + verticalScrollOffset;
 	selectionAnchor = anchorOffset;
-	setBlockSelectionOffset(offset);
+	setBlockSelectionOffset(offset, sendEvent);
 }
 /**
  * Sets the receiver's caret.  Set the caret's height and location.
@@ -7551,7 +7551,7 @@ public void setCaretOffset(int offset) {
 		// clear the selection if the caret is moved.
 		// don't notify listeners about the selection change.
 		if (blockSelection) {
-			clearBlockSelection(true);
+			clearBlockSelection(true, false);
 		} else {
 			clearSelection(false);
 		}
@@ -8400,7 +8400,7 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 		(length > 0 && selectionAnchor != selection.x) || 
 		(length < 0 && selectionAnchor != selection.y)) {
 		if (blockSelection && doBlock) {
-			setBlockSelectionOffset(start, end);
+			setBlockSelectionOffset(start, end, sendEvent);
 		} else {
 			clearSelection(sendEvent);
 			if (length < 0) {
