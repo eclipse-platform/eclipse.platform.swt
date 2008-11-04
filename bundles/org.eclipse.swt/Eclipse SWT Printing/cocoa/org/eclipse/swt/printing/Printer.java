@@ -462,6 +462,7 @@ public boolean startPage() {
 		Point dpi = getDPI (), screenDPI = getIndependentDPI();
 		transform.scaleXBy(screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
 		transform.concat();
+		operation.context().saveGraphicsState();
 		return true;
 	} finally {
 		if (pool != null) pool.release();
@@ -484,6 +485,7 @@ public void endPage() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		operation.context().restoreGraphicsState();
 		view.endPage();
 	} finally {
 		if (pool != null) pool.release();
