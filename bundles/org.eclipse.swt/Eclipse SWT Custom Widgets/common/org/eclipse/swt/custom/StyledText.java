@@ -2673,15 +2673,42 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	updateCaretDirection = true;
 	
 	if (blockSelection) {
-		x = Math.max(leftMargin, Math.min(x, clientAreaWidth - leftMargin - rightMargin));
-		y = Math.max(topMargin, Math.min(y, clientAreaHeight - topMargin - bottomMargin));
-		if (!select) clearBlockSelection(true);
-		int[] trailing = new int[1]; 
-		int offset = getOffsetAtPoint(x, y, trailing, true);
-		if (offset != -1) {
-			setBlockSelectionOffset(offset + trailing[0]);
+		x = Math.max(leftMargin, Math.min(x, clientAreaWidth - rightMargin));
+		y = Math.max(topMargin, Math.min(y, clientAreaHeight - bottomMargin));
+		if (doubleClickEnabled && clickCount > 1) {
+			boolean wordSelect = (clickCount & 1) == 0;
+			if (wordSelect) {
+				Point left = getPointAtOffset(doubleClickSelection.x);
+				int[] trailing = new int[1]; 
+				int offset = getOffsetAtPoint(x, y, trailing, true);
+				if (offset != -1) {
+					if (x > left.x) {
+						offset = getWordNext(offset + trailing[0], SWT.MOVEMENT_WORD_END);
+						setBlockSelectionOffset(doubleClickSelection.x, offset);
+					} else {
+						offset = getWordPrevious(offset + trailing[0], SWT.MOVEMENT_WORD_START);
+						setBlockSelectionOffset(doubleClickSelection.y, offset);
+					}
+				} else {
+					if (x > left.x) {
+						setBlockSelectionLocation(left.x, left.y, x, y);
+					} else {
+						Point right = getPointAtOffset(doubleClickSelection.y);
+						setBlockSelectionLocation(right.x, right.y, x, y);
+					}
+				}
+			} else {
+				setBlockSelectionLocation(blockXLocation, y);
+			}
 		} else {
-			setBlockSelectionLocation(x, y);
+			if (!select) clearBlockSelection(true);
+			int[] trailing = new int[1]; 
+			int offset = getOffsetAtPoint(x, y, trailing, true);
+			if (offset != -1) {
+				setBlockSelectionOffset(offset + trailing[0]);
+			} else {
+				setBlockSelectionLocation(x, y);
+			}
 		}
 		return;
 	}
@@ -5680,27 +5707,32 @@ void handleMouseDown(Event event) {
 		return;	
 	}
 	clickCount = event.count;
-	if (clickCount == 1 || blockSelection) {
-		boolean select = (event.stateMask & SWT.MOD2) != 0 && !blockSelection;
+	if (clickCount == 1) {
+		boolean select = (event.stateMask & SWT.MOD2) != 0;
 		doMouseLocationChange(event.x, event.y, select);
 	} else {
 		if (doubleClickEnabled) {
+			boolean wordSelect = (clickCount & 1) == 0;
 			int offset = getOffsetAtPoint(event.x, event.y);
 			int lineIndex = content.getLineAtOffset(offset);
 			int lineOffset = content.getOffsetAtLine(lineIndex);
-			int lineEnd = content.getCharCount();
-			if (lineIndex + 1 < content.getLineCount()) {
-				lineEnd = content.getOffsetAtLine(lineIndex + 1);
-			}
-			int start, end;
-			if ((clickCount & 1) == 0) {
-				start = Math.max(0, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
-				end = Math.min(content.getCharCount(), getWordNext(start, SWT.MOVEMENT_WORD_END));
+			if (wordSelect) {
+				int min = blockSelection ? lineOffset : 0;
+				int max = blockSelection ? lineOffset + content.getLine(lineIndex).length() : content.getCharCount();
+				int start = Math.max(min, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
+				int end = Math.min(max, getWordNext(start, SWT.MOVEMENT_WORD_END));
+				setSelection(start, end - start, true, true);
 			} else {
-				start = lineOffset;
-				end = lineEnd;
+				if (blockSelection) {
+					setBlockSelectionLocation(leftMargin, event.y, clientAreaWidth - rightMargin, event.y);
+				} else {
+					int lineEnd = content.getCharCount();
+					if (lineIndex + 1 < content.getLineCount()) {
+						lineEnd = content.getOffsetAtLine(lineIndex + 1);
+					}
+					setSelection(lineOffset, lineEnd - lineOffset, true, false);
+				}
 			}
-			setSelection(start, end - start, true, false);
 			doubleClickSelection = new Point(selection.x, selection.y);
 			showCaret();
 		}
@@ -7328,8 +7360,7 @@ public void setBlockSelection(boolean blockSelection) {
 		int start = selection.x;
 		int end = selection.y;
 		if (start != end) {
-			setBlockSelectionOffset(start);
-			setBlockSelectionOffset(end);
+			setBlockSelectionOffset(start, end);
 		}
 	} else {
 		clearBlockSelection(false);
@@ -7339,7 +7370,7 @@ void setBlockSelectionLocation (int x, int y) {
 	int verticalScrollOffset = getVerticalScrollOffset();
 	blockXLocation = x + horizontalScrollOffset;
 	blockYLocation = y + verticalScrollOffset;
-	caretOffset = getOffsetAtPoint(blockXLocation - horizontalScrollOffset, blockYLocation - verticalScrollOffset);
+	caretOffset = getOffsetAtPoint(x, y);
 	if (blockXAnchor == -1) {
 		blockXAnchor = blockXLocation;
 		blockYAnchor = blockYLocation;
@@ -7356,6 +7387,13 @@ void setBlockSelectionLocation (int x, int y) {
 	setCaretLocation();
 	//TODO REDRAW TOO MUCH
 	super.redraw();
+}
+void setBlockSelectionLocation (int anchorX, int anchorY, int x, int y) {
+	int verticalScrollOffset = getVerticalScrollOffset();
+	blockXAnchor = anchorX + horizontalScrollOffset;
+	blockYAnchor = anchorY + verticalScrollOffset;
+	selectionAnchor = getOffsetAtPoint(anchorX, anchorY);
+	setBlockSelectionLocation(x, y);
 }
 void setBlockSelectionOffset (int offset) {
 	Point point = getPointAtOffset(offset);
@@ -7379,6 +7417,14 @@ void setBlockSelectionOffset (int offset) {
 	setCaretLocation();
 	//TODO REDRAW TOO MUCH
 	super.redraw();
+}
+void setBlockSelectionOffset (int anchorOffset, int offset) {
+	int verticalScrollOffset = getVerticalScrollOffset();
+	Point anchorPoint = getPointAtOffset(anchorOffset);
+	blockXAnchor = anchorPoint.x + horizontalScrollOffset;
+	blockYAnchor = anchorPoint.y + verticalScrollOffset;
+	selectionAnchor = anchorOffset;
+	setBlockSelectionOffset(offset);
 }
 /**
  * Sets the receiver's caret.  Set the caret's height and location.
@@ -8354,9 +8400,7 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 		(length > 0 && selectionAnchor != selection.x) || 
 		(length < 0 && selectionAnchor != selection.y)) {
 		if (blockSelection && doBlock) {
-			clearBlockSelection(true);
-			setBlockSelectionOffset(start);
-			setBlockSelectionOffset(end);
+			setBlockSelectionOffset(start, end);
 		} else {
 			clearSelection(sendEvent);
 			if (length < 0) {
