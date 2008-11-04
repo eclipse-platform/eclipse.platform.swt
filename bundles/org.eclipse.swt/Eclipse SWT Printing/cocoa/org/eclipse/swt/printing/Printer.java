@@ -44,7 +44,6 @@ public final class Printer extends Device {
 	NSPrintOperation operation;
 	NSView view;
 	NSWindow window;
-	NSAutoreleasePool pool;
 	boolean isGCCreated;
 	
 	static Callback IsFlipped;
@@ -58,7 +57,8 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSArray printers = NSPrinter.printerNames();
 		int count = (int)/*64*/printers.count();
@@ -69,7 +69,7 @@ public static PrinterData[] getPrinterList() {
 		}
 		return result;
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -83,14 +83,15 @@ public static PrinterData[] getPrinterList() {
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSPrinter printer = NSPrintInfo.defaultPrinter();
 		if (printer == null) return null;
 		NSString str = printer.name();
 		return new PrinterData(DRIVER, str.getString());
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 	
 }
@@ -170,7 +171,8 @@ public Printer(PrinterData data) {
  */
 public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSSize paperSize = printInfo.paperSize();
 		NSRect bounds = printInfo.imageablePageBounds();
@@ -181,7 +183,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 		height += (paperSize.height - bounds.height) * dpi.y / screenDPI.y;
 		return new Rectangle(x, y, width, height);
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -192,49 +194,50 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  * @param deviceData the device data
  */
 protected void create(DeviceData deviceData) {
-	NSThread nsthread = NSThread.currentThread();
-	NSMutableDictionary dictionary = nsthread.threadDictionary();
-	NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
-	pool = new NSAutoreleasePool(dictionary.objectForKey(key));
-
-	data = (PrinterData)deviceData;
-	if (data.otherData != null) {
-		NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
-		printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
-	} else {
-		printInfo = NSPrintInfo.sharedPrintInfo();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		data = (PrinterData)deviceData;
+		if (data.otherData != null) {
+			NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
+			printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
+		} else {
+			printInfo = NSPrintInfo.sharedPrintInfo();
+		}
+		printInfo.retain();
+		printer = NSPrinter.printerWithName(NSString.stringWith(data.name));
+		if (printer != null) {
+			printer.retain();
+			printInfo.setPrinter(printer);
+		}
+		/*
+		* Bug in Cocoa.  For some reason, the output still goes to the printer when
+		* the user chooses the preview button.  The fix is to reset the job disposition.
+		*/
+		NSString job = printInfo.jobDisposition();
+		if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
+			printInfo.setJobDisposition(job);
+		}
+		NSRect rect = new NSRect();
+		window = (NSWindow)new NSWindow().alloc();
+		window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		String className = "SWTPrinterView"; //$NON-NLS-1$
+		if (OS.objc_lookUpClass(className) == 0) {
+			IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
+			int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+			OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
+			OS.objc_registerClassPair(cls);
+		}
+		view = (NSView)new SWTPrinterView().alloc();
+		view.initWithFrame(rect);
+		window.setContentView(view);
+		operation = NSPrintOperation.printOperationWithView(view, printInfo);
+		operation.retain();
+		operation.setShowsPrintPanel(false);
+		operation.setShowsProgressPanel(false);
+	} finally {
+		if (pool != null) pool.release();
 	}
-	printInfo.retain();
-	printer = NSPrinter.printerWithName(NSString.stringWith(data.name));
-	if (printer != null) {
-		printer.retain();
-		printInfo.setPrinter(printer);
-	}
-	/*
-	* Bug in Cocoa.  For some reason, the output still goes to the printer when
-	* the user chooses the preview button.  The fix is to reset the job disposition.
-	*/
-	NSString job = printInfo.jobDisposition();
-	if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
-		printInfo.setJobDisposition(job);
-	}
-	NSRect rect = new NSRect();
-	window = (NSWindow)new NSWindow().alloc();
-	window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
-	String className = "SWTPrinterView"; //$NON-NLS-1$
-	if (OS.objc_lookUpClass(className) == 0) {
-		IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
-		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
-		OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
-		OS.objc_registerClassPair(cls);
-	}
-	view = (NSView)new SWTPrinterView().alloc();
-	view.initWithFrame(rect);
-	window.setContentView(view);
-	operation = NSPrintOperation.printOperationWithView(view, printInfo);
-	operation.retain();
-	operation.setShowsPrintPanel(false);
-	operation.setShowsProgressPanel(false);
 }
 
 /**	 
@@ -243,17 +246,21 @@ protected void create(DeviceData deviceData) {
  * mechanism of the <code>Device</code> class.
  */
 protected void destroy() {
-	if (printer != null) printer.release();
-	if (printInfo != null) printInfo.release();
-	if (view != null) view.release();
-	if (window != null) window.release();
-	if (operation != null) operation.release();
-	if (pool != null) pool.release();
-	pool = null;
-	printer = null;
-	printInfo = null;
-	view = null;
-	operation = null;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (printer != null) printer.release();
+		if (printInfo != null) printInfo.release();
+		if (view != null) view.release();
+		if (window != null) window.release();
+		if (operation != null) operation.release();
+		printer = null;
+		printInfo = null;
+		view = null;
+		operation = null;
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**	 
@@ -271,7 +278,8 @@ protected void destroy() {
  */
 public int /*long*/ internal_new_GC(GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		if (data != null) {
 			if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -284,7 +292,7 @@ public int /*long*/ internal_new_GC(GCData data) {
 		}
 		return operation.context().id;
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -345,7 +353,8 @@ protected void release () {
  */
 public boolean startJob(String jobName) {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		if (jobName != null && jobName.length() != 0) {
 			operation.setJobTitle(NSString.stringWith(jobName));
@@ -359,7 +368,7 @@ public boolean startJob(String jobName) {
 		}
 		return false;
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -376,14 +385,15 @@ public boolean startJob(String jobName) {
  */
 public void endJob() {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		view.endDocument();
 		operation.deliverResult();
 		operation.destroyContext();
 		operation.cleanUpOperation();
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -396,12 +406,13 @@ public void endJob() {
  */
 public void cancelJob() {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		operation.destroyContext();
 		operation.cleanUpOperation();
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -436,7 +447,8 @@ static DeviceData checkNull (PrinterData data) {
  */
 public boolean startPage() {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSSize paperSize = printInfo.paperSize();
 		NSRect rect = new NSRect();
@@ -452,7 +464,7 @@ public boolean startPage() {
 		transform.concat();
 		return true;
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -469,11 +481,12 @@ public boolean startPage() {
  */
 public void endPage() {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		view.endPage();
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -490,12 +503,13 @@ public void endPage() {
  */
 public Point getDPI() {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		//TODO get output resolution
 		return getIndependentDPI();
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -520,13 +534,14 @@ Point getIndependentDPI() {
  */
 public Rectangle getBounds() {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSSize size = printInfo.paperSize();
 		Point dpi = getDPI (), screenDPI = getIndependentDPI();
 		return new Rectangle (0, 0, (int)(size.width * dpi.x / screenDPI.x), (int)(size.height * dpi.y / screenDPI.y));
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
@@ -549,13 +564,14 @@ public Rectangle getBounds() {
  */
 public Rectangle getClientArea() {
 	checkDevice();
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSRect rect = printInfo.imageablePageBounds();
 		Point dpi = getDPI (), screenDPI = getIndependentDPI();
 		return new Rectangle(0, 0, (int)(rect.width * dpi.x / screenDPI.x), (int)(rect.height * dpi.y / screenDPI.y));
 	} finally {
-		pool.release();
+		if (pool != null) pool.release();
 	}
 }
 
