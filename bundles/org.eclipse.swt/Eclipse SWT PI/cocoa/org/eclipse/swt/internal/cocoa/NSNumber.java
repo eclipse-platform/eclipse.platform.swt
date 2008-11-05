@@ -24,6 +24,10 @@ public NSNumber(id id) {
 	super(id);
 }
 
+public float floatValue() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_floatValue);
+}
+
 public int intValue() {
 	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_intValue);
 }

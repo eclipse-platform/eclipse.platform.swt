@@ -710,6 +710,7 @@ public static final int /*long*/ sel_firstIndex = sel_registerName("firstIndex")
 public static final int /*long*/ sel_firstRectForCharacterRange_ = sel_registerName("firstRectForCharacterRange:");
 public static final int /*long*/ sel_firstResponder = sel_registerName("firstResponder");
 public static final int /*long*/ sel_flagsChanged_ = sel_registerName("flagsChanged:");
+public static final int /*long*/ sel_floatValue = sel_registerName("floatValue");
 public static final int /*long*/ sel_flushBuffer = sel_registerName("flushBuffer");
 public static final int /*long*/ sel_flushGraphics = sel_registerName("flushGraphics");
 public static final int /*long*/ sel_font = sel_registerName("font");
@@ -3485,6 +3486,9 @@ public static final NSString NSPrintSaveJob = new NSString(NSPrintSaveJob());
 /** @method flags=const */
 public static final native int /*long*/ NSPrintSavePath();
 public static final NSString NSPrintSavePath = new NSString(NSPrintSavePath());
+/** @method flags=const */
+public static final native int /*long*/ NSPrintScalingFactor();
+public static final NSString NSPrintScalingFactor = new NSString(NSPrintScalingFactor());
 /** @method flags=const */
 public static final native int /*long*/ NSPrintSpoolJob();
 public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());

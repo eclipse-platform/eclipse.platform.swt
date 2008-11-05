@@ -6963,8 +6963,8 @@
     <method selector="doubleValue">
       <retval></retval>
     </method>
-    <method selector="floatValue">
-      <retval></retval>
+    <method selector="floatValue" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="initWithBool:">
       <arg name="value"></arg>

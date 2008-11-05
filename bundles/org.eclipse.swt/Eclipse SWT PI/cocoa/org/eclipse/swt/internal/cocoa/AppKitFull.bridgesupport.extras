@@ -649,7 +649,7 @@
   <constant name="NSPrintRightMargin"></constant>
   <constant name="NSPrintSaveJob" swt_gen="true"></constant>
   <constant name="NSPrintSavePath" swt_gen="true"></constant>
-  <constant name="NSPrintScalingFactor"></constant>
+  <constant name="NSPrintScalingFactor" swt_gen="true"></constant>
   <constant name="NSPrintSpoolJob" swt_gen="true"></constant>
   <constant name="NSPrintTime"></constant>
   <constant name="NSPrintTopMargin"></constant>

@@ -1938,6 +1938,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintSavePath)
 }
 #endif
 
+#ifndef NO_NSPrintScalingFactor
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintScalingFactor)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintScalingFactor_FUNC);
+	rc = (jintLong)NSPrintScalingFactor;
+	OS_NATIVE_EXIT(env, that, NSPrintScalingFactor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSPrintSpoolJob
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintSpoolJob)
 	(JNIEnv *env, jclass that)

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 339;
-int OS_nativeFunctionCallCount[339];
+int OS_nativeFunctionCount = 340;
+int OS_nativeFunctionCallCount[340];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -173,6 +173,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSPrintPreviewJob",
 	"NSPrintSaveJob",
 	"NSPrintSavePath",
+	"NSPrintScalingFactor",
 	"NSPrintSpoolJob",
 	"NSRTFPboardType",
 	"NSRange_1sizeof",
