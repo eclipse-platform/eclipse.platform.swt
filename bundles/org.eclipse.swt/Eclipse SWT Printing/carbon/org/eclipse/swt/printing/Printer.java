@@ -344,11 +344,12 @@ public int internal_new_GC(GCData data) {
 		data.font = getSystemFont ();
 		PMRect paperRect= new PMRect();
 		OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
+		Point dpi = getDPI(), screenDPI = getIndependentDPI();
 		Rect portRect = new Rect();
-		portRect.left = (short)paperRect.left;
-		portRect.right = (short)paperRect.right;
-		portRect.top = (short)paperRect.top;
-		portRect.bottom = (short)paperRect.bottom;
+		portRect.left = (short)(paperRect.left * dpi.x / screenDPI.x);
+		portRect.right = (short)(paperRect.right * dpi.x / screenDPI.x);
+		portRect.top = (short)(paperRect.top * dpi.x / screenDPI.x);
+		portRect.bottom = (short)(paperRect.bottom * dpi.x / screenDPI.x);
 		data.portRect = portRect;
 		isGCCreated = true;
 	}
