@@ -1490,9 +1490,9 @@ static Browser findBrowser (nsIDOMWindow aDOMWindow) {
 	result[0] = 0;
 	rc = windowWatcher.GetChromeForWindow (topDOMWindow, result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	new nsISupports (topDOMWindow).Release ();
-	windowWatcher.Release ();	
+	windowWatcher.Release ();
+	if (result[0] == 0) return null;	/* the parent chrome is disconnected */
 
 	nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (result[0]);
 	result[0] = 0;
