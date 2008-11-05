@@ -10276,9 +10276,9 @@
       <arg name="glyphRange"></arg>
       <retval></retval>
     </method>
-    <method selector="setTextStorage:">
-      <arg name="textStorage"></arg>
-      <retval></retval>
+    <method selector="setTextStorage:" swt_gen="true">
+      <arg name="textStorage" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setTypesetter:">
       <arg name="typesetter"></arg>

@@ -1212,6 +1212,7 @@ public static final int /*long*/ sel_setTabStops_ = sel_registerName("setTabStop
 public static final int /*long*/ sel_setTabViewType_ = sel_registerName("setTabViewType:");
 public static final int /*long*/ sel_setTarget_ = sel_registerName("setTarget:");
 public static final int /*long*/ sel_setTextColor_ = sel_registerName("setTextColor:");
+public static final int /*long*/ sel_setTextStorage_ = sel_registerName("setTextStorage:");
 public static final int /*long*/ sel_setTitle_ = sel_registerName("setTitle:");
 public static final int /*long*/ sel_setTitleFont_ = sel_registerName("setTitleFont:");
 public static final int /*long*/ sel_setTitlePosition_ = sel_registerName("setTitlePosition:");

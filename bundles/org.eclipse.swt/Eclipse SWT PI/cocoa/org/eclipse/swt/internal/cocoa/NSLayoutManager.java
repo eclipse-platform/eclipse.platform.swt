@@ -102,6 +102,10 @@ public void setLineFragmentRect(NSRect fragmentRect, NSRange glyphRange, NSRect 
 	OS.objc_msgSend(this.id, OS.sel_setLineFragmentRect_forGlyphRange_usedRect_, fragmentRect, glyphRange, usedRect);
 }
 
+public void setTextStorage(NSTextStorage textStorage) {
+	OS.objc_msgSend(this.id, OS.sel_setTextStorage_, textStorage != null ? textStorage.id : 0);
+}
+
 public NSTypesetter typesetter() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_typesetter);
 	return result != 0 ? new NSTypesetter(result) : null;

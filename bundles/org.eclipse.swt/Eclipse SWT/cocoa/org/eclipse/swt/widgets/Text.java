@@ -301,29 +301,32 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = (int)Math.ceil (size.width);
 		height = (int)Math.ceil (size.height);
 	} else {
-		NSTextView widget = (NSTextView) view;
-		NSSize oldSize = null;
-		NSTextContainer textContainer = widget.textContainer ();
+		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager ().alloc ().init ();
+		NSTextContainer textContainer = (NSTextContainer)new NSTextContainer ().alloc ();
+		NSSize size = new NSSize ();
+		size.width = size.height = Float.MAX_VALUE;
 		if ((style & SWT.WRAP) != 0) {
-			widget.setHorizontallyResizable (true);
-			textContainer.setWidthTracksTextView (false);
-			oldSize = textContainer.containerSize ();
-			NSSize csize = new NSSize ();
-			csize.width = wHint != SWT.DEFAULT ? wHint : Float.MAX_VALUE;
-			csize.height = hHint != SWT.DEFAULT ? hHint : Float.MAX_VALUE;
-			textContainer.setContainerSize (csize);
+			if (wHint != SWT.DEFAULT) size.width = wHint;
+			if (hHint != SWT.DEFAULT) size.height = hHint;
 		}
-		NSRect oldRect = widget.frame ();
-		widget.sizeToFit ();
-		NSRect newRect = widget.frame ();
-		widget.setFrame (oldRect);
-		if ((style & SWT.WRAP) != 0) {
-			widget.setHorizontallyResizable (false);
-			textContainer.setWidthTracksTextView (true);
-			textContainer.setContainerSize (oldSize);
-		}
-		width = (int)(newRect.width + 1);
-		height = (int)(newRect.height + 1);
+		textContainer.initWithContainerSize (size);
+		layoutManager.addTextContainer (textContainer);
+
+		NSTextStorage textStorage = (NSTextStorage)new NSTextStorage ().alloc ();
+		NSString string = ((NSTextView)view).textStorage ().string ();
+		textStorage.initWithString (string);
+		NSRange range = new NSRange ();
+		range.length = string.length ();
+		textStorage.addAttribute (OS.NSFontAttributeName, getFont ().handle, range);
+		layoutManager.setTextStorage (textStorage);
+		layoutManager.glyphRangeForTextContainer (textContainer);
+
+		NSRect rect = layoutManager.usedRectForTextContainer (textContainer);
+		width = layoutManager.numberOfGlyphs () == 0 ? DEFAULT_WIDTH : (int)Math.ceil (rect.width);
+		height = (int)Math.ceil (rect.height);
+		textStorage.release ();
+		textContainer.release ();
+		layoutManager.release ();
 	}
 	if (width <= 0) width = DEFAULT_WIDTH;
 	if (height <= 0) height = DEFAULT_HEIGHT;
@@ -413,12 +416,12 @@ void createHandle () {
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
 		widget.setAlignment (align);
-
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setRichText (false);
 		widget.setDelegate(widget);
-		
+		widget.setFont (display.getSystemFont ().handle);
+
 		view = widget;
 		scrollView = scrollWidget;
 	}
