@@ -771,6 +771,7 @@ void destroyItem (TreeItem item) {
 	items [count] = null;
 	if (parentItem != null) {
 		parentItem.itemCount = count;
+		if (count == 0) parentItem.expanded = false;
 		((NSOutlineView) view).reloadItem (parentItem.handle, true);
 	} else {
 		this.itemCount = count;
