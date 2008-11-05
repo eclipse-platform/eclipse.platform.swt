@@ -123,11 +123,11 @@ float[] computePolyline(int left, int top, int right, int bottom) {
 	return coordinates;
 }
 
+
 void computeRuns() {
 	if (textStorage != null) return;
 	NSString str = NSString.stringWith(text);
-	textStorage = ((NSTextStorage)new NSTextStorage().alloc());
-	textStorage.initWithString(str);
+	textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 	textContainer = (NSTextContainer)new NSTextContainer().alloc();
 	NSSize size = new NSSize();
@@ -136,13 +136,21 @@ void computeRuns() {
 	textContainer.initWithContainerSize(size);
 	textStorage.addLayoutManager(layoutManager);
 	layoutManager.addTextContainer(textContainer);
-	
-	textStorage.beginEditing();
+
+	/*
+	* Feature in Cocoa. Adding attributes directly to a NSTextStorage causes
+	* output to the console and eventually a segmentation fault when printing 
+	* on a thread other than the main thread. The fix is to add attributes to
+	* a separate NSMutableAttributedString and add it to text storage when done.
+	*/
+	NSMutableAttributedString attrStr = (NSMutableAttributedString)new NSMutableAttributedString().alloc();
+	attrStr.id = attrStr.initWithString(str).id;
+	attrStr.beginEditing();
 	Font defaultFont = font != null ? font : device.systemFont;
 	NSRange range = new NSRange();
 	range.length = str.length();
-	textStorage.addAttribute(OS.NSFontAttributeName, defaultFont.handle, range);
-	
+	attrStr.addAttribute(OS.NSFontAttributeName, defaultFont.handle, range);
+	//TODO ascend descent wrap
 	NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	int align = OS.NSLeftTextAlignment;
 	if (justify) {
@@ -173,12 +181,8 @@ void computeRuns() {
 		int width = count - 2 >= 0 ? tabs[count - 1] - tabs[count - 2] : tabs[count - 1];
 		paragraph.setDefaultTabInterval(width);
 	}
-	
-	//TODO ascend descent wrap
-	
-	textStorage.addAttribute(OS.NSParagraphStyleAttributeName, paragraph, range);
+	attrStr.addAttribute(OS.NSParagraphStyleAttributeName, paragraph, range);
 	paragraph.release();
-	
 	int /*long*/ textLength = str.length();
 	for (int i = 0; i < styles.length - 1; i++) {
 		StyleItem run = styles[i];
@@ -188,24 +192,24 @@ void computeRuns() {
 		range.length = translateOffset(styles[i + 1].start) - range.location;
 		Font font = style.font;
 		if (font != null) {
-			textStorage.addAttribute(OS.NSFontAttributeName, font.handle, range);
+			attrStr.addAttribute(OS.NSFontAttributeName, font.handle, range);
 		}
 		Color foreground = style.foreground;
 		if (foreground != null) {
 			NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-			textStorage.addAttribute(OS.NSForegroundColorAttributeName, color, range);
+			attrStr.addAttribute(OS.NSForegroundColorAttributeName, color, range);
 		}
 		Color background = style.background;
 		if (background != null) {
 			NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
-			textStorage.addAttribute(OS.NSBackgroundColorAttributeName, color, range);
+			attrStr.addAttribute(OS.NSBackgroundColorAttributeName, color, range);
 		}
 		if (style.strikeout) {
-			textStorage.addAttribute(OS.NSStrikethroughStyleAttributeName, NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
+			attrStr.addAttribute(OS.NSStrikethroughStyleAttributeName, NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
 			Color strikeColor = style.strikeoutColor;
 			if (strikeColor != null) {
 				NSColor color = NSColor.colorWithDeviceRed(strikeColor.handle[0], strikeColor.handle[1], strikeColor.handle[2], 1);
-				textStorage.addAttribute(OS.NSStrikethroughColorAttributeName, color, range);
+				attrStr.addAttribute(OS.NSStrikethroughColorAttributeName, color, range);
 			}
 		}
 		if (style.underline) {
@@ -222,24 +226,26 @@ void computeRuns() {
 					break;
 			}
 			if (underlineStyle != 0) {
-				textStorage.addAttribute(OS.NSUnderlineStyleAttributeName, NSNumber.numberWithInt(underlineStyle), range);
+				attrStr.addAttribute(OS.NSUnderlineStyleAttributeName, NSNumber.numberWithInt(underlineStyle), range);
 				Color underlineColor = style.underlineColor;
 				if (underlineColor != null) {
 					NSColor color = NSColor.colorWithDeviceRed(underlineColor.handle[0], underlineColor.handle[1], underlineColor.handle[2], 1);
-					textStorage.addAttribute(OS.NSUnderlineColorAttributeName, color, range);
+					attrStr.addAttribute(OS.NSUnderlineColorAttributeName, color, range);
 				}
 			}
 		}
 		if (style.rise != 0) {
-			textStorage.addAttribute(OS.NSBaselineOffsetAttributeName, NSNumber.numberWithInt(style.rise), range);
+			attrStr.addAttribute(OS.NSBaselineOffsetAttributeName, NSNumber.numberWithInt(style.rise), range);
 		}
 		if (style.metrics != null) {
-			//TODO
+			//TODO implement metrics 
 		}
 	}
-	textStorage.endEditing();
-	
-	textContainer.setLineFragmentPadding(0);	
+	attrStr.endEditing();
+	textStorage.setAttributedString(attrStr);
+	attrStr.release();
+
+	textContainer.setLineFragmentPadding(0);
 	layoutManager.glyphRangeForTextContainer(textContainer);
 	
 	int numberOfLines;
