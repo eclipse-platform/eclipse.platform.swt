@@ -348,8 +348,8 @@ public int internal_new_GC(GCData data) {
 		Rect portRect = new Rect();
 		portRect.left = (short)(paperRect.left * dpi.x / screenDPI.x);
 		portRect.right = (short)(paperRect.right * dpi.x / screenDPI.x);
-		portRect.top = (short)(paperRect.top * dpi.x / screenDPI.x);
-		portRect.bottom = (short)(paperRect.bottom * dpi.x / screenDPI.x);
+		portRect.top = (short)(paperRect.top * dpi.y / screenDPI.y);
+		portRect.bottom = (short)(paperRect.bottom * dpi.y / screenDPI.y);
 		data.portRect = portRect;
 		isGCCreated = true;
 	}
