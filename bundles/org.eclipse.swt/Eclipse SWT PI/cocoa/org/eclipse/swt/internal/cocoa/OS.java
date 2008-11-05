@@ -933,7 +933,6 @@ public static final int /*long*/ sel_outlineView_setObjectValue_forTableColumn_b
 public static final int /*long*/ sel_outlineView_shouldCollapseItem_ = sel_registerName("outlineView:shouldCollapseItem:");
 public static final int /*long*/ sel_outlineView_shouldExpandItem_ = sel_registerName("outlineView:shouldExpandItem:");
 public static final int /*long*/ sel_outlineView_willDisplayCell_forTableColumn_item_ = sel_registerName("outlineView:willDisplayCell:forTableColumn:item:");
-public static final int /*long*/ sel_outlineView_writeItems_toPasteboard_ = sel_registerName("outlineView:writeItems:toPasteboard:");
 public static final int /*long*/ sel_outlineViewColumnDidMove_ = sel_registerName("outlineViewColumnDidMove:");
 public static final int /*long*/ sel_outlineViewColumnDidResize_ = sel_registerName("outlineViewColumnDidResize:");
 public static final int /*long*/ sel_outlineViewItemDidExpand_ = sel_registerName("outlineViewItemDidExpand:");
@@ -1064,6 +1063,7 @@ public static final int /*long*/ sel_setAllowsMultipleSelection_ = sel_registerN
 public static final int /*long*/ sel_setAlphaValue_ = sel_registerName("setAlphaValue:");
 public static final int /*long*/ sel_setApplicationIconImage_ = sel_registerName("setApplicationIconImage:");
 public static final int /*long*/ sel_setApplicationNameForUserAgent_ = sel_registerName("setApplicationNameForUserAgent:");
+public static final int /*long*/ sel_setAttributedString_ = sel_registerName("setAttributedString:");
 public static final int /*long*/ sel_setAttributedStringValue_ = sel_registerName("setAttributedStringValue:");
 public static final int /*long*/ sel_setAttributedTitle_ = sel_registerName("setAttributedTitle:");
 public static final int /*long*/ sel_setAutoenablesItems_ = sel_registerName("setAutoenablesItems:");

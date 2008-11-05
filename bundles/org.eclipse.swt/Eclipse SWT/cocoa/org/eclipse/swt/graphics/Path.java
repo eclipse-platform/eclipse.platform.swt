@@ -304,8 +304,7 @@ public void addString(String string, float x, float y, Font font) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSString str = NSString.stringWith(string);
-		NSTextStorage textStorage = ((NSTextStorage)new NSTextStorage().alloc());
-		textStorage.initWithString(str);
+		NSTextStorage textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 		NSTextContainer textContainer = (NSTextContainer)new NSTextContainer().alloc();
 		NSSize size = new NSSize();
@@ -316,9 +315,19 @@ public void addString(String string, float x, float y, Font font) {
 		layoutManager.addTextContainer(textContainer);
 		NSRange range = new NSRange();
 		range.length = str.length();
-		textStorage.beginEditing();
-		textStorage.addAttribute(OS.NSFontAttributeName, font.handle, range);
-		textStorage.endEditing();
+		/*
+		* Feature in Cocoa. Adding attributes directly to a NSTextStorage causes
+		* output to the console and eventually a segmentation fault when printing 
+		* on a thread other than the main thread. The fix is to add attributes to
+		* a separate NSMutableAttributedString and add it to text storage when done.
+		*/
+		NSMutableAttributedString attrStr = (NSMutableAttributedString)new NSMutableAttributedString().alloc();
+		attrStr.id = attrStr.initWithString(str).id;
+		attrStr.beginEditing();
+		attrStr.addAttribute(OS.NSFontAttributeName, font.handle, range);
+		attrStr.endEditing();
+		textStorage.setAttributedString(attrStr);
+		attrStr.release();
 		range = layoutManager.glyphRangeForTextContainer(textContainer);
 		if (range.length != 0) {
 			int /*long*/ glyphs = OS.malloc(4 * range.length * 2);

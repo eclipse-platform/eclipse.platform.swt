@@ -45,4 +45,8 @@ public void endEditing() {
 	OS.objc_msgSend(this.id, OS.sel_endEditing);
 }
 
+public void setAttributedString(NSAttributedString attrString) {
+	OS.objc_msgSend(this.id, OS.sel_setAttributedString_, attrString != null ? attrString.id : 0);
+}
+
 }
