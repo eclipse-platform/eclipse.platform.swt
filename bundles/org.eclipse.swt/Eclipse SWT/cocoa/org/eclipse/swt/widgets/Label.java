@@ -240,6 +240,13 @@ NSAttributedString createString() {
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName);
 	}
+	if ((style & SWT.WRAP) == 0) {
+		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+		paragraphStyle.autorelease ();
+		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
+		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+	}
+
 	char [] chars = new char [text.length ()];
 	text.getChars (0, chars.length, chars, 0);
 	int length = fixMnemonic (chars);
