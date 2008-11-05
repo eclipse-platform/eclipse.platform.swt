@@ -4495,6 +4495,9 @@ public Color getSelectionBackground() {
  */
 public int getSelectionCount() {
 	checkWidget();
+	if (blockSelection && blockXLocation != -1) {
+		return getBlockSelectionText(content.getLineDelimiter()).length();
+	}
 	return getSelectionRange().y;
 }
 /**
@@ -4526,6 +4529,9 @@ public Color getSelectionForeground() {
  */
 public String getSelectionText() {
 	checkWidget();
+	if (blockSelection && blockXLocation != -1) {
+		return getBlockSelectionText(content.getLineDelimiter());
+	}
 	return content.getTextRange(selection.x, selection.y - selection.x);
 }
 public int getStyle() {
