@@ -230,7 +230,6 @@ void createHandle () {
 		}
 	} else if ((style & SWT.CHECK) != 0) {
 		type = OS.NSSwitchButton;
-		widget.setAllowsMixedState (true);
 	} else if ((style & SWT.RADIO) != 0) {
 		type = OS.NSRadioButton;		
 	} else if ((style & SWT.TOGGLE) != 0) {
@@ -413,6 +412,19 @@ public String getText () {
 
 boolean isDescribedByLabel () {
 	return false;
+}
+
+/*
+ * Feature in Cocoa.  If a checkbox is in multi-state mode, nextState cycles from off to mixed to on and back to off again.
+ * This will cause the on state to momentarily appear while clicking on the checkbox. To avoid this, we override [NSCell nextState]
+ * to go directly to the desired state if we have a grayed checkbox.
+ */
+int nextState(int /*long*/ id, int /*long*/ sel) {
+	if ((style & SWT.CHECK) != 0 && grayed) {
+		return ((NSButton)view).state() == OS.NSMixedState ? OS.NSOffState : OS.NSMixedState;
+	}
+
+	return super.nextState(id, sel);	
 }
 
 void register() {
@@ -612,6 +624,8 @@ public void setGrayed(boolean grayed) {
 	if ((style & SWT.CHECK) == 0) return;
 	boolean checked = getSelection ();
 	this.grayed = grayed;
+	((NSButton) view).setAllowsMixedState(grayed);
+
 	if (checked) {
 		if (grayed) {
 			((NSButton) view).setState (OS.NSMixedState);

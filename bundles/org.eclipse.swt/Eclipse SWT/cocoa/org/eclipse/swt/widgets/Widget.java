@@ -1466,4 +1466,8 @@ void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 boolean dragSelectionWithEvent(int id, int sel, int arg0, int arg1, int arg2) {
 	return false;
 }
+
+int nextState(int id, int sel) {
+	return callSuperObject(id, sel);
+}
 }

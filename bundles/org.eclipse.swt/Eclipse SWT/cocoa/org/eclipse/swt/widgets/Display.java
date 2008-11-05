@@ -1729,7 +1729,7 @@ void addAccessibilityMethods(int /*long*/ cls, int /*long*/ proc2, int /*long*/ 
 
 int registerCellSubclass(int cellClass, int size, int align, String types) {
 	String cellClassName = OS.class_getName(cellClass);
-	int cls = OS.objc_allocateClassPair(cellClass, "SWT" + cellClassName, 0);	
+	int cls = OS.objc_allocateClassPair(cellClass, "SWTAccessible" + cellClassName, 0);	
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.objc_registerClassPair(cls);
 	return cls;
@@ -1851,11 +1851,11 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
-	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	cls = registerCellSubclass(NSButton.cellClass(), size, align, types);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	OS.class_addMethod(cls, OS.sel_nextState, proc2, "@:");
 	NSButton.setCellClass(cls);
 
 	className = "SWTTableView";
@@ -3776,6 +3776,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.accessibilityFocusedUIElement(id, sel);
 	} else if (sel == OS.sel_accessibilityIsIgnored) {
 		return (widget.accessibilityIsIgnored(id, sel) ? 1 : 0);
+	} else if (sel == OS.sel_nextState) {
+		return widget.nextState(id, sel);
 	}
 	return 0;
 }

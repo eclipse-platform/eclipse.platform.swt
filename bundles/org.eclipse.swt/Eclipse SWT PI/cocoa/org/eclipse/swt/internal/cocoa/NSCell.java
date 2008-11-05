@@ -51,6 +51,10 @@ public NSFont font() {
 	return result != 0 ? new NSFont(result) : null;
 }
 
+public int /*long*/ nextState() {
+	return OS.objc_msgSend(this.id, OS.sel_nextState);
+}
+
 public void setAllowsMixedState(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, flag);
 }
