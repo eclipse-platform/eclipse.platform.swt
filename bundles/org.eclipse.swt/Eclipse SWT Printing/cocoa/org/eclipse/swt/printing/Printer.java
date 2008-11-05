@@ -177,10 +177,11 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 		NSSize paperSize = printInfo.paperSize();
 		NSRect bounds = printInfo.imageablePageBounds();
 		Point dpi = getDPI (), screenDPI = getIndependentDPI();
-		x -= (bounds.x * dpi.x / screenDPI.x);
-		y -= (bounds.y * dpi.y / screenDPI.y);
-		width += (paperSize.width - bounds.width) * dpi.x / screenDPI.x;
-		height += (paperSize.height - bounds.height) * dpi.y / screenDPI.y;
+		float scaling = scalingFactor();
+		x -= (bounds.x * dpi.x / screenDPI.x) / scaling;
+		y -= (bounds.y * dpi.y / screenDPI.y) / scaling;
+		width += ((paperSize.width - bounds.width) * dpi.x / screenDPI.x) / scaling;
+		height += ((paperSize.height - bounds.height) * dpi.y / screenDPI.y) / scaling;
 		return new Rectangle(x, y, width, height);
 	} finally {
 		if (pool != null) pool.release();
@@ -287,7 +288,12 @@ public int /*long*/ internal_new_GC(GCData data) {
 			data.background = getSystemColor(SWT.COLOR_WHITE).handle;
 			data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
 			data.font = getSystemFont ();
-			data.size = printInfo.paperSize();
+			float scaling = scalingFactor();
+			Point dpi = getDPI (), screenDPI = getIndependentDPI();
+			NSSize size = printInfo.paperSize();
+			size.width = (size.width * (dpi.x / screenDPI.x)) / scaling;
+			size.height = (size.height * dpi.y / screenDPI.y) / scaling;
+			data.size = size;
 			isGCCreated = true;
 		}
 		return operation.context().id;
@@ -328,6 +334,10 @@ static int /*long*/ isFlipped(int /*long*/ id, int /*long*/ sel) {
  */
 protected void release () {
 	super.release();
+}
+
+float scalingFactor() {
+	return new NSNumber(printInfo.dictionary().objectForKey(OS.NSPrintScalingFactor)).floatValue();
 }
 
 /**
@@ -450,12 +460,19 @@ public boolean startPage() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		float scaling = scalingFactor();
 		NSSize paperSize = printInfo.paperSize();
+		paperSize.width /= scaling;
+		paperSize.height /= scaling;
 		NSRect rect = new NSRect();
 		rect.width = paperSize.width;
 		rect.height = paperSize.height;
 		view.beginPageInRect(rect, new NSPoint());
 		NSRect imageBounds = printInfo.imageablePageBounds();
+		imageBounds.x /= scaling;
+		imageBounds.y /= scaling;
+		imageBounds.width /= scaling;
+		imageBounds.height /= scaling;
 		NSBezierPath.bezierPathWithRect(imageBounds).setClip();
 		NSAffineTransform transform = NSAffineTransform.transform();
 		transform.translateXBy(imageBounds.x, imageBounds.y);
@@ -540,8 +557,9 @@ public Rectangle getBounds() {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSSize size = printInfo.paperSize();
+		float scaling = scalingFactor();
 		Point dpi = getDPI (), screenDPI = getIndependentDPI();
-		return new Rectangle (0, 0, (int)(size.width * dpi.x / screenDPI.x), (int)(size.height * dpi.y / screenDPI.y));
+		return new Rectangle (0, 0, (int)((size.width * dpi.x / screenDPI.x) / scaling), (int)((size.height * dpi.y / screenDPI.y)  / scaling));
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -569,9 +587,10 @@ public Rectangle getClientArea() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		float scaling = scalingFactor();
 		NSRect rect = printInfo.imageablePageBounds();
 		Point dpi = getDPI (), screenDPI = getIndependentDPI();
-		return new Rectangle(0, 0, (int)(rect.width * dpi.x / screenDPI.x), (int)(rect.height * dpi.y / screenDPI.y));
+		return new Rectangle(0, 0, (int)((rect.width * dpi.x / screenDPI.x) / scaling), (int)((rect.height * dpi.y / screenDPI.y) / scaling));
 	} finally {
 		if (pool != null) pool.release();
 	}
