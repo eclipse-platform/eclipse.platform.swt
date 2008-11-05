@@ -278,6 +278,7 @@ public static Frame new_Frame (final Composite parent) {
 						}
 					});
 					break;
+				case SWT.FocusIn:
 				case SWT.Activate:
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
@@ -288,8 +289,8 @@ public static Frame new_Frame (final Composite parent) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 								frame.dispatchEvent (new WindowEvent (frame, 207 /*WindowEvent.WINDOW_GAINED_FOCUS*/));
 							} else {
+								if (frame.isActive()) return;
 								try {
-									/* Initialize the default focus traversal policy */
 									Class clazz = frame.getClass();
 									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
 									if (method != null) method.invoke(frame, new Object[]{new Boolean(true)});
@@ -308,8 +309,8 @@ public static Frame new_Frame (final Composite parent) {
 								frame.dispatchEvent (new WindowEvent (frame, 208 /*WindowEvent.WINDOW_LOST_FOCUS*/));
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 							} else {
+								if (!frame.isActive()) return;
 								try {
-									/* Initialize the default focus traversal policy */
 									Class clazz = frame.getClass();
 									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
 									if (method != null) method.invoke(frame, new Object[]{new Boolean(false)});
@@ -321,7 +322,11 @@ public static Frame new_Frame (final Composite parent) {
 			}
 		}
 	};
-	parent.addListener (SWT.Activate, listener);
+	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
+		parent.addListener (SWT.Activate, listener);
+	} else {
+		parent.addListener (SWT.FocusIn, listener);
+	}
 	parent.addListener (SWT.Deactivate, listener);
 	parent.addListener (SWT.Dispose, listener);
 	
