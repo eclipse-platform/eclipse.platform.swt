@@ -190,7 +190,7 @@
   <constant name="NSAccessibilitySelectedTextChangedNotification" swt_gen="true"></constant>
   <constant name="NSAccessibilitySelectedTextRangeAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilitySelectedTextRangesAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityServesAsTitleForUIElementsAttribute"></constant>
+  <constant name="NSAccessibilityServesAsTitleForUIElementsAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilityShadowTextAttribute"></constant>
   <constant name="NSAccessibilitySharedCharacterRangeAttribute"></constant>
   <constant name="NSAccessibilitySharedTextUIElementsAttribute"></constant>
@@ -5052,8 +5052,8 @@
     <method selector="mouseDownFlags">
       <retval></retval>
     </method>
-    <method selector="nextState">
-      <retval></retval>
+    <method selector="nextState" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="objectValue">
       <retval></retval>
@@ -12086,10 +12086,10 @@
       <arg name="action"></arg>
       <retval></retval>
     </method>
-    <method selector="accessibilitySetOverrideValue:forAttribute:">
-      <arg name="value"></arg>
-      <arg name="attribute"></arg>
-      <retval></retval>
+    <method selector="accessibilitySetOverrideValue:forAttribute:" swt_gen="true">
+      <arg name="value" swt_gen="true"></arg>
+      <arg name="attribute" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="accessibilitySetValue:forAttribute:">
       <arg name="value"></arg>

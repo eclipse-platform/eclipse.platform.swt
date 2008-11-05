@@ -29,6 +29,10 @@ public NSObject alloc() {
 	return this;
 }
 
+public boolean accessibilitySetOverrideValue(id value, NSString attribute) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_accessibilitySetOverrideValue_forAttribute_, value != null ? value.id : 0, attribute != null ? attribute.id : 0);
+}
+
 public void applicationWillResignActive(NSNotification notification) {
 	OS.objc_msgSend(this.id, OS.sel_applicationWillResignActive_, notification != null ? notification.id : 0);
 }

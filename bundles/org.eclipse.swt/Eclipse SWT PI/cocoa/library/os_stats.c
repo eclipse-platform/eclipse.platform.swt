@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 338;
-int OS_nativeFunctionCallCount[338];
+int OS_nativeFunctionCount = 339;
+int OS_nativeFunctionCallCount[339];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -105,6 +105,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilitySelectedTextChangedNotification",
 	"NSAccessibilitySelectedTextRangeAttribute",
 	"NSAccessibilitySelectedTextRangesAttribute",
+	"NSAccessibilityServesAsTitleForUIElementsAttribute",
 	"NSAccessibilitySizeAttribute",
 	"NSAccessibilitySliderRole",
 	"NSAccessibilitySortButtonRole",

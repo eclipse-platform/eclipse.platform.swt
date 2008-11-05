@@ -890,6 +890,7 @@ public static final int /*long*/ sel_name = sel_registerName("name");
 public static final int /*long*/ sel_namesOfPromisedFilesDroppedAtDestination_ = sel_registerName("namesOfPromisedFilesDroppedAtDestination:");
 public static final int /*long*/ sel_nextEventMatchingMask_untilDate_inMode_dequeue_ = sel_registerName("nextEventMatchingMask:untilDate:inMode:dequeue:");
 public static final int /*long*/ sel_nextObject = sel_registerName("nextObject");
+public static final int /*long*/ sel_nextState = sel_registerName("nextState");
 public static final int /*long*/ sel_nextWordFromIndex_forward_ = sel_registerName("nextWordFromIndex:forward:");
 public static final int /*long*/ sel_noteNumberOfRowsChanged = sel_registerName("noteNumberOfRowsChanged");
 public static final int /*long*/ sel_numberOfColumns = sel_registerName("numberOfColumns");
@@ -3319,6 +3320,9 @@ public static final NSString NSAccessibilitySelectedTextRangeAttribute = new NSS
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySelectedTextRangesAttribute();
 public static final NSString NSAccessibilitySelectedTextRangesAttribute = new NSString(NSAccessibilitySelectedTextRangesAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityServesAsTitleForUIElementsAttribute();
+public static final NSString NSAccessibilityServesAsTitleForUIElementsAttribute = new NSString(NSAccessibilityServesAsTitleForUIElementsAttribute());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySizeAttribute();
 public static final NSString NSAccessibilitySizeAttribute = new NSString(NSAccessibilitySizeAttribute());

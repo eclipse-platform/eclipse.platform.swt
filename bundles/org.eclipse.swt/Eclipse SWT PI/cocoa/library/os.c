@@ -1129,6 +1129,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedTextRangesAttribute)
 }
 #endif
 
+#ifndef NO_NSAccessibilityServesAsTitleForUIElementsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityServesAsTitleForUIElementsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityServesAsTitleForUIElementsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityServesAsTitleForUIElementsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityServesAsTitleForUIElementsAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilitySizeAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySizeAttribute)
 	(JNIEnv *env, jclass that)
