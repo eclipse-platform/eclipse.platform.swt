@@ -1733,7 +1733,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy() {
 	checkWidget();
-	copy(DND.CLIPBOARD);
+	copySelection(DND.CLIPBOARD);
 }
 /**
  * Copies the selected text to the specified clipboard.  The text will be put in the 
@@ -1758,48 +1758,36 @@ public void copy() {
  */
 public void copy(int clipboardType) {
 	checkWidget();
-	if (clipboardType != DND.CLIPBOARD && clipboardType != DND.SELECTION_CLIPBOARD) return;
-	if (blockSelection && blockXLocation != -1) {
-		Rectangle rect = getBlockSelectonPosition();
-		int firstLine = rect.y;
-		int lastLine = rect.height;
-		int left = rect.x;
-		int right = rect.width;
-		StringBuffer buffer = new StringBuffer();
-		String lineDelimiter = PlatformLineDelimiter;
-		for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
-			int start = getOffsetAtPoint(left, 0, lineIndex);
-			int end = getOffsetAtPoint(right, 0, lineIndex);
-			String text = content.getTextRange(start, end - start);
-			buffer.append(text);
-			if (lineIndex < lastLine) buffer.append(lineDelimiter); 
-		}
-		if (buffer.length() > 0) {
-			//TODO RTF support - refactor Writers
-			TextTransfer plainTextTransfer = TextTransfer.getInstance();
-//			TextWriter plainTextWriter = new TextWriter(start, length);
-//			String plainText = getPlatformDelimitedText(plainTextWriter);
-			String plainText = buffer.toString();
-			Object[] data = new Object[]{plainText};
-			Transfer[] types = new Transfer[]{plainTextTransfer};
-			clipboard.setContents(data, types, clipboardType);
-		}
-		return;
-	}
-	int length = selection.y - selection.x;
-	if (length > 0) {
-		try {
-			setClipboardContent(selection.x, length, clipboardType);
-		} catch (SWTError error) {
-			// Copy to clipboard failed. This happens when another application 
-			// is accessing the clipboard while we copy. Ignore the error.
-			// Fixes 1GDQAVN
-			// Rethrow all other errors. Fixes bug 17578.
-			if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
-				throw error;
+	copySelection(clipboardType);
+}
+boolean copySelection(int type) {
+	if (type != DND.CLIPBOARD && type != DND.SELECTION_CLIPBOARD) return false;
+	try {
+		if (blockSelection && blockXLocation != -1) {
+			String text = getBlockSelectionText(PlatformLineDelimiter);
+			if (text.length() > 0) {
+				//TODO RTF support
+				TextTransfer plainTextTransfer = TextTransfer.getInstance();
+				Object[] data = new Object[]{text};
+				Transfer[] types = new Transfer[]{plainTextTransfer};
+				clipboard.setContents(data, types, type);
+			}
+		} else {
+			int length = selection.y - selection.x;
+			if (length > 0) {
+				setClipboardContent(selection.x, length, type);
 			}
 		}
+	} catch (SWTError error) {
+		// Copy to clipboard failed. This happens when another application 
+		// is accessing the clipboard while we copy. Ignore the error.
+		// Rethrow all other errors. Fixes bug 17578.
+		if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
+			throw error;
+		}
+		return false;
 	}
+	return true;
 }
 /**
  * Returns the alignment of the widget.
@@ -2063,29 +2051,15 @@ void createCaretBitmaps() {
  */
 public void cut() {
 	checkWidget();
-	if (blockSelection && blockXLocation != -1) {
-		copy(DND.CLIPBOARD);
-		insertBlockSelectionText((char)0, SWT.NULL);
-		clearBlockSelection(true, true);
-		return;
-	}
-	int length = selection.y - selection.x;
-	if (length > 0) {
-		try {
-			setClipboardContent(selection.x, length, DND.CLIPBOARD);
-		} catch (SWTError error) {
-			// Copy to clipboard failed. This happens when another application 
-			// is accessing the clipboard while we copy. Ignore the error.
-			// Fixes 1GDQAVN
-			// Rethrow all other errors. Fixes bug 17578.
-			if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
-				throw error;
-			}
-			// Abort cut operation if copy to clipboard fails.
-			// Fixes bug 21030.
-			return;
+	// Abort cut operation if copy to clipboard fails.
+	// Fixes bug 21030.
+	if (copySelection(DND.CLIPBOARD)) {
+		if (blockSelection && blockXLocation != -1) {
+			insertBlockSelectionText((char)0, SWT.NULL);
+			clearBlockSelection(true, true);
+		} else {
+			doDelete();
 		}
-		doDelete();
 	}
 }
 /** 
@@ -3456,6 +3430,22 @@ Rectangle getBlockSelectionRectangle() {
 	rect.width = rect.width - horizontalScrollOffset - rect.x;
 	rect.height =  getLinePixel(rect.height + 1) - rect.y - 1;
 	return rect;
+}
+String getBlockSelectionText(String delimiter) {
+	Rectangle rect = getBlockSelectonPosition();
+	int firstLine = rect.y;
+	int lastLine = rect.height;
+	int left = rect.x;
+	int right = rect.width;
+	StringBuffer buffer = new StringBuffer();
+	for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
+		int start = getOffsetAtPoint(left, 0, lineIndex);
+		int end = getOffsetAtPoint(right, 0, lineIndex);
+		String text = content.getTextRange(start, end - start);
+		buffer.append(text);
+		if (lineIndex < lastLine) buffer.append(delimiter); 
+	}
+	return buffer.toString();
 }
 /** 
  * Returns the index of the last fully visible line.
@@ -5674,19 +5664,7 @@ void handleKeyDown(Event event) {
 void handleKeyUp(Event event) {
 	if (clipboardSelection != null) {
 		if (clipboardSelection.x != selection.x || clipboardSelection.y != selection.y) {
-			try {
-				if (selection.y - selection.x > 0) {
-					setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
-				}
-			} catch (SWTError error) {
-				// Copy to clipboard failed. This happens when another application 
-				// is accessing the clipboard while we copy. Ignore the error.
-				// Fixes 1GDQAVN
-				// Rethrow all other errors. Fixes bug 17578.
-				if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
-					throw error;
-				}
-			}
+			copySelection(DND.SELECTION_CLIPBOARD);
 		}
 	}
 	clipboardSelection = null;
@@ -5770,19 +5748,7 @@ void handleMouseUp(Event event) {
 	clickCount = 0;
 	endAutoScroll();
 	if (event.button == 1) {
-		try {
-			if (selection.y - selection.x > 0) {
-				setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
-			}
-		} catch (SWTError error) {
-			// Copy to clipboard failed. This happens when another application 
-			// is accessing the clipboard while we copy. Ignore the error.
-			// Fixes 1GDQAVN
-			// Rethrow all other errors. Fixes bug 17578.
-			if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
-				throw error;
-			}
-		}
+		copySelection(DND.SELECTION_CLIPBOARD);
 	}
 }
 /**
