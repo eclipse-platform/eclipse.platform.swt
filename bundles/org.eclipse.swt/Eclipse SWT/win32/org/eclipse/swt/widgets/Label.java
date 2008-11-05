@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.*;
  * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
  * <p>
- * Shadow styles are hints and may not be honoured
+ * Shadow styles are hints and may not be honored
  * by the platform.  To create a separator label
  * with the default shadow style for the platform,
  * do not specify a shadow style.
