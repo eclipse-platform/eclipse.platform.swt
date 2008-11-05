@@ -38,7 +38,6 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class ProgressBar extends Control {
-	boolean ignoreResize;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -81,14 +80,7 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	NSProgressIndicator widget = (NSProgressIndicator)view;
-	NSRect oldRect = widget.frame();
-	ignoreResize = true;
-	widget.sizeToFit();
-	NSRect newRect = widget.frame();
-	widget.setFrame (oldRect);
-	ignoreResize = false;
-	int size = (int)newRect.height;
+	int size = OS.NSProgressIndicatorPreferredThickness;
 	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		height = size;
@@ -176,11 +168,6 @@ public int getSelection () {
 public int getState () {
 	checkWidget ();
 	return SWT.NORMAL;
-}
-
-void sendEvent (int eventType, Event event, boolean send) {
-	if (ignoreResize && eventType == SWT.Resize) return;
-	super.sendEvent (eventType, event, send);
 }
 
 /**
