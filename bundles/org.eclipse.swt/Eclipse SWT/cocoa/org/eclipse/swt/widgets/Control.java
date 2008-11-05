@@ -540,6 +540,9 @@ public void addMouseWheelListener (MouseWheelListener listener) {
 	addListener (SWT.MouseWheel, typedListener);
 }
 
+void addRelation (Control control) {
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver needs to be painted, by sending it
@@ -739,6 +742,7 @@ void createWidget () {
 	checkBuffered ();
 	setDefaultFont ();
 	setZOrder ();
+	setRelations ();
 }
 
 Color defaultBackground () {
@@ -1571,6 +1575,14 @@ public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	}
 }
 
+/*
+ * Answers a boolean indicating whether a Label that precedes the receiver in
+ * a layout should be read by screen readers as the recevier's label.
+ */
+boolean isDescribedByLabel () {
+	return true;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * ancestors up to and including the receiver's nearest ancestor
@@ -1990,6 +2002,26 @@ void register () {
 	display.addWidget (view, this);
 }
 
+void release (boolean destroy) {
+	Control next = null, previous = null;
+	if (destroy && parent != null) {
+		Control[] children = parent._getChildren ();
+		int index = 0;
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		if (0 < index && (index + 1) < children.length) {
+			next = children [index + 1];
+			previous = children [index - 1];
+		}
+	}
+	super.release (destroy);
+	if (destroy) {
+		if (previous != null) previous.addRelation (next);
+	}
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	if (view != null) view.release();
@@ -2299,6 +2331,22 @@ public void removePaintListener(PaintListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Paint, listener);
 }
+
+/*
+ * Remove "Labeled by" relations from the receiver.
+ */
+void removeRelation () {
+	if (!isDescribedByLabel()) return;
+	NSObject accessibleElement = focusView();
+	
+	if (accessibleElement instanceof NSControl) {
+		NSControl viewAsControl = (NSControl) accessibleElement;
+		if (viewAsControl.cell() != null) accessibleElement = viewAsControl.cell();
+	}
+	
+	accessibleElement.accessibilitySetOverrideValue(accessibleElement, OS.NSAccessibilityTitleUIElementAttribute);
+}
+
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -3017,6 +3065,22 @@ public void setRegion (Region region) {
 //	redrawWidget (handle, true);
 }
 
+void setRelations () {
+	if (parent == null) return;
+	Control [] children = parent._getChildren ();
+	int count = children.length;
+	if (count > 1) {
+		/*
+		 * the receiver is the last item in the list, so its predecessor will
+		 * be the second-last item in the list
+		 */
+		Control child = children [count - 2];
+		if (child != this) {
+			child.addRelation (this);
+		}
+	}
+}
+
 boolean setRadioSelection (boolean value){
 	return false;
 }
@@ -3159,12 +3223,73 @@ void setZOrder () {
 	parent.contentView().addSubview(topView, OS.NSWindowBelow, null);
 }
 
-void setZOrder (Control control, boolean above) {
-	NSView otherView = control == null ? null : control.topView ();
+void setZOrder (Control sibling, boolean above) {
+	int index = 0, siblingIndex = 0, oldNextIndex = -1;
+	Control[] children = null;
+	/* determine the receiver's and sibling's indexes in the parent */
+	children = parent._getChildren ();
+	while (index < children.length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	if (sibling != null) {
+		while (siblingIndex < children.length) {
+			if (children [siblingIndex] == sibling) break;
+			siblingIndex++;
+		}
+	}
+	/* remove "Labeled by" relationships that will no longer be valid */
+	removeRelation ();
+	if (index + 1 < children.length) {
+		oldNextIndex = index + 1;
+		children [oldNextIndex].removeRelation ();
+	}
+	if (sibling != null) {
+		if (above) {
+			sibling.removeRelation ();
+		} else {
+			if (siblingIndex + 1 < children.length) {
+				children [siblingIndex + 1].removeRelation ();
+			}
+		}
+	}
+
+	NSView otherView = sibling == null ? null : sibling.topView ();
 	view.retain();
 	view.removeFromSuperview();
 	parent.contentView().addSubview(view, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
 	view.release();
+	
+	/* determine the receiver's new index in the parent */
+	if (sibling != null) {
+		if (above) {
+			index = siblingIndex - (index < siblingIndex ? 1 : 0);
+		} else {
+			index = siblingIndex + (siblingIndex < index ? 1 : 0);
+		}
+	} else {
+		if (above) {
+			index = 0;
+		} else {
+			index = children.length - 1;
+		}
+	}
+
+	/* add new "Labeled by" relations as needed */
+	children = parent._getChildren ();
+	if (0 < index) {
+		children [index - 1].addRelation (this);
+	}
+	if (index + 1 < children.length) {
+		addRelation (children [index + 1]);
+	}
+	if (oldNextIndex != -1) {
+		if (oldNextIndex <= index) oldNextIndex--;
+		/* the last two conditions below ensure that duplicate relations are not hooked */
+		if (0 < oldNextIndex && oldNextIndex != index && oldNextIndex != index + 1) {
+			children [oldNextIndex - 1].addRelation (children [oldNextIndex]);
+		}
+	}
 }
 
 void sort (int [] items) {

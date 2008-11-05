@@ -411,6 +411,10 @@ public String getText () {
 	return text;
 }
 
+boolean isDescribedByLabel () {
+	return false;
+}
+
 void register() {
 	super.register();
 	display.addWidget(((NSControl)view).cell(), this);

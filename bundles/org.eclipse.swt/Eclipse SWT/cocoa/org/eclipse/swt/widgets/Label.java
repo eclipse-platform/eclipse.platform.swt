@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
@@ -138,6 +137,23 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
 	if (id == view.id) return true;
 	return super.accessibilityIsIgnored(id, sel);	
+}
+
+void addRelation (Control control) {
+	if (!control.isDescribedByLabel ()) return;
+	
+	if (textView != null) {
+		NSObject accessibleElement = control.focusView();
+		
+		if (accessibleElement instanceof NSControl) {
+			NSControl viewAsControl = (NSControl)accessibleElement;
+			if (viewAsControl.cell() != null) accessibleElement = viewAsControl.cell();
+		}
+		
+		accessibleElement.accessibilitySetOverrideValue(textView.cell(), OS.NSAccessibilityTitleUIElementAttribute);
+		NSArray controlArray = NSArray.arrayWithObject(accessibleElement);
+		textView.cell().accessibilitySetOverrideValue(controlArray, OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
+	}
 }
 
 static int checkStyle (int style) {
@@ -329,6 +345,10 @@ public String getText () {
 	return text;
 }
 
+boolean isDescribedByLabel () {
+	return false;
+}
+
 void register () {
 	super.register ();
 	if (textView != null) {
@@ -347,6 +367,15 @@ void releaseHandle () {
 	if (imageView != null) imageView.release();
 	textView = null;
 	imageView = null;
+}
+
+/*
+ * Remove "Labeled by" relations from the receiver.
+ */
+void removeRelation () {
+	if (textView != null) {
+		textView.cell().accessibilitySetOverrideValue(null, OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
+	}
 }
 
 /**
