@@ -312,12 +312,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		textContainer.initWithContainerSize (size);
 		layoutManager.addTextContainer (textContainer);
 
-		NSTextStorage textStorage = (NSTextStorage)new NSTextStorage ().alloc ();
-		NSString string = ((NSTextView)view).textStorage ().string ();
-		textStorage.initWithString (string);
-		NSRange range = new NSRange ();
-		range.length = string.length ();
-		textStorage.addAttribute (OS.NSFontAttributeName, getFont ().handle, range);
+		NSTextStorage textStorage = (NSTextStorage)new NSTextStorage ().alloc ().init ();
+		textStorage.setAttributedString (((NSTextView)view).textStorage ());
 		layoutManager.setTextStorage (textStorage);
 		layoutManager.glyphRangeForTextContainer (textContainer);
 
