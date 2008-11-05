@@ -1760,23 +1760,14 @@ public void copy(int clipboardType) {
 	checkWidget();
 	if (clipboardType != DND.CLIPBOARD && clipboardType != DND.SELECTION_CLIPBOARD) return;
 	if (blockSelection && blockXLocation != -1) {
-		int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
-		int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
-		if (firstLine > lastLine) {
-			int temp = firstLine;
-			firstLine = lastLine;
-			lastLine = temp;
-		}
-		int left = blockXAnchor;
-		int right = blockXLocation;
-		if (left > right) {
-			left = blockXLocation;
-			right = blockXAnchor;
-		}
+		Rectangle rect = getBlockSelectonPosition();
+		int firstLine = rect.y;
+		int lastLine = rect.height;
+		int left = rect.x;
+		int right = rect.width;
 		StringBuffer buffer = new StringBuffer();
 		String lineDelimiter = PlatformLineDelimiter;
 		for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
-			//TODO BAD DOESN'T HANDLE BIDI
 			int start = getOffsetAtPoint(left, 0, lineIndex);
 			int end = getOffsetAtPoint(right, 0, lineIndex);
 			String text = content.getTextRange(start, end - start);
@@ -1921,10 +1912,17 @@ boolean checkDragDetect(Event event) {
 	} else {
 		if (event.button != 1) return false;
 	}
-	if (selection.x == selection.y) return false;
-	int offset = getOffsetAtPoint(event.x, event.y, null, true);
-	if (selection.x <= offset && offset < selection.y) {
-		return dragDetect(event);
+	if (blockSelection && blockXLocation != -1) {
+		Rectangle rect = getBlockSelectionRectangle();
+		if (rect.contains(event.x, event.y)) {
+			return dragDetect(event);
+		}
+	} else {
+		if (selection.x == selection.y) return false;
+		int offset = getOffsetAtPoint(event.x, event.y, null, true);
+		if (selection.x <= offset && offset < selection.y) {
+			return dragDetect(event);
+		}
 	}
 	return false;
 }
@@ -3435,6 +3433,30 @@ public boolean getBlockSelection() {
 	checkWidget();
 	return blockSelection;
 }
+Rectangle getBlockSelectonPosition() {
+	int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
+	int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
+	if (firstLine > lastLine) {
+		int temp = firstLine;
+		firstLine = lastLine;
+		lastLine = temp;
+	}
+	int left = blockXAnchor;
+	int right = blockXLocation;
+	if (left > right) {
+		left = blockXLocation;
+		right = blockXAnchor;
+	}
+	return new Rectangle (left, firstLine, right, lastLine);
+}
+Rectangle getBlockSelectionRectangle() {
+	Rectangle rect = getBlockSelectonPosition();
+	rect.x -= horizontalScrollOffset;
+	rect.y = getLinePixel(rect.y);
+	rect.width = rect.width - horizontalScrollOffset - rect.x;
+	rect.height =  getLinePixel(rect.height + 1) - rect.y - 1;
+	return rect;
+}
 /** 
  * Returns the index of the last fully visible line.
  *
@@ -4438,19 +4460,11 @@ public Point getSelectionRange() {
 public int[] getSelectionRanges() {
 	checkWidget();
 	if (blockSelection && blockXLocation != -1) {
-		int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
-		int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
-		if (firstLine > lastLine) {
-			int temp = firstLine;
-			firstLine = lastLine;
-			lastLine = temp;
-		}
-		int left = blockXAnchor;
-		int right = blockXLocation;
-		if (left > right) {
-			left = blockXLocation;
-			right = blockXAnchor;
-		}
+		Rectangle rect = getBlockSelectonPosition();
+		int firstLine = rect.y;
+		int lastLine = rect.height;
+		int left = rect.x;
+		int right = rect.width;
 		int[] ranges = new int[(lastLine - firstLine + 1) * 2];
 		int index = 0;
 		for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
@@ -5223,19 +5237,11 @@ int insertBlockSelectionText(String text) {
 	lines[lineCount++] = text.substring(start);
 	int firstLine, lastLine, left, right;
 	if (blockXLocation != -1) {
-		firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
-		lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
-		if (firstLine > lastLine) {
-			int temp = firstLine;
-			firstLine = lastLine;
-			lastLine = temp;
-		}
-		left = blockXAnchor;
-		right = blockXLocation;
-		if (left > right) {
-			left = blockXLocation;
-			right = blockXAnchor;
-		}
+		Rectangle rect = getBlockSelectonPosition();
+		firstLine = rect.y;
+		lastLine = rect.height;
+		left = rect.x;
+		right = rect.width;
 	} else {
 		firstLine = lastLine = getCaretLine();
 		left = right = getPointAtOffset(caretOffset).x;
@@ -5275,19 +5281,11 @@ int insertBlockSelectionText(String text) {
 }
 void insertBlockSelectionText(char key, int action) {
 	if (key == SWT.CR || key == SWT.LF) return;
-	int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
-	int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
-	if (firstLine > lastLine) {
-		int temp = firstLine;
-		firstLine = lastLine;
-		lastLine = temp;
-	}
-	int left = blockXAnchor;
-	int right = blockXLocation;
-	if (left > right) {
-		left = blockXLocation;
-		right = blockXAnchor;
-	}
+	Rectangle rect = getBlockSelectonPosition();
+	int firstLine = rect.y;
+	int lastLine = rect.height;
+	int left = rect.x;
+	int right = rect.width;
 	int[] trailing = new int[1];
 	int offset = 0, delta = 0;
 	String text = key != 0 ? new String(new char[] {key}) : "";
@@ -5815,22 +5813,12 @@ void handlePaint(Event event) {
 	}
 	if (blockSelection && blockXLocation != -1) {
 		gc.setBackground(getSelectionBackground());
-		int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
-		int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
-		if (firstLine > lastLine) {
-			int temp = firstLine;
-			firstLine = lastLine;
-			lastLine = temp;
-		}
-		int left = blockXAnchor - horizontalScrollOffset;
-		int top = getLinePixel(firstLine);
-		int right = blockXLocation - horizontalScrollOffset;
-		int bottom = getLinePixel(lastLine + 1) - 1;
-		gc.drawRectangle(left, top, right - left, bottom - top);
+		Rectangle rect = getBlockSelectionRectangle();
+		gc.drawRectangle(rect);
 		gc.setAdvanced(true);
 		if (gc.getAdvanced()) {
 			gc.setAlpha(100);
-			gc.fillRectangle(left, top, right - left, bottom - top);
+			gc.fillRectangle(rect);
 			gc.setAdvanced(false);
 		}
 	}
