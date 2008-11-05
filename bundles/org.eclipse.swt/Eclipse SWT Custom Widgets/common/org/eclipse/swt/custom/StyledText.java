@@ -5943,7 +5943,7 @@ void handleTextChanged(TextChangedEvent event) {
 	// selection redraw would be flushed during scroll which is wrong.
 	// in some cases new text would be drawn in scroll source area even 
 	// though the intent is to scroll it.
-	if (!blockSelection) {
+	if (!(blockSelection && blockXLocation != -1)) {
 		updateSelection(lastTextChangeStart, lastTextChangeReplaceCharCount, lastTextChangeNewCharCount);
 	}
 	if (lastTextChangeReplaceLineCount > 0 || wordWrap) {
@@ -6479,7 +6479,7 @@ void modifyContent(Event event, boolean updateCaret) {
 		content.replaceTextRange(event.start, replacedLength, event.text);
 		// set the caret position prior to sending the modify event.
 		// fixes 1GBB8NJ
-		if (updateCaret && !blockSelection) {
+		if (updateCaret && !(blockSelection && blockXLocation != -1)) {
 			// always update the caret location. fixes 1G8FODP
 			setSelection(event.start + event.text.length(), 0, true, false);
 			showCaret();
