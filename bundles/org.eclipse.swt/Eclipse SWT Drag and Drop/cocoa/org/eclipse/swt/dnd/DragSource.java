@@ -554,6 +554,8 @@ void onDispose() {
 	transferAgents = null;
 
 	if (delegateJniRef != 0) OS.DeleteGlobalRef(delegateJniRef);
+	delegateJniRef = 0;
+	OS.object_setInstanceVariable(dragSourceDelegate.id, SWT_OBJECT, 0);
 	if (dragSourceDelegate != null) dragSourceDelegate.release();
 }
 
