@@ -1088,7 +1088,10 @@ public void setChecked (boolean checked) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
-	if (expanded == getExpanded ()) return;
+
+	/* Do nothing when the item is a leaf or already expanded */
+	if (itemCount == 0 || expanded == getExpanded ()) return;
+
 	parent.ignoreExpand = true;
 	this.expanded = expanded;
 	if (expanded) {
