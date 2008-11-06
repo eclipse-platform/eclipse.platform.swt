@@ -186,19 +186,12 @@ public class TextEditor {
 		        	file = new FileInputStream(name);
 		        	styledText.setText(openFile(file));
 		        } catch (IOException exception) {
-		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
-					messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
-					messageBox.setMessage(getResourceString("Error_loadfile") + fileName); //$NON-NLS-1$
-					messageBox.open();
-		        	styledText.setText(""); //$NON-NLS-1$
+		        	showError(getResourceString("Error"), exception.getMessage()); //$NON-NLS-1$
 		        } finally {
 		        	try {
 		        		if (file != null) file.close();
-		        	} catch (IOException ex) {
-		        		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
-						messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
-						messageBox.setMessage(ex.getMessage());
-						messageBox.open();
+		        	} catch (IOException exception) {
+		        		showError(getResourceString("Error"), exception.getMessage()); //$NON-NLS-1$
 		        	}
 		        }
 			}					
@@ -208,17 +201,7 @@ public class TextEditor {
 		saveItem.setText(getResourceString("Save_menuitem")); //$NON-NLS-1$
 		saveItem.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				File file = new File(fileName);
-				try {					
-			       	FileWriter fileWriter = new FileWriter(file);
-			       	fileWriter.write(styledText.getText());
-			       	fileWriter.close();
-				} catch (IOException ex) {
-					MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
-					messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
-					messageBox.setMessage(getResourceString("Error_writefile") + fileName); //$NON-NLS-1$
-					messageBox.open();
-				}
+				saveFile();
 			}											
 		});
 		
@@ -233,33 +216,14 @@ public class TextEditor {
 		saveAsItem.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog dialog = new FileDialog (shell, SWT.SAVE);
-				dialog.setText(getResourceString("Save_fileitem")); //$NON-NLS-1$
 				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$ 
 				dialog.setFilterExtensions(new String [] {"*.txt"}); //$NON-NLS-1$
-				dialog.setFilterPath("c:\\"); //$NON-NLS-1$
-				dialog.setFileName("*.txt"); //$NON-NLS-1$
-				fileName = dialog.open(); 
-				if (fileName == null) return;				
-		        File file = new File(fileName);
-		        FileWriter fileWriter = null;
-		        try {
-		        	fileWriter = new FileWriter(file);
-		        	fileWriter.write(styledText.getText());
-		        } catch (IOException ex) {
-		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
-					messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
-					messageBox.setMessage(getResourceString("Error_savefile") + fileName); //$NON-NLS-1$
-					messageBox.open();
-		        } finally {
-		        	try {
-		        		if (fileWriter != null) fileWriter.close();
-		        	} catch (IOException ex) {
-		        		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
-						messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
-						messageBox.setMessage(ex.getMessage());
-						messageBox.open();
-		        	}
-		        }
+				if (fileName != null) dialog.setFileName(fileName);
+				String name = dialog.open(); 
+				if (name != null) {
+					fileName = name;
+					saveFile();
+				}
 			}
 		});
 		
@@ -1383,6 +1347,25 @@ public class TextEditor {
 		}
 	}
 
+	void saveFile() {
+		if (fileName != null) {
+			FileWriter file = null;
+			try {
+				file = new FileWriter(fileName);
+		       	file.write(styledText.getText());
+		       	file.close();
+			} catch (IOException exception) {
+	        	showError(getResourceString("Error"), exception.getMessage());
+	        } finally {
+	        	try {
+	        		if (file != null) file.close();
+	        	} catch (IOException exception) {
+	        		showError(getResourceString("Error"), exception.getMessage());
+	        	}
+	        }
+		}
+	}
+	
 	void setBullet(int type) {
 		Point selection = styledText.getSelection();
 		int lineStart = styledText.getLineAtOffset(selection.x);
@@ -1577,6 +1560,13 @@ public class TextEditor {
 		}
 		styledText.setStyleRanges(start, length, newRanges, newStyles);
 		disposeRanges(styles);
+	}
+	
+	void showError (String title, String message) {
+		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
+		messageBox.setText(title);
+		messageBox.setMessage(message);
+		messageBox.open();
 	}
 
 	void updateStatusBar() {
