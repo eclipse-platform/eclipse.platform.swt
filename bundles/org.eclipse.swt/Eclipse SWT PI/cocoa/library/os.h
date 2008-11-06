@@ -13,6 +13,7 @@
 #define INC_os_H
 
 /*#define NDEBUG*/
+/*#define DEBUG_EXCEPTIONS*/
 
 //TODO this is needed for objc_super, is it correct?
 #define __OBJC2__ 1
@@ -39,17 +40,27 @@ extern jint CPSSetProcessName(void *, jintLong);
 #define STRUCT_SIZE_LIMIT 16
 #endif
 
+#ifdef DEBUG_EXCEPTIONS
+#define DUMP_EXCEPTION \
+	if (![[nsx name] isEqualToString:NSAccessibilityException])  { \
+		NSLog(@"Exception thrown: %@ %@", [nsx name], [nsx reason]); \
+		jclass threadClass = (*env)->FindClass(env, "java/lang/Thread"); \
+		jmethodID dumpStackID = (*env)->GetStaticMethodID(env, threadClass, "dumpStack", "()V"); \
+		if (dumpStackID != NULL) (*env)->CallStaticVoidMethod(env, threadClass, dumpStackID, 0); \
+	}
+#else
+#define DUMP_EXCEPTION
+#endif
+
 #ifndef NATIVE_STATS
 #define OS_NATIVE_ENTER(env, that, func) \
 	@try {  
 #define OS_NATIVE_EXIT(env, that, func) \
 	} \
 	@catch (NSException *nsx) { \
-		NSLog(@"Exception thrown: %@ %@", [nsx name], [nsx reason]); \
-		jclass threadClass = (*env)->FindClass(env, "java/lang/Thread"); \
-		jmethodID dumpStackID = (*env)->GetStaticMethodID(env, threadClass, "dumpStack", "()V"); \
-		if (dumpStackID != NULL) (*env)->CallStaticVoidMethod(env, threadClass, dumpStackID, 0); \
+		DUMP_EXCEPTION \
 	}
 #endif
 
 #endif /* INC_os_H */
+
