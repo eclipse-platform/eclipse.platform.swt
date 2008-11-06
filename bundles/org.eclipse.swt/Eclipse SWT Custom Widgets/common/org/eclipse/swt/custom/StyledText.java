@@ -1771,11 +1771,13 @@ boolean copySelection(int type) {
 				Object[] data = new Object[]{text};
 				Transfer[] types = new Transfer[]{plainTextTransfer};
 				clipboard.setContents(data, types, type);
+				return true;
 			}
 		} else {
 			int length = selection.y - selection.x;
 			if (length > 0) {
 				setClipboardContent(selection.x, length, type);
+				return true;
 			}
 		}
 	} catch (SWTError error) {
@@ -1785,9 +1787,8 @@ boolean copySelection(int type) {
 		if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
 			throw error;
 		}
-		return false;
 	}
-	return true;
+	return false;
 }
 /**
  * Returns the alignment of the widget.
