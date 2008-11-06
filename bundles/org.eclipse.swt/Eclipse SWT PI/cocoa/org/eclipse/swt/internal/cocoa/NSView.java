@@ -122,6 +122,10 @@ public void displayIfNeeded() {
 	OS.objc_msgSend(this.id, OS.sel_displayIfNeeded);
 }
 
+public void displayRectIgnoringOpacity(NSRect aRect, NSGraphicsContext context) {
+	OS.objc_msgSend(this.id, OS.sel_displayRectIgnoringOpacity_inContext_, aRect, context != null ? context.id : 0);
+}
+
 public void dragImage(NSImage anImage, NSPoint viewLocation, NSSize initialOffset, NSEvent event, NSPasteboard pboard, id sourceObj, boolean slideFlag) {
 	OS.objc_msgSend(this.id, OS.sel_dragImage_at_offset_event_pasteboard_source_slideBack_, anImage != null ? anImage.id : 0, viewLocation, initialOffset, event != null ? event.id : 0, pboard != null ? pboard.id : 0, sourceObj != null ? sourceObj.id : 0, slideFlag);
 }

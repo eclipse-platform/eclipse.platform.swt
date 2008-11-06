@@ -650,6 +650,7 @@ public static final int /*long*/ sel_dictionaryWithObject_forKey_ = sel_register
 public static final int /*long*/ sel_disableCursorRects = sel_registerName("disableCursorRects");
 public static final int /*long*/ sel_disabledControlTextColor = sel_registerName("disabledControlTextColor");
 public static final int /*long*/ sel_displayIfNeeded = sel_registerName("displayIfNeeded");
+public static final int /*long*/ sel_displayRectIgnoringOpacity_inContext_ = sel_registerName("displayRectIgnoringOpacity:inContext:");
 public static final int /*long*/ sel_distantFuture = sel_registerName("distantFuture");
 public static final int /*long*/ sel_doCommandBySelector_ = sel_registerName("doCommandBySelector:");
 public static final int /*long*/ sel_documentSource = sel_registerName("documentSource");

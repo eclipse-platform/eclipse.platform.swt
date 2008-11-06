@@ -1912,20 +1912,19 @@ public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-//	int [] outImage = new int [1];
-//	CGRect outFrame = new CGRect ();
-//	if (OS.HIViewCreateOffscreenImage (handle, 0, outFrame, outImage) == OS.noErr) {
-//		int width = OS.CGImageGetWidth (outImage [0]);
-//		int height = OS.CGImageGetHeight (outImage [0]);
-//	 	CGRect rect = new CGRect();
-//	 	rect.width = width;
-//		rect.height = height;
-//		//TODO - does not draw the browser (cocoa widgets?)
-//		OS.HIViewDrawCGImage (gc.handle, rect, outImage [0]);
-//		OS.CGImageRelease (outImage [0]);
-//	}
-//	return true;
-	return false;
+	
+	if (view.isFlipped()) {
+		gc.handle.saveGraphicsState();
+		NSAffineTransform transform = NSAffineTransform.transform ();
+		transform.scaleXBy (1, -1);
+		transform.translateXBy (0, -(view.bounds().height + 2 * view.bounds().y));
+		transform.concat ();
+	}
+	
+	view.displayRectIgnoringOpacity(view.bounds(), gc.handle);
+	
+	if (view.isFlipped()) gc.handle.restoreGraphicsState();
+	return true;
 }
 
 /**

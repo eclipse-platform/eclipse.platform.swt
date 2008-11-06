@@ -22028,10 +22028,10 @@
       <arg name="rect"></arg>
       <retval></retval>
     </method>
-    <method selector="displayRectIgnoringOpacity:inContext:">
-      <arg name="aRect"></arg>
-      <arg name="context"></arg>
-      <retval></retval>
+    <method selector="displayRectIgnoringOpacity:inContext:" swt_gen="true">
+      <arg name="aRect" swt_gen="true"></arg>
+      <arg name="context" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="dragFile:fromRect:slideBack:event:">
       <arg name="filename"></arg>
