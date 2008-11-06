@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+/*****************************************************************************
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,349 +10,1701 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.texteditor;
 
-
+import java.io.*;
+import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import java.util.*;
 
-/**
- */
-public class TextEditor {  
+public class TextEditor {
+	Display display;
 	Shell shell;
-	ToolBar toolBar;
-	StyledText text;
-
-	Images images = new Images();
-	Vector cachedStyles = new Vector();
-	Color RED = null; 
-	Color BLUE = null; 
-	Color GREEN = null; 
-	Font font = null;
-	ToolItem boldButton, italicButton, underlineButton, strikeoutButton;
+	CoolBar coolBar;
+	StyledText styledText;
+	Label statusBar;
+	ToolItem boldControl, italicControl, leftAlignmentItem, centerAlignmentItem, rightAlignmentItem, justifyAlignmentItem, blockSelectionItem;
+	Combo fontNameControl, fontSizeControl;
+	MenuItem underlineSingleItem, underlineDoubleItem, underlineErrorItem, underlineSquiggleItem, borderSolidItem, borderDashItem, borderDotItem;
 	
-	static ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");
+	boolean insert = true;
+	StyleRange[] selectedRanges;
+	int[] imageOffsets = new int[0];
+	Image[] images = new Image[0];
+	Control[] controls = new Control[0];
+	int[] controlOffsets = new int[0];
+	int newCharCount, start;
+	String fileName = null;
+	int styleState;			// the style state for underline, strikeout, and border
 
-Menu createEditMenu() {
-	Menu bar = shell.getMenuBar ();
-	Menu menu = new Menu (bar);
+
+	// Resources
+	Image iBold, iItalic, iUnderline, iStrikeout, iLeftAlignment, iRightAlignment, iCenterAlignment, iJustifyAlignment, iCopy, iCut, iPaste, iSpacing, iIndent, iTextForeground, iTextBackground, iBaselineUp, iBaselineDown, iBulletList, iNumberedList, iBlockSelection, iBorderStyle;
+	Font font, textFont;
+	Color textForeground, textBackground, strikeoutColor, underlineColor, borderColor;
+
+	static final int BULLET_WIDTH = 40;
+	static final int MARGIN = 5;
+	static final int BOLD = SWT.BOLD;
+	static final int ITALIC = SWT.ITALIC;
+	static final int FONT_STYLE = BOLD | ITALIC;
+	static final int STRIKEOUT = 1 << 3;
+	static final int TEXT_FOREGROUND = 1 << 4;
+	static final int TEXT_BACKGROUND = 1 << 5;
+	static final int FONT = 1 << 6;
+	static final int BASELINE_UP = 1 << 7;
+	static final int BASELINE_DOWN = 1 << 8;
+	static final int UNDERLINE_SINGLE = 1 << 9;
+	static final int UNDERLINE_DOUBLE = 1 << 10;
+	static final int UNDERLINE_ERROR = 1 << 11;
+	static final int UNDERLINE_SQUIGGLE = 1 << 12;
+	static final int UNDERLINE = UNDERLINE_SINGLE | UNDERLINE_DOUBLE | UNDERLINE_SQUIGGLE | UNDERLINE_ERROR;
+	static final int BORDER_SOLID = 1 << 13;
+	static final int BORDER_DASH = 1 << 14;
+	static final int BORDER_DOT = 1 << 15;
+	static final int BORDER = BORDER_SOLID | BORDER_DASH | BORDER_DOT;
 	
-	MenuItem item = new MenuItem (menu, SWT.PUSH);
-	item.setText (resources.getString("Cut_menuitem"));
-	item.setAccelerator(SWT.MOD1 + 'X');
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			handleCutCopy();
-			text.cut();
-		}
-	});
-	item = new MenuItem (menu, SWT.PUSH);
-	item.setText (resources.getString("Copy_menuitem"));
-	item.setAccelerator(SWT.MOD1 + 'C');
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			handleCutCopy();
-			text.copy();
-		}
-	});
-	item = new MenuItem (menu, SWT.PUSH);
-	item.setText (resources.getString("Paste_menuitem"));
-	item.setAccelerator(SWT.MOD1 + 'V');
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			text.paste();
-		}
-	});
-	new MenuItem (menu, SWT.SEPARATOR);	
-	item = new MenuItem (menu, SWT.PUSH);
-	item.setText (resources.getString("Font_menuitem"));
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			setFont();
-		}
-	});
-	return menu;
-}
+	static final boolean SAMPLE_TEXT = false;
+	static final ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");  //$NON-NLS-1$
 
-Menu createFileMenu() {
-	Menu bar = shell.getMenuBar ();
-	Menu menu = new Menu (bar);
+	public static void main(String[] args) {
+		Display display = new Display();
+		TextEditor editor = new TextEditor(display);
+		Shell shell = editor.shell;
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		editor.releaseResources();
+		display.dispose();
+	}
 	
-	MenuItem item = new MenuItem (menu, SWT.PUSH);
-	item.setText (resources.getString("Exit_menuitem"));
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			shell.close ();
+	void applyStyle(int style) {
+		int[] ranges = styledText.getSelectionRanges();
+		int i = 0;
+		while (i < ranges.length) {
+			applyStyle(style, ranges[i++], ranges[i++]);
 		}
-	});
-
-	return menu;
-}
-
-/*
- * Set a style
- */
-void setStyle(Widget widget) {
-	Point sel = text.getSelectionRange();
-	if ((sel == null) || (sel.y == 0)) return;
-	StyleRange style;
-	for (int i = sel.x; i<sel.x+sel.y; i++) {
-		StyleRange range = text.getStyleRangeAtOffset(i);
-		if (range != null) {
-			style = (StyleRange)range.clone();
-			style.start = i;
-			style.length = 1;
-		} else {
-			style = new StyleRange(i, 1, null, null, SWT.NORMAL);
-		}
-		if (widget == boldButton) {
-			style.fontStyle ^= SWT.BOLD;
-		} else if (widget == italicButton) {
-			style.fontStyle ^= SWT.ITALIC;						
-		} else if (widget == underlineButton) {
-			style.underline = !style.underline;
-		} else if (widget == strikeoutButton) {
-			style.strikeout = !style.strikeout;
-		}
-		text.setStyleRange(style);
-	}
-	text.setSelectionRange(sel.x + sel.y, 0);			
-}
-
-/*
- * Clear all style data for the selected text.
- */
-void clear() {
-	Point sel = text.getSelectionRange();
-	if (sel.y != 0) {
-		StyleRange style;
-		style = new StyleRange(sel.x, sel.y, null, null, SWT.NORMAL);
-		text.setStyleRange(style);
-	}
-	text.setSelectionRange(sel.x + sel.y, 0);
-}
-/*
- * Set the foreground color for the selected text.
- */
-void fgColor(Color fg) {
-	Point sel = text.getSelectionRange();
-	if ((sel == null) || (sel.y == 0)) return;
-	StyleRange style, range;
-	for (int i = sel.x; i<sel.x+sel.y; i++) {
-		range = text.getStyleRangeAtOffset(i);
-		if (range != null) {
-			style = (StyleRange)range.clone();
-			style.start = i;
-			style.length = 1;
-			style.foreground = fg;
-		} else {
-			style = new StyleRange (i, 1, fg, null, SWT.NORMAL);
-		}
-		text.setStyleRange(style);
-	}
-	text.setSelectionRange(sel.x + sel.y, 0);
-}
-void createMenuBar () {
-	Menu bar = new Menu (shell, SWT.BAR);
-	shell.setMenuBar (bar);
-
-	MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
-	fileItem.setText (resources.getString("File_menuitem"));
-	fileItem.setMenu (createFileMenu ());
-
-	MenuItem editItem = new MenuItem (bar, SWT.CASCADE);
-	editItem.setText (resources.getString("Edit_menuitem"));
-	editItem.setMenu (createEditMenu ());
-}
-
-void createShell (Display display) {
-	shell = new Shell (display);
-	shell.setText (resources.getString("Window_title"));	
-	images.loadAll (display);
-	GridLayout layout = new GridLayout();
-	layout.numColumns = 1;
-	shell.setLayout(layout);
-	shell.addDisposeListener (new DisposeListener () {
-		public void widgetDisposed (DisposeEvent e) {
-			if (font != null) font.dispose();
-			images.freeAll ();
-			RED.dispose();
-			GREEN.dispose();
-			BLUE.dispose();
-		}
-	});
-}
-void createStyledText() {
-	initializeColors();
-	text = new StyledText (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-	GridData spec = new GridData();
-	spec.horizontalAlignment = GridData.FILL;
-	spec.grabExcessHorizontalSpace = true;
-	spec.verticalAlignment = GridData.FILL;
-	spec.grabExcessVerticalSpace = true;
-	text.setLayoutData(spec);
-	text.addExtendedModifyListener(new ExtendedModifyListener() {
-		public void modifyText(ExtendedModifyEvent e) {
-			handleExtendedModify(e);
-		}
-	});
-}
-
-void createToolBar() {
-	toolBar = new ToolBar(shell, SWT.NONE);
-	SelectionAdapter listener = new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			setStyle (event.widget);
-		}
-	};
-	boldButton = new ToolItem(toolBar, SWT.CHECK);
-	boldButton.setImage(images.Bold);
-	boldButton.setToolTipText(resources.getString("Bold"));
-	boldButton.addSelectionListener(listener);
-	italicButton = new ToolItem(toolBar, SWT.CHECK);
-	italicButton.setImage(images.Italic);
-	italicButton.setToolTipText(resources.getString("Italic"));
-	italicButton.addSelectionListener(listener);
-	underlineButton = new ToolItem(toolBar, SWT.CHECK);
-	underlineButton.setImage(images.Underline);
-	underlineButton.setToolTipText(resources.getString("Underline"));
-	underlineButton.addSelectionListener(listener);
-	strikeoutButton = new ToolItem(toolBar, SWT.CHECK);
-	strikeoutButton.setImage(images.Strikeout);
-	strikeoutButton.setToolTipText(resources.getString("Strikeout"));
-	strikeoutButton.addSelectionListener(listener);
-		
-	ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
-	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(images.Red);
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			fgColor(RED);
-		}
-	});
-	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(images.Green);
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			fgColor(GREEN);
-		}
-	});
-	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(images.Blue);
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			fgColor(BLUE);
-		}
-	});	
-	item = new ToolItem(toolBar, SWT.SEPARATOR);
-	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(images.Erase);
-	item.addSelectionListener(new SelectionAdapter() {
-		public void widgetSelected(SelectionEvent event) {
-			clear();
-		}
-	});
-}
-/*
- * Cache the style information for text that has been cut or copied.
- */
-void handleCutCopy() {
-	// Save the cut/copied style info so that during paste we will maintain
-	// the style information.  Cut/copied text is put in the clipboard in
-	// RTF format, but is not pasted in RTF format.  The other way to 
-	// handle the pasting of styles would be to access the Clipboard directly and 
-	// parse the RTF text.
-	cachedStyles = new Vector();
-	Point sel = text.getSelectionRange();
-	int startX = sel.x;
-	for (int i=sel.x; i<=sel.x+sel.y-1; i++) {
-		StyleRange style = text.getStyleRangeAtOffset(i);
-		if (style != null) {
-			style.start = style.start - startX;
-			if (!cachedStyles.isEmpty()) {
-				StyleRange lastStyle = (StyleRange)cachedStyles.lastElement();
-				if (lastStyle.similarTo(style) && lastStyle.start + lastStyle.length == style.start) {
-					lastStyle.length++;
-				} else {
-					cachedStyles.addElement(style);
-				}
+		if ((style & UNDERLINE) != 0) {
+			if ((style & UNDERLINE) == (styleState & UNDERLINE)) {
+				styleState &= ~UNDERLINE;
 			} else {
-				cachedStyles.addElement(style);
+				styleState &= ~UNDERLINE;
+				styleState |= style;
+			}
+		}
+		if ((style & STRIKEOUT) != 0) {
+			if ((style & STRIKEOUT) == (styleState & STRIKEOUT)) {
+				styleState &= ~STRIKEOUT;
+			} else {
+				styleState &= ~STRIKEOUT;
+				styleState |= style;
+			}
+		}
+		if ((style & BORDER) != 0) {
+			if ((style & BORDER) == (styleState & BORDER)) {
+				styleState &= ~BORDER;
+			} else {
+				styleState &= ~BORDER;
+				styleState |= style;
 			}
 		}
 	}
-}
-void handleExtendedModify(ExtendedModifyEvent event) {
-	if (event.length == 0) return;
-	StyleRange style;
-	if (event.length == 1 || text.getTextRange(event.start, event.length).equals(text.getLineDelimiter())) {
-		// Have the new text take on the style of the text to its right (during
-		// typing) if no style information is active.
-		int caretOffset = text.getCaretOffset();
-		style = null;
-		if (caretOffset < text.getCharCount()) style = text.getStyleRangeAtOffset(caretOffset);
-		if (style != null) {
-			style = (StyleRange) style.clone ();
-			style.start = event.start;
-			style.length = event.length;
-		} else {
-			style = new StyleRange(event.start, event.length, null, null, SWT.NORMAL);
-		}		
-		if (boldButton.getSelection()) style.fontStyle |= SWT.BOLD;
-		if (italicButton.getSelection()) style.fontStyle |= SWT.ITALIC;
-		style.underline = underlineButton.getSelection();
-		style.strikeout = strikeoutButton.getSelection();
-		if (!style.isUnstyled()) text.setStyleRange(style);
-	} else {
-		// paste occurring, have text take on the styles it had when it was
-		// cut/copied
-		for (int i=0; i<cachedStyles.size(); i++) {
-			style = (StyleRange)cachedStyles.elementAt(i);
-			StyleRange newStyle = (StyleRange)style.clone();
-			newStyle.start = style.start + event.start;
-			text.setStyleRange(newStyle);
+	void applyStyle(int style, int start, int length) {
+		if (length == 0) return;
+		
+		/* Create new style range */
+		StyleRange newRange = new StyleRange();
+		if ((style & FONT) != 0) {
+			newRange.font = textFont;
+		}
+		if ((style & FONT_STYLE) != 0) {
+			newRange.fontStyle = style & FONT_STYLE;
+		}
+		if ((style & TEXT_FOREGROUND) != 0) {
+			newRange.foreground = textForeground;
+		}
+		if ((style & TEXT_BACKGROUND) != 0) {
+			newRange.background = textBackground;
+		}
+		if ((style & BASELINE_UP) != 0)	newRange.rise++;
+		if ((style & BASELINE_DOWN) != 0) newRange.rise--;
+		if ((style & STRIKEOUT) != 0) {
+			newRange.strikeout = true;
+			newRange.strikeoutColor = strikeoutColor;
+		}
+		if ((style & UNDERLINE) != 0) {
+			newRange.underline = true;
+			switch (style & UNDERLINE) {
+				case UNDERLINE_SINGLE:
+					newRange.underlineStyle = SWT.UNDERLINE_SINGLE;
+					break;
+				case UNDERLINE_DOUBLE:
+					newRange.underlineStyle = SWT.UNDERLINE_DOUBLE;
+					break;
+				case UNDERLINE_ERROR:
+					newRange.underlineStyle = SWT.UNDERLINE_ERROR;
+					break;
+				case UNDERLINE_SQUIGGLE:
+					newRange.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
+					break;
+			}
+			newRange.underlineColor = underlineColor;
+		}
+		if ((style & BORDER) != 0) {
+			switch (style & BORDER) {
+				case BORDER_DASH:
+					newRange.borderStyle = SWT.BORDER_DASH;
+					break;
+				case BORDER_DOT:
+					newRange.borderStyle = SWT.BORDER_DOT;
+					break;
+				case BORDER_SOLID:
+					newRange.borderStyle = SWT.BORDER_SOLID;
+					break;
+			}
+			newRange.borderColor = borderColor;
+		}
+		
+		int newRangeStart = start;
+		int newRangeLength = length;
+		int[] ranges = styledText.getRanges(start, length);
+		StyleRange[] styles = styledText.getStyleRanges(start, length, false);		
+		int maxCount = ranges.length * 2 + 2;
+		int[] newRanges = new int[maxCount];
+		StyleRange[] newStyles = new StyleRange[maxCount / 2];		
+		int count = 0;
+		for (int i = 0; i < ranges.length; i+=2) {
+			int rangeStart = ranges[i];
+			int rangeLength = ranges[i + 1];
+			StyleRange range = styles[i / 2];
+			if (rangeStart > newRangeStart) {
+				newRangeLength = rangeStart - newRangeStart;
+				newRanges[count] = newRangeStart;
+				newRanges[count + 1] = newRangeLength;
+				newStyles[count / 2] = newRange;
+				count += 2;
+			}
+			newRangeStart = rangeStart + rangeLength;
+			newRangeLength = (start + length) - newRangeStart;
+
+			/* Create merged style range*/
+			StyleRange mergedRange = new StyleRange(range);
+			//Note: fontStyle is not copied by the constructor
+			mergedRange.fontStyle = range.fontStyle;
+			if ((style & FONT) != 0) {
+				mergedRange.font =  newRange.font;
+			}
+			if ((style & FONT_STYLE) != 0) {
+				mergedRange.fontStyle =  range.fontStyle ^ newRange.fontStyle;
+			}
+			if (mergedRange.font != null && ((style & FONT) != 0 || (style & FONT_STYLE) != 0)) {
+				boolean change = false;
+				FontData[] fds = mergedRange.font.getFontData();
+				for (int j = 0; j < fds.length; j++) {
+					FontData fd = fds[j];
+					if (fd.getStyle() != mergedRange.fontStyle) {
+						fds[j].setStyle(mergedRange.fontStyle);
+						change = true;
+					}
+				}
+				if (change) {
+					mergedRange.font = new Font(display, fds);
+				}
+			}
+			if ((style & TEXT_FOREGROUND) != 0) {
+				mergedRange.foreground = newRange.foreground;
+			}
+			if ((style & TEXT_BACKGROUND) != 0) {
+				mergedRange.background = newRange.background;
+			}
+			if ((style & BASELINE_UP) != 0) mergedRange.rise++;
+			if ((style & BASELINE_DOWN) != 0) mergedRange.rise--;
+			if ((style & STRIKEOUT) != 0) {
+				mergedRange.strikeout = !range.strikeout || range.strikeoutColor != newRange.strikeoutColor;
+				mergedRange.strikeoutColor = mergedRange.strikeout ? newRange.strikeoutColor : null;
+			}
+			if ((style & UNDERLINE) != 0) {
+				mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor;
+				mergedRange.underlineStyle = mergedRange.underline ? newRange.underlineStyle : SWT.NONE;
+				mergedRange.underlineColor = mergedRange.underline ? newRange.underlineColor : null;
+			}
+			if ((style & BORDER) != 0) {
+				if (range.borderStyle != newRange.borderStyle || range.borderColor != newRange.borderColor) {
+					mergedRange.borderStyle = newRange.borderStyle;
+					mergedRange.borderColor = newRange.borderColor;
+				} else {
+					mergedRange.borderStyle = SWT.NONE;
+					mergedRange.borderColor = null;
+				}
+			}
+			
+			newRanges[count] = rangeStart;
+			newRanges[count + 1] = rangeLength;
+			newStyles[count / 2] = mergedRange;
+			count += 2;
+		}
+		if (newRangeLength > 0) {
+			newRanges[count] = newRangeStart;
+			newRanges[count + 1] = newRangeLength;
+			newStyles[count / 2] = newRange;
+			count += 2;
+		}
+		if (0 < count && count < maxCount) {			
+			int[] tmpRanges = new int[count];
+			StyleRange[] tmpStyles = new StyleRange[count / 2];
+			System.arraycopy(newRanges, 0, tmpRanges, 0, count);
+			System.arraycopy(newStyles, 0, tmpStyles, 0, count / 2);
+			newRanges = tmpRanges;
+			newStyles = tmpStyles;
+		}
+		styledText.setStyleRanges(start, length, newRanges, newStyles);
+		disposeRanges(styles);
+	}
+
+	public StyleRange[] getStyles(InputStream stream) {
+		StyleRange[] styles = new StyleRange[256];
+		int count = 0;
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, ";", false);  //$NON-NLS-1$
+				StyleRange range = new StyleRange();
+				range.start = Integer.parseInt(tokenizer.nextToken());
+				range.length = Integer.parseInt(tokenizer.nextToken());
+				range.fontStyle = Integer.parseInt(tokenizer.nextToken());
+				range.strikeout = tokenizer.nextToken().equals("true");  //$NON-NLS-1$
+				range.underline = tokenizer.nextToken().equals("true");  //$NON-NLS-1$
+				if (tokenizer.hasMoreTokens()) {
+					int red = Integer.parseInt(tokenizer.nextToken());
+					int green = Integer.parseInt(tokenizer.nextToken());
+					int blue = Integer.parseInt(tokenizer.nextToken());
+					range.foreground = new Color(display, red, green, blue);
+				}
+				if (tokenizer.hasMoreTokens()) {
+					int red = Integer.parseInt(tokenizer.nextToken());
+					int green = Integer.parseInt(tokenizer.nextToken());
+					int blue = Integer.parseInt(tokenizer.nextToken());
+					range.background = new Color(display, red, green, blue);
+				}
+				if (count >= styles.length) {
+					StyleRange[] newStyles =  new StyleRange[styles.length + 256];
+					System.arraycopy(styles, 0, newStyles, 0, styles.length);
+					styles = newStyles;
+				}
+				styles[count++] = range;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (count < styles.length) {
+			StyleRange[] newStyles = new StyleRange[count];
+			System.arraycopy(styles, 0, newStyles, 0, count);
+			styles = newStyles;
+		}
+		return styles;
+	}
+
+	public String getText(InputStream stream) {
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			StringBuffer buffer = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
+				buffer.append("\r\n");  //$NON-NLS-1$
+			}
+			return buffer.toString();
+		} catch (IOException e) {
+			return e.getMessage();
 		}
 	}
-}
 
-public static void main (String [] args) {
-	Display display = new Display ();
-	TextEditor example = new TextEditor ();
-	Shell shell = example.open (display);
-	while (!shell.isDisposed ())
-		if (!display.readAndDispatch ()) display.sleep ();
-	display.dispose ();
-}
-
-public Shell open (Display display) {
-	createShell (display);
-	createMenuBar ();
-	createToolBar ();
-	createStyledText ();
-	shell.setSize(500, 300);
-	shell.open ();
-	return shell;
-}
-
-void setFont() {
-	FontDialog fontDialog = new FontDialog(shell);
-	fontDialog.setFontList((text.getFont()).getFontData());
-	FontData fontData = fontDialog.open();
-	if (fontData != null) {
-		Font newFont = new Font(shell.getDisplay(), fontData); 
-		text.setFont(newFont);
-		if (font != null) font.dispose();
-		font = newFont;
+	void loadProfile(int profile) {
+		switch (profile) {
+			case 1: {
+				String text = getText(TextEditor.class.getResourceAsStream("text.txt"));  //$NON-NLS-1$
+				StyleRange[] styles = getStyles(TextEditor.class.getResourceAsStream("styles.txt"));  //$NON-NLS-1$
+				styledText.setText(text);
+				styledText.setStyleRanges(styles);
+				break;
+			}
+			case 2: {
+				styledText.setText(getResourceString("Profile2"));  //$NON-NLS-1$
+				break;
+			}
+			case 3: {
+				String text = getText(TextEditor.class.getResourceAsStream("text4.txt"));  //$NON-NLS-1$
+				styledText.setText(text);
+				break;
+			}
+			case 4: {
+				styledText.setText(getResourceString("Profile4"));  //$NON-NLS-1$
+				break;
+			}
+		}
+		updateToolBar();
 	}
-}
 
-void initializeColors() {
-	Display display = Display.getDefault();
-	RED = new Color (display, new RGB(255,0,0));
-	BLUE = new Color (display, new RGB(0,0,255));
-	GREEN = new Color (display, new RGB(0,255,0));
-}
+	void handleResize(ControlEvent event) {
+		Rectangle rect = shell.getClientArea();
+		Point cSize = coolBar.computeSize(rect.width, SWT.DEFAULT);
+		Point sSize = statusBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		int statusMargin = 2;
+		coolBar.setBounds(rect.x, rect.y, cSize.x, cSize.y);
+		styledText.setBounds(rect.x, rect.y + cSize.y, rect.width, rect.height - cSize.y - (sSize.y + 2 * statusMargin));
+		statusBar.setBounds(rect.x + statusMargin, rect.y + rect.height - sSize.y - statusMargin, rect.width - (2 * statusMargin), sSize.y);
+	}
+
+	Image loadImage(Display display, String fileName) {
+		InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico");  //$NON-NLS-1$ //$NON-NLS-2$
+		ImageData source = new ImageData(sourceStream);
+		ImageData mask = source.getTransparencyMask();
+		Image result = new Image(display, source, mask);
+		try {
+			sourceStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	String[] getFontNames() {
+		FontData[] fontNames = display.getFontList(null, true);
+		String[] names = new String[fontNames.length];
+		int count = 0;
+		mainfor:
+		for (int i = 0; i < fontNames.length; i++) {
+			String fontName = fontNames[i].getName();
+			if (fontName.startsWith("@")) //$NON-NLS-1$
+				continue;
+			for (int j = 0; j < count; j++) {
+				if (names[j].equals(fontName)) continue mainfor;
+			}
+			names[count++] = fontName;
+		}
+		if (count < names.length) {
+			String[] newNames = new String[count];
+			System.arraycopy(names, 0, newNames, 0, count);
+			names = newNames;
+		}
+		return names;
+	}
+
+	void initResources() {
+		iBold = loadImage(display, "bold"); //$NON-NLS-1$
+		iItalic = loadImage(display, "italic"); //$NON-NLS-1$
+		iUnderline = loadImage(display, "underline"); //$NON-NLS-1$
+		iStrikeout = loadImage(display, "strikeout"); //$NON-NLS-1$
+		iBlockSelection = loadImage(display, "fullscrn"); //$NON-NLS-1$
+		iBorderStyle = loadImage(display, "resize"); //$NON-NLS-1$
+		iLeftAlignment = loadImage(display, "left"); //$NON-NLS-1$
+		iRightAlignment = loadImage(display, "right"); //$NON-NLS-1$
+		iCenterAlignment = loadImage(display, "center"); //$NON-NLS-1$
+		iJustifyAlignment = loadImage(display, "justify"); //$NON-NLS-1$
+		iCut = loadImage(display, "cut"); //$NON-NLS-1$
+		iCopy = loadImage(display, "copy"); //$NON-NLS-1$
+		iPaste = loadImage(display, "paste"); //$NON-NLS-1$
+		iTextForeground = loadImage(display, "textForeground"); //$NON-NLS-1$
+		iTextBackground = loadImage(display, "textBackground"); //$NON-NLS-1$
+		iBaselineUp = loadImage(display, "font_big"); //$NON-NLS-1$
+		iBaselineDown = loadImage(display, "font_sml"); //$NON-NLS-1$
+		iBulletList = loadImage(display, "para_bul"); //$NON-NLS-1$
+		iNumberedList = loadImage(display, "para_num"); //$NON-NLS-1$
+	}
+
+	void releaseResources() {
+		iBold.dispose();
+		iBold = null;
+		iItalic.dispose();
+		iItalic = null;
+		iUnderline.dispose();
+		iUnderline = null;
+		iStrikeout.dispose();
+		iStrikeout = null;
+		iBorderStyle.dispose();
+		iBorderStyle = null;
+		iBlockSelection.dispose();
+		iBlockSelection = null;
+		iLeftAlignment.dispose();
+		iLeftAlignment = null;
+		iRightAlignment.dispose();
+		iRightAlignment = null;
+		iCenterAlignment.dispose();
+		iCenterAlignment = null;
+		iJustifyAlignment.dispose();
+		iJustifyAlignment = null;
+		iCut.dispose();
+		iCut = null;
+		iCopy.dispose();
+		iCopy = null;
+		iPaste.dispose();
+		iPaste = null;
+		iTextForeground.dispose();
+		iTextForeground = null;
+		iTextBackground.dispose();
+		iTextBackground = null;
+		iBaselineUp.dispose();
+		iBaselineUp = null;
+		iBaselineDown.dispose();
+		iBaselineDown = null;
+		iBulletList.dispose();
+		iBulletList = null;
+		iNumberedList.dispose();
+		iNumberedList = null;
+		
+		if (textFont != null) textFont.dispose();
+		textFont = null;
+		if (textForeground != null) textForeground.dispose();
+		textForeground = null;
+		if (textBackground != null) textBackground.dispose();
+		textBackground = null;
+		if (strikeoutColor != null) strikeoutColor.dispose();
+		strikeoutColor = null;
+		if (underlineColor != null) underlineColor.dispose();
+		underlineColor = null;
+		if (borderColor != null) borderColor.dispose();
+		borderColor = null;
+
+		if (font != null) font.dispose();
+		font = null;
+
+		if (images != null) {
+			for (int i = 0; i < images.length; i++) {
+				if (images[i] != null) images[i].dispose();
+				images[i] = null;
+			}
+		}
+		if (controls != null) {
+			for (int i = 0; i < controls.length; i++) {
+				if (controls[i] != null) controls[i].dispose();
+				controls[i] = null;
+			}
+		}
+	}
+
+	void createMenuBar() {
+		Menu menu = new Menu(shell, SWT.BAR);
+		shell.setMenuBar(menu);
+
+		MenuItem fileItem = new MenuItem(menu, SWT.CASCADE);
+		Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
+		fileItem.setText(getResourceString("File_menuitem")); //$NON-NLS-1$
+		fileItem.setMenu(fileMenu);		
+		
+		MenuItem openItem = new MenuItem(fileMenu, SWT.PUSH);
+		openItem.setText(getResourceString("Open_menuitem")); //$NON-NLS-1$
+		openItem.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		        dialog.setText(getResourceString("Open_fileitem")); //$NON-NLS-1$
+				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
+				dialog.setFilterExtensions (new String [] {"*.txt"}); //$NON-NLS-1$
+				dialog.setFilterPath("c:\\"); //$NON-NLS-1$
+				dialog.setFileName("*.txt"); //$NON-NLS-1$
+		        String name = dialog.open();
+		        if (name == null)  return;
+		        fileName = name;
+		        FileReader file = null;
+		        try {
+		        	file = new FileReader(name);
+		        	BufferedReader fileInput = new BufferedReader(file);
+		        	String line = null;
+		        	StringBuffer buffer = new StringBuffer();
+		        	while ((line = fileInput.readLine()) != null) {
+		        		buffer.append(line);
+		        		if (fileInput.ready()) buffer.append(styledText.getLineDelimiter());
+		        	}
+		        	styledText.setText(buffer.toString());
+		        } catch (IOException exception) {
+		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
+					messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
+					messageBox.setMessage(getResourceString("Error_loadfile") + fileName); //$NON-NLS-1$
+					messageBox.open();
+		        	styledText.setText(""); //$NON-NLS-1$
+		        } finally {
+		        	try {
+		        		if (file != null) file.close();
+		        	} catch (IOException ex) {
+		        		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
+						messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
+						messageBox.setMessage(ex.getMessage());
+						messageBox.open();
+		        	}
+		        }
+			}					
+		});
+		
+		final MenuItem saveItem = new MenuItem(fileMenu, SWT.PUSH);
+		saveItem.setText(getResourceString("Save_menuitem")); //$NON-NLS-1$
+		saveItem.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				File file = new File(fileName);
+				try {					
+			       	FileWriter fileWriter = new FileWriter(file);
+			       	fileWriter.write(styledText.getText());
+			       	fileWriter.close();
+				} catch (IOException ex) {
+					MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
+					messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
+					messageBox.setMessage(getResourceString("Error_writefile") + fileName); //$NON-NLS-1$
+					messageBox.open();
+				}
+			}											
+		});
+		
+		fileMenu.addMenuListener(new MenuAdapter() {
+			public void menuShown(MenuEvent e){
+				saveItem.setEnabled(fileName != null);
+			}			 			
+		});
+		
+		MenuItem saveAsItem = new MenuItem(fileMenu, SWT.PUSH);
+		saveAsItem.setText(getResourceString("SaveAs_menuitem")); //$NON-NLS-1$
+		saveAsItem.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog dialog = new FileDialog (shell, SWT.SAVE);
+				dialog.setText(getResourceString("Save_fileitem")); //$NON-NLS-1$
+				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$ 
+				dialog.setFilterExtensions(new String [] {"*.txt"}); //$NON-NLS-1$
+				dialog.setFilterPath("c:\\"); //$NON-NLS-1$
+				dialog.setFileName("*.txt"); //$NON-NLS-1$
+				fileName = dialog.open(); 
+				if (fileName == null) return;				
+		        File file = new File(fileName);
+		        FileWriter fileWriter = null;
+		        try {
+		        	fileWriter = new FileWriter(file);
+		        	fileWriter.write(styledText.getText());
+		        } catch (IOException ex) {
+		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
+					messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
+					messageBox.setMessage(getResourceString("Error_savefile") + fileName); //$NON-NLS-1$
+					messageBox.open();
+		        } finally {
+		        	try {
+		        		if (fileWriter != null) fileWriter.close();
+		        	} catch (IOException ex) {
+		        		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
+						messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
+						messageBox.setMessage(ex.getMessage());
+						messageBox.open();
+		        	}
+		        }
+			}
+		});
+		
+		new MenuItem(fileMenu, SWT.SEPARATOR);
+		
+		MenuItem exitItem = new MenuItem(fileMenu, SWT.PUSH);
+		exitItem.setText(getResourceString("Exit_menuitem")); //$NON-NLS-1$
+		exitItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				shell.dispose();
+			}
+		});	
+
+		MenuItem editItem = new MenuItem(menu, SWT.CASCADE);
+		final Menu editMenu = new Menu(shell, SWT.DROP_DOWN);
+		editItem.setText(getResourceString("Edit_menuitem")); //$NON-NLS-1$
+		editItem.setMenu(editMenu);
+		final MenuItem cutItem = new MenuItem(editMenu, SWT.PUSH);
+		cutItem.setText(getResourceString("Cut_menuitem")); //$NON-NLS-1$
+		cutItem.setImage(iCut);
+		cutItem.setAccelerator(SWT.MOD1 | 'x');
+		cutItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.cut();
+			}
+		});
+
+		final MenuItem copyItem = new MenuItem(editMenu, SWT.PUSH);
+		copyItem.setText(getResourceString("Copy_menuitem")); //$NON-NLS-1$
+		copyItem.setImage(iCopy);
+		copyItem.setAccelerator(SWT.MOD1 | 'c');
+		copyItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.copy();
+			}
+		});
+
+		MenuItem pasteItem = new MenuItem(editMenu, SWT.PUSH);
+		pasteItem.setText(getResourceString("Paste_menuitem")); //$NON-NLS-1$
+		pasteItem.setImage(iPaste);
+		pasteItem.setAccelerator(SWT.MOD1 | 'v');
+		pasteItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.paste();
+			}
+		});
+
+		new MenuItem(editMenu, SWT.SEPARATOR);
+		final MenuItem selectAllItem = new MenuItem(editMenu, SWT.PUSH);
+		selectAllItem.setText(getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
+		selectAllItem.setAccelerator(SWT.MOD1 | 'a');
+		selectAllItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.selectAll();
+			}
+		});
+
+		editMenu.addMenuListener(new MenuAdapter() {
+			public void menuShown(MenuEvent e) {
+				int selectionCount = styledText.getSelectionCount();
+				cutItem.setEnabled(selectionCount > 0);
+				copyItem.setEnabled(selectionCount > 0);
+				selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
+			}
+		});
+
+		MenuItem wrapItem = new MenuItem(editMenu, SWT.CHECK);
+		wrapItem.setText(getResourceString("Wrap_menuitem")); //$NON-NLS-1$
+		wrapItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				MenuItem item = (MenuItem) e.widget;
+				boolean enabled = item.getSelection();
+				styledText.setWordWrap(enabled);
+				editMenu.getItem(6).setEnabled(enabled);
+				editMenu.getItem(8).setEnabled(enabled);
+				leftAlignmentItem.setEnabled(enabled);
+				centerAlignmentItem.setEnabled(enabled);
+				rightAlignmentItem.setEnabled(enabled);
+				justifyAlignmentItem.setEnabled(enabled);
+				blockSelectionItem.setEnabled(!enabled);
+			}
+		});
+
+		MenuItem justifyItem = new MenuItem(editMenu, SWT.CHECK);
+		justifyItem.setText(getResourceString("Justify_menuitem")); //$NON-NLS-1$
+		justifyItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				MenuItem item = (MenuItem) e.widget;
+				styledText.setJustify(item.getSelection());
+				updateToolBar();
+			}
+		});
+		justifyItem.setEnabled(false);
+
+		MenuItem setFontItem = new MenuItem(editMenu, SWT.PUSH);
+		setFontItem.setText(getResourceString("SetFont_menuitem")); //$NON-NLS-1$
+		setFontItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				FontDialog fontDialog = new FontDialog(shell);
+				fontDialog.setFontList(styledText.getFont().getFontData());
+				FontData data = fontDialog.open();
+				if (data != null) {
+					Font newFont = new Font(display, data);
+					styledText.setFont(newFont);
+					if (font != null) font.dispose();
+					font = newFont;
+					updateToolBar();
+				}
+			}
+		});
+
+		MenuItem alignmentItem = new MenuItem(editMenu, SWT.CASCADE);
+		alignmentItem.setText(getResourceString("Alignment_menuitem")); //$NON-NLS-1$
+		Menu alignmentMenu = new Menu(shell, SWT.DROP_DOWN);
+		alignmentItem.setMenu(alignmentMenu);
+		final MenuItem leftAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
+		leftAlignmentItem.setText(getResourceString("Left_menuitem")); //$NON-NLS-1$
+		leftAlignmentItem.setSelection(true);
+		leftAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.setAlignment(SWT.LEFT);
+				updateToolBar();
+			}
+		});
+		alignmentItem.setEnabled(false);
+
+		final MenuItem centerAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
+		centerAlignmentItem.setText(getResourceString("Center_menuitem")); //$NON-NLS-1$
+		centerAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.setAlignment(SWT.CENTER);
+				updateToolBar();
+			}
+		});
+
+		MenuItem rightAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
+		rightAlignmentItem.setText(getResourceString("Right_menuitem")); //$NON-NLS-1$
+		rightAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.setAlignment(SWT.RIGHT);
+				updateToolBar();
+			}
+		});
+		
+		MenuItem editOrientationItem = new MenuItem(editMenu, SWT.CASCADE);
+		editOrientationItem.setText(getResourceString("Orientation_menuitem")); //$NON-NLS-1$
+		Menu editOrientationMenu = new Menu(shell, SWT.DROP_DOWN);
+		editOrientationItem.setMenu(editOrientationMenu);
+
+		MenuItem leftToRightItem = new MenuItem(editOrientationMenu, SWT.RADIO);
+		leftToRightItem.setText(getResourceString("LeftToRight_menuitem")); //$NON-NLS-1$
+		leftToRightItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e){
+				styledText.setOrientation(SWT.LEFT_TO_RIGHT);
+			}
+		});
+		leftToRightItem.setSelection(true);
+		
+		MenuItem rightToLeftItem = new MenuItem(editOrientationMenu, SWT.RADIO);
+		rightToLeftItem.setText(getResourceString("RightToLeft_menuitem")); //$NON-NLS-1$
+		rightToLeftItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.setOrientation(SWT.RIGHT_TO_LEFT);
+			}
+		});
+		
+		new MenuItem(editMenu, SWT.SEPARATOR);
+		MenuItem insertObjectItem = new MenuItem(editMenu, SWT.CASCADE);
+		insertObjectItem.setText(getResourceString("InsertObject_menuitem")); //$NON-NLS-1$
+		Menu insertObjectMenu = new Menu(shell, SWT.DROP_DOWN);
+		insertObjectItem.setMenu(insertObjectMenu);
+
+		MenuItem insertControlItem = new MenuItem(insertObjectMenu, SWT.CASCADE);
+		insertControlItem.setText(getResourceString("Controls_menuitem")); //$NON-NLS-1$
+		Menu controlChoice = new Menu(shell, SWT.DROP_DOWN);
+		insertControlItem.setMenu(controlChoice);
+
+		MenuItem buttonItem = new MenuItem(controlChoice, SWT.PUSH);
+		buttonItem.setText(getResourceString("Button_menuitem")); //$NON-NLS-1$
+		MenuItem comboItem = new MenuItem(controlChoice, SWT.PUSH);
+		comboItem.setText(getResourceString("Combo_menuitem")); //$NON-NLS-1$
+
+		buttonItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Button button = new Button(styledText, SWT.PUSH);
+				button.setText(getResourceString("Button_menuitem")); //$NON-NLS-1$
+				addControl(button);
+			}
+		});
+
+		comboItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Combo combo = new Combo(styledText, SWT.NONE);
+				combo.setText(getResourceString("Combo_menuitem")); //$NON-NLS-1$
+				addControl(combo);
+			}
+		});
+
+		MenuItem insertImageItem = new MenuItem(insertObjectMenu, SWT.PUSH);
+		insertImageItem.setText(getResourceString("Image_menuitem")); //$NON-NLS-1$
+
+		insertImageItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
+				String fileName = fileDialog.open();
+
+				if (fileName != null) {
+					try {
+						Image image = new Image(display, fileName);
+						addImage(image);
+					} catch (Exception ex) {
+						MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
+						messageBox.setText(getResourceString("Bad_image")); //$NON-NLS-1$
+						messageBox.setMessage(ex.getMessage());
+						messageBox.open();
+					}
+				}
+			}
+		});
+
+		if (SAMPLE_TEXT) {
+			new MenuItem(editMenu, SWT.SEPARATOR);
+			MenuItem loadProfileItem = new MenuItem(editMenu, SWT.CASCADE);
+			loadProfileItem.setText(getResourceString("LoadProfile_menuitem")); //$NON-NLS-1$
+			Menu loadProfileMenu = new Menu(shell, SWT.DROP_DOWN);
+			loadProfileItem.setMenu(loadProfileMenu);
+			SelectionAdapter adapter = new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					int profile = Integer.parseInt((String) e.widget.getData());
+					loadProfile(profile);
+				}
+			};
+	
+			MenuItem profileItem = new MenuItem(loadProfileMenu, SWT.PUSH);
+			profileItem.setText(getResourceString("Profile1_menuitem")); //$NON-NLS-1$
+			profileItem.setData("1"); //$NON-NLS-1$
+			profileItem.addSelectionListener(adapter);
+			profileItem = new MenuItem(loadProfileMenu, SWT.PUSH);
+			profileItem.setText(getResourceString("Profile2_menuitem")); //$NON-NLS-1$
+			profileItem.setData("2"); //$NON-NLS-1$
+			profileItem.addSelectionListener(adapter);
+			profileItem = new MenuItem(loadProfileMenu, SWT.PUSH);
+			profileItem.setText(getResourceString("Profile3_menuitem")); //$NON-NLS-1$
+			profileItem.setData("3"); //$NON-NLS-1$
+			profileItem.addSelectionListener(adapter);
+			profileItem = new MenuItem(loadProfileMenu, SWT.PUSH);
+			profileItem.setText(getResourceString("Profile4_menuitem")); //$NON-NLS-1$
+			profileItem.setData("4"); //$NON-NLS-1$
+			profileItem.addSelectionListener(adapter);
+		}
+	}
+
+	void addImage(Image image) {
+		int offset = styledText.getCaretOffset();
+		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
+		int index = 0;		
+		while (index < images.length) {
+			if (imageOffsets[index] == -1 && images[index] == null) break;
+			index++;
+		}
+		if (index == imageOffsets.length) {
+			int[] tmpOffsets = new int[index + 1];
+			System.arraycopy(imageOffsets, 0, tmpOffsets, 0, imageOffsets.length);
+			imageOffsets = tmpOffsets;		
+			Image[] tmpImages = new Image[index + 1];
+			System.arraycopy(images, 0, tmpImages, 0, images.length);
+			images = tmpImages;
+		}
+		imageOffsets[index] = offset;
+		images[index] = image;
+		StyleRange style = new StyleRange();
+		Rectangle rect = image.getBounds();
+		style.metrics = new GlyphMetrics(rect.height, 0, rect.width);
+		int[] ranges = {offset, 1};
+		StyleRange[] styles = {style};
+		styledText.setStyleRanges(0,0, ranges, styles);
+	}
+	
+	void addControl(Control control) {
+		int offset = styledText.getCaretOffset();
+		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
+		int index = 0;		
+		while (index < controlOffsets.length) {
+			if (controlOffsets[index] == -1 && controls[index] == null) break;
+			index++;
+		}
+		if (index == controlOffsets.length) {
+			int[] tmpOffsets = new int[index + 1];
+			System.arraycopy(controlOffsets, 0, tmpOffsets, 0, controlOffsets.length);
+			controlOffsets = tmpOffsets;		
+			Control[] tmpControls = new Control[index + 1];
+			System.arraycopy(controls, 0, tmpControls, 0, controls.length);
+			controls = tmpControls;
+		}
+		controlOffsets[index] = offset;
+		controls[index] = control;
+		StyleRange style = new StyleRange();
+		Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		int ascent = 2 * size.y / 3;
+		int descent = size.y - ascent;
+		style.metrics = new GlyphMetrics(ascent + MARGIN, descent + MARGIN, size.x + 2 * MARGIN);		 
+		int[] ranges = {offset, 1};
+		StyleRange[] styles = {style};
+		styledText.setStyleRanges(0,0, ranges, styles);
+		control.setSize(size);
+	}
+
+	void createToolBar() {
+		coolBar = new CoolBar(shell, SWT.NONE);
+		ToolBar styleToolBar = new ToolBar(coolBar, SWT.FLAT);
+		boldControl = new ToolItem(styleToolBar, SWT.CHECK);
+		boldControl.setImage(iBold);
+		boldControl.setToolTipText(getResourceString("Bold")); //$NON-NLS-1$
+		boldControl.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				applyStyle(BOLD);
+			}
+		});
+
+		italicControl = new ToolItem(styleToolBar, SWT.CHECK);
+		italicControl.setImage(iItalic);
+		italicControl.setToolTipText(getResourceString("Italic")); //$NON-NLS-1$
+		italicControl.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				applyStyle(ITALIC);
+			}
+		});
+
+		final Menu underlineMenu = new Menu(shell, SWT.POP_UP);
+		underlineSingleItem = new MenuItem(underlineMenu, SWT.RADIO);
+		underlineSingleItem.setText(getResourceString("Single_menuitem")); //$NON-NLS-1$
+		underlineSingleItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (underlineSingleItem.getSelection()) {
+					applyStyle(UNDERLINE_SINGLE);
+				}
+			}
+		});
+		underlineSingleItem.setSelection(true);
+
+		underlineDoubleItem = new MenuItem(underlineMenu, SWT.RADIO);
+		underlineDoubleItem.setText(getResourceString("Double_menuitem")); //$NON-NLS-1$
+		underlineDoubleItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (underlineDoubleItem.getSelection()) {
+					applyStyle(UNDERLINE_DOUBLE);
+				}
+			}
+		});
+
+		underlineSquiggleItem = new MenuItem(underlineMenu, SWT.RADIO);
+		underlineSquiggleItem.setText(getResourceString("Squiggle_menuitem")); //$NON-NLS-1$
+		underlineSquiggleItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (underlineSquiggleItem.getSelection()) {
+					applyStyle(UNDERLINE_SQUIGGLE);
+				}
+			}
+		});
+
+		underlineErrorItem = new MenuItem(underlineMenu, SWT.RADIO);
+		underlineErrorItem.setText(getResourceString("Error_menuitem")); //$NON-NLS-1$
+		underlineErrorItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (underlineErrorItem.getSelection()) {
+					applyStyle(UNDERLINE_ERROR);
+				}
+			}
+		});
+
+		MenuItem underlineColorItem = new MenuItem(underlineMenu, SWT.PUSH);
+		underlineColorItem.setText(getResourceString("Color_menuitem")); //$NON-NLS-1$
+		underlineColorItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {			
+				ColorDialog dialog = new ColorDialog(shell);
+				RGB rgb = underlineColor != null ? underlineColor.getRGB() : null;
+				dialog.setRGB(rgb);
+				RGB newRgb = dialog.open();
+				if (newRgb != null) {
+					if (!newRgb.equals(rgb)) {
+						disposeResource(underlineColor);
+						underlineColor = new Color(display, newRgb);					
+					}
+					if (underlineSingleItem.getSelection()) applyStyle(UNDERLINE_SINGLE);
+					else if (underlineDoubleItem.getSelection()) applyStyle(UNDERLINE_DOUBLE);
+					else if (underlineErrorItem.getSelection()) applyStyle(UNDERLINE_ERROR);
+					else if (underlineSquiggleItem.getSelection()) applyStyle(UNDERLINE_SQUIGGLE);
+				}					
+			}
+		});
+		
+		final ToolItem underlineControl = new ToolItem(styleToolBar, SWT.DROP_DOWN);
+		underlineControl.setImage(iUnderline);
+		underlineControl.setToolTipText(getResourceString("Underline")); //$NON-NLS-1$
+		underlineControl.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (e.detail == SWT.ARROW) {
+					Rectangle rect = underlineControl.getBounds();
+					Point pt = new Point(rect.x, rect.y + rect.height);
+					underlineMenu.setLocation(display.map(underlineControl.getParent(), null, pt));
+					underlineMenu.setVisible(true);
+				} else {
+					if (underlineSingleItem.getSelection()) applyStyle(UNDERLINE_SINGLE);
+					else if (underlineDoubleItem.getSelection()) applyStyle(UNDERLINE_DOUBLE);
+					else if (underlineErrorItem.getSelection()) applyStyle(UNDERLINE_ERROR);
+					else if (underlineSquiggleItem.getSelection()) applyStyle(UNDERLINE_SQUIGGLE);
+				}
+			}
+		});
+
+		ToolItem strikeoutControl = new ToolItem(styleToolBar, SWT.DROP_DOWN);
+		strikeoutControl.setImage(iStrikeout);
+		strikeoutControl.setToolTipText(getResourceString("Strikeout")); //$NON-NLS-1$
+		strikeoutControl.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {				
+				if (e.detail == SWT.ARROW) {
+					ColorDialog dialog = new ColorDialog(shell);
+					RGB rgb = strikeoutColor != null ? strikeoutColor.getRGB() : null;
+					dialog.setRGB(rgb);
+					RGB newRgb = dialog.open();
+					if (newRgb == null) return;
+					if (!newRgb.equals(rgb)) {
+						disposeResource(strikeoutColor);
+						strikeoutColor = new Color(display, newRgb);
+					}
+				}
+				applyStyle(STRIKEOUT);
+			}
+		});
+
+		final Menu borderMenu = new Menu(shell, SWT.POP_UP);
+		borderSolidItem = new MenuItem(borderMenu, SWT.RADIO);
+		borderSolidItem.setText(getResourceString("Solid")); //$NON-NLS-1$
+		borderSolidItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e){
+				if (borderSolidItem.getSelection()) {
+					applyStyle(BORDER_SOLID);
+				}
+			}
+		});
+		borderSolidItem.setSelection(true);
+		
+		borderDashItem = new MenuItem(borderMenu, SWT.RADIO);
+		borderDashItem.setText(getResourceString("Dash")); //$NON-NLS-1$
+		borderDashItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e){
+				if (borderDashItem.getSelection()) {
+					applyStyle(BORDER_DASH);
+				}
+			}
+		});
+		
+		
+		borderDotItem = new MenuItem(borderMenu, SWT.RADIO);
+		borderDotItem.setText(getResourceString("Dot")); //$NON-NLS-1$
+		borderDotItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e){
+				if (borderDotItem.getSelection()) {
+					applyStyle(BORDER_DOT);
+				}
+			}
+		});
+		
+		MenuItem borderColorItem = new MenuItem(borderMenu, SWT.PUSH);
+		borderColorItem.setText(getResourceString("Color_menuitem")); //$NON-NLS-1$
+		borderColorItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e){
+				ColorDialog dialog = new ColorDialog(shell);
+				RGB rgb = borderColor != null ? borderColor.getRGB() : null;
+				dialog.setRGB(rgb);
+				RGB newRgb = dialog.open();
+				if (newRgb != null) {
+					if (!newRgb.equals(rgb)) {
+						disposeResource(borderColor);
+						borderColor = new Color(display, newRgb);
+					}
+					if (borderDashItem.getSelection()) applyStyle(BORDER_DASH);
+					else if (borderDotItem.getSelection()) applyStyle(BORDER_DOT);
+					else if (borderSolidItem.getSelection()) applyStyle(BORDER_SOLID);
+				}
+			}
+		});
+
+		final ToolItem borderControl = new ToolItem(styleToolBar, SWT.DROP_DOWN);
+		borderControl.setImage(iBorderStyle);
+		borderControl.setToolTipText(getResourceString("Box")); //$NON-NLS-1$
+		borderControl.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (e.detail == SWT.ARROW) {
+					Rectangle rect = borderControl.getBounds();
+					Point pt = new Point(rect.x, rect.y + rect.height);
+					borderMenu.setLocation(display.map(borderControl.getParent(), null, pt));
+					borderMenu.setVisible(true);
+				} else {
+					if (borderDashItem.getSelection()) applyStyle(BORDER_DASH);
+					else if (borderDotItem.getSelection()) applyStyle(BORDER_DOT);
+					else if (borderSolidItem.getSelection()) applyStyle(BORDER_SOLID);
+				}
+			}
+		});
+
+		ToolItem foregroundItem = new ToolItem(styleToolBar, SWT.DROP_DOWN);
+		foregroundItem.setImage(iTextForeground);
+		foregroundItem.setToolTipText(getResourceString("TextForeground")); //$NON-NLS-1$
+		foregroundItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {		
+				if (e.detail == SWT.ARROW || textForeground == null) {
+					ColorDialog dialog = new ColorDialog(shell);
+					RGB rgb = textForeground != null ? textForeground.getRGB() : null;
+					dialog.setRGB(rgb);
+					RGB newRgb = dialog.open();
+					if (newRgb == null) return;
+					if (!newRgb.equals(rgb)) {
+						disposeResource(textForeground);
+						textForeground = new Color(display, newRgb);					
+					}
+				}
+				applyStyle(TEXT_FOREGROUND);				
+			}
+		});
+
+		ToolItem backgroundItem = new ToolItem(styleToolBar, SWT.DROP_DOWN);
+		backgroundItem.setImage(iTextBackground);
+		backgroundItem.setToolTipText(getResourceString("TextBackground")); //$NON-NLS-1$
+		backgroundItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {			
+				if (e.detail == SWT.ARROW || textBackground == null) {
+					ColorDialog dialog = new ColorDialog(shell);
+					RGB rgb = textBackground != null ? textBackground.getRGB() : null;
+					dialog.setRGB(rgb);
+					RGB newRgb = dialog.open();
+					if (newRgb == null) return;
+					if (!newRgb.equals(rgb)) {
+						disposeResource(textBackground);
+						textBackground = new Color(display, newRgb);
+					}
+				}
+				applyStyle(TEXT_BACKGROUND);
+			}
+		});
+
+		ToolItem baselineUpItem = new ToolItem(styleToolBar, SWT.PUSH);
+		baselineUpItem.setImage(iBaselineUp);
+		baselineUpItem.setToolTipText(getResourceString("IncreaseBaseline")); //$NON-NLS-1$
+		baselineUpItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				applyStyle(BASELINE_UP);
+			}
+		});
+
+		ToolItem baselineDownItem = new ToolItem(styleToolBar, SWT.PUSH);
+		baselineDownItem.setImage(iBaselineDown);
+		baselineDownItem.setToolTipText(getResourceString("DecreaseBaseline")); //$NON-NLS-1$
+		baselineDownItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				applyStyle(BASELINE_DOWN);
+			}
+		});
+		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
+		coolItem.setControl(styleToolBar);
+		
+		Composite composite = new Composite(coolBar, SWT.NONE);
+		composite.setLayout(new GridLayout(2, false));
+		fontNameControl = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+		fontNameControl.setItems(getFontNames());
+		fontNameControl.setVisibleItemCount(12);
+		fontSizeControl = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+		String[] fontSizes = new String[] {
+				"6",		//$NON-NLS-1$
+				"8", 		//$NON-NLS-1$
+				"9", 		//$NON-NLS-1$
+				"10", 		//$NON-NLS-1$
+				"11", 		//$NON-NLS-1$
+				"12",	 	//$NON-NLS-1$
+				"14",		//$NON-NLS-1$
+				"24",		//$NON-NLS-1$
+				"36",		//$NON-NLS-1$
+				"48" 		//$NON-NLS-1$
+		};
+		fontSizeControl.setItems(fontSizes);
+		fontSizeControl.setVisibleItemCount(8);
+		SelectionAdapter adapter = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				String name = fontNameControl.getText();
+				int size = Integer.parseInt(fontSizeControl.getText());
+				disposeResource(textFont);
+				textFont = new Font(display, name, size, SWT.NORMAL);
+				applyStyle(FONT);
+			}
+		};
+		fontSizeControl.addSelectionListener(adapter);
+		fontNameControl.addSelectionListener(adapter);
+		coolItem = new CoolItem(coolBar, SWT.NONE);
+		coolItem.setControl(composite);
+
+		ToolBar alignmentToolBar = new ToolBar(coolBar, SWT.FLAT);
+		blockSelectionItem = new ToolItem(alignmentToolBar, SWT.CHECK);
+		blockSelectionItem.setImage(iBlockSelection);
+		blockSelectionItem.setToolTipText(getResourceString("BlockSelection")); //$NON-NLS-1$
+		blockSelectionItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				styledText.invokeAction(ST.TOGGLE_BLOCKSELECTION);
+			}
+		});
+		
+		leftAlignmentItem = new ToolItem(alignmentToolBar, SWT.RADIO);
+		leftAlignmentItem.setImage(iLeftAlignment);
+		leftAlignmentItem.setToolTipText(getResourceString("AlignLeft")); //$NON-NLS-1$
+		leftAlignmentItem.setSelection(true);
+		leftAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Point selection = styledText.getSelection();
+				int lineStart = styledText.getLineAtOffset(selection.x);
+				int lineEnd = styledText.getLineAtOffset(selection.y);
+				styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1,	SWT.LEFT);
+			}
+		});
+		leftAlignmentItem.setEnabled(false);
+
+		centerAlignmentItem = new ToolItem(alignmentToolBar, SWT.RADIO);
+		centerAlignmentItem.setImage(iCenterAlignment);
+		centerAlignmentItem.setToolTipText(getResourceString("Center_menuitem")); //$NON-NLS-1$
+		centerAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Point selection = styledText.getSelection();
+				int lineStart = styledText.getLineAtOffset(selection.x);
+				int lineEnd = styledText.getLineAtOffset(selection.y);
+				styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1, SWT.CENTER);
+			}
+		});
+		centerAlignmentItem.setEnabled(false);
+
+		rightAlignmentItem = new ToolItem(alignmentToolBar, SWT.RADIO);
+		rightAlignmentItem.setImage(iRightAlignment);
+		rightAlignmentItem.setToolTipText(getResourceString("AlignRight")); //$NON-NLS-1$
+		rightAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Point selection = styledText.getSelection();
+				int lineStart = styledText.getLineAtOffset(selection.x);
+				int lineEnd = styledText.getLineAtOffset(selection.y);
+				styledText.setLineAlignment(lineStart, lineEnd - lineStart + 1,	SWT.RIGHT);
+			}
+		});
+		rightAlignmentItem.setEnabled(false);
+
+		justifyAlignmentItem = new ToolItem(alignmentToolBar, SWT.CHECK);
+		justifyAlignmentItem.setImage(iJustifyAlignment);
+		justifyAlignmentItem.setToolTipText(getResourceString("Justify")); //$NON-NLS-1$
+		justifyAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Point selection = styledText.getSelection();
+				int lineStart = styledText.getLineAtOffset(selection.x);
+				int lineEnd = styledText.getLineAtOffset(selection.y);
+				styledText.setLineJustify(lineStart, lineEnd - lineStart + 1, justifyAlignmentItem.getSelection());
+			}
+		});
+		justifyAlignmentItem.setEnabled(false);
+
+		ToolItem bulletListItem = new ToolItem(alignmentToolBar, SWT.PUSH);
+		bulletListItem.setImage(iBulletList);
+		bulletListItem.setToolTipText(getResourceString("BulletList")); //$NON-NLS-1$
+		bulletListItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setBullet(ST.BULLET_DOT);}
+		});
+
+		ToolItem numberedListItem = new ToolItem(alignmentToolBar, SWT.PUSH);
+		numberedListItem.setImage(iNumberedList);
+		numberedListItem.setToolTipText(getResourceString("NumberedList")); //$NON-NLS-1$
+		numberedListItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setBullet(ST.BULLET_CUSTOM);
+			}
+		});
+
+		coolItem = new CoolItem(coolBar, SWT.NONE);
+		coolItem.setControl(alignmentToolBar);
+		composite = new Composite(coolBar, SWT.NONE);
+		composite.setLayout(new GridLayout(4, false));
+		Label label = new Label(composite, SWT.NONE);
+		label.setText(getResourceString("Indent")); //$NON-NLS-1$
+		Spinner indent = new Spinner(composite, SWT.BORDER);
+		indent.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Spinner spinner = (Spinner) e.widget;
+				styledText.setIndent(spinner.getSelection());
+			}
+		});
+		label = new Label(composite, SWT.NONE);
+		label.setText(getResourceString("Spacing")); //$NON-NLS-1$
+		Spinner spacing = new Spinner(composite, SWT.BORDER);
+		spacing.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Spinner spinner = (Spinner) e.widget;
+				styledText.setLineSpacing(spinner.getSelection());
+			}
+		});
+
+		coolItem = new CoolItem(coolBar, SWT.NONE);
+		coolItem.setControl(composite);
+		CoolItem[] coolItems = coolBar.getItems();
+		for (int i = 0; i < coolItems.length; i++) {
+			CoolItem item = coolItems[i];
+			Control control = item.getControl();
+			Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			item.setMinimumSize(size);
+			size = item.computeSize(size.x, size.y);
+			item.setPreferredSize(size);
+			item.setSize(size);
+		}
+		coolBar.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent event) {
+				handleResize(event);
+			}
+		});
+	}
+
+	void updateStatusBar() {
+		int offset = styledText.getCaretOffset();
+		int lineIndex = styledText.getLineAtOffset(offset);
+		String insertLabel = getResourceString(insert ? "Insert" : "Overwrite"); //$NON-NLS-1$ //$NON-NLS-2$
+		statusBar.setText(getResourceString("Offset")	//$NON-NLS-1$
+				+ offset + " "							//$NON-NLS-1$
+				+ getResourceString("Line")				//$NON-NLS-1$
+				+ lineIndex + "\t"						//$NON-NLS-1$
+				+ insertLabel);
+	}
+
+	void updateToolBar() {
+		styleState = 0;
+		boolean bold = false, italic = false, underline = false, strikeout = false, border = false;
+		Font font = null;
+		Color foreground = null;
+		Color background = null;
+
+		int offset = styledText.getCaretOffset();
+		StyleRange range = offset > 0 ? styledText.getStyleRangeAtOffset(offset-1) : null;
+		if (range != null) {
+			if (range.font != null) {
+				font = range.font;
+				FontData[] fds = font.getFontData();
+				for (int i = 0; i < fds.length; i++) {
+					int fontStyle = fds[i].getStyle();
+					if (!bold && (fontStyle & SWT.BOLD) != 0) bold = true;
+					if (!italic && (fontStyle & SWT.ITALIC) != 0) italic = true;
+				}
+			} else { 
+				bold = (range.fontStyle & SWT.BOLD) != 0;
+				italic = (range.fontStyle & SWT.ITALIC) != 0;
+			}
+			foreground = range.foreground;
+			background = range.background;
+			underline = range.underline;
+			if (underline) {
+				switch (range.underlineStyle) {
+					case SWT.UNDERLINE_SINGLE:	styleState |= UNDERLINE_SINGLE; break;
+					case SWT.UNDERLINE_DOUBLE: 	styleState |= UNDERLINE_DOUBLE; break;
+					case SWT.UNDERLINE_SQUIGGLE:	styleState |= UNDERLINE_SQUIGGLE; break;
+					case SWT.UNDERLINE_ERROR: 	styleState |= UNDERLINE_ERROR; break;
+				}
+				underlineSingleItem.setSelection((styleState & UNDERLINE_SINGLE) != 0);
+				underlineDoubleItem.setSelection((styleState & UNDERLINE_DOUBLE) != 0);
+				underlineErrorItem.setSelection((styleState & UNDERLINE_ERROR) != 0);
+				underlineSquiggleItem.setSelection((styleState & UNDERLINE_SQUIGGLE) != 0);
+				disposeResource(underlineColor);
+				underlineColor = range.underlineColor;
+			}
+			strikeout = range.strikeout;
+			if (strikeout) {
+				styleState |= STRIKEOUT;
+				disposeResource(strikeoutColor);
+				strikeoutColor = range.strikeoutColor;
+			}
+			border = range.borderStyle != SWT.NONE;
+			if (border) {
+				switch (range.borderStyle) {
+					case SWT.BORDER_SOLID:	styleState |= BORDER_SOLID; break;
+					case SWT.BORDER_DASH:	styleState |= BORDER_DASH; break;
+					case SWT.BORDER_DOT:	styleState |= BORDER_DOT; break;
+				}
+				borderSolidItem.setSelection((styleState & BORDER_SOLID) != 0);
+				borderDashItem.setSelection((styleState & BORDER_DASH) != 0);
+				borderDotItem.setSelection((styleState & BORDER_DOT) != 0);
+				disposeResource(borderColor);
+				borderColor = range.borderColor;
+			}
+		}
+		
+		boldControl.setSelection(bold);
+		italicControl.setSelection(italic);
+		FontData fontData = font != null ? font.getFontData()[0] : styledText.getFont().getFontData()[0];
+		int index = 0;
+		int count = fontNameControl.getItemCount();
+		String fontName = fontData.getName();
+		while (index < count) {
+			if (fontNameControl.getItem(index).equals(fontName)) {
+				fontNameControl.select(index);
+				break;
+			}
+			index++;
+		}
+		index = 0;
+		count = fontSizeControl.getItemCount();
+		int fontSize = fontData.getHeight();
+		while (index < count) {
+			int size = Integer.parseInt(fontSizeControl.getItem(index));
+			if (fontSize == size) {
+				fontSizeControl.select(index);
+				break;
+			}
+			if (size > fontSize) {
+				fontSizeControl.add (String.valueOf(fontSize), index);
+				fontSizeControl.select(index);
+				break;
+			}
+			index++;
+		}
+		
+		disposeResource(textFont);
+		textFont = font;
+		if (textForeground != foreground) {
+			disposeResource(textForeground);
+			textForeground = foreground;
+		}
+		if (textBackground != background) {
+			disposeResource(textBackground);
+			textBackground = background;
+		}
+		int lineIndex = styledText.getLineAtOffset(offset);
+		int alignment = styledText.getLineAlignment(lineIndex);
+		leftAlignmentItem.setSelection((alignment & SWT.LEFT) != 0);
+		centerAlignmentItem.setSelection((alignment & SWT.CENTER) != 0);
+		rightAlignmentItem.setSelection((alignment & SWT.RIGHT) != 0);
+		boolean justify = styledText.getLineJustify(lineIndex);
+		justifyAlignmentItem.setSelection(justify);
+	}
+
+	void setBullet(int type) {
+		Point selection = styledText.getSelection();
+		int lineStart = styledText.getLineAtOffset(selection.x);
+		int lineEnd = styledText.getLineAtOffset(selection.y);
+		StyleRange styleRange = new StyleRange();
+		styleRange.metrics = new GlyphMetrics(0, 0, BULLET_WIDTH);
+		Bullet bullet = new Bullet(type, styleRange);
+		for (int lineIndex = lineStart; lineIndex <= lineEnd; lineIndex++) {
+			Bullet oldBullet = styledText.getLineBullet(lineIndex);
+			styledText.setLineBullet(lineIndex, 1, oldBullet != null ? null : bullet);
+		}
+	}
+
+	public TextEditor(Display display) {
+		this.display = display;
+		initResources();
+		shell = new Shell(display);
+		shell.setText(getResourceString("Window_title")); //$NON-NLS-1$
+		styledText = new StyledText(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		createToolBar();
+		createMenuBar();
+		statusBar = new Label(shell, SWT.NONE);
+		createPopup();
+		installListeners();
+		updateStatusBar();
+		shell.setSize(1000, 700);
+		shell.open();
+	}
+
+	void installListeners() {
+		Listener caretListener = new Listener() {
+			public void handleEvent(Event event) {
+				if (event.type == SWT.KeyDown && event.keyCode == SWT.INSERT) {
+					insert = !insert;
+				}
+				updateStatusBar();
+				updateToolBar();
+			}
+		};
+		styledText.addListener(SWT.MouseDown, caretListener);
+		styledText.addListener(SWT.MouseUp, caretListener);
+		styledText.addListener(SWT.KeyDown, caretListener);
+		styledText.addVerifyListener(new VerifyListener() {
+			public void verifyText(VerifyEvent e) {
+				handleVerifyText(e);
+			}
+		});
+		styledText.addModifyListener(new ModifyListener(){
+			public void modifyText(ModifyEvent e) {
+				handleModify(e);
+			}
+		});
+		styledText.addPaintObjectListener(new PaintObjectListener() {
+			public void paintObject(PaintObjectEvent event) {
+				handlePaintObject(event);
+			}
+		});
+		shell.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent event) {
+				handleResize(event);
+			}
+		});
+	}
+
+	void disposeRanges(StyleRange[] ranges) {
+		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
+		for (int i = 0; i < ranges.length; i++) {
+			StyleRange style = ranges[i];
+			boolean disposeFg = true, disposeBg = true, disposeStrike= true, disposeUnder= true, disposeBorder = true, disposeFont = true;
+
+			for (int j = 0; j < styles.length; j++) {
+				StyleRange s = styles[j];
+				if (disposeFont && style.font == s.font) disposeFont = false;
+				if (disposeFg && style.foreground == s.foreground) disposeFg = false;
+				if (disposeBg && style.background == s.background) disposeBg = false;
+				if (disposeStrike && style.strikeoutColor == s.strikeoutColor) disposeStrike = false;
+				if (disposeUnder && style.underlineColor == s.underlineColor) disposeUnder = false;
+				if (disposeBorder && style.borderColor == s.borderColor) disposeBorder =  false;
+			}
+			if (disposeFont && style.font != textFont && style.font != null)  style.font.dispose();
+			if (disposeFg && style.foreground != textForeground && style.foreground != null) style.foreground.dispose();
+			if (disposeBg && style.background != textBackground && style.background != null) style.background.dispose();
+			if (disposeStrike && style.strikeoutColor != strikeoutColor && style.strikeoutColor != null) style.strikeoutColor.dispose();
+			if (disposeUnder && style.underlineColor != underlineColor && style.underlineColor != null) style.underlineColor.dispose();
+			if (disposeBorder && style.borderColor != borderColor && style.borderColor != null) style.borderColor.dispose();
+		}
+	}
+
+	void disposeResource(Resource resource) {
+		if (resource == null) return;
+		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
+		int index = 0;
+		while (index < styles.length) {
+			if (styles[index].font == resource) break;
+			if (styles[index].foreground == resource) break;
+			if (styles[index].background == resource) break;
+			if (styles[index].strikeoutColor == resource) break;
+			if (styles[index].underlineColor == resource) break;
+			if (styles[index].borderColor == resource) break;
+			index++;
+		}
+		if (index == styles.length) resource.dispose();
+	}
+
+	void createPopup() {
+		Menu menu = new Menu (styledText);
+		final MenuItem cutItem = new MenuItem (menu, SWT.PUSH);
+		cutItem.setText (getResourceString("Cut_menuitem")); //$NON-NLS-1$
+		cutItem.setImage(iCut);
+		cutItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.cut();
+			}
+		});
+		final MenuItem copyItem = new MenuItem (menu, SWT.PUSH);
+		copyItem.setText (getResourceString("Copy_menuitem")); //$NON-NLS-1$
+		copyItem.setImage(iCopy);
+		copyItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.copy();
+			}
+		});
+		final MenuItem pasteItem = new MenuItem (menu, SWT.PUSH);
+		pasteItem.setText (getResourceString("Paste_menuitem")); //$NON-NLS-1$
+		pasteItem.setImage(iPaste);
+		pasteItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.paste();
+			}
+		});
+		new MenuItem (menu, SWT.SEPARATOR);
+		final MenuItem selectAllItem = new MenuItem (menu, SWT.PUSH);
+		selectAllItem.setText (getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
+		selectAllItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.selectAll();
+			}
+		});
+		menu.addMenuListener(new MenuAdapter() {
+			public void menuShown(MenuEvent e) {
+				int selectionCount = styledText.getSelectionCount();
+				cutItem.setEnabled(selectionCount > 0);
+				copyItem.setEnabled(selectionCount > 0);
+				selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
+			}
+		});
+		styledText.setMenu(menu);
+	}
+
+	void handleVerifyText(VerifyEvent event) {
+		start = event.start;
+		newCharCount = event.text.length();
+		int replaceCharCount = event.end - start;
+
+		// mark styles to be disposed
+		selectedRanges = styledText.getStyleRanges(start, replaceCharCount, false);
+
+		// move/dispose images and controls
+		for (int i = 0; i < imageOffsets.length; i++) {
+			int offset = imageOffsets[i];
+
+			if (start <= offset && offset < start + replaceCharCount) {
+				if (images[i] != null && !images[i].isDisposed()) {
+					images[i].dispose();
+					images[i] = null;
+				}
+				offset = -1;
+			}
+			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
+			imageOffsets[i] = offset;
+		}
+		for (int i = 0; i < controlOffsets.length; i++) {
+			int offset = controlOffsets[i];
+			if (start <= offset && offset < start + replaceCharCount) {
+				if (controls[i] != null && !controls[i].isDisposed()) {
+					controls[i].dispose();
+					controls[i] = null;
+				}
+				offset = -1;
+			}
+			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
+			controlOffsets[i] = offset;
+		}
+	}
+	
+	void handleModify (ModifyEvent event) {
+		if (newCharCount > 0 && start >= 0) {
+			StyleRange style = new StyleRange();
+			if (textFont != null && !textFont.equals(styledText.getFont())) {
+				style.font = textFont;
+			} else {
+				style.fontStyle = SWT.NONE;
+				if (boldControl.getSelection()) style.fontStyle |= SWT.BOLD;
+				if (italicControl.getSelection()) style.fontStyle |= SWT.ITALIC;
+			}
+			style.foreground = textForeground;
+			style.background = textBackground;
+			int underlineStyle = styleState & UNDERLINE;
+			if (underlineStyle != 0) {
+				style.underline = true;
+				style.underlineColor = underlineColor;
+				switch (underlineStyle) {
+					case UNDERLINE_SINGLE:	style.underlineStyle = SWT.UNDERLINE_SINGLE; break;
+					case UNDERLINE_DOUBLE:	style.underlineStyle = SWT.UNDERLINE_DOUBLE; break;
+					case UNDERLINE_SQUIGGLE:	style.underlineStyle = SWT.UNDERLINE_SQUIGGLE; break;
+					case UNDERLINE_ERROR:	style.underlineStyle = SWT.UNDERLINE_ERROR; break;
+				}
+			}
+			if ((styleState & STRIKEOUT) != 0) {
+				style.strikeout = true;
+				style.strikeoutColor = strikeoutColor;
+			}
+			int borderStyle = styleState & BORDER;
+			if (borderStyle != 0) {
+				style.borderColor = borderColor;
+				switch (borderStyle) {
+					case BORDER_DASH:	style.borderStyle = SWT.BORDER_DASH; break;
+					case BORDER_DOT:	style.borderStyle = SWT.BORDER_DOT; break;
+					case BORDER_SOLID: style.borderStyle = SWT.BORDER_SOLID; break;
+				}
+			}
+			int[] ranges = {start, newCharCount};
+			StyleRange[] styles = {style}; 
+			styledText.setStyleRanges(start, newCharCount, ranges, styles);
+		}
+		disposeRanges(selectedRanges);
+	}
+
+	void handlePaintObject(PaintObjectEvent event) {
+		GC gc = event.gc;
+		StyleRange style = event.style;
+		int start = style.start;
+		Bullet bullet = event.bullet;
+		if (bullet != null && bullet.type == ST.BULLET_CUSTOM) {
+			Display display = event.display;
+			Font font = style.font;
+			if (font == null) font = styledText.getFont();
+			TextLayout layout = new TextLayout(display);
+			layout.setAscent(event.ascent);
+			layout.setDescent(event.descent);
+			layout.setFont(font);
+			layout.setText(event.bulletIndex + 1 + "."); //$NON-NLS-1$
+			layout.draw(gc, event.x + BULLET_WIDTH * 2 / 3, event.y);
+			layout.dispose();
+		} else {
+			for (int i = 0; i < imageOffsets.length; i++) {
+				int offset = imageOffsets[i];
+				if (start == offset) {
+					Image image = images[i];
+					int x = event.x;
+					int y = event.y + event.ascent - style.metrics.ascent;
+					gc.drawImage(image, x, y);
+				}
+			}
+			for (int i = 0; i < controlOffsets.length; i++) {
+				int offset = controlOffsets[i];
+				if (start == offset) {
+					Point pt = controls[i].getSize();
+					int x = event.x + MARGIN;
+					int y = event.y + event.ascent - 2 * pt.y / 3;
+					controls[i].setLocation(x, y);
+					break;
+				}
+			}
+		}
+	}
+
+	static String getResourceString(String key) {
+		try {
+			return resources.getString(key);
+		} catch (MissingResourceException e) {
+			return key;
+		} catch (NullPointerException e) {
+			return "!" + key + "!";  //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}
 }
