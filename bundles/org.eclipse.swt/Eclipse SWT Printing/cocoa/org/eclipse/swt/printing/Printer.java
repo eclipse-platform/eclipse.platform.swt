@@ -258,6 +258,7 @@ protected void destroy() {
 		printer = null;
 		printInfo = null;
 		view = null;
+		window = null;
 		operation = null;
 	} finally {
 		if (pool != null) pool.release();
