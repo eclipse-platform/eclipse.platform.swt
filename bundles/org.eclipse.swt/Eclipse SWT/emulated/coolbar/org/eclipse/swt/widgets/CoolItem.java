@@ -435,7 +435,11 @@ void setBounds (int x, int y, int width, int height) {
 		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
-		control.setBounds (parent.fixRectangle(x + MINIMUM_WIDTH,	y, controlWidth, height));
+		if (height > preferredHeight) {
+			y += (height - preferredHeight) / 2;
+			height = preferredHeight;
+		}
+		control.setBounds (parent.fixRectangle(x + MINIMUM_WIDTH, y, controlWidth, height));
 	}
 	updateChevron();
 }
