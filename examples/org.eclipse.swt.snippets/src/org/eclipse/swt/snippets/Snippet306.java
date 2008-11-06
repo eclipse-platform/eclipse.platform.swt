@@ -11,8 +11,8 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser example snippet: Show a context menu based on the clicked
- * HTML element in a Mozilla Browser.
+ * Browser example snippet: Show an HTML element-specific context menu
+ * in a Mozilla Browser.
  * 
  * IMPORTANT: For this snippet to work properly all of the requirements
  * for using JavaXPCOM in a stand-alone application must be satisfied
