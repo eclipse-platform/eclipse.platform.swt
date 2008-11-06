@@ -161,189 +161,6 @@ public class TextEditor {
 		StyleRange[] styles = {style};
 		styledText.setStyleRanges(0,0, ranges, styles);
 	}
-	
-	void applyStyle(int style) {
-		int[] ranges = styledText.getSelectionRanges();
-		int i = 0;
-		while (i < ranges.length) {
-			applyStyle(style, ranges[i++], ranges[i++]);
-		}
-		if ((style & UNDERLINE) != 0) {
-			if ((style & UNDERLINE) == (styleState & UNDERLINE)) {
-				styleState &= ~UNDERLINE;
-			} else {
-				styleState &= ~UNDERLINE;
-				styleState |= style;
-			}
-		}
-		if ((style & STRIKEOUT) != 0) {
-			if ((style & STRIKEOUT) == (styleState & STRIKEOUT)) {
-				styleState &= ~STRIKEOUT;
-			} else {
-				styleState &= ~STRIKEOUT;
-				styleState |= style;
-			}
-		}
-		if ((style & BORDER) != 0) {
-			if ((style & BORDER) == (styleState & BORDER)) {
-				styleState &= ~BORDER;
-			} else {
-				styleState &= ~BORDER;
-				styleState |= style;
-			}
-		}
-	}
-	void applyStyle(int style, int start, int length) {
-		if (length == 0) return;
-		
-		/* Create new style range */
-		StyleRange newRange = new StyleRange();
-		if ((style & FONT) != 0) {
-			newRange.font = textFont;
-		}
-		if ((style & FONT_STYLE) != 0) {
-			newRange.fontStyle = style & FONT_STYLE;
-		}
-		if ((style & TEXT_FOREGROUND) != 0) {
-			newRange.foreground = textForeground;
-		}
-		if ((style & TEXT_BACKGROUND) != 0) {
-			newRange.background = textBackground;
-		}
-		if ((style & BASELINE_UP) != 0)	newRange.rise++;
-		if ((style & BASELINE_DOWN) != 0) newRange.rise--;
-		if ((style & STRIKEOUT) != 0) {
-			newRange.strikeout = true;
-			newRange.strikeoutColor = strikeoutColor;
-		}
-		if ((style & UNDERLINE) != 0) {
-			newRange.underline = true;
-			switch (style & UNDERLINE) {
-				case UNDERLINE_SINGLE:
-					newRange.underlineStyle = SWT.UNDERLINE_SINGLE;
-					break;
-				case UNDERLINE_DOUBLE:
-					newRange.underlineStyle = SWT.UNDERLINE_DOUBLE;
-					break;
-				case UNDERLINE_ERROR:
-					newRange.underlineStyle = SWT.UNDERLINE_ERROR;
-					break;
-				case UNDERLINE_SQUIGGLE:
-					newRange.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
-					break;
-			}
-			newRange.underlineColor = underlineColor;
-		}
-		if ((style & BORDER) != 0) {
-			switch (style & BORDER) {
-				case BORDER_DASH:
-					newRange.borderStyle = SWT.BORDER_DASH;
-					break;
-				case BORDER_DOT:
-					newRange.borderStyle = SWT.BORDER_DOT;
-					break;
-				case BORDER_SOLID:
-					newRange.borderStyle = SWT.BORDER_SOLID;
-					break;
-			}
-			newRange.borderColor = borderColor;
-		}
-		
-		int newRangeStart = start;
-		int newRangeLength = length;
-		int[] ranges = styledText.getRanges(start, length);
-		StyleRange[] styles = styledText.getStyleRanges(start, length, false);		
-		int maxCount = ranges.length * 2 + 2;
-		int[] newRanges = new int[maxCount];
-		StyleRange[] newStyles = new StyleRange[maxCount / 2];		
-		int count = 0;
-		for (int i = 0; i < ranges.length; i+=2) {
-			int rangeStart = ranges[i];
-			int rangeLength = ranges[i + 1];
-			StyleRange range = styles[i / 2];
-			if (rangeStart > newRangeStart) {
-				newRangeLength = rangeStart - newRangeStart;
-				newRanges[count] = newRangeStart;
-				newRanges[count + 1] = newRangeLength;
-				newStyles[count / 2] = newRange;
-				count += 2;
-			}
-			newRangeStart = rangeStart + rangeLength;
-			newRangeLength = (start + length) - newRangeStart;
-
-			/* Create merged style range*/
-			StyleRange mergedRange = new StyleRange(range);
-			//Note: fontStyle is not copied by the constructor
-			mergedRange.fontStyle = range.fontStyle;
-			if ((style & FONT) != 0) {
-				mergedRange.font =  newRange.font;
-			}
-			if ((style & FONT_STYLE) != 0) {
-				mergedRange.fontStyle =  range.fontStyle ^ newRange.fontStyle;
-			}
-			if (mergedRange.font != null && ((style & FONT) != 0 || (style & FONT_STYLE) != 0)) {
-				boolean change = false;
-				FontData[] fds = mergedRange.font.getFontData();
-				for (int j = 0; j < fds.length; j++) {
-					FontData fd = fds[j];
-					if (fd.getStyle() != mergedRange.fontStyle) {
-						fds[j].setStyle(mergedRange.fontStyle);
-						change = true;
-					}
-				}
-				if (change) {
-					mergedRange.font = new Font(display, fds);
-				}
-			}
-			if ((style & TEXT_FOREGROUND) != 0) {
-				mergedRange.foreground = newRange.foreground;
-			}
-			if ((style & TEXT_BACKGROUND) != 0) {
-				mergedRange.background = newRange.background;
-			}
-			if ((style & BASELINE_UP) != 0) mergedRange.rise++;
-			if ((style & BASELINE_DOWN) != 0) mergedRange.rise--;
-			if ((style & STRIKEOUT) != 0) {
-				mergedRange.strikeout = !range.strikeout || range.strikeoutColor != newRange.strikeoutColor;
-				mergedRange.strikeoutColor = mergedRange.strikeout ? newRange.strikeoutColor : null;
-			}
-			if ((style & UNDERLINE) != 0) {
-				mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor;
-				mergedRange.underlineStyle = mergedRange.underline ? newRange.underlineStyle : SWT.NONE;
-				mergedRange.underlineColor = mergedRange.underline ? newRange.underlineColor : null;
-			}
-			if ((style & BORDER) != 0) {
-				if (range.borderStyle != newRange.borderStyle || range.borderColor != newRange.borderColor) {
-					mergedRange.borderStyle = newRange.borderStyle;
-					mergedRange.borderColor = newRange.borderColor;
-				} else {
-					mergedRange.borderStyle = SWT.NONE;
-					mergedRange.borderColor = null;
-				}
-			}
-			
-			newRanges[count] = rangeStart;
-			newRanges[count + 1] = rangeLength;
-			newStyles[count / 2] = mergedRange;
-			count += 2;
-		}
-		if (newRangeLength > 0) {
-			newRanges[count] = newRangeStart;
-			newRanges[count + 1] = newRangeLength;
-			newStyles[count / 2] = newRange;
-			count += 2;
-		}
-		if (0 < count && count < maxCount) {			
-			int[] tmpRanges = new int[count];
-			StyleRange[] tmpStyles = new StyleRange[count / 2];
-			System.arraycopy(newRanges, 0, tmpRanges, 0, count);
-			System.arraycopy(newStyles, 0, tmpStyles, 0, count / 2);
-			newRanges = tmpRanges;
-			newStyles = tmpStyles;
-		}
-		styledText.setStyleRanges(start, length, newRanges, newStyles);
-		disposeRanges(styles);
-	}
 
 	void createMenuBar() {
 		Menu menu = new Menu(shell, SWT.BAR);
@@ -758,7 +575,7 @@ public class TextEditor {
 		boldControl.setToolTipText(getResourceString("Bold")); //$NON-NLS-1$
 		boldControl.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				applyStyle(BOLD);
+				setStyle(BOLD);
 			}
 		});
 
@@ -767,7 +584,7 @@ public class TextEditor {
 		italicControl.setToolTipText(getResourceString("Italic")); //$NON-NLS-1$
 		italicControl.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				applyStyle(ITALIC);
+				setStyle(ITALIC);
 			}
 		});
 
@@ -777,7 +594,7 @@ public class TextEditor {
 		underlineSingleItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (underlineSingleItem.getSelection()) {
-					applyStyle(UNDERLINE_SINGLE);
+					setStyle(UNDERLINE_SINGLE);
 				}
 			}
 		});
@@ -788,7 +605,7 @@ public class TextEditor {
 		underlineDoubleItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (underlineDoubleItem.getSelection()) {
-					applyStyle(UNDERLINE_DOUBLE);
+					setStyle(UNDERLINE_DOUBLE);
 				}
 			}
 		});
@@ -798,7 +615,7 @@ public class TextEditor {
 		underlineSquiggleItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (underlineSquiggleItem.getSelection()) {
-					applyStyle(UNDERLINE_SQUIGGLE);
+					setStyle(UNDERLINE_SQUIGGLE);
 				}
 			}
 		});
@@ -808,7 +625,7 @@ public class TextEditor {
 		underlineErrorItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (underlineErrorItem.getSelection()) {
-					applyStyle(UNDERLINE_ERROR);
+					setStyle(UNDERLINE_ERROR);
 				}
 			}
 		});
@@ -826,10 +643,10 @@ public class TextEditor {
 						disposeResource(underlineColor);
 						underlineColor = new Color(display, newRgb);					
 					}
-					if (underlineSingleItem.getSelection()) applyStyle(UNDERLINE_SINGLE);
-					else if (underlineDoubleItem.getSelection()) applyStyle(UNDERLINE_DOUBLE);
-					else if (underlineErrorItem.getSelection()) applyStyle(UNDERLINE_ERROR);
-					else if (underlineSquiggleItem.getSelection()) applyStyle(UNDERLINE_SQUIGGLE);
+					if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
+					else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
+					else if (underlineErrorItem.getSelection()) setStyle(UNDERLINE_ERROR);
+					else if (underlineSquiggleItem.getSelection()) setStyle(UNDERLINE_SQUIGGLE);
 				}					
 			}
 		});
@@ -845,10 +662,10 @@ public class TextEditor {
 					underlineMenu.setLocation(display.map(underlineControl.getParent(), null, pt));
 					underlineMenu.setVisible(true);
 				} else {
-					if (underlineSingleItem.getSelection()) applyStyle(UNDERLINE_SINGLE);
-					else if (underlineDoubleItem.getSelection()) applyStyle(UNDERLINE_DOUBLE);
-					else if (underlineErrorItem.getSelection()) applyStyle(UNDERLINE_ERROR);
-					else if (underlineSquiggleItem.getSelection()) applyStyle(UNDERLINE_SQUIGGLE);
+					if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
+					else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
+					else if (underlineErrorItem.getSelection()) setStyle(UNDERLINE_ERROR);
+					else if (underlineSquiggleItem.getSelection()) setStyle(UNDERLINE_SQUIGGLE);
 				}
 			}
 		});
@@ -869,7 +686,7 @@ public class TextEditor {
 						strikeoutColor = new Color(display, newRgb);
 					}
 				}
-				applyStyle(STRIKEOUT);
+				setStyle(STRIKEOUT);
 			}
 		});
 
@@ -879,7 +696,7 @@ public class TextEditor {
 		borderSolidItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e){
 				if (borderSolidItem.getSelection()) {
-					applyStyle(BORDER_SOLID);
+					setStyle(BORDER_SOLID);
 				}
 			}
 		});
@@ -890,7 +707,7 @@ public class TextEditor {
 		borderDashItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e){
 				if (borderDashItem.getSelection()) {
-					applyStyle(BORDER_DASH);
+					setStyle(BORDER_DASH);
 				}
 			}
 		});
@@ -901,7 +718,7 @@ public class TextEditor {
 		borderDotItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e){
 				if (borderDotItem.getSelection()) {
-					applyStyle(BORDER_DOT);
+					setStyle(BORDER_DOT);
 				}
 			}
 		});
@@ -919,9 +736,9 @@ public class TextEditor {
 						disposeResource(borderColor);
 						borderColor = new Color(display, newRgb);
 					}
-					if (borderDashItem.getSelection()) applyStyle(BORDER_DASH);
-					else if (borderDotItem.getSelection()) applyStyle(BORDER_DOT);
-					else if (borderSolidItem.getSelection()) applyStyle(BORDER_SOLID);
+					if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
+					else if (borderDotItem.getSelection()) setStyle(BORDER_DOT);
+					else if (borderSolidItem.getSelection()) setStyle(BORDER_SOLID);
 				}
 			}
 		});
@@ -937,9 +754,9 @@ public class TextEditor {
 					borderMenu.setLocation(display.map(borderControl.getParent(), null, pt));
 					borderMenu.setVisible(true);
 				} else {
-					if (borderDashItem.getSelection()) applyStyle(BORDER_DASH);
-					else if (borderDotItem.getSelection()) applyStyle(BORDER_DOT);
-					else if (borderSolidItem.getSelection()) applyStyle(BORDER_SOLID);
+					if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
+					else if (borderDotItem.getSelection()) setStyle(BORDER_DOT);
+					else if (borderSolidItem.getSelection()) setStyle(BORDER_SOLID);
 				}
 			}
 		});
@@ -960,7 +777,7 @@ public class TextEditor {
 						textForeground = new Color(display, newRgb);					
 					}
 				}
-				applyStyle(TEXT_FOREGROUND);				
+				setStyle(TEXT_FOREGROUND);				
 			}
 		});
 
@@ -980,7 +797,7 @@ public class TextEditor {
 						textBackground = new Color(display, newRgb);
 					}
 				}
-				applyStyle(TEXT_BACKGROUND);
+				setStyle(TEXT_BACKGROUND);
 			}
 		});
 
@@ -989,7 +806,7 @@ public class TextEditor {
 		baselineUpItem.setToolTipText(getResourceString("IncreaseBaseline")); //$NON-NLS-1$
 		baselineUpItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				applyStyle(BASELINE_UP);
+				setStyle(BASELINE_UP);
 			}
 		});
 
@@ -998,7 +815,7 @@ public class TextEditor {
 		baselineDownItem.setToolTipText(getResourceString("DecreaseBaseline")); //$NON-NLS-1$
 		baselineDownItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				applyStyle(BASELINE_DOWN);
+				setStyle(BASELINE_DOWN);
 			}
 		});
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
@@ -1030,7 +847,7 @@ public class TextEditor {
 				int size = Integer.parseInt(fontSizeControl.getText());
 				disposeResource(textFont);
 				textFont = new Font(display, name, size, SWT.NORMAL);
-				applyStyle(FONT);
+				setStyle(FONT);
 			}
 		};
 		fontSizeControl.addSelectionListener(adapter);
@@ -1586,6 +1403,189 @@ public class TextEditor {
 			Bullet oldBullet = styledText.getLineBullet(lineIndex);
 			styledText.setLineBullet(lineIndex, 1, oldBullet != null ? null : bullet);
 		}
+	}
+	
+	void setStyle(int style) {
+		int[] ranges = styledText.getSelectionRanges();
+		int i = 0;
+		while (i < ranges.length) {
+			setStyle(style, ranges[i++], ranges[i++]);
+		}
+		if ((style & UNDERLINE) != 0) {
+			if ((style & UNDERLINE) == (styleState & UNDERLINE)) {
+				styleState &= ~UNDERLINE;
+			} else {
+				styleState &= ~UNDERLINE;
+				styleState |= style;
+			}
+		}
+		if ((style & STRIKEOUT) != 0) {
+			if ((style & STRIKEOUT) == (styleState & STRIKEOUT)) {
+				styleState &= ~STRIKEOUT;
+			} else {
+				styleState &= ~STRIKEOUT;
+				styleState |= style;
+			}
+		}
+		if ((style & BORDER) != 0) {
+			if ((style & BORDER) == (styleState & BORDER)) {
+				styleState &= ~BORDER;
+			} else {
+				styleState &= ~BORDER;
+				styleState |= style;
+			}
+		}
+	}
+	void setStyle(int style, int start, int length) {
+		if (length == 0) return;
+		
+		/* Create new style range */
+		StyleRange newRange = new StyleRange();
+		if ((style & FONT) != 0) {
+			newRange.font = textFont;
+		}
+		if ((style & FONT_STYLE) != 0) {
+			newRange.fontStyle = style & FONT_STYLE;
+		}
+		if ((style & TEXT_FOREGROUND) != 0) {
+			newRange.foreground = textForeground;
+		}
+		if ((style & TEXT_BACKGROUND) != 0) {
+			newRange.background = textBackground;
+		}
+		if ((style & BASELINE_UP) != 0)	newRange.rise++;
+		if ((style & BASELINE_DOWN) != 0) newRange.rise--;
+		if ((style & STRIKEOUT) != 0) {
+			newRange.strikeout = true;
+			newRange.strikeoutColor = strikeoutColor;
+		}
+		if ((style & UNDERLINE) != 0) {
+			newRange.underline = true;
+			switch (style & UNDERLINE) {
+				case UNDERLINE_SINGLE:
+					newRange.underlineStyle = SWT.UNDERLINE_SINGLE;
+					break;
+				case UNDERLINE_DOUBLE:
+					newRange.underlineStyle = SWT.UNDERLINE_DOUBLE;
+					break;
+				case UNDERLINE_ERROR:
+					newRange.underlineStyle = SWT.UNDERLINE_ERROR;
+					break;
+				case UNDERLINE_SQUIGGLE:
+					newRange.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
+					break;
+			}
+			newRange.underlineColor = underlineColor;
+		}
+		if ((style & BORDER) != 0) {
+			switch (style & BORDER) {
+				case BORDER_DASH:
+					newRange.borderStyle = SWT.BORDER_DASH;
+					break;
+				case BORDER_DOT:
+					newRange.borderStyle = SWT.BORDER_DOT;
+					break;
+				case BORDER_SOLID:
+					newRange.borderStyle = SWT.BORDER_SOLID;
+					break;
+			}
+			newRange.borderColor = borderColor;
+		}
+		
+		int newRangeStart = start;
+		int newRangeLength = length;
+		int[] ranges = styledText.getRanges(start, length);
+		StyleRange[] styles = styledText.getStyleRanges(start, length, false);		
+		int maxCount = ranges.length * 2 + 2;
+		int[] newRanges = new int[maxCount];
+		StyleRange[] newStyles = new StyleRange[maxCount / 2];		
+		int count = 0;
+		for (int i = 0; i < ranges.length; i+=2) {
+			int rangeStart = ranges[i];
+			int rangeLength = ranges[i + 1];
+			StyleRange range = styles[i / 2];
+			if (rangeStart > newRangeStart) {
+				newRangeLength = rangeStart - newRangeStart;
+				newRanges[count] = newRangeStart;
+				newRanges[count + 1] = newRangeLength;
+				newStyles[count / 2] = newRange;
+				count += 2;
+			}
+			newRangeStart = rangeStart + rangeLength;
+			newRangeLength = (start + length) - newRangeStart;
+
+			/* Create merged style range*/
+			StyleRange mergedRange = new StyleRange(range);
+			//Note: fontStyle is not copied by the constructor
+			mergedRange.fontStyle = range.fontStyle;
+			if ((style & FONT) != 0) {
+				mergedRange.font =  newRange.font;
+			}
+			if ((style & FONT_STYLE) != 0) {
+				mergedRange.fontStyle =  range.fontStyle ^ newRange.fontStyle;
+			}
+			if (mergedRange.font != null && ((style & FONT) != 0 || (style & FONT_STYLE) != 0)) {
+				boolean change = false;
+				FontData[] fds = mergedRange.font.getFontData();
+				for (int j = 0; j < fds.length; j++) {
+					FontData fd = fds[j];
+					if (fd.getStyle() != mergedRange.fontStyle) {
+						fds[j].setStyle(mergedRange.fontStyle);
+						change = true;
+					}
+				}
+				if (change) {
+					mergedRange.font = new Font(display, fds);
+				}
+			}
+			if ((style & TEXT_FOREGROUND) != 0) {
+				mergedRange.foreground = newRange.foreground;
+			}
+			if ((style & TEXT_BACKGROUND) != 0) {
+				mergedRange.background = newRange.background;
+			}
+			if ((style & BASELINE_UP) != 0) mergedRange.rise++;
+			if ((style & BASELINE_DOWN) != 0) mergedRange.rise--;
+			if ((style & STRIKEOUT) != 0) {
+				mergedRange.strikeout = !range.strikeout || range.strikeoutColor != newRange.strikeoutColor;
+				mergedRange.strikeoutColor = mergedRange.strikeout ? newRange.strikeoutColor : null;
+			}
+			if ((style & UNDERLINE) != 0) {
+				mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor;
+				mergedRange.underlineStyle = mergedRange.underline ? newRange.underlineStyle : SWT.NONE;
+				mergedRange.underlineColor = mergedRange.underline ? newRange.underlineColor : null;
+			}
+			if ((style & BORDER) != 0) {
+				if (range.borderStyle != newRange.borderStyle || range.borderColor != newRange.borderColor) {
+					mergedRange.borderStyle = newRange.borderStyle;
+					mergedRange.borderColor = newRange.borderColor;
+				} else {
+					mergedRange.borderStyle = SWT.NONE;
+					mergedRange.borderColor = null;
+				}
+			}
+			
+			newRanges[count] = rangeStart;
+			newRanges[count + 1] = rangeLength;
+			newStyles[count / 2] = mergedRange;
+			count += 2;
+		}
+		if (newRangeLength > 0) {
+			newRanges[count] = newRangeStart;
+			newRanges[count + 1] = newRangeLength;
+			newStyles[count / 2] = newRange;
+			count += 2;
+		}
+		if (0 < count && count < maxCount) {			
+			int[] tmpRanges = new int[count];
+			StyleRange[] tmpStyles = new StyleRange[count / 2];
+			System.arraycopy(newRanges, 0, tmpRanges, 0, count);
+			System.arraycopy(newStyles, 0, tmpStyles, 0, count / 2);
+			newRanges = tmpRanges;
+			newStyles = tmpStyles;
+		}
+		styledText.setStyleRanges(start, length, newRanges, newStyles);
+		disposeRanges(styles);
 	}
 
 	void updateStatusBar() {
