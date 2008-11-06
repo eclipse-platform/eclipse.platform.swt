@@ -97,12 +97,13 @@ public class TextEditor {
 		shell = new Shell(display);
 		shell.setText(getResourceString("Window_title")); //$NON-NLS-1$
 		styledText = new StyledText(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		createToolBar();
 		createMenuBar();
+		createToolBar();
 		createPopup();
 		statusBar = new Label(shell, SWT.NONE);
-		updateStatusBar();
 		installListeners();
+		updateToolBar();
+		updateStatusBar();
 		shell.setSize(1000, 700);
 		shell.open();
 	}
