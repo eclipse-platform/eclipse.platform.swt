@@ -99,10 +99,10 @@ public class TextEditor {
 		styledText = new StyledText(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		createToolBar();
 		createMenuBar();
-		statusBar = new Label(shell, SWT.NONE);
 		createPopup();
-		installListeners();
+		statusBar = new Label(shell, SWT.NONE);
 		updateStatusBar();
+		installListeners();
 		shell.setSize(1000, 700);
 		shell.open();
 	}
@@ -176,25 +176,15 @@ public class TextEditor {
 		openItem.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-		        dialog.setText(getResourceString("Open_fileitem")); //$NON-NLS-1$
 				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
 				dialog.setFilterExtensions (new String [] {"*.txt"}); //$NON-NLS-1$
-				dialog.setFilterPath("c:\\"); //$NON-NLS-1$
-				dialog.setFileName("*.txt"); //$NON-NLS-1$
 		        String name = dialog.open();
 		        if (name == null)  return;
 		        fileName = name;
-		        FileReader file = null;
+		        FileInputStream file = null;
 		        try {
-		        	file = new FileReader(name);
-		        	BufferedReader fileInput = new BufferedReader(file);
-		        	String line = null;
-		        	StringBuffer buffer = new StringBuffer();
-		        	while ((line = fileInput.readLine()) != null) {
-		        		buffer.append(line);
-		        		if (fileInput.ready()) buffer.append(styledText.getLineDelimiter());
-		        	}
-		        	styledText.setText(buffer.toString());
+		        	file = new FileInputStream(name);
+		        	styledText.setText(openFile(file));
 		        } catch (IOException exception) {
 		        	MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.CLOSE);
 					messageBox.setText(getResourceString("Error")); //$NON-NLS-1$
@@ -1082,21 +1072,6 @@ public class TextEditor {
 		}
 		return styles;
 	}
-
-	String getText(InputStream stream) {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			StringBuffer buffer = new StringBuffer();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				buffer.append(line);
-				buffer.append("\r\n");  //$NON-NLS-1$
-			}
-			return buffer.toString();
-		} catch (IOException e) {
-			return e.getMessage();
-		}
-	}
 	
 	void handleModify (ModifyEvent event) {
 		if (newCharCount > 0 && start >= 0) {
@@ -1297,29 +1272,45 @@ public class TextEditor {
 	}
 
 	void loadProfile(int profile) {
-		switch (profile) {
-			case 1: {
-				String text = getText(TextEditor.class.getResourceAsStream("text.txt"));  //$NON-NLS-1$
-				StyleRange[] styles = getStyles(TextEditor.class.getResourceAsStream("styles.txt"));  //$NON-NLS-1$
-				styledText.setText(text);
-				styledText.setStyleRanges(styles);
-				break;
+		try {
+			switch (profile) {
+				case 1: {
+					String text = openFile(TextEditor.class.getResourceAsStream("text.txt"));  //$NON-NLS-1$
+					StyleRange[] styles = getStyles(TextEditor.class.getResourceAsStream("styles.txt"));  //$NON-NLS-1$
+					styledText.setText(text);
+					styledText.setStyleRanges(styles);
+					break;
+				}
+				case 2: {
+					styledText.setText(getResourceString("Profile2"));  //$NON-NLS-1$
+					break;
+				}
+				case 3: {
+					String text = openFile(TextEditor.class.getResourceAsStream("text4.txt"));  //$NON-NLS-1$
+					styledText.setText(text);
+					break;
+				}
+				case 4: {
+					styledText.setText(getResourceString("Profile4"));  //$NON-NLS-1$
+					break;
+				}
 			}
-			case 2: {
-				styledText.setText(getResourceString("Profile2"));  //$NON-NLS-1$
-				break;
-			}
-			case 3: {
-				String text = getText(TextEditor.class.getResourceAsStream("text4.txt"));  //$NON-NLS-1$
-				styledText.setText(text);
-				break;
-			}
-			case 4: {
-				styledText.setText(getResourceString("Profile4"));  //$NON-NLS-1$
-				break;
-			}
+		} catch (Exception e) {
+			styledText.setText(e.getMessage());
 		}
 		updateToolBar();
+	}
+
+	String openFile(InputStream stream) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		StringBuffer buffer = new StringBuffer();
+		String line;
+		String lineDelimiter = styledText.getLineDelimiter();
+		while ((line = reader.readLine()) != null) {
+			buffer.append(line);
+			buffer.append(lineDelimiter);
+		}
+		return buffer.toString();
 	}
 
 	void releaseResources() {
