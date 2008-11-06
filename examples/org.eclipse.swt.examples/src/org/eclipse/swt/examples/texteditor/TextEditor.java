@@ -773,7 +773,9 @@ public class TextEditor {
 		coolItem.setControl(styleToolBar);
 		
 		Composite composite = new Composite(coolBar, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginHeight = 1;
+		composite.setLayout(layout);
 		fontNameControl = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		fontNameControl.setItems(getFontNames());
 		fontNameControl.setVisibleItemCount(12);
@@ -889,7 +891,9 @@ public class TextEditor {
 		coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(alignmentToolBar);
 		composite = new Composite(coolBar, SWT.NONE);
-		composite.setLayout(new GridLayout(4, false));
+		layout = new GridLayout(4, false);
+		layout.marginHeight = 1;
+		composite.setLayout(layout);
 		Label label = new Label(composite, SWT.NONE);
 		label.setText(getResourceString("Indent")); //$NON-NLS-1$
 		Spinner indent = new Spinner(composite, SWT.BORDER);
