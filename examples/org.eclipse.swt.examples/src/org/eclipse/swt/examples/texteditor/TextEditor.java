@@ -519,7 +519,7 @@ public class TextEditor {
 	}
 
 	void createToolBar() {
-		coolBar = new CoolBar(shell, SWT.NONE);
+		coolBar = new CoolBar(shell, SWT.FLAT);
 		ToolBar styleToolBar = new ToolBar(coolBar, SWT.FLAT);
 		boldControl = new ToolItem(styleToolBar, SWT.CHECK);
 		boldControl.setImage(iBold);
