@@ -69,6 +69,16 @@ public class TextEditor {
 	static final boolean SAMPLE_TEXT = false;
 	static final ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");  //$NON-NLS-1$
 
+	static String getResourceString(String key) {
+		try {
+			return resources.getString(key);
+		} catch (MissingResourceException e) {
+			return key;
+		} catch (NullPointerException e) {
+			return "!" + key + "!";  //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}
+	
 	public static void main(String[] args) {
 		Display display = new Display();
 		TextEditor editor = new TextEditor(display);
@@ -79,6 +89,77 @@ public class TextEditor {
 		}
 		editor.releaseResources();
 		display.dispose();
+	}
+
+	public TextEditor(Display display) {
+		this.display = display;
+		initResources();
+		shell = new Shell(display);
+		shell.setText(getResourceString("Window_title")); //$NON-NLS-1$
+		styledText = new StyledText(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		createToolBar();
+		createMenuBar();
+		statusBar = new Label(shell, SWT.NONE);
+		createPopup();
+		installListeners();
+		updateStatusBar();
+		shell.setSize(1000, 700);
+		shell.open();
+	}
+	
+	void addControl(Control control) {
+		int offset = styledText.getCaretOffset();
+		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
+		int index = 0;		
+		while (index < controlOffsets.length) {
+			if (controlOffsets[index] == -1 && controls[index] == null) break;
+			index++;
+		}
+		if (index == controlOffsets.length) {
+			int[] tmpOffsets = new int[index + 1];
+			System.arraycopy(controlOffsets, 0, tmpOffsets, 0, controlOffsets.length);
+			controlOffsets = tmpOffsets;		
+			Control[] tmpControls = new Control[index + 1];
+			System.arraycopy(controls, 0, tmpControls, 0, controls.length);
+			controls = tmpControls;
+		}
+		controlOffsets[index] = offset;
+		controls[index] = control;
+		StyleRange style = new StyleRange();
+		Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		int ascent = 2 * size.y / 3;
+		int descent = size.y - ascent;
+		style.metrics = new GlyphMetrics(ascent + MARGIN, descent + MARGIN, size.x + 2 * MARGIN);		 
+		int[] ranges = {offset, 1};
+		StyleRange[] styles = {style};
+		styledText.setStyleRanges(0,0, ranges, styles);
+		control.setSize(size);
+	}
+
+	void addImage(Image image) {
+		int offset = styledText.getCaretOffset();
+		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
+		int index = 0;		
+		while (index < images.length) {
+			if (imageOffsets[index] == -1 && images[index] == null) break;
+			index++;
+		}
+		if (index == imageOffsets.length) {
+			int[] tmpOffsets = new int[index + 1];
+			System.arraycopy(imageOffsets, 0, tmpOffsets, 0, imageOffsets.length);
+			imageOffsets = tmpOffsets;		
+			Image[] tmpImages = new Image[index + 1];
+			System.arraycopy(images, 0, tmpImages, 0, images.length);
+			images = tmpImages;
+		}
+		imageOffsets[index] = offset;
+		images[index] = image;
+		StyleRange style = new StyleRange();
+		Rectangle rect = image.getBounds();
+		style.metrics = new GlyphMetrics(rect.height, 0, rect.width);
+		int[] ranges = {offset, 1};
+		StyleRange[] styles = {style};
+		styledText.setStyleRanges(0,0, ranges, styles);
 	}
 	
 	void applyStyle(int style) {
@@ -262,228 +343,6 @@ public class TextEditor {
 		}
 		styledText.setStyleRanges(start, length, newRanges, newStyles);
 		disposeRanges(styles);
-	}
-
-	public StyleRange[] getStyles(InputStream stream) {
-		StyleRange[] styles = new StyleRange[256];
-		int count = 0;
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				StringTokenizer tokenizer = new StringTokenizer(line, ";", false);  //$NON-NLS-1$
-				StyleRange range = new StyleRange();
-				range.start = Integer.parseInt(tokenizer.nextToken());
-				range.length = Integer.parseInt(tokenizer.nextToken());
-				range.fontStyle = Integer.parseInt(tokenizer.nextToken());
-				range.strikeout = tokenizer.nextToken().equals("true");  //$NON-NLS-1$
-				range.underline = tokenizer.nextToken().equals("true");  //$NON-NLS-1$
-				if (tokenizer.hasMoreTokens()) {
-					int red = Integer.parseInt(tokenizer.nextToken());
-					int green = Integer.parseInt(tokenizer.nextToken());
-					int blue = Integer.parseInt(tokenizer.nextToken());
-					range.foreground = new Color(display, red, green, blue);
-				}
-				if (tokenizer.hasMoreTokens()) {
-					int red = Integer.parseInt(tokenizer.nextToken());
-					int green = Integer.parseInt(tokenizer.nextToken());
-					int blue = Integer.parseInt(tokenizer.nextToken());
-					range.background = new Color(display, red, green, blue);
-				}
-				if (count >= styles.length) {
-					StyleRange[] newStyles =  new StyleRange[styles.length + 256];
-					System.arraycopy(styles, 0, newStyles, 0, styles.length);
-					styles = newStyles;
-				}
-				styles[count++] = range;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if (count < styles.length) {
-			StyleRange[] newStyles = new StyleRange[count];
-			System.arraycopy(styles, 0, newStyles, 0, count);
-			styles = newStyles;
-		}
-		return styles;
-	}
-
-	public String getText(InputStream stream) {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			StringBuffer buffer = new StringBuffer();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				buffer.append(line);
-				buffer.append("\r\n");  //$NON-NLS-1$
-			}
-			return buffer.toString();
-		} catch (IOException e) {
-			return e.getMessage();
-		}
-	}
-
-	void loadProfile(int profile) {
-		switch (profile) {
-			case 1: {
-				String text = getText(TextEditor.class.getResourceAsStream("text.txt"));  //$NON-NLS-1$
-				StyleRange[] styles = getStyles(TextEditor.class.getResourceAsStream("styles.txt"));  //$NON-NLS-1$
-				styledText.setText(text);
-				styledText.setStyleRanges(styles);
-				break;
-			}
-			case 2: {
-				styledText.setText(getResourceString("Profile2"));  //$NON-NLS-1$
-				break;
-			}
-			case 3: {
-				String text = getText(TextEditor.class.getResourceAsStream("text4.txt"));  //$NON-NLS-1$
-				styledText.setText(text);
-				break;
-			}
-			case 4: {
-				styledText.setText(getResourceString("Profile4"));  //$NON-NLS-1$
-				break;
-			}
-		}
-		updateToolBar();
-	}
-
-	void handleResize(ControlEvent event) {
-		Rectangle rect = shell.getClientArea();
-		Point cSize = coolBar.computeSize(rect.width, SWT.DEFAULT);
-		Point sSize = statusBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		int statusMargin = 2;
-		coolBar.setBounds(rect.x, rect.y, cSize.x, cSize.y);
-		styledText.setBounds(rect.x, rect.y + cSize.y, rect.width, rect.height - cSize.y - (sSize.y + 2 * statusMargin));
-		statusBar.setBounds(rect.x + statusMargin, rect.y + rect.height - sSize.y - statusMargin, rect.width - (2 * statusMargin), sSize.y);
-	}
-
-	Image loadImage(Display display, String fileName) {
-		InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico");  //$NON-NLS-1$ //$NON-NLS-2$
-		ImageData source = new ImageData(sourceStream);
-		ImageData mask = source.getTransparencyMask();
-		Image result = new Image(display, source, mask);
-		try {
-			sourceStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	String[] getFontNames() {
-		FontData[] fontNames = display.getFontList(null, true);
-		String[] names = new String[fontNames.length];
-		int count = 0;
-		mainfor:
-		for (int i = 0; i < fontNames.length; i++) {
-			String fontName = fontNames[i].getName();
-			if (fontName.startsWith("@")) //$NON-NLS-1$
-				continue;
-			for (int j = 0; j < count; j++) {
-				if (names[j].equals(fontName)) continue mainfor;
-			}
-			names[count++] = fontName;
-		}
-		if (count < names.length) {
-			String[] newNames = new String[count];
-			System.arraycopy(names, 0, newNames, 0, count);
-			names = newNames;
-		}
-		return names;
-	}
-
-	void initResources() {
-		iBold = loadImage(display, "bold"); //$NON-NLS-1$
-		iItalic = loadImage(display, "italic"); //$NON-NLS-1$
-		iUnderline = loadImage(display, "underline"); //$NON-NLS-1$
-		iStrikeout = loadImage(display, "strikeout"); //$NON-NLS-1$
-		iBlockSelection = loadImage(display, "fullscrn"); //$NON-NLS-1$
-		iBorderStyle = loadImage(display, "resize"); //$NON-NLS-1$
-		iLeftAlignment = loadImage(display, "left"); //$NON-NLS-1$
-		iRightAlignment = loadImage(display, "right"); //$NON-NLS-1$
-		iCenterAlignment = loadImage(display, "center"); //$NON-NLS-1$
-		iJustifyAlignment = loadImage(display, "justify"); //$NON-NLS-1$
-		iCut = loadImage(display, "cut"); //$NON-NLS-1$
-		iCopy = loadImage(display, "copy"); //$NON-NLS-1$
-		iPaste = loadImage(display, "paste"); //$NON-NLS-1$
-		iTextForeground = loadImage(display, "textForeground"); //$NON-NLS-1$
-		iTextBackground = loadImage(display, "textBackground"); //$NON-NLS-1$
-		iBaselineUp = loadImage(display, "font_big"); //$NON-NLS-1$
-		iBaselineDown = loadImage(display, "font_sml"); //$NON-NLS-1$
-		iBulletList = loadImage(display, "para_bul"); //$NON-NLS-1$
-		iNumberedList = loadImage(display, "para_num"); //$NON-NLS-1$
-	}
-
-	void releaseResources() {
-		iBold.dispose();
-		iBold = null;
-		iItalic.dispose();
-		iItalic = null;
-		iUnderline.dispose();
-		iUnderline = null;
-		iStrikeout.dispose();
-		iStrikeout = null;
-		iBorderStyle.dispose();
-		iBorderStyle = null;
-		iBlockSelection.dispose();
-		iBlockSelection = null;
-		iLeftAlignment.dispose();
-		iLeftAlignment = null;
-		iRightAlignment.dispose();
-		iRightAlignment = null;
-		iCenterAlignment.dispose();
-		iCenterAlignment = null;
-		iJustifyAlignment.dispose();
-		iJustifyAlignment = null;
-		iCut.dispose();
-		iCut = null;
-		iCopy.dispose();
-		iCopy = null;
-		iPaste.dispose();
-		iPaste = null;
-		iTextForeground.dispose();
-		iTextForeground = null;
-		iTextBackground.dispose();
-		iTextBackground = null;
-		iBaselineUp.dispose();
-		iBaselineUp = null;
-		iBaselineDown.dispose();
-		iBaselineDown = null;
-		iBulletList.dispose();
-		iBulletList = null;
-		iNumberedList.dispose();
-		iNumberedList = null;
-		
-		if (textFont != null) textFont.dispose();
-		textFont = null;
-		if (textForeground != null) textForeground.dispose();
-		textForeground = null;
-		if (textBackground != null) textBackground.dispose();
-		textBackground = null;
-		if (strikeoutColor != null) strikeoutColor.dispose();
-		strikeoutColor = null;
-		if (underlineColor != null) underlineColor.dispose();
-		underlineColor = null;
-		if (borderColor != null) borderColor.dispose();
-		borderColor = null;
-
-		if (font != null) font.dispose();
-		font = null;
-
-		if (images != null) {
-			for (int i = 0; i < images.length; i++) {
-				if (images[i] != null) images[i].dispose();
-				images[i] = null;
-			}
-		}
-		if (controls != null) {
-			for (int i = 0; i < controls.length; i++) {
-				if (controls[i] != null) controls[i].dispose();
-				controls[i] = null;
-			}
-		}
 	}
 
 	void createMenuBar() {
@@ -846,59 +705,49 @@ public class TextEditor {
 		}
 	}
 
-	void addImage(Image image) {
-		int offset = styledText.getCaretOffset();
-		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
-		int index = 0;		
-		while (index < images.length) {
-			if (imageOffsets[index] == -1 && images[index] == null) break;
-			index++;
-		}
-		if (index == imageOffsets.length) {
-			int[] tmpOffsets = new int[index + 1];
-			System.arraycopy(imageOffsets, 0, tmpOffsets, 0, imageOffsets.length);
-			imageOffsets = tmpOffsets;		
-			Image[] tmpImages = new Image[index + 1];
-			System.arraycopy(images, 0, tmpImages, 0, images.length);
-			images = tmpImages;
-		}
-		imageOffsets[index] = offset;
-		images[index] = image;
-		StyleRange style = new StyleRange();
-		Rectangle rect = image.getBounds();
-		style.metrics = new GlyphMetrics(rect.height, 0, rect.width);
-		int[] ranges = {offset, 1};
-		StyleRange[] styles = {style};
-		styledText.setStyleRanges(0,0, ranges, styles);
-	}
-	
-	void addControl(Control control) {
-		int offset = styledText.getCaretOffset();
-		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
-		int index = 0;		
-		while (index < controlOffsets.length) {
-			if (controlOffsets[index] == -1 && controls[index] == null) break;
-			index++;
-		}
-		if (index == controlOffsets.length) {
-			int[] tmpOffsets = new int[index + 1];
-			System.arraycopy(controlOffsets, 0, tmpOffsets, 0, controlOffsets.length);
-			controlOffsets = tmpOffsets;		
-			Control[] tmpControls = new Control[index + 1];
-			System.arraycopy(controls, 0, tmpControls, 0, controls.length);
-			controls = tmpControls;
-		}
-		controlOffsets[index] = offset;
-		controls[index] = control;
-		StyleRange style = new StyleRange();
-		Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		int ascent = 2 * size.y / 3;
-		int descent = size.y - ascent;
-		style.metrics = new GlyphMetrics(ascent + MARGIN, descent + MARGIN, size.x + 2 * MARGIN);		 
-		int[] ranges = {offset, 1};
-		StyleRange[] styles = {style};
-		styledText.setStyleRanges(0,0, ranges, styles);
-		control.setSize(size);
+	void createPopup() {
+		Menu menu = new Menu (styledText);
+		final MenuItem cutItem = new MenuItem (menu, SWT.PUSH);
+		cutItem.setText (getResourceString("Cut_menuitem")); //$NON-NLS-1$
+		cutItem.setImage(iCut);
+		cutItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.cut();
+			}
+		});
+		final MenuItem copyItem = new MenuItem (menu, SWT.PUSH);
+		copyItem.setText (getResourceString("Copy_menuitem")); //$NON-NLS-1$
+		copyItem.setImage(iCopy);
+		copyItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.copy();
+			}
+		});
+		final MenuItem pasteItem = new MenuItem (menu, SWT.PUSH);
+		pasteItem.setText (getResourceString("Paste_menuitem")); //$NON-NLS-1$
+		pasteItem.setImage(iPaste);
+		pasteItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.paste();
+			}
+		});
+		new MenuItem (menu, SWT.SEPARATOR);
+		final MenuItem selectAllItem = new MenuItem (menu, SWT.PUSH);
+		selectAllItem.setText (getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
+		selectAllItem.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				styledText.selectAll();
+			}
+		});
+		menu.addMenuListener(new MenuAdapter() {
+			public void menuShown(MenuEvent e) {
+				int selectionCount = styledText.getSelectionCount();
+				cutItem.setEnabled(selectionCount > 0);
+				copyItem.setEnabled(selectionCount > 0);
+				selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
+			}
+		});
+		styledText.setMenu(menu);
 	}
 
 	void createToolBar() {
@@ -1311,6 +1160,434 @@ public class TextEditor {
 		});
 	}
 
+	void disposeRanges(StyleRange[] ranges) {
+		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
+		for (int i = 0; i < ranges.length; i++) {
+			StyleRange style = ranges[i];
+			boolean disposeFg = true, disposeBg = true, disposeStrike= true, disposeUnder= true, disposeBorder = true, disposeFont = true;
+
+			for (int j = 0; j < styles.length; j++) {
+				StyleRange s = styles[j];
+				if (disposeFont && style.font == s.font) disposeFont = false;
+				if (disposeFg && style.foreground == s.foreground) disposeFg = false;
+				if (disposeBg && style.background == s.background) disposeBg = false;
+				if (disposeStrike && style.strikeoutColor == s.strikeoutColor) disposeStrike = false;
+				if (disposeUnder && style.underlineColor == s.underlineColor) disposeUnder = false;
+				if (disposeBorder && style.borderColor == s.borderColor) disposeBorder =  false;
+			}
+			if (disposeFont && style.font != textFont && style.font != null)  style.font.dispose();
+			if (disposeFg && style.foreground != textForeground && style.foreground != null) style.foreground.dispose();
+			if (disposeBg && style.background != textBackground && style.background != null) style.background.dispose();
+			if (disposeStrike && style.strikeoutColor != strikeoutColor && style.strikeoutColor != null) style.strikeoutColor.dispose();
+			if (disposeUnder && style.underlineColor != underlineColor && style.underlineColor != null) style.underlineColor.dispose();
+			if (disposeBorder && style.borderColor != borderColor && style.borderColor != null) style.borderColor.dispose();
+		}
+	}
+
+	void disposeResource(Resource resource) {
+		if (resource == null) return;
+		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
+		int index = 0;
+		while (index < styles.length) {
+			if (styles[index].font == resource) break;
+			if (styles[index].foreground == resource) break;
+			if (styles[index].background == resource) break;
+			if (styles[index].strikeoutColor == resource) break;
+			if (styles[index].underlineColor == resource) break;
+			if (styles[index].borderColor == resource) break;
+			index++;
+		}
+		if (index == styles.length) resource.dispose();
+	}
+
+	String[] getFontNames() {
+		FontData[] fontNames = display.getFontList(null, true);
+		String[] names = new String[fontNames.length];
+		int count = 0;
+		mainfor:
+		for (int i = 0; i < fontNames.length; i++) {
+			String fontName = fontNames[i].getName();
+			if (fontName.startsWith("@")) //$NON-NLS-1$
+				continue;
+			for (int j = 0; j < count; j++) {
+				if (names[j].equals(fontName)) continue mainfor;
+			}
+			names[count++] = fontName;
+		}
+		if (count < names.length) {
+			String[] newNames = new String[count];
+			System.arraycopy(names, 0, newNames, 0, count);
+			names = newNames;
+		}
+		return names;
+	}
+
+	public StyleRange[] getStyles(InputStream stream) {
+		StyleRange[] styles = new StyleRange[256];
+		int count = 0;
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				StringTokenizer tokenizer = new StringTokenizer(line, ";", false);  //$NON-NLS-1$
+				StyleRange range = new StyleRange();
+				range.start = Integer.parseInt(tokenizer.nextToken());
+				range.length = Integer.parseInt(tokenizer.nextToken());
+				range.fontStyle = Integer.parseInt(tokenizer.nextToken());
+				range.strikeout = tokenizer.nextToken().equals("true");  //$NON-NLS-1$
+				range.underline = tokenizer.nextToken().equals("true");  //$NON-NLS-1$
+				if (tokenizer.hasMoreTokens()) {
+					int red = Integer.parseInt(tokenizer.nextToken());
+					int green = Integer.parseInt(tokenizer.nextToken());
+					int blue = Integer.parseInt(tokenizer.nextToken());
+					range.foreground = new Color(display, red, green, blue);
+				}
+				if (tokenizer.hasMoreTokens()) {
+					int red = Integer.parseInt(tokenizer.nextToken());
+					int green = Integer.parseInt(tokenizer.nextToken());
+					int blue = Integer.parseInt(tokenizer.nextToken());
+					range.background = new Color(display, red, green, blue);
+				}
+				if (count >= styles.length) {
+					StyleRange[] newStyles =  new StyleRange[styles.length + 256];
+					System.arraycopy(styles, 0, newStyles, 0, styles.length);
+					styles = newStyles;
+				}
+				styles[count++] = range;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (count < styles.length) {
+			StyleRange[] newStyles = new StyleRange[count];
+			System.arraycopy(styles, 0, newStyles, 0, count);
+			styles = newStyles;
+		}
+		return styles;
+	}
+
+	public String getText(InputStream stream) {
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			StringBuffer buffer = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
+				buffer.append("\r\n");  //$NON-NLS-1$
+			}
+			return buffer.toString();
+		} catch (IOException e) {
+			return e.getMessage();
+		}
+	}
+	
+	void handleModify (ModifyEvent event) {
+		if (newCharCount > 0 && start >= 0) {
+			StyleRange style = new StyleRange();
+			if (textFont != null && !textFont.equals(styledText.getFont())) {
+				style.font = textFont;
+			} else {
+				style.fontStyle = SWT.NONE;
+				if (boldControl.getSelection()) style.fontStyle |= SWT.BOLD;
+				if (italicControl.getSelection()) style.fontStyle |= SWT.ITALIC;
+			}
+			style.foreground = textForeground;
+			style.background = textBackground;
+			int underlineStyle = styleState & UNDERLINE;
+			if (underlineStyle != 0) {
+				style.underline = true;
+				style.underlineColor = underlineColor;
+				switch (underlineStyle) {
+					case UNDERLINE_SINGLE:	style.underlineStyle = SWT.UNDERLINE_SINGLE; break;
+					case UNDERLINE_DOUBLE:	style.underlineStyle = SWT.UNDERLINE_DOUBLE; break;
+					case UNDERLINE_SQUIGGLE:	style.underlineStyle = SWT.UNDERLINE_SQUIGGLE; break;
+					case UNDERLINE_ERROR:	style.underlineStyle = SWT.UNDERLINE_ERROR; break;
+				}
+			}
+			if ((styleState & STRIKEOUT) != 0) {
+				style.strikeout = true;
+				style.strikeoutColor = strikeoutColor;
+			}
+			int borderStyle = styleState & BORDER;
+			if (borderStyle != 0) {
+				style.borderColor = borderColor;
+				switch (borderStyle) {
+					case BORDER_DASH:	style.borderStyle = SWT.BORDER_DASH; break;
+					case BORDER_DOT:	style.borderStyle = SWT.BORDER_DOT; break;
+					case BORDER_SOLID: style.borderStyle = SWT.BORDER_SOLID; break;
+				}
+			}
+			int[] ranges = {start, newCharCount};
+			StyleRange[] styles = {style}; 
+			styledText.setStyleRanges(start, newCharCount, ranges, styles);
+		}
+		disposeRanges(selectedRanges);
+	}
+
+	void handlePaintObject(PaintObjectEvent event) {
+		GC gc = event.gc;
+		StyleRange style = event.style;
+		int start = style.start;
+		Bullet bullet = event.bullet;
+		if (bullet != null && bullet.type == ST.BULLET_CUSTOM) {
+			Display display = event.display;
+			Font font = style.font;
+			if (font == null) font = styledText.getFont();
+			TextLayout layout = new TextLayout(display);
+			layout.setAscent(event.ascent);
+			layout.setDescent(event.descent);
+			layout.setFont(font);
+			layout.setText(event.bulletIndex + 1 + "."); //$NON-NLS-1$
+			layout.draw(gc, event.x + BULLET_WIDTH * 2 / 3, event.y);
+			layout.dispose();
+		} else {
+			for (int i = 0; i < imageOffsets.length; i++) {
+				int offset = imageOffsets[i];
+				if (start == offset) {
+					Image image = images[i];
+					int x = event.x;
+					int y = event.y + event.ascent - style.metrics.ascent;
+					gc.drawImage(image, x, y);
+				}
+			}
+			for (int i = 0; i < controlOffsets.length; i++) {
+				int offset = controlOffsets[i];
+				if (start == offset) {
+					Point pt = controls[i].getSize();
+					int x = event.x + MARGIN;
+					int y = event.y + event.ascent - 2 * pt.y / 3;
+					controls[i].setLocation(x, y);
+					break;
+				}
+			}
+		}
+	}
+
+	void handleResize(ControlEvent event) {
+		Rectangle rect = shell.getClientArea();
+		Point cSize = coolBar.computeSize(rect.width, SWT.DEFAULT);
+		Point sSize = statusBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		int statusMargin = 2;
+		coolBar.setBounds(rect.x, rect.y, cSize.x, cSize.y);
+		styledText.setBounds(rect.x, rect.y + cSize.y, rect.width, rect.height - cSize.y - (sSize.y + 2 * statusMargin));
+		statusBar.setBounds(rect.x + statusMargin, rect.y + rect.height - sSize.y - statusMargin, rect.width - (2 * statusMargin), sSize.y);
+	}
+
+	void handleVerifyText(VerifyEvent event) {
+		start = event.start;
+		newCharCount = event.text.length();
+		int replaceCharCount = event.end - start;
+
+		// mark styles to be disposed
+		selectedRanges = styledText.getStyleRanges(start, replaceCharCount, false);
+
+		// move/dispose images and controls
+		for (int i = 0; i < imageOffsets.length; i++) {
+			int offset = imageOffsets[i];
+
+			if (start <= offset && offset < start + replaceCharCount) {
+				if (images[i] != null && !images[i].isDisposed()) {
+					images[i].dispose();
+					images[i] = null;
+				}
+				offset = -1;
+			}
+			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
+			imageOffsets[i] = offset;
+		}
+		for (int i = 0; i < controlOffsets.length; i++) {
+			int offset = controlOffsets[i];
+			if (start <= offset && offset < start + replaceCharCount) {
+				if (controls[i] != null && !controls[i].isDisposed()) {
+					controls[i].dispose();
+					controls[i] = null;
+				}
+				offset = -1;
+			}
+			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
+			controlOffsets[i] = offset;
+		}
+	}
+
+	void initResources() {
+		iBold = loadImage(display, "bold"); //$NON-NLS-1$
+		iItalic = loadImage(display, "italic"); //$NON-NLS-1$
+		iUnderline = loadImage(display, "underline"); //$NON-NLS-1$
+		iStrikeout = loadImage(display, "strikeout"); //$NON-NLS-1$
+		iBlockSelection = loadImage(display, "fullscrn"); //$NON-NLS-1$
+		iBorderStyle = loadImage(display, "resize"); //$NON-NLS-1$
+		iLeftAlignment = loadImage(display, "left"); //$NON-NLS-1$
+		iRightAlignment = loadImage(display, "right"); //$NON-NLS-1$
+		iCenterAlignment = loadImage(display, "center"); //$NON-NLS-1$
+		iJustifyAlignment = loadImage(display, "justify"); //$NON-NLS-1$
+		iCut = loadImage(display, "cut"); //$NON-NLS-1$
+		iCopy = loadImage(display, "copy"); //$NON-NLS-1$
+		iPaste = loadImage(display, "paste"); //$NON-NLS-1$
+		iTextForeground = loadImage(display, "textForeground"); //$NON-NLS-1$
+		iTextBackground = loadImage(display, "textBackground"); //$NON-NLS-1$
+		iBaselineUp = loadImage(display, "font_big"); //$NON-NLS-1$
+		iBaselineDown = loadImage(display, "font_sml"); //$NON-NLS-1$
+		iBulletList = loadImage(display, "para_bul"); //$NON-NLS-1$
+		iNumberedList = loadImage(display, "para_num"); //$NON-NLS-1$
+	}
+
+	void installListeners() {
+		Listener caretListener = new Listener() {
+			public void handleEvent(Event event) {
+				if (event.type == SWT.KeyDown && event.keyCode == SWT.INSERT) {
+					insert = !insert;
+				}
+				updateStatusBar();
+				updateToolBar();
+			}
+		};
+		styledText.addListener(SWT.MouseDown, caretListener);
+		styledText.addListener(SWT.MouseUp, caretListener);
+		styledText.addListener(SWT.KeyDown, caretListener);
+		styledText.addVerifyListener(new VerifyListener() {
+			public void verifyText(VerifyEvent e) {
+				handleVerifyText(e);
+			}
+		});
+		styledText.addModifyListener(new ModifyListener(){
+			public void modifyText(ModifyEvent e) {
+				handleModify(e);
+			}
+		});
+		styledText.addPaintObjectListener(new PaintObjectListener() {
+			public void paintObject(PaintObjectEvent event) {
+				handlePaintObject(event);
+			}
+		});
+		shell.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent event) {
+				handleResize(event);
+			}
+		});
+	}
+
+	Image loadImage(Display display, String fileName) {
+		InputStream sourceStream = getClass().getResourceAsStream(fileName + ".ico");  //$NON-NLS-1$ //$NON-NLS-2$
+		ImageData source = new ImageData(sourceStream);
+		ImageData mask = source.getTransparencyMask();
+		Image result = new Image(display, source, mask);
+		try {
+			sourceStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	void loadProfile(int profile) {
+		switch (profile) {
+			case 1: {
+				String text = getText(TextEditor.class.getResourceAsStream("text.txt"));  //$NON-NLS-1$
+				StyleRange[] styles = getStyles(TextEditor.class.getResourceAsStream("styles.txt"));  //$NON-NLS-1$
+				styledText.setText(text);
+				styledText.setStyleRanges(styles);
+				break;
+			}
+			case 2: {
+				styledText.setText(getResourceString("Profile2"));  //$NON-NLS-1$
+				break;
+			}
+			case 3: {
+				String text = getText(TextEditor.class.getResourceAsStream("text4.txt"));  //$NON-NLS-1$
+				styledText.setText(text);
+				break;
+			}
+			case 4: {
+				styledText.setText(getResourceString("Profile4"));  //$NON-NLS-1$
+				break;
+			}
+		}
+		updateToolBar();
+	}
+
+	void releaseResources() {
+		iBold.dispose();
+		iBold = null;
+		iItalic.dispose();
+		iItalic = null;
+		iUnderline.dispose();
+		iUnderline = null;
+		iStrikeout.dispose();
+		iStrikeout = null;
+		iBorderStyle.dispose();
+		iBorderStyle = null;
+		iBlockSelection.dispose();
+		iBlockSelection = null;
+		iLeftAlignment.dispose();
+		iLeftAlignment = null;
+		iRightAlignment.dispose();
+		iRightAlignment = null;
+		iCenterAlignment.dispose();
+		iCenterAlignment = null;
+		iJustifyAlignment.dispose();
+		iJustifyAlignment = null;
+		iCut.dispose();
+		iCut = null;
+		iCopy.dispose();
+		iCopy = null;
+		iPaste.dispose();
+		iPaste = null;
+		iTextForeground.dispose();
+		iTextForeground = null;
+		iTextBackground.dispose();
+		iTextBackground = null;
+		iBaselineUp.dispose();
+		iBaselineUp = null;
+		iBaselineDown.dispose();
+		iBaselineDown = null;
+		iBulletList.dispose();
+		iBulletList = null;
+		iNumberedList.dispose();
+		iNumberedList = null;
+		
+		if (textFont != null) textFont.dispose();
+		textFont = null;
+		if (textForeground != null) textForeground.dispose();
+		textForeground = null;
+		if (textBackground != null) textBackground.dispose();
+		textBackground = null;
+		if (strikeoutColor != null) strikeoutColor.dispose();
+		strikeoutColor = null;
+		if (underlineColor != null) underlineColor.dispose();
+		underlineColor = null;
+		if (borderColor != null) borderColor.dispose();
+		borderColor = null;
+
+		if (font != null) font.dispose();
+		font = null;
+
+		if (images != null) {
+			for (int i = 0; i < images.length; i++) {
+				if (images[i] != null) images[i].dispose();
+				images[i] = null;
+			}
+		}
+		if (controls != null) {
+			for (int i = 0; i < controls.length; i++) {
+				if (controls[i] != null) controls[i].dispose();
+				controls[i] = null;
+			}
+		}
+	}
+
+	void setBullet(int type) {
+		Point selection = styledText.getSelection();
+		int lineStart = styledText.getLineAtOffset(selection.x);
+		int lineEnd = styledText.getLineAtOffset(selection.y);
+		StyleRange styleRange = new StyleRange();
+		styleRange.metrics = new GlyphMetrics(0, 0, BULLET_WIDTH);
+		Bullet bullet = new Bullet(type, styleRange);
+		for (int lineIndex = lineStart; lineIndex <= lineEnd; lineIndex++) {
+			Bullet oldBullet = styledText.getLineBullet(lineIndex);
+			styledText.setLineBullet(lineIndex, 1, oldBullet != null ? null : bullet);
+		}
+	}
+
 	void updateStatusBar() {
 		int offset = styledText.getCaretOffset();
 		int lineIndex = styledText.getLineAtOffset(offset);
@@ -1429,282 +1706,5 @@ public class TextEditor {
 		rightAlignmentItem.setSelection((alignment & SWT.RIGHT) != 0);
 		boolean justify = styledText.getLineJustify(lineIndex);
 		justifyAlignmentItem.setSelection(justify);
-	}
-
-	void setBullet(int type) {
-		Point selection = styledText.getSelection();
-		int lineStart = styledText.getLineAtOffset(selection.x);
-		int lineEnd = styledText.getLineAtOffset(selection.y);
-		StyleRange styleRange = new StyleRange();
-		styleRange.metrics = new GlyphMetrics(0, 0, BULLET_WIDTH);
-		Bullet bullet = new Bullet(type, styleRange);
-		for (int lineIndex = lineStart; lineIndex <= lineEnd; lineIndex++) {
-			Bullet oldBullet = styledText.getLineBullet(lineIndex);
-			styledText.setLineBullet(lineIndex, 1, oldBullet != null ? null : bullet);
-		}
-	}
-
-	public TextEditor(Display display) {
-		this.display = display;
-		initResources();
-		shell = new Shell(display);
-		shell.setText(getResourceString("Window_title")); //$NON-NLS-1$
-		styledText = new StyledText(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		createToolBar();
-		createMenuBar();
-		statusBar = new Label(shell, SWT.NONE);
-		createPopup();
-		installListeners();
-		updateStatusBar();
-		shell.setSize(1000, 700);
-		shell.open();
-	}
-
-	void installListeners() {
-		Listener caretListener = new Listener() {
-			public void handleEvent(Event event) {
-				if (event.type == SWT.KeyDown && event.keyCode == SWT.INSERT) {
-					insert = !insert;
-				}
-				updateStatusBar();
-				updateToolBar();
-			}
-		};
-		styledText.addListener(SWT.MouseDown, caretListener);
-		styledText.addListener(SWT.MouseUp, caretListener);
-		styledText.addListener(SWT.KeyDown, caretListener);
-		styledText.addVerifyListener(new VerifyListener() {
-			public void verifyText(VerifyEvent e) {
-				handleVerifyText(e);
-			}
-		});
-		styledText.addModifyListener(new ModifyListener(){
-			public void modifyText(ModifyEvent e) {
-				handleModify(e);
-			}
-		});
-		styledText.addPaintObjectListener(new PaintObjectListener() {
-			public void paintObject(PaintObjectEvent event) {
-				handlePaintObject(event);
-			}
-		});
-		shell.addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent event) {
-				handleResize(event);
-			}
-		});
-	}
-
-	void disposeRanges(StyleRange[] ranges) {
-		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
-		for (int i = 0; i < ranges.length; i++) {
-			StyleRange style = ranges[i];
-			boolean disposeFg = true, disposeBg = true, disposeStrike= true, disposeUnder= true, disposeBorder = true, disposeFont = true;
-
-			for (int j = 0; j < styles.length; j++) {
-				StyleRange s = styles[j];
-				if (disposeFont && style.font == s.font) disposeFont = false;
-				if (disposeFg && style.foreground == s.foreground) disposeFg = false;
-				if (disposeBg && style.background == s.background) disposeBg = false;
-				if (disposeStrike && style.strikeoutColor == s.strikeoutColor) disposeStrike = false;
-				if (disposeUnder && style.underlineColor == s.underlineColor) disposeUnder = false;
-				if (disposeBorder && style.borderColor == s.borderColor) disposeBorder =  false;
-			}
-			if (disposeFont && style.font != textFont && style.font != null)  style.font.dispose();
-			if (disposeFg && style.foreground != textForeground && style.foreground != null) style.foreground.dispose();
-			if (disposeBg && style.background != textBackground && style.background != null) style.background.dispose();
-			if (disposeStrike && style.strikeoutColor != strikeoutColor && style.strikeoutColor != null) style.strikeoutColor.dispose();
-			if (disposeUnder && style.underlineColor != underlineColor && style.underlineColor != null) style.underlineColor.dispose();
-			if (disposeBorder && style.borderColor != borderColor && style.borderColor != null) style.borderColor.dispose();
-		}
-	}
-
-	void disposeResource(Resource resource) {
-		if (resource == null) return;
-		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
-		int index = 0;
-		while (index < styles.length) {
-			if (styles[index].font == resource) break;
-			if (styles[index].foreground == resource) break;
-			if (styles[index].background == resource) break;
-			if (styles[index].strikeoutColor == resource) break;
-			if (styles[index].underlineColor == resource) break;
-			if (styles[index].borderColor == resource) break;
-			index++;
-		}
-		if (index == styles.length) resource.dispose();
-	}
-
-	void createPopup() {
-		Menu menu = new Menu (styledText);
-		final MenuItem cutItem = new MenuItem (menu, SWT.PUSH);
-		cutItem.setText (getResourceString("Cut_menuitem")); //$NON-NLS-1$
-		cutItem.setImage(iCut);
-		cutItem.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				styledText.cut();
-			}
-		});
-		final MenuItem copyItem = new MenuItem (menu, SWT.PUSH);
-		copyItem.setText (getResourceString("Copy_menuitem")); //$NON-NLS-1$
-		copyItem.setImage(iCopy);
-		copyItem.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				styledText.copy();
-			}
-		});
-		final MenuItem pasteItem = new MenuItem (menu, SWT.PUSH);
-		pasteItem.setText (getResourceString("Paste_menuitem")); //$NON-NLS-1$
-		pasteItem.setImage(iPaste);
-		pasteItem.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				styledText.paste();
-			}
-		});
-		new MenuItem (menu, SWT.SEPARATOR);
-		final MenuItem selectAllItem = new MenuItem (menu, SWT.PUSH);
-		selectAllItem.setText (getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
-		selectAllItem.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				styledText.selectAll();
-			}
-		});
-		menu.addMenuListener(new MenuAdapter() {
-			public void menuShown(MenuEvent e) {
-				int selectionCount = styledText.getSelectionCount();
-				cutItem.setEnabled(selectionCount > 0);
-				copyItem.setEnabled(selectionCount > 0);
-				selectAllItem.setEnabled(selectionCount < styledText.getCharCount());
-			}
-		});
-		styledText.setMenu(menu);
-	}
-
-	void handleVerifyText(VerifyEvent event) {
-		start = event.start;
-		newCharCount = event.text.length();
-		int replaceCharCount = event.end - start;
-
-		// mark styles to be disposed
-		selectedRanges = styledText.getStyleRanges(start, replaceCharCount, false);
-
-		// move/dispose images and controls
-		for (int i = 0; i < imageOffsets.length; i++) {
-			int offset = imageOffsets[i];
-
-			if (start <= offset && offset < start + replaceCharCount) {
-				if (images[i] != null && !images[i].isDisposed()) {
-					images[i].dispose();
-					images[i] = null;
-				}
-				offset = -1;
-			}
-			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
-			imageOffsets[i] = offset;
-		}
-		for (int i = 0; i < controlOffsets.length; i++) {
-			int offset = controlOffsets[i];
-			if (start <= offset && offset < start + replaceCharCount) {
-				if (controls[i] != null && !controls[i].isDisposed()) {
-					controls[i].dispose();
-					controls[i] = null;
-				}
-				offset = -1;
-			}
-			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
-			controlOffsets[i] = offset;
-		}
-	}
-	
-	void handleModify (ModifyEvent event) {
-		if (newCharCount > 0 && start >= 0) {
-			StyleRange style = new StyleRange();
-			if (textFont != null && !textFont.equals(styledText.getFont())) {
-				style.font = textFont;
-			} else {
-				style.fontStyle = SWT.NONE;
-				if (boldControl.getSelection()) style.fontStyle |= SWT.BOLD;
-				if (italicControl.getSelection()) style.fontStyle |= SWT.ITALIC;
-			}
-			style.foreground = textForeground;
-			style.background = textBackground;
-			int underlineStyle = styleState & UNDERLINE;
-			if (underlineStyle != 0) {
-				style.underline = true;
-				style.underlineColor = underlineColor;
-				switch (underlineStyle) {
-					case UNDERLINE_SINGLE:	style.underlineStyle = SWT.UNDERLINE_SINGLE; break;
-					case UNDERLINE_DOUBLE:	style.underlineStyle = SWT.UNDERLINE_DOUBLE; break;
-					case UNDERLINE_SQUIGGLE:	style.underlineStyle = SWT.UNDERLINE_SQUIGGLE; break;
-					case UNDERLINE_ERROR:	style.underlineStyle = SWT.UNDERLINE_ERROR; break;
-				}
-			}
-			if ((styleState & STRIKEOUT) != 0) {
-				style.strikeout = true;
-				style.strikeoutColor = strikeoutColor;
-			}
-			int borderStyle = styleState & BORDER;
-			if (borderStyle != 0) {
-				style.borderColor = borderColor;
-				switch (borderStyle) {
-					case BORDER_DASH:	style.borderStyle = SWT.BORDER_DASH; break;
-					case BORDER_DOT:	style.borderStyle = SWT.BORDER_DOT; break;
-					case BORDER_SOLID: style.borderStyle = SWT.BORDER_SOLID; break;
-				}
-			}
-			int[] ranges = {start, newCharCount};
-			StyleRange[] styles = {style}; 
-			styledText.setStyleRanges(start, newCharCount, ranges, styles);
-		}
-		disposeRanges(selectedRanges);
-	}
-
-	void handlePaintObject(PaintObjectEvent event) {
-		GC gc = event.gc;
-		StyleRange style = event.style;
-		int start = style.start;
-		Bullet bullet = event.bullet;
-		if (bullet != null && bullet.type == ST.BULLET_CUSTOM) {
-			Display display = event.display;
-			Font font = style.font;
-			if (font == null) font = styledText.getFont();
-			TextLayout layout = new TextLayout(display);
-			layout.setAscent(event.ascent);
-			layout.setDescent(event.descent);
-			layout.setFont(font);
-			layout.setText(event.bulletIndex + 1 + "."); //$NON-NLS-1$
-			layout.draw(gc, event.x + BULLET_WIDTH * 2 / 3, event.y);
-			layout.dispose();
-		} else {
-			for (int i = 0; i < imageOffsets.length; i++) {
-				int offset = imageOffsets[i];
-				if (start == offset) {
-					Image image = images[i];
-					int x = event.x;
-					int y = event.y + event.ascent - style.metrics.ascent;
-					gc.drawImage(image, x, y);
-				}
-			}
-			for (int i = 0; i < controlOffsets.length; i++) {
-				int offset = controlOffsets[i];
-				if (start == offset) {
-					Point pt = controls[i].getSize();
-					int x = event.x + MARGIN;
-					int y = event.y + event.ascent - 2 * pt.y / 3;
-					controls[i].setLocation(x, y);
-					break;
-				}
-			}
-		}
-	}
-
-	static String getResourceString(String key) {
-		try {
-			return resources.getString(key);
-		} catch (MissingResourceException e) {
-			return key;
-		} catch (NullPointerException e) {
-			return "!" + key + "!";  //$NON-NLS-1$ //$NON-NLS-2$
-		}
 	}
 }
