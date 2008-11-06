@@ -1039,7 +1039,7 @@ public class TextEditor {
 		return names;
 	}
 
-	public StyleRange[] getStyles(InputStream stream) {
+	StyleRange[] getStyles(InputStream stream) {
 		StyleRange[] styles = new StyleRange[256];
 		int count = 0;
 		try {
@@ -1083,7 +1083,7 @@ public class TextEditor {
 		return styles;
 	}
 
-	public String getText(InputStream stream) {
+	String getText(InputStream stream) {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			StringBuffer buffer = new StringBuffer();
