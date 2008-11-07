@@ -1583,6 +1583,31 @@ boolean isTrim (NSView view) {
 	return view.id == headerView.id;
 }
 
+/*
+ * Feature in Cocoa: Outline views do not change the selection when the user
+ * right-clicks or control-clicks on an NSOutlineView. Fix is to select the 
+ * clicked-on row ourselves.
+ */
+int menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSEvent event = new NSEvent(theEvent);
+	NSOutlineView tree = (NSOutlineView)view;
+	
+	// get the current selections for the outline view. 
+	NSIndexSet selectedRowIndexes = tree.selectedRowIndexes();
+	
+	// select the row that was clicked before showing the menu for the event
+	NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
+	int row = tree.rowAtPoint(mousePoint);
+	
+	// figure out if the row that was just clicked on is currently selected
+	if (selectedRowIndexes.containsIndex(row) == false) {
+		tree.selectRow(row, false);
+	}
+	// else that row is currently selected, so don't change anything.
+	
+	return super.menuForEvent(id, sel, theEvent);
+}
+
 int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ index, int /*long*/ itemID) {
 	TreeItem parent = (TreeItem) display.getWidget (itemID);
 	TreeItem item = _getItem (parent, (int)/*64*/index, true);

@@ -5441,9 +5441,9 @@
     </method>
   </class>
   <class name="NSIndexSet" swt_gen="mixed">
-    <method selector="containsIndex:">
-      <arg name="value"></arg>
-      <retval></retval>
+    <method selector="containsIndex:" swt_gen="true">
+      <arg name="value" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="containsIndexes:">
       <arg name="indexSet"></arg>

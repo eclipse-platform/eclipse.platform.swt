@@ -24,6 +24,10 @@ public NSIndexSet(id id) {
 	super(id);
 }
 
+public boolean containsIndex(int /*long*/ value) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_containsIndex_, value);
+}
+
 public int /*long*/ count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }

@@ -567,6 +567,7 @@ public static final int /*long*/ sel_comboBoxSelectionDidChange_ = sel_registerN
 public static final int /*long*/ sel_concat = sel_registerName("concat");
 public static final int /*long*/ sel_conformsToProtocol_ = sel_registerName("conformsToProtocol:");
 public static final int /*long*/ sel_containerSize = sel_registerName("containerSize");
+public static final int /*long*/ sel_containsIndex_ = sel_registerName("containsIndex:");
 public static final int /*long*/ sel_containsObject_ = sel_registerName("containsObject:");
 public static final int /*long*/ sel_containsPoint_ = sel_registerName("containsPoint:");
 public static final int /*long*/ sel_contentRect = sel_registerName("contentRect");
