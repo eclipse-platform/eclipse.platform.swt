@@ -1584,8 +1584,8 @@ boolean isTrim (NSView view) {
 }
 
 /*
- * Feature in Cocoa: Outline views do not change the selection when the user
- * right-clicks or control-clicks on an NSOutlineView. Fix is to select the 
+ * Feature in Cocoa: Table views do not change the selection when the user
+ * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
  * clicked-on row ourselves.
  */
 int menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

@@ -687,6 +687,31 @@ public boolean isSelected (int index) {
 	return ((NSTableView)view).isRowSelected(index);
 }
 
+/*
+ * Feature in Cocoa: Table views do not change the selection when the user
+ * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
+ * clicked-on row ourselves.
+ */
+int menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSEvent event = new NSEvent(theEvent);
+	NSTableView table = (NSTableView)view;
+	
+	// get the current selections for the outline view. 
+	NSIndexSet selectedRowIndexes = table.selectedRowIndexes();
+	
+	// select the row that was clicked before showing the menu for the event
+	NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
+	int row = table.rowAtPoint(mousePoint);
+	
+	// figure out if the row that was just clicked on is currently selected
+	if (selectedRowIndexes.containsIndex(row) == false) {
+		table.selectRow(row, false);
+	}
+	// else that row is currently selected, so don't change anything.
+	
+	return super.menuForEvent(id, sel, theEvent);
+}
+
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return itemCount;
 }
