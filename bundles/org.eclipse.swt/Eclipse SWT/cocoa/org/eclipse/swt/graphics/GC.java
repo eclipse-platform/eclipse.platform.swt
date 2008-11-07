@@ -1603,8 +1603,8 @@ void fillPattern(NSBezierPath path, Pattern pattern) {
 	NSPoint end = new NSPoint();
 	end.x = pattern.pt2.x;
 	end.y = pattern.pt2.y;
-	float difx = end.x - start.x;
-	float dify = end.y - start.y;
+	float /*double*/ difx = end.x - start.x;
+	float /*double*/ dify = end.y - start.y;
 	if (difx == 0 && dify == 0) {
 		float[] color = pattern.color1;
 		NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
@@ -1612,7 +1612,7 @@ void fillPattern(NSBezierPath path, Pattern pattern) {
 		handle.restoreGraphicsState();
 		return;
 	}
-	float startx, starty, endx, endy;
+	float /*double*/ startx, starty, endx, endy;
 	if (difx == 0 || dify == 0) {
 		startx = bounds.x;
 		starty = bounds.y;
@@ -1625,13 +1625,13 @@ void fillPattern(NSBezierPath path, Pattern pattern) {
 			endy = bounds.y;
 		}
 	} else {
-		float m = (end.y-start.y)/(end.x - start.x);
-		float b = end.y - (m * end.x);
-		float m2 = -1/m; //perpendicular slope
-		float b2 = bounds.y - (m2 * bounds.x);
+		float /*double*/ m = (end.y-start.y)/(end.x - start.x);
+		float /*double*/ b = end.y - (m * end.x);
+		float /*double*/ m2 = -1/m; //perpendicular slope
+		float /*double*/ b2 = bounds.y - (m2 * bounds.x);
 		startx = endx = (b - b2) / (m2 - m);
 		b2 = (bounds.y + bounds.height) - (m2 * bounds.x);
-		float x2 = (b - b2) / (m2 - m);
+		float /*double*/ x2 = (b - b2) / (m2 - m);
 		startx = difx > 0 ? Math.min(startx, x2) : Math.max(startx, x2);
 		endx = difx < 0 ? Math.min(endx, x2) : Math.max(endx, x2);
 		b2 = bounds.y - (m2 * (bounds.x + bounds.width));
