@@ -1469,7 +1469,12 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 		path.closePath();
 		path.transformUsingAffineTransform(transform);
-		path.fill();
+		Pattern pattern = data.backgroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillPattern(path, pattern);
+		} else {
+			path.fill();
+		}
 		path.removeAllPoints();
 		handle.restoreGraphicsState();
 	} finally {
@@ -1591,7 +1596,79 @@ public void fillOval(int x, int y, int width, int height) {
 void fillPattern(NSBezierPath path, Pattern pattern) {
 	handle.saveGraphicsState();
 	path.addClip();
-	pattern.gradient.drawFromPoint(pattern.pt1, pattern.pt2, OS.NSGradientDrawsAfterEndingLocation | OS.NSGradientDrawsBeforeStartingLocation);
+	NSRect bounds = path.bounds();
+	NSPoint start = new NSPoint();
+	start.x = pattern.pt1.x;
+	start.y = pattern.pt1.y;
+	NSPoint end = new NSPoint();
+	end.x = pattern.pt2.x;
+	end.y = pattern.pt2.y;
+	float difx = end.x - start.x;
+	float dify = end.y - start.y;
+	if (difx == 0 && dify == 0) {
+		float[] color = pattern.color1;
+		NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
+		path.fill();
+		handle.restoreGraphicsState();
+		return;
+	}
+	float startx, starty, endx, endy;
+	if (difx == 0 || dify == 0) {
+		startx = bounds.x;
+		starty = bounds.y;
+		endx = bounds.x + bounds.width;
+		endy = bounds.y + bounds.height;
+		if (difx < 0 || dify < 0) {
+			startx = endx;
+			starty = endy;
+			endx = bounds.x;
+			endy = bounds.y;
+		}
+	} else {
+		float m = (end.y-start.y)/(end.x - start.x);
+		float b = end.y - (m * end.x);
+		float m2 = -1/m; //perpendicular slope
+		float b2 = bounds.y - (m2 * bounds.x);
+		startx = endx = (b - b2) / (m2 - m);
+		b2 = (bounds.y + bounds.height) - (m2 * bounds.x);
+		float x2 = (b - b2) / (m2 - m);
+		startx = difx > 0 ? Math.min(startx, x2) : Math.max(startx, x2);
+		endx = difx < 0 ? Math.min(endx, x2) : Math.max(endx, x2);
+		b2 = bounds.y - (m2 * (bounds.x + bounds.width));
+		x2 = (b - b2) / (m2 - m);
+		startx = difx > 0 ? Math.min(startx, x2) : Math.max(startx, x2);
+		endx = difx < 0 ? Math.min(endx, x2) : Math.max(endx, x2);
+		b2 = (bounds.y + bounds.height) - (m2 * (bounds.x + bounds.width));
+		x2 = (b - b2) / (m2 - m);
+		startx = difx > 0 ? Math.min(startx, x2) : Math.max(startx, x2);
+		endx = difx < 0 ? Math.min(endx, x2) : Math.max(endx, x2);
+		starty = (m * startx) + b;
+		endy = (m * endx) + b;
+	}
+	if (difx != 0) {
+		while ((difx > 0 && start.x >= startx) || (difx < 0 && start.x <= startx)) {
+			start.x -= difx;
+			start.y -= dify;
+		}
+	} else {
+		while ((dify > 0 && start.y >= starty) || (dify < 0 && start.y <= starty)) {
+			start.x -= difx;
+			start.y -= dify;
+		}
+	}
+	end.x = start.x;
+	end.y = start.y;
+	do {
+		end.x += difx;
+		end.y += dify;
+		pattern.gradient.drawFromPoint(start, end, 0);
+		start.x = end.x;
+		start.y = end.y;
+	} while (
+				(difx > 0  && end.x <= endx) ||
+				(difx < 0  && end.x >= endx) ||
+				(difx == 0 && ((dify > 0  && end.y <= endy) || (dify < 0  && end.y >= endy)))
+			);
 	handle.restoreGraphicsState();
 }
 
