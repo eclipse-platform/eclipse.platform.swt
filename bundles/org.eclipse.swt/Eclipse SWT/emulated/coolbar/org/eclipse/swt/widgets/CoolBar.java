@@ -304,9 +304,24 @@ public int indexOf (CoolItem item) {
  * Insert the item into the row. Adjust the x and width values
  * appropriately.
  */
-void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
+boolean insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
+	if (rowIndex < 0 || rowIndex >= items.length) {
+		/* Create a new row for the item. */
+		boolean bottom = rowIndex >= items.length;
+		CoolItem[][] newRows = new CoolItem[items.length + 1][];
+		System.arraycopy(items, 0, newRows, bottom ? 0 : 1, items.length);
+		int row = bottom ? items.length : 0;
+		newRows[row] = new CoolItem[1];
+		newRows[row][0] = item;
+		items = newRows;
+		item.wrap = true;
+		return true;
+	}
+	
 	int barWidth = getWidth();
-	int rowY = items[rowIndex][0].internalGetBounds().y;
+	Rectangle bounds = items[rowIndex][0].internalGetBounds();
+	int rowY = bounds.y;
+	int oldRowHeight = bounds.height;
 	int x = Math.max(0, Math.abs(x_root - toDisplay(new Point(0, 0)).x));
 	
 	/* Find the insertion index and add the item. */
@@ -339,7 +354,7 @@ void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 	}
 	
 	/* Set the item's bounds. */
-	int width = 0, height = item.internalGetBounds().height;
+	int width = 0, height = item.preferredHeight;
 	if (index < items[rowIndex].length - 1) {
 		CoolItem right = items[rowIndex][index + 1];
 		width = right.internalGetBounds().x - x;
@@ -354,9 +369,10 @@ void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 		item.setBounds(x, rowY, width, height);
 		if (x + width > barWidth) moveLeft(item, x + width - barWidth); 
 	}
-	Rectangle bounds = item.internalGetBounds();
+	bounds = item.internalGetBounds();
 	item.requestedWidth = bounds.width;
 	internalRedraw(bounds.x, bounds.y, item.internalGetMinimumWidth(), bounds.height);
+	return height > oldRowHeight;
 }
 void internalRedraw (int x, int y, int width, int height) {
 	if ((style & SWT.VERTICAL) != 0) {
@@ -440,29 +456,15 @@ void destroyItem(CoolItem item) {
 }
 void moveDown(CoolItem item, int x_root) {
 	int oldRowIndex = findItem(item).y;
-	boolean resize = false;
 	if (items[oldRowIndex].length == 1) {
-		resize = true;
 		/* If this is the only item in the bottom row, don't move it. */
 		if (oldRowIndex == items.length - 1) return;
 	}
 	int newRowIndex = (items[oldRowIndex].length == 1) ? oldRowIndex : oldRowIndex + 1;
-	removeItemFromRow(item, oldRowIndex, false);
+	boolean resize = removeItemFromRow(item, oldRowIndex, false);
 	Rectangle old = item.internalGetBounds();
 	internalRedraw(old.x, old.y, CoolItem.MINIMUM_WIDTH, old.height);
-	if (newRowIndex == items.length) {
-		/* Create a new bottom row for the item. */
-		CoolItem[][] newRows = new CoolItem[items.length + 1][];
-		System.arraycopy(items, 0, newRows, 0, items.length);
-		int row = items.length;
-		newRows[row] = new CoolItem[1];
-		newRows[row][0] = item;
-		items = newRows;
-		resize = true;
-		item.wrap = true;
-	} else {	
-		insertItemIntoRow(item, newRowIndex, x_root);
-	}
+	resize |= insertItemIntoRow(item, newRowIndex, x_root);
 	if (resize) {
 		relayout();
 	} else {
@@ -540,28 +542,15 @@ void moveRight(CoolItem item, int pixels) {
 void moveUp(CoolItem item, int x_root) {
 	Point point = findItem(item);
 	int oldRowIndex = point.y;
-	boolean resize = false;
 	if (items[oldRowIndex].length == 1) {
-		resize = true;
 		/* If this is the only item in the top row, don't move it. */
 		if (oldRowIndex == 0) return;
 	}
-	removeItemFromRow(item, oldRowIndex, false);
+	boolean resize = removeItemFromRow(item, oldRowIndex, false);
 	Rectangle old = item.internalGetBounds();
 	internalRedraw(old.x, old.y, CoolItem.MINIMUM_WIDTH, old.height);
-	int newRowIndex = Math.max(0, oldRowIndex - 1);
-	if (oldRowIndex == 0) {
-		/* Create a new top row for the item. */
-		CoolItem[][] newRows = new CoolItem[items.length + 1][];
-		System.arraycopy(items, 0, newRows, 1, items.length);
-		newRows[0] = new CoolItem[1];
-		newRows[0][0] = item;
-		items = newRows;
-		resize = true;
-		item.wrap = true;
-	} else {
-		insertItemIntoRow(item, newRowIndex, x_root);
-	}
+	int newRowIndex = oldRowIndex - 1;
+	resize |= insertItemIntoRow(item, newRowIndex, x_root);
 	if (resize) {
 		relayout();
 	} else {
@@ -776,10 +765,11 @@ void removeControl (Control control) {
  * Remove the item from the row. Adjust the x and width values
  * appropriately.
  */
-void removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
+boolean removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
 	int index = findItem(item).x;
 	int newLength = items[rowIndex].length - 1;
 	Rectangle itemBounds = item.internalGetBounds();
+	int oldRowHeight = itemBounds.height;
 	item.wrap = false;
 	if (newLength > 0) {
 		CoolItem[] newRow = new CoolItem[newLength];
@@ -792,7 +782,7 @@ void removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
 		System.arraycopy(items, 0, newRows, 0, rowIndex);
 		System.arraycopy(items, rowIndex + 1, newRows, rowIndex, newRows.length - rowIndex);
 		items = newRows;
-		return;
+		return true;
 	}
 	if (!disposed) {
 		if (index == 0) {
@@ -810,6 +800,11 @@ void removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
 			previous.requestedWidth = width;
 		}
 	}
+	int newRowHeight = 0;
+	for (int i = 0; i < newLength; i++) {
+		newRowHeight = Math.max(newRowHeight, items[rowIndex][i].preferredHeight);
+	}
+	return newRowHeight != oldRowHeight;
 }
 /**
  * Return the height of the bar after it has
@@ -833,7 +828,7 @@ int layoutItems () {
 		int available = width;
 		for (int i = 0; i < count; i++) {
 			CoolItem item = items[row][i];
-			rowHeight = Math.max(rowHeight, item.internalGetBounds().height);
+			rowHeight = Math.max(rowHeight, item.preferredHeight);
 			available -= item.internalGetMinimumWidth();	
 		}
 		if (row > 0) y += rowSpacing;
