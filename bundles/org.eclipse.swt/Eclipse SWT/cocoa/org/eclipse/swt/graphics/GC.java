@@ -65,8 +65,8 @@ public final class GC extends Resource {
 	CGPathElement element;
 	int count, typeCount;
 	byte[] types;
-	float/*double*/[] points;
-	float /*double*/ [] point = new float[2];
+	float /*double*/[] points;
+	float /*double*/ [] point;
 	
 	static final int TAB_COUNT = 32;
 
@@ -199,7 +199,7 @@ public static GC cocoa_new(Drawable drawable, GCData data) {
 	return gc;
 }
 
-int applierFunc(int /*long*/ info, int /*long*/ elementPtr) {
+int /*long*/ applierFunc(int /*long*/ info, int /*long*/ elementPtr) {
 	OS.memmove(element, elementPtr, CGPathElement.sizeof);
 	int type = 0, length = 1;
 	switch (element.type) {
@@ -682,8 +682,8 @@ NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
 	element = new CGPathElement();
 	OS.CGPathApply(cgPath, 0, proc);
 	types = new byte[typeCount];
-	points = new float[count];
-	point = new float[6];
+	points = new float /*double*/ [count];
+	point = new float /*double*/ [6];
 	count = typeCount = 0;
 	OS.CGPathApply(cgPath, 0, proc);
 	callback.dispose();
