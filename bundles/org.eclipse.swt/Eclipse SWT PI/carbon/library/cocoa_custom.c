@@ -13,12 +13,13 @@
 #include "cocoa_structs.h"
 #include "cocoa_stats.h"
 
+#include <dlfcn.h>
+
 #define Cocoa_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_Cocoa_##func
 
 extern id objc_msgSend(id, SEL, ...);
 
 #ifndef NO_HIJavaViewCreateWithCocoaView
-extern jint HIJavaViewCreateWithCocoaView(jint *, jint) __attribute__((weak_import));
 JNIEXPORT jint JNICALL Cocoa_NATIVE(HIJavaViewCreateWithCocoaView)
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
 {
@@ -26,7 +27,21 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(HIJavaViewCreateWithCocoaView)
 	jint rc = 0;
 	Cocoa_NATIVE_ENTER(env, that, HIJavaViewCreateWithCocoaView_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (HIJavaViewCreateWithCocoaView) rc = (jint)HIJavaViewCreateWithCocoaView(lparg0, arg1);
+	/*
+	rc = (jint)HIJavaViewCreateWithCocoaView(lparg0, arg1);
+	*/
+	{
+		static int initialized = 0;
+		static void *fp = NULL;
+		if (!initialized) {
+			void* handle = dlopen("/System/Library/Frameworks/JavaVM.framework/Libraries/libframeembedding.jnilib", RTLD_LAZY);
+			if (handle) fp = dlsym(handle, "HIJavaViewCreateWithCocoaView");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)((jint (*)(jint *, jint))fp)(lparg0, arg1);
+		}
+	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	Cocoa_NATIVE_EXIT(env, that, HIJavaViewCreateWithCocoaView_FUNC);
