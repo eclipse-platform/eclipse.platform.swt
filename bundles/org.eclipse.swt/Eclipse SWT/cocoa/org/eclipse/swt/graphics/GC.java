@@ -747,13 +747,18 @@ NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
 
 NSAttributedString createString(String string, int flags) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-	float[] foreground = data.foreground;
-	NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], data.alpha / 255f);
-	dict.setObject(color, OS.NSForegroundColorAttributeName);
+	float[] foreground = data.foreground;	
+	Pattern pattern = data.foregroundPattern;
+	if (pattern != null) {
+		if (pattern.color != null) dict.setObject(pattern.color, OS.NSForegroundColorAttributeName);
+	} else {
+		NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], data.alpha / 255f);
+		dict.setObject(color, OS.NSForegroundColorAttributeName);
+	}
 	dict.setObject(data.font.handle, OS.NSFontAttributeName);
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 		float[] background = data.background;
-		color = NSColor.colorWithDeviceRed(background[0], background[1], background[2], data.alpha / 255f);
+		NSColor color = NSColor.colorWithDeviceRed(background[0], background[1], background[2], data.alpha / 255f);
 		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
 	if ((flags & SWT.DRAW_TAB) == 0) {
