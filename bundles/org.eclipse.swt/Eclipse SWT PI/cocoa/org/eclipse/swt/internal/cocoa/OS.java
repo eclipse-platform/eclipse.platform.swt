@@ -64,6 +64,9 @@ public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
 public static final native int SetThemeCursor(int themeCursor);
 /** @method flags=dynamic */
 public static final native int GetCurrentButtonState();
+/** @method flags=dynamic 
+    @param  cast=(CGContextRef) */
+public static final native int /*long*/ CGContextCopyPath(int /*long*/ context);
 
 public static final int kThemeCopyArrowCursor = 1;
 public static final int kThemeNotAllowedCursor = 18;
@@ -2339,6 +2342,18 @@ public static final int NSWritingDirectionRightToLeft = 1;
 public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFStringEncodingUTF8 = 134217984;
+public static final int kCGLineCapButt = 0;
+public static final int kCGLineCapRound = 1;
+public static final int kCGLineCapSquare = 2;
+public static final int kCGLineJoinBevel = 2;
+public static final int kCGLineJoinMiter = 0;
+public static final int kCGLineJoinRound = 1;
+public static final int kCGPathElementAddCurveToPoint = 3;
+public static final int kCGPathElementAddLineToPoint = 1;
+public static final int kCGPathElementAddQuadCurveToPoint = 2;
+public static final int kCGPathElementCloseSubpath = 4;
+public static final int kCGPathElementMoveToPoint = 0;
+public static final int kCGPathStroke = 2;
 public static final int NSASCIIStringEncoding = 1;
 public static final int NSAdminApplicationDirectory = 4;
 public static final int NSAggregateExpressionType = 14;
@@ -3585,6 +3600,94 @@ public static final native void CFRelease(int /*long*/ cf);
  */
 public static final native int /*long*/ CFURLCreateStringByAddingPercentEscapes(int /*long*/ allocator, int /*long*/ originalString, int /*long*/ charactersToLeaveUnescaped, int /*long*/ legalURLCharactersToBeEscaped, int encoding);
 /**
+ * @param context cast=(CGContextRef)
+ * @param path cast=(CGPathRef)
+ */
+public static final native void CGContextAddPath(int /*long*/ context, int /*long*/ path);
+/**
+ * @param c cast=(CGContextRef)
+ */
+public static final native void CGContextReplacePathWithStrokedPath(int /*long*/ c);
+/**
+ * @param c cast=(CGContextRef)
+ */
+public static final native void CGContextRestoreGState(int /*long*/ c);
+/**
+ * @param c cast=(CGContextRef)
+ */
+public static final native void CGContextSaveGState(int /*long*/ c);
+/**
+ * @param c cast=(CGContextRef)
+ * @param cap cast=(CGLineCap)
+ */
+public static final native void CGContextSetLineCap(int /*long*/ c, int cap);
+/**
+ * @param c cast=(CGContextRef)
+ * @param phase cast=(CGFloat)
+ * @param lengths cast=(CGFloat*)
+ * @param count cast=(size_t)
+ */
+public static final native void CGContextSetLineDash(int /*long*/ c, float /*double*/ phase, float[] lengths, int /*long*/ count);
+/**
+ * @param c cast=(CGContextRef)
+ * @param join cast=(CGLineJoin)
+ */
+public static final native void CGContextSetLineJoin(int /*long*/ c, int join);
+/**
+ * @param c cast=(CGContextRef)
+ * @param width cast=(CGFloat)
+ */
+public static final native void CGContextSetLineWidth(int /*long*/ c, float /*double*/ width);
+/**
+ * @param c cast=(CGContextRef)
+ * @param limit cast=(CGFloat)
+ */
+public static final native void CGContextSetMiterLimit(int /*long*/ c, float /*double*/ limit);
+/**
+ * @param path cast=(CGMutablePathRef)
+ * @param m cast=(CGAffineTransform*)
+ * @param cp1x cast=(CGFloat)
+ * @param cp1y cast=(CGFloat)
+ * @param cp2x cast=(CGFloat)
+ * @param cp2y cast=(CGFloat)
+ * @param x cast=(CGFloat)
+ * @param y cast=(CGFloat)
+ */
+public static final native void CGPathAddCurveToPoint(int /*long*/ path, int /*long*/ m, float /*double*/ cp1x, float /*double*/ cp1y, float /*double*/ cp2x, float /*double*/ cp2y, float /*double*/ x, float /*double*/ y);
+/**
+ * @param path cast=(CGMutablePathRef)
+ * @param m cast=(CGAffineTransform*)
+ * @param x cast=(CGFloat)
+ * @param y cast=(CGFloat)
+ */
+public static final native void CGPathAddLineToPoint(int /*long*/ path, int /*long*/ m, float /*double*/ x, float /*double*/ y);
+/**
+ * @param path cast=(CGPathRef)
+ * @param info cast=(void*)
+ * @param function cast=(CGPathApplierFunction)
+ */
+public static final native void CGPathApply(int /*long*/ path, int /*long*/ info, int /*long*/ function);
+/**
+ * @param path cast=(CGMutablePathRef)
+ */
+public static final native void CGPathCloseSubpath(int /*long*/ path);
+/**
+ * @param path cast=(CGPathRef)
+ */
+public static final native int /*long*/ CGPathCreateCopy(int /*long*/ path);
+public static final native int /*long*/ CGPathCreateMutable();
+/**
+ * @param path cast=(CGMutablePathRef)
+ * @param m cast=(CGAffineTransform*)
+ * @param x cast=(CGFloat)
+ * @param y cast=(CGFloat)
+ */
+public static final native void CGPathMoveToPoint(int /*long*/ path, int /*long*/ m, float /*double*/ x, float /*double*/ y);
+/**
+ * @param path cast=(CGPathRef)
+ */
+public static final native void CGPathRelease(int /*long*/ path);
+/**
  * @param newCursorPosition flags=struct */
 public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
 /**
@@ -3932,6 +4035,7 @@ public static final native void objc_msgSend_stret(NSSize result, int /*long*/ i
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSSize arg0, int /*long*/ arg1);
 
 /** Sizeof natives */
+public static final native int CGPathElement_sizeof();
 public static final native int CGPoint_sizeof();
 public static final native int CGRect_sizeof();
 public static final native int CGSize_sizeof();
@@ -3943,6 +4047,11 @@ public static final native int NSSize_sizeof();
 
 /** Memmove natives */
 
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
+public static final native void memmove(CGPathElement dest, int /*long*/ src, int /*long*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(void *),flags=critical

@@ -14,11 +14,30 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 340;
-int OS_nativeFunctionCallCount[340];
+int OS_nativeFunctionCount = 360;
+int OS_nativeFunctionCallCount[360];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
+	"CGContextAddPath",
+	"CGContextCopyPath",
+	"CGContextReplacePathWithStrokedPath",
+	"CGContextRestoreGState",
+	"CGContextSaveGState",
+	"CGContextSetLineCap",
+	"CGContextSetLineDash",
+	"CGContextSetLineJoin",
+	"CGContextSetLineWidth",
+	"CGContextSetMiterLimit",
+	"CGPathAddCurveToPoint",
+	"CGPathAddLineToPoint",
+	"CGPathApply",
+	"CGPathCloseSubpath",
+	"CGPathCreateCopy",
+	"CGPathCreateMutable",
+	"CGPathElement_1sizeof",
+	"CGPathMoveToPoint",
+	"CGPathRelease",
 	"CGPoint_1sizeof",
 	"CGRect_1sizeof",
 	"CGSize_1sizeof",
@@ -261,6 +280,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2II",

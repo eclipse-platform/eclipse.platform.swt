@@ -12,6 +12,40 @@
 #include "swt.h"
 #include "os_structs.h"
 
+#ifndef NO_CGPathElement
+typedef struct CGPathElement_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, points;
+} CGPathElement_FID_CACHE;
+
+CGPathElement_FID_CACHE CGPathElementFc;
+
+void cacheCGPathElementFields(JNIEnv *env, jobject lpObject)
+{
+	if (CGPathElementFc.cached) return;
+	CGPathElementFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CGPathElementFc.type = (*env)->GetFieldID(env, CGPathElementFc.clazz, "type", "I");
+	CGPathElementFc.points = (*env)->GetFieldID(env, CGPathElementFc.clazz, "points", "I");
+	CGPathElementFc.cached = 1;
+}
+
+CGPathElement *getCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStruct)
+{
+	if (!CGPathElementFc.cached) cacheCGPathElementFields(env, lpObject);
+	lpStruct->type = (CGPathElementType)(*env)->GetIntField(env, lpObject, CGPathElementFc.type);
+	lpStruct->points = (CGPoint *)(*env)->GetIntField(env, lpObject, CGPathElementFc.points);
+	return lpStruct;
+}
+
+void setCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStruct)
+{
+	if (!CGPathElementFc.cached) cacheCGPathElementFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CGPathElementFc.type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, CGPathElementFc.points, (jint)lpStruct->points);
+}
+#endif
+
 #ifndef NO_CGPoint
 typedef struct CGPoint_FID_CACHE {
 	int cached;

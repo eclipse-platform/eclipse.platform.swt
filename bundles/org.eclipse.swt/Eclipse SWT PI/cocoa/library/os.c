@@ -37,6 +37,216 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 }
 #endif
 
+#ifndef NO_CGContextAddPath
+JNIEXPORT void JNICALL OS_NATIVE(CGContextAddPath)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextAddPath_FUNC);
+	CGContextAddPath((CGContextRef)arg0, (CGPathRef)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextAddPath_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextCopyPath
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGContextCopyPath)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGContextCopyPath_FUNC);
+/*
+	rc = (jintLong)CGContextCopyPath(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, CGContextCopyPath)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CGContextCopyPath_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGContextReplacePathWithStrokedPath
+JNIEXPORT void JNICALL OS_NATIVE(CGContextReplacePathWithStrokedPath)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGContextReplacePathWithStrokedPath_FUNC);
+	CGContextReplacePathWithStrokedPath((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextReplacePathWithStrokedPath_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextRestoreGState
+JNIEXPORT void JNICALL OS_NATIVE(CGContextRestoreGState)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGContextRestoreGState_FUNC);
+	CGContextRestoreGState((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextRestoreGState_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSaveGState
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSaveGState)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSaveGState_FUNC);
+	CGContextSaveGState((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextSaveGState_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetLineCap
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineCap)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetLineCap_FUNC);
+	CGContextSetLineCap((CGContextRef)arg0, (CGLineCap)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetLineCap_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetLineDash
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineDash)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDouble arg1, jfloatArray arg2, jintLong arg3)
+{
+	jfloat *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextSetLineDash_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	CGContextSetLineDash((CGContextRef)arg0, (CGFloat)arg1, (CGFloat*)lparg2, (size_t)arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, CGContextSetLineDash_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetLineJoin
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineJoin)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetLineJoin_FUNC);
+	CGContextSetLineJoin((CGContextRef)arg0, (CGLineJoin)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetLineJoin_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetLineWidth
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineWidth)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetLineWidth_FUNC);
+	CGContextSetLineWidth((CGContextRef)arg0, (CGFloat)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetLineWidth_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetMiterLimit
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetMiterLimit_FUNC);
+	CGContextSetMiterLimit((CGContextRef)arg0, (CGFloat)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetMiterLimit_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddCurveToPoint
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddCurveToPoint)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jfloatDouble arg2, jfloatDouble arg3, jfloatDouble arg4, jfloatDouble arg5, jfloatDouble arg6, jfloatDouble arg7)
+{
+	OS_NATIVE_ENTER(env, that, CGPathAddCurveToPoint_FUNC);
+	CGPathAddCurveToPoint((CGMutablePathRef)arg0, (CGAffineTransform*)arg1, (CGFloat)arg2, (CGFloat)arg3, (CGFloat)arg4, (CGFloat)arg5, (CGFloat)arg6, (CGFloat)arg7);
+	OS_NATIVE_EXIT(env, that, CGPathAddCurveToPoint_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathAddLineToPoint
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddLineToPoint)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jfloatDouble arg2, jfloatDouble arg3)
+{
+	OS_NATIVE_ENTER(env, that, CGPathAddLineToPoint_FUNC);
+	CGPathAddLineToPoint((CGMutablePathRef)arg0, (CGAffineTransform*)arg1, (CGFloat)arg2, (CGFloat)arg3);
+	OS_NATIVE_EXIT(env, that, CGPathAddLineToPoint_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathApply
+JNIEXPORT void JNICALL OS_NATIVE(CGPathApply)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+{
+	OS_NATIVE_ENTER(env, that, CGPathApply_FUNC);
+	CGPathApply((CGPathRef)arg0, (void*)arg1, (CGPathApplierFunction)arg2);
+	OS_NATIVE_EXIT(env, that, CGPathApply_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathCloseSubpath
+JNIEXPORT void JNICALL OS_NATIVE(CGPathCloseSubpath)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGPathCloseSubpath_FUNC);
+	CGPathCloseSubpath((CGMutablePathRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPathCloseSubpath_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathCreateCopy
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGPathCreateCopy)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPathCreateCopy_FUNC);
+	rc = (jintLong)CGPathCreateCopy((CGPathRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPathCreateCopy_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPathCreateMutable
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGPathCreateMutable)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPathCreateMutable_FUNC);
+	rc = (jintLong)CGPathCreateMutable();
+	OS_NATIVE_EXIT(env, that, CGPathCreateMutable_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPathElement_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CGPathElement_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPathElement_1sizeof_FUNC);
+	rc = (jint)CGPathElement_sizeof();
+	OS_NATIVE_EXIT(env, that, CGPathElement_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPathMoveToPoint
+JNIEXPORT void JNICALL OS_NATIVE(CGPathMoveToPoint)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jfloatDouble arg2, jfloatDouble arg3)
+{
+	OS_NATIVE_ENTER(env, that, CGPathMoveToPoint_FUNC);
+	CGPathMoveToPoint((CGMutablePathRef)arg0, (CGAffineTransform*)arg1, (CGFloat)arg2, (CGFloat)arg3);
+	OS_NATIVE_EXIT(env, that, CGPathMoveToPoint_FUNC);
+}
+#endif
+
+#ifndef NO_CGPathRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGPathRelease)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGPathRelease_FUNC);
+	CGPathRelease((CGPathRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPathRelease_FUNC);
+}
+#endif
+
 #ifndef NO_CGPoint_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CGPoint_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2671,6 +2881,31 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	CGPathElement _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (void *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setCGPathElementFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ_FUNC);
 #endif
 }
 #endif

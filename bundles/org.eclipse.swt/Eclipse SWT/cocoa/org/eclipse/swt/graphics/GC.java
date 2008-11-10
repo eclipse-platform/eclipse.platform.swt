@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -61,6 +62,12 @@ public final class GC extends Resource {
 	Drawable drawable;
 	GCData data;
 
+	CGPathElement element;
+	int count, typeCount;
+	byte[] types;
+	float/*double*/[] points;
+	float /*double*/ [] point = new float[2];
+	
 	static final int TAB_COUNT = 32;
 
 	final static int FOREGROUND = 1 << 0;
@@ -190,6 +197,28 @@ public static GC cocoa_new(Drawable drawable, GCData data) {
 	gc.device = data.device;
 	gc.init(drawable, data, context);
 	return gc;
+}
+
+int applierFunc(int /*long*/ info, int /*long*/ elementPtr) {
+	OS.memmove(element, elementPtr, CGPathElement.sizeof);
+	int type = 0, length = 1;
+	switch (element.type) {
+		case OS.kCGPathElementMoveToPoint: type = SWT.PATH_MOVE_TO; break;
+		case OS.kCGPathElementAddLineToPoint: type = SWT.PATH_LINE_TO; break;
+		case OS.kCGPathElementAddQuadCurveToPoint: type = SWT.PATH_QUAD_TO; length = 2; break;
+		case OS.kCGPathElementAddCurveToPoint: type = SWT.PATH_CUBIC_TO; length = 3; break;
+		case OS.kCGPathElementCloseSubpath: type = SWT.PATH_CLOSE; length = 0; break;
+	}
+	if (types != null) {
+		types[typeCount] = (byte)type;
+		if (length > 0) {
+			OS.memmove(point, element.points, length * CGPoint.sizeof);
+			System.arraycopy(point, 0, points, count, length * 2);
+		}
+	}
+	typeCount++;
+	count += length * 2;
+	return 0;
 }
 
 NSAutoreleasePool checkGC (int mask) {
@@ -610,6 +639,112 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 //	}
 }
 
+int /*long*/ createCGPathRef(NSBezierPath nsPath) {
+	int /*long*/ count = nsPath.elementCount();
+	if (count > 0) {
+		int /*long*/ cgPath = OS.CGPathCreateMutable();
+		if (cgPath == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ points = OS.malloc(NSPoint.sizeof * 3);
+		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		float /*double*/ [] pt = new float /*double*/ [6];
+		for (int i = 0; i < count; i++) {
+			int element = (int)/*64*/nsPath.elementAtIndex(i, points);
+			switch (element) {
+				case OS.NSMoveToBezierPathElement:
+					OS.memmove(pt, points, NSPoint.sizeof);
+					OS.CGPathMoveToPoint(cgPath, 0, pt[0], pt[1]);
+					break;
+				case OS.NSLineToBezierPathElement:
+                	OS.memmove(pt, points, NSPoint.sizeof);
+                    OS.CGPathAddLineToPoint(cgPath, 0, pt[0], pt[1]);					
+					break;	
+				 case OS.NSCurveToBezierPathElement:
+					 OS.memmove(pt, points, NSPoint.sizeof * 3);
+					 OS.CGPathAddCurveToPoint(cgPath, 0, pt[0], pt[1], pt[2], pt[3], pt[4], pt[5]);
+					 break;
+                case OS.NSClosePathBezierPathElement:
+                     OS.CGPathCloseSubpath(cgPath);
+					 break;
+			}
+		}
+		return cgPath;
+	}
+	return 0;
+}
+
+
+
+NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
+	Callback callback = new Callback(this, "applierFunc", 2);
+	int /*long*/  proc = callback.getAddress();
+	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	count = typeCount = 0;
+	element = new CGPathElement();
+	OS.CGPathApply(cgPath, 0, proc);
+	types = new byte[typeCount];
+	points = new float[count];
+	point = new float[6];
+	count = typeCount = 0;
+	OS.CGPathApply(cgPath, 0, proc);
+	callback.dispose();
+
+	NSBezierPath bezierPath = NSBezierPath.bezierPath();
+	NSPoint nsPoint = new NSPoint(), nsPoint2 = new NSPoint(), nsPoint3 = new NSPoint();
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				nsPoint.x = points[j++];
+				nsPoint.y = points[j++];
+				bezierPath.moveToPoint(nsPoint);
+				break;
+			case SWT.PATH_LINE_TO:
+				nsPoint.x = points[j++];
+				nsPoint.y = points[j++];
+				bezierPath.lineToPoint(nsPoint);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				nsPoint2.x = points[j++];
+				nsPoint2.y = points[j++];
+				nsPoint3.x = points[j++];
+				nsPoint3.y = points[j++];
+				nsPoint.x = points[j++];
+				nsPoint.y = points[j++];
+				bezierPath.curveToPoint(nsPoint, nsPoint2, nsPoint3);
+				break;
+			case SWT.PATH_QUAD_TO:
+				float /*double*/ currentX = nsPoint.x;
+				float /*double*/ currentY = nsPoint.y;
+				nsPoint2.x = points[j++];
+				nsPoint2.y = points[j++];
+				nsPoint.x = points[j++];
+				nsPoint.y = points[j++];
+				float /*double*/ x0 = currentX;
+				float /*double*/ y0 = currentY;
+				float /*double*/ cx1 = x0 + 2 * (nsPoint2.x - x0) / 3;
+				float /*double*/ cy1 = y0 + 2 * (nsPoint2.y - y0) / 3;
+				float /*double*/ cx2 = cx1 + (nsPoint.x - x0) / 3;
+				float /*double*/ cy2 = cy1 + (nsPoint.y - y0) / 3;
+				nsPoint2.x = cx1;
+				nsPoint2.y = cy1;
+				nsPoint3.x = cx2;
+				nsPoint3.y = cy2;
+				bezierPath.curveToPoint(nsPoint, nsPoint2, nsPoint3);
+				break;
+			case SWT.PATH_CLOSE:
+				bezierPath.closePath();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	element = null;
+	types = null;
+	points = null;
+	nsPoint = null;
+	return bezierPath;	
+}
+
 NSAttributedString createString(String string, int flags) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	float[] foreground = data.foreground;
@@ -749,7 +884,12 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		float eAngle = -(startAngle + arcAngle);
 		path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 		path.transformUsingAffineTransform(transform);
-		path.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(path, pattern);
+		} else {
+			path.stroke();
+		}
 		path.removeAllPoints();
 		handle.restoreGraphicsState();
 	} finally {
@@ -928,7 +1068,12 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		pt.x = x2 + data.drawXOffset;
 		pt.y = y2 + data.drawYOffset;
 		path.lineToPoint(pt);
-		path.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(path, pattern);
+		} else {
+			path.stroke();
+		}
 		path.removeAllPoints();
 	} finally {
 		uncheckGC(pool);
@@ -975,7 +1120,12 @@ public void drawOval(int x, int y, int width, int height) {
 		rect.width = width;
 		rect.height = height;
 		path.appendBezierPathWithOvalInRect(rect);
-		path.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(path, pattern);
+		} else {
+			path.stroke();
+		}
 		path.removeAllPoints();
 	} finally {
 		uncheckGC(pool);
@@ -1017,7 +1167,12 @@ public void drawPath(Path path) {
 		transform.concat();
 		NSBezierPath drawPath = data.path;
 		drawPath.appendBezierPath(path.handle);
-		drawPath.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(drawPath, pattern);
+		} else {
+			drawPath.stroke();
+		}
 		drawPath.removeAllPoints();
 		handle.restoreGraphicsState();
 	} finally {
@@ -1096,7 +1251,12 @@ public void drawPolygon(int[] pointArray) {
 			path.lineToPoint(pt);
 		}
 		path.closePath();
-		path.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(path, pattern);
+		} else {
+			path.stroke();
+		}
 		path.removeAllPoints();
 	} finally {
 		uncheckGC(pool);
@@ -1138,7 +1298,12 @@ public void drawPolyline(int[] pointArray) {
 			pt.y = pointArray[i+1] + yOffset;
 			path.lineToPoint(pt);
 		}
-		path.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(path, pattern);
+		} else {
+			path.stroke();
+		}
 		path.removeAllPoints();
 	} finally {
 		uncheckGC(pool);
@@ -1179,7 +1344,12 @@ public void drawRectangle(int x, int y, int width, int height) {
 		rect.height = height;
 		NSBezierPath path = data.path;
 		path.appendBezierPathWithRect(rect);
-		path.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(path, pattern);
+		} else {
+			path.stroke();
+		}
 		path.removeAllPoints();
 	} finally {
 		uncheckGC(pool);
@@ -1244,7 +1414,12 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		rect.width = width;
 		rect.height = height;
 		path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
-		path.stroke();
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null && pattern.gradient != null) {
+			fillStroke(path, pattern);
+		} else {
+			path.stroke();
+		}
 		path.removeAllPoints();
 	} finally {
 		uncheckGC(pool);
@@ -1873,6 +2048,26 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	} finally {
 		uncheckGC(pool);
 	}
+}
+
+
+void fillStroke(NSBezierPath path, Pattern pattern) {
+	handle.saveGraphicsState();
+	int /*long*/ cgPath = createCGPathRef(path);
+	int /*long*/ cgContext = handle.graphicsPort();
+	OS.CGContextSaveGState(cgContext);
+	initCGContext(cgContext);
+	OS.CGContextAddPath(cgContext, cgPath);
+	OS.CGContextReplacePathWithStrokedPath(cgContext);
+	OS.CGPathRelease(cgPath);
+	cgPath = 0;
+	cgPath = OS.CGContextCopyPath(cgContext);
+	if (cgPath == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.CGContextRestoreGState(cgContext);
+	NSBezierPath strokePath = createNSBezierPath(cgPath);
+	OS.CGPathRelease(cgPath);
+	fillPattern(strokePath, pattern);
+	handle.restoreGraphicsState();
 }
 
 void flush () {
@@ -2549,6 +2744,62 @@ void init(Drawable drawable, GCData data, int /*long*/ context) {
 	data.path = NSBezierPath.bezierPath();
 	data.path.setWindingRule(data.fillRule == SWT.FILL_WINDING ? OS.NSNonZeroWindingRule : OS.NSEvenOddWindingRule);
 	data.path.retain();
+}
+
+void initCGContext(int /*long*/ cgContext) {
+	int state = data.state;
+	if ((state & LINE_WIDTH) != 0) {
+		OS.CGContextSetLineWidth(cgContext, data.lineWidth == 0 ?  1 : data.lineWidth);
+		switch (data.lineStyle) {
+			case SWT.LINE_DOT:
+			case SWT.LINE_DASH:
+			case SWT.LINE_DASHDOT:
+			case SWT.LINE_DASHDOTDOT:
+				state |= LINE_STYLE;
+		}
+	}
+	if ((state & LINE_STYLE) != 0) {
+		float[] dashes = null;
+		float width = data.lineWidth;
+		switch (data.lineStyle) {
+			case SWT.LINE_SOLID: break;
+			case SWT.LINE_DASH: dashes = width != 0 ? LINE_DASH : LINE_DASH_ZERO; break;
+			case SWT.LINE_DOT: dashes = width != 0 ? LINE_DOT : LINE_DOT_ZERO; break;
+			case SWT.LINE_DASHDOT: dashes = width != 0 ? LINE_DASHDOT : LINE_DASHDOT_ZERO; break;
+			case SWT.LINE_DASHDOTDOT: dashes = width != 0 ? LINE_DASHDOTDOT : LINE_DASHDOTDOT_ZERO; break;
+			case SWT.LINE_CUSTOM: dashes = data.lineDashes; break;
+		}
+		if (dashes != null) {
+			float[] lengths = new float[dashes.length];
+			for (int i = 0; i < lengths.length; i++) {
+				lengths[i] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width;
+			}
+			OS.CGContextSetLineDash(cgContext, data.lineDashesOffset, lengths, lengths.length);
+		} else {
+			OS.CGContextSetLineDash(cgContext, 0, null, 0);
+		}
+	}
+	if ((state & LINE_MITERLIMIT) != 0) {
+		OS.CGContextSetMiterLimit(cgContext, data.lineMiterLimit);
+	}
+	if ((state & LINE_JOIN) != 0) {
+		int joinStyle = 0;
+		switch (data.lineJoin) {
+			case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
+			case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
+			case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
+		}
+		OS.CGContextSetLineJoin(cgContext, joinStyle);
+	}
+	if ((state & LINE_CAP) != 0) {
+		int capStyle = 0;
+		switch (data.lineCap) {
+			case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
+			case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
+			case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
+		}
+		OS.CGContextSetLineCap(cgContext, capStyle);
+	}
 }
 
 /**

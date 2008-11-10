@@ -27,6 +27,25 @@ extern char* OS_nativeFunctionNames[];
 typedef enum {
 	CFRelease_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
+	CGContextAddPath_FUNC,
+	CGContextCopyPath_FUNC,
+	CGContextReplacePathWithStrokedPath_FUNC,
+	CGContextRestoreGState_FUNC,
+	CGContextSaveGState_FUNC,
+	CGContextSetLineCap_FUNC,
+	CGContextSetLineDash_FUNC,
+	CGContextSetLineJoin_FUNC,
+	CGContextSetLineWidth_FUNC,
+	CGContextSetMiterLimit_FUNC,
+	CGPathAddCurveToPoint_FUNC,
+	CGPathAddLineToPoint_FUNC,
+	CGPathApply_FUNC,
+	CGPathCloseSubpath_FUNC,
+	CGPathCreateCopy_FUNC,
+	CGPathCreateMutable_FUNC,
+	CGPathElement_1sizeof_FUNC,
+	CGPathMoveToPoint_FUNC,
+	CGPathRelease_FUNC,
 	CGPoint_1sizeof_FUNC,
 	CGRect_1sizeof_FUNC,
 	CGSize_1sizeof_FUNC,
@@ -269,6 +288,11 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2II_FUNC,

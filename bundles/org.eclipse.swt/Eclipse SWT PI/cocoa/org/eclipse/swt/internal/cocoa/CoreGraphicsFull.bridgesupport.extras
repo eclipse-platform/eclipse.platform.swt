@@ -79,9 +79,9 @@
     <field name="noteMessage"></field>
     <field name="releaseInfo"></field>
   </struct>
-  <struct name="CGPathElement">
-    <field name="type"></field>
-    <field name="points"></field>
+  <struct name="CGPathElement" swt_gen="true">
+    <field name="type" swt_gen="true"></field>
+    <field name="points" swt_gen="true"></field>
   </struct>
   <struct name="CGPatternCallbacks">
     <field name="version"></field>
@@ -116,7 +116,7 @@
   <cftype name="CGGradientRef"></cftype>
   <cftype name="CGImageRef"></cftype>
   <cftype name="CGLayerRef"></cftype>
-  <cftype name="CGMutablePathRef"></cftype>
+  <cftype name="CGMutablePathRef" swt_gen="true"></cftype>
   <cftype name="CGPDFDocumentRef"></cftype>
   <cftype name="CGPDFPageRef"></cftype>
   <cftype name="CGPSConverterRef"></cftype>
@@ -302,7 +302,6 @@
   <enum name="kCGDesktopIconWindowLevelKey"></enum>
   <enum name="kCGDesktopWindowLevel"></enum>
   <enum name="kCGDesktopWindowLevelKey"></enum>
-  <enum name="kCGDirectMainDisplay"></enum>
   <enum name="kCGDisplayAddFlag"></enum>
   <enum name="kCGDisplayBeginConfigurationFlag"></enum>
   <enum name="kCGDisplayBlendNormal"></enum>
@@ -427,12 +426,12 @@
   <enum name="kCGKeyboardEventAutorepeat"></enum>
   <enum name="kCGKeyboardEventKeyboardType"></enum>
   <enum name="kCGKeyboardEventKeycode"></enum>
-  <enum name="kCGLineCapButt"></enum>
-  <enum name="kCGLineCapRound"></enum>
-  <enum name="kCGLineCapSquare"></enum>
-  <enum name="kCGLineJoinBevel"></enum>
-  <enum name="kCGLineJoinMiter"></enum>
-  <enum name="kCGLineJoinRound"></enum>
+  <enum name="kCGLineCapButt" swt_gen="true"></enum>
+  <enum name="kCGLineCapRound" swt_gen="true"></enum>
+  <enum name="kCGLineCapSquare" swt_gen="true"></enum>
+  <enum name="kCGLineJoinBevel" swt_gen="true"></enum>
+  <enum name="kCGLineJoinMiter" swt_gen="true"></enum>
+  <enum name="kCGLineJoinRound" swt_gen="true"></enum>
   <enum name="kCGMainMenuWindowLevel"></enum>
   <enum name="kCGMainMenuWindowLevelKey"></enum>
   <enum name="kCGMaxDisplayReservationInterval"></enum>
@@ -480,14 +479,14 @@
   <enum name="kCGPDFTrimBox"></enum>
   <enum name="kCGPathEOFill"></enum>
   <enum name="kCGPathEOFillStroke"></enum>
-  <enum name="kCGPathElementAddCurveToPoint"></enum>
-  <enum name="kCGPathElementAddLineToPoint"></enum>
-  <enum name="kCGPathElementAddQuadCurveToPoint"></enum>
-  <enum name="kCGPathElementCloseSubpath"></enum>
-  <enum name="kCGPathElementMoveToPoint"></enum>
+  <enum name="kCGPathElementAddCurveToPoint" swt_gen="true"></enum>
+  <enum name="kCGPathElementAddLineToPoint" swt_gen="true"></enum>
+  <enum name="kCGPathElementAddQuadCurveToPoint" swt_gen="true"></enum>
+  <enum name="kCGPathElementCloseSubpath" swt_gen="true"></enum>
+  <enum name="kCGPathElementMoveToPoint" swt_gen="true"></enum>
   <enum name="kCGPathFill"></enum>
   <enum name="kCGPathFillStroke"></enum>
-  <enum name="kCGPathStroke"></enum>
+  <enum name="kCGPathStroke" swt_gen="true"></enum>
   <enum name="kCGPatternTilingConstantSpacing"></enum>
   <enum name="kCGPatternTilingConstantSpacingMinimalDistortion"></enum>
   <enum name="kCGPatternTilingNoDistortion"></enum>
@@ -950,9 +949,9 @@
     <arg name="points"></arg>
     <arg name="count"></arg>
   </function>
-  <function name="CGContextAddPath">
-    <arg name="context"></arg>
-    <arg name="path"></arg>
+  <function name="CGContextAddPath" swt_gen="true">
+    <arg name="context" swt_gen="true"></arg>
+    <arg name="path" swt_gen="true"></arg>
   </function>
   <function name="CGContextAddQuadCurveToPoint">
     <arg name="c"></arg>
@@ -974,8 +973,8 @@
     <arg name="c"></arg>
     <arg name="mediaBox"></arg>
   </function>
-  <function name="CGContextBeginPath">
-    <arg name="c"></arg>
+  <function name="CGContextBeginPath" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
   </function>
   <function name="CGContextBeginTransparencyLayer">
     <arg name="context"></arg>
@@ -1076,9 +1075,9 @@
     <arg name="c"></arg>
     <arg name="page"></arg>
   </function>
-  <function name="CGContextDrawPath">
-    <arg name="c"></arg>
-    <arg name="mode"></arg>
+  <function name="CGContextDrawPath" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="mode" swt_gen="true"></arg>
   </function>
   <function name="CGContextDrawRadialGradient">
     <arg name="context"></arg>
@@ -1114,8 +1113,8 @@
     <arg name="context"></arg>
     <arg name="rect"></arg>
   </function>
-  <function name="CGContextFillPath">
-    <arg name="c"></arg>
+  <function name="CGContextFillPath" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
   </function>
   <function name="CGContextFillRect">
     <arg name="c"></arg>
@@ -1182,11 +1181,11 @@
   <function name="CGContextRelease">
     <arg name="c"></arg>
   </function>
-  <function name="CGContextReplacePathWithStrokedPath">
-    <arg name="c"></arg>
+  <function name="CGContextReplacePathWithStrokedPath" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
   </function>
-  <function name="CGContextRestoreGState">
-    <arg name="c"></arg>
+  <function name="CGContextRestoreGState" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
   </function>
   <function name="CGContextRetain">
     <arg name="c"></arg>
@@ -1196,8 +1195,8 @@
     <arg name="c"></arg>
     <arg name="angle"></arg>
   </function>
-  <function name="CGContextSaveGState">
-    <arg name="c"></arg>
+  <function name="CGContextSaveGState" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
   </function>
   <function name="CGContextScaleCTM">
     <arg name="c"></arg>
@@ -1285,27 +1284,27 @@
     <arg name="c"></arg>
     <arg name="quality"></arg>
   </function>
-  <function name="CGContextSetLineCap">
-    <arg name="c"></arg>
-    <arg name="cap"></arg>
+  <function name="CGContextSetLineCap" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="cap" swt_gen="true"></arg>
   </function>
-  <function name="CGContextSetLineDash">
-    <arg name="c"></arg>
-    <arg name="phase"></arg>
-    <arg name="lengths"></arg>
-    <arg name="count"></arg>
+  <function name="CGContextSetLineDash" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="phase" swt_gen="true"></arg>
+    <arg name="lengths" swt_gen="true" swt_java_type="float[]" swt_java_type64="float[]"></arg>
+    <arg name="count" swt_gen="true"></arg>
   </function>
-  <function name="CGContextSetLineJoin">
-    <arg name="c"></arg>
-    <arg name="join"></arg>
+  <function name="CGContextSetLineJoin" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="join" swt_gen="true"></arg>
   </function>
-  <function name="CGContextSetLineWidth">
-    <arg name="c"></arg>
-    <arg name="width"></arg>
+  <function name="CGContextSetLineWidth" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="width" swt_gen="true"></arg>
   </function>
-  <function name="CGContextSetMiterLimit">
-    <arg name="c"></arg>
-    <arg name="limit"></arg>
+  <function name="CGContextSetMiterLimit" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="limit" swt_gen="true"></arg>
   </function>
   <function name="CGContextSetPatternPhase">
     <arg name="c"></arg>
@@ -3002,26 +3001,26 @@
     <arg name="y2"></arg>
     <arg name="radius"></arg>
   </function>
-  <function name="CGPathAddCurveToPoint">
-    <arg name="path"></arg>
-    <arg name="m"></arg>
-    <arg name="cp1x"></arg>
-    <arg name="cp1y"></arg>
-    <arg name="cp2x"></arg>
-    <arg name="cp2y"></arg>
-    <arg name="x"></arg>
-    <arg name="y"></arg>
+  <function name="CGPathAddCurveToPoint" swt_gen="true">
+    <arg name="path" swt_gen="true"></arg>
+    <arg name="m" swt_gen="true"></arg>
+    <arg name="cp1x" swt_gen="true"></arg>
+    <arg name="cp1y" swt_gen="true"></arg>
+    <arg name="cp2x" swt_gen="true"></arg>
+    <arg name="cp2y" swt_gen="true"></arg>
+    <arg name="x" swt_gen="true"></arg>
+    <arg name="y" swt_gen="true"></arg>
   </function>
   <function name="CGPathAddEllipseInRect">
     <arg name="path"></arg>
     <arg name="m"></arg>
     <arg name="rect"></arg>
   </function>
-  <function name="CGPathAddLineToPoint">
-    <arg name="path"></arg>
-    <arg name="m"></arg>
-    <arg name="x"></arg>
-    <arg name="y"></arg>
+  <function name="CGPathAddLineToPoint" swt_gen="true">
+    <arg name="path" swt_gen="true"></arg>
+    <arg name="m" swt_gen="true"></arg>
+    <arg name="x" swt_gen="true"></arg>
+    <arg name="y" swt_gen="true"></arg>
   </function>
   <function name="CGPathAddLines">
     <arg name="path"></arg>
@@ -3053,17 +3052,17 @@
     <arg name="rects"></arg>
     <arg name="count"></arg>
   </function>
-  <function name="CGPathApply">
-    <arg name="path"></arg>
-    <arg name="info"></arg>
-    <arg name="function">
+  <function name="CGPathApply" swt_gen="true">
+    <arg name="path" swt_gen="true"></arg>
+    <arg name="info" swt_gen="true"></arg>
+    <arg name="function" swt_gen="true">
+      <arg swt_gen="true"></arg>
       <arg></arg>
-      <arg></arg>
-      <retval></retval>
+      <retval swt_gen="true"></retval>
     </arg>
   </function>
-  <function name="CGPathCloseSubpath">
-    <arg name="path"></arg>
+  <function name="CGPathCloseSubpath" swt_gen="true">
+    <arg name="path" swt_gen="true"></arg>
   </function>
   <function name="CGPathContainsPoint">
     <arg name="path"></arg>
@@ -3072,12 +3071,12 @@
     <arg name="eoFill"></arg>
     <retval></retval>
   </function>
-  <function name="CGPathCreateCopy">
-    <arg name="path"></arg>
-    <retval></retval>
+  <function name="CGPathCreateCopy" swt_gen="true">
+    <arg name="path" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="CGPathCreateMutable">
-    <retval></retval>
+  <function name="CGPathCreateMutable" swt_gen="true">
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGPathCreateMutableCopy">
     <arg name="path"></arg>
@@ -3108,14 +3107,14 @@
     <arg name="rect"></arg>
     <retval></retval>
   </function>
-  <function name="CGPathMoveToPoint">
-    <arg name="path"></arg>
-    <arg name="m"></arg>
-    <arg name="x"></arg>
-    <arg name="y"></arg>
+  <function name="CGPathMoveToPoint" swt_gen="true">
+    <arg name="path" swt_gen="true"></arg>
+    <arg name="m" swt_gen="true"></arg>
+    <arg name="x" swt_gen="true"></arg>
+    <arg name="y" swt_gen="true"></arg>
   </function>
-  <function name="CGPathRelease">
-    <arg name="path"></arg>
+  <function name="CGPathRelease" swt_gen="true">
+    <arg name="path" swt_gen="true"></arg>
   </function>
   <function name="CGPathRetain">
     <arg name="path"></arg>
@@ -3532,4 +3531,5 @@
   <function_alias name="CGAffineTransformMake"></function_alias>
   <function_alias name="CGPointApplyAffineTransform"></function_alias>
   <function_alias name="CGSizeApplyAffineTransform"></function_alias>
+  <enum name="kCGDirectMainDisplay"></enum>
 </signatures>

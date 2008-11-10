@@ -11,6 +11,18 @@
 
 #include "os.h"
 
+#ifndef NO_CGPathElement
+void cacheCGPathElementFields(JNIEnv *env, jobject lpObject);
+CGPathElement *getCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStruct);
+void setCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStruct);
+#define CGPathElement_sizeof() sizeof(CGPathElement)
+#else
+#define cacheCGPathElementFields(a,b)
+#define getCGPathElementFields(a,b,c) NULL
+#define setCGPathElementFields(a,b,c)
+#define CGPathElement_sizeof() 0
+#endif
+
 #ifndef NO_CGPoint
 void cacheCGPointFields(JNIEnv *env, jobject lpObject);
 CGPoint *getCGPointFields(JNIEnv *env, jobject lpObject, CGPoint *lpStruct);
