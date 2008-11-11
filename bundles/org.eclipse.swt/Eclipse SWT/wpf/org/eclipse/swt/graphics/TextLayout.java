@@ -50,7 +50,8 @@ public final class TextLayout extends Resource {
 	int string, defaultTextProperties;
 	int[] runs;
 	int[] lines;
-	
+
+	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 	static final int TAB_COUNT = 32;
 	
@@ -124,6 +125,12 @@ void computeRuns () {
 			int fg = 0;
 			if (style.foreground != null) {
 				fg = OS.gcnew_SolidColorBrush(style.foreground.handle);
+			} else {
+				if (style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+					int color = OS.Color_FromArgb((byte)0xFF, (byte)LINK_FOREGROUND.red, (byte)LINK_FOREGROUND.green, (byte)LINK_FOREGROUND.blue);
+					fg = OS.gcnew_SolidColorBrush(color);
+					OS.GCHandle_Free(color);
+				}
 			}
 			int bg = 0;
 			if (style.background != null) {
@@ -146,17 +153,19 @@ void computeRuns () {
 					if (pen != 0) OS.GCHandle_Free(pen);
 				}
 				if (style.underline) {
-					Color color = device.getSystemColor(SWT.COLOR_BLACK);
+					int brush;
 					if (style.underlineColor != null) {
-						color = style.underlineColor;
+						Color color = style.underlineColor;
+						brush = OS.gcnew_SolidColorBrush(color.handle);
 					} else {
-						if (style.foreground != null) {
-							color = style.foreground;
+						if (fg != 0) {
+							brush = fg;
+						} else {
+							brush = OS.Brushes_Black();
 						}
 					}
-					int brush = OS.gcnew_SolidColorBrush(color.handle);
 					int pen = OS.gcnew_Pen(brush, 1f);
-					OS.GCHandle_Free(brush);
+					if (brush != fg) OS.GCHandle_Free(brush);
 					int underline;
 					switch (style.underlineStyle) {
 						case SWT.UNDERLINE_SQUIGGLE:
@@ -174,6 +183,7 @@ void computeRuns () {
 							OS.TextDecorationCollection_Add(decorations, underline);
 							OS.GCHandle_Free(underline);
 							//FALLTHROU
+						case SWT.UNDERLINE_LINK: 
 						case SWT.UNDERLINE_SINGLE: 
 							underline = OS.gcnew_TextDecoration(OS.TextDecorationLocation_Underline, pen, 0, OS.TextDecorationUnit_FontRecommended, OS.TextDecorationUnit_FontRecommended);
 							OS.TextDecorationCollection_Add(decorations, underline);
@@ -350,9 +360,10 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	OS.SWTTextRunProperties_ForegroundBrush(defaultTextProperties, fg);
 	for (int i = 0; i < styles.length; i++) {
 		StyleItem run = styles[i];
-		if (run.style != null && run.style.foreground == null) {
-			OS.SWTTextRunProperties_ForegroundBrush(run.textProperties, fg);
-		}
+		if (run.textProperties == 0) continue;
+		if (run.style != null && run.style.foreground != null) continue;
+		if (run.style != null && run.style.underline && run.style.underlineStyle == SWT.UNDERLINE_LINK) continue;
+		OS.SWTTextRunProperties_ForegroundBrush(run.textProperties, fg);
 	}
 	int drawingContext = gc.handle;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
