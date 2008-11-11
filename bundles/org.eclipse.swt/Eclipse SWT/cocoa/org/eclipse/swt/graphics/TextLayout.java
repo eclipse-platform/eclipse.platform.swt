@@ -367,7 +367,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		int length = translateOffset(text.length());
 		if (length == 0 && flags == 0) return;
 		gc.handle.saveGraphicsState();
-		float[] fg = gc.data.foreground;
+		float /*double*/ [] fg = gc.data.foreground;
 		NSColor foreground = NSColor.colorWithDeviceRed(fg[0], fg[1], fg[2], fg[3]);
 		NSPoint pt = new NSPoint();
 		pt.x = x;
@@ -386,7 +386,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			layoutManager.addTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionColor, selectionRange);
 		}
 		//TODO draw selection for flags (DELIMITER_SELECTION)
-		int numberOfGlyphs = layoutManager.numberOfGlyphs();
+		int /*long*/ numberOfGlyphs = layoutManager.numberOfGlyphs();
 		if (numberOfGlyphs > 0) {
 			NSRange range = new NSRange();
 			for (int i = 0; i < styles.length - 1; i++) {
@@ -428,10 +428,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							if (range.length > 0) {
 								gc.handle.saveGraphicsState();
 								NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
-								float baseline = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineStart);
-								float underlineX = pt.x + rect.x;
-								float underlineY = pt.y + rect.y + rect.height - baseline;
-								float[] color = null;
+								float /*double*/ baseline = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineStart);
+								float /*double*/ underlineX = pt.x + rect.x;
+								float /*double*/ underlineY = pt.y + rect.y + rect.height - baseline;
+								float /*double*/ [] color = null;
 								if (style.underlineColor != null) color = style.underlineColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
 								if (color != null) {
@@ -443,7 +443,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 									path.setLineWidth(2f);
 									path.setLineCapStyle(OS.NSRoundLineCapStyle);
 									path.setLineJoinStyle(OS.NSRoundLineJoinStyle);
-									path.setLineDash(new float[]{1, 3f}, 2, 0);
+									path.setLineDash(new float /*double*/ []{1, 3f}, 2, 0);
 									point.x = underlineX;
 									point.y = underlineY + 0.5f;
 									path.moveToPoint(point);
@@ -457,10 +457,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 									path.setLineWidth(1.0f);
 									path.setLineCapStyle(OS.NSButtLineCapStyle);
 									path.setLineJoinStyle(OS.NSMiterLineJoinStyle);
-									float lineBottom = pt.y + rect.y + rect.height;
+									float /*double*/ lineBottom = pt.y + rect.y + rect.height;
 									float squigglyThickness = 1;
 									float squigglyHeight = 2 * squigglyThickness;
-									float squigglyY = Math.min(underlineY - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
+									float /*double*/ squigglyY = Math.min(underlineY - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
 									float[] points = computePolyline((int)underlineX, (int)squigglyY, (int)(underlineX + rect.width), (int)(squigglyY + squigglyHeight));
 									point.x = points[0] + 0.5f;
 									point.y = points[1] + 0.5f;
@@ -494,7 +494,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								rect.y += pt.y + 0.5f;
 								rect.width -= 0.5f;
 								rect.height -= 0.5f;
-								float[] color = null;
+								float /*double*/ [] color = null;
 								if (style.borderColor != null) color = style.borderColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
 								if (color != null) {
@@ -508,7 +508,12 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
 								}
 								NSBezierPath path = NSBezierPath.bezierPath();
-								path.setLineDash(dashes, dashes != null ? dashes.length : 0, 0);
+								float /*double*/ [] lengths = null;
+								if (dashes != null) {
+									lengths = new float /*double*/[dashes.length];
+									System.arraycopy(dashes, 0, lengths, 0, lengths.length);
+								}
+								path.setLineDash(lengths, lengths != null ? lengths.length : 0, 0);
 								path.appendBezierPathWithRect(rect);
 								path.stroke();
 								gc.handle.restoreGraphicsState();

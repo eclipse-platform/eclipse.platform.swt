@@ -356,14 +356,14 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
 	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
-	int famCount = families.count();
+	int famCount = (int)/*64*/families.count();
 	int count = 0;	
 	FontData[] fds = new FontData[100];
 	for (int i = 0; i < famCount; i++) {
 		NSString nsfamily = new NSString(families.objectAtIndex(i));
 		String family = nsfamily.getString();
 		NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsfamily);
-		int fontCount = fonts.count();
+		int fontCount = (int)/*64*/fonts.count();
 		for (int j = 0; j < fontCount; j++) {
 			NSArray fontDetails = new NSArray(fonts.objectAtIndex(j));
 			NSString str = new NSString(fontDetails.objectAtIndex(0));
@@ -514,7 +514,7 @@ protected void init () {
 	
 	/* Initialize the system font slot */
 	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
-	float systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
+	float /*double*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
 	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
 	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / screenDPI.y);
 	systemFont = Font.cocoa_new(this, font);

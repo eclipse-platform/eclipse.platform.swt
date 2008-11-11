@@ -1444,7 +1444,7 @@ public Color getSystemColor (int id) {
 	NSColor color = null;
 	switch (id) {
 		case SWT.COLOR_INFO_FOREGROUND: return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_INFO_BACKGROUND: return Color.cocoa_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
+		case SWT.COLOR_INFO_BACKGROUND: return Color.cocoa_new (this, new float /*double*/ [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
 		case SWT.COLOR_TITLE_FOREGROUND: color = NSColor.windowFrameTextColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.secondarySelectedControlColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: color = NSColor.windowFrameColor(); break;
@@ -1470,7 +1470,7 @@ public Color getSystemColor (int id) {
 	if (color == null) return super.getSystemColor(id);
 	float /*double*/[] components = new float /*double*/[(int)/*64*/color.numberOfComponents()];
 	color.getComponents(components);	
-	return Color.cocoa_new (this, new float[]{(float)/*64*/components[0], (float)/*64*/components[1], (float)/*64*/components[2], (float)/*64*/components[3]});
+	return Color.cocoa_new (this, new float /*double*/ []{components[0], components[1], components[2], components[3]});
 }
 
 /**
@@ -1727,9 +1727,9 @@ void addAccessibilityMethods(int /*long*/ cls, int /*long*/ proc2, int /*long*/ 
 	OS.class_addMethod(cls, OS.sel_accessibilityActionDescription_, proc3, "@:@");	
 }
 
-int registerCellSubclass(int cellClass, int size, int align, String types) {
+int /*long*/ registerCellSubclass(int /*long*/ cellClass, int size, int align, String types) {
 	String cellClassName = OS.class_getName(cellClass);
-	int cls = OS.objc_allocateClassPair(cellClass, "SWTAccessible" + cellClassName, 0);	
+	int /*long*/ cls = OS.objc_allocateClassPair(cellClass, "SWTAccessible" + cellClassName, 0);	
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.objc_registerClassPair(cls);
 	return cls;
@@ -3574,7 +3574,7 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
-	int type = nsEvent.type ();
+	int type = (int)/*64*/nsEvent.type ();
 	boolean beep = false;
 	switch (type) {
 		case OS.NSLeftMouseDown:

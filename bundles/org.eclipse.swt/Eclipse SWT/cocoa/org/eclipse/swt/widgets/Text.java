@@ -497,7 +497,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	if (filter) {
 		Point selection = getSelection ();
 		if (selection.x != selection.y) {
-			int position = getPosition (x, y);
+			int /*long*/ position = getPosition (x, y);
 			if (selection.x <= position && position < selection.y) {
 				if (super.dragDetect (x, y, filter, consume)) {
 					if (consume != null) consume [0] = true;
@@ -789,7 +789,7 @@ public String getMessage () {
 	return message;
 }
 
-int getPosition (int x, int y) {
+int /*long*/ getPosition (int x, int y) {
 //	checkWidget ();
 	if ((style & SWT.MULTI) != 0) {
 		NSTextView widget = (NSTextView) view;
@@ -806,7 +806,7 @@ int getPosition (int x, int y) {
 /*public*/ int getPosition (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getPosition (point.x, point.y);
+	return (int)/*64*/getPosition (point.x, point.y);
 }
 
 /**

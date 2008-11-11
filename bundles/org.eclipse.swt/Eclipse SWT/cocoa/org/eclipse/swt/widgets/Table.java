@@ -114,7 +114,7 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	
 	if (accessible != null) {
 		NSString attribute = new NSString(arg0);
@@ -831,7 +831,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
 		if (isSelected) {
-			float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
+			float /*double*/ [] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
 			nsSelectionForeground.getComponents (components);	
 			Color selectionForeground = Color.cocoa_new (display, components);
 			gc.setForeground (selectionForeground);
@@ -890,7 +890,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	if (drawBackground && !drawSelection) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext ();
 		context.saveGraphicsState ();
-		float[] colorRGB = background.handle;
+		float /*double*/ [] colorRGB = background.handle;
 		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 		color.setFill ();
 		NSBezierPath.fillRect (fullRect);
@@ -1067,7 +1067,7 @@ public int [] getColumnOrder () {
 	int [] order = new int [columnCount];
 	for (int i = 0; i < columnCount; i++) {
 		TableColumn column = columns [i];
-		int index = ((NSTableView)view).columnWithIdentifier (column.nsColumn);
+		int index = (int)/*64*/((NSTableView)view).columnWithIdentifier (column.nsColumn);
 		if ((style & SWT.CHECK) != 0) index -= 1;
 		order [index] = i;
 	}
@@ -1575,7 +1575,7 @@ boolean isTrim (NSView view) {
  * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
  * clicked-on row ourselves.
  */
-int menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSEvent event = new NSEvent(theEvent);
 	NSTableView table = (NSTableView)view;
 	
@@ -1584,7 +1584,7 @@ int menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	
 	// select the row that was clicked before showing the menu for the event
 	NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
-	int row = table.rowAtPoint(mousePoint);
+	int /*long*/ row = table.rowAtPoint(mousePoint);
 	
 	// figure out if the row that was just clicked on is currently selected
 	if (selectedRowIndexes.containsIndex(row) == false) {
@@ -1927,7 +1927,7 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 	super.setBackground (color);
 	NSColor nsColor;
 	if (color == null) {
@@ -1992,7 +1992,7 @@ public void setColumnOrder (int [] order) {
 		for (int i=0; i<order.length; i++) {
 			int index = order [i];
 			TableColumn column = columns[index];
-			int oldIndex = tableView.columnWithIdentifier (column.nsColumn);
+			int oldIndex = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
 			int newIndex = i + check;
 			tableView.moveColumn (oldIndex, newIndex);
 			newX [index] = (int)tableView.rectOfColumn (newIndex).x;
@@ -2013,8 +2013,8 @@ public void setColumnOrder (int [] order) {
 void setFont(NSFont font) {
 	super.setFont (font);
 	if (!hooks (SWT.MeasureItem)) {
-		float ascent = font.ascender ();
-		float descent = -font.descender () + font.leading ();
+		float /*double*/ ascent = font.ascender ();
+		float /*double*/ descent = -font.descender () + font.leading ();
 		((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
 	} else {
 		view.setNeedsDisplay (true);

@@ -244,7 +244,7 @@ int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasure
 
 		if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
 			NSOutlineView outlineView = (NSOutlineView)parent.view;
-			int nsColumnIndex = 0;
+			int /*long*/ nsColumnIndex = 0;
 			if (parent.columnCount > 0) {
 				nsColumnIndex = outlineView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
 			}

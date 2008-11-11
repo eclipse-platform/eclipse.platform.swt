@@ -89,7 +89,7 @@ public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 	
 	if (accessible != null) {
@@ -110,8 +110,7 @@ int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/
 			if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute))
 				return role.id;
 			else {
-				int roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
-				return roleDescription;
+				return OS.NSAccessibilityRoleDescription(role.id, 0);
 			}
 		}
 	}
@@ -419,7 +418,7 @@ boolean isDescribedByLabel () {
  * This will cause the on state to momentarily appear while clicking on the checkbox. To avoid this, we override [NSCell nextState]
  * to go directly to the desired state if we have a grayed checkbox.
  */
-int nextState(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 	if ((style & SWT.CHECK) != 0 && grayed) {
 		return ((NSButton)view).state() == OS.NSMixedState ? OS.NSOffState : OS.NSMixedState;
 	}

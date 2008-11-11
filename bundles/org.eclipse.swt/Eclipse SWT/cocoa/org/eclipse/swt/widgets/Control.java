@@ -104,7 +104,7 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
-int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
 	if (accessible != null) {
 		NSArray returnValue = accessible.internal_accessibilityActionNames(ACC.CHILDID_SELF);
 		if (returnValue != null) return returnValue.id;
@@ -113,7 +113,7 @@ int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
 	return super.accessibilityActionNames(id, sel);
 }
 
-int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
 	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
@@ -130,7 +130,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
 			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
 
-			for (int i = extraAttributes.count() - 1; i >= 0; i--) {
+			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
 				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
 				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) == null) {
 					extraAttributes.removeObjectAtIndex(i);
@@ -138,7 +138,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 			}
 
 			if (extraAttributes.count() > 0) {
-				int superResult = super.accessibilityAttributeNames(id, sel);
+				int /*long*/ superResult = super.accessibilityAttributeNames(id, sel);
 				NSArray baseAttributes = new NSArray(superResult);
 				NSMutableArray mutableAttributes = NSMutableArray.arrayWithCapacity(baseAttributes.count() + 1);
 				mutableAttributes.addObjectsFromArray(baseAttributes);
@@ -158,7 +158,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	return super.accessibilityAttributeNames(id, sel);
 }
 
-int accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
 
 	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
@@ -184,7 +184,7 @@ boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int 
 	return false;
 }
 
-int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 	id returnValue = null;
 
 	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
@@ -201,7 +201,7 @@ int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 		return returnValue.id;
 }
 
-int accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	id returnValue = null;
 
 	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
@@ -218,9 +218,9 @@ int accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
 		return returnValue.id;
 }
 
-int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString attribute = new NSString(arg0);
-	int returnValue = 0;
+	int /*long*/ returnValue = 0;
 	id returnObject = null;
 	
 	if (accessible != null) {
@@ -238,7 +238,7 @@ int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	return returnValue;
 }
 
-int accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+int /*long*/ accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	NSString attribute = new NSString(arg0);
 	
 	id returnValue = null;
@@ -944,7 +944,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect) {
 	}
 	Color background = control.getBackgroundColor ();
 	if (background != null && !background.isDisposed ()) {
-		float [] color = background.handle;
+		float /*double*/ [] color = background.handle;
 		context.saveGraphicsState();
 		NSColor.colorWithDeviceRed(color [0], color [1], color [2], getThemeAlpha()).setFill();
 		NSBezierPath.fillRect(rect);
@@ -2552,7 +2552,7 @@ public void setBackgroundImage (Image image) {
 //	redrawWidget (handle, false);
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 }
 
 void setBackground (int control, float [] color) {
@@ -2824,7 +2824,7 @@ public void setForeground (Color color) {
 	view.setNeedsDisplay(true);
 }
 
-void setForeground (float [] color) {
+void setForeground (float /*double*/ [] color) {
 }
 
 void setForeground (int control, float [] color) {

@@ -129,34 +129,34 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
-int accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	return callSuperObject(id, sel, arg0);
 }
 
-int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	return callSuperObject(id, sel, arg0);
 }
 
-int accessibilityAttributeValue_forParameter(int id, int sel, int /*long*/ arg0, int /*long*/ arg1) {
+int /*long*/ accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
-int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-int accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -171,7 +171,7 @@ boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
-int accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
 
@@ -232,14 +232,14 @@ boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	return OS.objc_msgSendSuper(super_struct, sel, arg0) != 0;
 }
 
-int callSuperObject(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel);
 }
 
-int callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -1463,11 +1463,11 @@ boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window
 void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
-boolean dragSelectionWithEvent(int id, int sel, int arg0, int arg1, int arg2) {
+boolean dragSelectionWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
 	return false;
 }
 
-int nextState(int id, int sel) {
+int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
 }

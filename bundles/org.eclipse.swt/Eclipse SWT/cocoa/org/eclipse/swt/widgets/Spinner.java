@@ -187,7 +187,7 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	float width = 0, height = 0;
+	float /*double*/ width = 0, height = 0;
 	String string = Double.toString (buttonView.maxValue ());
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (1);
 	dict.setObject(textView.font (), OS.NSFontAttributeName);
@@ -455,7 +455,7 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 
     if (chars.length() != 1) return;
     
-    keyChar = chars.characterAtIndex(0);
+    keyChar = (int)/*64*/chars.characterAtIndex(0);
 
     switch (keyChar) {
 	    case OS.NSEnterCharacter: /* KP Enter */

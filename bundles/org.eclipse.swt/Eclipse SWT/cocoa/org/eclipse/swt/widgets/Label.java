@@ -95,8 +95,7 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-	
+int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	if (accessible != null) {		
 		if ((textView != null && (id == textView.id || id == textView.cell().id)) || (imageView != null && (id == imageView.id || id == imageView.cell().id))) {
 			// See if the accessible will override or augment the standard list.
@@ -106,7 +105,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
 			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
 
-			for (int i = extraAttributes.count() - 1; i >= 0; i--) {
+			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
 				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
 				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) == null) {
 					extraAttributes.removeObjectAtIndex(i);
@@ -114,7 +113,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 			}
 
 			if (extraAttributes.count() > 0) {
-				int superResult = super.accessibilityAttributeNames(id, sel);
+				int /*long*/ superResult = super.accessibilityAttributeNames(id, sel);
 				NSArray baseAttributes = new NSArray(superResult);
 				NSMutableArray mutableAttributes = NSMutableArray.arrayWithCapacity(baseAttributes.count() + 1);
 				mutableAttributes.addObjectsFromArray(baseAttributes);
@@ -170,7 +169,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
 	if ((style & SWT.SEPARATOR) != 0) {
-		float lineWidth = ((NSBox)view).borderWidth ();
+		float /*double*/ lineWidth = ((NSBox)view).borderWidth ();
 		if ((style & SWT.HORIZONTAL) != 0) {
 			height = (int)Math.ceil (lineWidth * 2);
 		} else {

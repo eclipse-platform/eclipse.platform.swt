@@ -1228,7 +1228,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO reset to OS default

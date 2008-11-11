@@ -77,7 +77,7 @@ public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	
 	if (accessible != null) {
 		NSString attribute = new NSString(arg0);
@@ -692,7 +692,7 @@ public boolean isSelected (int index) {
  * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
  * clicked-on row ourselves.
  */
-int menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSEvent event = new NSEvent(theEvent);
 	NSTableView table = (NSTableView)view;
 	
@@ -701,7 +701,7 @@ int menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	
 	// select the row that was clicked before showing the menu for the event
 	NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
-	int row = table.rowAtPoint(mousePoint);
+	int /*long*/ row = table.rowAtPoint(mousePoint);
 	
 	// figure out if the row that was just clicked on is currently selected
 	if (selectedRowIndexes.containsIndex(row) == false) {
@@ -1049,8 +1049,8 @@ void setBackground (float [] color) {
 
 void setFont (NSFont font) {
 	super.setFont (font);
-	float ascent = font.ascender ();
-	float descent = -font.descender () + font.leading ();
+	float /*double*/ ascent = font.ascender ();
+	float /*double*/ descent = -font.descender () + font.leading ();
 	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
 }
 

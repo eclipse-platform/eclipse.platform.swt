@@ -316,7 +316,7 @@ void sendSelection () {
 	postEvent (SWT.Selection);
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO reset to OS default
@@ -377,7 +377,7 @@ public void setDay (int day) {
 	}
 }
 
-void setForeground (float [] color) {
+void setForeground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO reset to OS default

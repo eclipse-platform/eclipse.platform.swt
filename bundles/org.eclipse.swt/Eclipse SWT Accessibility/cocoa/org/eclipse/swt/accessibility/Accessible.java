@@ -1086,7 +1086,7 @@ public class Accessible {
 		String appValue = event.result;
 
 		if (appValue != null) {
-			returnValue = NSString.stringWith(appValue.substring(range.location, range.location + range.length));
+			returnValue = NSString.stringWith(appValue.substring((int)/*64*/range.location, (int)/*64*/(range.location + range.length)));
 		}
 
 		return returnValue;

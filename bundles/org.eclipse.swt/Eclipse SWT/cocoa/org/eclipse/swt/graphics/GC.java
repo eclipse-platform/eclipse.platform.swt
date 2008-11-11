@@ -269,7 +269,7 @@ NSAutoreleasePool checkGC (int mask) {
 		if (pattern != null) {
 			if (pattern.color != null) pattern.color.setStroke();
 		} else {
-			float[] color = data.foreground;
+			float /*double*/ [] color = data.foreground;
 			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setStroke();
 		}
 	}
@@ -278,7 +278,7 @@ NSAutoreleasePool checkGC (int mask) {
 		if (pattern != null) {
 			if (pattern.color != null) pattern.color.setFill();
 		} else {
-			float[] color = data.foreground;
+			float /*double*/ [] color = data.foreground;
 			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
 		}
 		data.state &= ~BACKGROUND;
@@ -288,7 +288,7 @@ NSAutoreleasePool checkGC (int mask) {
 		if (pattern != null) {
 			if (pattern.color != null) pattern.color.setFill();
 		} else {
-			float[] color = data.background;
+			float /*double*/ [] color = data.background;
 			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
 		}
 		data.state &= ~FOREGROUND_FILL;
@@ -747,7 +747,7 @@ NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
 
 NSAttributedString createString(String string, int flags) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-	float[] foreground = data.foreground;	
+	float /*double*/ [] foreground = data.foreground;	
 	Pattern pattern = data.foregroundPattern;
 	if (pattern != null) {
 		if (pattern.color != null) dict.setObject(pattern.color, OS.NSForegroundColorAttributeName);
@@ -757,7 +757,7 @@ NSAttributedString createString(String string, int flags) {
 	}
 	dict.setObject(data.font.handle, OS.NSFontAttributeName);
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-		float[] background = data.background;
+		float /*double*/ [] background = data.background;
 		NSColor color = NSColor.colorWithDeviceRed(background[0], background[1], background[2], data.alpha / 255f);
 		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
@@ -1786,7 +1786,7 @@ void fillPattern(NSBezierPath path, Pattern pattern) {
 	float /*double*/ difx = end.x - start.x;
 	float /*double*/ dify = end.y - start.y;
 	if (difx == 0 && dify == 0) {
-		float[] color = pattern.color1;
+		float /*double*/ [] color = pattern.color1;
 		NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
 		path.fill();
 		handle.restoreGraphicsState();

@@ -80,7 +80,7 @@ public Sash (Composite parent, int style) {
 	sizeCursor = new Cursor (display, cursorStyle);
 }
 
-int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	if (accessibilityAttributes == null) {
 		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
 		ourAttributes.addObject(OS.NSAccessibilityRoleAttribute);
@@ -108,7 +108,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
 			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
 
-			for (int i = extraAttributes.count() - 1; i >= 0; i--) {
+			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
 				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
 				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) != null) {
 					ourAttributes.addObject(extraAttributes.objectAtIndex(i));
@@ -123,8 +123,8 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	return accessibilityAttributes.id;
 }
 
-public int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	int returnValue = 0;
+int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	int /*long*/ returnValue = 0;
 	NSString attributeName = new NSString(arg0);
 	
 	if (accessible != null) {
@@ -154,7 +154,7 @@ public int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*
 		return NSNumber.numberWithInt(value).id;
 	} else if (attributeName.isEqualToString (OS.NSAccessibilityMaxValueAttribute)) {
 		NSRect parentBounds = view.bounds();
-		float maxValue = (style & SWT.VERTICAL) != 0 ?
+		float /*double*/ maxValue = (style & SWT.VERTICAL) != 0 ?
 				parentBounds.width :
 				parentBounds.height;
 		return NSNumber.numberWithInt((int)maxValue).id;

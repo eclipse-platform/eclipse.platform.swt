@@ -133,7 +133,7 @@ public ToolItem (ToolBar parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
-int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 
 	if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {

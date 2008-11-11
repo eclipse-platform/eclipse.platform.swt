@@ -28,8 +28,8 @@ import org.eclipse.swt.internal.cocoa.*;
 public final class GCData {
 	public Device device;
 	public int style, state = -1;
-	public float[] foreground;
-	public float[] background;
+	public float /*double*/ [] foreground;
+	public float /*double*/ [] background;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public Font font;

@@ -41,7 +41,7 @@ public final class Color extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public float[] handle;
+	public float /*double*/ [] handle;
 
 Color(Device device) {
 	super(device);
@@ -124,7 +124,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
-	float[] rgbColor = color.handle;
+	float /*double*/ [] rgbColor = color.handle;
 	if (handle == rgbColor) return true;
 	return device == color.device &&
 		(int)(handle[0] * 255) == (int)(rgbColor[0] * 255) &&
@@ -218,7 +218,7 @@ public RGB getRGB () {
  * 
  * @private
  */
-public static Color cocoa_new(Device device, float[] rgbColor) {
+public static Color cocoa_new(Device device, float /*double*/ [] rgbColor) {
 	Color color = new Color(device);
 	color.handle = rgbColor;
 	return color;
@@ -230,7 +230,7 @@ void init(int red, int green, int blue) {
 		(blue > 255) || (blue < 0)) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	float[] rgbColor = new float[4];
+	float /*double*/ [] rgbColor = new float /*double*/ [4];
 	rgbColor[0] = red / 255f;
 	rgbColor[1] = green / 255f;
 	rgbColor[2] = blue / 255f;

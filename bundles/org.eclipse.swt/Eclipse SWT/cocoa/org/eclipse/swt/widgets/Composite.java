@@ -133,7 +133,7 @@ boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	return super.acceptsFirstResponder (id, sel);
 }
 
-int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
 	if (id == view.id) {
 		if (accessible != null) {

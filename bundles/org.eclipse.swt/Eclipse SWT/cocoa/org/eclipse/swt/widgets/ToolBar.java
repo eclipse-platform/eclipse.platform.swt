@@ -100,7 +100,7 @@ public ToolBar (Composite parent, int style) {
 	}
 }
 
-int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
 	if (accessibilityAttributes == null) {
 		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
@@ -124,7 +124,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
 			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
 
-			for (int i = extraAttributes.count() - 1; i >= 0; i--) {
+			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
 				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
 				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) != null) {
 					ourAttributes.addObject(extraAttributes.objectAtIndex(i));
@@ -139,7 +139,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	return accessibilityAttributes.id;
 }
 
-int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 	
 	if (accessible != null) {
@@ -153,7 +153,7 @@ int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/
 		if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute))
 			return role.id;
 		else {
-			int roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
+			int /*long*/ roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
 			return roleDescription;
 		}
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {

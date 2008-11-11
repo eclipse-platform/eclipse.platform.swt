@@ -137,7 +137,7 @@ int calculateWidth (int columnIndex, GC gc, boolean callMeasureItem) {
 
 	if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
 		NSTableView tableView = (NSTableView)parent.view;
-		int nsColumnIndex = 0;
+		int /*long*/ nsColumnIndex = 0;
 		if (parent.columnCount > 0) {
 			nsColumnIndex = tableView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
 		}
