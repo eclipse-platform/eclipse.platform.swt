@@ -418,7 +418,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						if (!run.tab && !(run.style != null && run.style.metrics != null)) {
 							gc.setForeground(selectionForeground);
 							gc.drawString(string, drawX, drawRunY, true);
-							drawLines(gc, run, drawX, drawRunY, run.width, true);
+							drawLines(gc, run, drawX, drawRunY, run.width);
 						}
 					} else {
 						if (run.style != null && run.style.background != null) {
@@ -432,7 +432,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							if (!(run.style != null && run.style.metrics != null)) {
 								gc.setForeground(fg);
 								gc.drawString(string, drawX, drawRunY, true);
-								drawLines(gc, run, drawX, drawRunY, run.width, false);
+								drawLines(gc, run, drawX, drawRunY, run.width);
 							}
 							boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 							if (partialSelection) {
@@ -447,7 +447,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								if (fg != selectionForeground && !(run.style != null && run.style.metrics != null)) {
 									gc.setForeground(selectionForeground);
 									gc.drawString(string, selX, drawRunY, true);
-									drawLines(gc, run, selX, drawRunY, selWidth, true);
+									drawLines(gc, run, selX, drawRunY, selWidth);
 								}
 							}
 						}
@@ -505,12 +505,12 @@ void drawBorder(GC gc, StyleItem[] line, int index, int x, int y, int lineHeight
 	}
 } 
 
-void drawLines(GC gc, StyleItem run, int x, int y, int width, boolean selection) {
+void drawLines(GC gc, StyleItem run, int x, int y, int width) {
 	TextStyle style = run.style;
 	if (style == null) return;
 	if (style.underline) {
 		int underlineY = y + run.baseline + 1 - style.rise;
-		if (!selection && style.underlineColor != null) {
+		if (style.underlineColor != null) {
 			gc.setForeground(style.underlineColor);
 		}
 		switch (style.underlineStyle) {
@@ -531,7 +531,7 @@ void drawLines(GC gc, StyleItem run, int x, int y, int width, boolean selection)
 	}
 	if (style.strikeout) {
 		int strikeoutY = y + run.height - run.height/2 - 1;
-		if (!selection && style.strikeoutColor != null) {
+		if (style.strikeoutColor != null) {
 			gc.setForeground(style.strikeoutColor);
 		}
 		gc.drawLine (x, strikeoutY, x + width, strikeoutY);
