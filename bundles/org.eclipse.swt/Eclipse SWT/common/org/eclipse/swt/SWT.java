@@ -1548,6 +1548,16 @@ public class SWT {
 	public static final int UNDERLINE_SQUIGGLE = 3;
 	
 	/**
+	 * Style constant to indicate link underline (value is 0).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.5
+	 */
+	public static final int UNDERLINE_LINK = 4;
+
+	/**
 	 * Style constant to indicate solid border (value is 1).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>

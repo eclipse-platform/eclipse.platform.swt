@@ -525,13 +525,16 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 	return coordinates;
 }
 
-int /*long*/ createGdipBrush(Color color, int alpha) {
-	int pixel = color.handle;
+int /*long*/ createGdipBrush(int pixel, int alpha) {
 	int argb = ((alpha & 0xFF) << 24) | ((pixel >> 16) & 0xFF) | (pixel & 0xFF00) | ((pixel & 0xFF) << 16);
 	int /*long*/ gdiColor = Gdip.Color_new(argb); 
 	int /*long*/ brush = Gdip.SolidBrush_new(gdiColor);
 	Gdip.Color_delete(gdiColor);
 	return brush;
+}
+
+int /*long*/ createGdipBrush(Color color, int alpha) {
+	return createGdipBrush(color.handle, alpha);
 }
 
 /**
@@ -617,9 +620,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	GCData data = gc.data;
 	int /*long*/ gdipGraphics = data.gdipGraphics;
 	int foreground = data.foreground;
+	int linkColor = OS.GetSysColor (OS.COLOR_HOTLIGHT);
 	int alpha = data.alpha;
 	boolean gdip = gdipGraphics != 0;
 	int /*long*/ gdipForeground = 0;
+	int /*long*/ gdipLinkColor = 0;
 	int state = 0;
 	if (gdip) {
 		gc.checkGC(GC.FOREGROUND);
@@ -741,19 +746,26 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								gdipFont = 0;
 							}
 						}
-						if (gdipFont != 0) {
-							pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, gdipForeground, gdipSelForeground, selectionStart, selectionEnd, alpha);
-						} else {
-							pRect = drawRunTextGDIPRaster(gdipGraphics, run, rect, baseline, foreground, selForeground, selectionStart, selectionEnd);
+						int /*long*/ gdipFg = gdipForeground;
+						if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+							if (gdipLinkColor == 0) gdipLinkColor = createGdipBrush(linkColor, alpha);
+							gdipFg = gdipLinkColor;
 						}
-						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, gdipForeground, gdipSelForeground, underlineClip, pRect, selectionStart, selectionEnd, alpha);
-						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, gdipForeground, gdipSelForeground, strikeoutClip, pRect, selectionStart, selectionEnd, alpha);
-						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, gdipForeground, gdipSelForeground, borderClip, pRect, selectionStart, selectionEnd, alpha);
+						if (gdipFont != 0) {
+							pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, gdipFg, gdipSelForeground, selectionStart, selectionEnd, alpha);
+						} else {
+							int fg = style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ? linkColor : foreground;
+							pRect = drawRunTextGDIPRaster(gdipGraphics, run, rect, baseline, fg, selForeground, selectionStart, selectionEnd);
+						}
+						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, gdipFg, gdipSelForeground, underlineClip, pRect, selectionStart, selectionEnd, alpha);
+						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, gdipFg, gdipSelForeground, strikeoutClip, pRect, selectionStart, selectionEnd, alpha);
+						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, gdipFg, gdipSelForeground, borderClip, pRect, selectionStart, selectionEnd, alpha);
 					}  else {
-						pRect = drawRunText(hdc, run, rect, baseline, foreground, selForeground, selectionStart, selectionEnd);
-						underlineClip = drawUnderline(hdc, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, foreground, selForeground, underlineClip, pRect, selectionStart, selectionEnd);
-						strikeoutClip = drawStrikeout(hdc, x, drawY + baseline, lineRuns, i, foreground, selForeground, strikeoutClip, pRect, selectionStart, selectionEnd);
-						borderClip = drawBorder(hdc, x, drawY, lineHeight, lineRuns, i, foreground, selForeground, borderClip, pRect,  selectionStart, selectionEnd);
+						int fg = style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ? linkColor : foreground;
+						pRect = drawRunText(hdc, run, rect, baseline, fg, selForeground, selectionStart, selectionEnd);
+						underlineClip = drawUnderline(hdc, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, fg, selForeground, underlineClip, pRect, selectionStart, selectionEnd);
+						strikeoutClip = drawStrikeout(hdc, x, drawY + baseline, lineRuns, i, fg, selForeground, strikeoutClip, pRect, selectionStart, selectionEnd);
+						borderClip = drawBorder(hdc, x, drawY, lineHeight, lineRuns, i, fg, selForeground, borderClip, pRect,  selectionStart, selectionEnd);
 					}
 				}
 			}
@@ -762,6 +774,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 	if (gdipSelBackground != 0) Gdip.SolidBrush_delete(gdipSelBackground);
 	if (gdipSelForeground != 0) Gdip.SolidBrush_delete(gdipSelForeground);
+	if (gdipLinkColor != 0) Gdip.SolidBrush_delete(gdipLinkColor);
 	if (gdipFont != 0) Gdip.Font_delete(gdipFont);
 	if (state != 0)	OS.RestoreDC(hdc, state);
 	if (selBackground != 0) OS.DeleteObject (selBackground);
@@ -1279,6 +1292,7 @@ RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, 
 			}
 			case SWT.UNDERLINE_SINGLE:
 			case SWT.UNDERLINE_DOUBLE:
+			case SWT.UNDERLINE_LINK:
 			case UNDERLINE_IME_THICK:
 				if (style.underlineStyle == UNDERLINE_IME_THICK) {
 					rect.top -= run.underlineThickness;
@@ -1414,6 +1428,7 @@ RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnde
 			}
 			case SWT.UNDERLINE_SINGLE:
 			case SWT.UNDERLINE_DOUBLE:
+			case SWT.UNDERLINE_LINK:
 			case UNDERLINE_IME_THICK:
 				if (style.underlineStyle == UNDERLINE_IME_THICK) {
 					rect.top -= run.underlineThickness;

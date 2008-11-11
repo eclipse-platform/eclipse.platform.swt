@@ -81,6 +81,7 @@ public class TextStyle {
 	 * @see SWT#UNDERLINE_DOUBLE 
 	 * @see SWT#UNDERLINE_ERROR
 	 * @see SWT#UNDERLINE_SQUIGGLE
+	 * @see SWT#UNDERLINE_LINK
 	 * 
 	 * @since 3.4
 	 */	
@@ -137,6 +138,17 @@ public class TextStyle {
 	 * @since 3.2
 	 */	
 	public int rise;
+	
+	
+	/**
+	 * the data. An user data field. It can be used to hold the HREF when the range 
+	 * is used as a link or the embed object when the range is used with <code>GlyphMetrics</code>.
+	 * <p>
+	 * 
+	 * @since 3.5
+	 */
+	public Object data;
+
 
 /** 
  * Create an empty text style.
@@ -185,6 +197,7 @@ public TextStyle (TextStyle style) {
 	borderColor = style.borderColor;
 	metrics = style.metrics;
 	rise = style.rise;
+	data = style.data;
 }
 
 /**
@@ -227,6 +240,9 @@ public boolean equals(Object object) {
 	if (borderColor != null) {
 		if (!borderColor.equals(style.borderColor)) return false;
 	} else if (style.borderColor != null) return false;
+	if (data != null) {
+		if (!data.equals(style.data)) return false;
+	} else if (style.data != null) return false;
 	return true;
 }
 
