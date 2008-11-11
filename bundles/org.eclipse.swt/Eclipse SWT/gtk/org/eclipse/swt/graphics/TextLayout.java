@@ -200,6 +200,20 @@ void computeRuns () {
 						underlineStyle = OS.PANGO_UNDERLINE_ERROR;
 					}
 					break;
+				case SWT.UNDERLINE_LINK: {
+					if (style.foreground == null) {
+						int /*long*/ attr = OS.pango_attr_foreground_new((short)0, (short)0x3333, (short)0x9999);
+						OS.memmove (attribute, attr, PangoAttribute.sizeof);
+						attribute.start_index = byteStart;
+						attribute.end_index = byteEnd;
+						OS.memmove (attr, attribute, PangoAttribute.sizeof);
+						OS.pango_attr_list_insert(attrList, attr);
+					} 
+					if (style.underlineColor == null) {
+						underlineStyle = OS.PANGO_UNDERLINE_SINGLE;
+					}
+					break;
+				}
 			}
 			if (underlineStyle != OS.PANGO_UNDERLINE_NONE && style.underlineColor == null) {
 				int /*long*/ attr = OS.pango_attr_underline_new(underlineStyle);
@@ -722,6 +736,7 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 								OS.gdk_draw_rectangle(data.drawable, gdkGC, 1, rect.x, underlineY + underlineThickness * 2, rect.width, underlineThickness);
 							}
 							//FALLTHROUGH
+						case SWT.UNDERLINE_LINK:
 						case SWT.UNDERLINE_SINGLE:
 							if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 								Cairo.cairo_rectangle(cairo, rect.x, underlineY, rect.width, underlineThickness);
