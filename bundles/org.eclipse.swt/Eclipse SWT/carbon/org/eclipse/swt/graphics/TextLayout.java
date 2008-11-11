@@ -48,13 +48,26 @@ public final class TextLayout extends Resource {
 			if (atsuStyle == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
 			int length = 0, ptrLength = 0, index = 0;
 			Font font = null;
-			Color foreground = null;
+			RGBColor foreground = null;
 			GlyphMetrics metrics = null;
 			if (style != null) {
 				font = style.font;
-				foreground = style.foreground;
+				if (style.foreground != null) {
+					float[] color = style.foreground.handle;
+					foreground = new RGBColor ();
+					foreground.red = (short) (color [0] * 0xffff);
+					foreground.green = (short) (color [1] * 0xffff);
+					foreground.blue = (short) (color [2] * 0xffff);
+				} else {
+					if (style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+						foreground = new RGBColor ();
+						foreground.red = (short) 0;
+						foreground.green = (short) 0x3333;
+						foreground.blue = (short) 0x9999;
+					}
+				}
 				metrics = style.metrics;
-				if (style.underline && (style.underlineStyle == SWT.UNDERLINE_SINGLE || style.underlineStyle == SWT.UNDERLINE_DOUBLE)) {
+				if (isUnderlineSupported(style)) {
 					length += 1;
 					ptrLength += 1;
 					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
@@ -139,7 +152,7 @@ public final class TextLayout extends Resource {
 				}
 			}
 			int underlineColor = 0, strikeoutColor = 0;;
-			if (style != null && style.underline && (style.underlineStyle == SWT.UNDERLINE_SINGLE || style.underlineStyle == SWT.UNDERLINE_DOUBLE)) {				
+			if (isUnderlineSupported(style)) {
 				buffer1[0] = (byte)1;
 				tags[index] = OS.kATSUQDUnderlineTag;
 				sizes[index] = 1;
@@ -227,15 +240,10 @@ public final class TextLayout extends Resource {
 				index++;
 			}
 			if (foreground != null && metrics == null) {
-				RGBColor rgb = new RGBColor ();
-				float[] color = foreground.handle;
-				rgb.red = (short) (color [0] * 0xffff);
-				rgb.green = (short) (color [1] * 0xffff);
-				rgb.blue = (short) (color [2] * 0xffff);		
 				tags[index] = OS.kATSUColorTag;
 				sizes[index] = RGBColor.sizeof;
 				values[index] = ptr1;
-				OS.memmove(values[index], rgb, sizes[index]);
+				OS.memmove(values[index], foreground, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
@@ -672,7 +680,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		StyleItem run = styles[j];
 		TextStyle style = run.style;
 		if (style == null) continue;
-		boolean drawUnderline = style.underline && style.underlineStyle != SWT.UNDERLINE_SINGLE && style.underlineStyle != SWT.UNDERLINE_DOUBLE;
+		boolean drawUnderline = style.underline && !isUnderlineSupported(style);
 		drawUnderline = drawUnderline && (j + 1 == styles.length || !style.isAdherentUnderline(styles[j + 1].style)); 
 		boolean drawBorder = style.borderStyle != SWT.NONE;
 		drawBorder = drawBorder && (j + 1 == styles.length || !style.isAdherentBorder(styles[j + 1].style)); 
@@ -1690,6 +1698,17 @@ public int getWidth () {
 	OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
 	int wrapWidth = OS.Fix2Long(buffer[0]);
 	return wrapWidth == 0 ? -1 : wrapWidth;
+}
+
+/*
+ * Returns true if the underline style is supported natively by ATSUI
+ */
+static boolean isUnderlineSupported (TextStyle style) {
+	if (style != null && style.underline) {
+		int uStyle = style.underlineStyle;
+		return uStyle == SWT.UNDERLINE_SINGLE || uStyle == SWT.UNDERLINE_DOUBLE || uStyle == SWT.UNDERLINE_LINK;
+	}
+	return false;
 }
 
 /**
