@@ -1036,7 +1036,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 	super.setBackground (color);
 	NSColor nsColor;
 	if (color == null) {
