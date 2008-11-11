@@ -53,6 +53,7 @@ public final class TextLayout extends Resource {
 	NSRect[] lineBounds;
 	
 	static final int UNDERLINE_THICK = 1 << 16;
+	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 
 	static class StyleItem {
 		TextStyle style;
@@ -212,7 +213,7 @@ void computeRuns() {
 				attrStr.addAttribute(OS.NSStrikethroughColorAttributeName, color, range);
 			}
 		}
-		if (style.underline) {
+		if (isUnderlineSupported(style)) {
 			int underlineStyle = 0;
 			switch (style.underlineStyle) {
 				case SWT.UNDERLINE_SINGLE:
@@ -224,6 +225,14 @@ void computeRuns() {
 				case UNDERLINE_THICK:
 					underlineStyle = OS.NSUnderlineStyleThick;
 					break;
+				case SWT.UNDERLINE_LINK: {
+					underlineStyle = OS.NSUnderlineStyleSingle;
+					if (foreground == null) {
+						NSColor color = NSColor.colorWithDeviceRed(LINK_FOREGROUND.red / 255f, LINK_FOREGROUND.green / 255f, LINK_FOREGROUND.blue / 255f, 1);
+						attrStr.addAttribute(OS.NSForegroundColorAttributeName, color, range);
+					}
+					break;
+				}
 			}
 			if (underlineStyle != 0) {
 				attrStr.addAttribute(OS.NSUnderlineStyleAttributeName, NSNumber.numberWithInt(underlineStyle), range);
@@ -392,6 +401,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			for (int i = 0; i < styles.length - 1; i++) {
 				StyleItem run = styles[i];
 				if (run.style != null && run.style.foreground != null) continue;
+				if (run.style != null && run.style.underline && run.style.underlineStyle == SWT.UNDERLINE_LINK) continue;
 				range.location = length != 0 ? translateOffset(run.start) : 0;
 				range.length = translateOffset(styles[i + 1].start) - range.location;
 				layoutManager.addTemporaryAttribute(OS.NSForegroundColorAttributeName, foreground, range);
@@ -407,7 +417,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				StyleItem run = styles[j];
 				TextStyle style = run.style;
 				if (style == null) continue;
-				boolean drawUnderline = style.underline && style.underlineStyle != SWT.UNDERLINE_SINGLE && style.underlineStyle != SWT.UNDERLINE_DOUBLE;
+				boolean drawUnderline = style.underline && !isUnderlineSupported(style);
 				drawUnderline = drawUnderline && (j + 1 == styles.length || !style.isAdherentUnderline(styles[j + 1].style)); 
 				boolean drawBorder = style.borderStyle != SWT.NONE;
 				drawBorder = drawBorder && (j + 1 == styles.length || !style.isAdherentBorder(styles[j + 1].style)); 
@@ -1314,6 +1324,17 @@ public int getWidth () {
  */
 public boolean isDisposed () {
 	return device == null;
+}
+
+/*
+ * Returns true if the underline style is supported natively
+ */
+boolean isUnderlineSupported (TextStyle style) {
+	if (style != null && style.underline) {
+		int uStyle = style.underlineStyle;
+		return uStyle == SWT.UNDERLINE_SINGLE || uStyle == SWT.UNDERLINE_DOUBLE || uStyle == SWT.UNDERLINE_LINK || uStyle == UNDERLINE_THICK;
+	}
+	return false;
 }
 
 /**
