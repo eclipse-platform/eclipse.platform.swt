@@ -31,17 +31,15 @@ public class TextEditor {
 	
 	boolean insert = true;
 	StyleRange[] selectedRanges;
-	int[] imageOffsets = new int[0];
-	Image[] images = new Image[0];
-	Control[] controls = new Control[0];
-	int[] controlOffsets = new int[0];
 	int newCharCount, start;
 	String fileName = null;
 	int styleState;			// the style state for underline, strikeout, and border
+	String link;
 
 
 	// Resources
-	Image iBold, iItalic, iUnderline, iStrikeout, iLeftAlignment, iRightAlignment, iCenterAlignment, iJustifyAlignment, iCopy, iCut, iPaste, iSpacing, iIndent, iTextForeground, iTextBackground, iBaselineUp, iBaselineDown, iBulletList, iNumberedList, iBlockSelection, iBorderStyle;
+	Image iBold, iItalic, iUnderline, iStrikeout, iLeftAlignment, iRightAlignment, iCenterAlignment, iJustifyAlignment, iCopy, iCut, iLink;
+	Image iPaste, iSpacing, iIndent, iTextForeground, iTextBackground, iBaselineUp, iBaselineDown, iBulletList, iNumberedList, iBlockSelection, iBorderStyle;
 	Font font, textFont;
 	Color textForeground, textBackground, strikeoutColor, underlineColor, borderColor;
 
@@ -60,13 +58,14 @@ public class TextEditor {
 	static final int UNDERLINE_DOUBLE = 1 << 10;
 	static final int UNDERLINE_ERROR = 1 << 11;
 	static final int UNDERLINE_SQUIGGLE = 1 << 12;
-	static final int UNDERLINE = UNDERLINE_SINGLE | UNDERLINE_DOUBLE | UNDERLINE_SQUIGGLE | UNDERLINE_ERROR;
-	static final int BORDER_SOLID = 1 << 13;
-	static final int BORDER_DASH = 1 << 14;
-	static final int BORDER_DOT = 1 << 15;
+	static final int UNDERLINE_LINK = 1 << 13;
+	static final int UNDERLINE = UNDERLINE_SINGLE | UNDERLINE_DOUBLE | UNDERLINE_SQUIGGLE | UNDERLINE_ERROR | UNDERLINE_LINK;
+	static final int BORDER_SOLID = 1 << 23;
+	static final int BORDER_DASH = 1 << 24;
+	static final int BORDER_DOT = 1 << 25;
 	static final int BORDER = BORDER_SOLID | BORDER_DASH | BORDER_DOT;
 	
-	static final boolean SAMPLE_TEXT = false;
+	static final boolean SAMPLE_TEXT = true;
 	static final ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");  //$NON-NLS-1$
 
 	static String getResourceString(String key) {
@@ -111,26 +110,12 @@ public class TextEditor {
 	void addControl(Control control) {
 		int offset = styledText.getCaretOffset();
 		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
-		int index = 0;		
-		while (index < controlOffsets.length) {
-			if (controlOffsets[index] == -1 && controls[index] == null) break;
-			index++;
-		}
-		if (index == controlOffsets.length) {
-			int[] tmpOffsets = new int[index + 1];
-			System.arraycopy(controlOffsets, 0, tmpOffsets, 0, controlOffsets.length);
-			controlOffsets = tmpOffsets;		
-			Control[] tmpControls = new Control[index + 1];
-			System.arraycopy(controls, 0, tmpControls, 0, controls.length);
-			controls = tmpControls;
-		}
-		controlOffsets[index] = offset;
-		controls[index] = control;
 		StyleRange style = new StyleRange();
 		Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		int ascent = 2 * size.y / 3;
 		int descent = size.y - ascent;
-		style.metrics = new GlyphMetrics(ascent + MARGIN, descent + MARGIN, size.x + 2 * MARGIN);		 
+		style.metrics = new GlyphMetrics(ascent + MARGIN, descent + MARGIN, size.x + 2 * MARGIN);
+		style.data = control;
 		int[] ranges = {offset, 1};
 		StyleRange[] styles = {style};
 		styledText.setStyleRanges(0,0, ranges, styles);
@@ -140,24 +125,10 @@ public class TextEditor {
 	void addImage(Image image) {
 		int offset = styledText.getCaretOffset();
 		styledText.replaceTextRange(offset, 0, "\uFFFC"); //$NON-NLS-1$
-		int index = 0;		
-		while (index < images.length) {
-			if (imageOffsets[index] == -1 && images[index] == null) break;
-			index++;
-		}
-		if (index == imageOffsets.length) {
-			int[] tmpOffsets = new int[index + 1];
-			System.arraycopy(imageOffsets, 0, tmpOffsets, 0, imageOffsets.length);
-			imageOffsets = tmpOffsets;		
-			Image[] tmpImages = new Image[index + 1];
-			System.arraycopy(images, 0, tmpImages, 0, images.length);
-			images = tmpImages;
-		}
-		imageOffsets[index] = offset;
-		images[index] = image;
 		StyleRange style = new StyleRange();
 		Rectangle rect = image.getBounds();
 		style.metrics = new GlyphMetrics(rect.height, 0, rect.width);
+		style.data = image;
 		int[] ranges = {offset, 1};
 		StyleRange[] styles = {style};
 		styledText.setStyleRanges(0,0, ranges, styles);
@@ -769,6 +740,15 @@ public class TextEditor {
 				setStyle(BASELINE_DOWN);
 			}
 		});
+		ToolItem linkItem = new ToolItem(styleToolBar, SWT.PUSH);
+		linkItem.setImage(iLink);
+		linkItem.setToolTipText(getResourceString("Link")); //$NON-NLS-1$
+		linkItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				setLink();
+			}
+		});
+		
 		CoolItem coolItem = new CoolItem(coolBar, SWT.NONE);
 		coolItem.setControl(styleToolBar);
 		
@@ -933,13 +913,13 @@ public class TextEditor {
 	}
 
 	void disposeRanges(StyleRange[] ranges) {
-		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
+		StyleRange[] allRanges = styledText.getStyleRanges(0, styledText.getCharCount(), false);
 		for (int i = 0; i < ranges.length; i++) {
 			StyleRange style = ranges[i];
 			boolean disposeFg = true, disposeBg = true, disposeStrike= true, disposeUnder= true, disposeBorder = true, disposeFont = true;
 
-			for (int j = 0; j < styles.length; j++) {
-				StyleRange s = styles[j];
+			for (int j = 0; j < allRanges.length; j++) {
+				StyleRange s = allRanges[j];
 				if (disposeFont && style.font == s.font) disposeFont = false;
 				if (disposeFg && style.foreground == s.foreground) disposeFg = false;
 				if (disposeBg && style.background == s.background) disposeBg = false;
@@ -953,6 +933,12 @@ public class TextEditor {
 			if (disposeStrike && style.strikeoutColor != strikeoutColor && style.strikeoutColor != null) style.strikeoutColor.dispose();
 			if (disposeUnder && style.underlineColor != underlineColor && style.underlineColor != null) style.underlineColor.dispose();
 			if (disposeBorder && style.borderColor != borderColor && style.borderColor != null) style.borderColor.dispose();
+			
+			Object data = style.data;
+			if (data != null) {
+				if (data instanceof Image) ((Image)data).dispose();
+				if (data instanceof Control) ((Control)data).dispose();
+			}
 		}
 	}
 
@@ -1060,6 +1046,16 @@ public class TextEditor {
 					case UNDERLINE_DOUBLE:	style.underlineStyle = SWT.UNDERLINE_DOUBLE; break;
 					case UNDERLINE_SQUIGGLE:	style.underlineStyle = SWT.UNDERLINE_SQUIGGLE; break;
 					case UNDERLINE_ERROR:	style.underlineStyle = SWT.UNDERLINE_ERROR; break;
+					case UNDERLINE_LINK:	{
+						if (link != null && link.length() > 0) {
+							style.underlineStyle = SWT.UNDERLINE_LINK;
+							style.data = link;
+						} else {
+							style.underline = false;
+							style.underlineColor = null;
+						}
+						break;
+					}
 				}
 			}
 			if ((styleState & STRIKEOUT) != 0) {
@@ -1085,7 +1081,6 @@ public class TextEditor {
 	void handlePaintObject(PaintObjectEvent event) {
 		GC gc = event.gc;
 		StyleRange style = event.style;
-		int start = style.start;
 		Bullet bullet = event.bullet;
 		if (bullet != null && bullet.type == ST.BULLET_CUSTOM) {
 			Display display = event.display;
@@ -1099,24 +1094,19 @@ public class TextEditor {
 			layout.draw(gc, event.x + BULLET_WIDTH * 2 / 3, event.y);
 			layout.dispose();
 		} else {
-			for (int i = 0; i < imageOffsets.length; i++) {
-				int offset = imageOffsets[i];
-				if (start == offset) {
-					Image image = images[i];
-					int x = event.x;
-					int y = event.y + event.ascent - style.metrics.ascent;
-					gc.drawImage(image, x, y);
-				}
+			Object data = style.data;
+			if (data instanceof Image) {
+				Image image = (Image)data;
+				int x = event.x;
+				int y = event.y + event.ascent - style.metrics.ascent;
+				gc.drawImage(image, x, y);
 			}
-			for (int i = 0; i < controlOffsets.length; i++) {
-				int offset = controlOffsets[i];
-				if (start == offset) {
-					Point pt = controls[i].getSize();
-					int x = event.x + MARGIN;
-					int y = event.y + event.ascent - 2 * pt.y / 3;
-					controls[i].setLocation(x, y);
-					break;
-				}
+			if (data instanceof Control) {
+				Control control = (Control)data;
+				Point pt = control.getSize();
+				int x = event.x + MARGIN;
+				int y = event.y + event.ascent - 2 * pt.y / 3;
+				control.setLocation(x, y);
 			}
 		}
 	}
@@ -1138,33 +1128,6 @@ public class TextEditor {
 
 		// mark styles to be disposed
 		selectedRanges = styledText.getStyleRanges(start, replaceCharCount, false);
-
-		// move/dispose images and controls
-		for (int i = 0; i < imageOffsets.length; i++) {
-			int offset = imageOffsets[i];
-
-			if (start <= offset && offset < start + replaceCharCount) {
-				if (images[i] != null && !images[i].isDisposed()) {
-					images[i].dispose();
-					images[i] = null;
-				}
-				offset = -1;
-			}
-			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
-			imageOffsets[i] = offset;
-		}
-		for (int i = 0; i < controlOffsets.length; i++) {
-			int offset = controlOffsets[i];
-			if (start <= offset && offset < start + replaceCharCount) {
-				if (controls[i] != null && !controls[i].isDisposed()) {
-					controls[i].dispose();
-					controls[i] = null;
-				}
-				offset = -1;
-			}
-			if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
-			controlOffsets[i] = offset;
-		}
 	}
 
 	void initResources() {
@@ -1187,6 +1150,7 @@ public class TextEditor {
 		iBaselineDown = loadImage(display, "font_sml"); //$NON-NLS-1$
 		iBulletList = loadImage(display, "para_bul"); //$NON-NLS-1$
 		iNumberedList = loadImage(display, "para_num"); //$NON-NLS-1$
+		iLink = new Image(display, getClass().getResourceAsStream("link_obj.gif")); //$NON-NLS-1$
 	}
 
 	void installListeners() {
@@ -1196,6 +1160,17 @@ public class TextEditor {
 					insert = !insert;
 				}
 				updateStatusBar();
+				
+				if (event.type == SWT.MouseUp && link != null) {
+					int offset = styledText.getCaretOffset();
+					StyleRange range = offset > 0 ? styledText.getStyleRangeAtOffset(offset-1) : null;
+					if (range != null) {
+						if (link == range.data) {
+							//	TODO
+							System.out.println("LINK: " + link);
+						}
+					}
+				}
 				updateToolBar();
 			}
 		};
@@ -1215,6 +1190,18 @@ public class TextEditor {
 		styledText.addPaintObjectListener(new PaintObjectListener() {
 			public void paintObject(PaintObjectEvent event) {
 				handlePaintObject(event);
+			}
+		});
+		styledText.addListener(SWT.Dispose, new Listener() {
+			public void handleEvent(Event event) {
+				StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
+				for (int i = 0; i < styles.length; i++) {
+					Object data = styles[i].data;
+					if (data != null) {
+						if (data instanceof Image) ((Image)data).dispose();
+						if (data instanceof Control) ((Control)data).dispose();
+					}
+				}
 			}
 		});
 		shell.addControlListener(new ControlAdapter() {
@@ -1335,19 +1322,6 @@ public class TextEditor {
 
 		if (font != null) font.dispose();
 		font = null;
-
-		if (images != null) {
-			for (int i = 0; i < images.length; i++) {
-				if (images[i] != null) images[i].dispose();
-				images[i] = null;
-			}
-		}
-		if (controls != null) {
-			for (int i = 0; i < controls.length; i++) {
-				if (controls[i] != null) controls[i].dispose();
-				controls[i] = null;
-			}
-		}
 	}
 
 	void saveFile() {
@@ -1379,6 +1353,43 @@ public class TextEditor {
 		for (int lineIndex = lineStart; lineIndex <= lineEnd; lineIndex++) {
 			Bullet oldBullet = styledText.getLineBullet(lineIndex);
 			styledText.setLineBullet(lineIndex, 1, oldBullet != null ? null : bullet);
+		}
+	}
+	
+	void setLink() {
+		final Shell dialog = new Shell(shell, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
+		dialog.setLayout(new GridLayout(2, false));
+		dialog.setText(getResourceString("SetLink")); //$NON-NLS-1$
+		Label label = new Label(dialog, SWT.NONE);
+		label.setText(getResourceString("URL")); //$NON-NLS-1$
+		final Text text = new Text(dialog, SWT.SINGLE);
+		text.setLayoutData(new GridData(200, SWT.DEFAULT));
+		if (link != null) {
+			text.setText(link);
+			text.selectAll();
+		}
+		final Button okButton = new Button(dialog, SWT.PUSH);
+		okButton.setText(getResourceString("Ok")); //$NON-NLS-1$
+		final Button cancelButton = new Button(dialog, SWT.PUSH);
+		cancelButton.setText(getResourceString("Cancel")); //$NON-NLS-1$
+		Listener listener = new Listener() {
+			public void handleEvent(Event event) {
+				if (event.widget == okButton) {
+					link = text.getText();
+					setStyle(UNDERLINE_LINK);
+				}
+				dialog.dispose();
+			}
+		};
+		okButton.addListener(SWT.Selection, listener);
+		cancelButton.addListener(SWT.Selection, listener);
+		dialog.setDefaultButton(okButton);
+		dialog.pack();
+		dialog.open();
+		while (!dialog.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
 		}
 	}
 	
@@ -1451,8 +1462,16 @@ public class TextEditor {
 				case UNDERLINE_SQUIGGLE:
 					newRange.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
 					break;
+				case UNDERLINE_LINK:
+					if (link != null && link.length() > 0) {
+						newRange.underlineStyle = SWT.UNDERLINE_LINK;
+						newRange.data = link;
+					} else {
+						newRange.underline = false;
+					}
+					break;
 			}
-			newRange.underlineColor = underlineColor;
+			if (newRange.underline) newRange.underlineColor = underlineColor;
 		}
 		if ((style & BORDER) != 0) {
 			switch (style & BORDER) {
@@ -1528,9 +1547,15 @@ public class TextEditor {
 				mergedRange.strikeoutColor = mergedRange.strikeout ? newRange.strikeoutColor : null;
 			}
 			if ((style & UNDERLINE) != 0) {
-				mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor;
+				if ((style & UNDERLINE_LINK) != 0) {
+					mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor || range.data != newRange.data;
+					if (newRange.data == null) mergedRange.underline = false;
+				} else {
+					mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor;
+				}
 				mergedRange.underlineStyle = mergedRange.underline ? newRange.underlineStyle : SWT.NONE;
 				mergedRange.underlineColor = mergedRange.underline ? newRange.underlineColor : null;
+				mergedRange.data = mergedRange.underline ? newRange.data : null;
 			}
 			if ((style & BORDER) != 0) {
 				if (range.borderStyle != newRange.borderStyle || range.borderColor != newRange.borderColor) {
@@ -1585,6 +1610,7 @@ public class TextEditor {
 
 	void updateToolBar() {
 		styleState = 0;
+		link = null;
 		boolean bold = false, italic = false, underline = false, strikeout = false, border = false;
 		Font font = null;
 		Color foreground = null;
@@ -1614,6 +1640,10 @@ public class TextEditor {
 					case SWT.UNDERLINE_DOUBLE: 	styleState |= UNDERLINE_DOUBLE; break;
 					case SWT.UNDERLINE_SQUIGGLE:	styleState |= UNDERLINE_SQUIGGLE; break;
 					case SWT.UNDERLINE_ERROR: 	styleState |= UNDERLINE_ERROR; break;
+					case SWT.UNDERLINE_LINK: 	
+						styleState |= UNDERLINE_LINK;
+						link = (String)range.data;
+						break;
 				}
 				underlineSingleItem.setSelection((styleState & UNDERLINE_SINGLE) != 0);
 				underlineDoubleItem.setSelection((styleState & UNDERLINE_DOUBLE) != 0);
