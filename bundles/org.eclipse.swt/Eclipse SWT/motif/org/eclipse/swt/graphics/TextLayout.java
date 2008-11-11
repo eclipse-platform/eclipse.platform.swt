@@ -415,27 +415,28 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					int end = run.start + run.length - 1;
 					gc.setFont(getItemFont(run));
 					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+					TextStyle style = run.style;
 					if (fullSelection) {
 						gc.setBackground(selectionBackground);
 						gc.fillRectangle(drawX, drawY, run.width, lineHeight);
-						if (!run.tab && !(run.style != null && run.style.metrics != null)) {
+						if (!run.tab && !(style != null && style.metrics != null)) {
 							gc.setForeground(selectionForeground);
 							gc.drawString(string, drawX, drawRunY, true);
 							drawLines(gc, run, drawX, drawRunY, run.width);
 						}
 					} else {
-						if (run.style != null && run.style.background != null) {
-							Color bg = run.style.background;
+						if (style != null && style.background != null) {
+							Color bg = style.background;
 							gc.setBackground(bg);
 							gc.fillRectangle(drawX, drawRunY, run.width, run.height);
 						}
 						if (!run.tab) {
 							Color fg = foreground;
-							if (run.style != null) {
-								if (run.style.foreground != null) {
-									fg = run.style.foreground;
+							if (style != null) {
+								if (style.foreground != null) {
+									fg = style.foreground;
 								} else {
-									if (run.style.underline && run.style.underlineStyle == SWT.UNDERLINE_LINK) {
+									if (style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
 										if (linkColor == null) {
 											linkColor = new Color(device, LINK_FOREGROUND);
 										}
@@ -443,7 +444,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 									}
 								}
 							}
-							if (!(run.style != null && run.style.metrics != null)) {
+							if (!(style != null && style.metrics != null)) {
 								gc.setForeground(fg);
 								gc.drawString(string, drawX, drawRunY, true);
 								drawLines(gc, run, drawX, drawRunY, run.width);
@@ -458,7 +459,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								int selWidth = gc.stringExtent(string).x;
 								gc.setBackground(selectionBackground);
 								gc.fillRectangle(selX, drawY, selWidth, lineHeight);
-								if (fg != selectionForeground && !(run.style != null && run.style.metrics != null)) {
+								if (fg != selectionForeground && !(style != null && style.metrics != null)) {
 									gc.setForeground(selectionForeground);
 									gc.drawString(string, selX, drawRunY, true);
 									drawLines(gc, run, selX, drawRunY, selWidth);
