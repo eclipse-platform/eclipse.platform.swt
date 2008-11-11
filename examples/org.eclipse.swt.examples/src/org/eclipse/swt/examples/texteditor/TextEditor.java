@@ -65,7 +65,7 @@ public class TextEditor {
 	static final int BORDER_DOT = 1 << 25;
 	static final int BORDER = BORDER_SOLID | BORDER_DASH | BORDER_DOT;
 	
-	static final boolean SAMPLE_TEXT = true;
+	static final boolean SAMPLE_TEXT = false;
 	static final ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");  //$NON-NLS-1$
 
 	static String getResourceString(String key) {
