@@ -5743,10 +5743,25 @@ void handleMouseDown(Event event) {
  * during the mouse move.
  */
 void handleMouseMove(Event event) {
-	if (clickCount == 0) return;
-	doMouseLocationChange(event.x, event.y, true);
-	update();
-	doAutoScroll(event);
+	if (clickCount > 0) {
+		update();
+		doAutoScroll(event);
+		doMouseLocationChange(event.x, event.y, true);
+	} 
+	if (renderer.hasLinks) {
+		int offset = getOffsetAtPoint(event.x, event.y, null, true);
+		Display display = getDisplay();
+		Cursor newCursor = cursor;
+		if (renderer.hasLink(offset)) {
+			newCursor = display.getSystemCursor(SWT.CURSOR_HAND);
+		} else {
+			if (cursor == null) {
+				int type = blockSelection ? SWT.CURSOR_CROSS : SWT.CURSOR_IBEAM;
+				newCursor = display.getSystemCursor(type);
+			}
+		}
+		if (newCursor != getCursor()) super.setCursor(newCursor);
+	}
 }
 /** 
  * Autoscrolling ends when the mouse button is released.
@@ -7006,7 +7021,7 @@ void reset() {
 	topIndex = 0;
 	topIndexY = 0;
 	verticalScrollOffset = 0;
-	horizontalScrollOffset = 0;	
+	horizontalScrollOffset = 0;
 	resetSelection();
 	renderer.setContent(content);
 	if (verticalBar != null) {

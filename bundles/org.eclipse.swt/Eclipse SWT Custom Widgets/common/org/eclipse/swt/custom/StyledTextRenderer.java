@@ -52,6 +52,7 @@ class StyledTextRenderer {
 	StyleRange[] styles;
 	StyleRange[] stylesSet;
 	int stylesSetCount = 0;
+	boolean hasLinks;
 	final static int BULLET_MARGIN = 8;
 	
 	final static boolean COMPACT_STYLES = true;
@@ -486,6 +487,44 @@ int getHeight () {
 	}
 	return totalHeight + styledText.topMargin + styledText.bottomMargin;
 }
+boolean hasLink(int offset) {
+	if (offset == -1) return false;
+	int lineIndex = content.getLineAtOffset(offset);
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	String line = content.getLine(lineIndex);
+	StyledTextEvent event = styledText.getLineStyleData(lineOffset, line);
+	if (event != null) {
+		StyleRange[] styles = event.styles;
+		if (styles != null) {
+			int[] ranges = event.ranges; 
+			if (ranges != null) {
+				for (int i = 0; i < ranges.length; i+=2) {
+					if (ranges[i] <= offset && offset < ranges[i] + ranges[i+1] && styles[i >> 1].underline && styles[i >> 1].underlineStyle == SWT.UNDERLINE_LINK) {
+						return true;
+					}
+				}
+			} else {
+				for (int i = 0; i < styles.length; i++) {
+					if (styles[i].start <= offset && offset < styles[i].start + styles[i].length && styles[i >> 1].underline && styles[i >> 1].underlineStyle == SWT.UNDERLINE_LINK) {
+						return true;
+					}
+				}
+			}
+		}
+	}  else {
+		if (ranges != null) {
+			int rangeCount = styleCount << 1;
+			int index = getRangeIndex(offset, -1, rangeCount);
+			int rangeStart = ranges[index]; 
+			int rangeLength = ranges[index + 1];
+			StyleRange rangeStyle = styles[index >> 1];
+			if (rangeStart <= offset && offset < rangeStart + rangeLength && rangeStyle.underline && rangeStyle.underlineStyle == SWT.UNDERLINE_LINK) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 int getLineAlignment(int index, int defaultAlignment) {
 	if (lines == null) return defaultAlignment;
 	LineInfo info = lines[index];
@@ -650,6 +689,7 @@ StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 	return newStyles;
 }
 StyleRange getStyleRange(StyleRange style) {
+	if (style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) hasLinks = true;
 	if (style.start == 0 && style.length == 0 && style.fontStyle == SWT.NORMAL) return style;
 	StyleRange clone = (StyleRange)style.clone();
 	clone.start = clone.length = 0;
@@ -965,6 +1005,7 @@ void reset() {
 	bullets = null;
 	bulletsIndices = null;
 	redrawLines = null;
+	hasLinks = false;
 }
 void reset(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
@@ -1118,6 +1159,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		ranges = null;
 		styles = null;
 		stylesSet = null;
+		hasLinks = false;
 		return;
 	}
 	if (newRanges == null && COMPACT_STYLES) {
