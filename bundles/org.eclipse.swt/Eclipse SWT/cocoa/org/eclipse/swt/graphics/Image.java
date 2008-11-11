@@ -1031,27 +1031,27 @@ public void setBackground(Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (transparentPixel == -1) return;
-//	byte red = (byte)((transparentPixel >> 16) & 0xFF);
-//	byte green = (byte)((transparentPixel >> 8) & 0xFF);
-//	byte blue = (byte)((transparentPixel >> 0) & 0xFF);
-//	byte newRed = (byte)((int)(color.handle[0] * 255) & 0xFF);
-//	byte newGreen = (byte)((int)(color.handle[1] * 255) & 0xFF);
-//	byte newBlue = (byte)((int)(color.handle[2] * 255) & 0xFF);
-//	int height = OS.CGImageGetHeight(handle);
-//	int bpl = OS.CGImageGetBytesPerRow(handle);
-//	byte[] line = new byte[bpl];
-//	for (int i = 0, offset = 0; i < height; i++, offset += bpl) {
-//		OS.memmove(line, data + offset, bpl);
-//		for (int j = 0; j  < line.length; j += 4) {
-//			if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
-//				line[j + 1] = newRed;
-//				line[j + 2] = newGreen;
-//				line[j + 3] = newBlue;
-//			}
-//		}
-//		OS.memmove(data + offset, line, bpl);
-//	}
-//	transparentPixel = (newRed & 0xFF) << 16 | (newGreen & 0xFF) << 8 | (newBlue & 0xFF);
+	byte red = (byte)((transparentPixel >> 16) & 0xFF);
+	byte green = (byte)((transparentPixel >> 8) & 0xFF);
+	byte blue = (byte)((transparentPixel >> 0) & 0xFF);
+	byte newRed = (byte)((int)(color.handle[0] * 255) & 0xFF);
+	byte newGreen = (byte)((int)(color.handle[1] * 255) & 0xFF);
+	byte newBlue = (byte)((int)(color.handle[2] * 255) & 0xFF);
+	int /*long*/ bpr = imageRep.bytesPerRow();
+	int /*long*/ data = imageRep.bitmapData();
+	byte[] line = new byte[(int)bpr];
+	for (int i = 0, offset = 0; i < height; i++, offset += bpr) {
+		OS.memmove(line, data + offset, bpr);
+		for (int j = 0; j  < line.length; j += 4) {
+			if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
+				line[j + 1] = newRed;
+				line[j + 2] = newGreen;
+				line[j + 3] = newBlue;
+			}
+		}
+		OS.memmove(data + offset, line, bpr);
+	}
+	transparentPixel = (newRed & 0xFF) << 16 | (newGreen & 0xFF) << 8 | (newBlue & 0xFF);
 }
 
 /**
