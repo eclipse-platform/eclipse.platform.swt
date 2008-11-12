@@ -84,12 +84,12 @@ public Region(Device device) {
 	}
 }
 
-Region(Device device, int handle) {
+Region(Device device, int /*long*/ handle) {
 	super(device);
 	this.handle = handle;
 }
 
-public static Region cocoa_new(Device device, int handle) {
+public static Region cocoa_new(Device device, int /*long*/ handle) {
 	return new Region(device, handle);
 }
 
