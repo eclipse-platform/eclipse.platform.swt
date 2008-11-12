@@ -1024,6 +1024,14 @@ public class TextEditor {
 		return null;
 	}
 	
+	void handleKeyDown (Event event) {
+		if (event.keyCode == SWT.INSERT) {
+			insert = !insert;
+		}
+		updateStatusBar();
+		updateToolBar();
+	}
+	
 	void handleModify (ModifyEvent event) {
 		if (newCharCount > 0 && start >= 0) {
 			StyleRange style = new StyleRange();
@@ -1077,6 +1085,26 @@ public class TextEditor {
 		disposeRanges(selectedRanges);
 	}
 
+	void handleMouseDown (Event event) {
+		updateStatusBar();
+		updateToolBar();
+	}
+	
+	void handleMouseUp (Event event) {
+		if (link != null) {
+			int offset = styledText.getCaretOffset();
+			StyleRange range = offset > 0 ? styledText.getStyleRangeAtOffset(offset-1) : null;
+			if (range != null) {
+				if (link == range.data) {
+					//	TODO
+					System.out.println("LINK: " + link);
+				}
+			}
+		}
+		updateStatusBar();
+		updateToolBar();
+	}
+	
 	void handlePaintObject(PaintObjectEvent event) {
 		GC gc = event.gc;
 		StyleRange style = event.style;
@@ -1153,29 +1181,21 @@ public class TextEditor {
 	}
 
 	void installListeners() {
-		Listener caretListener = new Listener() {
+		styledText.addListener(SWT.MouseDown, new Listener() {
 			public void handleEvent(Event event) {
-				if (event.type == SWT.KeyDown && event.keyCode == SWT.INSERT) {
-					insert = !insert;
-				}
-				updateStatusBar();
-				
-				if (event.type == SWT.MouseUp && link != null) {
-					int offset = styledText.getCaretOffset();
-					StyleRange range = offset > 0 ? styledText.getStyleRangeAtOffset(offset-1) : null;
-					if (range != null) {
-						if (link == range.data) {
-							//	TODO
-							System.out.println("LINK: " + link);
-						}
-					}
-				}
-				updateToolBar();
+				handleMouseDown(event);
 			}
-		};
-		styledText.addListener(SWT.MouseDown, caretListener);
-		styledText.addListener(SWT.MouseUp, caretListener);
-		styledText.addListener(SWT.KeyDown, caretListener);
+		});
+		styledText.addListener(SWT.MouseUp, new Listener() {
+			public void handleEvent(Event event) {
+				handleMouseUp(event);
+			}
+		});
+		styledText.addListener(SWT.KeyDown, new Listener() {
+			public void handleEvent(Event event) {
+				handleKeyDown(event);
+			}
+		});
 		styledText.addVerifyListener(new VerifyListener() {
 			public void verifyText(VerifyEvent event) {
 				handleVerifyText(event);
