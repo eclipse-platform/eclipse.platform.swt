@@ -1611,7 +1611,7 @@ public class TextEditor {
 	void updateToolBar() {
 		styleState = 0;
 		link = null;
-		boolean bold = false, italic = false, underline = false, strikeout = false, border = false;
+		boolean bold = false, italic = false;
 		Font font = null;
 		Color foreground = null;
 		Color background = null;
@@ -1627,14 +1627,13 @@ public class TextEditor {
 					if (!bold && (fontStyle & SWT.BOLD) != 0) bold = true;
 					if (!italic && (fontStyle & SWT.ITALIC) != 0) italic = true;
 				}
-			} else { 
+			} else {
 				bold = (range.fontStyle & SWT.BOLD) != 0;
 				italic = (range.fontStyle & SWT.ITALIC) != 0;
 			}
 			foreground = range.foreground;
 			background = range.background;
-			underline = range.underline;
-			if (underline) {
+			if (range.underline) {
 				switch (range.underlineStyle) {
 					case SWT.UNDERLINE_SINGLE:	styleState |= UNDERLINE_SINGLE; break;
 					case SWT.UNDERLINE_DOUBLE: 	styleState |= UNDERLINE_DOUBLE; break;
@@ -1652,14 +1651,12 @@ public class TextEditor {
 				disposeResource(underlineColor);
 				underlineColor = range.underlineColor;
 			}
-			strikeout = range.strikeout;
-			if (strikeout) {
+			if (range.strikeout) {
 				styleState |= STRIKEOUT;
 				disposeResource(strikeoutColor);
 				strikeoutColor = range.strikeoutColor;
 			}
-			border = range.borderStyle != SWT.NONE;
-			if (border) {
+			if (range.borderStyle != SWT.NONE) {
 				switch (range.borderStyle) {
 					case SWT.BORDER_SOLID:	styleState |= BORDER_SOLID; break;
 					case SWT.BORDER_DASH:	styleState |= BORDER_DASH; break;
