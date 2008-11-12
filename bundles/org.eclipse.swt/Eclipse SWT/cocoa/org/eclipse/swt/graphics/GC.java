@@ -891,7 +891,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		path.transformUsingAffineTransform(transform);
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(path, pattern);
+			strokePattern(path, pattern);
 		} else {
 			path.stroke();
 		}
@@ -1075,7 +1075,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		path.lineToPoint(pt);
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(path, pattern);
+			strokePattern(path, pattern);
 		} else {
 			path.stroke();
 		}
@@ -1127,7 +1127,7 @@ public void drawOval(int x, int y, int width, int height) {
 		path.appendBezierPathWithOvalInRect(rect);
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(path, pattern);
+			strokePattern(path, pattern);
 		} else {
 			path.stroke();
 		}
@@ -1174,7 +1174,7 @@ public void drawPath(Path path) {
 		drawPath.appendBezierPath(path.handle);
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(drawPath, pattern);
+			strokePattern(drawPath, pattern);
 		} else {
 			drawPath.stroke();
 		}
@@ -1258,7 +1258,7 @@ public void drawPolygon(int[] pointArray) {
 		path.closePath();
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(path, pattern);
+			strokePattern(path, pattern);
 		} else {
 			path.stroke();
 		}
@@ -1305,7 +1305,7 @@ public void drawPolyline(int[] pointArray) {
 		}
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(path, pattern);
+			strokePattern(path, pattern);
 		} else {
 			path.stroke();
 		}
@@ -1351,7 +1351,7 @@ public void drawRectangle(int x, int y, int width, int height) {
 		path.appendBezierPathWithRect(rect);
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(path, pattern);
+			strokePattern(path, pattern);
 		} else {
 			path.stroke();
 		}
@@ -1421,7 +1421,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
-			fillStroke(path, pattern);
+			strokePattern(path, pattern);
 		} else {
 			path.stroke();
 		}
@@ -2055,8 +2055,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	}
 }
 
-
-void fillStroke(NSBezierPath path, Pattern pattern) {
+void strokePattern(NSBezierPath path, Pattern pattern) {
 	handle.saveGraphicsState();
 	int /*long*/ cgPath = createCGPathRef(path);
 	int /*long*/ cgContext = handle.graphicsPort();
