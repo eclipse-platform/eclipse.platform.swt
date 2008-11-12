@@ -1529,6 +1529,8 @@ public int /*long*/ internal_new_GC (GCData data) {
 		context = NSGraphicsContext.currentContext().id;
 	} else {
 		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (view.window ());
+		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
+		graphicsContext = flippedContext;
 		display.addContext (graphicsContext);
 		context = graphicsContext.id;
 	}
