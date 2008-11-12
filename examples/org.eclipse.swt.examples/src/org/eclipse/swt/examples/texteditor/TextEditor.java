@@ -13,6 +13,7 @@ package org.eclipse.swt.examples.texteditor;
 import java.io.*;
 import java.util.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -1096,8 +1097,12 @@ public class TextEditor {
 			StyleRange range = offset > 0 ? styledText.getStyleRangeAtOffset(offset-1) : null;
 			if (range != null) {
 				if (link == range.data) {
-					//	TODO
-					System.out.println("LINK: " + link);
+					Shell dialog = new Shell(shell);
+					dialog.setLayout(new FillLayout());
+					dialog.setText(getResourceString("Browser")); //$NON-NLS-1$
+					Browser browser = new Browser(dialog, SWT.MOZILLA);
+					browser.setUrl(link);
+					dialog.open();
 				}
 			}
 		}
