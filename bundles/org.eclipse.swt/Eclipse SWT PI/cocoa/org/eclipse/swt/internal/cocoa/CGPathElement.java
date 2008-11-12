@@ -15,6 +15,6 @@ public class CGPathElement {
 	/** @field cast=(CGPathElementType) */
 	public int type;
 	/** @field cast=(CGPoint *) */
-	public int points;
-	public static final int sizeof = 8;
+	public int /*long*/ points;
+	public static final int sizeof = OS.CGPathElement_sizeof();
 }
