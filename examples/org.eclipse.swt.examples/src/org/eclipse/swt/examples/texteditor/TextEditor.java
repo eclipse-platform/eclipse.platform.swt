@@ -555,7 +555,7 @@ public class TextEditor {
 		MenuItem underlineColorItem = new MenuItem(underlineMenu, SWT.PUSH);
 		underlineColorItem.setText(getResourceString("Color_menuitem")); //$NON-NLS-1$
 		underlineColorItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {			
+			public void widgetSelected(SelectionEvent event) {
 				ColorDialog dialog = new ColorDialog(shell);
 				RGB rgb = underlineColor != null ? underlineColor.getRGB() : null;
 				dialog.setRGB(rgb);
@@ -569,7 +569,7 @@ public class TextEditor {
 					else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
 					else if (underlineErrorItem.getSelection()) setStyle(UNDERLINE_ERROR);
 					else if (underlineSquiggleItem.getSelection()) setStyle(UNDERLINE_SQUIGGLE);
-				}					
+				}
 			}
 		});
 		
@@ -596,7 +596,7 @@ public class TextEditor {
 		strikeoutControl.setImage(iStrikeout);
 		strikeoutControl.setToolTipText(getResourceString("Strikeout")); //$NON-NLS-1$
 		strikeoutControl.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {				
+			public void widgetSelected(SelectionEvent event) {
 				if (event.detail == SWT.ARROW) {
 					ColorDialog dialog = new ColorDialog(shell);
 					RGB rgb = strikeoutColor != null ? strikeoutColor.getRGB() : null;
@@ -633,7 +633,6 @@ public class TextEditor {
 				}
 			}
 		});
-		
 		
 		borderDotItem = new MenuItem(borderMenu, SWT.RADIO);
 		borderDotItem.setText(getResourceString("Dot")); //$NON-NLS-1$
@@ -1046,13 +1045,13 @@ public class TextEditor {
 					case UNDERLINE_DOUBLE:	style.underlineStyle = SWT.UNDERLINE_DOUBLE; break;
 					case UNDERLINE_SQUIGGLE:	style.underlineStyle = SWT.UNDERLINE_SQUIGGLE; break;
 					case UNDERLINE_ERROR:	style.underlineStyle = SWT.UNDERLINE_ERROR; break;
-					case UNDERLINE_LINK:	{
+					case UNDERLINE_LINK: {
+						style.underlineColor = null;
 						if (link != null && link.length() > 0) {
 							style.underlineStyle = SWT.UNDERLINE_LINK;
 							style.data = link;
 						} else {
 							style.underline = false;
-							style.underlineColor = null;
 						}
 						break;
 					}
@@ -1449,6 +1448,7 @@ public class TextEditor {
 		}
 		if ((style & UNDERLINE) != 0) {
 			newRange.underline = true;
+			newRange.underlineColor = underlineColor;
 			switch (style & UNDERLINE) {
 				case UNDERLINE_SINGLE:
 					newRange.underlineStyle = SWT.UNDERLINE_SINGLE;
@@ -1463,6 +1463,7 @@ public class TextEditor {
 					newRange.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
 					break;
 				case UNDERLINE_LINK:
+					newRange.underlineColor = null;
 					if (link != null && link.length() > 0) {
 						newRange.underlineStyle = SWT.UNDERLINE_LINK;
 						newRange.data = link;
@@ -1471,7 +1472,6 @@ public class TextEditor {
 					}
 					break;
 			}
-			if (newRange.underline) newRange.underlineColor = underlineColor;
 		}
 		if ((style & BORDER) != 0) {
 			switch (style & BORDER) {
@@ -1548,13 +1548,17 @@ public class TextEditor {
 			}
 			if ((style & UNDERLINE) != 0) {
 				if ((style & UNDERLINE_LINK) != 0) {
-					mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor || range.data != newRange.data;
-					if (newRange.data == null) mergedRange.underline = false;
+					if (link != null && link.length() > 0) {
+						mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle  || range.data != newRange.data;
+					} else {
+						mergedRange.underline = false;
+					}
+					mergedRange.underlineColor = null;
 				} else {
 					mergedRange.underline = !range.underline || range.underlineStyle != newRange.underlineStyle || range.underlineColor != newRange.underlineColor;
+					mergedRange.underlineColor = mergedRange.underline ? newRange.underlineColor : null;
 				}
 				mergedRange.underlineStyle = mergedRange.underline ? newRange.underlineStyle : SWT.NONE;
-				mergedRange.underlineColor = mergedRange.underline ? newRange.underlineColor : null;
 				mergedRange.data = mergedRange.underline ? newRange.data : null;
 			}
 			if ((style & BORDER) != 0) {
@@ -1644,12 +1648,14 @@ public class TextEditor {
 						link = (String)range.data;
 						break;
 				}
-				underlineSingleItem.setSelection((styleState & UNDERLINE_SINGLE) != 0);
-				underlineDoubleItem.setSelection((styleState & UNDERLINE_DOUBLE) != 0);
-				underlineErrorItem.setSelection((styleState & UNDERLINE_ERROR) != 0);
-				underlineSquiggleItem.setSelection((styleState & UNDERLINE_SQUIGGLE) != 0);
-				disposeResource(underlineColor);
-				underlineColor = range.underlineColor;
+				if (range.underlineStyle != SWT.UNDERLINE_LINK) {
+					underlineSingleItem.setSelection((styleState & UNDERLINE_SINGLE) != 0);
+					underlineDoubleItem.setSelection((styleState & UNDERLINE_DOUBLE) != 0);
+					underlineErrorItem.setSelection((styleState & UNDERLINE_ERROR) != 0);
+					underlineSquiggleItem.setSelection((styleState & UNDERLINE_SQUIGGLE) != 0);
+					disposeResource(underlineColor);
+					underlineColor = range.underlineColor;
+				}
 			}
 			if (range.strikeout) {
 				styleState |= STRIKEOUT;
