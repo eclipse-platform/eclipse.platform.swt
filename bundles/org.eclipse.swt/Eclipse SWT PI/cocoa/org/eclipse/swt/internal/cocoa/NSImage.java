@@ -51,6 +51,11 @@ public NSImage initByReferencingFile(NSString fileName) {
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
+public NSImage initWithContentsOfFile(NSString fileName) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_, fileName != null ? fileName.id : 0);
+	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
+}
+
 public id initWithData(NSData data) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithData_, data != null ? data.id : 0);
 	return result != 0 ? new id(result) : null;
@@ -59,6 +64,15 @@ public id initWithData(NSData data) {
 public NSImage initWithSize(NSSize aSize) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithSize_, aSize);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
+}
+
+public void lockFocus() {
+	OS.objc_msgSend(this.id, OS.sel_lockFocus);
+}
+
+public NSArray representations() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_representations);
+	return result != 0 ? new NSArray(result) : null;
 }
 
 public void setCacheMode(int /*long*/ mode) {
@@ -73,6 +87,10 @@ public NSSize size() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_size);
 	return result;
+}
+
+public void unlockFocus() {
+	OS.objc_msgSend(this.id, OS.sel_unlockFocus);
 }
 
 }

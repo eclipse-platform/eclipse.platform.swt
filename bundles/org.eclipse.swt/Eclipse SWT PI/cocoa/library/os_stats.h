@@ -27,8 +27,11 @@ extern char* OS_nativeFunctionNames[];
 typedef enum {
 	CFRelease_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
+	CGBitmapContextCreate_FUNC,
+	CGBitmapContextGetData_FUNC,
 	CGContextAddPath_FUNC,
 	CGContextCopyPath_FUNC,
+	CGContextRelease_FUNC,
 	CGContextReplacePathWithStrokedPath_FUNC,
 	CGContextRestoreGState_FUNC,
 	CGContextSaveGState_FUNC,
@@ -189,6 +192,7 @@ typedef enum {
 	NSHTMLPboardType_FUNC,
 	NSIntersectionRect_FUNC,
 	NSLinkAttributeName_FUNC,
+	NSNumberOfColorComponents_FUNC,
 	NSParagraphStyleAttributeName_FUNC,
 	NSPoint_1sizeof_FUNC,
 	NSPrintAllPages_FUNC,
@@ -622,7 +626,7 @@ typedef enum {
 #ifndef JNI64
 	objc_1msgSend__II_3I_FUNC,
 #else
-	objc_1msgSend__JJ_3I_FUNC,
+	objc_1msgSend__JJ_3J_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__II_3III_FUNC,
@@ -631,6 +635,7 @@ typedef enum {
 #endif
 	objc_1msgSend__JJFD_FUNC,
 	objc_1msgSend__JJI_FUNC,
+	objc_1msgSend__JJ_3I_FUNC,
 #ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I_FUNC,
 #else

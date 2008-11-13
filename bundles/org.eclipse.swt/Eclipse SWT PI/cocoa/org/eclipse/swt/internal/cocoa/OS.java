@@ -507,6 +507,7 @@ public static final int /*long*/ sel_bezierPath = sel_registerName("bezierPath")
 public static final int /*long*/ sel_bezierPathByFlatteningPath = sel_registerName("bezierPathByFlatteningPath");
 public static final int /*long*/ sel_bezierPathWithRect_ = sel_registerName("bezierPathWithRect:");
 public static final int /*long*/ sel_bitmapData = sel_registerName("bitmapData");
+public static final int /*long*/ sel_bitmapFormat = sel_registerName("bitmapFormat");
 public static final int /*long*/ sel_bitsPerPixel = sel_registerName("bitsPerPixel");
 public static final int /*long*/ sel_bitsPerSample = sel_registerName("bitsPerSample");
 public static final int /*long*/ sel_blackColor = sel_registerName("blackColor");
@@ -558,6 +559,7 @@ public static final int /*long*/ sel_closePath = sel_registerName("closePath");
 public static final int /*long*/ sel_code = sel_registerName("code");
 public static final int /*long*/ sel_collapseItem_ = sel_registerName("collapseItem:");
 public static final int /*long*/ sel_color = sel_registerName("color");
+public static final int /*long*/ sel_colorSpaceName = sel_registerName("colorSpaceName");
 public static final int /*long*/ sel_colorUsingColorSpace_ = sel_registerName("colorUsingColorSpace:");
 public static final int /*long*/ sel_colorUsingColorSpaceName_ = sel_registerName("colorUsingColorSpaceName:");
 public static final int /*long*/ sel_colorWithDeviceRed_green_blue_alpha_ = sel_registerName("colorWithDeviceRed:green:blue:alpha:");
@@ -727,6 +729,7 @@ public static final int /*long*/ sel_frameRectForContentRect_ = sel_registerName
 public static final int /*long*/ sel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_ = sel_registerName("frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:");
 public static final int /*long*/ sel_fullPathForApplication_ = sel_registerName("fullPathForApplication:");
 public static final int /*long*/ sel_generalPasteboard = sel_registerName("generalPasteboard");
+public static final int /*long*/ sel_getBitmapDataPlanes_ = sel_registerName("getBitmapDataPlanes:");
 public static final int /*long*/ sel_getBytes_ = sel_registerName("getBytes:");
 public static final int /*long*/ sel_getBytes_length_ = sel_registerName("getBytes:length:");
 public static final int /*long*/ sel_getCharacters_ = sel_registerName("getCharacters:");
@@ -766,6 +769,7 @@ public static final int /*long*/ sel_iconForFileType_ = sel_registerName("iconFo
 public static final int /*long*/ sel_ignore = sel_registerName("ignore");
 public static final int /*long*/ sel_ignoreModifierKeysWhileDragging = sel_registerName("ignoreModifierKeysWhileDragging");
 public static final int /*long*/ sel_imageInterpolation = sel_registerName("imageInterpolation");
+public static final int /*long*/ sel_imageRepWithData_ = sel_registerName("imageRepWithData:");
 public static final int /*long*/ sel_imageablePageBounds = sel_registerName("imageablePageBounds");
 public static final int /*long*/ sel_increment = sel_registerName("increment");
 public static final int /*long*/ sel_indentationPerLevel = sel_registerName("indentationPerLevel");
@@ -780,8 +784,10 @@ public static final int /*long*/ sel_initWithBitmapDataPlanes_pixelsWide_pixelsH
 public static final int /*long*/ sel_initWithContainerSize_ = sel_registerName("initWithContainerSize:");
 public static final int /*long*/ sel_initWithContentRect_styleMask_backing_defer_ = sel_registerName("initWithContentRect:styleMask:backing:defer:");
 public static final int /*long*/ sel_initWithContentRect_styleMask_backing_defer_screen_ = sel_registerName("initWithContentRect:styleMask:backing:defer:screen:");
+public static final int /*long*/ sel_initWithContentsOfFile_ = sel_registerName("initWithContentsOfFile:");
 public static final int /*long*/ sel_initWithData_ = sel_registerName("initWithData:");
 public static final int /*long*/ sel_initWithDictionary_ = sel_registerName("initWithDictionary:");
+public static final int /*long*/ sel_initWithFocusedViewRect_ = sel_registerName("initWithFocusedViewRect:");
 public static final int /*long*/ sel_initWithFrame_ = sel_registerName("initWithFrame:");
 public static final int /*long*/ sel_initWithFrame_frameName_groupName_ = sel_registerName("initWithFrame:frameName:groupName:");
 public static final int /*long*/ sel_initWithFrame_pixelFormat_ = sel_registerName("initWithFrame:pixelFormat:");
@@ -851,6 +857,7 @@ public static final int /*long*/ sel_localizedDescription = sel_registerName("lo
 public static final int /*long*/ sel_location = sel_registerName("location");
 public static final int /*long*/ sel_locationForGlyphAtIndex_ = sel_registerName("locationForGlyphAtIndex:");
 public static final int /*long*/ sel_locationInWindow = sel_registerName("locationInWindow");
+public static final int /*long*/ sel_lockFocus = sel_registerName("lockFocus");
 public static final int /*long*/ sel_lowercaseString = sel_registerName("lowercaseString");
 public static final int /*long*/ sel_mainFrame = sel_registerName("mainFrame");
 public static final int /*long*/ sel_mainMenu = sel_registerName("mainMenu");
@@ -903,6 +910,7 @@ public static final int /*long*/ sel_numberOfColumns = sel_registerName("numberO
 public static final int /*long*/ sel_numberOfComponents = sel_registerName("numberOfComponents");
 public static final int /*long*/ sel_numberOfGlyphs = sel_registerName("numberOfGlyphs");
 public static final int /*long*/ sel_numberOfItems = sel_registerName("numberOfItems");
+public static final int /*long*/ sel_numberOfPlanes = sel_registerName("numberOfPlanes");
 public static final int /*long*/ sel_numberOfRows = sel_registerName("numberOfRows");
 public static final int /*long*/ sel_numberOfRowsInTableView_ = sel_registerName("numberOfRowsInTableView:");
 public static final int /*long*/ sel_numberOfSelectedRows = sel_registerName("numberOfSelectedRows");
@@ -998,6 +1006,7 @@ public static final int /*long*/ sel_removeTableColumn_ = sel_registerName("remo
 public static final int /*long*/ sel_removeTemporaryAttribute_forCharacterRange_ = sel_registerName("removeTemporaryAttribute:forCharacterRange:");
 public static final int /*long*/ sel_replaceCharactersInRange_withString_ = sel_registerName("replaceCharactersInRange:withString:");
 public static final int /*long*/ sel_representation = sel_registerName("representation");
+public static final int /*long*/ sel_representations = sel_registerName("representations");
 public static final int /*long*/ sel_request = sel_registerName("request");
 public static final int /*long*/ sel_requestWithURL_ = sel_registerName("requestWithURL:");
 public static final int /*long*/ sel_resignFirstResponder = sel_registerName("resignFirstResponder");
@@ -1330,6 +1339,7 @@ public static final int /*long*/ sel_types = sel_registerName("types");
 public static final int /*long*/ sel_typesetter = sel_registerName("typesetter");
 public static final int /*long*/ sel_unarchiveObjectWithData_ = sel_registerName("unarchiveObjectWithData:");
 public static final int /*long*/ sel_unhideAllApplications_ = sel_registerName("unhideAllApplications:");
+public static final int /*long*/ sel_unlockFocus = sel_registerName("unlockFocus");
 public static final int /*long*/ sel_unmarkText = sel_registerName("unmarkText");
 public static final int /*long*/ sel_unregisterDraggedTypes = sel_registerName("unregisterDraggedTypes");
 public static final int /*long*/ sel_use = sel_registerName("use");
@@ -2342,6 +2352,7 @@ public static final int NSWritingDirectionRightToLeft = 1;
 public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFStringEncodingUTF8 = 134217984;
+public static final int kCGImageAlphaOnly = 7;
 public static final int kCGLineCapButt = 0;
 public static final int kCGLineCapRound = 1;
 public static final int kCGLineCapSquare = 2;
@@ -3588,6 +3599,10 @@ public static final native void NSBeep();
  */
 public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
 /**
+ * @param colorSpaceName cast=(NSString*)
+ */
+public static final native int /*long*/ NSNumberOfColorComponents(int /*long*/ colorSpaceName);
+/**
  * @param cf cast=(CFTypeRef)
  */
 public static final native void CFRelease(int /*long*/ cf);
@@ -3600,10 +3615,28 @@ public static final native void CFRelease(int /*long*/ cf);
  */
 public static final native int /*long*/ CFURLCreateStringByAddingPercentEscapes(int /*long*/ allocator, int /*long*/ originalString, int /*long*/ charactersToLeaveUnescaped, int /*long*/ legalURLCharactersToBeEscaped, int encoding);
 /**
+ * @param data cast=(void*)
+ * @param width cast=(size_t)
+ * @param height cast=(size_t)
+ * @param bitsPerComponent cast=(size_t)
+ * @param bytesPerRow cast=(size_t)
+ * @param colorspace cast=(CGColorSpaceRef)
+ * @param bitmapInfo cast=(CGBitmapInfo)
+ */
+public static final native int /*long*/ CGBitmapContextCreate(int /*long*/ data, int /*long*/ width, int /*long*/ height, int /*long*/ bitsPerComponent, int /*long*/ bytesPerRow, int /*long*/ colorspace, int bitmapInfo);
+/**
+ * @param c cast=(CGContextRef)
+ */
+public static final native int /*long*/ CGBitmapContextGetData(int /*long*/ c);
+/**
  * @param context cast=(CGContextRef)
  * @param path cast=(CGPathRef)
  */
 public static final native void CGContextAddPath(int /*long*/ context, int /*long*/ path);
+/**
+ * @param c cast=(CGContextRef)
+ */
+public static final native void CGContextRelease(int /*long*/ c);
 /**
  * @param c cast=(CGContextRef)
  */
@@ -3954,15 +3987,17 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6);
 /** @method flags=cast */
-public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0);
 /** @method flags=cast */
-public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] arg0);
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
 /** @method flags=cast */
 public static final native int objc_msgSend(int id, int sel, float arg0);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, float arg0, double arg1);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, int arg0);
+/** @method flags=cast */
+public static final native long objc_msgSend(long id, long sel, int[] arg0);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSAffineTransformStruct result, int /*long*/ id, int /*long*/ sel);
 /** @method flags=cast */

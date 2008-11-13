@@ -14,13 +14,16 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 361;
-int OS_nativeFunctionCallCount[361];
+int OS_nativeFunctionCount = 365;
+int OS_nativeFunctionCallCount[365];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
+	"CGBitmapContextCreate",
+	"CGBitmapContextGetData",
 	"CGContextAddPath",
 	"CGContextCopyPath",
+	"CGContextRelease",
 	"CGContextReplacePathWithStrokedPath",
 	"CGContextRestoreGState",
 	"CGContextSaveGState",
@@ -181,6 +184,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSHTMLPboardType",
 	"NSIntersectionRect",
 	"NSLinkAttributeName",
+	"NSNumberOfColorComponents",
 	"NSParagraphStyleAttributeName",
 	"NSPoint_1sizeof",
 	"NSPrintAllPages",
@@ -614,7 +618,7 @@ char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"objc_1msgSend__II_3I",
 #else
-	"objc_1msgSend__JJ_3I",
+	"objc_1msgSend__JJ_3J",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__II_3III",
@@ -623,6 +627,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"objc_1msgSend__JJFD",
 	"objc_1msgSend__JJI",
+	"objc_1msgSend__JJ_3I",
 #ifndef JNI64
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I",
 #else

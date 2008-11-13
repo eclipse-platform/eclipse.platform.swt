@@ -64,8 +64,16 @@ public void restoreGraphicsState() {
 	OS.objc_msgSend(this.id, OS.sel_restoreGraphicsState);
 }
 
+public static void static_restoreGraphicsState() {
+	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_restoreGraphicsState);
+}
+
 public void saveGraphicsState() {
 	OS.objc_msgSend(this.id, OS.sel_saveGraphicsState);
+}
+
+public static void static_saveGraphicsState() {
+	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_saveGraphicsState);
 }
 
 public void setCompositingOperation(int /*long*/ operation) {

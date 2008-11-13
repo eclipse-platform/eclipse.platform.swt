@@ -37,6 +37,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 }
 #endif
 
+#ifndef NO_CGBitmapContextCreate
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGBitmapContextCreate)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jint arg6)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGBitmapContextCreate_FUNC);
+	rc = (jintLong)CGBitmapContextCreate((void*)arg0, (size_t)arg1, (size_t)arg2, (size_t)arg3, (size_t)arg4, (CGColorSpaceRef)arg5, (CGBitmapInfo)arg6);
+	OS_NATIVE_EXIT(env, that, CGBitmapContextCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGBitmapContextGetData
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGBitmapContextGetData)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGBitmapContextGetData_FUNC);
+	rc = (jintLong)CGBitmapContextGetData((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGBitmapContextGetData_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGContextAddPath
 JNIEXPORT void JNICALL OS_NATIVE(CGContextAddPath)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -64,6 +88,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGContextCopyPath)
 	}
 	OS_NATIVE_EXIT(env, that, CGContextCopyPath_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_CGContextRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGContextRelease)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGContextRelease_FUNC);
+	CGContextRelease((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextRelease_FUNC);
 }
 #endif
 
@@ -2012,6 +2046,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSLinkAttributeName)
 	OS_NATIVE_ENTER(env, that, NSLinkAttributeName_FUNC);
 	rc = (jintLong)NSLinkAttributeName;
 	OS_NATIVE_EXIT(env, that, NSLinkAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSNumberOfColorComponents
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSNumberOfColorComponents)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSNumberOfColorComponents_FUNC);
+	rc = (jintLong)NSNumberOfColorComponents((NSString*)arg0);
+	OS_NATIVE_EXIT(env, that, NSNumberOfColorComponents_FUNC);
 	return rc;
 }
 #endif
@@ -4656,28 +4702,28 @@ fail:
 }
 #endif
 
-#if (!defined(NO_objc_1msgSend__II_3I) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ_3I) && defined(JNI64))
+#if (!defined(NO_objc_1msgSend__II_3I) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ_3J) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2)
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
 #else
-JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2)
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3J)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
 #endif
 {
-	jint *lparg2=NULL;
+	jintLong *lparg2=NULL;
 	jintLong rc = 0;
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3I_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3I_FUNC);
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3J_FUNC);
 #endif
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jint *))objc_msgSend)(arg0, arg1, lparg2);
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong *))objc_msgSend)(arg0, arg1, lparg2);
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3I_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3I_FUNC);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3J_FUNC);
 #endif
 	return rc;
 }
@@ -4730,6 +4776,22 @@ JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJI)
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJI_FUNC);
 	rc = (jlong)((jlong (*)(jlong, jlong, jint))objc_msgSend)(arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__JJ_3I
+JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJ_3I)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3I_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)((jlong (*)(jlong, jlong, jint *))objc_msgSend)(arg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3I_FUNC);
 	return rc;
 }
 #endif

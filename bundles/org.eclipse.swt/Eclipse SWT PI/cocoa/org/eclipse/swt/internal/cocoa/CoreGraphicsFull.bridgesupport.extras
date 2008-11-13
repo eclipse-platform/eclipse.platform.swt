@@ -416,7 +416,7 @@
   <enum name="kCGImageAlphaNone"></enum>
   <enum name="kCGImageAlphaNoneSkipFirst"></enum>
   <enum name="kCGImageAlphaNoneSkipLast"></enum>
-  <enum name="kCGImageAlphaOnly"></enum>
+  <enum name="kCGImageAlphaOnly" swt_gen="true"></enum>
   <enum name="kCGImageAlphaPremultipliedFirst"></enum>
   <enum name="kCGImageAlphaPremultipliedLast"></enum>
   <enum name="kCGInterpolationDefault"></enum>
@@ -642,15 +642,15 @@
     <arg name="pConfigRef"></arg>
     <retval></retval>
   </function>
-  <function name="CGBitmapContextCreate">
-    <arg name="data"></arg>
-    <arg name="width"></arg>
-    <arg name="height"></arg>
-    <arg name="bitsPerComponent"></arg>
-    <arg name="bytesPerRow"></arg>
-    <arg name="colorspace"></arg>
-    <arg name="bitmapInfo"></arg>
-    <retval></retval>
+  <function name="CGBitmapContextCreate" swt_gen="true">
+    <arg name="data" swt_gen="true"></arg>
+    <arg name="width" swt_gen="true"></arg>
+    <arg name="height" swt_gen="true"></arg>
+    <arg name="bitsPerComponent" swt_gen="true"></arg>
+    <arg name="bytesPerRow" swt_gen="true"></arg>
+    <arg name="colorspace" swt_gen="true"></arg>
+    <arg name="bitmapInfo" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGBitmapContextCreateImage">
     <arg name="c"></arg>
@@ -680,9 +680,9 @@
     <arg name="c"></arg>
     <retval></retval>
   </function>
-  <function name="CGBitmapContextGetData">
-    <arg name="c"></arg>
-    <retval></retval>
+  <function name="CGBitmapContextGetData" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGBitmapContextGetHeight">
     <arg name="c"></arg>
@@ -1178,8 +1178,8 @@
     <arg name="mode"></arg>
     <retval></retval>
   </function>
-  <function name="CGContextRelease">
-    <arg name="c"></arg>
+  <function name="CGContextRelease" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
   </function>
   <function name="CGContextReplacePathWithStrokedPath" swt_gen="true">
     <arg name="c" swt_gen="true"></arg>
