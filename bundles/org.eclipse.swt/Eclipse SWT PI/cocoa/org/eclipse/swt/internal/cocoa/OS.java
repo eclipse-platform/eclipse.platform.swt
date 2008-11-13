@@ -736,10 +736,12 @@ public static final int /*long*/ sel_getCharacters_ = sel_registerName("getChara
 public static final int /*long*/ sel_getCharacters_range_ = sel_registerName("getCharacters:range:");
 public static final int /*long*/ sel_getComponents_ = sel_registerName("getComponents:");
 public static final int /*long*/ sel_getGlyphs_range_ = sel_registerName("getGlyphs:range:");
+public static final int /*long*/ sel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_ = sel_registerName("getGlyphsInRange:glyphs:characterIndexes:glyphInscriptions:elasticBits:bidiLevels:");
 public static final int /*long*/ sel_getIndexes_maxCount_inIndexRange_ = sel_registerName("getIndexes:maxCount:inIndexRange:");
 public static final int /*long*/ sel_getInfoForFile_application_type_ = sel_registerName("getInfoForFile:application:type:");
 public static final int /*long*/ sel_glyphIndexForCharacterAtIndex_ = sel_registerName("glyphIndexForCharacterAtIndex:");
 public static final int /*long*/ sel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_ = sel_registerName("glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:");
+public static final int /*long*/ sel_glyphRangeForCharacterRange_actualCharacterRange_ = sel_registerName("glyphRangeForCharacterRange:actualCharacterRange:");
 public static final int /*long*/ sel_glyphRangeForTextContainer_ = sel_registerName("glyphRangeForTextContainer:");
 public static final int /*long*/ sel_goBack = sel_registerName("goBack");
 public static final int /*long*/ sel_goForward = sel_registerName("goForward");
@@ -981,6 +983,7 @@ public static final int /*long*/ sel_printerWithName_ = sel_registerName("printe
 public static final int /*long*/ sel_propertyListForType_ = sel_registerName("propertyListForType:");
 public static final int /*long*/ sel_rangeValue = sel_registerName("rangeValue");
 public static final int /*long*/ sel_recentSearches = sel_registerName("recentSearches");
+public static final int /*long*/ sel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_ = sel_registerName("rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:");
 public static final int /*long*/ sel_rectOfColumn_ = sel_registerName("rectOfColumn:");
 public static final int /*long*/ sel_rectOfRow_ = sel_registerName("rectOfRow:");
 public static final int /*long*/ sel_redComponent = sel_registerName("redComponent");
@@ -3836,8 +3839,19 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 /**
  * @method flags=cast
  * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, NSRange arg1, int /*long*/ arg2, int /*long*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
 /**
  * @method flags=cast
  * @param arg0 flags=struct
@@ -4016,6 +4030,11 @@ public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ 
 public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRange result, int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSend_stret(NSRange result, int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

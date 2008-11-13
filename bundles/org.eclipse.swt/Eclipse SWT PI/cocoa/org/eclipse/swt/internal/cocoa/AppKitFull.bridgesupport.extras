@@ -9944,14 +9944,14 @@
       <arg name="elasticBuffer"></arg>
       <retval></retval>
     </method>
-    <method selector="getGlyphsInRange:glyphs:characterIndexes:glyphInscriptions:elasticBits:bidiLevels:">
-      <arg name="glyphRange"></arg>
-      <arg name="glyphBuffer"></arg>
-      <arg name="charIndexBuffer"></arg>
-      <arg name="inscribeBuffer"></arg>
-      <arg name="elasticBuffer"></arg>
-      <arg name="bidiLevelBuffer"></arg>
-      <retval></retval>
+    <method selector="getGlyphsInRange:glyphs:characterIndexes:glyphInscriptions:elasticBits:bidiLevels:" swt_gen="true">
+      <arg name="glyphRange" swt_gen="true"></arg>
+      <arg name="glyphBuffer" swt_gen="true"></arg>
+      <arg name="charIndexBuffer" swt_gen="true"></arg>
+      <arg name="inscribeBuffer" swt_gen="true"></arg>
+      <arg name="elasticBuffer" swt_gen="true"></arg>
+      <arg name="bidiLevelBuffer" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="getLineFragmentInsertionPointsForCharacterAtIndex:alternatePositions:inDisplayOrder:positions:characterIndexes:">
       <arg name="charIndex"></arg>
@@ -9998,10 +9998,10 @@
       <arg name="container"></arg>
       <retval></retval>
     </method>
-    <method selector="glyphRangeForCharacterRange:actualCharacterRange:">
-      <arg name="charRange"></arg>
-      <arg name="actualCharRange"></arg>
-      <retval></retval>
+    <method selector="glyphRangeForCharacterRange:actualCharacterRange:" swt_gen="true">
+      <arg name="charRange" swt_gen="true"></arg>
+      <arg name="actualCharRange" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="glyphRangeForTextContainer:" swt_gen="true">
       <arg name="container" swt_gen="true"></arg>
@@ -10127,12 +10127,12 @@
       <arg name="glyphIndex"></arg>
       <retval></retval>
     </method>
-    <method selector="rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:">
-      <arg name="charRange"></arg>
-      <arg name="selCharRange"></arg>
-      <arg name="container"></arg>
-      <arg name="rectCount"></arg>
-      <retval></retval>
+    <method selector="rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:" swt_gen="true">
+      <arg name="charRange" swt_gen="true"></arg>
+      <arg name="selCharRange" swt_gen="true"></arg>
+      <arg name="container" swt_gen="true"></arg>
+      <arg name="rectCount" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:">
       <arg name="glyphRange"></arg>
