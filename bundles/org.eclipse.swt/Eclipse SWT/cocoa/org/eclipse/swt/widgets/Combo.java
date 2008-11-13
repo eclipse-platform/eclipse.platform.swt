@@ -1358,7 +1358,7 @@ public void setItems (String [] items) {
  * 
  * @since 3.4
  */
-/*public*/ void setListVisible (boolean visible) {
+public void setListVisible (boolean visible) {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		((NSPopUpButton)view).setPullsDown(visible);
