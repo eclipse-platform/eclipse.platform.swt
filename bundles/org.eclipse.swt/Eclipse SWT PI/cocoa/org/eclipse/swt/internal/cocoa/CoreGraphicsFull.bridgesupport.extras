@@ -973,8 +973,8 @@
     <arg name="c"></arg>
     <arg name="mediaBox"></arg>
   </function>
-  <function name="CGContextBeginPath" swt_gen="true">
-    <arg name="c" swt_gen="true"></arg>
+  <function name="CGContextBeginPath">
+    <arg name="c"></arg>
   </function>
   <function name="CGContextBeginTransparencyLayer">
     <arg name="context"></arg>
@@ -1075,9 +1075,9 @@
     <arg name="c"></arg>
     <arg name="page"></arg>
   </function>
-  <function name="CGContextDrawPath" swt_gen="true">
-    <arg name="c" swt_gen="true"></arg>
-    <arg name="mode" swt_gen="true"></arg>
+  <function name="CGContextDrawPath">
+    <arg name="c"></arg>
+    <arg name="mode"></arg>
   </function>
   <function name="CGContextDrawRadialGradient">
     <arg name="context"></arg>
@@ -1113,8 +1113,8 @@
     <arg name="context"></arg>
     <arg name="rect"></arg>
   </function>
-  <function name="CGContextFillPath" swt_gen="true">
-    <arg name="c" swt_gen="true"></arg>
+  <function name="CGContextFillPath">
+    <arg name="c"></arg>
   </function>
   <function name="CGContextFillRect">
     <arg name="c"></arg>

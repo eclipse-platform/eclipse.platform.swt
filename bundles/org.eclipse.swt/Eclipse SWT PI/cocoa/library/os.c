@@ -2685,6 +2685,31 @@ JNIEXPORT void JNICALL OS_NATIVE(instrumentObjcMessageSends)
 }
 #endif
 
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CGPathElement_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_cocoa_CGPathElement_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#endif
+{
+	CGPathElement _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CGPathElement_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getCGPathElementFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (void *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setCGPathElementFields(env, arg1, lparg1);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CGPathElement_2J_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CGPoint_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CGPoint_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CGPoint_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)

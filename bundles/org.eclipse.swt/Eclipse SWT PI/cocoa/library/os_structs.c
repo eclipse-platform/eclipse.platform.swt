@@ -26,7 +26,7 @@ void cacheCGPathElementFields(JNIEnv *env, jobject lpObject)
 	if (CGPathElementFc.cached) return;
 	CGPathElementFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	CGPathElementFc.type = (*env)->GetFieldID(env, CGPathElementFc.clazz, "type", "I");
-	CGPathElementFc.points = (*env)->GetFieldID(env, CGPathElementFc.clazz, "points", "I");
+	CGPathElementFc.points = (*env)->GetFieldID(env, CGPathElementFc.clazz, "points", I_J);
 	CGPathElementFc.cached = 1;
 }
 
@@ -34,7 +34,7 @@ CGPathElement *getCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathEleme
 {
 	if (!CGPathElementFc.cached) cacheCGPathElementFields(env, lpObject);
 	lpStruct->type = (CGPathElementType)(*env)->GetIntField(env, lpObject, CGPathElementFc.type);
-	lpStruct->points = (CGPoint *)(*env)->GetIntField(env, lpObject, CGPathElementFc.points);
+	lpStruct->points = (CGPoint *)(*env)->GetIntLongField(env, lpObject, CGPathElementFc.points);
 	return lpStruct;
 }
 
@@ -42,7 +42,7 @@ void setCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStru
 {
 	if (!CGPathElementFc.cached) cacheCGPathElementFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, CGPathElementFc.type, (jint)lpStruct->type);
-	(*env)->SetIntField(env, lpObject, CGPathElementFc.points, (jint)lpStruct->points);
+	(*env)->SetIntLongField(env, lpObject, CGPathElementFc.points, (jintLong)lpStruct->points);
 }
 #endif
 

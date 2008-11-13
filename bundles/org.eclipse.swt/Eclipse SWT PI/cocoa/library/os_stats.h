@@ -250,6 +250,11 @@ typedef enum {
 	instrumentObjcMessageSends_FUNC,
 	markedRange_1CALLBACK_FUNC,
 #ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_CGPathElement_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGPoint_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_cocoa_CGPoint_2J_FUNC,

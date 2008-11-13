@@ -4051,6 +4051,11 @@ public static final native int NSSize_sizeof();
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(void *),flags=critical
  */
+public static final native void memmove(int /*long*/ dest, CGPathElement src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(CGPathElement dest, int /*long*/ src, int /*long*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
