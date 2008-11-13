@@ -63,13 +63,6 @@ public final class TextLayout extends Resource {
 			return "StyleItem {" + start + ", " + style + "}";
 		}
 	}
-
-//	static final int TAB_COUNT = 32;
-//	static final char ZWS = '\u200B';
-//	
-//	static final int UNDERLINE_IME_INPUT = 1 << 16;
-//	static final int UNDERLINE_IME_TARGET_CONVERTED = 2 << 16;
-//	static final int UNDERLINE_IME_CONVERTED = 3 << 16;
 	
 /**	 
  * Constructs a new instance of this class on the given device.
