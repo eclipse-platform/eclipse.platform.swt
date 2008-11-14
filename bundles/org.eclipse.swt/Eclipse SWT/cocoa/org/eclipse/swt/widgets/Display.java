@@ -652,7 +652,7 @@ void createDisplay (DeviceData data) {
 	NSMutableDictionary dictionary = nsthread.threadDictionary();
 	NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
 	NSNumber id = new NSNumber(dictionary.objectForKey(key));
-	pool = new NSAutoreleasePool(id.intValue());
+	pool = new NSAutoreleasePool(id.integerValue());
 
 	application = NSApplication.sharedApplication();
 

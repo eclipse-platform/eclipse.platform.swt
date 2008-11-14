@@ -812,6 +812,7 @@ public static final int /*long*/ sel_insertItemWithObjectValue_atIndex_ = sel_re
 public static final int /*long*/ sel_insertTabViewItem_atIndex_ = sel_registerName("insertTabViewItem:atIndex:");
 public static final int /*long*/ sel_insertText_ = sel_registerName("insertText:");
 public static final int /*long*/ sel_intValue = sel_registerName("intValue");
+public static final int /*long*/ sel_integerValue = sel_registerName("integerValue");
 public static final int /*long*/ sel_intercellSpacing = sel_registerName("intercellSpacing");
 public static final int /*long*/ sel_interpretKeyEvents_ = sel_registerName("interpretKeyEvents:");
 public static final int /*long*/ sel_invalidate = sel_registerName("invalidate");

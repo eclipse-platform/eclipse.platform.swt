@@ -32,6 +32,10 @@ public int intValue() {
 	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_intValue);
 }
 
+public int /*long*/ integerValue() {
+	return OS.objc_msgSend(this.id, OS.sel_integerValue);
+}
+
 public static NSNumber numberWithBool(boolean value) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithBool_, value);
 	return result != 0 ? new NSNumber(result) : null;
