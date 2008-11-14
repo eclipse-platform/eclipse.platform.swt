@@ -1221,11 +1221,11 @@ public void setBackground(Color color) {
 		int /*long*/ bpr = imageRep.bytesPerRow();
 		int /*long*/ data = imageRep.bitmapData();
 		boolean alphaFirst = (imageRep.hasAlpha() && (imageRep.bitmapFormat() & OS.NSAlphaFirstBitmapFormat) != 0);
-		int /*long*/ firstColorComp = (alphaFirst ? 1 : 0);
+		int /*long*/ firstColorCompOffset = (alphaFirst ? 0 : -1);
 		byte[] line = new byte[(int)bpr];
 		for (int i = 0, offset = 0; i < height; i++, offset += bpr) {
 			OS.memmove(line, data + offset, bpr);
-			for (int j = (int)/*64*/firstColorComp; j  < line.length; j += 4) {
+			for (int j = (int)/*64*/firstColorCompOffset; j  < line.length; j += 4) {
 				if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
 					line[j + 1] = newRed;
 					line[j + 2] = newGreen;
