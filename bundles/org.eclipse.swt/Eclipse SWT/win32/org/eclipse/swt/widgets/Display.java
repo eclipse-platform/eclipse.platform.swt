@@ -212,8 +212,11 @@ public class Display extends Device {
 	int /*long*/ [] timerIds;
 	Runnable [] timerList;
 	int /*long*/ nextTimerId = SETTINGS_ID + 1;
+	
+	/* Settings */
 	static final int /*long*/ SETTINGS_ID = 100;
 	static final int SETTINGS_DELAY = 2000;
+	boolean lastHighContrast, sendSettings;
 	
 	/* Keyboard and Mouse */
 	RECT clickRect;
@@ -2616,6 +2619,9 @@ protected void init () {
 	controlTable = new Control [GROW_SIZE];
 	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
 	indexTable [GROW_SIZE - 1] = -1;
+	
+	/* Remember the last high contrast state */
+	lastHighContrast = getHighContrast ();
 }
 
 /**	 
@@ -3073,19 +3079,36 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			break;
 		}
 		case OS.WM_DWMCOLORIZATIONCOLORCHANGED: {
-			OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
-			break;
+			sendSettings = true;
+			//FALL THROUGH
 		}
 		case OS.WM_SETTINGCHANGE: {
+			/*
+			* Bug in Windows.  When high contrast is cleared using
+			* the key sequence, Alt + Left Shift + Print Screen, the
+			* system parameter is set to false, but WM_SETTINGCHANGE
+			* is not sent with SPI_SETHIGHCONTRAST.  The fix is to
+			* detect the change when any WM_SETTINGCHANGE message
+			* is sent.
+			*/
+			if (lastHighContrast != getHighContrast ()) {
+				sendSettings = true;
+				lastHighContrast = getHighContrast ();
+			}
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
-				break;
+				sendSettings = true;
 			} 
 			switch ((int)/*64*/wParam) {
 				case 0:
 				case 1:
-				case OS.SPI_SETHIGHCONTRAST:
-					OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
+				case OS.SPI_SETHIGHCONTRAST: {
+					sendSettings = true;
+					lastHighContrast = getHighContrast ();
+				}
+			}
+			/* Set the initial timer or push the time out period forward */
+			if (sendSettings) {
+				OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
 			}
 			break;
 		}
@@ -3102,6 +3125,7 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 		}
 		case OS.WM_TIMER: {
 			if (wParam == SETTINGS_ID) {
+				sendSettings = false;
 				OS.KillTimer (hwndMessage, SETTINGS_ID);
 				runSettings ();
 			} else {
@@ -3548,6 +3572,9 @@ void releaseDisplay () {
 		foregroundIdleCallback = null;
 		foregroundIdleProc = 0;
 	}
+	
+	/* Stop the settings timer */
+	OS.KillTimer (hwndMessage, SETTINGS_ID);
 	
 	/* Destroy the message only HWND */
 	if (hwndMessage != 0) OS.DestroyWindow (hwndMessage);
