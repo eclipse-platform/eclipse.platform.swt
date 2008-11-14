@@ -3978,6 +3978,18 @@ fail:
 }
 #endif
 
+#ifndef NO_GetGraphicsMode
+JNIEXPORT jint JNICALL OS_NATIVE(GetGraphicsMode)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetGraphicsMode_FUNC);
+	rc = (jint)GetGraphicsMode((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, GetGraphicsMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetIconInfo
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetIconInfo)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -8108,6 +8120,22 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, MessageBoxW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ModifyWorldTransform
+JNIEXPORT jboolean JNICALL OS_NATIVE(ModifyWorldTransform)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatArray arg1, jint arg2)
+{
+	jfloat *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ModifyWorldTransform_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)ModifyWorldTransform((HDC)arg0, (XFORM *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, ModifyWorldTransform_FUNC);
 	return rc;
 }
 #endif

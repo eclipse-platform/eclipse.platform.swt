@@ -282,6 +282,7 @@ typedef enum {
 	GetFontLanguageInfo_FUNC,
 	GetForegroundWindow_FUNC,
 	GetGUIThreadInfo_FUNC,
+	GetGraphicsMode_FUNC,
 	GetIconInfo_FUNC,
 	GetKeyNameTextA_FUNC,
 	GetKeyNameTextW_FUNC,
@@ -631,6 +632,7 @@ typedef enum {
 	MessageBeep_FUNC,
 	MessageBoxA_FUNC,
 	MessageBoxW_FUNC,
+	ModifyWorldTransform_FUNC,
 	MonitorFromWindow_FUNC,
 #ifndef JNI64
 	MoveMemory__III_FUNC,

@@ -1167,6 +1167,7 @@ public class OS extends C {
 	public static final int MSGF_SIZE = 4;
 	public static final int MSGF_USER = 4096;
 	public static final int MWMO_INPUTAVAILABLE = 0x4;
+	public static final int MWT_LEFTMULTIPLY = 2;
 	public static final int NI_COMPOSITIONSTR = 0x15;
 	public static final int NIF_ICON = 0x00000002;
 	public static final int NIF_INFO = 0x00000010;
@@ -4015,6 +4016,8 @@ public static final native int /*long*/ GetFocus ();
 /** @param hdc cast=(HDC) */
 public static final native int GetFontLanguageInfo (int /*long*/ hdc);
 public static final native int /*long*/ GetForegroundWindow ();
+/** @param hdc cast=(HDC) */
+public static final native int GetGraphicsMode (int /*long*/ hdc);
 /**
  * @param idThread cast=(DWORD)
  * @param lpgui cast=(LPGUITHREADINFO)
@@ -4767,6 +4770,11 @@ public static final native int MessageBoxW (int /*long*/ hWnd, char [] lpText, c
  * @param lpCaption cast=(LPSTR)
  */
 public static final native int MessageBoxA (int /*long*/ hWnd, byte [] lpText, byte [] lpCaption, int uType);
+/**
+ * @param hdc cast=(HDC)
+ * @param lpXform cast=(XFORM *)
+ */
+public static final native boolean ModifyWorldTransform(int /*long*/ hdc, float [] lpXform, int iMode);
 /** @method flags=dynamic */
 public static final native int /*long*/ MonitorFromWindow (int /*long*/ hwnd, int dwFlags);
 /**

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 957;
-int OS_nativeFunctionCallCount[957];
+int OS_nativeFunctionCount = 959;
+int OS_nativeFunctionCallCount[959];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -274,6 +274,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetFontLanguageInfo",
 	"GetForegroundWindow",
 	"GetGUIThreadInfo",
+	"GetGraphicsMode",
 	"GetIconInfo",
 	"GetKeyNameTextA",
 	"GetKeyNameTextW",
@@ -623,6 +624,7 @@ char * OS_nativeFunctionNames[] = {
 	"MessageBeep",
 	"MessageBoxA",
 	"MessageBoxW",
+	"ModifyWorldTransform",
 	"MonitorFromWindow",
 #ifndef JNI64
 	"MoveMemory__III",
