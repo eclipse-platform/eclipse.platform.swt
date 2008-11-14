@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
@@ -54,7 +55,9 @@ public final class TextLayout extends Resource {
 	
 	static final int UNDERLINE_THICK = 1 << 16;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
-
+	int[] invalidOffsets;
+	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B';
+	
 	static class StyleItem {
 		TextStyle style;
 		int start;
@@ -120,7 +123,8 @@ float[] computePolyline(int left, int top, int right, int bottom) {
 
 void computeRuns() {
 	if (textStorage != null) return;
-	NSString str = NSString.stringWith(text);
+	String segmentsText = getSegmentsText();
+	NSString str = NSString.stringWith(segmentsText);
 	textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 	textContainer = (NSTextContainer)new NSTextContainer().alloc();
@@ -383,8 +387,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		}
 		if (hasSelection) {
 			selectionRange = new NSRange();
-			selectionRange.location = selectionStart;
-			selectionRange.length = selectionEnd - selectionStart + 1;
+			selectionRange.location = translateOffset(selectionStart);
+			selectionRange.length = translateOffset(selectionEnd - selectionStart + 1);
 			layoutManager.addTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionColor, selectionRange);
 		}
 		//TODO draw selection for flags (DELIMITER_SELECTION)
@@ -661,10 +665,24 @@ public Rectangle getBounds(int start, int end) {
 		start = translateOffset(start);
 		end = translateOffset(end);
 		NSRange range = new NSRange();
-		range.location = layoutManager.glyphIndexForCharacterAtIndex(start);
-		range.length = layoutManager.glyphIndexForCharacterAtIndex(end + 1) - range.location;
-		NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
-		return new Rectangle((int)rect.x, (int)rect.y, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height));
+		range.location = start;
+		range.length = end - start + 1;
+		int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
+		int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
+		int /*long*/ [] rectCount = new int /*long*/ [1];
+		OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
+		OS.free(pRectCount);
+		NSRect rect = new NSRect();
+		int left = 0x7FFFFFFF, right = 0;
+		int top = 0x7FFFFFFF, bottom = 0;
+		for (int i = 0; i < rectCount[0]; i++, pArray += NSRect.sizeof) {
+			OS.memmove(rect, pArray, NSRect.sizeof);
+			left = Math.min(left, (int)rect.x);
+			right = Math.max(right, (int)Math.ceil(rect.x + rect.width));
+			top = Math.min(top, (int)rect.y);
+			bottom = Math.max(bottom, (int)Math.ceil(rect.y + rect.height));
+		}
+		return new Rectangle(left, top, right - left, bottom - top);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -758,10 +776,19 @@ public int getLevel(int offset) {
 		computeRuns();
 		int length = text.length();
 		if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-		offset = translateOffset(offset);	
-		int level = 0;
-		//TODO
-		return level;
+		offset = translateOffset(offset);
+		int /*long*/ glyphOffset = layoutManager.glyphIndexForCharacterAtIndex(offset);
+		NSRange range  = new NSRange();
+		range.location = glyphOffset;
+		range.length = 1;
+		int /*long*/ pBidiLevels = OS.malloc(1);
+		byte[] bidiLevels = new byte[1];
+		int /*long*/ result = layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, pBidiLevels);
+		if (result > 0) {
+			OS.memmove(bidiLevels, pBidiLevels, 1);
+		}
+		OS.free(pBidiLevels);
+		return bidiLevels[0];
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -947,10 +974,18 @@ public Point getLocation(int offset, boolean trailing) {
 		NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
 		if (trailing) {
 			NSRange range = new NSRange();
-			range.location = glyphIndex;
+			range.location = offset;
 			range.length = 1;
-			NSRect bounds = layoutManager.boundingRectForGlyphRange(range, textContainer);
-			point.x += bounds.width;
+			int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
+			int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
+			int /*long*/ [] rectCount = new int /*long*/ [1];
+			OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
+			OS.free(pRectCount);
+			if (rectCount[0] > 0) {
+				NSRect bounds = new NSRect();
+				OS.memmove(bounds, pArray, NSRect.sizeof);
+				point.x += bounds.width;
+			}
 		}
 		return new Point((int)point.x, (int)rect.y);
 	} finally {
@@ -994,15 +1029,31 @@ int _getOffset (int offset, int movement, boolean forward) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return 0;
 	offset = translateOffset(offset);
+	length = translateOffset(length);
 	switch (movement) {
 		case SWT.MOVEMENT_CLUSTER://TODO cluster
 		case SWT.MOVEMENT_CHAR: {
-			if (forward) {
-				offset++;
-			} else {
-				offset--;
-			}
-			return Math.max(0, Math.min(length, untranslateOffset(offset)));
+			boolean invalid = false;
+			do {
+				int newOffset = offset;
+				if (forward) {
+					if (newOffset < length) newOffset++;
+				} else {
+					if (newOffset > 0) newOffset--;
+				}
+				if (newOffset == offset) break;
+				offset = newOffset;
+				invalid = false;
+				if (invalidOffsets != null) {
+					for (int i = 0; i < invalidOffsets.length; i++) {
+						if (offset == invalidOffsets[i]) {
+							invalid = true;
+							break;
+						}
+					}
+				}
+			} while (invalid);
+			return untranslateOffset(offset);
 		}
 		case SWT.MOVEMENT_WORD: {
 			return untranslateOffset((int)/*64*/textStorage.nextWordFromIndex(offset, forward));
@@ -1015,10 +1066,8 @@ int _getOffset (int offset, int movement, boolean forward) {
 			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
 			return untranslateOffset((int)/*64*/range.location);
 		}
-		default:
-			break;
 	}
-	return -1;
+	return untranslateOffset(offset);
 }
 
 /**
@@ -1189,6 +1238,42 @@ public int[] getRanges () {
 public int[] getSegments() {
 	checkLayout();
 	return segments;
+}
+
+String getSegmentsText() {
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments <= 1) return text;
+	int length = text.length();
+	if (length == 0) return text;
+	if (nSegments == 2) {
+		if (segments[0] == 0 && segments[1] == length) return text;
+	}
+	invalidOffsets = new int[nSegments];
+	char[] oldChars = new char[length];
+	text.getChars(0, length, oldChars, 0);
+	char[] newChars = new char[length + nSegments];
+	int charCount = 0, segmentCount = 0;
+	char separator = getOrientation() == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
+			invalidOffsets[segmentCount] = charCount + segmentCount;
+			newChars[charCount + segmentCount++] = separator;
+		} else {
+			newChars[charCount + segmentCount] = oldChars[charCount++];
+		}
+	}
+	if (segmentCount < nSegments) {
+		invalidOffsets[segmentCount] = charCount + segmentCount;
+		segments[segmentCount] = charCount;
+		newChars[charCount + segmentCount++] = separator;
+	}
+	if (segmentCount != nSegments) {
+		int[] tmp = new int [segmentCount];
+		System.arraycopy(invalidOffsets, 0, tmp, 0, segmentCount);
+		invalidOffsets = tmp;
+	}
+	return new String(newChars, 0, Math.min(charCount + segmentCount, newChars.length));
 }
 
 /**
@@ -1805,6 +1890,13 @@ public String toString () {
  *  Translate a client offset to an internal offset
  */
 int translateOffset (int offset) {
+	int length = text.length();
+	if (length == 0) return offset;
+	if (invalidOffsets == null) return offset;
+	for (int i = 0; i < invalidOffsets.length; i++) {
+		if (offset < invalidOffsets[i]) break; 
+		offset++;
+	}
 	return offset;
 }
 
@@ -1812,7 +1904,19 @@ int translateOffset (int offset) {
  *  Translate an internal offset to a client offset
  */
 int untranslateOffset (int offset) {
-	return offset;
+	int length = text.length();
+	if (length == 0) return offset;
+	if (invalidOffsets == null) return offset;
+	for (int i = 0; i < invalidOffsets.length; i++) {
+		if (offset == invalidOffsets[i]) {
+			offset++;
+			continue;
+		}
+		if (offset < invalidOffsets[i]) {
+			return offset - i;
+		}
+	}
+	return offset - invalidOffsets.length;
 }
 
 }
