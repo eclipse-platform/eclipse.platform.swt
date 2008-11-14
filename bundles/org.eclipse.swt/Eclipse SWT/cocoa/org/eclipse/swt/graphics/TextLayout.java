@@ -430,57 +430,65 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						}
 						start = translateOffset(start);
 						if (!(start > lineEnd || end < lineStart)) {
-							range.location = layoutManager.glyphIndexForCharacterAtIndex(Math.max(lineStart, start));
-							range.length = layoutManager.glyphIndexForCharacterAtIndex(Math.min(lineEnd, end) + 1) - range.location;
+							range.location = Math.max(lineStart, start);
+							range.length = Math.min(lineEnd, end) + 1 - range.location;
 							if (range.length > 0) {
+								int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
+								int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
+								int /*long*/ [] rectCount = new int /*long*/ [1];
+								OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
+								OS.free(pRectCount);
+								NSRect rect = new NSRect();
 								gc.handle.saveGraphicsState();
-								NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
 								float /*double*/ baseline = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineStart);
-								float /*double*/ underlineX = pt.x + rect.x;
-								float /*double*/ underlineY = pt.y + rect.y + rect.height - baseline;
 								float /*double*/ [] color = null;
 								if (style.underlineColor != null) color = style.underlineColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
 								if (color != null) {
 									NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]).setStroke();
 								}
-								NSBezierPath path = NSBezierPath.bezierPath();
-								switch (style.underlineStyle) {
-								case SWT.UNDERLINE_ERROR: {
-									path.setLineWidth(2f);
-									path.setLineCapStyle(OS.NSRoundLineCapStyle);
-									path.setLineJoinStyle(OS.NSRoundLineJoinStyle);
-									path.setLineDash(new float /*double*/ []{1, 3f}, 2, 0);
-									point.x = underlineX;
-									point.y = underlineY + 0.5f;
-									path.moveToPoint(point);
-									point.x = underlineX + rect.width;
-									point.y = underlineY + 0.5f;
-									path.lineToPoint(point);
-									break;
-								}
-								case SWT.UNDERLINE_SQUIGGLE: {
-									gc.handle.setShouldAntialias(false);
-									path.setLineWidth(1.0f);
-									path.setLineCapStyle(OS.NSButtLineCapStyle);
-									path.setLineJoinStyle(OS.NSMiterLineJoinStyle);
-									float /*double*/ lineBottom = pt.y + rect.y + rect.height;
-									float squigglyThickness = 1;
-									float squigglyHeight = 2 * squigglyThickness;
-									float /*double*/ squigglyY = Math.min(underlineY - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
-									float[] points = computePolyline((int)underlineX, (int)squigglyY, (int)(underlineX + rect.width), (int)(squigglyY + squigglyHeight));
-									point.x = points[0] + 0.5f;
-									point.y = points[1] + 0.5f;
-									path.moveToPoint(point);
-									for (int p = 2; p < points.length; p+=2) {
-										point.x = points[p] + 0.5f;
-										point.y = points[p+1] + 0.5f;
-										path.lineToPoint(point);
+								for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
+									OS.memmove(rect, pArray, NSRect.sizeof);
+									float /*double*/ underlineX = pt.x + rect.x;
+									float /*double*/ underlineY = pt.y + rect.y + rect.height - baseline;
+									NSBezierPath path = NSBezierPath.bezierPath();
+									switch (style.underlineStyle) {
+										case SWT.UNDERLINE_ERROR: {
+											path.setLineWidth(2f);
+											path.setLineCapStyle(OS.NSRoundLineCapStyle);
+											path.setLineJoinStyle(OS.NSRoundLineJoinStyle);
+											path.setLineDash(new float /*double*/ []{1, 3f}, 2, 0);
+											point.x = underlineX;
+											point.y = underlineY + 0.5f;
+											path.moveToPoint(point);
+											point.x = underlineX + rect.width;
+											point.y = underlineY + 0.5f;
+											path.lineToPoint(point);
+											break;
+										}
+										case SWT.UNDERLINE_SQUIGGLE: {
+											gc.handle.setShouldAntialias(false);
+											path.setLineWidth(1.0f);
+											path.setLineCapStyle(OS.NSButtLineCapStyle);
+											path.setLineJoinStyle(OS.NSMiterLineJoinStyle);
+											float /*double*/ lineBottom = pt.y + rect.y + rect.height;
+											float squigglyThickness = 1;
+											float squigglyHeight = 2 * squigglyThickness;
+											float /*double*/ squigglyY = Math.min(underlineY - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
+											float[] points = computePolyline((int)underlineX, (int)squigglyY, (int)(underlineX + rect.width), (int)(squigglyY + squigglyHeight));
+											point.x = points[0] + 0.5f;
+											point.y = points[1] + 0.5f;
+											path.moveToPoint(point);
+											for (int p = 2; p < points.length; p+=2) {
+												point.x = points[p] + 0.5f;
+												point.y = points[p+1] + 0.5f;
+												path.lineToPoint(point);
+											}
+											break;
+										}
 									}
-									break;
+									path.stroke();
 								}
-								}
-								path.stroke();
 								gc.handle.restoreGraphicsState();
 							}
 						}
@@ -492,15 +500,16 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						}
 						start = translateOffset(start);
 						if (!(start > lineEnd || end < lineStart)) {
-							range.location = layoutManager.glyphIndexForCharacterAtIndex(Math.max(lineStart, start));
-							range.length = layoutManager.glyphIndexForCharacterAtIndex(Math.min(lineEnd, end) + 1) - range.location;
+							range.location = Math.max(lineStart, start);
+							range.length = Math.min(lineEnd, end) + 1 - range.location;
 							if (range.length > 0) {
+								int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
+								int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
+								int /*long*/ [] rectCount = new int /*long*/ [1];
+								OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
+								OS.free(pRectCount);
+								NSRect rect = new NSRect();
 								gc.handle.saveGraphicsState();
-								NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
-								rect.x += pt.x + 0.5f;
-								rect.y += pt.y + 0.5f;
-								rect.width -= 0.5f;
-								rect.height -= 0.5f;
 								float /*double*/ [] color = null;
 								if (style.borderColor != null) color = style.borderColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
@@ -510,19 +519,26 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								int width = 1;
 								float[] dashes = null;
 								switch (style.borderStyle) {
-								case SWT.BORDER_SOLID:	break;
-								case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
-								case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+									case SWT.BORDER_SOLID:	break;
+									case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+									case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
 								}
-								NSBezierPath path = NSBezierPath.bezierPath();
 								float /*double*/ [] lengths = null;
 								if (dashes != null) {
 									lengths = new float /*double*/[dashes.length];
 									System.arraycopy(dashes, 0, lengths, 0, lengths.length);
 								}
-								path.setLineDash(lengths, lengths != null ? lengths.length : 0, 0);
-								path.appendBezierPathWithRect(rect);
-								path.stroke();
+								for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
+									OS.memmove(rect, pArray, NSRect.sizeof);
+									rect.x += pt.x + 0.5f;
+									rect.y += pt.y + 0.5f;
+									rect.width -= 0.5f;
+									rect.height -= 0.5f;
+									NSBezierPath path = NSBezierPath.bezierPath();
+									path.setLineDash(lengths, lengths != null ? lengths.length : 0, 0);
+									path.appendBezierPathWithRect(rect);
+									path.stroke();
+								}
 								gc.handle.restoreGraphicsState();
 							}
 						}
