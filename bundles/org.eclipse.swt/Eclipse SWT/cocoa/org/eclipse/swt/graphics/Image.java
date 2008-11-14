@@ -1104,7 +1104,6 @@ public int /*long*/ internal_new_GC (GCData data) {
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
 		context = flippedContext;
 		context.retain();
-		data.savedContext = NSGraphicsContext.currentContext();
 		NSGraphicsContext.setCurrentContext(context);
 		NSAffineTransform transform = NSAffineTransform.transform();
 		NSSize size = handle.size();
@@ -1149,7 +1148,6 @@ public void internal_dispose_GC (int /*long*/ context, GCData data) {
 		data.bitmapDataAddress = 0;
 		if (context != 0) {
 			NSGraphicsContext contextObj = new NSGraphicsContext(context);
-			if (data.savedContext != null) NSGraphicsContext.setCurrentContext(data.savedContext);
 			contextObj.release();
 		}
 //		handle.setCacheMode(OS.NSImageCacheDefault);
