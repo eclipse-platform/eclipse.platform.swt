@@ -2155,40 +2155,61 @@ public void setItemCount (int count) {
 	setItemCount (null, count);
 }
 
+
 void setItemCount (TreeItem parentItem, int count) {
 	int itemCount = getItemCount (parentItem);
 	if (count == itemCount) return;
+	NSOutlineView widget = (NSOutlineView) view;
+	int length = Math.max (4, (count + 3) / 4 * 4);
 	TreeItem [] children = parentItem == null ? items : parentItem.items;
+	boolean expanded = parentItem == null || parentItem.getExpanded();
 	if (count < itemCount) {
+		/*
+		* Note that the item count has to be updated before the call to reloadItem(), but
+		* the items have to be released after.
+		*/
+		if (parentItem == null) {
+			this.itemCount = count;
+		} else {
+			parentItem.itemCount = count;
+		}
+		widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
 		for (int index = count; index < itemCount; index ++) {
 			TreeItem item = children [index];
 			if (item != null && !item.isDisposed()) item.release (false);
 		}
-	}
-	if (count > itemCount) {
-		if ((getStyle() & SWT.VIRTUAL) == 0) {
+		TreeItem [] newItems = new TreeItem [length];
+		if (children != null) {
+			System.arraycopy (children, 0, newItems, 0, Math.min (count, itemCount));
+		}
+		children = newItems;
+		if (parentItem == null) {
+			this.items = newItems;
+		} else {
+			parentItem.items = newItems;
+		}
+	} else {
+		if ((style & SWT.VIRTUAL) == 0) {
 			for (int i=itemCount; i<count; i++) {
 				new TreeItem (this, parentItem, SWT.NONE, i, true);
 			}
-			return;
-		} 
+		} else {
+			TreeItem [] newItems = new TreeItem [length];
+			if (children != null) {
+				System.arraycopy (children, 0, newItems, 0, Math.min (count, itemCount));
+			}
+			children = newItems;
+			if (parentItem == null) {
+				this.items = newItems;
+				this.itemCount = count;
+			} else {
+				parentItem.items = newItems;
+				parentItem.itemCount = count;
+			}
+			widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
+		}
 	}
-	int length = Math.max (4, (count + 3) / 4 * 4);
-	TreeItem [] newItems = new TreeItem [length];
-	if (children != null) {
-		System.arraycopy (children, 0, newItems, 0, Math.min (count, itemCount));
-	}
-	children = newItems;
-	if (parentItem == null) {
-		this.items = newItems;
-		this.itemCount = count;
-	} else {
-		parentItem.items = newItems;
-		parentItem.itemCount = count;
-	}
-	NSOutlineView widget = (NSOutlineView) view;
-	widget.reloadItem (parentItem != null ? parentItem.handle : null, true);
-	widget.noteNumberOfRowsChanged();
+	
 }
 
 /*public*/ void setItemHeight (int itemHeight) {
