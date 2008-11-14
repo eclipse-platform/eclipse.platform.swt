@@ -1003,6 +1003,7 @@ public static final int /*long*/ sel_removeItemAtPath_error_ = sel_registerName(
 public static final int /*long*/ sel_removeObject_ = sel_registerName("removeObject:");
 public static final int /*long*/ sel_removeObjectAtIndex_ = sel_registerName("removeObjectAtIndex:");
 public static final int /*long*/ sel_removeObserver_ = sel_registerName("removeObserver:");
+public static final int /*long*/ sel_removeRepresentation_ = sel_registerName("removeRepresentation:");
 public static final int /*long*/ sel_removeStatusItem_ = sel_registerName("removeStatusItem:");
 public static final int /*long*/ sel_removeTabViewItem_ = sel_registerName("removeTabViewItem:");
 public static final int /*long*/ sel_removeTableColumn_ = sel_registerName("removeTableColumn:");

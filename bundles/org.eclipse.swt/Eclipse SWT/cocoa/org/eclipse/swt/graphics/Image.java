@@ -984,10 +984,10 @@ void initNative(String filename) {
 		if (handle == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
 		
 		NSImageRep rep = handle.bestRepresentationForDevice(null);
-//		if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
-//			rep.retain();
-//			imageRep = new NSBitmapImageRep(rep.id);
-//		} else {
+		if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
+			rep.retain();
+			imageRep = new NSBitmapImageRep(rep.id);
+		} else {
 			NSArray reps = handle.representations();
 			if (reps != null) {
 				int /*long*/ repCount = reps.count();
@@ -1011,7 +1011,7 @@ void initNative(String filename) {
 				imageRep.retain();
 				handle.addRepresentation(imageRep);
 			}
-//		}
+		}
 
 		// Only RGB images are supported.
 		NSString colorSpace = imageRep.colorSpaceName();
@@ -1084,6 +1084,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSBitmapImageRep rep = imageRep;
+		
 		if (imageRep.hasAlpha()) {
 			int bpr = width * 4;
 			rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
@@ -1092,13 +1093,18 @@ public int /*long*/ internal_new_GC (GCData data) {
 			data.bitmapDataAddress = OS.malloc(C.PTR_SIZEOF);
 			OS.memmove(data.bitmapDataAddress, new int /*long*/[] {bitmapData}, C.PTR_SIZEOF);
 			rep = rep.initWithBitmapDataPlanes(data.bitmapDataAddress, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat , bpr, 32);
-			rep.autorelease();
+			handle.removeRepresentation(imageRep);
+			imageRep.release();
+			imageRep = rep;
+			handle.addRepresentation(rep);
 		}
+		
 		handle.setCacheMode(OS.NSImageCacheNever);
-		//TODO should the context and flippedContext be retained and released in internal_dispose_GC?
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
 		context = flippedContext;
+		context.retain();
+		data.savedContext = NSGraphicsContext.currentContext();
 		NSGraphicsContext.setCurrentContext(context);
 		NSAffineTransform transform = NSAffineTransform.transform();
 		NSSize size = handle.size();
@@ -1141,6 +1147,11 @@ public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	try {
 		if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
 		data.bitmapDataAddress = 0;
+		if (context != 0) {
+			NSGraphicsContext contextObj = new NSGraphicsContext(context);
+			if (data.savedContext != null) NSGraphicsContext.setCurrentContext(data.savedContext);
+			contextObj.release();
+		}
 //		handle.setCacheMode(OS.NSImageCacheDefault);
 	} finally {
 		if (pool != null) pool.release();

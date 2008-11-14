@@ -70,6 +70,10 @@ public void lockFocus() {
 	OS.objc_msgSend(this.id, OS.sel_lockFocus);
 }
 
+public void removeRepresentation(NSImageRep imageRep) {
+	OS.objc_msgSend(this.id, OS.sel_removeRepresentation_, imageRep != null ? imageRep.id : 0);
+}
+
 public NSArray representations() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_representations);
 	return result != 0 ? new NSArray(result) : null;

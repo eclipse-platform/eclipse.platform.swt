@@ -46,7 +46,6 @@ public final class GCData {
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
 	public int /*long*/ bitmapDataAddress;
-
 	public Image image;
 	
 	public float /*double*/ drawXOffset, drawYOffset;
@@ -58,4 +57,5 @@ public final class GCData {
 	public NSSize size;
 	public NSRect windowRect, visibleRect;
 	public Thread thread;
+	public NSGraphicsContext savedContext;
 }
