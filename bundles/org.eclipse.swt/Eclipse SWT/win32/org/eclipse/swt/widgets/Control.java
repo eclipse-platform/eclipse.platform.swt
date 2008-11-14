@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
@@ -1946,21 +1947,80 @@ public boolean print (GC gc) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		int /*long*/ topHandle = topHandle ();
+		int /*long*/ hdc = gc.handle;
+		int state = 0;
+		int /*long*/ gdipGraphics = gc.getGCData().gdipGraphics;
+		if (gdipGraphics != 0) {
+			int /*long*/ clipRgn = 0;
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+			int /*long*/ rgn = Gdip.Region_new();
+			if (rgn == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			Gdip.Graphics_GetClip(gdipGraphics, rgn);
+			if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
+				clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
+			}
+			Gdip.Region_delete(rgn);
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+			float[] lpXform = null;
+			int /*long*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+			if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+			if (!Gdip.Matrix_IsIdentity(matrix)) {
+				lpXform = new float[6];
+				Gdip.Matrix_GetElements(matrix, lpXform);
+			}
+			Gdip.Matrix_delete(matrix);
+			hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+			state = OS.SaveDC(hdc);
+			if (lpXform != null) {
+				OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+				OS.SetWorldTransform(hdc, lpXform);
+			}
+			if (clipRgn != 0) {
+				OS.SelectClipRgn(hdc, clipRgn);
+				OS.DeleteObject(clipRgn);
+			}
+		}
 		int bits = OS.GetWindowLong (topHandle, OS.GWL_STYLE);
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
 		}
-		printWidget (topHandle, gc);
+		printWidget (topHandle, hdc, gc);
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 0, 0);
+		}
+		if (gdipGraphics != 0) {
+			OS.RestoreDC(hdc, state);
+			Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
 		}
 		return true;
 	}
 	return false;
 }
 
-void printWidget (int /*long*/ hwnd, GC gc) {
-	OS.PrintWindow (hwnd, gc.handle, 0);
+void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
+	/*
+	* Bug in Windows.  For some reason, PrintWindow()
+	* returns success but does nothing when it is called
+	* on a printer.  The fix is to just go directly to
+	* WM_PRINT in this case.
+	*/
+	boolean success = false;
+	if (!(OS.GetDeviceCaps(gc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
+		success = OS.PrintWindow (hwnd, hdc, 0);
+	}
+	
+	/*
+	* Bug in Windows.  For some reason, PrintWindow() fails
+	* when it is called on a push button.  The fix is to
+	* detect the failure and use WM_PRINT instead.  Note
+	* that WM_PRINT cannot be used all the time because it
+	* fails for browser controls when the browser has focus.
+	*/
+	if (!success) {
+		int flags = OS.PRF_CLIENT | OS.PRF_NONCLIENT | OS.PRF_ERASEBKGND | OS.PRF_CHILDREN;
+		OS.SendMessage (hwnd, OS.WM_PRINT, hdc, flags);
+	}
 }
 
 /**

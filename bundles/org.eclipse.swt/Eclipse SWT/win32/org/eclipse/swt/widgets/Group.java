@@ -289,7 +289,18 @@ boolean mnemonicMatch (char key) {
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
-void printWidget (int /*long*/ hwnd, GC gc) {
+void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
+	/*
+	* Bug in Windows.  For some reason, PrintWindow()
+	* returns success but does nothing when it is called
+	* on a printer.  The fix is to just go directly to
+	* WM_PRINT in this case.
+	*/
+	boolean success = false;
+	if (!(OS.GetDeviceCaps(gc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
+		success = OS.PrintWindow (hwnd, hdc, 0);
+	}
+	
 	/*
 	* Bug in Windows.  For some reason, PrintWindow() fails
 	* when it is called on a push button.  The fix is to
@@ -297,8 +308,7 @@ void printWidget (int /*long*/ hwnd, GC gc) {
 	* that WM_PRINT cannot be used all the time because it
 	* fails for browser controls when the browser has focus.
 	*/
-	int /*long*/ hDC = gc.handle;
-	if (!OS.PrintWindow (hwnd, hDC, 0)) {
+	if (!success) {
 		/*
 		* Bug in Windows.  For some reason, WM_PRINT when called
 		* with PRF_CHILDREN will not draw the tool bar divider
@@ -307,17 +317,35 @@ void printWidget (int /*long*/ hwnd, GC gc) {
 		* the children, drawing each one.
 		*/
 		int flags = OS.PRF_CLIENT | OS.PRF_NONCLIENT | OS.PRF_ERASEBKGND;
-		OS.SendMessage (hwnd, OS.WM_PRINT, hDC, flags);
-		int nSavedDC = OS.SaveDC (hDC);
+		OS.SendMessage (hwnd, OS.WM_PRINT, hdc, flags);
+		int nSavedDC = OS.SaveDC (hdc);
 		Control [] children = _getChildren ();
 		Rectangle rect = getBounds ();
-		OS.IntersectClipRect (hDC, 0, 0, rect.width, rect.height);
+		OS.IntersectClipRect (hdc, 0, 0, rect.width, rect.height);
 		for (int i=children.length - 1; i>=0; --i) {
 			Point location = children [i].getLocation ();
-			OS.SetWindowOrgEx (hDC, -location.x, -location.y, null);
-			children [i].print (gc);
+			int graphicsMode = OS.GetGraphicsMode(hdc);
+			if (graphicsMode == OS.GM_ADVANCED) {
+				float [] lpXform = {1, 0, 0, 1, location.x, location.y};
+				OS.ModifyWorldTransform(hdc, lpXform, OS.MWT_LEFTMULTIPLY);
+			} else {
+				OS.SetWindowOrgEx (hdc, -location.x, -location.y, null);
+			}
+			int /*long*/ topHandle = children [i].topHandle();
+			int bits = OS.GetWindowLong (topHandle, OS.GWL_STYLE);
+			if ((bits & OS.WS_VISIBLE) == 0) {
+				OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
+			}
+			children [i].printWidget (topHandle, hdc, gc);
+			if ((bits & OS.WS_VISIBLE) == 0) {
+				OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 0, 0);
+			}
+			if (graphicsMode == OS.GM_ADVANCED) {
+				float [] lpXform = {1, 0, 0, 1, -location.x, -location.y};
+				OS.ModifyWorldTransform(hdc, lpXform, OS.MWT_LEFTMULTIPLY);
+			}
 		}
-		OS.RestoreDC (hDC, nSavedDC);
+		OS.RestoreDC (hdc, nSavedDC);
 	}
 }
 
