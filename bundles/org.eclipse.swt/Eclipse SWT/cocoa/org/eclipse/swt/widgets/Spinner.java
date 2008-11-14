@@ -853,6 +853,13 @@ void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotificatio
 	postEvent (SWT.Modify);
 }
 
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
+	/* allow the selection change to proceed */
+	NSRange result = new NSRange ();
+	OS.memmove(result, newSelectedCharRange, NSRange.sizeof);
+	return result;
+}
+
 void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	boolean [] parseFail = new boolean [1];
 	int value = getSelectionText (parseFail);
