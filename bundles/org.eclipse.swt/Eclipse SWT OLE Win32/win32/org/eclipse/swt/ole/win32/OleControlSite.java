@@ -718,7 +718,7 @@ void onFocusOut(Event e) {
 private int OnFocus(int fGotFocus) {
 	return COM.S_OK;
 }
-int OnUIDeactivate(int fUndoable) {
+protected int OnUIDeactivate(int fUndoable) {
 	// controls don't need to do anything for
 	// border space or menubars
 	if (frame == null || frame.isDisposed()) return COM.S_OK;
