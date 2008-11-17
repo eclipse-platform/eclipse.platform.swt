@@ -253,6 +253,7 @@
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
 #define NO_GetFontLanguageInfo
+#define NO_GetGraphicsMode
 #define NO_GetGUIThreadInfo
 #define NO_GetIconInfo
 #define NO_GetKeyboardLayout
@@ -361,6 +362,7 @@
 #define NO_MapVirtualKeyA
 #define NO_MCIWndRegisterClass
 #define NO_MessageBoxA
+#define NO_ModifyWorldTransform
 #define NO_MonitorFromWindow
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II
