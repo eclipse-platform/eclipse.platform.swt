@@ -34,7 +34,7 @@ public class TextEditor {
 	StyleRange[] selectedRanges;
 	int newCharCount, start;
 	String fileName = null;
-	int styleState;			// the style state for underline, strikeout, and border
+	int styleState;
 	String link;
 
 
@@ -50,8 +50,8 @@ public class TextEditor {
 	static final int ITALIC = SWT.ITALIC;
 	static final int FONT_STYLE = BOLD | ITALIC;
 	static final int STRIKEOUT = 1 << 3;
-	static final int TEXT_FOREGROUND = 1 << 4;
-	static final int TEXT_BACKGROUND = 1 << 5;
+	static final int FOREGROUND = 1 << 4;
+	static final int BACKGROUND = 1 << 5;
 	static final int FONT = 1 << 6;
 	static final int BASELINE_UP = 1 << 7;
 	static final int BASELINE_DOWN = 1 << 8;
@@ -699,7 +699,7 @@ public class TextEditor {
 						textForeground = new Color(display, newRgb);					
 					}
 				}
-				setStyle(TEXT_FOREGROUND);				
+				setStyle(FOREGROUND);				
 			}
 		});
 
@@ -719,7 +719,7 @@ public class TextEditor {
 						textBackground = new Color(display, newRgb);
 					}
 				}
-				setStyle(TEXT_BACKGROUND);
+				setStyle(BACKGROUND);
 			}
 		});
 
@@ -1043,10 +1043,10 @@ public class TextEditor {
 				if (boldControl.getSelection()) style.fontStyle |= SWT.BOLD;
 				if (italicControl.getSelection()) style.fontStyle |= SWT.ITALIC;
 			}
-			if ((styleState & TEXT_FOREGROUND) != 0) {
+			if ((styleState & FOREGROUND) != 0) {
 				style.foreground = textForeground;
 			}
-			if ((styleState & TEXT_BACKGROUND) != 0) {
+			if ((styleState & BACKGROUND) != 0) {
 				style.background = textBackground;
 			}
 			int underlineStyle = styleState & UNDERLINE;
@@ -1427,47 +1427,11 @@ public class TextEditor {
 		while (i < ranges.length) {
 			setStyle(style, ranges[i++], ranges[i++]);
 		}
-
-		if ((style & TEXT_FOREGROUND) != 0) {
-			if ((style & TEXT_FOREGROUND) == (styleState & TEXT_FOREGROUND)) {
-				styleState &= ~TEXT_FOREGROUND;
-			} else {
-				styleState &= ~TEXT_FOREGROUND;
-				styleState |= style;
-			}
-		}
-		if ((style & TEXT_BACKGROUND) != 0) {
-			if ((style & TEXT_BACKGROUND) == (styleState & TEXT_BACKGROUND)) {
-				styleState &= ~TEXT_BACKGROUND;
-			} else {
-				styleState &= ~TEXT_BACKGROUND;
-				styleState |= style;
-			}
-		}
-		if ((style & UNDERLINE) != 0) {
-			if ((style & UNDERLINE) == (styleState & UNDERLINE)) {
-				styleState &= ~UNDERLINE;
-			} else {
-				styleState &= ~UNDERLINE;
-				styleState |= style;
-			}
-		}
-		if ((style & STRIKEOUT) != 0) {
-			if ((style & STRIKEOUT) == (styleState & STRIKEOUT)) {
-				styleState &= ~STRIKEOUT;
-			} else {
-				styleState &= ~STRIKEOUT;
-				styleState |= style;
-			}
-		}
-		if ((style & BORDER) != 0) {
-			if ((style & BORDER) == (styleState & BORDER)) {
-				styleState &= ~BORDER;
-			} else {
-				styleState &= ~BORDER;
-				styleState |= style;
-			}
-		}
+		updateStyleState(style, FOREGROUND);
+		updateStyleState(style, BACKGROUND);
+		updateStyleState(style, UNDERLINE);
+		updateStyleState(style, STRIKEOUT);
+		updateStyleState(style, BORDER);
 	}
 	void setStyle(int style, int start, int length) {
 		if (length == 0) return;
@@ -1480,10 +1444,10 @@ public class TextEditor {
 		if ((style & FONT_STYLE) != 0) {
 			newRange.fontStyle = style & FONT_STYLE;
 		}
-		if ((style & TEXT_FOREGROUND) != 0) {
+		if ((style & FOREGROUND) != 0) {
 			newRange.foreground = textForeground;
 		}
-		if ((style & TEXT_BACKGROUND) != 0) {
+		if ((style & BACKGROUND) != 0) {
 			newRange.background = textBackground;
 		}
 		if ((style & BASELINE_UP) != 0)	newRange.rise++;
@@ -1580,10 +1544,10 @@ public class TextEditor {
 					mergedRange.font = new Font(display, fds);
 				}
 			}
-			if ((style & TEXT_FOREGROUND) != 0) {
+			if ((style & FOREGROUND) != 0) {
 				mergedRange.foreground = newRange.foreground != range.foreground ? newRange.foreground : null;
 			}
-			if ((style & TEXT_BACKGROUND) != 0) {
+			if ((style & BACKGROUND) != 0) {
 				mergedRange.background = newRange.background != range.background ? newRange.background : null;
 			}
 			if ((style & BASELINE_UP) != 0) mergedRange.rise++;
@@ -1657,6 +1621,17 @@ public class TextEditor {
 				+ lineIndex + "\t"						//$NON-NLS-1$
 				+ insertLabel);
 	}
+	
+	void updateStyleState(int style, int changingStyle) {
+		if ((style & changingStyle) != 0) {
+			if ((style & changingStyle) == (styleState & changingStyle)) {
+				styleState &= ~changingStyle;
+			} else {
+				styleState &= ~changingStyle;
+				styleState |= style;
+			}
+		}
+	}
 
 	void updateToolBar() {
 		styleState = 0;
@@ -1680,14 +1655,14 @@ public class TextEditor {
 				italic = (range.fontStyle & SWT.ITALIC) != 0;
 			}
 			if (range.foreground != null) {
-				styleState |= TEXT_FOREGROUND;
+				styleState |= FOREGROUND;
 				if (textForeground != range.foreground) {
 					disposeResource(textForeground);
 					textForeground = range.foreground;
 				}
 			}
 			if (range.background != null) {
-				styleState |= TEXT_FOREGROUND;
+				styleState |= BACKGROUND;
 				if (textBackground != range.background) {
 					disposeResource(textBackground);
 					textBackground = range.background;
