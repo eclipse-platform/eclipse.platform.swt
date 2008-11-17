@@ -1043,8 +1043,12 @@ public class TextEditor {
 				if (boldControl.getSelection()) style.fontStyle |= SWT.BOLD;
 				if (italicControl.getSelection()) style.fontStyle |= SWT.ITALIC;
 			}
-			style.foreground = textForeground;
-			style.background = textBackground;
+			if ((styleState & TEXT_FOREGROUND) != 0) {
+				style.foreground = textForeground;
+			}
+			if ((styleState & TEXT_BACKGROUND) != 0) {
+				style.background = textBackground;
+			}
 			int underlineStyle = styleState & UNDERLINE;
 			if (underlineStyle != 0) {
 				style.underline = true;
@@ -1423,6 +1427,23 @@ public class TextEditor {
 		while (i < ranges.length) {
 			setStyle(style, ranges[i++], ranges[i++]);
 		}
+
+		if ((style & TEXT_FOREGROUND) != 0) {
+			if ((style & TEXT_FOREGROUND) == (styleState & TEXT_FOREGROUND)) {
+				styleState &= ~TEXT_FOREGROUND;
+			} else {
+				styleState &= ~TEXT_FOREGROUND;
+				styleState |= style;
+			}
+		}
+		if ((style & TEXT_BACKGROUND) != 0) {
+			if ((style & TEXT_BACKGROUND) == (styleState & TEXT_BACKGROUND)) {
+				styleState &= ~TEXT_BACKGROUND;
+			} else {
+				styleState &= ~TEXT_BACKGROUND;
+				styleState |= style;
+			}
+		}
 		if ((style & UNDERLINE) != 0) {
 			if ((style & UNDERLINE) == (styleState & UNDERLINE)) {
 				styleState &= ~UNDERLINE;
@@ -1560,10 +1581,10 @@ public class TextEditor {
 				}
 			}
 			if ((style & TEXT_FOREGROUND) != 0) {
-				mergedRange.foreground = newRange.foreground;
+				mergedRange.foreground = newRange.foreground != range.foreground ? newRange.foreground : null;
 			}
 			if ((style & TEXT_BACKGROUND) != 0) {
-				mergedRange.background = newRange.background;
+				mergedRange.background = newRange.background != range.background ? newRange.background : null;
 			}
 			if ((style & BASELINE_UP) != 0) mergedRange.rise++;
 			if ((style & BASELINE_DOWN) != 0) mergedRange.rise--;
@@ -1642,8 +1663,6 @@ public class TextEditor {
 		link = null;
 		boolean bold = false, italic = false;
 		Font font = null;
-		Color foreground = null;
-		Color background = null;
 
 		int offset = styledText.getCaretOffset();
 		StyleRange range = offset > 0 ? styledText.getStyleRangeAtOffset(offset-1) : null;
@@ -1660,8 +1679,20 @@ public class TextEditor {
 				bold = (range.fontStyle & SWT.BOLD) != 0;
 				italic = (range.fontStyle & SWT.ITALIC) != 0;
 			}
-			foreground = range.foreground;
-			background = range.background;
+			if (range.foreground != null) {
+				styleState |= TEXT_FOREGROUND;
+				if (textForeground != range.foreground) {
+					disposeResource(textForeground);
+					textForeground = range.foreground;
+				}
+			}
+			if (range.background != null) {
+				styleState |= TEXT_FOREGROUND;
+				if (textBackground != range.background) {
+					disposeResource(textBackground);
+					textBackground = range.background;
+				}
+			}
 			if (range.underline) {
 				switch (range.underlineStyle) {
 					case SWT.UNDERLINE_SINGLE:	styleState |= UNDERLINE_SINGLE; break;
@@ -1733,14 +1764,6 @@ public class TextEditor {
 		
 		disposeResource(textFont);
 		textFont = font;
-		if (textForeground != foreground) {
-			disposeResource(textForeground);
-			textForeground = foreground;
-		}
-		if (textBackground != background) {
-			disposeResource(textBackground);
-			textBackground = background;
-		}
 		int lineIndex = styledText.getLineAtOffset(offset);
 		int alignment = styledText.getLineAlignment(lineIndex);
 		leftAlignmentItem.setSelection((alignment & SWT.LEFT) != 0);
