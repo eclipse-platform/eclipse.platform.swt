@@ -1434,8 +1434,8 @@ void generateFunctions() {
 								if (!cast.startsWith("(")) out("(");
 								out(cast);
 								if (!cast.endsWith(")")) out(")");
-								outln();
 							}
+							outln();
 						}
 					}
 					if (count > 0) {
