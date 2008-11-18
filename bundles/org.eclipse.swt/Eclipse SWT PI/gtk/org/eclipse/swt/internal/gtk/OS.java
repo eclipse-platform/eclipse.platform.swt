@@ -13967,17 +13967,6 @@ public static final boolean pango_layout_line_x_to_index(int /*long*/ line, int 
 		lock.unlock();
 	}
 }
-/** @method flags=no_gen */
-public static final native int _pango_layout_line_get_resolved_dir(int /*long*/ line);
-public static final int pango_layout_line_get_resolved_dir(int /*long*/ line) {
-	lock.lock();
-	try {
-		return _pango_layout_line_get_resolved_dir(line);
-	} finally {
-		lock.unlock();
-	}
-}
-
 /** @param context cast=(PangoContext *) */
 public static final native int /*long*/ _pango_layout_new(int /*long*/ context);
 public static final int /*long*/ pango_layout_new(int /*long*/ context) {
