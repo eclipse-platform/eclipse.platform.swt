@@ -19,14 +19,48 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
-#ifndef NO_Call
-JNIEXPORT jint JNICALL OS_NATIVE(Call)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+#if (!defined(NO_Call__IIII) && !defined(JNI64)) || (!defined(NO_Call__JJII) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(Call__IIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(Call__JJII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+#endif
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, Call_FUNC);
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, Call__IIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, Call__JJII_FUNC);
+#endif
 	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, Call_FUNC);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, Call__IIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, Call__JJII_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_Call__IIIJ) && !defined(JNI64)) || (!defined(NO_Call__JJIJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jlong JNICALL OS_NATIVE(Call__IIIJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3)
+#else
+JNIEXPORT jlong JNICALL OS_NATIVE(Call__JJIJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3)
+#endif
+{
+	jlong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, Call__IIIJ_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, Call__JJIJ_FUNC);
+#endif
+	rc = (jlong)((jlong (*)())arg0)(arg1, arg2, arg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, Call__IIIJ_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, Call__JJIJ_FUNC);
+#endif
 	return rc;
 }
 #endif
@@ -328,6 +362,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTypeQuery_1sizeof)
 	rc = (jint)GTypeQuery_sizeof();
 	OS_NATIVE_EXIT(env, that, GTypeQuery_1sizeof_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_G_1OBJECT_1CLASS_1CONSTRUCTOR
+JNIEXPORT jintLong JNICALL OS_NATIVE(G_1OBJECT_1CLASS_1CONSTRUCTOR)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1OBJECT_1CLASS_1CONSTRUCTOR_FUNC);
+	rc = (jintLong)G_OBJECT_CLASS_CONSTRUCTOR((GObjectClass *)arg0);
+	OS_NATIVE_EXIT(env, that, G_1OBJECT_1CLASS_1CONSTRUCTOR_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR
+JNIEXPORT void JNICALL OS_NATIVE(G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR_FUNC);
+	G_OBJECT_CLASS_SET_CONSTRUCTOR((GObjectClass *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR_FUNC);
 }
 #endif
 
@@ -1571,6 +1627,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1PANGO_1TYPE_1FONT_1DESCRIPTION)
 	OS_NATIVE_ENTER(env, that, _1PANGO_1TYPE_1FONT_1DESCRIPTION_FUNC);
 	rc = (jintLong)PANGO_TYPE_FONT_DESCRIPTION;
 	OS_NATIVE_EXIT(env, that, _1PANGO_1TYPE_1FONT_1DESCRIPTION_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1PANGO_1TYPE_1LAYOUT
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1PANGO_1TYPE_1LAYOUT)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1PANGO_1TYPE_1LAYOUT_FUNC);
+	rc = (jintLong)PANGO_TYPE_LAYOUT;
+	OS_NATIVE_EXIT(env, that, _1PANGO_1TYPE_1LAYOUT_FUNC);
 	return rc;
 }
 #endif
@@ -3306,6 +3374,28 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1type_1class_1peek_1parent)
 	rc = (jintLong)g_type_class_peek_parent((gpointer)arg0);
 	OS_NATIVE_EXIT(env, that, _1g_1type_1class_1peek_1parent_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1g_1type_1class_1ref
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1type_1class_1ref)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1type_1class_1ref_FUNC);
+	rc = (jintLong)g_type_class_ref((GType)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1type_1class_1ref_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1type_1class_1unref
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1type_1class_1unref)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1type_1class_1unref_FUNC);
+	g_type_class_unref((gpointer)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1type_1class_1unref_FUNC);
 }
 #endif
 

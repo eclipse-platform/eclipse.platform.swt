@@ -589,6 +589,14 @@ public static final native int /*long*/ realpath(byte[] path, byte[] realPath);
 
 /** Object private fields accessors */
 
+
+/** @param object_class cast=(GObjectClass *) */
+public static final native int /*long*/ G_OBJECT_CLASS_CONSTRUCTOR(int /*long*/ object_class);
+/** 
+ * @param object_class cast=(GObjectClass *)
+ * @paramOFF constructor cast=(GObject* (*) (GType, guint, GObjectConstructParam *))
+ */
+public static final native void G_OBJECT_CLASS_SET_CONSTRUCTOR(int /*long*/ object_class, int /*long*/ constructor);
 /** @param widget cast=(GtkWidget *) */
 public static final native int GTK_WIDGET_HEIGHT(int /*long*/ widget);
 /** @param widget cast=(GtkWidget *) */
@@ -1311,6 +1319,7 @@ public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, i
 
 /** Natives */
 public static final native int Call (int /*long*/ func, int /*long*/ arg0, int arg1, int arg2);
+public static final native long Call (int /*long*/ func, int /*long*/ arg0, int arg1, long arg2);
 public static final native int /*long*/ _GDK_DISPLAY();
 public static final int /*long*/ GDK_DISPLAY() {
 	lock.lock();
@@ -1690,6 +1699,16 @@ public static final int /*long*/ PANGO_TYPE_FONT_DESCRIPTION() {
 	lock.lock();
 	try {
 		return _PANGO_TYPE_FONT_DESCRIPTION();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native int /*long*/ _PANGO_TYPE_LAYOUT();
+public static final int /*long*/ PANGO_TYPE_LAYOUT() {
+	lock.lock();
+	try {
+		return _PANGO_TYPE_LAYOUT();
 	} finally {
 		lock.unlock();
 	}
@@ -2684,6 +2703,26 @@ public static final int /*long*/ g_type_class_peek_parent (int /*long*/ g_class)
 	lock.lock();
 	try {
 		return _g_type_class_peek_parent(g_class);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param g_class cast=(GType) */
+public static final native int /*long*/ _g_type_class_ref (int /*long*/ g_class);
+public static final int /*long*/ g_type_class_ref (int /*long*/ g_class) {
+	lock.lock();
+	try {
+		return _g_type_class_ref(g_class);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param g_class cast=(gpointer) */
+public static final native void _g_type_class_unref (int /*long*/ g_class);
+public static final void g_type_class_unref (int /*long*/ g_class) {
+	lock.lock();
+	try {
+		_g_type_class_unref(g_class);
 	} finally {
 		lock.unlock();
 	}

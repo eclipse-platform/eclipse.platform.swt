@@ -198,6 +198,8 @@
 #define FcConfigAppFontAddFile_LIB "libfontconfig.so.1"
 
 /* Field accessors */
+#define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
+#define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
 #define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->accel_string
 #define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) (arg0)->hscrollbar

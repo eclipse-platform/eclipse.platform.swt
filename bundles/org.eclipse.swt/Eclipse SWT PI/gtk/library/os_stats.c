@@ -18,10 +18,19 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1270;
-int OS_nativeFunctionCallCount[1270];
+int OS_nativeFunctionCount = 1276;
+int OS_nativeFunctionCallCount[1276];
 char * OS_nativeFunctionNames[] = {
-	"Call",
+#ifndef JNI64
+	"Call__IIII",
+#else
+	"Call__JJII",
+#endif
+#ifndef JNI64
+	"Call__IIIJ",
+#else
+	"Call__JJIJ",
+#endif
 	"GDK_1EVENT_1TYPE",
 	"GDK_1EVENT_1WINDOW",
 	"GDK_1WINDOWING_1X11",
@@ -49,6 +58,8 @@ char * OS_nativeFunctionNames[] = {
 	"GTK_1WIDGET_1Y",
 	"GTypeInfo_1sizeof",
 	"GTypeQuery_1sizeof",
+	"G_1OBJECT_1CLASS_1CONSTRUCTOR",
+	"G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR",
 	"GdkColor_1sizeof",
 	"GdkDragContext_1sizeof",
 	"GdkEventAny_1sizeof",
@@ -152,6 +163,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1G_1TYPE_1STRING",
 	"_1PANGO_1PIXELS",
 	"_1PANGO_1TYPE_1FONT_1DESCRIPTION",
+	"_1PANGO_1TYPE_1LAYOUT",
 	"_1XCheckIfEvent",
 	"_1XCheckMaskEvent",
 	"_1XCheckWindowEvent",
@@ -305,6 +317,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1type_1add_1interface_1static",
 	"_1g_1type_1class_1peek",
 	"_1g_1type_1class_1peek_1parent",
+	"_1g_1type_1class_1ref",
+	"_1g_1type_1class_1unref",
 	"_1g_1type_1from_1name",
 	"_1g_1type_1interface_1peek_1parent",
 	"_1g_1type_1is_1a",

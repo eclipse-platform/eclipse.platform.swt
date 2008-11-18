@@ -29,7 +29,16 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
-	Call_FUNC,
+#ifndef JNI64
+	Call__IIII_FUNC,
+#else
+	Call__JJII_FUNC,
+#endif
+#ifndef JNI64
+	Call__IIIJ_FUNC,
+#else
+	Call__JJIJ_FUNC,
+#endif
 	GDK_1EVENT_1TYPE_FUNC,
 	GDK_1EVENT_1WINDOW_FUNC,
 	GDK_1WINDOWING_1X11_FUNC,
@@ -57,6 +66,8 @@ typedef enum {
 	GTK_1WIDGET_1Y_FUNC,
 	GTypeInfo_1sizeof_FUNC,
 	GTypeQuery_1sizeof_FUNC,
+	G_1OBJECT_1CLASS_1CONSTRUCTOR_FUNC,
+	G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR_FUNC,
 	GdkColor_1sizeof_FUNC,
 	GdkDragContext_1sizeof_FUNC,
 	GdkEventAny_1sizeof_FUNC,
@@ -160,6 +171,7 @@ typedef enum {
 	_1G_1TYPE_1STRING_FUNC,
 	_1PANGO_1PIXELS_FUNC,
 	_1PANGO_1TYPE_1FONT_1DESCRIPTION_FUNC,
+	_1PANGO_1TYPE_1LAYOUT_FUNC,
 	_1XCheckIfEvent_FUNC,
 	_1XCheckMaskEvent_FUNC,
 	_1XCheckWindowEvent_FUNC,
@@ -313,6 +325,8 @@ typedef enum {
 	_1g_1type_1add_1interface_1static_FUNC,
 	_1g_1type_1class_1peek_FUNC,
 	_1g_1type_1class_1peek_1parent_FUNC,
+	_1g_1type_1class_1ref_FUNC,
+	_1g_1type_1class_1unref_FUNC,
 	_1g_1type_1from_1name_FUNC,
 	_1g_1type_1interface_1peek_1parent_FUNC,
 	_1g_1type_1is_1a_FUNC,

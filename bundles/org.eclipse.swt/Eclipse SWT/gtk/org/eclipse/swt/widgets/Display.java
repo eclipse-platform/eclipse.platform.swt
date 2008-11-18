@@ -275,6 +275,10 @@ public class Display extends Device {
 	/* Timestamp of the Last Received Events */
 	int lastEventTime, lastUserEventTime;
 	
+	/* Pango layout constructor */
+	int /*long*/ pangoLayoutNewProc, pangoLayoutNewDefaultProc;
+	Callback pangoLayoutNewCallback;
+	
 	/* Fixed Subclass */
 	static int /*long*/ fixed_type;
 	static int /*long*/ fixed_info_ptr;
@@ -2300,6 +2304,7 @@ int /*long*/ idleProc (int /*long*/ data) {
 protected void init () {
 	super.init ();
 	initializeCallbacks ();
+	initializeSubclasses ();
 	initializeSystemColors ();
 	initializeSystemSettings ();
 	initializeWidgetTable ();
@@ -2492,6 +2497,19 @@ void initializeCallbacks () {
 	idleCallback = new Callback (this, "idleProc", 1); //$NON-NLS-1$
 	idleProc = idleCallback.getAddress ();
 	if (idleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+}
+
+void initializeSubclasses () {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		pangoLayoutNewCallback = new Callback (this, "pangoLayoutNewProc", 3); //$NON-NLS-1$
+		pangoLayoutNewProc = pangoLayoutNewCallback.getAddress ();
+		if (pangoLayoutNewProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+		int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+		pangoLayoutNewDefaultProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
+		OS.g_type_class_unref (pangoLayoutClass);
+	}
 }
 
 void initializeSystemSettings () {
@@ -2841,6 +2859,12 @@ int /*long*/ mouseHoverProc (int /*long*/ handle) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.hoverProc (handle);
+}
+
+int /*long*/ pangoLayoutNewProc (int /*long*/ type, int n_construct_properties, int /*long*/ construct_properties) {
+	int /*long*/ layout = OS.Call (pangoLayoutNewDefaultProc, type, n_construct_properties, construct_properties);
+	OS.pango_layout_set_auto_dir (layout, false);
+	return layout;
 }
 
 /**
@@ -3249,6 +3273,17 @@ void releaseDisplay () {
 	styleSetCallback.dispose(); styleSetCallback = null;
 	styleSetProc = 0;
 
+	/* Dispose subclass */
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+		int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewDefaultProc);
+		OS.g_type_class_unref (pangoLayoutClass);
+		pangoLayoutNewCallback.dispose ();
+		pangoLayoutNewCallback = null;
+		pangoLayoutNewDefaultProc = pangoLayoutNewProc = 0;
+	}
+	
 	/* Release the sleep resources */
 	max_priority = timeout = null;
 	if (fds != 0) OS.g_free (fds);
