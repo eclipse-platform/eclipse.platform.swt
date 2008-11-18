@@ -46,10 +46,12 @@ public class MozillaGenerator {
 		"  NS_IMETHOD_(nsrefcnt) ",
 		"  NS_IMETHOD_(void *) ",
 		"  NS_IMETHOD_(void) ",
+		"  NS_IMETHOD_(nsresult) ",
 		"  NS_SCRIPTABLE NS_IMETHOD ",
 		"  NS_SCRIPTABLE NS_IMETHOD_(nsrefcnt) ",
 		"  NS_SCRIPTABLE NS_IMETHOD_(void *) ",
 		"  NS_SCRIPTABLE NS_IMETHOD_(void) ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(nsresult) ",
 	};
 	static String NO_SUPER_CLASS = "SWT_NO_SUPER_CLASS";
 	
