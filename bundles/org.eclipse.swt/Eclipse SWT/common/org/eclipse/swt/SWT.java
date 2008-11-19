@@ -1549,6 +1549,14 @@ public class SWT {
 	
 	/**
 	 * Style constant to indicate link underline (value is 0).
+	 * <p>
+	 * If the text color or the underline color are not set in the range
+	 * the usage of <code>UNDERLINE_LINK</code> will change these colors
+	 * to the preferred link color of the platform.<br>
+	 * Note that clients that use this style, such as <code>StyledText</code>,
+	 * will include code to track the mouse and change the cursor to the hand
+	 * cursor when mouse is over the link.
+	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>TextStyle</code></li>
 	 * </ul></p>
