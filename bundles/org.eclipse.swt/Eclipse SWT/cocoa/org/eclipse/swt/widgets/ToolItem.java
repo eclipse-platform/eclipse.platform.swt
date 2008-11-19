@@ -373,8 +373,8 @@ public Rectangle getBounds () {
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
-NSBezierPath getClipping() {
-	return parent.getClipping ();
+void setClipRegion (float /*double*/ x, float /*double*/ y) {
+	parent.setClipRegion(x, y);
 }
 
 /**
@@ -410,6 +410,10 @@ public Control getControl () {
 public Image getDisabledImage () {
 	checkWidget();
 	return disabledImage;
+}
+
+int getDrawCount () {
+	return parent.getDrawCount ();
 }
 
 /**

@@ -1172,10 +1172,10 @@
     <arg name="range2"></arg>
     <retval></retval>
   </function>
-  <function name="NSEqualRects">
-    <arg name="aRect"></arg>
-    <arg name="bRect"></arg>
-    <retval></retval>
+  <function name="NSEqualRects" swt_gen="true">
+    <arg name="aRect" swt_gen="true"></arg>
+    <arg name="bRect" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="NSEqualSizes">
     <arg name="aSize"></arg>

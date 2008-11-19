@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 369;
-int OS_nativeFunctionCallCount[369];
+int OS_nativeFunctionCount = 371;
+int OS_nativeFunctionCallCount[371];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -171,10 +171,12 @@ char * OS_nativeFunctionNames[] = {
 	"NSBeep",
 	"NSBitsPerPixelFromDepth",
 	"NSCalibratedRGBColorSpace",
+	"NSCopyBits",
 	"NSDefaultRunLoopMode",
 	"NSDeviceRGBColorSpace",
 	"NSDeviceResolution",
 	"NSDragPboard",
+	"NSEqualRects",
 	"NSErrorFailingURLStringKey",
 	"NSFileTypeForHFSTypeCode",
 	"NSFilenamesPboardType",

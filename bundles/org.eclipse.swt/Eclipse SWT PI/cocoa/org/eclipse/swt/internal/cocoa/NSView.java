@@ -166,6 +166,10 @@ public boolean isOpaque() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isOpaque);
 }
 
+public void lockFocus() {
+	OS.objc_msgSend(this.id, OS.sel_lockFocus);
+}
+
 public NSMenu menuForEvent(NSEvent event) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_menuForEvent_, event != null ? event.id : 0);
 	return result != 0 ? new NSMenu(result) : null;
@@ -231,6 +235,10 @@ public NSArray subviews() {
 public NSView superview() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_superview);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
+}
+
+public void unlockFocus() {
+	OS.objc_msgSend(this.id, OS.sel_unlockFocus);
 }
 
 public void unregisterDraggedTypes() {

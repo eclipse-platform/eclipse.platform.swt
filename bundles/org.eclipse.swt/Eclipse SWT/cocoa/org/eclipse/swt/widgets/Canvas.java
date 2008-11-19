@@ -283,7 +283,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
-//	if (!isDrawing (handle)) return;
+	if (!isDrawing (view)) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	Rectangle clientRect = getClientArea ();
@@ -296,19 +296,76 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	damage.y = y;
 	damage.width = width;
 	damage.height = height;
-	view.setNeedsDisplayInRect(damage);
-	damage.x = destX;
-	damage.y = destY;
-	view.setNeedsDisplayInRect(damage);
-//	Control control = findBackgroundControl ();
-//	if ((control != null && control.backgroundImage != null)) {
-//		redrawWidget (handle, x, y, width, height, false);
-//		redrawWidget (handle, destX, destY, width, height, false);
-//	} else {
-//	    GC gc = new GC (this);
-//	    gc.copyArea (x, y, width, height, destX, destY);
-//	    gc.dispose ();
-//	}
+
+	NSPoint dest = new NSPoint();
+	dest.x = destX;
+	dest.y = destY;
+		
+	view.lockFocus();
+	OS.NSCopyBits(0, damage , dest);
+	view.unlockFocus();
+
+	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
+	if (disjoint) {
+		view.setNeedsDisplayInRect(damage);
+	} else {
+		if (deltaX != 0) {
+			int newX = destX - deltaX;
+			if (deltaX < 0) newX = destX + width;
+			damage.x = newX;
+			damage.width = Math.abs(deltaX);
+			view.setNeedsDisplayInRect(damage);
+		}
+		if (deltaY != 0) {
+			int newY = destY - deltaY;
+			if (deltaY < 0) newY = destY + height;
+			damage.x = x;
+			damage.y = newY;
+			damage.width = width;
+			damage.height =  Math.abs (deltaY);
+			view.setNeedsDisplayInRect(damage);
+		}
+	}
+	
+	NSRect visibleRect = view.visibleRect();
+	NSRect srcRect = new NSRect();
+	srcRect.x = sourceRect.x;
+	srcRect.y = sourceRect.y;
+	srcRect.width = sourceRect.width;
+	srcRect.height = sourceRect.height;
+	OS.NSIntersectionRect(visibleRect, visibleRect, srcRect);
+	
+	if (!OS.NSEqualRects(visibleRect, srcRect)) {
+		if (srcRect.x != visibleRect.x) {
+			damage.x = srcRect.x + deltaX;
+			damage.y = srcRect.y + deltaY;
+			damage.width = visibleRect.x - srcRect.x;
+			damage.height = srcRect.height;
+			view.setNeedsDisplayInRect(damage);
+		} 
+		if (visibleRect.x + visibleRect.width != srcRect.x + srcRect.width) {
+			damage.x = srcRect.x + visibleRect.width + deltaX;
+			damage.y = srcRect.y + deltaY;
+			damage.width = srcRect.width - visibleRect.width;
+			damage.height = srcRect.height;
+			view.setNeedsDisplayInRect(damage);
+		}
+		if (visibleRect.y != srcRect.y) {
+			damage.x = visibleRect.x + deltaX;
+			damage.y = srcRect.y + deltaY;
+			damage.width = visibleRect.width;
+			damage.height = visibleRect.y - srcRect.y;
+			view.setNeedsDisplayInRect(damage);
+		}
+		if (visibleRect.y + visibleRect.height != srcRect.y + srcRect.height) {
+			damage.x = visibleRect.x + deltaX;
+			damage.y = visibleRect.y + visibleRect.height + deltaY;
+			damage.width = visibleRect.width;
+			damage.height = srcRect.y + srcRect.height - (visibleRect.y + visibleRect.height);
+			view.setNeedsDisplayInRect(damage);
+		}
+	}	
+
     if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {

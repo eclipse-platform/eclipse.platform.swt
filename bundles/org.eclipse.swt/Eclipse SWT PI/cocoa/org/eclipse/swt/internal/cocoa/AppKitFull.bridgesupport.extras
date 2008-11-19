@@ -1934,10 +1934,10 @@
     <arg name="packedGlyphs"></arg>
     <retval></retval>
   </function>
-  <function name="NSCopyBits">
-    <arg name="srcGState"></arg>
-    <arg name="srcRect"></arg>
-    <arg name="destPoint"></arg>
+  <function name="NSCopyBits" swt_gen="true">
+    <arg name="srcGState" swt_gen="true"></arg>
+    <arg name="srcRect" swt_gen="true"></arg>
+    <arg name="destPoint" swt_gen="true"></arg>
   </function>
   <function name="NSCountWindows">
     <arg name="count"></arg>
@@ -22169,8 +22169,8 @@
       <arg name="aRect"></arg>
       <retval></retval>
     </method>
-    <method selector="lockFocus">
-      <retval></retval>
+    <method selector="lockFocus" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="lockFocusIfCanDraw">
       <retval></retval>
@@ -22549,8 +22549,8 @@
       <arg name="delta"></arg>
       <retval></retval>
     </method>
-    <method selector="unlockFocus">
-      <retval></retval>
+    <method selector="unlockFocus" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="unregisterDraggedTypes" swt_gen="true">
       <retval swt_gen="true"></retval>

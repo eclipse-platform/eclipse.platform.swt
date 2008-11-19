@@ -185,8 +185,7 @@ String getClipboardText () {
 	return string != null ? string.getString () : null;
 }
 
-NSBezierPath getClipping () {
-	return null;
+void setClipRegion (float /*double*/ x, float /*double*/ y) {
 }
 
 int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
@@ -506,20 +505,18 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	//TODO offset region to view coordinates
 	//TODO use region from control as well shell region
+	if (getDrawCount() > 0) return;
 	NSGraphicsContext current = NSGraphicsContext.currentContext();
-	NSBezierPath path = getClipping ();
-	if (path != null) {
-		current.saveGraphicsState();
-		path.addClip ();
-	}
+	current.saveGraphicsState();
+	setClipRegion(0, 0);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, rect);
+	display.inPaint = true;
 	drawWidget (id, rect);
-	if (path != null) {
-		current.restoreGraphicsState();
-	}
+	display.inPaint = false;
+	current.restoreGraphicsState();
 }
 
 void drawWidget (int /*long*/ id, NSRect rect) {
@@ -633,6 +630,10 @@ public Display getDisplay () {
 	return display;
 }
 
+int getDrawCount () {
+	return 0;
+}
+
 /**
  * Returns an array of listeners who will be notified when an event 
  * of the given type occurs. The event type is one of the event constants 
@@ -736,6 +737,11 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
  */
 public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
+}
+
+boolean isDrawing (NSView control) {
+	NSRect visibleRect = control.visibleRect();
+	return visibleRect.width != 0 && visibleRect.height != 0 && getDrawCount () == 0;
 }
 
 boolean isFlipped (int /*long*/ id, int /*long*/ sel) {

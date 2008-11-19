@@ -144,6 +144,10 @@ void deregister () {
 	display.removeWidget (view);
 }
 
+int getDrawCount () {
+	return parent.getDrawCount ();
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically

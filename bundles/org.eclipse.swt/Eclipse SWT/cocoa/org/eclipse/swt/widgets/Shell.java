@@ -707,8 +707,8 @@ public Rectangle getClientArea () {
 	return new Rectangle (0, 0, width, height);
 }
 
-NSBezierPath getClipping() {
-	return regionPath;
+int getDrawCount () {
+	return drawCount;
 }
 
 /**
@@ -1179,6 +1179,18 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	window.setFrame(frame, false);
 }
 
+void setClipRegion (float /*double*/ x, float /*double*/ y) {
+	if (region != null) {
+		NSBezierPath rgnPath = getPath(region);
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.translateXBy(-x, -y);
+		rgnPath.transformUsingAffineTransform(transform);
+		rgnPath.addClip();
+		transform.translateXBy(x, y);
+		rgnPath.transformUsingAffineTransform(transform);
+	}
+}
+
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
@@ -1405,38 +1417,6 @@ public void setRegion (Region region) {
 		window.setOpaque(true);
 	}
 	window.contentView().setNeedsDisplay(true);
-}
-
-NSBezierPath getPath(Region region) {
-	if (region == null) return null;
-	Callback callback = new Callback(this, "regionToRects", 4);
-	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	NSBezierPath path = NSBezierPath.bezierPath();
-	path.retain();
-	OS.QDRegionToRects(region.handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
-	callback.dispose();
-	if (path.isEmpty()) path.appendBezierPathWithRect(new NSRect());
-	return path;
-}
-
-int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, int /*long*/ path) {
-	NSPoint pt = new NSPoint();
-	short[] rect = new short[4];
-	if (message == OS.kQDRegionToRectsMsgParse) {
-		OS.memmove(rect, r, rect.length * 2);
-		pt.x = rect[1];
-		pt.y = rect[0];
-		OS.objc_msgSend(path, OS.sel_moveToPoint_, pt);
-		pt.x = rect[3];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
-		pt.x = rect[3];
-		pt.y = rect[2];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
-		pt.x = rect[1];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
-		OS.objc_msgSend(path, OS.sel_closePath);
-	}
-	return 0;
 }
 
 public void setText (String string) {

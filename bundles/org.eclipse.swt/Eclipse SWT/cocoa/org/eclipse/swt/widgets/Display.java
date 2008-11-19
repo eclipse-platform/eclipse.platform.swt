@@ -110,6 +110,8 @@ public class Display extends Device {
 	
 	boolean dragging;
 	Control currentControl, grabControl, trackingControl;
+	
+	boolean inPaint;
 
 	NSDictionary markedAttributes;
 
@@ -3431,12 +3433,11 @@ int /*long*/ timerProc (int /*long*/ id, int /*long*/ sel, int /*long*/ timerID)
  */
 public void update () {
 	checkDevice ();	
-//	Shell [] shells = getShells ();
-//	for (int i=0; i<shells.length; i++) {
-//		Shell shell = shells [i];
-//		if (!shell.isDisposed ()) shell.update (true);
-//	}
-
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) shell.update (true);
+	}
 }
 
 /**

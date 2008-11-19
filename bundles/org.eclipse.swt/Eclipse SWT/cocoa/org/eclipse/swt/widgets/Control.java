@@ -14,6 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -1164,8 +1165,9 @@ public boolean getDragDetect () {
 	return (state & DRAG_DETECT) != 0;
 }
 
-NSBezierPath getClipping() {
-	return parent.getClipping ();
+int getDrawCount () {
+	if (drawCount != 0) return drawCount;
+	return parent.getDrawCount ();
 }
 
 /**
@@ -1372,6 +1374,18 @@ Control [] getPath () {
 		control = control.parent;
 	}
 	return result;
+}
+
+NSBezierPath getPath(Region region) {
+	if (region == null) return null;
+	Callback callback = new Callback(this, "regionToRects", 4);
+	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	NSBezierPath path = NSBezierPath.bezierPath();
+	path.retain();
+	OS.QDRegionToRects(region.handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
+	callback.dispose();
+	if (path.isEmpty()) path.appendBezierPathWithRect(new NSRect());
+	return path;
 }
 
 /** 
@@ -1955,7 +1969,7 @@ public void redraw () {
 
 void redraw (boolean children) {
 //	checkWidget();
-	
+	view.setNeedsDisplay(true);
 }
 
 /**
@@ -1996,6 +2010,26 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	rect.width = width;
 	rect.height = height;
 	view.setNeedsDisplayInRect(rect);
+}
+
+int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, int /*long*/ path) {
+	NSPoint pt = new NSPoint();
+	short[] rect = new short[4];
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		OS.memmove(rect, r, rect.length * 2);
+		pt.x = rect[1];
+		pt.y = rect[0];
+		OS.objc_msgSend(path, OS.sel_moveToPoint_, pt);
+		pt.x = rect[3];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
+		pt.x = rect[3];
+		pt.y = rect[2];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
+		pt.x = rect[1];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
+		OS.objc_msgSend(path, OS.sel_closePath);
+	}
+	return 0;
 }
 
 void register () {
@@ -2662,6 +2696,22 @@ public void setCapture (boolean capture) {
 	checkWidget();
 }
 
+void setClipRegion (float /*double*/ x, float /*double*/ y) {
+	if (region != null) {
+		NSBezierPath rgnPath = getPath(region);
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.translateXBy(-x, -y);
+		rgnPath.transformUsingAffineTransform(transform);
+		rgnPath.addClip();
+		transform.translateXBy(x, y);
+		rgnPath.transformUsingAffineTransform(transform);
+	}
+	if (parent != null) {
+		NSRect frame = topView().frame();
+		parent.setClipRegion(frame.x, frame.y);
+	}
+}
+
 /**
  * Sets the receiver's cursor to the cursor specified by the
  * argument, or to the default cursor for that kind of control
@@ -3029,13 +3079,11 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
-//			OS.HIViewSetDrawingEnabled (handle, true);
 //			invalidateVisibleRegion (handle);
-//			redrawWidget (handle, true);
+			redraw(true);
 		}
 	} else {
 		if (drawCount == 0) {
-//			OS.HIViewSetDrawingEnabled (handle, false);
 //			invalidateVisibleRegion (handle);
 		}
 		drawCount++;
@@ -3063,7 +3111,7 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.region = region;
-//	redrawWidget (handle, true);
+	redraw (true);
 }
 
 void setRelations () {
@@ -3605,6 +3653,7 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget();
+	if (display.inPaint) return;
 	//TODO - not all
 	view.displayIfNeeded ();
 }

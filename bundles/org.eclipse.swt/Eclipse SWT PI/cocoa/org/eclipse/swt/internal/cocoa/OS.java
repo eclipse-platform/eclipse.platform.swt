@@ -3604,6 +3604,12 @@ public static final native void NSBeep();
  */
 public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
 /**
+ * @param srcGState cast=(NSInteger)
+ * @param srcRect flags=struct
+ * @param destPoint flags=struct
+ */
+public static final native void NSCopyBits(int /*long*/ srcGState, NSRect srcRect, NSPoint destPoint);
+/**
  * @param colorSpaceName cast=(NSString*)
  */
 public static final native int /*long*/ NSNumberOfColorComponents(int /*long*/ colorSpaceName);
@@ -3726,8 +3732,14 @@ public static final native void CGPathMoveToPoint(int /*long*/ path, int /*long*
  */
 public static final native void CGPathRelease(int /*long*/ path);
 /**
- * @param newCursorPosition flags=struct */
+ * @param newCursorPosition flags=struct
+ */
 public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
+/**
+ * @param aRect flags=struct
+ * @param bRect flags=struct
+ */
+public static final native boolean NSEqualRects(NSRect aRect, NSRect bRect);
 /**
  * @param hfsFileTypeCode cast=(OSType)
  */
