@@ -315,7 +315,6 @@ void checkGC(int mask) {
 			Gdip.Matrix_delete(matrix);
 			float scaling = point.X;
 			if (scaling < 0) scaling = -scaling;
-			System.out.println(point.X + " " + point.Y);
 			float penWidth = data.lineWidth * scaling;
 			if (penWidth == 0 || ((int)penWidth % 2) == 1) {
 				data.gdipXOffset = 0.5f / scaling;
