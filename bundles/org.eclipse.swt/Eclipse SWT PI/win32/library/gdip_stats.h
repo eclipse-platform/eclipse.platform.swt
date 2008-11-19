@@ -240,6 +240,7 @@ typedef enum {
 #else
 	Matrix_1TransformPoints__J_3FI_FUNC,
 #endif
+	Matrix_1TransformVectors_FUNC,
 	Matrix_1Translate_FUNC,
 	Matrix_1delete_FUNC,
 	Matrix_1new_FUNC,

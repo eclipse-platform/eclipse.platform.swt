@@ -932,6 +932,11 @@ public static final native int Matrix_TransformPoints(int /*long*/ matrix, float
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
+ */
+public static final native int Matrix_TransformVectors(int /*long*/ matrix, PointF pts, int count);
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
  * @param offsetX cast=(REAL)
  * @param offsetY cast=(REAL)
  * @param order cast=(MatrixOrder)

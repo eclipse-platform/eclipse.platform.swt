@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 179;
-int Gdip_nativeFunctionCallCount[179];
+int Gdip_nativeFunctionCount = 180;
+int Gdip_nativeFunctionCallCount[180];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -232,6 +232,7 @@ char * Gdip_nativeFunctionNames[] = {
 #else
 	"Matrix_1TransformPoints__J_3FI",
 #endif
+	"Matrix_1TransformVectors",
 	"Matrix_1Translate",
 	"Matrix_1delete",
 	"Matrix_1new",

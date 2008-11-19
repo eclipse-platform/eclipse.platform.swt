@@ -1930,6 +1930,23 @@ fail:
 }
 #endif
 
+#ifndef NO_Matrix_1TransformVectors
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformVectors)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformVectors)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+{
+	PointF _arg1, *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Matrix_1TransformVectors_FUNC);
+	if (arg1) if ((lparg1 = getPointFFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)((Matrix *)arg0)->TransformVectors(lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setPointFFields(env, arg1, lparg1);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1TransformVectors_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Matrix_1Translate
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Translate)(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1, jfloat arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Translate)

@@ -308,17 +308,19 @@ void checkGC(int mask) {
 		if ((state & DRAW_OFFSET) != 0) {
 			data.gdipXOffset = data.gdipYOffset = 0;
 			int /*long*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-			float[] point = new float[]{1, 1};
+			PointF point = new PointF();
+			point.X = point.Y = 1;
 			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
-			Gdip.Matrix_TransformPoints(matrix, point, 1);
+			Gdip.Matrix_TransformVectors(matrix, point, 1);
 			Gdip.Matrix_delete(matrix);
-			float scaling = point[0];
+			float scaling = point.X;
 			if (scaling < 0) scaling = -scaling;
+			System.out.println(point.X + " " + point.Y);
 			float penWidth = data.lineWidth * scaling;
 			if (penWidth == 0 || ((int)penWidth % 2) == 1) {
 				data.gdipXOffset = 0.5f / scaling;
 			}
-			scaling = point[1];
+			scaling = point.Y;
 			if (scaling < 0) scaling = -scaling;
 			penWidth = data.lineWidth * scaling;
 			if (penWidth == 0 || ((int)penWidth % 2) == 1) {
