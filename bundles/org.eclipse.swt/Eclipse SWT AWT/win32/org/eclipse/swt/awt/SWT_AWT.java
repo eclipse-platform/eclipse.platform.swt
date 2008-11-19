@@ -33,6 +33,7 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.FocusEvent;
 
@@ -374,7 +375,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 
 	final Shell shell = Shell.win32_new (display, handle);
-	parent.addComponentListener(new ComponentAdapter () {
+	final ComponentListener listener = new ComponentAdapter () {
 		public void componentResized (ComponentEvent e) {
 			display.syncExec (new Runnable () {
 				public void run () {
@@ -382,6 +383,12 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 					shell.setSize (dim.width, dim.height);
 				}
 			});
+		}
+	};
+	parent.addComponentListener(listener);
+	shell.addListener(SWT.Dispose, new Listener() {
+		public void handleEvent(Event event) {
+			parent.removeComponentListener(listener);
 		}
 	});
 	shell.setVisible (true);

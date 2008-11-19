@@ -216,7 +216,7 @@ public class SWT_AWT {
 //		if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 //
 //		final Shell shell = Shell.cocoa_new (display, handle);
-//		parent.addComponentListener(new ComponentAdapter () {
+//		final ComponentListener listener = new ComponentAdapter () {
 //			public void componentResized (ComponentEvent e) {
 //				display.asyncExec (new Runnable () {
 //					public void run () {
@@ -224,6 +224,12 @@ public class SWT_AWT {
 //						shell.setSize (dim.width, dim.height);
 //					}
 //				});
+//			}
+//		};
+//		parent.addComponentListener(listener);
+//		shell.addListener(SWT.Dispose, new Listener() {
+//			public void handleEvent(Event event) {
+//				parent.removeComponentListener(listener);
 //			}
 //		});
 //		shell.setVisible (true);
