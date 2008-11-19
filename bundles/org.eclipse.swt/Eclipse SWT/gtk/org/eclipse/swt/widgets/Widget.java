@@ -872,16 +872,15 @@ char [] fixMnemonic (String string, boolean replace) {
 		switch (text [i]) {
 			case '&':
 				if (i + 1 < length && text [i + 1] == '&') {
-					result [j++] = '&';
-					i += 2;
+					result [j++] = text [i++];
 				} else {
 					if (replace) result [j++] = '_';
-					i++;
 				}
+				i++;
 				break;
 			case '_':
 				if (replace) result [j++] = '_';
-				//FALLTHROUGH
+				//FALL THROUGH
 			default:
 				result [j++] = text [i++];
 		}
