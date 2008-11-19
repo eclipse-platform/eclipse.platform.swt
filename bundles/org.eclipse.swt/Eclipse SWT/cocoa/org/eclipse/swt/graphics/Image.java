@@ -1021,6 +1021,11 @@ void initNative(String filename) {
 		height = (int)/*64*/imageRep.pixelsHigh();
 		width = (int)/*64*/imageRep.pixelsWide();
 
+		NSSize size = new NSSize();
+		size.height = height;
+		size.width = width;
+		handle.setSize(size);
+		
 		byte[] alphaData = null;
 		
 		if (imageRep.hasAlpha()) {
