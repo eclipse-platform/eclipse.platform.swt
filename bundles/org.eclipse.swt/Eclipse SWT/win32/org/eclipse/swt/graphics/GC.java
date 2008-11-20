@@ -3190,7 +3190,12 @@ public void getClipping (Region region) {
 			Gdip.Graphics_SetTransform(gdipGraphics, matrix);
 			Gdip.Matrix_delete(identity);
 			Gdip.Matrix_delete(matrix);
-			OS.CombineRgn(region.handle, hRgn, 0, OS.RGN_COPY);
+			if (!OS.IsWinCE) {
+				POINT pt = new POINT ();
+				OS.GetWindowOrgEx (handle, pt);
+				OS.OffsetRgn (hRgn, pt.x, pt.y);
+			}
+			OS.CombineRgn(region.handle, hRgn, 0, OS.RGN_COPY);			
 			OS.DeleteObject(hRgn);
 		}
 		Gdip.Region_delete(rgn);
