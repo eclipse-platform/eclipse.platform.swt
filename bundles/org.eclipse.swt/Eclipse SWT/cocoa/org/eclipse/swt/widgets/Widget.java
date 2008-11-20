@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
@@ -520,6 +519,19 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 }
 
 void drawWidget (int /*long*/ id, NSRect rect) {
+}
+
+void redrawWidget (NSView view, boolean children) {
+	view.setNeedsDisplay(true);
+}
+
+void redrawWidget (NSView view, int /*long*/ x, int /*long*/ y, int /*long*/ width, int /*long*/ height, boolean children) {
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	view.setNeedsDisplayInRect(rect);
 }
 
 void error (int code) {

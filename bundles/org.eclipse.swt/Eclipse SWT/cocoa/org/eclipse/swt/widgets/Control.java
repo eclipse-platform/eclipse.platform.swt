@@ -62,6 +62,7 @@ public abstract class Control extends Widget implements Drawable {
 	Font font;
 	Cursor cursor;
 	Region region;
+	NSBezierPath regionPath;
 //	GCData gcs[];
 	Accessible accessible;
 
@@ -2087,6 +2088,8 @@ void releaseWidget () {
 	}
 	accessible = null;
 	region = null;
+	if (regionPath != null) regionPath.release();
+	regionPath = null;
 }
 
 /**
@@ -2697,19 +2700,16 @@ public void setCapture (boolean capture) {
 }
 
 void setClipRegion (float /*double*/ x, float /*double*/ y) {
-	if (region != null) {
-		NSBezierPath rgnPath = getPath(region);
+	if (regionPath != null) {
 		NSAffineTransform transform = NSAffineTransform.transform();
 		transform.translateXBy(-x, -y);
-		rgnPath.transformUsingAffineTransform(transform);
-		rgnPath.addClip();
-		transform.translateXBy(x, y);
-		rgnPath.transformUsingAffineTransform(transform);
+		regionPath.transformUsingAffineTransform(transform);
+		regionPath.addClip();
+		transform.translateXBy(2*x, 2*y);
+		regionPath.transformUsingAffineTransform(transform);
 	}
-	if (parent != null) {
-		NSRect frame = topView().frame();
-		parent.setClipRegion(frame.x, frame.y);
-	}
+	NSRect frame = topView().frame();
+	parent.setClipRegion(frame.x + x, frame.y + y);
 }
 
 /**
@@ -3080,7 +3080,7 @@ public void setRedraw (boolean redraw) {
 	if (redraw) {
 		if (--drawCount == 0) {
 //			invalidateVisibleRegion (handle);
-			redraw(true);
+			redrawWidget(view, true);
 		}
 	} else {
 		if (drawCount == 0) {
@@ -3111,7 +3111,9 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.region = region;
-	redraw (true);
+	if (regionPath != null) regionPath.release();
+	regionPath = getPath(region);
+	redrawWidget(view, true);
 }
 
 void setRelations () {

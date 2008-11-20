@@ -13,7 +13,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -118,7 +117,6 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
-	NSBezierPath regionPath;
 	boolean opened, moved, resized, fullScreen;
 //	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
 	Control lastActive;
@@ -1037,8 +1035,6 @@ void releaseWidget () {
 	display.clearModal (this);
 //	disposed = true;
 	lastActive = null;
-	if (regionPath != null) regionPath.release();
-	regionPath = null;
 }
 
 /**
@@ -1180,14 +1176,13 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 }
 
 void setClipRegion (float /*double*/ x, float /*double*/ y) {
-	if (region != null) {
-		NSBezierPath rgnPath = getPath(region);
+	if (regionPath != null) {
 		NSAffineTransform transform = NSAffineTransform.transform();
 		transform.translateXBy(-x, -y);
-		rgnPath.transformUsingAffineTransform(transform);
-		rgnPath.addClip();
-		transform.translateXBy(x, y);
-		rgnPath.transformUsingAffineTransform(transform);
+		regionPath.transformUsingAffineTransform(transform);
+		regionPath.addClip();
+		transform.translateXBy(2*x, 2*y);
+		regionPath.transformUsingAffineTransform(transform);
 	}
 }
 
