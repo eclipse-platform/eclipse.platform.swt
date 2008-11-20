@@ -12,7 +12,7 @@
 
 cd `dirname $0`
 
-OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx
+OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx.x86_64
 
 export OUTPUT_DIR
 
