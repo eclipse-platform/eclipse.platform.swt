@@ -93,11 +93,11 @@ public class Snippet207 {
 				gc.drawImage(image, 150, 475);
 				
 				// Rotate by 45 degrees	
-				float cos45 = (float)Math.cos(45);
-				float sin45 = (float)Math.sin(45);
+				float cos45 = (float)Math.cos(Math.PI/4);
+				float sin45 = (float)Math.sin(Math.PI/4);
 				transform.setElements(cos45, sin45, -sin45, cos45, 0, 0);
 				gc.setTransform(transform);
-				gc.drawImage(image, 350, 100);
+				gc.drawImage(image, 400, 60);
 				
 				transform.dispose();
 			}
