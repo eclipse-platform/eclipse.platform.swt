@@ -265,7 +265,8 @@ public Image(Device device, Image srcImage, int flag) {
 				byte[] line = new byte[(int)/*64*/bpr];
 				for (int y=0; y<height; y++) {
 					OS.memmove(line, data + (y * bpr), bpr);
-					int offset = 0;
+					boolean alphaFirst = (srcRep.hasAlpha() && (srcRep.bitmapFormat() & OS.NSAlphaFirstBitmapFormat) != 0);
+					int offset = (alphaFirst ? 0 : -1);
 					for (int x=0; x<width; x++) {
 						int red = line[offset+1] & 0xFF;
 						int green = line[offset+2] & 0xFF;
@@ -290,7 +291,8 @@ public Image(Device device, Image srcImage, int flag) {
 				byte[] line = new byte[(int)/*64*/bpr];
 				for (int y=0; y<height; y++) {
 					OS.memmove(line, data + (y * bpr), bpr);
-					int offset = 0;
+					boolean alphaFirst = (srcRep.hasAlpha() && (srcRep.bitmapFormat() & OS.NSAlphaFirstBitmapFormat) != 0);
+					int offset = (alphaFirst ? 0 : -1);
 					for (int x=0; x<width; x++) {
 						int red = line[offset+1] & 0xFF;
 						int green = line[offset+2] & 0xFF;
@@ -419,6 +421,12 @@ public Image(Device device, ImageData source, ImageData mask) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		// convertMask seems to assumes the palette of the is indexed, or that a black pixel also has an alpha component of 0.
+		// So, we need to clear the alpha out of the mask data.
+		int maskSize = mask.data.length;
+		for (int i = 0; i < maskSize; i += 4)
+			mask.data[i] = 0;
+
 		mask = ImageData.convertMask(mask);
 		ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 		image.maskPad = mask.scanlinePad;
@@ -535,8 +543,7 @@ void createAlpha () {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		NSSize size = handle.size();
-		int height = (int)size.height;
+		int /*long*/ height = imageRep.pixelsHigh();
 		int /*long*/ bpr = imageRep.bytesPerRow();
 		int /*long*/ dataSize = height * bpr;
 		byte[] srcData = new byte[(int)/*64*/dataSize];
@@ -563,7 +570,7 @@ void createAlpha () {
 				srcData[i] = a;				
 			}
 		} else {
-			int width = (int)size.width;
+			int /*long*/ width = imageRep.pixelsWide();
 			int startByte = alphaFirst ? 0 : 3;
 			int offset = startByte, alphaOffset = 0;
 			for (int y = 0; y<height; y++) {
@@ -1050,6 +1057,34 @@ void initNative(String filename) {
 			OS.memmove(alphaData, alphaBitmapData, bitmapByteCount);
 			OS.free(alphaBitmapData);
 			OS.CGContextRelease(alphaBitmapCtx);
+			
+			ImageData data = getImageData();
+			int /*long*/ bitmapFormat = imageRep.bitmapFormat();
+			boolean alphaFirst = (bitmapFormat & OS.NSAlphaFirstBitmapFormat) != 0;
+			// If the alpha has only 0 or 255 (-1) for alpha values, compute the transparent pixel color instead
+			// of a continuous alpha range.
+			boolean hasTransparentPixel = true;
+			int transparentColor = -1;
+			int/*64*/ alphaOffset = 0;
+			transparentScan: {
+				for (int y = 0; y < height; y++) {
+					for (int x = 0; x < width; x++) {
+						if (alphaData[alphaOffset] != 0 && alphaData[alphaOffset] != -1) {
+							hasTransparentPixel = false;
+							break transparentScan;
+						}					
+						
+						if (alphaData[alphaOffset] == 0) {
+							transparentColor = data.getPixel(x, y);
+							if (alphaFirst) transparentColor >>= 8;
+						}
+						
+						alphaOffset += 1;
+					}
+				}
+			}
+			
+			if (hasTransparentPixel) this.transparentPixel = transparentColor;
 		}
 		
 		this.alphaData = alphaData;
