@@ -49,6 +49,8 @@ XULRUNNERLFLAGS = $(LFLAGS)
 
 all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB) $(XULRUNNER_LIB)
 
+all_x86_64: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB)
+
 .c.o:
 	cc $(CFLAGS) $*.c
 
@@ -80,6 +82,9 @@ xpcominit_stats.o: xpcominit_stats.cpp
 	g++ $(XULRUNNERCFLAGS) xpcominit_stats.cpp
 
 install: all
+	cp *.jnilib $(OUTPUT_DIR)
+	
+install_x86_64: all_x86_64
 	cp *.jnilib $(OUTPUT_DIR)
 
 clean:

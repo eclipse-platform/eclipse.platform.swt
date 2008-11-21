@@ -25,7 +25,7 @@
 <target name="build_cocoa_lib_x86_64" depends="init">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build64.sh"/>
-		<arg value="install"/>
+		<arg value="install_x86_64"/>
 	</exec>
 	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx.x86_64" depth="infinite" />		
 </target>
