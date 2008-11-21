@@ -56,6 +56,7 @@ public class CCombo extends Composite {
 	Listener listener, filter;
 	Color foreground, background;
 	Font font;
+	Shell _shell;
 	
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.custom."; //$NON-NLS-1$
 
@@ -89,6 +90,7 @@ public class CCombo extends Composite {
  */
 public CCombo (Composite parent, int style) {
 	super (parent, style = checkStyle (style));
+	_shell = super.getShell ();
 	
 	int textStyle = SWT.SINGLE;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
@@ -100,6 +102,7 @@ public CCombo (Composite parent, int style) {
 
 	listener = new Listener () {
 		public void handleEvent (Event event) {
+			if (isDisposed ()) return;
 			if (popup == event.widget) {
 				popupEvent (event);
 				return;
@@ -123,7 +126,7 @@ public CCombo (Composite parent, int style) {
 			if (getShell () == event.widget) {
 				getDisplay().asyncExec(new Runnable() {
 					public void run() {
-						if (isDisposed()) return;
+						if (isDisposed ()) return;
 						handleFocus (SWT.FocusOut);
 					}
 				});
@@ -132,6 +135,7 @@ public CCombo (Composite parent, int style) {
 	};
 	filter = new Listener() {
 		public void handleEvent(Event event) {
+			if (isDisposed ()) return;
 			Shell shell = ((Control)event.widget).getShell ();
 			if (shell == CCombo.this.getShell ()) {
 				handleFocus (SWT.FocusOut);
@@ -369,6 +373,7 @@ void comboEvent (Event event) {
 			text = null;  
 			list = null;  
 			arrow = null;
+			_shell = null;
 			break;
 		case SWT.FocusIn:
 			Control focusControl = getDisplay ().getFocusControl ();
@@ -730,6 +735,17 @@ public int getSelectionIndex () {
 	checkWidget ();
 	return list.getSelectionIndex ();
 }
+public Shell getShell () {
+	checkWidget ();
+	Shell shell = super.getShell ();
+	if (shell != _shell) {
+		if (_shell != null && !_shell.isDisposed ()) {
+			_shell.removeListener (SWT.Deactivate, listener);
+		}
+		_shell = shell;
+	}
+	return _shell;
+}
 public int getStyle () {
 	int style = super.getStyle ();
 	style &= ~SWT.READ_ONLY;
@@ -800,7 +816,6 @@ public int getVisibleItemCount () {
 	return visibleItemCount;
 }
 void handleFocus (int type) {
-	if (isDisposed ()) return;
 	switch (type) {
 		case SWT.FocusIn: {
 			if (hasFocus) return;
