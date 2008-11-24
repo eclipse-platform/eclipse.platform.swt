@@ -95,6 +95,7 @@ GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 CFLAGS = -O \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
+		-DDTACTION_WARNING_DISABLED \
 		-DSOLARIS -DGTK -DCDE \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/solaris \
@@ -200,7 +201,7 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 #
 # Mozilla lib
 #
-make_mozilla:$(MOZILLA_LIB)
+make_mozilla:#$(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
 	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
