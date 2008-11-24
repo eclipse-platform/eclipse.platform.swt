@@ -515,6 +515,7 @@ boolean hasLink(int offset) {
 		if (ranges != null) {
 			int rangeCount = styleCount << 1;
 			int index = getRangeIndex(offset, -1, rangeCount);
+			if (index >= rangeCount) return false;
 			int rangeStart = ranges[index]; 
 			int rangeLength = ranges[index + 1];
 			StyleRange rangeStyle = styles[index >> 1];

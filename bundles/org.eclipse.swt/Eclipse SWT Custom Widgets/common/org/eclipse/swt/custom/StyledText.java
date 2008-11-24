@@ -2646,6 +2646,26 @@ void doLineUp(boolean select) {
 	int hScrollChange = oldHScrollOffset - horizontalScrollOffset;
 	columnX = oldColumnX + hScrollChange;
 }
+void doMouseLinkCursor() {
+	Display display = getDisplay();
+	Point point = display.getCursorLocation();
+	point = display.map(null, this, point);
+	doMouseLinkCursor(point.x, point.y);
+}
+void doMouseLinkCursor(int x, int y) {
+	int offset = getOffsetAtPoint(x, y, null, true);
+	Display display = getDisplay();
+	Cursor newCursor = cursor;
+	if (renderer.hasLink(offset)) {
+		newCursor = display.getSystemCursor(SWT.CURSOR_HAND);
+	} else {
+		if (cursor == null) {
+			int type = blockSelection ? SWT.CURSOR_CROSS : SWT.CURSOR_IBEAM;
+			newCursor = display.getSystemCursor(type);
+		}
+	}
+	if (newCursor != getCursor()) super.setCursor(newCursor);
+}
 /**
  * Moves the caret to the specified location.
  *
@@ -5749,18 +5769,7 @@ void handleMouseMove(Event event) {
 		doMouseLocationChange(event.x, event.y, true);
 	} 
 	if (renderer.hasLinks) {
-		int offset = getOffsetAtPoint(event.x, event.y, null, true);
-		Display display = getDisplay();
-		Cursor newCursor = cursor;
-		if (renderer.hasLink(offset)) {
-			newCursor = display.getSystemCursor(SWT.CURSOR_HAND);
-		} else {
-			if (cursor == null) {
-				int type = blockSelection ? SWT.CURSOR_CROSS : SWT.CURSOR_IBEAM;
-				newCursor = display.getSystemCursor(type);
-			}
-		}
-		if (newCursor != getCursor()) super.setCursor(newCursor);
+		doMouseLinkCursor(event.x, event.y);
 	}
 }
 /** 
@@ -6611,6 +6620,7 @@ public void redraw() {
 	renderer.reset(topIndex, itemCount);
 	renderer.calculate(topIndex, itemCount);
 	setScrollBars(false);
+	doMouseLinkCursor();
 }
 /**
  * Causes the rectangular area of the receiver specified by
@@ -6648,6 +6658,7 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 		int firstLine = getLineIndex(y);
 		int lastLine = getLineIndex(y + height);
 		resetCache(firstLine, lastLine - firstLine + 1);
+		doMouseLinkCursor();
 	}
 }
 void redrawLines(int startLine, int lineCount) {
@@ -6725,6 +6736,7 @@ public void redrawRange(int start, int length, boolean clearBackground) {
 	int lastLine = content.getLineAtOffset(end);
 	resetCache(firstLine, lastLine - firstLine + 1);
 	internalRedrawRange(start, length);
+	doMouseLinkCursor();
 }
 /**
  * Removes the specified bidirectional segment listener.
@@ -8636,6 +8648,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 		}
 	}
 	setCaretLocation();
+	doMouseLinkCursor();
 }
 /** 
  * Sets styles to be used for rendering the widget content. All styles 
