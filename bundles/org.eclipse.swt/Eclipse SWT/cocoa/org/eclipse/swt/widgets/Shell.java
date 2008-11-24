@@ -366,7 +366,7 @@ public Shell (Shell parent, int style) {
  * 
  * @since 3.3
  */
-public static Shell internal_new (Display display, int handle) {
+public static Shell internal_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
