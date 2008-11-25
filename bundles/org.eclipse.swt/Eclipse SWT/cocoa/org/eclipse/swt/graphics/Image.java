@@ -423,9 +423,9 @@ public Image(Device device, ImageData source, ImageData mask) {
 	try {
 		// convertMask seems to assumes the palette of the is indexed, or that a black pixel also has an alpha component of 0.
 		// So, we need to clear the alpha out of the mask data.
-		int maskSize = mask.data.length;
-		for (int i = 0; i < maskSize; i += 4)
-			mask.data[i] = 0;
+//		int maskSize = mask.data.length;
+//		for (int i = 0; i < maskSize; i += 4)
+//			mask.data[i] = 0;
 
 		mask = ImageData.convertMask(mask);
 		ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
