@@ -30,6 +30,7 @@ public class OLEExample {
 	OleClientSite clientSite;
 	OleFrame oleFrame;
 	Button closeButton;
+	boolean createClientSite = true; // to create OleControlSite, set to false.
 	
 	public static void main(String[] args) {
 		Display display = new Display();
@@ -63,6 +64,22 @@ public class OLEExample {
 		});
 	}
 
+	OleClientSite createSite(OleFrame frame, String progID) {
+		if (createClientSite) {
+			return new OleClientSite(frame, SWT.NONE, progID);
+		} else {
+			return new OleControlSite(frame, SWT.NONE, progID);
+		}
+	}
+	
+	OleClientSite createSite(OleFrame frame, String progID, File file) {
+		if (createClientSite) {
+			return new OleClientSite(frame, SWT.NONE, progID, file);
+		} else {
+			return new OleControlSite(frame, SWT.NONE, progID, file);
+		}
+	}
+	
 	void disposeClient() {
 		if (clientSite != null)
 			clientSite.dispose();
@@ -89,7 +106,7 @@ public class OLEExample {
 						fileExtension.equalsIgnoreCase("rtf") ||
 						fileExtension.equalsIgnoreCase("txt")) {
 					try {
-						clientSite = new OleClientSite(oleFrame, SWT.NONE, "Word.Document", new File(fileName));
+						clientSite = createSite(oleFrame, "Word.Document", new File(fileName));
 					} catch (SWTException error2) {
 						disposeClient();
 					}
@@ -104,7 +121,7 @@ public class OLEExample {
 				String fileExtension = fileName.substring(index + 1);
 				if (fileExtension.equalsIgnoreCase("xls")) {
 					try {
-						clientSite = new OleClientSite(oleFrame, SWT.NONE, "Excel.Sheet", new File(fileName));
+						clientSite = createSite(oleFrame, "Excel.Sheet", new File(fileName));
 					} catch (SWTException error2) {
 						disposeClient();
 					}
@@ -119,7 +136,7 @@ public class OLEExample {
 				String fileExtension = fileName.substring(index + 1);
 				if (fileExtension.equalsIgnoreCase("mpa")) {
 					try {
-						clientSite = new OleClientSite(oleFrame, SWT.NONE, "MPlayer", new File(fileName));
+						clientSite = createSite(oleFrame, "MPlayer", new File(fileName));
 					} catch (SWTException error2) {
 						disposeClient();
 					}
@@ -139,7 +156,7 @@ public class OLEExample {
 						|| fileExtension.equalsIgnoreCase("asf")
 						|| fileExtension.equalsIgnoreCase("wav")) {
 					try {
-						clientSite = new OleClientSite(oleFrame, SWT.NONE, "WMPlayer.OCX");
+						clientSite = createSite(oleFrame, "WMPlayer.OCX");
 						OleAutomation player = new OleAutomation(clientSite);
 						int playURL[] = player.getIDsOfNames(new String[] { "URL" });
 						if (playURL != null) {
@@ -164,7 +181,7 @@ public class OLEExample {
 				String fileExtension = fileName.substring(index + 1);
 				if (fileExtension.equalsIgnoreCase("pdf")) {
 					try {
-						clientSite = new OleClientSite(oleFrame, SWT.NONE, "PDF.PdfCtrl.5");
+						clientSite = createSite(oleFrame, "PDF.PdfCtrl.5");
 						clientSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 					    OleAutomation pdf = new OleAutomation (clientSite);
 					    int loadFile[] = pdf.getIDsOfNames (new String [] {"LoadFile"});
@@ -188,7 +205,7 @@ public class OLEExample {
 		// try opening with Explorer
 		if (clientSite == null) {
 			try {
-				clientSite = new OleClientSite(oleFrame, SWT.NONE, "Shell.Explorer");
+				clientSite = createSite(oleFrame, "Shell.Explorer");
 				OleAutomation explorer = new OleAutomation(clientSite);
 				int[] navigate = explorer.getIDsOfNames(new String[]{"Navigate"}); 
 				
@@ -215,7 +232,7 @@ public class OLEExample {
 	void newClientSite(String progID) {
 		disposeClient();
 		try {
-			clientSite = new OleClientSite(oleFrame, SWT.NONE, progID);
+			clientSite = createSite(oleFrame, progID);
 		} catch (SWTException error) {
 
 		}
