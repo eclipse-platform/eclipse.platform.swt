@@ -2401,12 +2401,10 @@ int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
 }
 
-int keyboardProc (int nextHandler, int theEvent, int userData) {	
+int keyboardProc (int nextHandler, int theEvent, int userData) {
 	int theWindow = OS.GetUserFocusWindow ();
 	if (theWindow != 0) {
-		int [] theControl = new int [1];
-		OS.GetKeyboardFocus (theWindow, theControl);
-		Widget widget = getWidget (theControl [0]);
+		Widget widget = getFocusControl (theWindow, false);
 		if (widget != null) {
 			MenuTrackingData outData = new MenuTrackingData ();
 			if (OS.GetMenuTrackingData (0, outData) != OS.noErr) {
@@ -3958,13 +3956,12 @@ public void syncExec (Runnable runnable) {
 int textInputProc (int nextHandler, int theEvent, int userData) {
 	int theWindow = OS.GetUserFocusWindow ();
 	if (theWindow != 0) {
-		int [] theControl = new int [1];
-		OS.GetKeyboardFocus (theWindow, theControl);
-		Widget widget = getWidget (theControl [0]);
+		Widget widget = getFocusControl (theWindow, false);
 		if (widget != null) {
 			MenuTrackingData outData = new MenuTrackingData ();
 			if (OS.GetMenuTrackingData (0, outData) != OS.noErr) {
 				/* Stop the default event handler from activating the default button */
+				int [] theControl = new int [1];
 				OS.GetWindowDefaultButton (theWindow, theControl);
 				OS.SetWindowDefaultButton (theWindow, 0);
 				int result = widget.textInputProc (nextHandler, theEvent, userData);
