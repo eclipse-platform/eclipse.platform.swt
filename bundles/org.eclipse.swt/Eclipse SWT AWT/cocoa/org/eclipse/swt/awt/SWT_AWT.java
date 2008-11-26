@@ -220,6 +220,7 @@ public class SWT_AWT {
 //			public void componentResized (ComponentEvent e) {
 //				display.asyncExec (new Runnable () {
 //					public void run () {
+//						if (shell.isDisposed()) return;
 //						Dimension dim = parent.getSize ();
 //						shell.setSize (dim.width, dim.height);
 //					}

@@ -314,6 +314,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 		public void componentResized (ComponentEvent e) {
 			display.syncExec (new Runnable () {
 				public void run () {
+					if (shell.isDisposed()) return;
 					Dimension dim = parent.getSize ();
 					shell.setSize (dim.width, dim.height);
 				}
