@@ -1360,18 +1360,20 @@ public void setImage (int index, Image image) {
 //	cached = true;
 	if (index == 0) parent.setScrollWidth (this, false, true);
 
-	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		outlineView.reloadItem (handle);
-	} else {
-		if (parent.columnCount == 0) {
-			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	if (0 <= index && index < count) {
+		NSOutlineView outlineView = (NSOutlineView) parent.view;
+		if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+			outlineView.reloadItem (handle);
 		} else {
-			TreeColumn column = parent.getColumn (index);
-			index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+			if (parent.columnCount == 0) {
+				index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+			} else {
+				TreeColumn column = parent.getColumn (index);
+				index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+			}
+			NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
+			outlineView.setNeedsDisplayInRect (rect);
 		}
-		NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
-		outlineView.setNeedsDisplayInRect (rect);
 	}
 }
 
@@ -1455,18 +1457,20 @@ public void setText (int index, String string) {
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this, false, true);
 
-	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		outlineView.reloadItem (handle);
-	} else {
-		if (parent.columnCount == 0) {
-			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	if (0 <= index && index < count) {
+		NSOutlineView outlineView = (NSOutlineView) parent.view;
+		if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+			outlineView.reloadItem (handle);
 		} else {
-			TreeColumn column = parent.getColumn (index);
-			index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+			if (parent.columnCount == 0) {
+				index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+			} else {
+				TreeColumn column = parent.getColumn (index);
+				index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+			}
+			NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
+			outlineView.setNeedsDisplayInRect (rect);
 		}
-		NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
-		outlineView.setNeedsDisplayInRect (rect);
 	}
 }
 
