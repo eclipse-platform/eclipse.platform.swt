@@ -755,7 +755,7 @@ public void setImage (Image image) {
 			if (hBitmap != 0) OS.DeleteObject (hBitmap);
 			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image) : 0;
 		} else {
-			info.hbmpItem = OS.HBMMENU_CALLBACK;
+			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
 	}
 	int /*long*/ hMenu = parent.handle;
