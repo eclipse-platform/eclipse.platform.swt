@@ -732,6 +732,7 @@ public void setEnabled (boolean enabled) {
 public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (this.image == null && image == null) return;
 	super.setImage (image);
 	if (OS.IsWinCE) {
 		if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
