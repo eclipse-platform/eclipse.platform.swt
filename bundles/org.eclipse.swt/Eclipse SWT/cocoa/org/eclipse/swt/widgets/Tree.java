@@ -777,14 +777,7 @@ void destroyItem (TreeItem item) {
 		this.itemCount = count;
 		((NSOutlineView) view).reloadItem (null);
 	}
-	
-	//noteNumberOfRowsChanged was causing crashes whenever
-	//a TreeItem was disposed. 
-	//Using reloadItem avoids the crashes.
-	//Not sure that this NSTableView function 
-	//makes sense in an NSOutlineView.
-	
-	//((NSTableView)view).noteNumberOfRowsChanged();
+	((NSTableView)view).noteNumberOfRowsChanged();
 	
 //	setScrollWidth (true);
 //	fixScrollBar ();
@@ -2209,6 +2202,7 @@ void setItemCount (TreeItem parentItem, int count) {
 			widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
 		}
 	}
+	widget.noteNumberOfRowsChanged();
 	
 }
 
