@@ -2166,6 +2166,21 @@ void setItemCount (TreeItem parentItem, int count) {
 		} else {
 			parentItem.itemCount = count;
 		}
+		/*
+		* Bug in Cocoa. When reloading an item that is not expandable,
+		* the NSOutlineView does not attempt to fix selection. Therefore,
+		* if child item is selected, and all children are removed
+		* from its parent, the NSOutlineViews selected row does not change,
+		* and an incorrect selection is left in the view.  The fix is to
+		* deselect all child items before reloading the parent when setting 
+		* the child count to 0. 
+		*/
+		if (count == 0) {
+			for (int i = 0; i < children.length; i++) {
+				TreeItem treeItem = children[i];
+				if (treeItem != null) widget.deselectRow(widget.rowForItem(treeItem.handle));
+			}
+		}
 		widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
 		for (int index = count; index < itemCount; index ++) {
 			TreeItem item = children [index];
@@ -2173,7 +2188,7 @@ void setItemCount (TreeItem parentItem, int count) {
 		}
 		TreeItem [] newItems = new TreeItem [length];
 		if (children != null) {
-			System.arraycopy (children, 0, newItems, 0, Math.min (count, itemCount));
+			System.arraycopy (children, 0, newItems, 0, count);
 		}
 		children = newItems;
 		if (parentItem == null) {
@@ -2189,7 +2204,7 @@ void setItemCount (TreeItem parentItem, int count) {
 		} else {
 			TreeItem [] newItems = new TreeItem [length];
 			if (children != null) {
-				System.arraycopy (children, 0, newItems, 0, Math.min (count, itemCount));
+				System.arraycopy (children, 0, newItems, 0, itemCount);
 			}
 			children = newItems;
 			if (parentItem == null) {
