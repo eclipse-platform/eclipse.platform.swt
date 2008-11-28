@@ -777,7 +777,6 @@ void destroyItem (TreeItem item) {
 		this.itemCount = count;
 		((NSOutlineView) view).reloadItem (null);
 	}
-	((NSTableView)view).noteNumberOfRowsChanged();
 	
 //	setScrollWidth (true);
 //	fixScrollBar ();
@@ -2167,18 +2166,14 @@ void setItemCount (TreeItem parentItem, int count) {
 			parentItem.itemCount = count;
 		}
 		/*
-		* Bug in Cocoa. When reloading an item that is not expandable,
-		* the NSOutlineView does not attempt to fix selection. Therefore,
-		* if child item is selected, and all children are removed
-		* from its parent, the NSOutlineViews selected row does not change,
-		* and an incorrect selection is left in the view.  The fix is to
-		* deselect all child items before reloading the parent when setting 
-		* the child count to 0. 
+		* Bug in Cocoa.  When removing selected items from an NSOutlineView, the selection
+		* is not properly updated.  The fix is to ensure that the item and its subitems
+		* are deselected before the item is removed by the reloadItem call. 
 		*/
-		if (count == 0) {
-			for (int i = 0; i < children.length; i++) {
-				TreeItem treeItem = children[i];
-				if (treeItem != null) widget.deselectRow(widget.rowForItem(treeItem.handle));
+		if (expanded) {
+			for (int index = count; index < itemCount; index ++) {
+				TreeItem item = children [index];
+				if (item != null && !item.isDisposed ()) item.clearSelection ();
 			}
 		}
 		widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
@@ -2217,8 +2212,6 @@ void setItemCount (TreeItem parentItem, int count) {
 			widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
 		}
 	}
-	widget.noteNumberOfRowsChanged();
-	
 }
 
 /*public*/ void setItemHeight (int itemHeight) {

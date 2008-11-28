@@ -368,6 +368,18 @@ public void clearAll (boolean all) {
 	parent.clearAll (this, all);
 }
 
+void clearSelection () {
+	NSOutlineView widget = (NSOutlineView) parent.view;
+	int row = widget.rowForItem (handle);
+	if (widget.isRowSelected(row)) widget.deselectRow (row);
+	if (items != null && expanded) {
+		for (int i = 0; i < items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null && !item.isDisposed ()) item.clearSelection ();
+		}
+	}
+}
+
 NSAttributedString createString(int index) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	Color foreground = cellForeground != null ? cellForeground [index] : null;
@@ -921,6 +933,19 @@ public int indexOf (TreeItem item) {
 void register () {
 	super.register ();
 	display.addWidget (handle, this);
+}
+
+void release(boolean destroy) {
+	/*
+	* Bug in Cocoa.  When removing selected items from an NSOutlineView, the selection
+	* is not properly updated.  The fix is to ensure that the item and its subitems
+	* are deselected before the item is removed by the reloadItem call. 
+	* 
+	* This has to be done in release to avoid traversing the tree twice when items are
+	* removed from the tree by setItemCount. 
+	*/
+	if (destroy) clearSelection ();
+	super.release(destroy);
 }
 
 void releaseChildren (boolean destroy) {
