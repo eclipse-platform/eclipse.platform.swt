@@ -370,7 +370,7 @@ public void clearAll (boolean all) {
 
 void clearSelection () {
 	NSOutlineView widget = (NSOutlineView) parent.view;
-	int row = widget.rowForItem (handle);
+	int /*long*/ row = widget.rowForItem (handle);
 	if (widget.isRowSelected(row)) widget.deselectRow (row);
 	if (items != null && expanded) {
 		for (int i = 0; i < items.length; i++) {
