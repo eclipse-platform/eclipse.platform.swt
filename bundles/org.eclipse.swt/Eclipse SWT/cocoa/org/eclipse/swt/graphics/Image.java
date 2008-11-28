@@ -421,12 +421,6 @@ public Image(Device device, ImageData source, ImageData mask) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		// convertMask seems to assumes the palette of the is indexed, or that a black pixel also has an alpha component of 0.
-		// So, we need to clear the alpha out of the mask data.
-//		int maskSize = mask.data.length;
-//		for (int i = 0; i < maskSize; i += 4)
-//			mask.data[i] = 0;
-
 		mask = ImageData.convertMask(mask);
 		ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 		image.maskPad = mask.scanlinePad;
@@ -775,11 +769,11 @@ public ImageData getImageData() {
 			data.maskPad = maskPad;
 		}
 		
+		int startByte = ((dataFormat & OS.NSAlphaFirstBitmapFormat) == 0 ? 3 : 0);
+		for (int i = startByte; i < srcData.length; i+= 4) {
+			srcData[i] = 0;
+		}
 		if (imageRep.hasAlpha()) {
-			int startByte = ((dataFormat & OS.NSAlphaFirstBitmapFormat) == 0 ? 3 : 0);
-			for (int i = startByte; i < srcData.length; i+= 4) {
-				srcData[i] = 0;
-			}
 			data.alpha = alpha;
 			if (alpha == -1 && alphaData != null) {
 				data.alphaData = new byte[alphaData.length];
