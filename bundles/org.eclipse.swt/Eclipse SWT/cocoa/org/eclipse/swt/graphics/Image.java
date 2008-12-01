@@ -1085,7 +1085,7 @@ void initNative(String filename) {
 		
 		// For compatibility, images created from .ico files are treated as SWT.ICON format, even though
 		// they are no different than other bitmaps in Cocoa.
-		if (filename.endsWith(".ico")) {
+		if (filename.toLowerCase().endsWith(".ico")) {
 			this.type = SWT.ICON;
 		} else {
 			this.type = SWT.BITMAP;
