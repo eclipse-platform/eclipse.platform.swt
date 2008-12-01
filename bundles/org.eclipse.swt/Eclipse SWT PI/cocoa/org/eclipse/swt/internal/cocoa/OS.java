@@ -559,6 +559,7 @@ public static final int /*long*/ sel_closePath = sel_registerName("closePath");
 public static final int /*long*/ sel_code = sel_registerName("code");
 public static final int /*long*/ sel_collapseItem_ = sel_registerName("collapseItem:");
 public static final int /*long*/ sel_color = sel_registerName("color");
+public static final int /*long*/ sel_colorAtX_y_ = sel_registerName("colorAtX:y:");
 public static final int /*long*/ sel_colorSpaceName = sel_registerName("colorSpaceName");
 public static final int /*long*/ sel_colorUsingColorSpace_ = sel_registerName("colorUsingColorSpace:");
 public static final int /*long*/ sel_colorUsingColorSpaceName_ = sel_registerName("colorUsingColorSpaceName:");

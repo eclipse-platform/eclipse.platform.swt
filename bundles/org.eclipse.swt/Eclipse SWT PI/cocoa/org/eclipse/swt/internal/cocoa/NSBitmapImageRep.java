@@ -49,6 +49,11 @@ public int /*long*/ bytesPerRow() {
 	return OS.objc_msgSend(this.id, OS.sel_bytesPerRow);
 }
 
+public NSColor colorAtX(int /*long*/ x, int /*long*/ y) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorAtX_y_, x, y);
+	return result != 0 ? new NSColor(result) : null;
+}
+
 public void getBitmapDataPlanes(int[] /*long[]*/ data) {
 	OS.objc_msgSend(this.id, OS.sel_getBitmapDataPlanes_, data);
 }

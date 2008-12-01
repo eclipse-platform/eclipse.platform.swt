@@ -3752,10 +3752,10 @@
       <arg name="compression"></arg>
       <retval></retval>
     </method>
-    <method selector="colorAtX:y:">
-      <arg name="x"></arg>
-      <arg name="y"></arg>
-      <retval></retval>
+    <method selector="colorAtX:y:" swt_gen="true">
+      <arg name="x" swt_gen="true"></arg>
+      <arg name="y" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="colorizeByMappingGray:toColor:blackMapping:whiteMapping:">
       <arg name="midPoint"></arg>
