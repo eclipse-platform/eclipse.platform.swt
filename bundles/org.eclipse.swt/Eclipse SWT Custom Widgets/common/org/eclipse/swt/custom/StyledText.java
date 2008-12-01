@@ -7343,6 +7343,8 @@ public void setBackground(Color color) {
 	checkWidget();
 	background = color;
 	super.setBackground(color);
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
 	super.redraw();
 }
 /**
@@ -7690,6 +7692,8 @@ public void setForeground(Color color) {
 	checkWidget();
 	foreground = color;
 	super.setForeground(getForeground());
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
 	super.redraw();
 }
 /** 
@@ -8307,6 +8311,8 @@ public void setSelectionBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	selectionBackground = color;
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
 	super.redraw();
 }
 /**
@@ -8334,6 +8340,8 @@ public void setSelectionForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	selectionForeground = color;
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
 	super.redraw();
 }
 /** 
