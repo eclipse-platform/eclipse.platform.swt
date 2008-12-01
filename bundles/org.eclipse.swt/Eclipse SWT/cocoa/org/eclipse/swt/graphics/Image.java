@@ -1052,9 +1052,6 @@ void initNative(String filename) {
 			OS.free(alphaBitmapData);
 			OS.CGContextRelease(alphaBitmapCtx);
 			
-			ImageData data = getImageData();
-			int /*long*/ bitmapFormat = imageRep.bitmapFormat();
-			boolean alphaFirst = (bitmapFormat & OS.NSAlphaFirstBitmapFormat) != 0;
 			// If the alpha has only 0 or 255 (-1) for alpha values, compute the transparent pixel color instead
 			// of a continuous alpha range.
 			boolean hasTransparentPixel = true;
@@ -1069,8 +1066,11 @@ void initNative(String filename) {
 						}					
 						
 						if (alphaData[alphaOffset] == 0) {
-							transparentColor = data.getPixel(x, y);
-							if (alphaFirst) transparentColor >>= 8;
+							NSColor color = imageRep.colorAtX(x, y);
+							int red = (int) (color.redComponent() * 255);
+							int green = (int) (color.greenComponent() * 255);
+							int blue = (int) (color.blueComponent() * 255);
+							transparentColor = (red << 16) + (green << 8) + blue;
 						}
 						
 						alphaOffset += 1;
