@@ -564,17 +564,20 @@ void fixLevel() {
 	Shell[] shells = display.getShells ();
 	for (int i = 0; i < shells.length; i++) {
 		Shell shell = shells [i];
-		if ((shell.style & SWT.ON_TOP) == 0) {
+		int newLevel = 0;
+		if ((shell.style & SWT.ON_TOP) != 0) {
+			newLevel = OS.NSStatusWindowLevel;
+		} else {
 			int level = 0;
 			Shell pShell = shell;
 			while (pShell.parent != null) {
 				pShell = (Shell) pShell.parent;
 				level++;
 			}
-			int newLevel = pShell == topShell ? level : 0;
+			newLevel = pShell == topShell ? level : 0;
 			newLevel = Math.min (newLevel, OS.NSModalPanelWindowLevel - 1);
-			shell.window.setLevel (newLevel);
 		}
+		shell.window.setLevel (newLevel);
 	}
 }
 
