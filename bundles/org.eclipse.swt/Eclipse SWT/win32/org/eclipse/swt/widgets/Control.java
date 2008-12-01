@@ -2032,6 +2032,17 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 		OS.IntersectRect (rect2, rect1, rect2);
 		boolean fixPrintWindow = !OS.EqualRect (rect2, rect1);
 		int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+		int hwndInsertAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
+		/*
+		* Bug in Windows.  For some reason, when GetWindow ()
+		* with GW_HWNDPREV is used to query the previous window
+		* in the z-order with the first child, Windows returns
+		* the first child instead of NULL.  The fix is to detect
+		* this case and move the control to the top.
+		*/
+		if (hwndInsertAfter == 0 || hwndInsertAfter == hwnd) {
+			hwndInsertAfter = OS.HWND_TOP;
+		}
 		if (fixPrintWindow) {
 			int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
 			int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
@@ -2047,8 +2058,8 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 		if (fixPrintWindow) {
 			OS.SetParent (hwnd, hwndParent);
 			OS.MapWindowPoints (0, hwndParent, rect1, 2);
-			int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
-			SetWindowPos (hwnd, 0, rect1.left, rect1.top, rect1.right - rect1.left, rect1.bottom - rect1.top, flags);
+			int flags = OS.SWP_NOSIZE | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
+			SetWindowPos (hwnd, hwndInsertAfter, rect1.left, rect1.top, rect1.right - rect1.left, rect1.bottom - rect1.top, flags);
 			if ((bits & OS.WS_VISIBLE) == 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
 			}
