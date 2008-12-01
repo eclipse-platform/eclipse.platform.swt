@@ -325,42 +325,70 @@ boolean isAdherentStrikeout(TextStyle style) {
  * @return a string representation of the <code>TextStyle</code>
  */
 public String toString () {
-	StringBuffer buffer = new StringBuffer("TextStyle {");
+	StringBuffer buffer = new StringBuffer("TextStyle {"); //$NON-NLS-1$
 	int startLength = buffer.length();
 	if (font != null) {
-		if (buffer.length() > startLength) buffer.append(", ");
-		buffer.append("font=");
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
+		buffer.append("font="); //$NON-NLS-1$
 		buffer.append(font);
 	}
 	if (foreground != null) {
-		if (buffer.length() > startLength) buffer.append(", ");
-		buffer.append("foreground=");
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$ 
+		buffer.append("foreground="); //$NON-NLS-1$
 		buffer.append(foreground);
 	}
 	if (background != null) {
-		if (buffer.length() > startLength) buffer.append(", ");
-		buffer.append("background=");
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
+		buffer.append("background="); //$NON-NLS-1$
 		buffer.append(background);
 	}
 	if (underline) {
-		if (buffer.length() > startLength) buffer.append(", ");
-		buffer.append("underlined");
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
+		buffer.append("underline="); //$NON-NLS-1$
+		switch (underlineStyle) {
+			case SWT.UNDERLINE_SINGLE: buffer.append("single"); break; //$NON-NLS-1$ 
+			case SWT.UNDERLINE_DOUBLE: buffer.append("double"); break; //$NON-NLS-1$ 
+			case SWT.UNDERLINE_SQUIGGLE: buffer.append("squiggle"); break; //$NON-NLS-1$ 
+			case SWT.UNDERLINE_ERROR: buffer.append("error"); break; //$NON-NLS-1$ 
+			case SWT.UNDERLINE_LINK: buffer.append("link"); break; //$NON-NLS-1$ 
+		}
+		if (underlineColor != null) {
+			buffer.append(", underlineColor="); //$NON-NLS-1$
+			buffer.append(underlineColor);
+		}
 	}
 	if (strikeout) {
-		if (buffer.length() > startLength) buffer.append(", ");
-		buffer.append("striked out");
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
+		buffer.append("striked out"); //$NON-NLS-1$
+		if (strikeoutColor != null) {
+			buffer.append(", strikeoutColor="); //$NON-NLS-1$
+			buffer.append(strikeoutColor);
+		}
+	}
+	if (borderStyle != SWT.NONE) {
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
+		buffer.append("border="); //$NON-NLS-1$
+		switch (borderStyle) {
+			case SWT.BORDER_SOLID:	buffer.append("solid"); break; //$NON-NLS-1$
+			case SWT.BORDER_DOT:	buffer.append("dot"); break; //$NON-NLS-1$
+			case SWT.BORDER_DASH:	buffer.append("dash"); break; //$NON-NLS-1$
+		}
+		if (borderColor != null) {
+			buffer.append(", borderColor="); //$NON-NLS-1$
+			buffer.append(borderColor);
+		}
 	}
 	if (rise != 0) {
-		if (buffer.length() > startLength) buffer.append(", ");
-		buffer.append("rise=");
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
+		buffer.append("rise="); //$NON-NLS-1$
 		buffer.append(rise);
 	}
 	if (metrics != null) {
-		if (buffer.length() > startLength) buffer.append(", ");
-		buffer.append("metrics=");
+		if (buffer.length() > startLength) buffer.append(", "); //$NON-NLS-1$
+		buffer.append("metrics="); //$NON-NLS-1$
 		buffer.append(metrics);
 	}
-	buffer.append("}");
+	buffer.append("}"); //$NON-NLS-1$
 	return buffer.toString();
 }
 
