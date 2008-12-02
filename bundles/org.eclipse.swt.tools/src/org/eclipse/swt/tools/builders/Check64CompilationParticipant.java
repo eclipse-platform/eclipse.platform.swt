@@ -51,7 +51,7 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 	static final String buildDir = "/.build64/";
 	static final String pluginDir = "/org.eclipse.swt/";
 	static final String SOURCE_ID = "JNI";
-	static final String CHECK_64_ENABLED = "CHECK_64_ENABLED";
+	static final String CHECK_64_ENABLED = Activator.PLUGIN_ID + "CHECK_64_ENABLED";
 	
 void build(IJavaProject project, String root) throws CoreException {
 	PrintWriter writer = null;
@@ -191,11 +191,11 @@ boolean replace(char[] source) {
 }
 
 public static boolean getEnabled() {
-	return Activator.getDefault().getPluginPreferences().getBoolean("CHECK_64_ENABLED");
+	return Activator.getDefault().getPreferenceStore().getBoolean(CHECK_64_ENABLED);
 }
 
 public static void setEnabled(boolean enabled) {
-	Activator.getDefault().getPluginPreferences().setValue("CHECK_64_ENABLED", enabled);
+	Activator.getDefault().getPreferenceStore().setValue(CHECK_64_ENABLED, enabled);
 }
 
 public void buildFinished(IJavaProject project) {
