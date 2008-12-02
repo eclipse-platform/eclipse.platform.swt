@@ -13,6 +13,7 @@ package org.eclipse.swt.browser;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
@@ -52,7 +53,8 @@ class Mozilla extends WebBrowser {
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
-	static int BrowserCount;
+	static int BrowserCount, NextJSFunctionIndex = 1;
+	static Hashtable AllFunctions = new Hashtable (); 
 	static boolean Initialized, IsPre_1_8, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 
 	/* XULRunner detect constants */
@@ -374,6 +376,39 @@ public void create (Composite parent, int style) {
 		}
 
 		if (!Initialized) {
+			LocationProvider = new AppFileLocProvider (mozillaPath);
+			LocationProvider.AddRef ();
+
+			/* extract external.xpt to temp */
+			String tempPath = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
+			File componentsDir = new File (tempPath, "eclipse/mozillaComponents"); //$NON-NLS-1$
+			LocationProvider.setComponentsPath (componentsDir.getAbsolutePath ());
+			java.io.InputStream is = Library.class.getResourceAsStream ("/external.xpt"); //$NON-NLS-1$
+			if (is != null) {
+				if (!componentsDir.exists ()) {
+					componentsDir.mkdir ();
+				}
+				int read;
+				byte [] buffer = new byte [4096];
+				File file = new File (componentsDir, "external.xpt"); //$NON-NLS-1$
+				try {
+					FileOutputStream os = new FileOutputStream (file);
+					while ((read = is.read (buffer)) != -1) {
+						os.write(buffer, 0, read);
+					}
+					os.close ();
+					is.close ();
+					if (!Platform.PLATFORM.equals ("win32")) { //$NON-NLS-1$
+						try {
+							Runtime.getRuntime ().exec (
+								new String [] {"chmod", "755", file.getAbsolutePath ()}).waitFor (); //$NON-NLS-1$ //$NON-NLS-2$
+						} catch (Throwable e) {}
+					}
+				} catch (FileNotFoundException e) {
+				} catch (IOException e) {
+				}
+			}
+
 			int /*long*/[] retVal = new int /*long*/[1];
 			nsEmbedString pathString = new nsEmbedString (mozillaPath);
 			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, retVal);
@@ -386,9 +421,6 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				error (XPCOM.NS_ERROR_NULL_POINTER);
 			}
-
-			LocationProvider = new AppFileLocProvider (mozillaPath);
-			LocationProvider.AddRef ();
 
 			nsIFile localFile = new nsILocalFile (retVal[0]);
 			rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), LocationProvider.getAddress ());
@@ -603,7 +635,6 @@ public void create (Composite parent, int style) {
 		 */
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
 		rc = serviceManager.GetServiceByContractID (aContractID, nsIPrefService.NS_IPREFSERVICE_IID, result);
-		serviceManager.Release ();
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
 			error (rc);
@@ -887,6 +918,8 @@ public void create (Composite parent, int style) {
 		
 		nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar (result[0]);
 		result[0] = 0;
+		componentRegistrar.AutoRegister (0);	 /* detect the External component */ 
+
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PROMPTSERVICE_CONTRACTID, true); 
 		byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "Prompt Service", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress ());
@@ -895,7 +928,31 @@ public void create (Composite parent, int style) {
 			error (rc);
 		}
 		factory.Release ();
-		
+
+		ExternalFactory externalFactory = new ExternalFactory ();
+		externalFactory.AddRef ();
+		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXTERNAL_CONTRACTID, true); 
+		aClassName = MozillaDelegate.wcsToMbcs (null, "External", true); //$NON-NLS-1$
+		rc = componentRegistrar.RegisterFactory (XPCOM.EXTERNAL_CID, aClassName, aContractID, externalFactory.getAddress ());
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		externalFactory.Release ();
+
+		rc = serviceManager.GetService (XPCOM.NS_CATEGORYMANAGER_CID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		serviceManager.Release ();
+
+		nsICategoryManager categoryManager = new nsICategoryManager (result[0]);
+		result[0] = 0;
+		byte[] category = MozillaDelegate.wcsToMbcs (null, "JavaScript global property", true); //$NON-NLS-1$
+		byte[] entry = MozillaDelegate.wcsToMbcs (null, "external", true); //$NON-NLS-1$
+		rc = categoryManager.AddCategoryEntry(category, entry, aContractID, 1, 1, result);
+		result[0] = 0;
+		categoryManager.Release ();
+
 		/*
 		* This Download factory will be used if the GRE version is < 1.8.
 		* If the GRE version is 1.8.x then the Download factory that is registered later for
@@ -1530,6 +1587,10 @@ public String getBrowserType () {
 	return "mozilla"; //$NON-NLS-1$
 }
 
+int getNextFunctionIndex () {
+	return NextJSFunctionIndex++;
+}
+
 public String getText () {
 	if (awaitingNavigate) return ""; //$NON-NLS-1$
 
@@ -1756,7 +1817,12 @@ void Activate () {
 	if (rc != XPCOM.NS_OK) error (rc);
 	webBrowserFocus.Release ();
 }
-	
+
+public void addFunction (BrowserFunction function) {
+	super.addFunction (function);
+	AllFunctions.put (new Integer (function.index), function);
+}
+
 void Deactivate () {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
@@ -2171,6 +2237,11 @@ int Release () {
 	return refCount;
 }
 
+public void removeFunction (BrowserFunction function) {
+	super.removeFunction (function);
+	AllFunctions.remove (new Integer (function.index));
+}
+
 /* nsIWeakReference */	
 	
 int QueryReferent (int /*long*/ riid, int /*long*/ ppvObject) {
@@ -2286,6 +2357,14 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				for (int i = 0; i < statusTextListeners.length; i++) {
 					statusTextListeners[i].changed (event);
 				}
+
+				/* re-install registered functions */
+				Enumeration elements = functions.elements ();
+				while (elements.hasMoreElements ()) {
+					BrowserFunction function = (BrowserFunction)elements.nextElement ();
+					execute (function.functionString);
+				}
+
 				ProgressEvent event2 = new ProgressEvent (browser);
 				event2.display = browser.getDisplay ();
 				event2.widget = browser;

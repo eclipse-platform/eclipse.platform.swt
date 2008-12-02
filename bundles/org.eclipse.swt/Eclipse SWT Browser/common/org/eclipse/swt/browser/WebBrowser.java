@@ -10,11 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.*;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
 abstract class WebBrowser {
 	Browser browser;
+	Hashtable functions = new Hashtable ();
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
 	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
@@ -22,7 +25,9 @@ abstract class WebBrowser {
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
+	int nextFunctionIndex = 1;
 
+	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
 	static Runnable MozillaClearSessions;
 	static Runnable NativeClearSessions;
 
@@ -169,6 +174,38 @@ public void addCloseWindowListener (CloseWindowListener listener) {
 	closeWindowListeners[closeWindowListeners.length - 1] = listener;
 }
 
+public void addFunction (BrowserFunction function) {
+	/* 
+	 * If an existing function with the same name is found then
+	 * remove it so that it is not recreated on subsequent pages
+	 * (the new function overwrites the old one).
+	 */
+	Enumeration keys = functions.keys ();
+	while (keys.hasMoreElements ()) {
+		Object key = keys.nextElement ();
+		BrowserFunction current = (BrowserFunction)functions.get (key);
+		if (current.name.equals (function.name)) {
+			functions.remove (key);
+			break;
+		}
+	}
+
+	function.index = getNextFunctionIndex ();
+	functions.put (new Integer (function.index), function);
+
+	StringBuffer buffer = new StringBuffer ("function ");
+	buffer.append (function.name);
+	buffer.append ("() {var result = window.external.callJava(");
+	buffer.append (function.index);
+	buffer.append (",Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('");
+	buffer.append (ERROR_ID);
+	buffer.append ("') == 0) {var error = new Error(result.substring(");
+	buffer.append (ERROR_ID.length () + 1);
+	buffer.append (")); throw error;} return result;}");
+	function.functionString = buffer.toString ();
+	execute (function.functionString);	
+}
+
 public void addLocationListener (LocationListener listener) {
 	LocationListener[] newLocationListeners = new LocationListener[locationListeners.length + 1];
 	System.arraycopy(locationListeners, 0, newLocationListeners, 0, locationListeners.length);
@@ -226,6 +263,10 @@ public abstract boolean forward ();
 
 public abstract String getBrowserType ();
 
+int getNextFunctionIndex () {
+	return nextFunctionIndex++;
+}
+
 public abstract String getText ();
 
 public abstract String getUrl ();
@@ -262,6 +303,11 @@ public void removeCloseWindowListener (CloseWindowListener listener) {
 	System.arraycopy (closeWindowListeners, 0, newCloseWindowListeners, 0, index);
 	System.arraycopy (closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
 	closeWindowListeners = newCloseWindowListeners;
+}
+
+public void removeFunction (BrowserFunction function) {
+	execute ("window." + function.name + "=undefined;");
+	functions.remove (new Integer (function.index));
 }
 
 public void removeLocationListener (LocationListener listener) {

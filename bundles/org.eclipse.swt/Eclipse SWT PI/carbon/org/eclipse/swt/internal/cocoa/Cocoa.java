@@ -39,12 +39,20 @@ public static final int C_NSImageView = Cocoa.objc_getClass("NSImageView"); //$N
 public static final int C_WebPreferences = Cocoa.objc_getClass("WebPreferences"); //$NON-NLS-1$
 public static final int C_NSBezierPath = Cocoa.objc_getClass("NSBezierPath"); //$NON-NLS-1$
 public static final int C_NSButton = Cocoa.objc_getClass("NSButton"); //$NON-NLS-1$
+public static final int C_NSObject = Cocoa.objc_getClass("NSObject"); //$NON-NLS-1$
+public static final int C_NSString = Cocoa.objc_getClass("NSString"); //$NON-NLS-1$
+public static final int C_NSMutableArray = Cocoa.objc_getClass("NSMutableArray"); //$NON-NLS-1$
+public static final int C_WebScriptObject = Cocoa.objc_getClass("WebScriptObject"); //$NON-NLS-1$
+public static final int C_WebUndefined = Cocoa.objc_getClass("WebUndefined"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
 public static final int S_addObserver_selector_name_object = Cocoa.sel_registerName("addObserver:selector:name:object:"); //$NON-NLS-1$
+public static final int S_addObject = Cocoa.sel_registerName("addObject:"); //$NON-NLS-1$
 public static final int S_alloc = Cocoa.sel_registerName("alloc"); //$NON-NLS-1$
+public static final int S_arrayWithCapacity = Cocoa.sel_registerName("arrayWithCapacity:"); //$NON-NLS-1$
 public static final int S_autorelease = Cocoa.sel_registerName("autorelease"); //$NON-NLS-1$
+public static final int S_boolValue = Cocoa.sel_registerName("boolValue"); //$NON-NLS-1$
 public static final int S_cancel = Cocoa.sel_registerName("cancel"); //$NON-NLS-1$
 public static final int S_canGoBack = Cocoa.sel_registerName("canGoBack"); //$NON-NLS-1$
 public static final int S_canGoForward = Cocoa.sel_registerName("canGoForward"); //$NON-NLS-1$
@@ -58,6 +66,7 @@ public static final int S_dataSource = Cocoa.sel_registerName("dataSource"); //$
 public static final int S_defaultCenter = Cocoa.sel_registerName("defaultCenter"); //$NON-NLS-1$
 public static final int S_deleteCookie = Cocoa.sel_registerName("deleteCookie:"); //$NON-NLS-1$
 public static final int S_documentSource = Cocoa.sel_registerName("documentSource"); //$NON-NLS-1$
+public static final int S_doubleValue = Cocoa.sel_registerName("doubleValue"); //$NON-NLS-1$
 public static final int S_download = Cocoa.sel_registerName("download"); //$NON-NLS-1$
 public static final int S_goBack = Cocoa.sel_registerName("goBack:"); //$NON-NLS-1$
 public static final int S_goForward = Cocoa.sel_registerName("goForward:"); //$NON-NLS-1$
@@ -66,11 +75,16 @@ public static final int S_ignore = Cocoa.sel_registerName("ignore"); //$NON-NLS-
 public static final int S_initialRequest = Cocoa.sel_registerName("initialRequest"); //$NON-NLS-1$
 public static final int S_initWithFrame_frameName_groupName = Cocoa.sel_registerName("initWithFrame:frameName:groupName:"); //$NON-NLS-1$
 public static final int S_initWithProc = Cocoa.sel_registerName("initWithProc:user_data:"); //$NON-NLS-1$
+public static final int S_intValue = Cocoa.sel_registerName("intValue"); //$NON-NLS-1$
+public static final int S_isKindOfClass = Cocoa.sel_registerName("isKindOfClass:"); //$NON-NLS-1$
 public static final int S_isSessionOnly = Cocoa.sel_registerName("isSessionOnly"); //$NON-NLS-1$
 public static final int S_loadHTMLStringbaseURL = Cocoa.sel_registerName("loadHTMLString:baseURL:"); //$NON-NLS-1$
 public static final int S_loadRequest = Cocoa.sel_registerName("loadRequest:"); //$NON-NLS-1$
+public static final int S_length = Cocoa.sel_registerName("length"); //$NON-NLS-1$
 public static final int S_mainFrame = Cocoa.sel_registerName("mainFrame"); //$NON-NLS-1$
 public static final int S_name = Cocoa.sel_registerName("name"); //$NON-NLS-1$
+public static final int S_numberWithBool = Cocoa.sel_registerName("numberWithBool:"); //$NON-NLS-1$
+public static final int S_numberWithDouble = Cocoa.sel_registerName("numberWithDouble:"); //$NON-NLS-1$
 public static final int S_numberWithInt = Cocoa.sel_registerName("numberWithInt:"); //$NON-NLS-1$
 public static final int S_objectAtIndex = Cocoa.sel_registerName("objectAtIndex:"); //$NON-NLS-1$
 public static final int S_pageTitle = Cocoa.sel_registerName("pageTitle"); //$NON-NLS-1$
@@ -100,6 +114,7 @@ public static final int S_standardPreferences = Cocoa.sel_registerName("standard
 public static final int S_stopLoading = Cocoa.sel_registerName("stopLoading:"); //$NON-NLS-1$
 public static final int S_stringByEvaluatingJavaScriptFromString = Cocoa.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$
 public static final int S_takeStringURLFrom = Cocoa.sel_registerName("takeStringURLFrom:"); //$NON-NLS-1$
+public static final int S_undefined = Cocoa.sel_registerName("undefined"); //$NON-NLS-1$
 public static final int S_use = Cocoa.sel_registerName("use"); //$NON-NLS-1$
 public static final int S_valueForKey = Cocoa.sel_registerName("valueForKey:"); //$NON-NLS-1$
 public static final int S_webFrame = Cocoa.sel_registerName("webFrame"); //$NON-NLS-1$
@@ -164,6 +179,10 @@ public static final int S_relatedTarget = Cocoa.sel_registerName("relatedTarget"
 public static final int S_shiftKey = Cocoa.sel_registerName("shiftKey"); //$NON-NLS-1$
 public static final int S_type = Cocoa.sel_registerName("type"); //$NON-NLS-1$
 public static final int S_wheelDelta = Cocoa.sel_registerName("wheelDelta"); //$NON-NLS-1$
+public static final int S_setValue = Cocoa.sel_registerName("setValue:forKey:"); //$NON-NLS-1$
+public static final int S_webScriptValueAtIndex = Cocoa.sel_registerName("webScriptValueAtIndex:"); //$NON-NLS-1$
+public static final int S_getCharacters_ = Cocoa.sel_registerName("getCharacters:"); //$NON-NLS-1$
+public static final int S_objCType = Cocoa.sel_registerName("objCType"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
@@ -191,6 +210,8 @@ public static final native int HICocoaViewCreate(int nsview, int options, int[] 
 /* OBJ-C runtime primitives */
 /** @param className cast=(const char *) */
 public static final native int objc_getClass(byte[] className);
+/** @param className cast=(const char *) */
+public static final native int objc_getMetaClass(byte[] className);
 /**
  * @param object cast=(id)
  * @param selector cast=(SEL)
@@ -207,6 +228,14 @@ public static final native int objc_msgSend(int object, int selector, int arg0);
  * @param selector cast=(SEL)
  */
 public static final native int objc_msgSend(int object, int selector, float arg0);
+/**
+ * @method flags=cast
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
+public static final native int objc_msgSend(int object, int selector, double arg0);
+/** @method flags=cast */
+public static final native int objc_msgSend(int object, int selector, char[] arg0);
 /**
  * @method flags=cast
  * @param object cast=(id)
@@ -289,6 +318,8 @@ public static final native int objc_msgSend(int object, int selector, int arg0, 
  * @param selector cast=(SEL)
  */
 public static final native int objc_msgSend(int object, int selector, int[] arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10);
+/** @method flags=cast */
+public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel);
 /**
  * @param result cast=(void *)
  * @param object cast=(void *)

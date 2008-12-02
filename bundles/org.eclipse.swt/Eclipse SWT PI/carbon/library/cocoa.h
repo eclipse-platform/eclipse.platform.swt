@@ -16,8 +16,13 @@
 #include <WebKit/WebKit.h>
 #include <WebKit/HIWebView.h>
 #include <WebKit/CarbonUtils.h>
+#import <objc/objc-runtime.h>
 
 #include "cocoa_custom.h"
+
+#ifndef __i386__
+#define objc_msgSend_fpret objc_msgSend
+#endif
 
 #ifdef __i386__
 #define STRUCT_SIZE_LIMIT 8

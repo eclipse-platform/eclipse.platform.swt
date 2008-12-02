@@ -133,6 +133,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1getMetaClass
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1getMetaClass)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1getMetaClass_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)objc_getMetaClass((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	Cocoa_NATIVE_EXIT(env, that, objc_1getMetaClass_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__II
 JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -141,6 +157,18 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II)
 	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__II_FUNC);
 	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1);
 	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__IID
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IID)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jdouble arg2)
+{
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__IID_FUNC);
+	rc = (jint)((jint (*)(id, SEL, jdouble))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__IID_FUNC);
 	return rc;
 }
 #endif
@@ -367,6 +395,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__II_3C
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2)
+{
+	jchar *lparg2=NULL;
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__II_3C_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (*)(jint, jint, jchar *))objc_msgSend)(arg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__II_3C_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__II_3IIIIIIIIIII
 JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II_3IIIIIIIIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12)
@@ -379,6 +423,18 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II_3IIIIIIIIIII)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__II_3IIIIIIIIIII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1fpret
+JNIEXPORT jdouble JNICALL Cocoa_NATIVE(objc_1msgSend_1fpret)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jdouble rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1fpret_FUNC);
+	rc = (jdouble)((jdouble (*)(jintLong, jintLong))objc_msgSend_fpret)(arg0, arg1);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend_1fpret_FUNC);
 	return rc;
 }
 #endif

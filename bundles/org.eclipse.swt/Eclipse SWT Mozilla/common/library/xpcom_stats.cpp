@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 170;
-int XPCOM_nativeFunctionCallCount[170];
+int XPCOM_nativeFunctionCount = 175;
+int XPCOM_nativeFunctionCallCount[175];
 char * XPCOM_nativeFunctionNames[] = {
 	"_1Call",
 	"_1NS_1GetComponentManager",
@@ -26,6 +26,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__II",
 #else
 	"_1VtblCall__IJ",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IID",
+#else
+	"_1VtblCall__IJD",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIF",
@@ -246,6 +251,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__III_3C_3C_3I_3I_3C_3I_3I",
 #else
 	"_1VtblCall__IJI_3C_3C_3I_3I_3C_3I_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__III_3C_3I",
+#else
+	"_1VtblCall__IJI_3C_3I",
 #endif
 #ifndef JNI64
 	"_1VtblCall__III_3I",
@@ -471,6 +481,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I",
 #else
 	"_1VtblCall__IJJ_3C_3C_3J_3J_3C_3I_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJ_3C_3J",
+#else
+	"_1VtblCall__IJJ_3C_3J",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJ_3I",
@@ -751,6 +766,16 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__II_3S",
 #else
 	"_1VtblCall__IJ_3S",
+#endif
+#ifndef JNI64
+	"_1VtblCall__II_3SI_3I_3I",
+#else
+	"_1VtblCall__IJ_3SI_3I_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__II_3SJ_3I_3J",
+#else
+	"_1VtblCall__IJ_3SJ_3I_3J",
 #endif
 	"_1XPCOMGlueShutdown",
 	"_1XPCOMGlueStartup",

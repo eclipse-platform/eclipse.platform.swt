@@ -167,12 +167,12 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IIII_FUNC,
 #else
-	VtblCall__IJJJ_FUNC,
+	VtblCall__IJII_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIIII_FUNC,
 #else
-	VtblCall__IJIIJ_FUNC,
+	VtblCall__IJIII_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIIIII_FUNC,
@@ -195,6 +195,21 @@ typedef enum {
 	VtblCall__IJJJJJIIII_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2I_FUNC,
+#else
+	VtblCall__IJIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2JLorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2J_FUNC,
+#else
+	VtblCall__IJIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2JLorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIIIJ_FUNC,
+#else
+	VtblCall__IJIIJ_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_DVTARGETDEVICE_2Lorg_eclipse_swt_internal_win32_SIZE_2_FUNC,
 #else
 	VtblCall__IJIILorg_eclipse_swt_internal_ole_win32_DVTARGETDEVICE_2Lorg_eclipse_swt_internal_win32_SIZE_2_FUNC,
@@ -202,12 +217,12 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_GUID_2I_3I_FUNC,
 #else
-	VtblCall__IJJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J_FUNC,
+	VtblCall__IJIILorg_eclipse_swt_internal_ole_win32_GUID_2I_3I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIIILorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
 #else
-	VtblCall__IJJJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
+	VtblCall__IJIILorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIII_3I_FUNC,
@@ -220,6 +235,11 @@ typedef enum {
 	VtblCall__IJII_3J_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIIJ_FUNC,
+#else
+	VtblCall__IJIJ_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIIJ_3I_FUNC,
 #else
 	VtblCall__IJIJ_3I_FUNC,
@@ -227,7 +247,7 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3I_FUNC,
 #else
-	VtblCall__IJJLorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3J_FUNC,
+	VtblCall__IJILorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC,
@@ -237,27 +257,42 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2II_FUNC,
 #else
-	VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2JJ_FUNC,
+	VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2II_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I_FUNC,
 #else
+	VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2JLorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I_FUNC,
+#else
 	VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2JLorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2JJ_FUNC,
+#else
+	VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_ole_win32_STATSTG_2_3I_FUNC,
 #else
-	VtblCall__IJJLorg_eclipse_swt_internal_ole_win32_STATSTG_2_3J_FUNC,
+	VtblCall__IJILorg_eclipse_swt_internal_ole_win32_STATSTG_2_3I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_win32_MSG_2IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+#else
+	VtblCall__IJILorg_eclipse_swt_internal_win32_MSG_2IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIILorg_eclipse_swt_internal_win32_MSG_2JIJLorg_eclipse_swt_internal_win32_RECT_2_FUNC,
 #else
 	VtblCall__IJILorg_eclipse_swt_internal_win32_MSG_2JIJLorg_eclipse_swt_internal_win32_RECT_2_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
 #else
-	VtblCall__IJJLorg_eclipse_swt_internal_win32_POINT_2J_FUNC,
+	VtblCall__IJILorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIILorg_eclipse_swt_internal_win32_SIZE_2_FUNC,
@@ -267,7 +302,7 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IIIZ_FUNC,
 #else
-	VtblCall__IJJZ_FUNC,
+	VtblCall__IJIZ_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__III_3I_FUNC,
@@ -277,12 +312,12 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__III_3II_3I_FUNC,
 #else
-	VtblCall__IJI_3JI_3I_FUNC,
+	VtblCall__IJI_3II_3I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__III_3I_3I_3I_3I_FUNC,
 #else
-	VtblCall__IJI_3J_3J_3I_3J_FUNC,
+	VtblCall__IJI_3I_3I_3I_3I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__III_3J_FUNC,
@@ -290,14 +325,74 @@ typedef enum {
 	VtblCall__IJI_3J_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__III_3JI_3I_FUNC,
+#else
+	VtblCall__IJI_3JI_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__III_3J_3J_3I_3J_FUNC,
+#else
+	VtblCall__IJI_3J_3J_3I_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJI_FUNC,
+#else
+	VtblCall__IJJI_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJI_3I_FUNC,
 #else
 	VtblCall__IJJI_3I_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIJI_3J_FUNC,
+#else
+	VtblCall__IJJI_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJJ_FUNC,
+#else
+	VtblCall__IJJJ_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J_FUNC,
+#else
+	VtblCall__IJJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
+#else
+	VtblCall__IJJJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJLorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3J_FUNC,
+#else
+	VtblCall__IJJLorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJLorg_eclipse_swt_internal_ole_win32_STATSTG_2_3J_FUNC,
+#else
+	VtblCall__IJJLorg_eclipse_swt_internal_ole_win32_STATSTG_2_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJLorg_eclipse_swt_internal_win32_POINT_2J_FUNC,
+#else
+	VtblCall__IJJLorg_eclipse_swt_internal_win32_POINT_2J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJZ_FUNC,
+#else
+	VtblCall__IJJZ_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJ_3I_FUNC,
 #else
 	VtblCall__IJJ_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJ_3J_FUNC,
+#else
+	VtblCall__IJJ_3J_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_ole_win32_CAUUID_2_FUNC,
@@ -332,12 +427,17 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2IIII_FUNC,
 #else
-	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2IIJJ_FUNC,
+	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2IIII_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2III_3I_FUNC,
 #else
-	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2JII_3I_FUNC,
+	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2III_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2IIJJ_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2IIJJ_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2ILorg_eclipse_swt_internal_ole_win32_OLECMD_2Lorg_eclipse_swt_internal_ole_win32_OLECMDTEXT_2_FUNC,
@@ -345,12 +445,27 @@ typedef enum {
 	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2ILorg_eclipse_swt_internal_ole_win32_OLECMD_2Lorg_eclipse_swt_internal_ole_win32_OLECMDTEXT_2_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2JII_3I_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2JII_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3J_FUNC,
 #else
 	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3J_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3J_FUNC,
 #else
 	VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2_3J_FUNC,
 #endif
@@ -377,6 +492,11 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2IZ_FUNC,
 #else
+	VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2IZ_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2JZ_FUNC,
+#else
 	VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2JZ_FUNC,
 #endif
 #ifndef JNI64
@@ -386,6 +506,11 @@ typedef enum {
 #endif
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2J_FUNC,
 #else
 	VtblCall__IJLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2J_FUNC,
 #endif
@@ -402,12 +527,12 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__II_3CI_FUNC,
 #else
-	VtblCall__IJ_3CJ_FUNC,
+	VtblCall__IJ_3CI_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__II_3CIIII_3I_FUNC,
 #else
-	VtblCall__IJ_3CJIII_3J_FUNC,
+	VtblCall__IJ_3CIIII_3I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__II_3CIII_3I_FUNC,
@@ -418,6 +543,16 @@ typedef enum {
 	VtblCall__II_3CIII_3J_FUNC,
 #else
 	VtblCall__IJ_3CIII_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__II_3CJ_FUNC,
+#else
+	VtblCall__IJ_3CJ_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__II_3CJIII_3J_FUNC,
+#else
+	VtblCall__IJ_3CJIII_3J_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__II_3CJII_3J_FUNC,

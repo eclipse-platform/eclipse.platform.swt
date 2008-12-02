@@ -49,6 +49,7 @@ public class XPCOM extends C {
 	public static final String DOMEVENT_KEYPRESS = "keypress"; //$NON-NLS-1$
 	
 	/* CID constants */
+	public static final nsID EXTERNAL_CID = new nsID ("f2c59ad0-bd76-11dd-ad8b-0800200c9a66"); //$NON-NLS-1$
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
 	public static final nsID NS_CATEGORYMANAGER_CID = new nsID("16d222a6-1dd2-11b2-b693-f38b02c021b2"); //$NON-NLS-1$
 	public static final nsID NS_DOWNLOAD_CID = new nsID("e3fa9D0a-1dd1-11b2-bdef-8c720b597445"); //$NON-NLS-1$
@@ -59,6 +60,7 @@ public class XPCOM extends C {
 	public static final nsID NS_LOADGROUP_CID = new nsID("e1c61582-2a84-11d3-8cce-0060b0fc14a3"); //$NON-NLS-1$
 	public static final nsID NS_PROMPTSERVICE_CID = new nsID("a2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
 
+	public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$
 	public static final String NS_CONTEXTSTACK_CONTRACTID = "@mozilla.org/js/xpc/ContextStack;1"; //$NON-NLS-1$
 	public static final String NS_COOKIEMANAGER_CONTRACTID = "@mozilla.org/cookiemanager;1"; //$NON-NLS-1$
 	public static final String NS_DIRECTORYSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1"; //$NON-NLS-1$
@@ -72,6 +74,7 @@ public class XPCOM extends C {
 	public static final String NS_PREFSERVICE_CONTRACTID = "@mozilla.org/preferences-service;1"; //$NON-NLS-1$
 	public static final String NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1"; //$NON-NLS-1$
 	public static final String NS_TRANSFER_CONTRACTID = "@mozilla.org/transfer;1"; //$NON-NLS-1$
+	public static final String NS_VARIANT_CONTRACTID = "@mozilla.org/variant;1"; //$NON-NLS-1$
 	public static final String NS_WEBNAVIGATIONINFO_CONTRACTID = "@mozilla.org/webnavigation-info;1"; //$NON-NLS-1$
 	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
 
@@ -426,6 +429,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0) {
 		lock.unlock();
 	}
 }
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, double arg0);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, double arg0) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0);
+	} finally {
+		lock.unlock();
+	}
+}
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, float arg0);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, float arg0) {
 	lock.lock();
@@ -700,6 +712,24 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, byte[] a
 
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, char[] arg1, int arg2);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, char[] arg1, int arg2) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, char[] arg1, int[] arg2);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, char[] arg1, int[] arg2) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, char[] arg1, long[] arg2);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, char[] arg1, long[] arg2) {
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2);
@@ -1723,6 +1753,24 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, short[] type, int iid, int[] count, int[] ptr);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, short[] type, int iid, int[] count, int[] ptr) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, type, iid, count, ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, short[] type, long iid, int[] count, long[] ptr);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, short[] type, long iid, int[] count, long[] ptr) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, type, iid, count, ptr);
 	} finally {
 		lock.unlock();
 	}

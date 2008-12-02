@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.Enumeration;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -284,7 +286,7 @@ public void create (Composite parent, int style) {
 	// delegate = [[WebResourceLoadDelegate alloc] init eventProc];
 	delegate = Cocoa.objc_msgSend(Cocoa.C_WebKitDelegate, Cocoa.S_alloc);
 	delegate = Cocoa.objc_msgSend(delegate, Cocoa.S_initWithProc, callback7Address, webViewHandle);
-				
+
 	// [webView setFrameLoadDelegate:delegate];
 	Cocoa.objc_msgSend(webView, Cocoa.S_setFrameLoadDelegate, delegate);
 		
@@ -623,6 +625,8 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 30: mouseDidMoveOverElement(arg0, arg1); break;
 		case 31: didChangeLocationWithinPageForFrame(arg0); break;
 		case 32: handleEvent(arg0); break;
+		case 33: windowScriptObjectAvailable(arg0); break;
+		case 34: ret = callJava(arg0, arg1, arg2); break;
 	}
 	return ret;
 }
@@ -852,6 +856,14 @@ void didFinishLoadForFrame(int frame) {
 				}
 			);
 		}
+
+		/* re-install registered functions */
+		Enumeration elements = functions.elements ();
+		while (elements.hasMoreElements ()) {
+			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+			execute (function.functionString);
+		}
+
 		/*
 		* Feature on Safari.  The identifier is used here as a marker for the events 
 		* related to the top frame and the URL changes related to that top frame as 
@@ -1064,6 +1076,17 @@ void didCommitLoadForFrame(int frame) {
 	location.top = top;
 	for (int i = 0; i < locationListeners.length; i++) {
 		locationListeners[i].changed(location);
+	}
+}
+
+void windowScriptObjectAvailable (int windowScriptObject) {
+	String objectName = "external"; //$NON-NLS-1$
+	char[] chars = new char[objectName.length ()];
+	objectName.getChars (0, chars.length, chars, 0);
+	int str = OS.CFStringCreateWithCharacters (0, chars, chars.length);
+	if (str != 0) {
+		Cocoa.objc_msgSend (windowScriptObject, Cocoa.S_setValue, delegate, str);
+		OS.CFRelease (str);
 	}
 }
 
@@ -1626,4 +1649,97 @@ void handleEvent(int evt) {
 	}
 }
 
+/* external */
+
+Object convertToJava (int value) {
+	if (Cocoa.objc_msgSend (value, Cocoa.S_isKindOfClass, Cocoa.C_NSString) != 0) {
+		int length = Cocoa.objc_msgSend (value, Cocoa.S_length);
+		char[] buffer = new char[length];
+		Cocoa.objc_msgSend (value, Cocoa.S_getCharacters_, buffer);
+		return new String (buffer);
+	}
+	if (Cocoa.objc_msgSend (value, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
+		int ptr = Cocoa.objc_msgSend (value, Cocoa.S_objCType);
+		byte[] type = new byte[1];
+		OS.memmove (type, ptr, 1);
+		if (type[0] == 'c' || type[0] == 'B') {
+			int result = Cocoa.objc_msgSend (value, Cocoa.S_boolValue);
+			return new Boolean (result != 0);
+		}
+		if ("islqISLQfd".indexOf (type[0]) != -1) { //$NON-NLS-1$
+			double result = Cocoa.objc_msgSend_fpret (value, Cocoa.S_doubleValue);
+			return new Double (result);
+		}
+	}
+	if (Cocoa.objc_msgSend (value, Cocoa.S_isKindOfClass, Cocoa.C_WebScriptObject) != 0) {
+		String string = "length"; //$NON-NLS-1$
+		char[] chars = new char[string.length ()];
+		string.getChars (0, chars.length, chars, 0);
+		int str = OS.CFStringCreateWithCharacters (0, chars, chars.length);
+		int numberValue = Cocoa.objc_msgSend (value, Cocoa.S_valueForKey, str);
+		OS.CFRelease (str);
+		int length = Cocoa.objc_msgSend (numberValue, Cocoa.S_intValue);
+		Object[] arguments = new Object[length];
+		for (int i = 0; i < length; i++) {
+			int current = Cocoa.objc_msgSend (value, Cocoa.S_webScriptValueAtIndex, i);
+			if (current != 0) {
+				arguments[i] = convertToJava (current);
+			}
+		}
+		return arguments;
+	}
+	return null;
+}
+
+int convertToJS (Object value) {
+	if (value instanceof String) {
+		String result = (String)value;
+		char[] chars = new char[result.length ()];
+		result.getChars (0, chars.length, chars, 0);
+		return OS.CFStringCreateWithCharacters (0, chars, chars.length);
+	}
+	if (value instanceof Boolean) {
+		int booleanValue = ((Boolean)value).booleanValue () ? 1 : 0;
+		return Cocoa.objc_msgSend (Cocoa.C_NSNumber, Cocoa.S_numberWithBool, booleanValue);
+	}
+	if (value instanceof Number) {
+		double doubleValue = ((Number)value).doubleValue ();
+		return Cocoa.objc_msgSend (Cocoa.C_NSNumber, Cocoa.S_numberWithDouble, doubleValue);
+	}
+	if (value instanceof Object[]) {
+		Object[] arrayValue = (Object[])value;
+		int length = arrayValue.length;
+		if (length > 0) {
+			int array = Cocoa.objc_msgSend (Cocoa.C_NSMutableArray, Cocoa.S_arrayWithCapacity, length);
+			for (int i = 0; i < length; i++) {
+				Object currentObject = arrayValue[i];
+				int jsObject = convertToJS (currentObject);
+				Cocoa.objc_msgSend (array, Cocoa.S_addObject, jsObject);
+			}
+			return array;
+		}
+	}
+	return Cocoa.objc_msgSend (Cocoa.C_WebUndefined, Cocoa.S_undefined);
+}
+
+int /*long*/ callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
+	Object returnValue = null;
+	if (Cocoa.objc_msgSend (index, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
+		Object temp = convertToJava (args);
+		if (temp instanceof Object[]) {
+			Object[] arguments = (Object[])temp;
+			int functionIndex = Cocoa.objc_msgSend (index, Cocoa.S_intValue);
+			Object key = new Integer (functionIndex);
+			BrowserFunction function = (BrowserFunction)functions.get (key);
+			if (function != null) {
+				try {
+					returnValue = function.function (arguments);
+				} catch (Exception e) {
+					returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+				}
+			}
+		}
+	}
+	return convertToJS (returnValue);
+}
 }

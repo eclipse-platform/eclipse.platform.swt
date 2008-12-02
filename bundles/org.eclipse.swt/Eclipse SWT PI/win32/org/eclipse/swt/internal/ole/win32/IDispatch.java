@@ -12,8 +12,8 @@ package org.eclipse.swt.internal.ole.win32;
 
 import org.eclipse.swt.internal.win32.*;
 
-public class IDispatch extends IUnknown
-{
+public class IDispatch extends IUnknown {
+
 public IDispatch(int /*long*/ address) {
 	super(address);
 }

@@ -23,6 +23,7 @@ class WebSite extends OleControlSite {
 	COMObject iServiceProvider;
 	COMObject iInternetSecurityManager;
 	COMObject iOleCommandTarget;
+	COMObject iDispatch;
 	boolean ignoreNextMessage;
 
 	static final int OLECMDID_SHOWSCRIPTERROR = 40;
@@ -94,6 +95,29 @@ protected void createCOMInterfaces () {
 		public int /*long*/ method3(int /*long*/[] args) {return QueryStatus(args[0], (int)/*64*/args[1], args[2], args[3]);}		
 		public int /*long*/ method4(int /*long*/[] args) {return Exec(args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3], args[4]);}
 	};
+	iDispatch = new COMObject (new int[] {2, 0, 0, 1, 3, 5, 8}) {
+		public int /*long*/ method0 (int /*long*/[] args) {
+			/* 
+			 * IDispatch check must be done here instead of in the shared QueryInterface
+			 * implementation, to avoid answering the superclass's IDispatch implementation
+			 * instead of this one.
+			 */
+			GUID guid = new GUID ();
+			COM.MoveMemory (guid, args[0], GUID.sizeof);
+			if (COM.IsEqualGUID (guid, COM.IIDIDispatch)) {
+				COM.MoveMemory (args[1], new int /*long*/[] {iDispatch.getAddress ()}, OS.PTR_SIZEOF);
+				AddRef ();
+				return COM.S_OK;
+			}
+			return QueryInterface (args[0], args[1]);
+		}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public int /*long*/ method3 (int /*long*/[] args) {return GetTypeInfoCount (args[0]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return GetTypeInfo ((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+		public int /*long*/ method5 (int /*long*/[] args) {return GetIDsOfNames ((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4]);}
+		public int /*long*/ method6 (int /*long*/[] args) {return Invoke ((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
+	};
 }
 
 protected void disposeCOMInterfaces() {
@@ -117,6 +141,10 @@ protected void disposeCOMInterfaces() {
 	if (iOleCommandTarget != null) {
 		iOleCommandTarget.dispose();
 		iOleCommandTarget = null;
+	}
+	if (iDispatch != null) {
+		iDispatch.dispose ();
+		iDispatch = null;
 	}
 }
 
@@ -175,8 +203,9 @@ int GetDropTarget(int /*long*/ pDropTarget, int /*long*/ ppDropTarget) {
 }
 
 int GetExternal(int /*long*/ ppDispatch) {
-	OS.MoveMemory(ppDispatch, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
-	return COM.S_FALSE;
+	OS.MoveMemory (ppDispatch, new int /*long*/[] {iDispatch.getAddress()}, C.PTR_SIZEOF);
+	AddRef ();
+	return COM.S_OK;
 }
 
 int GetHostInfo(int /*long*/ pInfo) {
@@ -546,6 +575,224 @@ int Exec(int /*long*/ pguidCmdGroup, int nCmdID, int nCmdExecOpt, int /*long*/ p
 		}
 	}
 	return COM.E_NOTSUPPORTED;
+}
+
+/* IDispatch */
+
+int GetTypeInfoCount (int /*long*/ pctinfo) {
+	C.memmove (pctinfo, new int[] {0}, 4);
+	return COM.S_OK;
+}
+
+int GetTypeInfo (int iTInfo, int lcid, int /*long*/ ppTInfo) {
+	return COM.S_OK;
+}
+
+int GetIDsOfNames (int riid, int /*long*/ rgszNames, int cNames, int lcid, int /*long*/ rgDispId) {
+    int /*long*/[] ptr = new int /*long*/[1];
+    OS.MoveMemory (ptr, rgszNames, C.PTR_SIZEOF);
+    int length = OS.wcslen (ptr[0]);
+    char[] buffer = new char[length];
+    OS.MoveMemory (buffer, ptr[0], length * 2);
+    String functionName = String.valueOf (buffer);
+    int result = COM.S_OK; 
+    int[] ids = new int[cNames];	/* DISPIDs */
+    if (functionName.equals ("callJava")) { //$NON-NLS-1$
+	    for (int i = 0; i < cNames; i++) {
+	        ids[i] = i + 1;
+	    }
+    } else {
+    	result = COM.DISP_E_UNKNOWNNAME;
+	    for (int i = 0; i < cNames; i++) {
+	        ids[i] = COM.DISPID_UNKNOWN;
+	    }
+    }
+    OS.MoveMemory (rgDispId, ids, cNames * 4);
+	return result;
+}
+
+int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*long*/ pDispParams, int /*long*/ pVarResult, int /*long*/ pExcepInfo, int /*long*/ pArgErr) {
+	DISPPARAMS dispParams = new DISPPARAMS ();
+	COM.MoveMemory (dispParams, pDispParams, DISPPARAMS.sizeof);
+	if (dispParams.cArgs != 2) {
+		if (pVarResult != 0) {
+			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
+		}
+		return COM.S_OK;
+	}
+
+	int /*long*/ ptr = dispParams.rgvarg + Variant.sizeof;
+	Variant variant = Variant.win32_new (ptr);
+	int index = variant.getInt ();
+	variant.dispose ();
+	if (index <= 0) {
+		if (pVarResult != 0) {
+			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
+		}
+		return COM.S_OK;
+	}
+
+	variant = Variant.win32_new (dispParams.rgvarg);
+	Object temp = (Object[])convertToJava (variant);
+	variant.dispose ();
+	Object returnValue = null;
+	if (temp instanceof Object[]) {
+		Object[] args = (Object[])temp;
+		IE ie = (IE)((Browser)getParent ().getParent ()).webBrowser;
+		Object key = new Integer (index);
+		BrowserFunction function = (BrowserFunction)ie.functions.get (key);
+		if (function != null) {
+			try {
+				returnValue = function.function (args);
+			} catch (Exception e) {
+				returnValue = IE.ERROR_ID + ':' + e.getLocalizedMessage ();
+			}
+		}
+	}
+
+	if (pVarResult != 0) {
+		if (returnValue == null) {
+			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
+		} else {
+			variant = convertToJS (returnValue);
+			Variant.win32_copy (pVarResult, variant);
+			variant.dispose ();
+		}
+	}
+	return COM.S_OK;
+}
+
+Object convertToJava (Variant variant) {
+	switch (variant.getType ()) {
+		case OLE.VT_NULL: return null;
+		case OLE.VT_BSTR: return variant.getString ();
+		case OLE.VT_BOOL: return new Boolean (variant.getBoolean ());
+		case OLE.VT_I2:
+		case OLE.VT_I4:
+		case OLE.VT_I8:
+		case OLE.VT_R4:
+		case OLE.VT_R8:
+			return new Double (variant.getDouble ());
+		case OLE.VT_DISPATCH: {
+			Object[] args = null;
+			OleAutomation auto = variant.getAutomation ();
+			TYPEATTR typeattr = auto.getTypeInfoAttributes ();
+			if (typeattr != null) {
+				GUID guid = new GUID ();
+				guid.Data1 = typeattr.guid_Data1;
+				guid.Data2 = typeattr.guid_Data2;
+				guid.Data3 = typeattr.guid_Data3;
+				guid.Data4 = typeattr.guid_Data4;
+				if (COM.IsEqualGUID (guid, COM.IIDIJScriptTypeInfo)) {
+					int[] rgdispid = auto.getIDsOfNames (new String[] {"length"}); //$NON-NLS-1$
+					if (rgdispid != null) {
+						Variant varLength = auto.getProperty (rgdispid[0]);
+						int length = varLength.getInt ();
+						varLength.dispose ();
+						args = new Object[length];
+						for (int i = 0; i < length; i++) {
+							rgdispid = auto.getIDsOfNames (new String[] {String.valueOf (i)});
+							if (rgdispid != null) {
+								Variant current = auto.getProperty (rgdispid[0]);
+								args[i] = convertToJava (current);
+								current.dispose ();
+							}
+						}
+					}
+				}
+			}
+			auto.dispose ();
+			return args;
+		}
+	}
+	return null;
+}
+
+Variant convertToJS (Object value) {
+	if (value instanceof String) {
+		return new Variant ((String)value);
+	}
+	if (value instanceof Boolean) {
+		return new Variant (((Boolean)value).booleanValue ());
+	}
+	if (value instanceof Number) {
+		return new Variant (((Number)value).doubleValue ());
+	}
+	if (value instanceof Object[]) {
+		Object[] arrayValue = (Object[])value;
+		int length = arrayValue.length;
+		if (length > 0) {
+			/* get IHTMLDocument2 */
+			IE browser = (IE)((Browser)getParent ().getParent ()).webBrowser;
+			OleAutomation auto = browser.auto;
+			int[] rgdispid = auto.getIDsOfNames (new String[] {"Document"}); //$NON-NLS-1$
+			if (rgdispid == null) return new Variant ();
+			Variant pVarResult = auto.getProperty (rgdispid[0]);
+			if (pVarResult == null) return new Variant ();
+			if (pVarResult.getType () == COM.VT_EMPTY) {
+				pVarResult.dispose ();
+				return new Variant ();
+			}
+			OleAutomation document = pVarResult.getAutomation ();
+			pVarResult.dispose ();
+
+			/* get IHTMLWindow2 */
+			rgdispid = document.getIDsOfNames (new String[] {"parentWindow"}); //$NON-NLS-1$
+			if (rgdispid == null) {
+				document.dispose ();
+				return new Variant ();
+			}
+			pVarResult = document.getProperty (rgdispid[0]);
+			if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
+				if (pVarResult != null) pVarResult.dispose ();
+				document.dispose ();
+				return new Variant ();	
+			}
+			OleAutomation ihtmlWindow2 = pVarResult.getAutomation ();
+			pVarResult.dispose ();
+			document.dispose ();
+
+			/* create a new JS array to be returned */
+			rgdispid = ihtmlWindow2.getIDsOfNames (new String[] {"Array"}); //$NON-NLS-1$
+			if (rgdispid == null) {
+				ihtmlWindow2.dispose ();
+				return new Variant ();
+			}
+			Variant arrayType = ihtmlWindow2.getProperty (rgdispid[0]);
+			ihtmlWindow2.dispose ();
+			IDispatch arrayTypeDispatch = arrayType.getDispatch ();
+			arrayType.dispose ();
+
+			int /*long*/[] result = new int /*long*/[1];
+			int rc = arrayTypeDispatch.QueryInterface (COM.IIDIDispatchEx, result);
+			if (rc != COM.S_OK) return new Variant ();
+			IDispatchEx arrayTypeDispatchEx = new IDispatchEx (result[0]);
+			result[0] = 0;
+			int /*long*/ resultPtr = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+			DISPPARAMS params = new DISPPARAMS ();
+			rc = arrayTypeDispatchEx.InvokeEx (COM.DISPID_VALUE, COM.LOCALE_USER_DEFAULT, COM.DISPATCH_CONSTRUCT, params, resultPtr, null, 0);
+			if (rc != COM.S_OK) {
+				OS.GlobalFree (resultPtr);
+				return new Variant ();	
+			}
+			Variant array = Variant.win32_new (resultPtr);
+			OS.GlobalFree (resultPtr);
+
+			/* populate the array */
+			auto = array.getAutomation ();
+			int[] rgdispids = auto.getIDsOfNames (new String[] {"push"}); //$NON-NLS-1$
+			if (rgdispids != null) {
+				for (int i = 0; i < length; i++) {
+					Object currentObject = arrayValue[i];
+					Variant variant = convertToJS (currentObject);
+					auto.invoke (rgdispids[0], new Variant[] {variant});
+					variant.dispose ();
+				}
+			}
+			return array;
+		}		
+	}
+	return new Variant ();
 }
 
 }

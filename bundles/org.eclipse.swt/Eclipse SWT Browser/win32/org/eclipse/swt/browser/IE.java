@@ -10,8 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
@@ -447,6 +450,14 @@ public void create(Composite parent, int style) {
 							if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
 								/* final document complete */
 								globalDispatch = 0;
+
+								/* re-install registered functions */
+								Enumeration elements = functions.elements ();
+								while (elements.hasMoreElements ()) {
+									BrowserFunction function = (BrowserFunction)elements.nextElement ();
+									execute (function.functionString);
+								}
+
 								ProgressEvent progressEvent = new ProgressEvent(browser);
 								progressEvent.display = browser.getDisplay();
 								progressEvent.widget = browser;
@@ -556,7 +567,12 @@ public void create(Composite parent, int style) {
 								*/
 								int[] rgdispid = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
 								Variant pVarResult = auto.getProperty(rgdispid[0]);
-								if (pVarResult != null && pVarResult.getType() == OLE.VT_BOOL) addressBar = pVarResult.getBoolean();
+								if (pVarResult != null) {
+									if (pVarResult.getType () == OLE.VT_BOOL) {
+										addressBar = pVarResult.getBoolean ();
+									}
+									pVarResult.dispose ();
+								}
 							}
 							newEvent.addressBar = addressBar;
 							newEvent.menuBar = menuBar;

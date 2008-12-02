@@ -137,6 +137,11 @@ fail:
 	proc((int)sender, user_data, 31, (int)frame, 0, 0, 0);
 }
 
+- (void)webView:(WebView *)sender windowScriptObjectAvailable:(WebScriptObject *)windowScriptObject
+{
+	proc((int)sender, user_data, 33, (int)windowScriptObject, 0, 0, 0);
+}
+
 /* WebResourceLoadDelegate */
 
 - (void)webView:(WebView *)sender resource:(id)identifier didFinishLoadingFromDataSource:(WebDataSource *)dataSource
@@ -278,6 +283,28 @@ fail:
 - (void)handleEvent:(DOMEvent *)evt
 {
 	proc((int)evt, user_data, 32, (int)evt, 0, 0, 0);
+}
+
+/* WebScripting */
+
++ (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector
+{
+	return aSelector != @selector(callJava:index:arg:);
+}
+
++ (NSString *)webScriptNameForSelector:(SEL)aSelector
+{
+	if (aSelector == @selector(callJava:index:arg:)) {
+		return @"callJava";
+	}
+	return 0;
+}
+
+/* external */
+
+- (id)callJava:(NSObject *)arg index:(NSObject *)index arg:(NSObject *)arg0
+{
+	return (id)proc(0, user_data, 34, (int)arg, (int)index, (int)arg0, 0);
 }
 
 @end
