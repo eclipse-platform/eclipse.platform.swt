@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaModelMarker;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
@@ -50,6 +51,7 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 	static final char[] DOUBLE_FLOAT_ARRAY = "double[] /*float[]*/".toCharArray();
 	static final String buildDir = "/.build64/";
 	static final String pluginDir = "/org.eclipse.swt/";
+	static final String plugin = "org.eclipse.swt";
 	static final String SOURCE_ID = "JNI";
 	static final String CHECK_64_ENABLED = Activator.PLUGIN_ID + "CHECK_64_ENABLED";
 	
@@ -198,10 +200,31 @@ public static void setEnabled(boolean enabled) {
 	Activator.getDefault().getPreferenceStore().setValue(CHECK_64_ENABLED, enabled);
 }
 
+boolean is64bit(IJavaProject project) {
+	try {
+		IClasspathEntry[] entries = project.getResolvedClasspath(true);
+		for (int i = 0; i < entries.length; i++) {
+			IClasspathEntry entry = entries[i];
+			if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+				String path = entry.getPath().toPortableString();
+				System.out.println(path);
+				if (path.equals(pluginDir + "Eclipse SWT PI/win32") || 
+					path.equals(pluginDir + "Eclipse SWT PI/cocoa") || 
+					path.equals(pluginDir + "Eclipse SWT PI/gtk")
+				) 
+				{
+					return true;
+				}
+			}
+		}
+	} catch (JavaModelException e) {}
+	return false;
+}
+
 public void buildFinished(IJavaProject project) {
 	try {
 		if (sources == null) return;
-		if (!getEnabled()) return;
+		if (!getEnabled() || !is64bit(project)) return;
 //		long time = System.currentTimeMillis();
 		String root = project.getProject().getLocation().toPortableString() + buildDir;
 		build(project, root);		
@@ -251,7 +274,7 @@ public void cleanStarting(IJavaProject project) {
 }
 
 public boolean isActive(IJavaProject project) {
-	if (project.getProject().getName().equals("org.eclipse.swt")) {
+	if (project.getProject().getName().equals(plugin)) {
 		return true;
 	}
 	return super.isActive(project);
