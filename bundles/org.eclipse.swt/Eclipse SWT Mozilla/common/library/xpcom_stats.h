@@ -566,6 +566,16 @@ typedef enum {
 	_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IISIII_FUNC,
+#else
+	_1VtblCall__IJSIII_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IISJIJ_FUNC,
+#else
+	_1VtblCall__IJSJIJ_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__II_3B_FUNC,
 #else
 	_1VtblCall__IJ_3B_FUNC,
@@ -764,6 +774,11 @@ typedef enum {
 	_1VtblCall__II_3J_FUNC,
 #else
 	_1VtblCall__IJ_3J_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__II_3J_3J_FUNC,
+#else
+	_1VtblCall__IJ_3J_3J_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__II_3J_3J_3J_FUNC,

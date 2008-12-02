@@ -755,6 +755,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, int[] a
 		lock.unlock();
 	}
 }
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long [] arg0, long [] arg1);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long [] arg0, long [] arg1) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1);
+	} finally {
+		lock.unlock();
+	}
+}
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long [] arg0, long [] arg1, long [] arg2);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long [] arg0, long [] arg1, long [] arg2) {
 	lock.lock();
@@ -764,6 +773,26 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long [] arg0, long 
 		lock.unlock();
 	}
 }
+
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, short arg0, int arg1, int arg2, int arg3);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, short arg0, int arg1, int arg2, int arg3) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, short arg0, long arg1, int arg2, long arg3);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, short arg0, long arg1, int arg2, long arg3) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3);
+	} finally {
+		lock.unlock();
+	}
+}
+
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, long[] arg1, int[] arg2);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, long[] arg1, int[] arg2) {
 	lock.lock();
