@@ -96,7 +96,6 @@ public class XPCOM extends C {
 	public static final String NS_OS_HOME_DIR = "Home"; //$NON-NLS-1$
 	public static final String NS_OS_TEMP_DIR = "TmpD"; //$NON-NLS-1$
 	public static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
-	public static final String NS_XPCOM_COMPONENT_DIR_LIST = "ComsDL"; //$NON-NLS-1$
 	public static final String NS_XPCOM_CURRENT_PROCESS_DIR = "XCurProcD"; //$NON-NLS-1$
 	public static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
 

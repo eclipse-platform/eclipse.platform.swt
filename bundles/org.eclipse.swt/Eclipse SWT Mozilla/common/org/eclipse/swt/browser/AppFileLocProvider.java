@@ -148,12 +148,6 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 	String propertyName = new String (MozillaDelegate.mbcsToWcs (null, bytes));
 	String[] propertyValues = null;
 
-	if (propertyName.equals (XPCOM.NS_XPCOM_COMPONENT_DIR_LIST)) {
-		propertyValues = new String [2];
-		propertyValues[0] = mozillaPath + COMPONENTS_DIR;
-		propertyValues[1] = componentsPath;
-	}
-
 	if (propertyName.equals (XPCOM.NS_APP_PLUGINS_DIR_LIST)) {
 		if (pluginDirs == null) {
 			int index = 0;
@@ -274,7 +268,7 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 	} else if (propertyName.equals (XPCOM.NS_GRE_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_GRE_COMPONENT_DIR)) {
-		propertyValue = mozillaPath + COMPONENTS_DIR;
+		propertyValue = componentsPath != null ? componentsPath : mozillaPath + COMPONENTS_DIR;
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_INIT_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_OS_CURRENT_PROCESS_DIR)) {
