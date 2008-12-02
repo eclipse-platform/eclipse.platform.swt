@@ -150,10 +150,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	wrapItems(getWidth());
 	if (width == 0) width = DEFAULT_COOLBAR_WIDTH;
 	if (height == 0) height = DEFAULT_COOLBAR_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim(0, 0, width, height);
-	return fixPoint(trim.width, trim.height);
+	Point size = fixPoint(width, height);
+	if (wHint != SWT.DEFAULT) size.x = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
+	Rectangle trim = computeTrim(0, 0, size.x, size.y);
+	return new Point(trim.width, trim.height);
 }
 CoolItem getGrabbedItem(int x, int y) {
 	for (int row = 0; row < items.length; row++) {
