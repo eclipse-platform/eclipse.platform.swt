@@ -3639,6 +3639,7 @@ static String findErrorText (int code) {
 		case ERROR_INVALID_SUBCLASS:       return "Subclassing not allowed"; //$NON-NLS-1$
 		case ERROR_GRAPHIC_DISPOSED:       return "Graphic is disposed"; //$NON-NLS-1$
 		case ERROR_DEVICE_DISPOSED:        return "Device is disposed"; //$NON-NLS-1$
+		case ERROR_FUNCTION_DISPOSED:      return "BrowserFunction is disposed"; //$NON-NLS-1$
 		case ERROR_FAILED_EXEC:            return "Failed to execute runnable"; //$NON-NLS-1$
 		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library"; //$NON-NLS-1$
 		case ERROR_CANNOT_INVERT_MATRIX:    return "Cannot invert matrix"; //$NON-NLS-1$
@@ -3792,6 +3793,7 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_WIDGET_DISPOSED:
 		case ERROR_GRAPHIC_DISPOSED:
 		case ERROR_DEVICE_DISPOSED:
+		case ERROR_FUNCTION_DISPOSED:
 		case ERROR_INVALID_IMAGE:
 		case ERROR_UNSUPPORTED_DEPTH:
 		case ERROR_UNSUPPORTED_FORMAT:
