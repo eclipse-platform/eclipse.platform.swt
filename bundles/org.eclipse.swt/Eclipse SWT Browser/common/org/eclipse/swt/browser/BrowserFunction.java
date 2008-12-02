@@ -38,8 +38,12 @@ public BrowserFunction (Browser browser, String name) {
 *
 */
 public void dispose () {
+	dispose (true);
+}
+
+void dispose (boolean remove) {
 	if (index < 0) return;
-	browser.webBrowser.removeFunction (this);
+	if (remove) browser.webBrowser.removeFunction (this);
 	browser = null;
 	name = functionString = null;
 	index = -1;

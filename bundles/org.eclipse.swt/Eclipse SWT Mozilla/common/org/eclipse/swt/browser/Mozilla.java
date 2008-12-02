@@ -1799,6 +1799,14 @@ void onDispose (Display display) {
 	}
 	unhookedDOMWindows = null;
 
+	elements = functions.elements ();
+	while (elements.hasMoreElements ()) {
+		BrowserFunction function = ((BrowserFunction)elements.nextElement ());
+		AllFunctions.remove (new Integer (function.index));
+		function.dispose (false);
+	}
+	functions = null;
+
 	delegate.onDispose (embedHandle);
 	delegate = null;
 

@@ -246,6 +246,13 @@ public void create(Composite parent, int style) {
 						documents[i].dispose();
 					}
 					documents = null;
+
+					Enumeration elements = functions.elements ();
+					while (elements.hasMoreElements ()) {
+						((BrowserFunction)elements.nextElement ()).dispose (false);
+					}
+					functions = null;
+
 					domListener = null;
 					if (auto != null) auto.dispose();
 					auto = null;
