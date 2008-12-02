@@ -693,7 +693,7 @@ void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Col
 				if (onBottom) {
 					int pos = 0;
 					if (percents[percents.length - 1] < 100) {
-						pos = percents[percents.length - 1] * height / 100;
+						pos = (100 - percents[percents.length - 1]) * height / 100;
 						gc.setBackground(defaultBackground);
 						gc.fillRectangle(x, y, width, pos);
 					}
@@ -704,7 +704,8 @@ void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Col
 						lastColor = colors[i];
 						if (lastColor == null) lastColor = defaultBackground;
 						gc.setBackground(lastColor);
-						int gradientHeight = percents[i] * height / 100;
+						int percentage = i > 0 ? percents[i] - percents[i-1] : percents[i];
+						int gradientHeight = percentage * height / 100;
 						gc.fillGradientRectangle(x, y+pos, width, gradientHeight, true);
 						pos += gradientHeight;
 					}
@@ -717,7 +718,8 @@ void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Col
 						lastColor = colors[i + 1];
 						if (lastColor == null) lastColor = defaultBackground;
 						gc.setBackground(lastColor);
-						int gradientHeight = percents[i] * height / 100;
+						int percentage = i > 0 ? percents[i] - percents[i-1] : percents[i];
+						int gradientHeight = percentage * height / 100;
 						gc.fillGradientRectangle(x, y+pos, width, gradientHeight, true);
 						pos += gradientHeight;
 					}
