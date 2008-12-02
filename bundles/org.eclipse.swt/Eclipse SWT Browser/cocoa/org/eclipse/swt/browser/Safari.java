@@ -194,6 +194,12 @@ public void create (Composite parent, int style) {
 					Safari.this.delegate = null;
 					html = null;
 					lastHoveredLinkURL = null;
+
+					Enumeration elements = functions.elements ();
+					while (elements.hasMoreElements ()) {
+						((BrowserFunction)elements.nextElement ()).dispose (false);
+					}
+					functions = null;
 					break;
 				}
 			}

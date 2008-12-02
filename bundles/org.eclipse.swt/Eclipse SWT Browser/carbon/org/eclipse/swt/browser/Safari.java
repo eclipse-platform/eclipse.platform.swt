@@ -240,6 +240,12 @@ public void create (Composite parent, int style) {
 					webView = webViewHandle = 0;
 					html = null;
 					lastHoveredLinkURL = null;
+
+					Enumeration elements = functions.elements ();
+					while (elements.hasMoreElements ()) {
+						((BrowserFunction)elements.nextElement ()).dispose (false);
+					}
+					functions = null;
 					break;
 				}
 				case SWT.FocusIn: {
