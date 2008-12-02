@@ -12,7 +12,6 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
-import org.eclipse.swt.internal.win32.OS;
 
 /**
  */
@@ -276,7 +275,7 @@ Object convertToJava (nsIVariant variant, short type) {
 				int /*long*/[] result = new int /*long*/[1];
 				for (int i = 0; i < count[0]; i++) {
 					int /*long*/[] arrayPtr = new int /*long*/[1];
-					OS.memmove (arrayPtr, ptr[0] + i * C.PTR_SIZEOF, C.PTR_SIZEOF);
+					C.memmove (arrayPtr, ptr[0] + i * C.PTR_SIZEOF, C.PTR_SIZEOF);
 					nsISupports supports = new nsISupports (arrayPtr[0]);
 					rc = supports.QueryInterface (nsIVariant.NS_IVARIANT_IID, result);
 					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -364,7 +363,7 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 			for (int i = 0; i < length; i++) {
 				Object currentObject = arrayValue[i];
 				nsIVariant currentVariant = convertToJS (currentObject, componentManager);
-				OS.memmove (arrayPtr + C.PTR_SIZEOF * i, new int /*long*/[] {currentVariant.getAddress ()}, C.PTR_SIZEOF);
+				C.memmove (arrayPtr + C.PTR_SIZEOF * i, new int /*long*/[] {currentVariant.getAddress ()}, C.PTR_SIZEOF);
 			}
 			int /*long*/ idPtr = C.malloc (nsID.sizeof);
 			XPCOM.memmove (idPtr, nsIVariant.NS_IVARIANT_IID, nsID.sizeof);
