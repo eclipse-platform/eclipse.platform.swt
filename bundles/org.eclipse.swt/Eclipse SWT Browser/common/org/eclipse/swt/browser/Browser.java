@@ -159,6 +159,10 @@ static int checkStyle(int style) {
 	return style;
 }
 
+protected void checkWidget () {
+	super.checkWidget ();
+}
+
 /**
  * Clears all session cookies from all current Browser instances.
  * 

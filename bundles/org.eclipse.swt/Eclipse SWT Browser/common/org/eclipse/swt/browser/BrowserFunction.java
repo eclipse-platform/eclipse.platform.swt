@@ -28,6 +28,7 @@ public BrowserFunction (Browser browser, String name) {
 	super ();
 	if (browser == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (browser.isDisposed ()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	this.browser = browser;
 	this.name = name;
 	browser.webBrowser.addFunction (this);
@@ -48,6 +49,8 @@ public void dispose () {
 *
 */
 public Object function (Object[] arguments) {
+	if (index < 0) SWT.error (SWT.ERROR_FUNCTION_DISPOSED);
+	browser.checkWidget ();
 	return null;
 }
 
@@ -56,6 +59,7 @@ public Object function (Object[] arguments) {
 */
 public Browser getBrowser () {
 	if (index < 0) SWT.error (SWT.ERROR_FUNCTION_DISPOSED);
+	browser.checkWidget ();
 	return browser;
 }
 
@@ -64,6 +68,7 @@ public Browser getBrowser () {
 */
 public String getName () {
 	if (index < 0) SWT.error (SWT.ERROR_FUNCTION_DISPOSED);
+	browser.checkWidget ();
 	return name;
 }
 
