@@ -347,6 +347,7 @@ typedef enum {
 #endif
 	objc_1allocateClassPair_FUNC,
 	objc_1getClass_FUNC,
+	objc_1getMetaClass_FUNC,
 	objc_1getProtocol_FUNC,
 	objc_1lookUpClass_FUNC,
 #ifndef JNI64

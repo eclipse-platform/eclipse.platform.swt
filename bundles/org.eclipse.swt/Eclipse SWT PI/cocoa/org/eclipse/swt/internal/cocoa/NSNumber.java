@@ -24,6 +24,14 @@ public NSNumber(id id) {
 	super(id);
 }
 
+public boolean boolValue() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_boolValue);
+}
+
+public double doubleValue() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_doubleValue);
+}
+
 public float floatValue() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_floatValue);
 }
@@ -38,6 +46,11 @@ public int /*long*/ integerValue() {
 
 public static NSNumber numberWithBool(boolean value) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithBool_, value);
+	return result != 0 ? new NSNumber(result) : null;
+}
+
+public static NSNumber numberWithDouble(double value) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithDouble_, value);
 	return result != 0 ? new NSNumber(result) : null;
 }
 

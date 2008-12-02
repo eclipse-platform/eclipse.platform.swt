@@ -37,6 +37,11 @@ public class OS extends C {
 	public static final int /*long*/ sel_sendHorizontalSelection = sel_registerName("sendHorizontalSelection");
 	public static final int /*long*/ sel_timerProc_ = sel_registerName("timerProc:");
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
+	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
+
+	/* These are not generated in order to avoid creating static methods on all classes */
+	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
+	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
 
 /** JNI natives */
 
@@ -195,6 +200,7 @@ public static final native void instrumentObjcMessageSends(boolean val);
 /** @param superclass cast=(Class) */
 public static final native int /*long*/ objc_allocateClassPair(int /*long*/ superclass, String name, int /*long*/ extraBytes);
 public static final native int /*long*/ objc_getClass(String className);
+public static final native int /*long*/ objc_getMetaClass(String name);
 public static final native int /*long*/ objc_getProtocol(String name);
 public static final native int /*long*/ objc_lookUpClass(String className);
 /** @method flags=cast */
@@ -383,6 +389,8 @@ public static final int /*long*/ class_WebDataSource = objc_getClass("WebDataSou
 public static final int /*long*/ class_WebFrame = objc_getClass("WebFrame");
 public static final int /*long*/ class_WebFrameView = objc_getClass("WebFrameView");
 public static final int /*long*/ class_WebPreferences = objc_getClass("WebPreferences");
+public static final int /*long*/ class_WebScriptObject = objc_getClass("WebScriptObject");
+public static final int /*long*/ class_WebUndefined = objc_getClass("WebUndefined");
 public static final int /*long*/ class_WebView = objc_getClass("WebView");
 
 /** Protocols */
@@ -512,6 +520,7 @@ public static final int /*long*/ sel_bitsPerPixel = sel_registerName("bitsPerPix
 public static final int /*long*/ sel_bitsPerSample = sel_registerName("bitsPerSample");
 public static final int /*long*/ sel_blackColor = sel_registerName("blackColor");
 public static final int /*long*/ sel_blueComponent = sel_registerName("blueComponent");
+public static final int /*long*/ sel_boolValue = sel_registerName("boolValue");
 public static final int /*long*/ sel_borderWidth = sel_registerName("borderWidth");
 public static final int /*long*/ sel_boundingRectForGlyphRange_inTextContainer_ = sel_registerName("boundingRectForGlyphRange:inTextContainer:");
 public static final int /*long*/ sel_bounds = sel_registerName("bounds");
@@ -920,8 +929,10 @@ public static final int /*long*/ sel_numberOfRowsInTableView_ = sel_registerName
 public static final int /*long*/ sel_numberOfSelectedRows = sel_registerName("numberOfSelectedRows");
 public static final int /*long*/ sel_numberOfVisibleItems = sel_registerName("numberOfVisibleItems");
 public static final int /*long*/ sel_numberWithBool_ = sel_registerName("numberWithBool:");
+public static final int /*long*/ sel_numberWithDouble_ = sel_registerName("numberWithDouble:");
 public static final int /*long*/ sel_numberWithInt_ = sel_registerName("numberWithInt:");
 public static final int /*long*/ sel_numberWithInteger_ = sel_registerName("numberWithInteger:");
+public static final int /*long*/ sel_objCType = sel_registerName("objCType");
 public static final int /*long*/ sel_object = sel_registerName("object");
 public static final int /*long*/ sel_objectAtIndex_ = sel_registerName("objectAtIndex:");
 public static final int /*long*/ sel_objectEnumerator = sel_registerName("objectEnumerator");
@@ -1344,6 +1355,7 @@ public static final int /*long*/ sel_type = sel_registerName("type");
 public static final int /*long*/ sel_types = sel_registerName("types");
 public static final int /*long*/ sel_typesetter = sel_registerName("typesetter");
 public static final int /*long*/ sel_unarchiveObjectWithData_ = sel_registerName("unarchiveObjectWithData:");
+public static final int /*long*/ sel_undefined = sel_registerName("undefined");
 public static final int /*long*/ sel_unhideAllApplications_ = sel_registerName("unhideAllApplications:");
 public static final int /*long*/ sel_unlockFocus = sel_registerName("unlockFocus");
 public static final int /*long*/ sel_unmarkText = sel_registerName("unmarkText");
@@ -1363,6 +1375,7 @@ public static final int /*long*/ sel_visibleRect = sel_registerName("visibleRect
 public static final int /*long*/ sel_wantsPeriodicDraggingUpdates = sel_registerName("wantsPeriodicDraggingUpdates");
 public static final int /*long*/ sel_wantsToHandleMouseEvents = sel_registerName("wantsToHandleMouseEvents");
 public static final int /*long*/ sel_webFrame = sel_registerName("webFrame");
+public static final int /*long*/ sel_webScriptValueAtIndex_ = sel_registerName("webScriptValueAtIndex:");
 public static final int /*long*/ sel_webView_contextMenuItemsForElement_defaultMenuItems_ = sel_registerName("webView:contextMenuItemsForElement:defaultMenuItems:");
 public static final int /*long*/ sel_webView_createWebViewWithRequest_ = sel_registerName("webView:createWebViewWithRequest:");
 public static final int /*long*/ sel_webView_decidePolicyForMIMEType_request_frame_decisionListener_ = sel_registerName("webView:decidePolicyForMIMEType:request:frame:decisionListener:");
@@ -1389,6 +1402,7 @@ public static final int /*long*/ sel_webView_setStatusBarVisible_ = sel_register
 public static final int /*long*/ sel_webView_setStatusText_ = sel_registerName("webView:setStatusText:");
 public static final int /*long*/ sel_webView_setToolbarsVisible_ = sel_registerName("webView:setToolbarsVisible:");
 public static final int /*long*/ sel_webView_unableToImplementPolicyWithError_frame_ = sel_registerName("webView:unableToImplementPolicyWithError:frame:");
+public static final int /*long*/ sel_webView_windowScriptObjectAvailable_ = sel_registerName("webView:windowScriptObjectAvailable:");
 public static final int /*long*/ sel_webViewClose_ = sel_registerName("webViewClose:");
 public static final int /*long*/ sel_webViewFocus_ = sel_registerName("webViewFocus:");
 public static final int /*long*/ sel_webViewShow_ = sel_registerName("webViewShow:");

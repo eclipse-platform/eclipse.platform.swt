@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.Enumeration;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -32,6 +34,7 @@ class Safari extends WebBrowser {
 	//TEMPORARY CODE
 //	boolean doit;
 
+	static int /*long*/ delegateClass;
 	static boolean Initialized;
 	// the following Callbacks are never freed
 	static Callback Callback3, Callback4, Callback5, Callback6, Callback7;
@@ -73,8 +76,7 @@ class Safari extends WebBrowser {
 	}
 
 public void create (Composite parent, int style) {
-	String className = "SWTWebViewDelegate"; //$NON-NLS-1$
-	if (OS.objc_lookUpClass(className) == 0) {
+	if (delegateClass == 0) {
 		Class safariClass = this.getClass();
 		Callback3 = new Callback(safariClass, "browserProc", 3); //$NON-NLS-1$
 		int /*long*/ proc3 = Callback3.getAddress();
@@ -94,45 +96,52 @@ public void create (Composite parent, int style) {
 		int /*long*/ setFrameProc = OS.webView_setFrame_CALLBACK(proc4);
 		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+		String className = "SWTWebViewDelegate"; //$NON-NLS-1$
 		String types = "*"; //$NON-NLS-1$
 		int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
+		delegateClass = OS.objc_allocateClassPair (OS.class_NSObject, className, 0);
 
-		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-		OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-		OS.class_addMethod(cls, OS.sel_webView_didChangeLocationWithinPageForFrame_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_didFailProvisionalLoadWithError_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_didFinishLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_didReceiveTitle_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_didStartProvisionalLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_didCommitLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_resource_didFinishLoadingFromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_identifierForInitialRequest_fromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_handleNotification_, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_createWebViewWithRequest_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewShow_, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewClose_, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_contextMenuItemsForElement_defaultMenuItems_, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_setStatusBarVisible_, proc4, "@:@B"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_setResizable_, proc4, "@:@B"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_setToolbarsVisible_, proc4, "@:@B"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_setStatusText_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewFocus_, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewUnfocus_, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_runJavaScriptAlertPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_runJavaScriptConfirmPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_runOpenPanelForFileButtonWithResultListener_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_mouseDidMoveOverElement_modifierFlags_, proc5, "@:@@I"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_printFrameView_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_decidePolicyForMIMEType_request_frame_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_unableToImplementPolicyWithError_frame_, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_download_decideDestinationWithSuggestedFilename_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_handleEvent_, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_setFrame_, setFrameProc, "@:@{NSRect}"); //$NON-NLS-1$
-		OS.objc_registerClassPair(cls);
+		OS.class_addIvar(delegateClass, SWT_OBJECT, size, (byte)align, types);
+		OS.class_addMethod(delegateClass, OS.sel_webView_didChangeLocationWithinPageForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_didFailProvisionalLoadWithError_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_didFinishLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_didReceiveTitle_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_didStartProvisionalLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_didCommitLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didFinishLoadingFromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_identifierForInitialRequest_fromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_handleNotification_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_createWebViewWithRequest_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webViewShow_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webViewClose_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_contextMenuItemsForElement_defaultMenuItems_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_setStatusBarVisible_, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_setResizable_, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_setToolbarsVisible_, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_setStatusText_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webViewFocus_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webViewUnfocus_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptAlertPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptConfirmPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_runOpenPanelForFileButtonWithResultListener_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_mouseDidMoveOverElement_modifierFlags_, proc5, "@:@@I"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_printFrameView_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_decidePolicyForMIMEType_request_frame_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_unableToImplementPolicyWithError_frame_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_download_decideDestinationWithSuggestedFilename_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_handleEvent_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_setFrame_, setFrameProc, "@:@{NSRect}"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_windowScriptObjectAvailable_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_callJava, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.objc_registerClassPair(delegateClass);
+
+ 		int /*long*/ metaClass = OS.objc_getMetaClass (className);
+		OS.class_addMethod(metaClass, OS.sel_isSelectorExcludedFromWebScript_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(metaClass, OS.sel_webScriptNameForSelector_, proc3, "@:@"); //$NON-NLS-1$
 	}
 
 	/*
@@ -216,6 +225,14 @@ public boolean back() {
 }
 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	if (id == delegateClass) {
+		if (sel == OS.sel_isSelectorExcludedFromWebScript_) {
+			return isSelectorExcludedFromWebScript (arg0) ? 1 : 0;
+		} else if (sel == OS.sel_webScriptNameForSelector_) {
+			return webScriptNameForSelector (arg0);
+		}
+	}
+
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
@@ -269,6 +286,8 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		safari.download_decideDestinationWithSuggestedFilename(arg0, arg1);
 	} else if (sel == OS.sel_webView_printFrameView_) {
 		safari.webView_printFrameView(arg0, arg1);
+	} else if (sel == OS.sel_webView_windowScriptObjectAvailable_) {
+		safari.webView_windowScriptObjectAvailable (arg0, arg1);
 	}
 	return 0;
 }
@@ -291,6 +310,9 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		safari.webView_mouseDidMoveOverElement_modifierFlags(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_unableToImplementPolicyWithError_frame_) {
 		safari.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
+	} else if (sel == OS.sel_callJava) {
+		id result = safari.callJava (arg0, arg1, arg2);
+		return result == null ? 0 : result.id;
 	}
 	return 0;
 }
@@ -301,7 +323,7 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	Safari safari = (Safari)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_) {
 		safari.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
-	}	
+	}
 	return 0;
 }
 
@@ -321,11 +343,22 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	return 0;
 }
 
-public boolean execute(String script) {
-	return webView.stringByEvaluatingJavaScriptFromString(NSString.stringWith(script)) != null;
+static boolean isSelectorExcludedFromWebScript (int /*long*/ aSelector) {
+	return aSelector != OS.sel_callJava;
 }
 
-public boolean forward() {
+static int /*long*/ webScriptNameForSelector (int /*long*/ aSelector) {
+	if (aSelector == OS.sel_callJava) {
+		return NSString.stringWith ("callJava").id; //$NON-NLS-1$
+	}
+	return 0;
+}
+
+public boolean execute (String script) {
+	return webView.stringByEvaluatingJavaScriptFromString (NSString.stringWith (script)) != null;
+}
+
+public boolean forward () {
 	html = null;
 	return webView.goForward();
 }
@@ -559,6 +592,14 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 				}
 			);
 		}
+
+		/* re-install registered functions */
+		Enumeration elements = functions.elements ();
+		while (elements.hasMoreElements ()) {
+			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+			execute (function.functionString);
+		}
+
 		/*
 		* Feature on Safari.  The identifier is used here as a marker for the events 
 		* related to the top frame and the URL changes related to that top frame as 
@@ -695,6 +736,12 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	for (int i = 0; i < locationListeners.length; i++) {
 		locationListeners[i].changed(location);
 	}
+}
+
+void webView_windowScriptObjectAvailable (int /*long*/ webView, int /*long*/ windowScriptObject) {
+	NSObject scriptObject = new NSObject (windowScriptObject);
+	NSString key = NSString.stringWith ("external"); //$NON-NLS-1$
+	scriptObject.setValue (delegate, key);
 }
 
 /* WebResourceLoadDelegate */
@@ -1202,4 +1249,92 @@ void handleEvent(int /*long*/ evtId) {
 		browser.notifyListeners (mouseEvent.type, mouseEvent);
 	}
 }
+
+/* external */
+
+Object convertToJava (int /*long*/ value) {
+	NSObject object = new NSObject (value);
+	int /*long*/ clazz = OS.objc_lookUpClass ("NSString"); //$NON-NLS-1$
+	if (object.isKindOfClass (clazz)) {
+		NSString string = new NSString (value);
+		return string.getString ();
+	}
+	clazz = OS.objc_lookUpClass ("NSNumber"); //$NON-NLS-1$
+	if (object.isKindOfClass (clazz)) {
+		NSNumber number = new NSNumber (value);
+		int /*long*/ ptr = number.objCType ();
+		byte[] type = new byte[1];
+		OS.memmove (type, ptr, 1);
+		if (type[0] == 'c' || type[0] == 'B') {
+			return new Boolean (number.boolValue ());
+		}
+		if ("islqISLQfd".indexOf (type[0]) != -1) { //$NON-NLS-1$
+			return new Double (number.doubleValue ());
+		}
+	}
+	clazz = OS.objc_lookUpClass ("WebScriptObject"); //$NON-NLS-1$
+	if (object.isKindOfClass (clazz)) {
+		WebScriptObject script = new WebScriptObject (value);
+		id id = script.valueForKey (NSString.stringWith ("length")); //$NON-NLS-1$
+		int length = new NSNumber (id).intValue ();
+		Object[] arguments = new Object[length];
+		for (int i = 0; i < length; i++) {
+			id current = script.webScriptValueAtIndex (i);
+			if (current != null) {
+				arguments[i] = convertToJava (current.id);
+			}
+		}
+		return arguments;
+	}
+	return null;
+}
+
+NSObject convertToJS (Object value) {
+	if (value instanceof String) {
+		return NSString.stringWith ((String)value);
+	}
+	if (value instanceof Boolean) {
+		return NSNumber.numberWithBool (((Boolean)value).booleanValue ());
+	}
+	if (value instanceof Number) {
+		return NSNumber.numberWithDouble (((Number)value).doubleValue ());
+	}
+	if (value instanceof Object[]) {
+		Object[] arrayValue = (Object[]) value;
+		int length = arrayValue.length;
+		if (length > 0) {
+			NSMutableArray array = NSMutableArray.arrayWithCapacity (length);
+			for (int i = 0; i < length; i++) {
+				Object currentObject = arrayValue[i];
+				array.addObject (convertToJS (currentObject));
+			}
+			return array;
+		}
+	}
+	return WebUndefined.undefined ();
+}
+
+NSObject callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
+	Object returnValue = null;
+	NSObject object = new NSObject (index);
+	int /*long*/ clazz = OS.objc_lookUpClass ("NSNumber"); //$NON-NLS-1$
+	if (object.isKindOfClass (clazz)) {
+		NSNumber number = new NSNumber (index);
+		Object temp = convertToJava (args);
+		if (temp instanceof Object[]) {
+			Object[] arguments = (Object[])temp;
+			Object key = new Integer (number.intValue ());
+			BrowserFunction function = (BrowserFunction)functions.get (key);
+			if (function != null) {
+				try {
+					returnValue = function.function (arguments);
+				} catch (Exception e) {
+					returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+				}
+			}
+		}
+	}
+	return convertToJS (returnValue);
+}
+
 }

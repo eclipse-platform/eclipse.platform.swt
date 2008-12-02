@@ -6943,8 +6943,8 @@
     </method>
   </class>
   <class name="NSNumber" swt_gen="mixed" swt_superclass="NSValue">
-    <method selector="boolValue">
-      <retval></retval>
+    <method selector="boolValue" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="charValue">
       <retval></retval>
@@ -6960,8 +6960,8 @@
       <arg name="locale"></arg>
       <retval></retval>
     </method>
-    <method selector="doubleValue">
-      <retval></retval>
+    <method selector="doubleValue" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="floatValue" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -7050,9 +7050,9 @@
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="numberWithDouble:">
-      <arg name="value"></arg>
-      <retval></retval>
+    <method class_method="true" selector="numberWithDouble:" swt_gen="true">
+      <arg name="value" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="numberWithFloat:">
       <arg name="value"></arg>
@@ -8646,10 +8646,10 @@
       <arg name="properties"></arg>
       <retval></retval>
     </method>
-    <method selector="setValue:forKey:">
-      <arg name="value"></arg>
-      <arg name="key"></arg>
-      <retval></retval>
+    <method selector="setValue:forKey:" swt_gen="true">
+      <arg name="value" swt_gen="true"></arg>
+      <arg name="key" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setValue:forKeyPath:">
       <arg name="value"></arg>
@@ -8806,9 +8806,9 @@
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="valueForKey:">
-      <arg name="key"></arg>
-      <retval></retval>
+    <method selector="valueForKey:" swt_gen="true">
+      <arg name="key" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="valueForKeyPath:">
       <arg name="keyPath"></arg>
@@ -12290,8 +12290,8 @@
     <method selector="nonretainedObjectValue">
       <retval></retval>
     </method>
-    <method selector="objCType">
-      <retval></retval>
+    <method selector="objCType" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="pointValue" swt_gen="true">
       <retval swt_gen="true"></retval>

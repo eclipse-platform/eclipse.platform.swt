@@ -4167,7 +4167,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="WebScriptObject">
+  <class name="WebScriptObject" swt_gen="mixed">
     <method selector="JSObject">
       <retval></retval>
     </method>
@@ -4200,14 +4200,14 @@
       <arg name="exceptionMessage"></arg>
       <retval></retval>
     </method>
-    <method selector="webScriptValueAtIndex:">
-      <arg name="index"></arg>
-      <retval></retval>
+    <method selector="webScriptValueAtIndex:" swt_gen="true">
+      <arg name="index" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="WebUndefined">
-    <method class_method="true" selector="undefined">
-      <retval></retval>
+  <class name="WebUndefined" swt_gen="true">
+    <method class_method="true" selector="undefined" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="WebView" swt_gen="mixed" swt_superclass="NSView">
@@ -4777,9 +4777,9 @@
       <arg name="date"></arg>
       <arg name="frame"></arg>
     </method>
-    <method selector="webView:windowScriptObjectAvailable:">
-      <arg name="webView"></arg>
-      <arg name="windowScriptObject"></arg>
+    <method selector="webView:windowScriptObjectAvailable:" swt_gen="true">
+      <arg name="webView" swt_gen="true"></arg>
+      <arg name="windowScriptObject" swt_gen="true"></arg>
     </method>
   </informal_protocol>
   <informal_protocol name="WebJavaPlugIn">

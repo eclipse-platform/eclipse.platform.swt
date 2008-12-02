@@ -180,8 +180,17 @@ public int /*long*/ retainCount() {
 	return OS.objc_msgSend(this.id, OS.sel_retainCount);
 }
 
+public void setValue(id value, NSString key) {
+	OS.objc_msgSend(this.id, OS.sel_setValue_forKey_, value != null ? value.id : 0, key != null ? key.id : 0);
+}
+
 public int /*long*/ superclass() {
 	return OS.objc_msgSend(this.id, OS.sel_superclass);
+}
+
+public id valueForKey(NSString key) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_valueForKey_, key != null ? key.id : 0);
+	return result != 0 ? new id(result) : null;
 }
 
 public void addEventListener(NSString type, id  listener, boolean useCapture) {

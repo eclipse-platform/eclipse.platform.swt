@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 371;
-int OS_nativeFunctionCallCount[371];
+int OS_nativeFunctionCount = 372;
+int OS_nativeFunctionCallCount[372];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -339,6 +339,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"objc_1allocateClassPair",
 	"objc_1getClass",
+	"objc_1getMetaClass",
 	"objc_1getProtocol",
 	"objc_1lookUpClass",
 #ifndef JNI64

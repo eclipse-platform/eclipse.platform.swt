@@ -3249,6 +3249,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1getMetaClass
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1getMetaClass)
+	(JNIEnv *env, jclass that, jstring arg0)
+{
+	const char *lparg0= NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1getMetaClass_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)objc_getMetaClass(lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1getMetaClass_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1getProtocol
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1getProtocol)
 	(JNIEnv *env, jclass that, jstring arg0)

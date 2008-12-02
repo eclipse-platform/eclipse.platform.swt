@@ -24,6 +24,10 @@ public NSValue(id id) {
 	super(id);
 }
 
+public int /*long*/ objCType() {
+	return OS.objc_msgSend(this.id, OS.sel_objCType);
+}
+
 public NSPoint pointValue() {
 	NSPoint result = new NSPoint();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_pointValue);
