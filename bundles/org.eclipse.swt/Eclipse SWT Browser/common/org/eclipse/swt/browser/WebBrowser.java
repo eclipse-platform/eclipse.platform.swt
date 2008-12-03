@@ -193,15 +193,17 @@ public void addFunction (BrowserFunction function) {
 	function.index = getNextFunctionIndex ();
 	functions.put (new Integer (function.index), function);
 
-	StringBuffer buffer = new StringBuffer ("function ");
+	StringBuffer buffer = new StringBuffer ("window."); //$NON-NLS-1$
 	buffer.append (function.name);
-	buffer.append ("() {var result = window.external.callJava(");
+	buffer.append (" = function "); //$NON-NLS-1$
+	buffer.append (function.name);
+	buffer.append ("() {var result = window.external.callJava("); //$NON-NLS-1$
 	buffer.append (function.index);
-	buffer.append (",Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('");
+	buffer.append (",Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
 	buffer.append (ERROR_ID);
-	buffer.append ("') == 0) {var error = new Error(result.substring(");
+	buffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
 	buffer.append (ERROR_ID.length () + 1);
-	buffer.append (")); throw error;} return result;}");
+	buffer.append (")); throw error;} return result;}"); //$NON-NLS-1$
 	function.functionString = buffer.toString ();
 	execute (function.functionString);	
 }
@@ -263,6 +265,10 @@ public abstract boolean forward ();
 
 public abstract String getBrowserType ();
 
+String getDeleteFunctionString (String functionName) {
+	return "delete window." + functionName + ';';	//$NON-NLS-1$
+}
+
 int getNextFunctionIndex () {
 	return nextFunctionIndex++;
 }
@@ -306,7 +312,7 @@ public void removeCloseWindowListener (CloseWindowListener listener) {
 }
 
 public void removeFunction (BrowserFunction function) {
-	execute ("window." + function.name + "=undefined;");
+	execute (getDeleteFunctionString (function.name));
 	functions.remove (new Integer (function.index));
 }
 
