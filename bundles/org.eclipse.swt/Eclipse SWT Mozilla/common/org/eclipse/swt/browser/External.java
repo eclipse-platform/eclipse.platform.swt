@@ -132,10 +132,27 @@ int Release () {
 /* nsIClassInfo */
 
 int getClassDescription (int /*long*/ _retValue) {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	serviceManager.Release ();
+
+	nsIMemory memory = new nsIMemory (result[0]);
+	result[0] = 0;
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, "external", true); //$NON-NLS-1$
-	int /*long*/ ptr = C.malloc (bytes.length);
+	int /*long*/ ptr = memory.Alloc (bytes.length);
 	C.memmove (ptr, bytes, bytes.length);
 	C.memmove (_retValue, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+	memory.Release ();
+
 	return XPCOM.NS_OK;
 }
 
@@ -200,14 +217,46 @@ int getInterfaces (int /*long*/ count, int /*long*/ array) {
 /* nsISecurityCheckedComponent */
 
 int canCreateWrapper (int /*long*/ iid, int /*long*/ _retVal) {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	serviceManager.Release ();
+
+	nsIMemory memory = new nsIMemory (result[0]);
+	result[0] = 0;
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, "allAccess", true); //$NON-NLS-1$
-	int /*long*/ ptr = C.malloc (bytes.length);
+	int /*long*/ ptr = memory.Alloc (bytes.length);
 	C.memmove (ptr, bytes, bytes.length);
 	C.memmove (_retVal, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+	memory.Release ();
+
 	return XPCOM.NS_OK;
 }
 
 int canCallMethod (int /*long*/ iid, int /*long*/ methodName, int /*long*/ _retVal) {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	serviceManager.Release ();
+
+	nsIMemory memory = new nsIMemory (result[0]);
+	result[0] = 0;
 	int length = XPCOM.strlen_PRUnichar (methodName);
 	char[] dest = new char[length];
 	XPCOM.memmove (dest, methodName, length * 2);
@@ -218,25 +267,61 @@ int canCallMethod (int /*long*/ iid, int /*long*/ methodName, int /*long*/ _retV
 	} else {
 		bytes = MozillaDelegate.wcsToMbcs (null, "noAccess", true); //$NON-NLS-1$
 	}
-	int /*long*/ ptr = C.malloc (bytes.length);
+	int /*long*/ ptr = memory.Alloc (bytes.length);
 	C.memmove (ptr, bytes, bytes.length);
 	C.memmove (_retVal, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+	memory.Release ();
+
 	return XPCOM.NS_OK;
 }
 
 int canGetProperty (int /*long*/ iid, int /*long*/ propertyName, int /*long*/ _retVal) {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	serviceManager.Release ();
+
+	nsIMemory memory = new nsIMemory (result[0]);
+	result[0] = 0;
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, "noAccess", true); //$NON-NLS-1$
-	int /*long*/ ptr = C.malloc (bytes.length);
+	int /*long*/ ptr = memory.Alloc (bytes.length);
 	C.memmove (ptr, bytes, bytes.length);
 	C.memmove (_retVal, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+	memory.Release ();
+
 	return XPCOM.NS_OK;
 }
 
 int canSetProperty (int /*long*/ iid, int /*long*/ propertyName, int /*long*/ _retVal) {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	serviceManager.Release ();
+
+	nsIMemory memory = new nsIMemory (result[0]);
+	result[0] = 0;
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, "noAccess", true); //$NON-NLS-1$
-	int /*long*/ ptr = C.malloc (bytes.length);
+	int /*long*/ ptr = memory.Alloc (bytes.length);
 	C.memmove (ptr, bytes, bytes.length);
 	C.memmove (_retVal, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+	memory.Release ();
+
 	return XPCOM.NS_OK;
 }
 
