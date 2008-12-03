@@ -168,13 +168,31 @@ int getImplementationLanguage (int /*long*/ _retValue) {
 
 
 int getInterfaces (int /*long*/ count, int /*long*/ array) {
-	int /*long*/ arrayOfIIDs = C.malloc (nsID.sizeof * 2);
-	int /*long*/ arrayOfPtrs = C.malloc (C.PTR_SIZEOF * 2);
-	XPCOM.memmove (arrayOfIIDs, nsISecurityCheckedComponent.NS_ISECURITYCHECKEDCOMPONENT_IID, nsID.sizeof);
-	XPCOM.memmove (arrayOfPtrs, new int /*long*/[] {arrayOfIIDs}, C.PTR_SIZEOF);
-	XPCOM.memmove (arrayOfIIDs + nsID.sizeof, EXTERNAL_IID, nsID.sizeof);
-	XPCOM.memmove (arrayOfPtrs + C.PTR_SIZEOF, new int /*long*/[] {arrayOfIIDs + nsID.sizeof}, C.PTR_SIZEOF);
-	C.memmove (array, new int /*long*/[] {arrayOfPtrs}, C.PTR_SIZEOF);
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+	serviceManager.Release ();
+
+	nsIMemory memory = new nsIMemory (result[0]);
+	result[0] = 0;
+	int /*long*/ securityCheckedComponentIID = memory.Alloc (nsID.sizeof);
+	XPCOM.memmove (securityCheckedComponentIID, nsISecurityCheckedComponent.NS_ISECURITYCHECKEDCOMPONENT_IID, nsID.sizeof);
+	int /*long*/ externalIID = memory.Alloc (nsID.sizeof);
+	XPCOM.memmove (externalIID, EXTERNAL_IID, nsID.sizeof);
+	int /*long*/ ptrArray = memory.Alloc (2 * C.PTR_SIZEOF);
+	C.memmove (ptrArray, new int /*long*/[] {securityCheckedComponentIID}, C.PTR_SIZEOF);
+	C.memmove (ptrArray + C.PTR_SIZEOF, new int /*long*/[] {externalIID}, C.PTR_SIZEOF);
+	C.memmove (array, new int /*long*/[] {ptrArray}, C.PTR_SIZEOF);
+	memory.Release ();
+
 	C.memmove (count, new int[] {2}, 4); /* PRUint */
 	return XPCOM.NS_OK;
 }
