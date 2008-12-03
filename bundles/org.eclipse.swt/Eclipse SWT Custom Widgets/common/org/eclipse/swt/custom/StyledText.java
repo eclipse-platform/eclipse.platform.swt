@@ -2707,17 +2707,21 @@ void doMouseLocationChange(int x, int y, boolean select) {
 			} else {
 				setBlockSelectionLocation(blockXLocation, y, true);
 			}
+			return;
 		} else {
 			if (!select) clearBlockSelection(true, false);
 			int[] trailing = new int[1]; 
 			int offset = getOffsetAtPoint(x, y, trailing, true);
 			if (offset != -1) {
-				setBlockSelectionOffset(offset + trailing[0], true);
+				if (select) {
+					setBlockSelectionOffset(offset + trailing[0], true);
+					return;
+				}
 			} else {
 				setBlockSelectionLocation(x, y, true);
+				return;
 			}
 		}
-		return;
 	}
 	
 	// allow caret to be placed below first line only if receiver is 
