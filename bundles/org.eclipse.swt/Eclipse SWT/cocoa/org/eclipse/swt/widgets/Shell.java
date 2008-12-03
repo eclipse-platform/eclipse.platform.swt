@@ -457,10 +457,6 @@ void checkOpen () {
 	if (!opened) resized = false;
 }
 
-void clearLevel() {
-	window.setLevel(0);	
-}
-
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on
@@ -556,30 +552,6 @@ void createHandle () {
 * will track the movement of its parent window. The work around is to adjust
 * the window's level.  
 */
-void fixLevel() {
-	Shell topShell = this;
-	while (topShell.parent != null) {
-		if (topShell.parent != null) topShell = (Shell) topShell.parent;
-	}
-	Shell[] shells = display.getShells ();
-	for (int i = 0; i < shells.length; i++) {
-		Shell shell = shells [i];
-		int newLevel = 0;
-		if ((shell.style & SWT.ON_TOP) != 0) {
-			newLevel = OS.NSStatusWindowLevel;
-		} else {
-			int level = 0;
-			Shell pShell = shell;
-			while (pShell.parent != null) {
-				pShell = (Shell) pShell.parent;
-				level++;
-			}
-			newLevel = pShell == topShell ? level : 0;
-			newLevel = Math.min (newLevel, OS.NSModalPanelWindowLevel - 1);
-		}
-		shell.window.setLevel (newLevel);
-	}
-}
 
 void deregister () {
 	super.deregister ();
@@ -592,6 +564,8 @@ void destroyWidget () {
 	Display display = this.display;
 	releaseHandle ();
 	if (window != null) {
+		NSWindow parentWindow = window.parentWindow ();
+		if (parentWindow != null) parentWindow.removeChildWindow (window);
 		window.close();
 	}
 	//If another shell is not going to become active, clear the menu bar.
@@ -1457,6 +1431,9 @@ void setWindowVisible (boolean visible, boolean key) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
+		if (parent != null) {
+			((Shell)parent).window.addChildWindow (window, OS.NSWindowAbove);
+		}
 		topView ().setHidden (false);
 		if (key) {
 			window.makeKeyAndOrderFront (null);
@@ -1479,6 +1456,8 @@ void setWindowVisible (boolean visible, boolean key) {
 			}
 		}
 	} else {
+		NSWindow parentWindow = window.parentWindow ();
+		if (parentWindow != null) parentWindow.removeChildWindow (window);
 		window.orderOut (null);
 		topView ().setHidden (true);
 		sendEvent (SWT.Hide);
@@ -1541,7 +1520,6 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	Display display = this.display;
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
-	fixLevel();
 //	if (!isDisposed ()) {
 //		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 //	}

@@ -1683,7 +1683,6 @@ void initApplicationDelegate() {
 		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationWillTerminate_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_applicationWillResignActive_, appProc3, "@:@");
 		OS.objc_registerClassPair(cls);
 	}	
 	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
@@ -3697,12 +3696,7 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 		return OS.NSTerminateCancel;
 	} else if (sel == OS.sel_applicationWillTerminate_) {
 		display.dispose();
-	} else if (sel == OS.sel_applicationWillResignActive_) {
-		Shell[] shells = display.getShells();
-		for (int i = 0; i < shells.length; i++) {
-			shells[i].clearLevel();
-		}
-	}
+	} 
  	return 0;
 }
 

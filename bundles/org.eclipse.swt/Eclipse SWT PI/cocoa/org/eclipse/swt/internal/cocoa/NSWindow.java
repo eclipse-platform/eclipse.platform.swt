@@ -24,6 +24,10 @@ public NSWindow(id id) {
 	super(id);
 }
 
+public void addChildWindow(NSWindow childWin, int /*long*/ place) {
+	OS.objc_msgSend(this.id, OS.sel_addChildWindow_ordered_, childWin != null ? childWin.id : 0, place);
+}
+
 public float /*double*/ alphaValue() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
 }
@@ -138,6 +142,15 @@ public void orderFrontRegardless() {
 
 public void orderOut(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_orderOut_, sender != null ? sender.id : 0);
+}
+
+public NSWindow parentWindow() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_parentWindow);
+	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
+}
+
+public void removeChildWindow(NSWindow childWin) {
+	OS.objc_msgSend(this.id, OS.sel_removeChildWindow_, childWin != null ? childWin.id : 0);
 }
 
 public NSScreen screen() {

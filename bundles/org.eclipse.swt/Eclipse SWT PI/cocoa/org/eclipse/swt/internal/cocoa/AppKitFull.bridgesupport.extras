@@ -12261,9 +12261,9 @@
       <arg name="notification"></arg>
       <retval></retval>
     </method>
-    <method selector="applicationWillResignActive:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="applicationWillResignActive:">
+      <arg name="notification"></arg>
+      <retval></retval>
     </method>
     <method selector="applicationWillTerminate:">
       <arg name="notification"></arg>
@@ -22687,10 +22687,10 @@
     <method selector="acceptsMouseMovedEvents">
       <retval></retval>
     </method>
-    <method selector="addChildWindow:ordered:">
-      <arg name="childWin"></arg>
-      <arg name="place"></arg>
-      <retval></retval>
+    <method selector="addChildWindow:ordered:" swt_gen="true">
+      <arg name="childWin" swt_gen="true"></arg>
+      <arg name="place" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="allowsToolTipsWhenApplicationIsInactive">
       <retval></retval>
@@ -23143,8 +23143,8 @@
     <method selector="orderedIndex">
       <retval></retval>
     </method>
-    <method selector="parentWindow">
-      <retval></retval>
+    <method selector="parentWindow" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="performClose:">
       <arg name="sender"></arg>
@@ -23180,9 +23180,9 @@
       <arg name="newTypes"></arg>
       <retval></retval>
     </method>
-    <method selector="removeChildWindow:">
-      <arg name="childWin"></arg>
-      <retval></retval>
+    <method selector="removeChildWindow:" swt_gen="true">
+      <arg name="childWin" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="removeFrameUsingName:">
       <arg name="name"></arg>
