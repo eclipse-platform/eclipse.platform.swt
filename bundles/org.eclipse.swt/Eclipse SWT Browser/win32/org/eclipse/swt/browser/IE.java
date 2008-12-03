@@ -785,6 +785,10 @@ public String getBrowserType () {
 	return "ie"; //$NON-NLS-1$
 }
 
+String getDeleteFunctionString (String functionName) {
+	return "window." + functionName + "=undefined;"; //$NON-NLS-1$ //$NON-NLS-2$
+}
+
 public String getText() {
 	/* get the document object */
 	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
