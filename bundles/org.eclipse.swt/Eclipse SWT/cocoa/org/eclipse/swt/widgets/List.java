@@ -372,6 +372,23 @@ public void deselectAll () {
 	ignoreSelect = false;
 }
 
+boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
+	boolean dragging = super.dragDetect(x, y, filter, consume);
+	if (dragging) {
+		NSTableView widget = (NSTableView)view;
+		NSPoint pt = new NSPoint();
+		pt.x = x;
+		pt.y = y;
+		int row = (int)/*64*/widget.rowAtPoint(pt);
+		if (!widget.isRowSelected(row)) {
+			//TODO expand current selection when Shift, Command key pressed??
+			widget.selectRow(row, false);
+		}
+	}
+	consume[0] = dragging;
+	return dragging;
+}
+
 void fixSelection (int index, boolean add) {
 	int [] selection = getSelectionIndices ();
 	if (selection.length == 0) return;

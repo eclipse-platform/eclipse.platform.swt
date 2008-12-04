@@ -109,6 +109,8 @@ public class Display extends Device {
 	Caret currentCaret;
 	
 	boolean dragging;
+	boolean [] consume = {false};
+	
 	Control currentControl, grabControl, trackingControl;
 	
 	boolean inPaint;
@@ -3510,7 +3512,7 @@ int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel
 	return result;
 }
 
-void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
+boolean applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 	if (send) runDeferredEvents();
 	boolean up = false;
 	int type = (int)/*64*/nsEvent.type();
@@ -3519,17 +3521,20 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSRightMouseDown:
 		case OS.NSOtherMouseDown: {
 			Control control = grabControl = findControl(nsEvent, false, true, false);
+			consume[0] = false;
 			if (control != null) {
 				if (nsEvent.clickCount() == 1 && (control.state & Widget.DRAG_DETECT) != 0 && control.hooks (SWT.DragDetect)) {
 					NSPoint windowLoc = nsEvent.locationInWindow();
 					NSPoint viewLoc = control.view.convertPoint_toView_(windowLoc, null);
-					if (control.dragDetect((int)viewLoc.x, (int)viewLoc.y, false, null))
+					if (control.dragDetect((int)viewLoc.x, (int)viewLoc.y, false, consume)) {
 						dragging = true;
+					}
 				}
 				control.sendMouseEvent (nsEvent, SWT.MouseDown, send);
 				if (nsEvent.clickCount() == 2) {
 					control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, send);
 				}
+				if (consume [0]) return true;
 			}
 			break;
 		}
@@ -3568,9 +3573,11 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 				timerExec (getToolTipTime (), hoverTimer);
 				control.sendMouseEvent (nsEvent, SWT.MouseMove, send);
 			}
+			if (consume [0]) return true;
 			break;
 		}
 	}
+	return false;
 }
 
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
@@ -3604,7 +3611,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 			}
 			break;
 	}
-	applicationSendMouseEvent (nsEvent, false);
+	if (applicationSendMouseEvent (nsEvent, false)) return;
 	objc_super super_struct = new objc_super ();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
