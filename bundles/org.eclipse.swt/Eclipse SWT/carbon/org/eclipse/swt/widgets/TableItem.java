@@ -137,7 +137,11 @@ int calculateWidth (int index, GC gc) {
 	gc.setFont (font);
 	if (image != null) width += image.getBounds ().width + parent.getGap ();
 	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
-	if (parent.hooks (SWT.MeasureItem)) {
+	boolean sendMeasure = true;
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		sendMeasure = cached;
+	}
+	if (sendMeasure && parent.hooks (SWT.MeasureItem)) {
 		Event event = new Event ();
 		event.item = this;
 		event.index = index;
