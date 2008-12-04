@@ -796,7 +796,10 @@ public String getText() {
 	/* get the document object */
 	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
 	Variant pVarResult = auto.getProperty(rgdispid[0]);
-	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return ""; //$NON-NLS-1$
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+		if (pVarResult != null) pVarResult.dispose ();
+		return ""; //$NON-NLS-1$
+	}
 	OleAutomation document = pVarResult.getAutomation();
 	pVarResult.dispose();
 
@@ -809,7 +812,10 @@ public String getText() {
 	}
 	pVarResult = document.getProperty(rgdispid[0]);
 	document.dispose();
-	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return ""; //$NON-NLS-1$
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+		if (pVarResult != null) pVarResult.dispose ();
+		return ""; //$NON-NLS-1$
+	}
 	OleAutomation element = pVarResult.getAutomation();
 	pVarResult.dispose();
 
@@ -817,7 +823,10 @@ public String getText() {
 	rgdispid = element.getIDsOfNames(new String[] {"outerHTML"}); //$NON-NLS-1$
 	pVarResult = element.getProperty(rgdispid[0]);
 	element.dispose();
-	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return ""; //$NON-NLS-1$
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+		if (pVarResult != null) pVarResult.dispose ();
+		return ""; //$NON-NLS-1$
+	}
 	String result = pVarResult.getString();
 	pVarResult.dispose();
 
