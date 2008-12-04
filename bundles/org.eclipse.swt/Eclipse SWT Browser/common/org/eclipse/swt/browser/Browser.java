@@ -408,6 +408,15 @@ public boolean execute (String script) {
 }
 
 /**
+ * @since 3.5
+ */
+public Object evaluate (String script) throws SWTException {
+	checkWidget();
+	if (script == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return webBrowser.evaluate (script);
+}
+
+/**
  * Navigate to the next session history item.
  *
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise

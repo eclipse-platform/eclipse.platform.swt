@@ -12,7 +12,7 @@ package org.eclipse.swt.browser;
 
 import java.util.*;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 abstract class WebBrowser {
@@ -26,8 +26,10 @@ abstract class WebBrowser {
 	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 	int nextFunctionIndex = 1;
+	Object evaluateResult;
 
 	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
+	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
 	static Runnable MozillaClearSessions;
 	static Runnable NativeClearSessions;
 
@@ -167,45 +169,29 @@ abstract class WebBrowser {
 		{189,	'-'},
 	};
 
+public class EvaluateFunction extends BrowserFunction {
+	public EvaluateFunction (Browser browser, String name) {
+		super (browser, name, false);
+	}
+	public Object function (Object[] arguments) {
+		if (arguments[0] instanceof String) {
+			String string = (String)arguments[0];
+			if (string.startsWith (ERROR_ID)) {
+				String errorString = string.substring (ERROR_ID.length () + 1);
+				evaluateResult = new SWTException (SWT.ERROR_FAILED_EVALUATE, errorString);
+				return null;
+			}
+		}
+		evaluateResult = arguments[0];
+		return null;
+	}
+}
+
 public void addCloseWindowListener (CloseWindowListener listener) {
 	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
 	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, closeWindowListeners.length);
 	closeWindowListeners = newCloseWindowListeners;
 	closeWindowListeners[closeWindowListeners.length - 1] = listener;
-}
-
-public void addFunction (BrowserFunction function) {
-	/* 
-	 * If an existing function with the same name is found then
-	 * remove it so that it is not recreated on subsequent pages
-	 * (the new function overwrites the old one).
-	 */
-	Enumeration keys = functions.keys ();
-	while (keys.hasMoreElements ()) {
-		Object key = keys.nextElement ();
-		BrowserFunction current = (BrowserFunction)functions.get (key);
-		if (current.name.equals (function.name)) {
-			functions.remove (key);
-			break;
-		}
-	}
-
-	function.index = getNextFunctionIndex ();
-	functions.put (new Integer (function.index), function);
-
-	StringBuffer buffer = new StringBuffer ("window."); //$NON-NLS-1$
-	buffer.append (function.name);
-	buffer.append (" = function "); //$NON-NLS-1$
-	buffer.append (function.name);
-	buffer.append ("() {var result = window.external.callJava("); //$NON-NLS-1$
-	buffer.append (function.index);
-	buffer.append (",Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
-	buffer.append (ERROR_ID);
-	buffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
-	buffer.append (ERROR_ID.length () + 1);
-	buffer.append (")); throw error;} return result;}"); //$NON-NLS-1$
-	function.functionString = buffer.toString ();
-	execute (function.functionString);	
 }
 
 public void addLocationListener (LocationListener listener) {
@@ -259,7 +245,89 @@ public static void clearSessions () {
 
 public abstract void create (Composite parent, int style);
 
+public void createFunction (BrowserFunction function) {
+	/* 
+	 * If an existing function with the same name is found then
+	 * remove it so that it is not recreated on subsequent pages
+	 * (the new function overwrites the old one).
+	 */
+	Enumeration keys = functions.keys ();
+	while (keys.hasMoreElements ()) {
+		Object key = keys.nextElement ();
+		BrowserFunction current = (BrowserFunction)functions.get (key);
+		if (current.name.equals (function.name)) {
+			functions.remove (key);
+			break;
+		}
+	}
+
+	function.index = getNextFunctionIndex ();
+	registerFunction (function);
+
+	StringBuffer buffer = new StringBuffer ("window."); //$NON-NLS-1$
+	buffer.append (function.name);
+	buffer.append (" = function "); //$NON-NLS-1$
+	buffer.append (function.name);
+	buffer.append ("() {var result = window.external.callJava("); //$NON-NLS-1$
+	buffer.append (function.index);
+	buffer.append (",Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
+	buffer.append (ERROR_ID);
+	buffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
+	buffer.append (ERROR_ID.length () + 1);
+	buffer.append (")); throw error;} return result;}"); //$NON-NLS-1$
+	function.functionString = buffer.toString ();
+	if (!execute (function.functionString)) {
+		deregisterFunction (function);	
+	}
+}
+
+void deregisterFunction (BrowserFunction function) {
+	functions.remove (new Integer (function.index));
+}
+
+public void destroyFunction (BrowserFunction function) {
+	execute (getDeleteFunctionString (function.name));
+	deregisterFunction (function);
+}
+
 public abstract boolean execute (String script);
+
+public Object evaluate (String script) throws SWTException {
+	BrowserFunction function = new EvaluateFunction (browser, ""); // $NON-NLS-1$
+	int index = getNextFunctionIndex ();
+	function.index = index;
+	registerFunction (function);
+	String functionName = EXECUTE_ID + index;
+
+	StringBuffer buffer = new StringBuffer ("window."); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append (" = function "); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append ("() {"); // $NON-NLS-1$
+	buffer.append (script);
+	buffer.append ("};"); // $NON-NLS-1$
+	if (!execute (buffer.toString ())) {
+		deregisterFunction (function);
+		return null;
+	}
+	buffer = new StringBuffer ("try {var result = "); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append ("(); window.external.callJava("); // $NON-NLS-1$
+	buffer.append (index);
+	buffer.append (", [result]);} catch (e) {window.external.callJava("); // $NON-NLS-1$
+	buffer.append (index);
+	buffer.append (", ['"); // $NON-NLS-1$
+	buffer.append (ERROR_ID);
+	buffer.append (":' + e.message]);}"); // $NON-NLS-1$
+	execute (buffer.toString ());
+	execute (getDeleteFunctionString (functionName));
+	deregisterFunction (function);
+
+	Object result = evaluateResult;
+	evaluateResult = null;
+	if (result instanceof SWTException) throw (SWTException)result;
+	return result;
+}
 
 public abstract boolean forward ();
 
@@ -291,6 +359,10 @@ public abstract boolean isForwardEnabled ();
 
 public abstract void refresh ();
 
+void registerFunction (BrowserFunction function) {
+	functions.put (new Integer (function.index), function);
+}
+
 public void removeCloseWindowListener (CloseWindowListener listener) {
 	if (closeWindowListeners.length == 0) return;
 	int index = -1;
@@ -309,11 +381,6 @@ public void removeCloseWindowListener (CloseWindowListener listener) {
 	System.arraycopy (closeWindowListeners, 0, newCloseWindowListeners, 0, index);
 	System.arraycopy (closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
 	closeWindowListeners = newCloseWindowListeners;
-}
-
-public void removeFunction (BrowserFunction function) {
-	execute (getDeleteFunctionString (function.name));
-	functions.remove (new Integer (function.index));
 }
 
 public void removeLocationListener (LocationListener listener) {

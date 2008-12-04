@@ -1450,6 +1450,11 @@ void createCOMInterfaces () {
 	};
 }
 
+void deregisterFunction (BrowserFunction function) {
+	super.deregisterFunction (function);
+	AllFunctions.remove (new Integer (function.index));
+}
+
 void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
@@ -1826,11 +1831,6 @@ void Activate () {
 	webBrowserFocus.Release ();
 }
 
-public void addFunction (BrowserFunction function) {
-	super.addFunction (function);
-	AllFunctions.put (new Integer (function.index), function);
-}
-
 void Deactivate () {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
@@ -1883,6 +1883,11 @@ public void refresh () {
 	* so this error code should be ignored. 
 	*/
 	if (rc != XPCOM.NS_ERROR_INVALID_POINTER && rc != XPCOM.NS_ERROR_FILE_NOT_FOUND) error (rc);
+}
+
+void registerFunction (BrowserFunction function) {
+	super.registerFunction (function);
+	AllFunctions.put (new Integer (function.index), function);
 }
 
 public boolean setText (String html) {
@@ -2243,11 +2248,6 @@ int Release () {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces ();
 	return refCount;
-}
-
-public void removeFunction (BrowserFunction function) {
-	super.removeFunction (function);
-	AllFunctions.remove (new Integer (function.index));
 }
 
 /* nsIWeakReference */	

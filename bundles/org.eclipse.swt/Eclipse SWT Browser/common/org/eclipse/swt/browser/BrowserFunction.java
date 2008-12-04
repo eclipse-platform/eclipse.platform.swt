@@ -25,13 +25,17 @@ public class BrowserFunction {
  *
  */
 public BrowserFunction (Browser browser, String name) {
+	this (browser, name, true);
+}
+
+BrowserFunction (Browser browser, String name, boolean create) {
 	super ();
 	if (browser == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (browser.isDisposed ()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	this.browser = browser;
 	this.name = name;
-	browser.webBrowser.addFunction (this);
+	if (create) browser.webBrowser.createFunction (this);
 }
 
 /**
@@ -43,7 +47,7 @@ public void dispose () {
 
 void dispose (boolean remove) {
 	if (index < 0) return;
-	if (remove) browser.webBrowser.removeFunction (this);
+	if (remove) browser.webBrowser.destroyFunction (this);
 	browser = null;
 	name = functionString = null;
 	index = -1;

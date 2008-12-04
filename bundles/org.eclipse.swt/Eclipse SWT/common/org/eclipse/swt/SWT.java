@@ -3105,6 +3105,15 @@ public class SWT {
 	 */
 	public static final int ERROR_FUNCTION_DISPOSED = 49;
 
+	/** 
+	 * SWT error constant indicating that an exception happened
+	 * when evaluating a javascript expression
+	 * (value is 50).
+	 * 
+	 * @since 3.5
+	 */
+	public static final int ERROR_FAILED_EVALUATE = 50;
+
 	/**
 	 * Constant indicating that an image or operation is of type bitmap  (value is 0).
 	 */	
@@ -3643,6 +3652,7 @@ static String findErrorText (int code) {
 		case ERROR_DEVICE_DISPOSED:        return "Device is disposed"; //$NON-NLS-1$
 		case ERROR_FUNCTION_DISPOSED:      return "BrowserFunction is disposed"; //$NON-NLS-1$
 		case ERROR_FAILED_EXEC:            return "Failed to execute runnable"; //$NON-NLS-1$
+		case ERROR_FAILED_EVALUATE:        return "Failed to evaluate javascript expression"; //$NON-NLS-1$
 		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library"; //$NON-NLS-1$
 		case ERROR_CANNOT_INVERT_MATRIX:    return "Cannot invert matrix"; //$NON-NLS-1$
 		case ERROR_NO_GRAPHICS_LIBRARY:    return "Unable to load graphics library"; //$NON-NLS-1$
@@ -3800,6 +3810,7 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_UNSUPPORTED_DEPTH:
 		case ERROR_UNSUPPORTED_FORMAT:
 		case ERROR_FAILED_EXEC:
+		case ERROR_FAILED_EVALUATE:
 		case ERROR_CANNOT_INVERT_MATRIX:
 		case ERROR_NO_GRAPHICS_LIBRARY:
 		case ERROR_IO: {
