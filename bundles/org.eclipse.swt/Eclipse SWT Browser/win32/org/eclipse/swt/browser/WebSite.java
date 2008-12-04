@@ -633,7 +633,7 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 	}
 
 	variant = Variant.win32_new (dispParams.rgvarg);
-	Object temp = (Object[])convertToJava (variant);
+	Object temp = convertToJava (variant);
 	variant.dispose ();
 	Object returnValue = null;
 	if (temp instanceof Object[]) {
