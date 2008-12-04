@@ -303,9 +303,9 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append (functionName);
 	buffer.append (" = function "); // $NON-NLS-1$
 	buffer.append (functionName);
-	buffer.append ("() {"); // $NON-NLS-1$
+	buffer.append ("() {\n"); // $NON-NLS-1$
 	buffer.append (script);
-	buffer.append ("};"); // $NON-NLS-1$
+	buffer.append ("\n};"); // $NON-NLS-1$
 	if (!execute (buffer.toString ())) {
 		deregisterFunction (function);
 		return null;
