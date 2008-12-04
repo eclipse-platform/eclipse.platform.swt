@@ -744,7 +744,10 @@ public boolean execute(String script) {
 	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
 	int dispIdMember = rgdispid[0];
 	Variant pVarResult = auto.getProperty(dispIdMember);
-	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return false;
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+		if (pVarResult != null) pVarResult.dispose ();
+		return false;
+	}
 	OleAutomation document = pVarResult.getAutomation();
 	pVarResult.dispose();
 
