@@ -25033,8 +25033,8 @@
     <method selector="textDidChange:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="textDidEndEditing:">
-      <arg name="notification"></arg>
+    <method selector="textDidEndEditing:" swt_gen="true">
+      <arg name="notification" swt_gen="true"></arg>
     </method>
     <method selector="textShouldBeginEditing:">
       <arg name="textObject"></arg>

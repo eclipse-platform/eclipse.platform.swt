@@ -494,6 +494,10 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ aSelec
 	callSuper (id, sel, aSelector);
 }
 
+boolean dragSelectionWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+	return false;
+}
+
 void drawBackground (int control, int context) {
 	/* Do nothing */
 }
@@ -1429,6 +1433,9 @@ void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 void textDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 }
 
+void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+}
+
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
 	return new NSRange();
 }
@@ -1481,11 +1488,8 @@ boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window
 void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
-boolean dragSelectionWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
-	return false;
-}
-
 int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
+
 }

@@ -1335,6 +1335,7 @@ public static final int /*long*/ sel_textBackgroundColor = sel_registerName("tex
 public static final int /*long*/ sel_textColor = sel_registerName("textColor");
 public static final int /*long*/ sel_textContainer = sel_registerName("textContainer");
 public static final int /*long*/ sel_textDidChange_ = sel_registerName("textDidChange:");
+public static final int /*long*/ sel_textDidEndEditing_ = sel_registerName("textDidEndEditing:");
 public static final int /*long*/ sel_textStorage = sel_registerName("textStorage");
 public static final int /*long*/ sel_textView_clickedOnLink_atIndex_ = sel_registerName("textView:clickedOnLink:atIndex:");
 public static final int /*long*/ sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_ = sel_registerName("textView:willChangeSelectionFromCharacterRange:toCharacterRange:");

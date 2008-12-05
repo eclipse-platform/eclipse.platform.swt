@@ -2074,6 +2074,7 @@ void initClasses () {
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textDidEndEditing_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
@@ -3885,6 +3886,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.textViewDidChangeSelection(id, sel, arg0);
 	} else if (sel == OS.sel_textDidChange_) {
 		widget.textDidChange(id, sel, arg0);
+	} else if (sel == OS.sel_textDidEndEditing_) {
+		widget.textDidEndEditing(id, sel, arg0);
 	} else if (sel == OS.sel_attributedSubstringFromRange_) {
 		return widget.attributedSubstringFromRange (id, sel, arg0);
 	} else if (sel == OS.sel_characterIndexForPoint_) {

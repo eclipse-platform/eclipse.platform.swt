@@ -45,8 +45,25 @@ public class Spinner extends Composite {
 	NSStepper buttonView;
 	int pageIncrement = 10;
 	int digits = 0;
-	
+	int textLimit = LIMIT;
 	static int GAP = 0;
+	
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 * 
+	 * @since 3.4
+	 */
+	public static final int LIMIT;
+	
+	/*
+	* These values can be different on different platforms.
+	* Therefore they are not initialized in the declaration
+	* to stop the compiler from inlining.
+	*/
+	static {
+		LIMIT = 0x7FFFFFFF;
+	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -228,19 +245,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-//	short [] selection = new short [2];
-//	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null) != OS.noErr) return;
-//	if (selection [0] == selection [1]) return;
-//	int [] actualSize = new int [1];
-//	int [] ptr = new int [1];
-//	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) != OS.noErr) return;
-//	CFRange range = new CFRange ();
-//	range.location = selection [0];
-//	range.length = selection [1] - selection [0];
-//	char [] buffer= new char [range.length];
-//	OS.CFStringGetCharacters (ptr [0], range, buffer);
-//	OS.CFRelease (ptr [0]);
-//	copyToClipboard (buffer);
+	textView.window().fieldEditor(false, textView).copy(null);
 }
 
 void createHandle () {
@@ -257,9 +262,8 @@ void createHandle () {
 //	textWidget.setTarget(widget);
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
 	textFormatter = new NSNumberFormatter();
-	textFormatter.alloc().init(); //.autorelease();
+	textFormatter.alloc().init();
 	textFormatter.setNumberStyle(OS.NSNumberFormatterDecimalStyle);
-	//textWidget.cell().setFormatter(textFormatter);
 	widget.addSubview(textWidget);
 	widget.addSubview(buttonWidget);
 	buttonView = buttonWidget;
@@ -283,13 +287,7 @@ void createHandle () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-//	short [] selection = new short [2];
-//	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null) != OS.noErr) return;
-//	if (selection [0] == selection [1]) return;
-//	char [] buffer = setText ("", selection [0], selection [1], true);
-//	if (buffer != null) {
-//		copyToClipboard (buffer);
-//	}
+	textView.window().fieldEditor(false, textView).cut(null);
 }
 
 void deregister () {
@@ -446,60 +444,26 @@ int getSelectionText (boolean[] parseFail) {
 	return -1;
 }
 
-void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	NSEvent event = new NSEvent(theEvent);
-	NSString chars = event.charactersIgnoringModifiers();
-	
-	int delta = 0;
-    int keyChar = 0;
-
-    if (chars.length() != 1) return;
-    
-    keyChar = (int)/*64*/chars.characterAtIndex(0);
-
-    switch (keyChar) {
-	    case OS.NSEnterCharacter: /* KP Enter */
-	    case OS.NSNewlineCharacter: /* Return */
-	    	postEvent (SWT.DefaultSelection);
-	    	return;
-	    case OS.NSPageUpFunctionKey: delta = pageIncrement; break;
-	    case OS.NSPageDownFunctionKey: delta = -pageIncrement; break;
-	    case OS.NSDownArrowFunctionKey: delta = -getIncrement(); break;
-	    case OS.NSUpArrowFunctionKey: delta = getIncrement(); break;
-	    
-	    default: {
-	    	NSCharacterSet numbers = new NSCharacterSet(NSCharacterSet.decimalDigitCharacterSet().id);
-	    	boolean isANumber = numbers.characterIsMember((short) keyChar);
-	    	boolean isSeparator = (keyChar == textFormatter.decimalSeparator().characterAtIndex(0));
-	    	boolean isMathSymbol = (keyChar == 0x2d || keyChar == 0x2b); // Minus sign, plus sign
-	    	if (isANumber || (isSeparator && digits > 0) || isMathSymbol) super.keyDown(id, sel, theEvent);
-	    }
-    }
-
-    if (delta != 0) {
-    	boolean [] parseFail = new boolean [1];
-    	int value = getSelectionText (parseFail);
-    	if (parseFail [0]) {
-    		value = (int)buttonView.doubleValue();
-    	}
-    	int newValue = value + delta;
-    	int max = (int)buttonView.maxValue();
-    	int min = (int)buttonView.minValue();
-    	if ((style & SWT.WRAP) != 0) {
-    		if (newValue > max) newValue = min;
-    		if (newValue < min) newValue = max;
-    	}
-    	newValue = Math.min (Math.max (min, newValue), max);
-    	if (value != newValue) setSelection (newValue, true, true, true);
-    	return;
-    } else {
-    	boolean [] parseFail = new boolean [1];
-    	int value = getSelectionText (parseFail);
-    	if (!parseFail [0]) {
-    		int pos = (int)buttonView.doubleValue();
-    		if (pos != value) setSelection (value, true, false, true);
-    	}
-    }
+/**
+ * Returns the maximum number of characters that the receiver's
+ * text field is capable of holding. If this has not been changed
+ * by <code>setTextLimit()</code>, it will be the constant
+ * <code>Spinner.LIMIT</code>.
+ * 
+ * @return the text limit
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #LIMIT
+ * 
+ * @since 3.4
+ */
+public int getTextLimit () {
+	checkWidget();
+    return textLimit;
 }
 
 /**
@@ -517,10 +481,7 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-//	String text = getClipboardText ();
-//	short [] selection = new short [2];
-//	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null) != OS.noErr) return;
-//	setText (text, selection [0], selection [1], true);
+	textView.window().fieldEditor(false, textView).paste(null);
 }
 
 void register () {
@@ -631,6 +592,110 @@ void resized () {
 	frame.width -= buttonFrame.width + GAP;
 	textView.setFrame(frame);
 	buttonView.setFrame(buttonFrame);
+}
+
+boolean sendKeyEvent (int type, Event event) {
+	if (!super.sendKeyEvent (type, event)) {
+		return false;
+	}
+	if (type != SWT.KeyDown) return true;
+	if ((style & SWT.READ_ONLY) != 0) return true;
+	if (event.character == 0) return true;
+	if ((event.stateMask & SWT.COMMAND) != 0) return true;
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
+	String oldText = "", newText = "";
+	int /*long*/ charCount = 0;
+	charCount = textView.stringValue().length();
+	NSText fieldEditor = textView.window().fieldEditor(false, textView);
+	NSRange selection = fieldEditor.selectedRange();
+	int /*long*/ start = selection.location, end = selection.location + selection.length;
+	switch (event.character) {
+		case SWT.BS:
+			if (start == end) {
+				if (start == 0) return true;
+				start = Math.max (0, start - 1);
+			}
+			break;
+		case SWT.DEL:
+			if (start == end) {
+				if (start == charCount) return true;
+				end = Math.min (end + 1, charCount);
+			}
+			break;
+		case SWT.CR:
+			return true;
+		default:
+			if (event.character != '\t' && event.character < 0x20) return true;
+			oldText = new String (new char [] {event.character});
+	}
+	newText = verifyText (oldText, start, end, event);
+	if (newText == null) return false;
+	if (charCount - (end - start) + newText.length () > textLimit) {
+		return false;
+	}
+	if (newText != oldText) {
+		setText (newText, start, end, false);
+		start += newText.length ();
+		selection.location = start;
+		selection.length = 0;
+		fieldEditor.setSelectedRange(selection);
+	}
+	/*
+	* Post the modify event so that the character will be inserted
+	* into the widget when the modify event is delivered.  Normally,
+	* modify events are sent but it is safe to post the event here
+	* because this method is called from the event loop.
+	*/
+	postEvent (SWT.Modify);
+	return newText == oldText;	
+}
+
+boolean sendKeyEvent (NSEvent nsEvent, int type) {
+	boolean result = super.sendKeyEvent (nsEvent, type);
+	if (!result) return result;
+	if (type != SWT.KeyDown) return result;
+	int delta = 0;
+	short keyCode = nsEvent.keyCode ();
+	switch (keyCode) {
+		case 76: /* KP Enter */
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			return true;
+		}
+
+	    case 116: delta = pageIncrement; break; /* Page Up */
+	    case 121: delta = -pageIncrement; break; /* Page Down */
+	    case 125: delta = -getIncrement(); break; /* Down arrow */
+	    case 126: delta = getIncrement(); break; /* Up arrow */
+    }
+
+    if (delta != 0) {
+    	boolean [] parseFail = new boolean [1];
+    	int value = getSelectionText (parseFail);
+    	if (parseFail [0]) {
+    		value = (int)buttonView.doubleValue();
+    	}
+    	int newValue = value + delta;
+    	int max = (int)buttonView.maxValue();
+    	int min = (int)buttonView.minValue();
+    	if ((style & SWT.WRAP) != 0) {
+    		if (newValue > max) newValue = min;
+    		if (newValue < min) newValue = max;
+    	}
+    	newValue = Math.min (Math.max (min, newValue), max);
+    	if (value != newValue) setSelection (newValue, true, true, true);
+    	// Prevent the arrow or page up/down from being handled by the text field.
+    	result = false;
+    } else {
+    	boolean [] parseFail = new boolean [1];
+    	int value = getSelectionText (parseFail);
+    	if (!parseFail [0]) {
+    		int pos = (int)buttonView.doubleValue();
+    		if (pos != value) setSelection (value, true, false, true);
+    	}
+    }
+
+    return result;
 }
 
 void sendSelection () {	
@@ -805,9 +870,85 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 			if (string == null) return;
 		}
 		textView.setStringValue(NSString.stringWith(string));
+		NSRange selection = new NSRange();
+		selection.location = 0;
+		selection.length = string.length();
+		if (textView.window() != null) {
+			NSText fieldEditor = textView.window().fieldEditor(false, textView);
+			if (fieldEditor != null) fieldEditor.setSelectedRange(selection);
+		}
 		sendEvent (SWT.Modify);
 	}
 	if (notify) postEvent (SWT.Selection);
+}
+
+char [] setText (String string, int /*long*/ start, int /*long*/ end, boolean notify) {
+	if (notify) {
+		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+			string = verifyText (string, start, end, null);
+			if (string == null) return null;
+		}
+	}
+
+	int /*long*/ charCount = textView.stringValue().length();
+	int /*long*/ length = string.length ();
+	if (textLimit != LIMIT) {
+		if (charCount - (end - start) + length > textLimit) {
+			length = textLimit - charCount + (end - start);
+		}
+	}
+	char [] text = new char [(int)/*64*/(charCount - (end - start) + length)];
+	NSRange range = new NSRange();
+	range.location = 0;
+	range.length = start;
+	char [] buffer = new char [(int)/*64*/range.length];
+	textView.stringValue().getCharacters(buffer, range);
+	System.arraycopy (buffer, 0, text, 0, (int)/*64*/range.length);
+	string.getChars (0, (int)/*64*/length, text, (int)/*64*/start);
+	range.location = end;
+	range.length = charCount - end;
+	buffer = new char [(int)/*64*/range.length];
+	textView.stringValue().getCharacters(buffer, range);
+	System.arraycopy (buffer, 0, text, (int)/*64*/(start + length), (int)/*64*/range.length);
+	
+	/* Copying the return value to buffer */
+	range.location = start;
+	range.length = end - start;
+	buffer = new char [(int)/*64*/range.length];
+	textView.stringValue().getCharacters(buffer, range);
+
+	NSString newText = NSString.stringWithCharacters(text, text.length);
+	textView.setStringValue(newText);
+	if (notify) sendEvent (SWT.Modify);
+	return buffer;
+}
+
+/**
+ * Sets the maximum number of characters that the receiver's
+ * text field is capable of holding to be the argument.
+ * <p>
+ * To reset this value to the default, use <code>setTextLimit(Spinner.LIMIT)</code>.
+ * Specifying a limit value larger than <code>Spinner.LIMIT</code> sets the
+ * receiver's limit to <code>Spinner.LIMIT</code>.
+ * </p>
+ * @param limit new text limit
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_CANNOT_BE_ZERO - if the limit is zero</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #LIMIT
+ * 
+ * @since 3.4
+ */
+public void setTextLimit (int limit) {
+	checkWidget();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	textLimit = limit;
 }
 
 /**
@@ -869,11 +1010,11 @@ void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotifica
 	}
 }
 
-String verifyText (String string, int start, int end, Event keyEvent) {
+String verifyText (String string, int /*long*/ start, int /*long*/ end, Event keyEvent) {
 	Event event = new Event ();
 	event.text = string;
-	event.start = start;
-	event.end = end;
+	event.start = (int)/*64*/start;
+	event.end = (int)/*64*/end;
 	if (keyEvent != null) {
 		event.character = keyEvent.character;
 		event.keyCode = keyEvent.keyCode;
