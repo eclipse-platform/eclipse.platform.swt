@@ -109,7 +109,7 @@ static String createHTML () {
 	buffer.append ("</head>\n");
 	buffer.append ("<body>\n");
 	buffer.append ("<input id=button type=\"button\" value=\"Push to Invoke Java\" onclick=\"function1();\">\n");
-	buffer.append ("<p><a href=\"http://www.eclipse.org\">goto eclipse.org</a>\n");
+	buffer.append ("<p><a href=\"http://www.eclipse.org\">go to eclipse.org</a>\n");
 	buffer.append ("</body>\n");
 	buffer.append ("</html>\n");
 	return buffer.toString ();
