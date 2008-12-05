@@ -381,10 +381,12 @@ protected void checkSubclass () {
 }
 
 /**
- * Execute the specified script.
- *
+ * Executes the specified script.
  * <p>
- * Execute a script containing javascript commands in the context of the current document. 
+ * Executes a script containing javascript commands in the context of the current document.
+ * If document-defined functions or properties are accessed by the script then this method
+ * should not be invoked until the document has finished loading (<code>ProgressListener.completed()</code>
+ * gives notification of this).
  * 
  * @param script the script with javascript commands
  *  
@@ -399,6 +401,8 @@ protected void checkSubclass () {
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
  *
+ * @see ProgressListener#completed(ProgressEvent)
+ * 
  * @since 3.1
  */
 public boolean execute (String script) {
@@ -410,21 +414,27 @@ public boolean execute (String script) {
 /**
  * Returns the result, if any, of executing the specified script.
  * <p>
- * Evaluates a script containing javascript commands in the context
- * of the current document.  If the script returns a value with a
- * supported type then a java representation of the value is returned.
- * The supported javascript -> java mappings are:
- *
- * javascript null or undefined -> <code>null</code>
- * javascript number -> <code>java.lang.Double</code>
- * javascript string -> <code>java.lang.String</code>
- * javascript boolean -> <code>java.lang.Boolean</code>
- * javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code>
+ * Evaluates a script containing javascript commands in the context of
+ * the current document.  If document-defined functions or properties
+ * are accessed by the script then this method should not be invoked
+ * until the document has finished loading (<code>ProgressListener.completed()</code>
+ * gives notification of this).
+ * </p><p>
+ * If the script returns a value with a supported type then a java
+ * representation of the value is returned.  The supported
+ * javascript -> java mappings are:
+ * <ul>
+ * <li>javascript null or undefined -> <code>null</code></li>
+ * <li>javascript number -> <code>java.lang.Double</code></li>
+ * <li>javascript string -> <code>java.lang.String</code></li>
+ * <li>javascript boolean -> <code>java.lang.Boolean</code></li>
+ * <li>javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code></li>
+ * </ul>
  *
  * An <code>SWTException</code> is thrown if the return value has an
  * unsupported type, or if evaluating the script causes a javascript
  * error to be thrown.
- *  
+ *
  * @param script the script with javascript commands
  *  
  * @return the return value, if any, of executing the script
@@ -439,6 +449,8 @@ public boolean execute (String script) {
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
+ * 
+ * @see ProgressListener#completed(ProgressEvent)
  * 
  * @since 3.5
  */
