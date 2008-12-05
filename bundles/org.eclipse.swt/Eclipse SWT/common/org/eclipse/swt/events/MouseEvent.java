@@ -40,8 +40,8 @@ public class MouseEvent extends TypedEvent {
 	public int button;
 	
 	/**
-	 * the state of the keyboard modifier keys at the time
-	 * the event was generated
+	 * the state of the keyboard modifier keys and mouse masks
+	 * at the time the event was generated.
 	 */
 	public int stateMask;
 	
