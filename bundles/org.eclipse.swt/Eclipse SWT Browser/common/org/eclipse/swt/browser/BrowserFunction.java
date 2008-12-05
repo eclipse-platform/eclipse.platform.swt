@@ -27,7 +27,7 @@ import org.eclipse.swt.*;
  * longer required.  Since there is usually a correlation between
  * the registering of BrowserFunction(s) in a Browser and the
  * loading of a page in the Browser that is aware of these
- * functions, the <code>LocationListener.changing()</code> listener
+ * functions, the <code>LocationListener.changed()</code> listener
  * is often a good place to do this.
  * </p><p>
  * Note that disposing a Browser automatically disposes all
@@ -36,7 +36,7 @@ import org.eclipse.swt.*;
  * 
  * @see #dispose()
  * @see #function(Object[])
- * @see org.eclipse.swt.browser.LocationListener#changing(LocationEvent)
+ * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
  * 
  * @since 3.5
  */
@@ -51,7 +51,7 @@ public class BrowserFunction {
  * by javascript running in the specified Browser.
  * <p>
  * You must dispose the BrowserFunction when it is no longer required.
- * A common place to do this is in a <code>LocationListener.changing()</code>
+ * A common place to do this is in a <code>LocationListener.changed()</code>
  * listener.
  * </p>
  * @param browser the browser whose javascript can invoke this function
@@ -68,7 +68,7 @@ public class BrowserFunction {
  * </ul>
  * 
  * @see #dispose()
- * @see org.eclipse.swt.browser.LocationListener#changing(LocationEvent)
+ * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
  */
 public BrowserFunction (Browser browser, String name) {
 	this (browser, name, true);
