@@ -408,6 +408,38 @@ public boolean execute (String script) {
 }
 
 /**
+ * Returns the result, if any, of executing the specified script.
+ * <p>
+ * Evaluates a script containing javascript commands in the context
+ * of the current document.  If the script returns a value with a
+ * supported type then a java representation of the value is returned.
+ * The supported javascript -> java mappings are:
+ *
+ * javascript null or undefined -> <code>null</code>
+ * javascript number -> <code>java.lang.Double</code>
+ * javascript string -> <code>java.lang.String</code>
+ * javascript boolean -> <code>java.lang.Boolean</code>
+ * javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code>
+ *
+ * An <code>SWTException</code> is thrown if the return value has an
+ * unsupported type, or if evaluating the script causes a javascript
+ * error to be thrown.
+ *  
+ * @param script the script with javascript commands
+ *  
+ * @return the return value, if any, of executing the script
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+ * </ul>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_FAILED_EVALUATE when the script returns a value of unsupported type,
+ *    	or when the script evaluation causes a javascript error to be thrown</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
  * @since 3.5
  */
 public Object evaluate (String script) throws SWTException {
