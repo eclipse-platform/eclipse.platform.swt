@@ -1694,10 +1694,14 @@ Object convertToJava (int value) {
 		}
 		return arguments;
 	}
+	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
 }
 
 int convertToJS (Object value) {
+	if (value == null) {
+		return Cocoa.objc_msgSend (Cocoa.C_WebUndefined, Cocoa.S_undefined);
+	}
 	if (value instanceof String) {
 		String result = (String)value;
 		char[] chars = new char[result.length ()];
@@ -1725,27 +1729,42 @@ int convertToJS (Object value) {
 			return array;
 		}
 	}
-	return Cocoa.objc_msgSend (Cocoa.C_WebUndefined, Cocoa.S_undefined);
+	SWT.error (SWT.ERROR_INVALID_RETURNVALUE);
+	return 0;
 }
 
 int /*long*/ callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
 	Object returnValue = null;
 	if (Cocoa.objc_msgSend (index, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
-		Object temp = convertToJava (args);
-		if (temp instanceof Object[]) {
-			Object[] arguments = (Object[])temp;
-			int functionIndex = Cocoa.objc_msgSend (index, Cocoa.S_intValue);
-			Object key = new Integer (functionIndex);
-			BrowserFunction function = (BrowserFunction)functions.get (key);
-			if (function != null) {
-				try {
-					returnValue = function.function (arguments);
-				} catch (Exception e) {
-					returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+		int functionIndex = Cocoa.objc_msgSend (index, Cocoa.S_intValue);
+		Object key = new Integer (functionIndex);
+		BrowserFunction function = (BrowserFunction)functions.get (key);
+		if (function != null) {
+			try {
+				Object temp = convertToJava (args);
+				if (temp instanceof Object[]) {
+					Object[] arguments = (Object[])temp;
+					try {
+						returnValue = function.function (arguments);
+					} catch (Exception e) {
+						/* exception during function invocation */
+						returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+					}
 				}
+			} catch (IllegalArgumentException e) {
+				/* invalid argument value type */
+				if (function.isEvaluate) {
+					/* notify the evaluate function so that a java exception can be thrown */
+					function.function (new String[] {ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
+				}
+				returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
 			}
 		}
 	}
-	return convertToJS (returnValue);
+	try {
+		return convertToJS (returnValue);
+	} catch (SWTException e) {
+		return convertToJS (ERROR_ID + ':' + e.getLocalizedMessage ());
+	}
 }
 }
