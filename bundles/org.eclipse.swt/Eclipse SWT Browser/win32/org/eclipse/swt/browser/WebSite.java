@@ -652,7 +652,7 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 		} catch (IllegalArgumentException e) {
 			/* invalid argument value type */
 			if (function.isEvaluate) {
-				/* notify the function so that a java error can be thrown */
+				/* notify the function so that a java exception can be thrown */
 				function.function (new String[] {IE.ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
 			}
 			returnValue = IE.ERROR_ID + ':' + e.getLocalizedMessage ();

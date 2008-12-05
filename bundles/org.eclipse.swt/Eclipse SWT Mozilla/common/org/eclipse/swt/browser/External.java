@@ -545,7 +545,7 @@ int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
 		} catch (IllegalArgumentException e) {
 			/* invalid argument value type */
 			if (function.isEvaluate) {
-				/* notify the evaluate function so that a java error can be thrown */
+				/* notify the evaluate function so that a java exception can be thrown */
 				function.function (new String[] {IE.ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
 			}
 			returnValue = Mozilla.ERROR_ID + ':' + e.getLocalizedMessage ();
