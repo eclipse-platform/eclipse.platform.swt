@@ -902,6 +902,14 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
+void drawRect(int id, int sel, NSRect rect) {
+	if (backgroundImage != null && !backgroundImage.isDisposed()) {
+		NSColor color = NSColor.colorWithPatternImage(backgroundImage.handle);
+		color.set();
+	}
+	super.drawRect(id, sel, rect);
+}
+
 void drawWidget (int /*long*/ id, NSRect rect) {
 	if (id != view.id) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
@@ -2592,7 +2600,7 @@ public void setBackgroundImage (Image image) {
 	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (image == backgroundImage) return;
 	backgroundImage = image;
-//	redrawWidget (handle, false);
+	redrawWidget(view, false);
 }
 
 void setBackground (float /*double*/ [] color) {
