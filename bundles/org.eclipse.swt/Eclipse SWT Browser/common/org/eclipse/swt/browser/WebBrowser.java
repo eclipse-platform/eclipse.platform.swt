@@ -296,6 +296,7 @@ public Object evaluate (String script) throws SWTException {
 	BrowserFunction function = new EvaluateFunction (browser, ""); // $NON-NLS-1$
 	int index = getNextFunctionIndex ();
 	function.index = index;
+	function.isEvaluate = true;
 	registerFunction (function);
 	String functionName = EXECUTE_ID + index;
 

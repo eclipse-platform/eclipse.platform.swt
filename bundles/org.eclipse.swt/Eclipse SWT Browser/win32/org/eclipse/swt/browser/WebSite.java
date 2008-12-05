@@ -633,28 +633,43 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 	}
 
 	variant = Variant.win32_new (dispParams.rgvarg);
-	Object temp = convertToJava (variant);
-	variant.dispose ();
+	IE ie = (IE)((Browser)getParent ().getParent ()).webBrowser;
+	Object key = new Integer (index);
+	BrowserFunction function = (BrowserFunction)ie.functions.get (key);
 	Object returnValue = null;
-	if (temp instanceof Object[]) {
-		Object[] args = (Object[])temp;
-		IE ie = (IE)((Browser)getParent ().getParent ()).webBrowser;
-		Object key = new Integer (index);
-		BrowserFunction function = (BrowserFunction)ie.functions.get (key);
-		if (function != null) {
-			try {
-				returnValue = function.function (args);
-			} catch (Exception e) {
-				returnValue = IE.ERROR_ID + ':' + e.getLocalizedMessage ();
+	if (function != null) {
+		try {
+			Object temp = convertToJava (variant);
+			if (temp instanceof Object[]) {
+				Object[] args = (Object[])temp;
+				try {
+					returnValue = function.function (args);
+				} catch (Exception e) {
+					/* exception during function invocation */
+					returnValue = IE.ERROR_ID + ':' + e.getLocalizedMessage ();
+				}
 			}
+		} catch (IllegalArgumentException e) {
+			/* invalid argument value type */
+			if (function.isEvaluate) {
+				/* notify the function so that a java error can be thrown */
+				function.function (new String[] {IE.ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
+			}
+			returnValue = IE.ERROR_ID + ':' + e.getLocalizedMessage ();
 		}
 	}
+	variant.dispose ();
 
 	if (pVarResult != 0) {
 		if (returnValue == null) {
 			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
 		} else {
-			variant = convertToJS (returnValue);
+			try {
+				variant = convertToJS (returnValue);
+			} catch (SWTException e) {
+				/* invalid return value type */
+				variant = convertToJS (IE.ERROR_ID + ':' + e.getLocalizedMessage ());
+			}
 			Variant.win32_copy (pVarResult, variant);
 			variant.dispose ();
 		}
@@ -694,21 +709,35 @@ Object convertToJava (Variant variant) {
 							rgdispid = auto.getIDsOfNames (new String[] {String.valueOf (i)});
 							if (rgdispid != null) {
 								Variant current = auto.getProperty (rgdispid[0]);
-								args[i] = convertToJava (current);
-								current.dispose ();
+								try {
+									args[i] = convertToJava (current);
+									current.dispose ();
+								} catch (IllegalArgumentException e) {
+									/* invalid argument value type */
+									current.dispose ();
+									auto.dispose ();
+									throw e;
+								}
 							}
 						}
 					}
+				} else {
+					auto.dispose ();
+					SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 				}
 			}
 			auto.dispose ();
 			return args;
 		}
 	}
+	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
 }
 
 Variant convertToJS (Object value) {
+	if (value == null) {
+		return new Variant ();
+	}
 	if (value instanceof String) {
 		return new Variant ((String)value);
 	}
@@ -784,15 +813,24 @@ Variant convertToJS (Object value) {
 			if (rgdispids != null) {
 				for (int i = 0; i < length; i++) {
 					Object currentObject = arrayValue[i];
-					Variant variant = convertToJS (currentObject);
-					auto.invoke (rgdispids[0], new Variant[] {variant});
-					variant.dispose ();
+					try {
+						Variant variant = convertToJS (currentObject);
+						auto.invoke (rgdispids[0], new Variant[] {variant});
+						variant.dispose ();
+					} catch (SWTException e) {
+						/* invalid return value type */
+						auto.dispose ();
+						array.dispose ();
+						throw e;
+					}
 				}
 			}
+			auto.dispose ();
 			return array;
-		}		
+		}
 	}
-	return new Variant ();
+	SWT.error (SWT.ERROR_INVALID_RETURNVALUE);
+	return null;
 }
 
 }

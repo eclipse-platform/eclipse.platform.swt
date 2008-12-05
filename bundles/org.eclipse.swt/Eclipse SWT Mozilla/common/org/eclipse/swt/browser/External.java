@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 
@@ -389,8 +390,15 @@ Object convertToJava (nsIVariant variant, short type) {
 					currentType[0] = 0;
 					rc = currentVariant.GetDataType (currentType);
 					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-					arrayReturn[i] = convertToJava (currentVariant, currentType[0]);
-					currentVariant.Release ();
+					try {
+						arrayReturn[i] = convertToJava (currentVariant, currentType[0]);
+						currentVariant.Release ();
+					} catch (IllegalArgumentException e) {
+						/* invalid argument value type */
+						currentVariant.Release ();
+						C.free (ptr[0]);
+						throw e;
+					}
 				}
 			} else {
 				switch (currentType[0]) {
@@ -400,6 +408,14 @@ Object convertToJava (nsIVariant variant, short type) {
 							double[] doubleValue = new double[1];
 							C.memmove (doubleValue, ptr[0] + i * 8, 8);
 							arrayReturn[i] = new Double (doubleValue[0]);
+						}
+						break;
+					case nsIDataType.VTYPE_BOOL:
+						arrayReturn = new Object[count[0]];
+						for (int i = 0; i < count[0]; i++) {
+							int[] boolValue = new int[1]; /* PRUInt32 */
+							C.memmove (boolValue, ptr[0] + i * 4, 4);
+							arrayReturn[i] = new Boolean (boolValue[0] != 0);
 						}
 						break;
 					case nsIDataType.VTYPE_INT32:
@@ -422,11 +438,15 @@ Object convertToJava (nsIVariant variant, short type) {
 							arrayReturn[i] = new String (dest);
 						}
 						break;
+					default:
+						C.free (ptr[0]);
+						SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 				}
 			}
 			C.free (ptr[0]);
 			return arrayReturn;
 	}
+	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
 }
 
@@ -437,6 +457,11 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 	nsIWritableVariant variant = new nsIWritableVariant (result[0]);
 	result[0] = 0;
 
+	if (value == null) {
+		rc = variant.SetAsVoid ();
+		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		return variant;
+	}
 	if (value instanceof String) {
 		String stringValue = (String)value;
 		int length = stringValue.length ();
@@ -465,8 +490,21 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 			int /*long*/ arrayPtr = C.malloc (C.PTR_SIZEOF * length);
 			for (int i = 0; i < length; i++) {
 				Object currentObject = arrayValue[i];
-				nsIVariant currentVariant = convertToJS (currentObject, componentManager);
-				C.memmove (arrayPtr + C.PTR_SIZEOF * i, new int /*long*/[] {currentVariant.getAddress ()}, C.PTR_SIZEOF);
+				try {
+					nsIVariant currentVariant = convertToJS (currentObject, componentManager);
+					C.memmove (arrayPtr + C.PTR_SIZEOF * i, new int /*long*/[] {currentVariant.getAddress ()}, C.PTR_SIZEOF);
+				} catch (SWTException e) {
+					/* invalid return value type */
+					C.free (arrayPtr);
+					variant.Release ();
+					/* release the variants that had previously been added to the array */
+					for (int j = 0; j < i; j++) {
+						int /*long*/[] ptr = new int /*long*/[1];
+						C.memmove (ptr, arrayPtr + C.PTR_SIZEOF * j, C.PTR_SIZEOF);
+						new nsISupports (ptr[0]).Release ();
+					}
+					throw e;
+				}
 			}
 			int /*long*/ idPtr = C.malloc (nsID.sizeof);
 			XPCOM.memmove (idPtr, nsIVariant.NS_IVARIANT_IID, nsID.sizeof);
@@ -477,9 +515,10 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 			return variant;
 		}
 	}
-	rc = variant.SetAsVoid();
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	return variant;
+
+	variant.Release ();
+	SWT.error (SWT.ERROR_INVALID_RETURNVALUE);
+	return null;
 }
 
 int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
@@ -492,14 +531,24 @@ int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
 		nsIVariant variant = new nsIVariant (args);
 		int rc = variant.GetDataType (type);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-		Object temp = (Object[])convertToJava (variant, type[0]);
-		if (temp instanceof Object[]) {
-			Object[] arguments = (Object[])temp;
-			try {
-				returnValue = function.function (arguments);
-			} catch (Exception e) {
-				returnValue = Mozilla.ERROR_ID + ':' + e.getLocalizedMessage();
+		try {
+			Object temp = (Object[])convertToJava (variant, type[0]);
+			if (temp instanceof Object[]) {
+				Object[] arguments = (Object[])temp;
+				try {
+					returnValue = function.function (arguments);
+				} catch (Exception e) {
+					/* exception during function invocation */
+					returnValue = Mozilla.ERROR_ID + ':' + e.getLocalizedMessage ();
+				}
 			}
+		} catch (IllegalArgumentException e) {
+			/* invalid argument value type */
+			if (function.isEvaluate) {
+				/* notify the evaluate function so that a java error can be thrown */
+				function.function (new String[] {IE.ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
+			}
+			returnValue = Mozilla.ERROR_ID + ':' + e.getLocalizedMessage ();
 		}
 	}
 
@@ -509,7 +558,13 @@ int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	nsIComponentManager componentManager = new nsIComponentManager (result[0]);
 	result[0] = 0;
-	nsIVariant variant = convertToJS (returnValue, componentManager);
+	nsIVariant variant;
+	try {
+		variant = convertToJS (returnValue, componentManager);
+	} catch (SWTException e) {
+		/* invalid return value type */
+		variant = convertToJS (Mozilla.ERROR_ID + ':' + e.getLocalizedMessage (), componentManager);
+	}
 	componentManager.Release ();
 	C.memmove (returnPtr, new int /*long*/[] {variant.getAddress ()}, C.PTR_SIZEOF);
 

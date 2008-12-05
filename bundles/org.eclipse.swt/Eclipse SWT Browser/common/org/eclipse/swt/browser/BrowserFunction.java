@@ -45,6 +45,7 @@ public class BrowserFunction {
 	String name;
 	String functionString;
 	int index;
+	boolean isEvaluate;
 
 /**
  * Constructs a new instance of this class, which will be invokable
