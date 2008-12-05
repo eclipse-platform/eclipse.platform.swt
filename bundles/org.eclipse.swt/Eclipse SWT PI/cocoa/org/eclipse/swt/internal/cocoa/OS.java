@@ -38,7 +38,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_timerProc_ = sel_registerName("timerProc:");
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
-
+	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
+	
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
@@ -396,7 +397,6 @@ public static final int /*long*/ class_WebView = objc_getClass("WebView");
 /** Protocols */
 public static final int /*long*/ protocol_NSAccessibility = objc_getProtocol("NSAccessibility");
 public static final int /*long*/ protocol_NSAccessibilityAdditions = objc_getProtocol("NSAccessibilityAdditions");
-public static final int /*long*/ protocol_NSApplicationDelegate = objc_getProtocol("NSApplicationDelegate");
 public static final int /*long*/ protocol_NSApplicationNotifications = objc_getProtocol("NSApplicationNotifications");
 public static final int /*long*/ protocol_NSColorPanelResponderMethod = objc_getProtocol("NSColorPanelResponderMethod");
 public static final int /*long*/ protocol_NSComboBoxNotifications = objc_getProtocol("NSComboBoxNotifications");
@@ -785,6 +785,7 @@ public static final int /*long*/ sel_imageRepWithData_ = sel_registerName("image
 public static final int /*long*/ sel_imageablePageBounds = sel_registerName("imageablePageBounds");
 public static final int /*long*/ sel_increment = sel_registerName("increment");
 public static final int /*long*/ sel_indentationPerLevel = sel_registerName("indentationPerLevel");
+public static final int /*long*/ sel_indexOfItemWithTarget_andAction_ = sel_registerName("indexOfItemWithTarget:andAction:");
 public static final int /*long*/ sel_indexOfSelectedItem = sel_registerName("indexOfSelectedItem");
 public static final int /*long*/ sel_infoDictionary = sel_registerName("infoDictionary");
 public static final int /*long*/ sel_init = sel_registerName("init");

@@ -10987,10 +10987,10 @@
       <arg name="aTag"></arg>
       <retval></retval>
     </method>
-    <method selector="indexOfItemWithTarget:andAction:">
-      <arg name="target"></arg>
-      <arg name="actionSelector"></arg>
-      <retval></retval>
+    <method selector="indexOfItemWithTarget:andAction:" swt_gen="true">
+      <arg name="target" swt_gen="true"></arg>
+      <arg name="actionSelector" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="indexOfItemWithTitle:">
       <arg name="aTitle"></arg>
@@ -12241,9 +12241,9 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="applicationShouldTerminate:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="applicationShouldTerminate:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="applicationShouldTerminateAfterLastWindowClosed:">
       <arg name="sender"></arg>
@@ -23942,7 +23942,7 @@
       <arg name="animation"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSApplicationDelegate" swt_gen="mixed">
+  <informal_protocol name="NSApplicationDelegate">
     <method selector="application:openFile:">
       <arg name="sender"></arg>
       <arg name="filename"></arg>
@@ -23990,8 +23990,8 @@
     <method selector="applicationShouldOpenUntitledFile:">
       <arg name="sender"></arg>
     </method>
-    <method selector="applicationShouldTerminate:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="applicationShouldTerminate:">
+      <arg name="sender"></arg>
     </method>
     <method selector="applicationShouldTerminateAfterLastWindowClosed:">
       <arg name="sender"></arg>

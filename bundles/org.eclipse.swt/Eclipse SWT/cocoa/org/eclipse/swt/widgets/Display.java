@@ -751,6 +751,15 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
+
+	Runtime.getRuntime().addShutdownHook(new Thread() {
+		// Any top-level autorelease pool cannot be destroyed until the absolute end of the application.
+		// terminate is that absolute end of the app; it will also clean up any remaining pools.
+		public void run() {
+			NSApplication.sharedApplication().terminate(null);
+		}
+	});
+
 	application = null;
 }
 
@@ -1679,12 +1688,11 @@ void initApplicationDelegate() {
 		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_quitRequested_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_applicationWillTerminate_, appProc3, "@:@");
 		OS.objc_registerClassPair(cls);
 	}	
 	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
@@ -2779,9 +2787,7 @@ void releaseDisplay () {
 	if (markedAttributes != null) markedAttributes.release();
 	markedAttributes = null;
 
-	/* The release pool needs to be released before the call backs. */
-	if (pool != null) pool.release();
-	pool = null;
+	// The autorelease pool is cleaned up when we call NSApplication.terminate().
 
 	if (application != null && applicationClass != 0) {
 		OS.object_setClass (application.id, applicationClass);
@@ -3681,9 +3687,16 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 				NSString title = ni.title().stringByReplacingOccurrencesOfString(NSString.stringWith("%@"), NSString.stringWith(APP_NAME));
 				ni.setTitle(title);
 			}
-		}
+
+			int /*long*/ quitIndex = sm.indexOfItemWithTarget(applicationDelegate, OS.sel_terminate_);
+			
+			if (quitIndex != -1) {
+				NSMenuItem quitItem = sm.itemAtIndex(quitIndex);
+				quitItem.setAction(OS.sel_quitRequested_);
+			}
+		}		
 	} else if (sel == OS.sel_terminate_) {
-		application.terminate(application);
+		// Do nothing here -- without a definition of sel_terminate we get a warning dumped to the console.
 	} else if (sel == OS.sel_orderFrontStandardAboutPanel_) {
 //		Event event = new Event ();
 //		sendEvent (SWT.ABORT, event);
@@ -3693,17 +3706,14 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 		application.hide(application);
 	} else if (sel == OS.sel_unhideAllApplications_) {
 		application.unhideAllApplications(application);
-	} else if (sel == OS.sel_applicationShouldTerminate_) {
+	} else if (sel == OS.sel_quitRequested_) {
 		if (!display.disposing) {
 			Event event = new Event ();
 			display.sendEvent (SWT.Close, event);
 			if (event.doit) {
-				return OS.NSTerminateNow;
+				display.dispose();
 			}
 		}
-		return OS.NSTerminateCancel;
-	} else if (sel == OS.sel_applicationWillTerminate_) {
-		display.dispose();
 	} 
  	return 0;
 }

@@ -32,6 +32,10 @@ public void cancelTracking() {
 	OS.objc_msgSend(this.id, OS.sel_cancelTracking);
 }
 
+public int /*long*/ indexOfItemWithTarget(id target, int /*long*/ actionSelector) {
+	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTarget_andAction_, target != null ? target.id : 0, actionSelector);
+}
+
 public NSMenu initWithTitle(NSString aTitle) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_, aTitle != null ? aTitle.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSMenu(result) : null);
