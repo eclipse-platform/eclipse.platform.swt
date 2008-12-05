@@ -1292,10 +1292,15 @@ Object convertToJava (int /*long*/ value) {
 		}
 		return arguments;
 	}
+
+	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
 }
 
 NSObject convertToJS (Object value) {
+	if (value == null) {
+		return WebUndefined.undefined ();
+	}
 	if (value instanceof String) {
 		return NSString.stringWith ((String)value);
 	}
@@ -1317,7 +1322,8 @@ NSObject convertToJS (Object value) {
 			return array;
 		}
 	}
-	return WebUndefined.undefined ();
+	SWT.error (SWT.ERROR_INVALID_RETURNVALUE);
+	return null;
 }
 
 NSObject callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
@@ -1326,21 +1332,36 @@ NSObject callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
 	int /*long*/ clazz = OS.objc_lookUpClass ("NSNumber"); //$NON-NLS-1$
 	if (object.isKindOfClass (clazz)) {
 		NSNumber number = new NSNumber (index);
-		Object temp = convertToJava (args);
-		if (temp instanceof Object[]) {
-			Object[] arguments = (Object[])temp;
-			Object key = new Integer (number.intValue ());
-			BrowserFunction function = (BrowserFunction)functions.get (key);
-			if (function != null) {
-				try {
-					returnValue = function.function (arguments);
-				} catch (Exception e) {
-					returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+		Object key = new Integer (number.intValue ());
+		BrowserFunction function = (BrowserFunction)functions.get (key);
+		if (function != null) {
+			try {
+				Object temp = convertToJava (args);
+				if (temp instanceof Object[]) {
+					Object[] arguments = (Object[])temp;
+					try {
+						returnValue = function.function (arguments);
+					} catch (Exception e) {
+						/* exception during function invocation */
+						returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+					}
 				}
+			} catch (IllegalArgumentException e) {
+				/* invalid argument value type */
+				if (function.isEvaluate) {
+					/* notify the evaluate function so that a java exception can be thrown */
+					function.function (new String[] {ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
+				}
+				returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
 			}
 		}
 	}
-	return convertToJS (returnValue);
+	try {
+		return convertToJS (returnValue);
+	} catch (SWTException e) {
+		/* invalid return value type */
+		return convertToJS (ERROR_ID + ':' + e.getLocalizedMessage ());
+	}
 }
 
 }
