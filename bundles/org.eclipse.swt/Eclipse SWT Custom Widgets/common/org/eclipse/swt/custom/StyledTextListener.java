@@ -88,6 +88,12 @@ public void handleEvent(Event e) {
 			((StyledTextEvent) e).end = wordBoundaryEvent.newOffset;
 			break;
 		}
+		case StyledText.CaretMoved: {
+			CaretEvent caretEvent = new CaretEvent((StyledTextEvent) e);
+			((CaretListener) eventListener).caretMoved(caretEvent);
+			((StyledTextEvent) e).end = caretEvent.caretOffset;
+			break;
+		}
 	}
 }
 }

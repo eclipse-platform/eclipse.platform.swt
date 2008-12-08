@@ -98,6 +98,7 @@ public class StyledText extends Canvas {
 	static final int PaintObject = 3008;
 	static final int WordNext = 3009;
 	static final int WordPrevious = 3010;
+	static final int CaretMoved = 3011;
 	
 	static final int PREVIOUS_OFFSET_TRAILING = 0;
 	static final int OFFSET_LEADING = 1;
@@ -1317,6 +1318,25 @@ public void addBidiSegmentListener(BidiSegmentListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	addListener(LineGetSegments, new StyledTextListener(listener));
+}
+/**
+ * Adds a caret listener. CaretEvent is sent when the caret offset changes.
+ * 
+ * @param listener the listener
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void addCaretListener(CaretListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	addListener(CaretMoved, new StyledTextListener(listener));
 }
 /**
  * Adds a line background listener. A LineGetBackground event is sent by the 
@@ -6768,6 +6788,26 @@ public void removeBidiSegmentListener(BidiSegmentListener listener) {
 	removeListener(LineGetSegments, listener);	
 }
 /**
+ * Removes the specified caret listener.
+ *
+ * @param listener the listener which should no longer be notified
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void removeCaretListener(CaretListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	removeListener(CaretMoved, listener);
+}
+/**
  * Removes the specified extended modify listener.
  *
  * @param extendedModifyListener the listener which should no longer be notified
@@ -7561,6 +7601,11 @@ public void setCaretOffset(int offset) {
 void setCaretOffset(int offset, int alignment) {
 	if (caretOffset != offset) {
 		caretOffset = offset;
+		if (isListening(CaretMoved)) {
+			StyledTextEvent event = new StyledTextEvent(content);
+			event.end = caretOffset;
+			notifyListeners(CaretMoved, event);
+		}
 	}
 	if (alignment != SWT.DEFAULT) {
 		caretAlignment = alignment;
