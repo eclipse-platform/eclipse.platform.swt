@@ -4219,17 +4219,17 @@ int getOffsetAtPoint(int x, int y, int lineIndex, int[] alignment) {
 	x += horizontalScrollOffset - leftMargin;
 	int[] trailing = new int[1];	
 	int offsetInLine = layout.getOffset(x, y, trailing);
-	if (alignment != null) {
-		alignment[0] = OFFSET_LEADING;
-		if (trailing[0] != 0) {
-			int lineInParagraph = layout.getLineIndex(offsetInLine + trailing[0]);
-			int lineStart = layout.getLineOffsets()[lineInParagraph];
-			if (offsetInLine + trailing[0] == lineStart) {
-				offsetInLine += trailing[0];
-				alignment[0] = PREVIOUS_OFFSET_TRAILING;
-			} else {
-				String line = content.getLine(lineIndex);			
-				int level;
+	if (alignment != null) alignment[0] = OFFSET_LEADING;
+	if (trailing[0] != 0) {
+		int lineInParagraph = layout.getLineIndex(offsetInLine + trailing[0]);
+		int lineStart = layout.getLineOffsets()[lineInParagraph];
+		if (offsetInLine + trailing[0] == lineStart) {
+			offsetInLine += trailing[0];
+			if (alignment != null) alignment[0] = PREVIOUS_OFFSET_TRAILING;
+		} else {
+			String line = content.getLine(lineIndex);
+			int level = 0;
+			if (alignment != null) {
 				int offset = offsetInLine;
 				while (offset > 0 && Character.isDigit(line.charAt(offset))) offset--;
 				if (offset == 0 && Character.isDigit(line.charAt(offset))) {
@@ -4237,7 +4237,9 @@ int getOffsetAtPoint(int x, int y, int lineIndex, int[] alignment) {
 				} else {
 					level = layout.getLevel(offset) & 0x1;
 				}
-				offsetInLine += trailing[0];
+			}
+			offsetInLine += trailing[0];
+			if (alignment != null) {
 				int trailingLevel = layout.getLevel(offsetInLine) & 0x1;
 				if ((level ^ trailingLevel) != 0) {
 					alignment[0] = PREVIOUS_OFFSET_TRAILING;
