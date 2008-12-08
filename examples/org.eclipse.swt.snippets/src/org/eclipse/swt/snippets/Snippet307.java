@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser example snippet: Call out from javascript to java.
+ * Browser example snippet: call Java from JavaScript.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
