@@ -2548,7 +2548,9 @@ void doLineDown(boolean select) {
 			setCaretOffset(content.getCharCount(), SWT.DEFAULT);
 		}
 	} else {
-		setCaretOffset(getOffsetAtPoint(columnX, y, caretLine), SWT.DEFAULT);
+		int[] alignment = new int[1];
+		int offset = getOffsetAtPoint(columnX, y, caretLine, alignment); 
+		setCaretOffset(offset, alignment[0]);
 	}
 	int oldColumnX = columnX;
 	int oldHScrollOffset = horizontalScrollOffset;
@@ -2636,7 +2638,9 @@ void doLineUp(boolean select) {
 			setCaretOffset(0, SWT.DEFAULT);
 		}
 	} else {
-		setCaretOffset(getOffsetAtPoint(columnX, y, caretLine), SWT.DEFAULT);
+		int[] alignment = new int[1];
+		int offset = getOffsetAtPoint(columnX, y, caretLine, alignment); 
+		setCaretOffset(offset, alignment[0]);
 	}
 	int oldColumnX = columnX;
 	int oldHScrollOffset = horizontalScrollOffset;
@@ -2729,8 +2733,9 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	if (line < 0 || (isSingleLine() && line > 0)) {
 		return;
 	}
-	int oldCaretAlignment = caretAlignment;
-	int newCaretOffset = getOffsetAtPoint(x, y);
+	int[] alignment = new int[1];
+	int newCaretOffset = getOffsetAtPoint(x, y, alignment);
+	int newCaretAlignemnt = alignment[0];
 	
 	if (doubleClickEnabled && clickCount > 1) {
 		newCaretOffset = doMouseWordSelect(x, newCaretOffset, line);
@@ -2744,14 +2749,14 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	if (0 <= y && y < clientAreaHeight && 
 		(0 <= x && x < clientAreaWidth || wordWrap ||	
 		newCaretLine != content.getLineAtOffset(caretOffset))) {
-		if (newCaretOffset != caretOffset || caretAlignment != oldCaretAlignment) {
-			setCaretOffset(newCaretOffset, SWT.DEFAULT);
+		if (newCaretOffset != caretOffset || newCaretAlignemnt != caretAlignment) {
+			setCaretOffset(newCaretOffset, newCaretAlignemnt);
 			if (select) doMouseSelection();
 			showCaret();
 		}
 	}
 	if (!select) {
-		setCaretOffset(newCaretOffset, SWT.DEFAULT);
+		setCaretOffset(newCaretOffset, newCaretAlignemnt);
 		clearSelection(true);
 	}
 }
@@ -2838,8 +2843,9 @@ void doPageDown(boolean select, int height) {
 			// ensure that scrollLines never gets negative and at least one 
 			// line is scrolled. fixes bug 5602.
 			scrollLines = Math.max(1, scrollLines);
-			int offset = getOffsetAtPoint(columnX, getLinePixel(caretLine + scrollLines));
-			setCaretOffset(offset, SWT.DEFAULT);
+			int[] alignment = new int[1];
+			int offset = getOffsetAtPoint(columnX, getLinePixel(caretLine + scrollLines), alignment);
+			setCaretOffset(offset, alignment[0]);
 			if (select) {
 				doSelection(ST.COLUMN_NEXT);
 			}
@@ -2912,8 +2918,9 @@ void doPageDown(boolean select, int height) {
 			caretHeight -= lineHeight;
 			lineHeight = renderer.getLineHeight(++lineIndex);
 		}
-		int offset = getOffsetAtPoint(columnX, caretHeight, lineIndex);
-		setCaretOffset(offset, SWT.DEFAULT);
+		int[] alignment = new int[1];
+		int offset = getOffsetAtPoint(columnX, caretHeight, lineIndex, alignment);
+		setCaretOffset(offset, alignment[0]);
 		if (select) doSelection(ST.COLUMN_NEXT);
 		height = getAvailableHeightBellow(height);
 		scrollVertical(height, true);
@@ -3013,8 +3020,9 @@ void doPageUp(boolean select, int height) {
 			int lines = (height == -1 ? clientAreaHeight : height) / lineHeight;
 			int scrollLines = Math.max(1, Math.min(caretLine, lines));
 			caretLine -= scrollLines;
-			int offset = getOffsetAtPoint(columnX, getLinePixel(caretLine));
-			setCaretOffset(offset, SWT.DEFAULT);
+			int[] alignment = new int[1];
+			int offset = getOffsetAtPoint(columnX, getLinePixel(caretLine), alignment);
+			setCaretOffset(offset, alignment[0]);
 			if (select) {
 				doSelection(ST.COLUMN_PREVIOUS);
 			}
@@ -3088,8 +3096,9 @@ void doPageUp(boolean select, int height) {
 			lineHeight = renderer.getLineHeight(--lineIndex);
 		}
 		lineHeight = renderer.getLineHeight(lineIndex);
-		int offset = getOffsetAtPoint(columnX, lineHeight - caretHeight, lineIndex);
-		setCaretOffset(offset, SWT.DEFAULT);
+		int[] alignment = new int[1];
+		int offset = getOffsetAtPoint(columnX, lineHeight - caretHeight, lineIndex, alignment);
+		setCaretOffset(offset, alignment[0]);
 		if (select) doSelection(ST.COLUMN_PREVIOUS);
 		height = getAvailableHeightAbove(height);
 		scrollVertical(-height, true);
@@ -3464,8 +3473,8 @@ String getBlockSelectionText(String delimiter) {
 	int right = rect.width;
 	StringBuffer buffer = new StringBuffer();
 	for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
-		int start = getOffsetAtPoint(left, 0, lineIndex);
-		int end = getOffsetAtPoint(right, 0, lineIndex);
+		int start = getOffsetAtPoint(left, 0, lineIndex, null);
+		int end = getOffsetAtPoint(right, 0, lineIndex, null);
 		String text = content.getTextRange(start, end - start);
 		buffer.append(text);
 		if (lineIndex < lastLine) buffer.append(delimiter); 
@@ -4201,47 +4210,41 @@ public int getOffsetAtLocation(Point point) {
 	}
 	return offset + trailing[0];
 }
-int getOffsetAtPoint(int x, int y) {
+int getOffsetAtPoint(int x, int y, int[] alignment) {
 	int lineIndex = getLineIndex(y);
 	y -= getLinePixel(lineIndex);
-	return getOffsetAtPoint(x, y, lineIndex);
+	return getOffsetAtPoint(x, y, lineIndex, alignment);
 }
-/**
- * Returns the offset at the specified x location in the specified line.
- *
- * @param x	x location of the mouse location
- * @param line	line the mouse location is in
- * @return the offset at the specified x location in the specified line,
- * 	relative to the beginning of the document
- */
-int getOffsetAtPoint(int x, int y, int lineIndex) {
+int getOffsetAtPoint(int x, int y, int lineIndex, int[] alignment) {
 	TextLayout layout = renderer.getTextLayout(lineIndex);
 	x += horizontalScrollOffset - leftMargin;
 	int[] trailing = new int[1];	
 	int offsetInLine = layout.getOffset(x, y, trailing);
-	caretAlignment = OFFSET_LEADING;
-	if (trailing[0] != 0) {
-		int lineInParagraph = layout.getLineIndex(offsetInLine + trailing[0]);
-		int lineStart = layout.getLineOffsets()[lineInParagraph];
-		if (offsetInLine + trailing[0] == lineStart) {
-			offsetInLine += trailing[0];
-			caretAlignment = PREVIOUS_OFFSET_TRAILING;
-		} else {
-			String line = content.getLine(lineIndex);			
-			int level;
-			int offset = offsetInLine;
-			while (offset > 0 && Character.isDigit(line.charAt(offset))) offset--;
-			if (offset == 0 && Character.isDigit(line.charAt(offset))) {
-				level = isMirrored() ? 1 : 0;
+	if (alignment != null) {
+		alignment[0] = OFFSET_LEADING;
+		if (trailing[0] != 0) {
+			int lineInParagraph = layout.getLineIndex(offsetInLine + trailing[0]);
+			int lineStart = layout.getLineOffsets()[lineInParagraph];
+			if (offsetInLine + trailing[0] == lineStart) {
+				offsetInLine += trailing[0];
+				alignment[0] = PREVIOUS_OFFSET_TRAILING;
 			} else {
-				level = layout.getLevel(offset) & 0x1;
-			}
-			offsetInLine += trailing[0];
-			int trailingLevel = layout.getLevel(offsetInLine) & 0x1;
-			if ((level ^ trailingLevel) != 0) {
-				caretAlignment = PREVIOUS_OFFSET_TRAILING;
-			} else {
-				caretAlignment = OFFSET_LEADING;
+				String line = content.getLine(lineIndex);			
+				int level;
+				int offset = offsetInLine;
+				while (offset > 0 && Character.isDigit(line.charAt(offset))) offset--;
+				if (offset == 0 && Character.isDigit(line.charAt(offset))) {
+					level = isMirrored() ? 1 : 0;
+				} else {
+					level = layout.getLevel(offset) & 0x1;
+				}
+				offsetInLine += trailing[0];
+				int trailingLevel = layout.getLevel(offsetInLine) & 0x1;
+				if ((level ^ trailingLevel) != 0) {
+					alignment[0] = PREVIOUS_OFFSET_TRAILING;
+				} else {
+					alignment[0] = OFFSET_LEADING;
+				}
 			}
 		}
 	}
@@ -4483,9 +4486,9 @@ public int[] getSelectionRanges() {
 		int[] ranges = new int[(lastLine - firstLine + 1) * 2];
 		int index = 0;
 		for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
-			int start = getOffsetAtPoint(left, 0, lineIndex);
+			int start = getOffsetAtPoint(left, 0, lineIndex, null);
 			ranges[index++] = start;
-			ranges[index++] = getOffsetAtPoint(right, 0, lineIndex) - start;
+			ranges[index++] = getOffsetAtPoint(right, 0, lineIndex, null) - start;
 		}
 		return ranges;
 	}
@@ -5269,8 +5272,8 @@ int insertBlockSelectionText(String text) {
 	}
 	int index = 0, end = caretOffset, lineIndex = firstLine;
 	while (lineIndex <= lastLine) {
-		start = getOffsetAtPoint(left, 0, lineIndex);
-		end = getOffsetAtPoint(right, 0, lineIndex);
+		start = getOffsetAtPoint(left, 0, lineIndex, null);
+		end = getOffsetAtPoint(right, 0, lineIndex, null);
 		Event event = new Event();
 		event.text = index < lineCount ? lines[index++] : "";
 		event.start = start;
@@ -5283,7 +5286,7 @@ int insertBlockSelectionText(String text) {
 		int maxLines = content.getLineCount();
 		String line;
 		if (lineIndex < maxLines) {
-			start = end = getOffsetAtPoint(left, 0, lineIndex);
+			start = end = getOffsetAtPoint(left, 0, lineIndex, null);
 			line = lines[index]; 
 		} else {
 			start = end = content.getCharCount();
@@ -5737,7 +5740,7 @@ void handleMouseDown(Event event) {
 	} else {
 		if (doubleClickEnabled) {
 			boolean wordSelect = (clickCount & 1) == 0;
-			int offset = getOffsetAtPoint(event.x, event.y);
+			int offset = getOffsetAtPoint(event.x, event.y, null);
 			int lineIndex = content.getLineAtOffset(offset);
 			int lineOffset = content.getOffsetAtLine(lineIndex);
 			if (wordSelect) {
@@ -7385,8 +7388,9 @@ void setBlockSelectionLocation (int x, int y, boolean sendEvent) {
 	int verticalScrollOffset = getVerticalScrollOffset();
 	blockXLocation = x + horizontalScrollOffset;
 	blockYLocation = y + verticalScrollOffset;
-	int offset = getOffsetAtPoint(x, y);
-	setCaretOffset(offset, SWT.DEFAULT);
+	int[] alignment = new int[1];
+	int offset = getOffsetAtPoint(x, y, alignment);
+	setCaretOffset(offset, alignment[0]);
 	if (blockXAnchor == -1) {
 		blockXAnchor = blockXLocation;
 		blockYAnchor = blockYLocation;
@@ -7398,7 +7402,7 @@ void setBlockSelectionLocation (int anchorX, int anchorY, int x, int y, boolean 
 	int verticalScrollOffset = getVerticalScrollOffset();
 	blockXAnchor = anchorX + horizontalScrollOffset;
 	blockYAnchor = anchorY + verticalScrollOffset;
-	selectionAnchor = getOffsetAtPoint(anchorX, anchorY);
+	selectionAnchor = getOffsetAtPoint(anchorX, anchorY, null);
 	setBlockSelectionLocation(x, y, sendEvent);
 }
 void setBlockSelectionOffset (int offset, boolean sendEvent) {
