@@ -59,6 +59,7 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	Color foreground, background;
 	Image backgroundImage;
+	NSColor bgImage;
 	Font font;
 	Cursor cursor;
 	Region region;
@@ -903,10 +904,7 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 }
 
 void drawRect(int id, int sel, NSRect rect) {
-	if (backgroundImage != null && !backgroundImage.isDisposed()) {
-		NSColor color = NSColor.colorWithPatternImage(backgroundImage.handle);
-		color.set();
-	}
+	if (bgImage != null) bgImage.set();
 	super.drawRect(id, sel, rect);
 }
 
@@ -2072,6 +2070,8 @@ void release (boolean destroy) {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	if (bgImage != null) bgImage.release();
+	bgImage = null;
 	if (view != null) view.release();
 	view = null;
 	parent = null;
@@ -2600,6 +2600,14 @@ public void setBackgroundImage (Image image) {
 	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (image == backgroundImage) return;
 	backgroundImage = image;
+	if (bgImage != null) {
+		bgImage.release();
+		bgImage = null;
+	}
+	if (image != null) {
+		bgImage = NSColor.colorWithPatternImage(backgroundImage.handle);
+		bgImage.retain();
+	}
 	redrawWidget(view, false);
 }
 
