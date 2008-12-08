@@ -1282,6 +1282,9 @@ Object convertToJava (int /*long*/ value) {
 	if (object.isKindOfClass (clazz)) {
 		WebScriptObject script = new WebScriptObject (value);
 		id id = script.valueForKey (NSString.stringWith ("length")); //$NON-NLS-1$
+		if (id == null) { /* not a JS array */
+			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		}
 		int length = new NSNumber (id).intValue ();
 		Object[] arguments = new Object[length];
 		for (int i = 0; i < length; i++) {
