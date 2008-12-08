@@ -1029,8 +1029,6 @@ public class TextEditor {
 		if (event.keyCode == SWT.INSERT) {
 			insert = !insert;
 		}
-		updateStatusBar();
-		updateToolBar();
 	}
 	
 	void handleModify (ModifyEvent event) {
@@ -1089,11 +1087,6 @@ public class TextEditor {
 		}
 		disposeRanges(selectedRanges);
 	}
-
-	void handleMouseDown (Event event) {
-		updateStatusBar();
-		updateToolBar();
-	}
 	
 	void handleMouseUp (Event event) {
 		if (link != null) {
@@ -1110,8 +1103,6 @@ public class TextEditor {
 				}
 			}
 		}
-		updateStatusBar();
-		updateToolBar();
 	}
 	
 	void handlePaintObject(PaintObjectEvent event) {
@@ -1190,9 +1181,10 @@ public class TextEditor {
 	}
 
 	void installListeners() {
-		styledText.addListener(SWT.MouseDown, new Listener() {
-			public void handleEvent(Event event) {
-				handleMouseDown(event);
+		styledText.addCaretListener(new CaretListener() {
+			public void caretMoved(CaretEvent event) {
+				updateStatusBar();
+				updateToolBar();
 			}
 		});
 		styledText.addListener(SWT.MouseUp, new Listener() {
