@@ -52,7 +52,7 @@ class StyledTextRenderer {
 	StyleRange[] styles;
 	StyleRange[] stylesSet;
 	int stylesSetCount = 0;
-	boolean hasLinks;
+	boolean hasLinks, fixedPitch;
 	final static int BULLET_MARGIN = 8;
 	
 	final static boolean COMPACT_STYLES = true;
@@ -1072,6 +1072,7 @@ void setFont(Font font, int tabs) {
 	if (styledText != null) {
 		GC gc = new GC(styledText);
 		averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
+		fixedPitch = gc.stringExtent("l").x == gc.stringExtent("W").x; //$NON-NLS-1$ //$NON-NLS-2$
 		gc.dispose();
 	}
 }
