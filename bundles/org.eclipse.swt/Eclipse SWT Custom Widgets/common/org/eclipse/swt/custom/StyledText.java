@@ -3455,13 +3455,12 @@ Rectangle getBlockSelectonPosition() {
 		left = blockXLocation;
 		right = blockXAnchor;
 	}
-	return new Rectangle (left, firstLine, right, lastLine);
+	return new Rectangle (left - horizontalScrollOffset, firstLine, right - horizontalScrollOffset, lastLine);
 }
 Rectangle getBlockSelectionRectangle() {
 	Rectangle rect = getBlockSelectonPosition();
-	rect.x -= horizontalScrollOffset;
 	rect.y = getLinePixel(rect.y);
-	rect.width = rect.width - horizontalScrollOffset - rect.x;
+	rect.width = rect.width - rect.x;
 	rect.height =  getLinePixel(rect.height + 1) - rect.y - 1;
 	return rect;
 }
