@@ -1343,16 +1343,16 @@ NSObject callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
 						returnValue = function.function (arguments);
 					} catch (Exception e) {
 						/* exception during function invocation */
-						returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+						returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 					}
 				}
 			} catch (IllegalArgumentException e) {
 				/* invalid argument value type */
 				if (function.isEvaluate) {
 					/* notify the evaluate function so that a java exception can be thrown */
-					function.function (new String[] {ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
+					function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ())});
 				}
-				returnValue = ERROR_ID + ':' + e.getLocalizedMessage ();
+				returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 			}
 		}
 	}
@@ -1360,7 +1360,7 @@ NSObject callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
 		return convertToJS (returnValue);
 	} catch (SWTException e) {
 		/* invalid return value type */
-		return convertToJS (ERROR_ID + ':' + e.getLocalizedMessage ());
+		return convertToJS (WebBrowser.CreateErrorString (e.getLocalizedMessage ()));
 	}
 }
 
