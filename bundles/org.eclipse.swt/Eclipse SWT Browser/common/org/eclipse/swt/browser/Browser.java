@@ -445,7 +445,7 @@ public boolean execute (String script) {
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_FAILED_EVALUATE when the script evaluation causes a javascript error to be thrown</li>
- *    <li>ERROR_INVALID_RETURNVALUE when the script returns a value of unsupported type</li>
+ *    <li>ERROR_INVALID_RETURN_VALUE when the script returns a value of unsupported type</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>

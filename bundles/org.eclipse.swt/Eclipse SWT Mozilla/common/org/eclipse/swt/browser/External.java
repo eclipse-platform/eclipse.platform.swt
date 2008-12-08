@@ -517,7 +517,7 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 	}
 
 	variant.Release ();
-	SWT.error (SWT.ERROR_INVALID_RETURNVALUE);
+	SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
 	return null;
 }
 
@@ -546,7 +546,7 @@ int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
 			/* invalid argument value type */
 			if (function.isEvaluate) {
 				/* notify the evaluate function so that a java exception can be thrown */
-				function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ())});
+				function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
 			}
 			returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 		}

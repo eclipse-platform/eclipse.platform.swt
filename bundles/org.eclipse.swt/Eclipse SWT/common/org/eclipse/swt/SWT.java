@@ -3120,7 +3120,7 @@ public class SWT {
 	 * 
 	 * @since 3.5
 	 */
-	public static final int ERROR_INVALID_RETURNVALUE = 51;
+	public static final int ERROR_INVALID_RETURN_VALUE = 51;
 
 	/**
 	 * Constant indicating that an image or operation is of type bitmap  (value is 0).
@@ -3629,7 +3629,7 @@ static String findErrorText (int code) {
 		case ERROR_NO_MORE_CALLBACKS:      return "No more callbacks"; //$NON-NLS-1$
 		case ERROR_NULL_ARGUMENT:          return "Argument cannot be null"; //$NON-NLS-1$
 		case ERROR_INVALID_ARGUMENT:       return "Argument not valid"; //$NON-NLS-1$
-		case ERROR_INVALID_RETURNVALUE:    return "Return value not valid"; //$NON-NLS-1$
+		case ERROR_INVALID_RETURN_VALUE:   return "Return value not valid"; //$NON-NLS-1$
 		case ERROR_INVALID_RANGE:          return "Index out of bounds"; //$NON-NLS-1$
 		case ERROR_CANNOT_BE_ZERO:         return "Argument cannot be zero"; //$NON-NLS-1$
 		case ERROR_CANNOT_GET_ITEM:        return "Cannot get item"; //$NON-NLS-1$
@@ -3822,7 +3822,7 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_FAILED_EVALUATE:
 		case ERROR_CANNOT_INVERT_MATRIX:
 		case ERROR_NO_GRAPHICS_LIBRARY:
-		case ERROR_INVALID_RETURNVALUE:
+		case ERROR_INVALID_RETURN_VALUE:
 		case ERROR_IO: {
 			SWTException exception = new SWTException (code, message);
 			exception.throwable = throwable;

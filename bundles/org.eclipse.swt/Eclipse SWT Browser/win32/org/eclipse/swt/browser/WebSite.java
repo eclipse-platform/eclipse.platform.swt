@@ -653,7 +653,7 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 			/* invalid argument value type */
 			if (function.isEvaluate) {
 				/* notify the function so that a java exception can be thrown */
-				function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ())});
+				function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
 			}
 			returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 		}
@@ -829,7 +829,7 @@ Variant convertToJS (Object value) {
 			return array;
 		}
 	}
-	SWT.error (SWT.ERROR_INVALID_RETURNVALUE);
+	SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
 	return null;
 }
 
