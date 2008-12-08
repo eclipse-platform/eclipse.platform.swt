@@ -178,7 +178,11 @@ public class EvaluateFunction extends BrowserFunction {
 			String string = (String)arguments[0];
 			if (string.startsWith (ERROR_ID)) {
 				String errorString = ExtractError (string);
-				evaluateResult = new SWTException (SWT.ERROR_FAILED_EVALUATE, errorString);
+				if (errorString.length () > 0) {
+					evaluateResult = new SWTException (SWT.ERROR_FAILED_EVALUATE, errorString);
+				} else {
+					evaluateResult = new SWTException (SWT.ERROR_FAILED_EVALUATE);
+				}
 				return null;
 			}
 		}
@@ -315,11 +319,15 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append ("() {\n"); // $NON-NLS-1$
 	buffer.append (script);
 	buffer.append ("\n};"); // $NON-NLS-1$
-	if (!execute (buffer.toString ())) {
-		deregisterFunction (function);
-		return null;
-	}
-	buffer = new StringBuffer ("try {var result = "); // $NON-NLS-1$
+	execute (buffer.toString ());
+
+	buffer = new StringBuffer ("if (window."); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append (" == undefined) {window.external.callJava("); // $NON-NLS-1$
+	buffer.append (index);
+	buffer.append (", ['"); // $NON-NLS-1$
+	buffer.append (ERROR_ID);
+	buffer.append ("']);} else {try {var result = "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(); window.external.callJava("); // $NON-NLS-1$
 	buffer.append (index);
@@ -327,7 +335,7 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append (index);
 	buffer.append (", ['"); // $NON-NLS-1$
 	buffer.append (ERROR_ID);
-	buffer.append ("' + e.message]);}"); // $NON-NLS-1$
+	buffer.append ("' + e.message]);}}"); // $NON-NLS-1$
 	execute (buffer.toString ());
 	execute (getDeleteFunctionString (functionName));
 	deregisterFunction (function);
