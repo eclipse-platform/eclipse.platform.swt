@@ -177,7 +177,7 @@ public class EvaluateFunction extends BrowserFunction {
 		if (arguments[0] instanceof String) {
 			String string = (String)arguments[0];
 			if (string.startsWith (ERROR_ID)) {
-				String errorString = string.substring (ERROR_ID.length () + 1);
+				String errorString = ExtractError (string);
 				evaluateResult = new SWTException (SWT.ERROR_FAILED_EVALUATE, errorString);
 				return null;
 			}
@@ -245,6 +245,14 @@ public static void clearSessions () {
 
 public abstract void create (Composite parent, int style);
 
+static String CreateErrorString (String error) {
+	return ERROR_ID + error;
+}
+
+static String ExtractError (String error) {
+	return error.substring (ERROR_ID.length ());
+}
+
 public void createFunction (BrowserFunction function) {
 	/* 
 	 * If an existing function with the same name is found then
@@ -273,7 +281,7 @@ public void createFunction (BrowserFunction function) {
 	buffer.append (",Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
 	buffer.append (ERROR_ID);
 	buffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
-	buffer.append (ERROR_ID.length () + 1);
+	buffer.append (ERROR_ID.length ());
 	buffer.append (")); throw error;} return result;}"); //$NON-NLS-1$
 	function.functionString = buffer.toString ();
 	if (!execute (function.functionString)) {
@@ -317,9 +325,9 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append (index);
 	buffer.append (", [result]);} catch (e) {window.external.callJava("); // $NON-NLS-1$
 	buffer.append (index);
-	buffer.append (", ['"); // $NON-NLS-1$
+	buffer.append (", ["); // $NON-NLS-1$
 	buffer.append (ERROR_ID);
-	buffer.append (":' + e.message]);}"); // $NON-NLS-1$
+	buffer.append ("e.message]);}"); // $NON-NLS-1$
 	execute (buffer.toString ());
 	execute (getDeleteFunctionString (functionName));
 	deregisterFunction (function);

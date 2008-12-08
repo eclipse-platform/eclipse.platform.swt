@@ -539,16 +539,16 @@ int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
 					returnValue = function.function (arguments);
 				} catch (Exception e) {
 					/* exception during function invocation */
-					returnValue = Mozilla.ERROR_ID + ':' + e.getLocalizedMessage ();
+					returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 				}
 			}
 		} catch (IllegalArgumentException e) {
 			/* invalid argument value type */
 			if (function.isEvaluate) {
 				/* notify the evaluate function so that a java exception can be thrown */
-				function.function (new String[] {Mozilla.ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
+				function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ())});
 			}
-			returnValue = Mozilla.ERROR_ID + ':' + e.getLocalizedMessage ();
+			returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 		}
 	}
 
@@ -563,7 +563,7 @@ int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
 		variant = convertToJS (returnValue, componentManager);
 	} catch (SWTException e) {
 		/* invalid return value type */
-		variant = convertToJS (Mozilla.ERROR_ID + ':' + e.getLocalizedMessage (), componentManager);
+		variant = convertToJS (WebBrowser.CreateErrorString (e.getLocalizedMessage ()), componentManager);
 	}
 	componentManager.Release ();
 	C.memmove (returnPtr, new int /*long*/[] {variant.getAddress ()}, C.PTR_SIZEOF);

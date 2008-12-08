@@ -646,16 +646,16 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 					returnValue = function.function (args);
 				} catch (Exception e) {
 					/* exception during function invocation */
-					returnValue = IE.ERROR_ID + ':' + e.getLocalizedMessage ();
+					returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 				}
 			}
 		} catch (IllegalArgumentException e) {
 			/* invalid argument value type */
 			if (function.isEvaluate) {
 				/* notify the function so that a java exception can be thrown */
-				function.function (new String[] {IE.ERROR_ID + ':' + new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ()});
+				function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURNVALUE).getLocalizedMessage ())});
 			}
-			returnValue = IE.ERROR_ID + ':' + e.getLocalizedMessage ();
+			returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 		}
 	}
 	variant.dispose ();
@@ -668,7 +668,7 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 				variant = convertToJS (returnValue);
 			} catch (SWTException e) {
 				/* invalid return value type */
-				variant = convertToJS (IE.ERROR_ID + ':' + e.getLocalizedMessage ());
+				variant = convertToJS (WebBrowser.CreateErrorString (e.getLocalizedMessage ()));
 			}
 			Variant.win32_copy (pVarResult, variant);
 			variant.dispose ();
