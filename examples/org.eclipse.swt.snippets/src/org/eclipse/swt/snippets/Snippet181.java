@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Allow user to reorder columns and reorder columns programmatically.
+ * Allow user to reorder columns by dragging or programmatically.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
