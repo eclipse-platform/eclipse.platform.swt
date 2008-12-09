@@ -386,7 +386,7 @@ public void create (Composite parent, int style) {
 			java.io.InputStream is = Library.class.getResourceAsStream ("/external.xpt"); //$NON-NLS-1$
 			if (is != null) {
 				if (!componentsDir.exists ()) {
-					componentsDir.mkdir ();
+					componentsDir.mkdirs ();
 				}
 				int read;
 				byte [] buffer = new byte [4096];
