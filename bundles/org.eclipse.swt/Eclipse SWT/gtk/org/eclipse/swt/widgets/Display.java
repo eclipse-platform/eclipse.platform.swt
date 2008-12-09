@@ -2861,8 +2861,8 @@ int /*long*/ mouseHoverProc (int /*long*/ handle) {
 	return widget.hoverProc (handle);
 }
 
-int /*long*/ pangoLayoutNewProc (int /*long*/ type, int n_construct_properties, int /*long*/ construct_properties) {
-	int /*long*/ layout = OS.Call (pangoLayoutNewDefaultProc, type, n_construct_properties, construct_properties);
+int /*long*/ pangoLayoutNewProc (int /*long*/ type, int /*long*/ n_construct_properties, int /*long*/ construct_properties) {
+	int /*long*/ layout = OS.Call (pangoLayoutNewDefaultProc, type, (int)/*64*/n_construct_properties, construct_properties);
 	OS.pango_layout_set_auto_dir (layout, false);
 	return layout;
 }
