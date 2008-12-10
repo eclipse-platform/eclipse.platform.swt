@@ -2455,9 +2455,9 @@
     <method selector="accessoryView">
       <retval></retval>
     </method>
-    <method selector="addButtonWithTitle:">
-      <arg name="title"></arg>
-      <retval></retval>
+    <method selector="addButtonWithTitle:" swt_gen="true">
+      <arg name="title" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="alertStyle">
       <retval></retval>
@@ -2466,13 +2466,13 @@
       <arg name="error"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="alertWithMessageText:defaultButton:alternateButton:otherButton:informativeTextWithFormat:" swt_gen="true">
-      <arg name="message" swt_gen="true"></arg>
-      <arg name="defaultButton" swt_gen="true"></arg>
-      <arg name="alternateButton" swt_gen="true"></arg>
-      <arg name="otherButton" swt_gen="true"></arg>
-      <arg name="informativeTextWithFormat" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method class_method="true" selector="alertWithMessageText:defaultButton:alternateButton:otherButton:informativeTextWithFormat:">
+      <arg name="message"></arg>
+      <arg name="defaultButton"></arg>
+      <arg name="alternateButton"></arg>
+      <arg name="otherButton"></arg>
+      <arg name="informativeTextWithFormat"></arg>
+      <retval></retval>
     </method>
     <method selector="beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:">
       <arg name="window"></arg>
@@ -2529,9 +2529,9 @@
       <arg name="informativeText"></arg>
       <retval></retval>
     </method>
-    <method selector="setMessageText:">
-      <arg name="messageText"></arg>
-      <retval></retval>
+    <method selector="setMessageText:" swt_gen="true">
+      <arg name="messageText" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setShowsHelp:">
       <arg name="showsHelp"></arg>

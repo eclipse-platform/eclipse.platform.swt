@@ -120,55 +120,74 @@ public String getMessage () {
  * </ul>
  */
 public int open () {
+	NSAlert alert = (NSAlert) new NSAlert().alloc().init();
 	int alertType = OS.NSInformationalAlertStyle;
 	if ((style & SWT.ICON_ERROR) != 0) alertType = OS.NSCriticalAlertStyle;
 	if ((style & SWT.ICON_INFORMATION) != 0) alertType = OS.NSInformationalAlertStyle;
 	if ((style & SWT.ICON_QUESTION) != 0) alertType = OS.NSInformationalAlertStyle;
 	if ((style & SWT.ICON_WARNING) != 0) alertType = OS.NSWarningAlertStyle;
 	if ((style & SWT.ICON_WORKING) != 0) alertType = OS.NSInformationalAlertStyle;
-	NSString defaultButton = null, alternateButton = null, otherButton = null;
+	alert.setAlertStyle(alertType);
+	
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 	int bits = style & mask;
+	NSString title;
 	switch (bits) {
 		case SWT.OK:
 			break;
 		case SWT.CANCEL:
-			defaultButton = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.OK | SWT.CANCEL:
-			alternateButton = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = NSString.stringWith(SWT.getMessage("SWT_OK"));
+			alert.addButtonWithTitle(title);
+			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.YES:
-			defaultButton = NSString.stringWith(SWT.getMessage("SWT_Yes"));
+			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.NO:
-			defaultButton = NSString.stringWith(SWT.getMessage("SWT_No"));
+			title = NSString.stringWith(SWT.getMessage("SWT_No"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.YES | SWT.NO:
-			defaultButton = NSString.stringWith(SWT.getMessage("SWT_Yes"));
-			alternateButton = NSString.stringWith(SWT.getMessage("SWT_No"));
+			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
+			alert.addButtonWithTitle(title);
+			title = NSString.stringWith(SWT.getMessage("SWT_No"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.YES | SWT.NO | SWT.CANCEL:				
-			defaultButton = NSString.stringWith(SWT.getMessage("SWT_Yes"));
-			alternateButton = NSString.stringWith(SWT.getMessage("SWT_No"));
-			otherButton = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
+			alert.addButtonWithTitle(title);
+			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			alert.addButtonWithTitle(title);
+			title = NSString.stringWith(SWT.getMessage("SWT_No"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.RETRY | SWT.CANCEL:
-			defaultButton = NSString.stringWith(SWT.getMessage("SWT_Retry"));
-			alternateButton = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = NSString.stringWith(SWT.getMessage("SWT_Retry"));
+			alert.addButtonWithTitle(title);
+			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.ABORT | SWT.RETRY | SWT.IGNORE:
-			defaultButton = NSString.stringWith(SWT.getMessage("SWT_Abort"));
-			alternateButton = NSString.stringWith(SWT.getMessage("SWT_Retry"));
-			otherButton = NSString.stringWith(SWT.getMessage("SWT_Ignore"));
+			title = NSString.stringWith(SWT.getMessage("SWT_Abort"));
+			alert.addButtonWithTitle(title);
+			title = NSString.stringWith(SWT.getMessage("SWT_Ignore"));
+			alert.addButtonWithTitle(title);
+			title = NSString.stringWith(SWT.getMessage("SWT_Retry"));
+			alert.addButtonWithTitle(title);
 			break;
 	}
-	NSString title = NSString.stringWith(this.title != null ? this.title : "");
-	NSString message = NSString.stringWith(this.message != null ? this.message : "");
-	NSAlert alert = NSAlert.alertWithMessageText(NSString.stringWith(""), defaultButton, alternateButton, otherButton, message);
+	title = NSString.stringWith(this.title != null ? this.title : "");
 	new NSWindow(alert.window().id).setTitle(title);
-	alert.setAlertStyle(alertType);
+	NSString message = NSString.stringWith(this.message != null ? this.message : "");
+	alert.setMessageText(message);
 	int response = (int)/*64*/alert.runModal();
+	alert.release();
 	switch (bits) {
 		case SWT.OK:
 			switch (response) {

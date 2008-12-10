@@ -24,9 +24,9 @@ public NSAlert(id id) {
 	super(id);
 }
 
-public static NSAlert alertWithMessageText(NSString message, NSString defaultButton, NSString alternateButton, NSString otherButton, NSString informativeTextWithFormat) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSAlert, OS.sel_alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat_, message != null ? message.id : 0, defaultButton != null ? defaultButton.id : 0, alternateButton != null ? alternateButton.id : 0, otherButton != null ? otherButton.id : 0, informativeTextWithFormat != null ? informativeTextWithFormat.id : 0);
-	return result != 0 ? new NSAlert(result) : null;
+public NSButton addButtonWithTitle(NSString title) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_addButtonWithTitle_, title != null ? title.id : 0);
+	return result != 0 ? new NSButton(result) : null;
 }
 
 public int /*long*/ runModal() {
@@ -35,6 +35,10 @@ public int /*long*/ runModal() {
 
 public void setAlertStyle(int /*long*/ style) {
 	OS.objc_msgSend(this.id, OS.sel_setAlertStyle_, style);
+}
+
+public void setMessageText(NSString messageText) {
+	OS.objc_msgSend(this.id, OS.sel_setMessageText_, messageText != null ? messageText.id : 0);
 }
 
 public NSWindow window() {

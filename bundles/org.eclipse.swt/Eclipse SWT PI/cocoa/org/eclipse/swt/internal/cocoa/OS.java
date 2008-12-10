@@ -452,6 +452,7 @@ public static final int /*long*/ sel_accessibilitySetValue_forAttribute_ = sel_r
 public static final int /*long*/ sel_action = sel_registerName("action");
 public static final int /*long*/ sel_activateIgnoringOtherApps_ = sel_registerName("activateIgnoringOtherApps:");
 public static final int /*long*/ sel_addAttribute_value_range_ = sel_registerName("addAttribute:value:range:");
+public static final int /*long*/ sel_addButtonWithTitle_ = sel_registerName("addButtonWithTitle:");
 public static final int /*long*/ sel_addChildWindow_ordered_ = sel_registerName("addChildWindow:ordered:");
 public static final int /*long*/ sel_addClip = sel_registerName("addClip");
 public static final int /*long*/ sel_addEventListener_listener_useCapture_ = sel_registerName("addEventListener:listener:useCapture:");
@@ -471,7 +472,6 @@ public static final int /*long*/ sel_addTableColumn_ = sel_registerName("addTabl
 public static final int /*long*/ sel_addTemporaryAttribute_value_forCharacterRange_ = sel_registerName("addTemporaryAttribute:value:forCharacterRange:");
 public static final int /*long*/ sel_addTextContainer_ = sel_registerName("addTextContainer:");
 public static final int /*long*/ sel_addTypes_owner_ = sel_registerName("addTypes:owner:");
-public static final int /*long*/ sel_alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat_ = sel_registerName("alertWithMessageText:defaultButton:alternateButton:otherButton:informativeTextWithFormat:");
 public static final int /*long*/ sel_alignment = sel_registerName("alignment");
 public static final int /*long*/ sel_allKeys = sel_registerName("allKeys");
 public static final int /*long*/ sel_alloc = sel_registerName("alloc");
@@ -1202,6 +1202,7 @@ public static final int /*long*/ sel_setMaximum_ = sel_registerName("setMaximum:
 public static final int /*long*/ sel_setMaximumFractionDigits_ = sel_registerName("setMaximumFractionDigits:");
 public static final int /*long*/ sel_setMaximumIntegerDigits_ = sel_registerName("setMaximumIntegerDigits:");
 public static final int /*long*/ sel_setMenu_ = sel_registerName("setMenu:");
+public static final int /*long*/ sel_setMessageText_ = sel_registerName("setMessageText:");
 public static final int /*long*/ sel_setMinSize_ = sel_registerName("setMinSize:");
 public static final int /*long*/ sel_setMinValue_ = sel_registerName("setMinValue:");
 public static final int /*long*/ sel_setMinWidth_ = sel_registerName("setMinWidth:");
@@ -4025,8 +4026,6 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
-/** @method flags=cast */
-public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, boolean arg5, boolean arg6, int /*long*/ arg7, int /*long*/ arg8, int /*long*/ arg9);
 /** @method flags=cast */

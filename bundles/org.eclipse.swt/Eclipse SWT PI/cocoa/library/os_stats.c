@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 372;
-int OS_nativeFunctionCallCount[372];
+int OS_nativeFunctionCount = 371;
+int OS_nativeFunctionCallCount[371];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -392,11 +392,6 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIIIII",
 #else
 	"objc_1msgSend__JJJJJJ",
-#endif
-#ifndef JNI64
-	"objc_1msgSend__IIIIIII",
-#else
-	"objc_1msgSend__JJJJJJJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIIIIIIII",
