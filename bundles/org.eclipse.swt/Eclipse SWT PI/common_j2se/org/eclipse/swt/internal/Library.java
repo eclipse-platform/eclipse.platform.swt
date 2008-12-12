@@ -37,6 +37,10 @@ public class Library {
 	public static final int JAVA_VERSION, SWT_VERSION;
 
 	static final String SEPARATOR;
+	
+	/* 64-bit support */
+	static final boolean IS_64 = 0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL;
+	static final String SUFFIX_64 = "-64";
 
 static {
 	SEPARATOR = System.getProperty("file.separator");
@@ -169,15 +173,11 @@ public static void loadLibrary (String name, boolean mapName) {
 	String prop = System.getProperty ("sun.arch.data.model"); //$NON-NLS-1$
 	if (prop == null) prop = System.getProperty ("com.ibm.vm.bitmode"); //$NON-NLS-1$
 	if (prop != null) {
-		if ("32".equals (prop)) { //$NON-NLS-1$
-			 if (0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL) {
-				throw new UnsatisfiedLinkError ("Cannot load 64-bit SWT libraries on 32-bit JVM"); //$NON-NLS-1$
-			 }
+		if ("32".equals (prop) && IS_64) { //$NON-NLS-1$
+			throw new UnsatisfiedLinkError ("Cannot load 64-bit SWT libraries on 32-bit JVM"); //$NON-NLS-1$
 		}
-		if ("64".equals (prop)) { //$NON-NLS-1$
-			if (0x1FFFFFFFFL != (int /*long*/)0x1FFFFFFFFL) {
-				throw new UnsatisfiedLinkError ("Cannot load 32-bit SWT libraries on 64-bit JVM"); //$NON-NLS-1$
-			}		
+		if ("64".equals (prop) && !IS_64) { //$NON-NLS-1$
+			throw new UnsatisfiedLinkError ("Cannot load 32-bit SWT libraries on 64-bit JVM"); //$NON-NLS-1$
 		}
 	}
 	
@@ -218,17 +218,19 @@ public static void loadLibrary (String name, boolean mapName) {
 	if (mapName && load (libName2)) return;
 	
 	/* Try loading library from the tmp directory if swt library path is not specified */
+	String fileName1 = IS_64 ? System.mapLibraryName (libName1 + SUFFIX_64) : mappedName1;
+	String fileName2 = IS_64 ? System.mapLibraryName (libName2 + SUFFIX_64) : mappedName2;
 	if (path == null) {
 		path = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
 		path = new File (path).getAbsolutePath ();
-		if (load (path + SEPARATOR + mappedName1)) return;
-		if (mapName && load (path + SEPARATOR + mappedName2)) return;
+		if (load (path + SEPARATOR + fileName1)) return;
+		if (mapName && load (path + SEPARATOR + fileName2)) return;
 	}
 		
 	/* Try extracting and loading library from jar */
 	if (path != null) {
-		if (extract (path + SEPARATOR + mappedName1, mappedName1)) return;
-		if (mapName && extract (path + SEPARATOR + mappedName2, mappedName2)) return;
+		if (extract (path + SEPARATOR + fileName1, mappedName1)) return;
+		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2)) return;
 	}
 	
 	/* Failed to find the library */
