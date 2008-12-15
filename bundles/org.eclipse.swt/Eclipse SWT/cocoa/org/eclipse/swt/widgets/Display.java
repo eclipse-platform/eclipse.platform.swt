@@ -3532,7 +3532,7 @@ boolean applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 			if (control != null) {
 				if (nsEvent.clickCount() == 1 && (control.state & Widget.DRAG_DETECT) != 0 && control.hooks (SWT.DragDetect)) {
 					NSPoint windowLoc = nsEvent.locationInWindow();
-					NSPoint viewLoc = control.view.convertPoint_toView_(windowLoc, null);
+					NSPoint viewLoc = control.view.convertPoint_fromView_(windowLoc, null);
 					if (control.dragDetect((int)viewLoc.x, (int)viewLoc.y, false, consume)) {
 						dragging = true;
 					}
