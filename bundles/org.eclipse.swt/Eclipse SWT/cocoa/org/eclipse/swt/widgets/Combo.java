@@ -492,6 +492,30 @@ public void deselectAll () {
 	}
 }
 
+boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
+	if ((style & SWT.READ_ONLY) == 0) {
+		NSText fieldEditor = view.window().fieldEditor(false, view);
+		NSRange selectedRange = fieldEditor.selectedRange();
+		
+		if (selectedRange.length > 0) {
+			NSPoint mouseLocation = NSEvent.mouseLocation();
+			NSTextView feAsTextView = (NSTextView)fieldEditor;
+			int /*long*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(mouseLocation);
+
+			if (charPosition != OS.NSNotFound && charPosition >= selectedRange.location && charPosition < (selectedRange.location + selectedRange.length)) {
+				if (super.dragDetect(x, y, filter, consume)) {
+					if (consume != null) consume[0] = true;
+					return true;
+				}
+			}	
+		}
+		
+		return false;
+	}
+	
+	return super.dragDetect(x, y, filter, consume);
+}
+
 int getCharCount() {
 	NSString str;
 	if ((style & SWT.READ_ONLY) != 0) {
