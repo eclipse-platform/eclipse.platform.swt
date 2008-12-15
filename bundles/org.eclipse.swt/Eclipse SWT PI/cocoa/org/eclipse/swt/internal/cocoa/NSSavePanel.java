@@ -38,6 +38,10 @@ public static NSSavePanel savePanel() {
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 
+public void setCanCreateDirectories(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setCanCreateDirectories_, flag);
+}
+
 public void setDirectory(NSString path) {
 	OS.objc_msgSend(this.id, OS.sel_setDirectory_, path != null ? path.id : 0);
 }

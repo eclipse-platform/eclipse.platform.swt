@@ -1118,6 +1118,7 @@ public static final int /*long*/ sel_setButtonType_ = sel_registerName("setButto
 public static final int /*long*/ sel_setCacheMode_ = sel_registerName("setCacheMode:");
 public static final int /*long*/ sel_setCanChooseDirectories_ = sel_registerName("setCanChooseDirectories:");
 public static final int /*long*/ sel_setCanChooseFiles_ = sel_registerName("setCanChooseFiles:");
+public static final int /*long*/ sel_setCanCreateDirectories_ = sel_registerName("setCanCreateDirectories:");
 public static final int /*long*/ sel_setCellClass_ = sel_registerName("setCellClass:");
 public static final int /*long*/ sel_setClip = sel_registerName("setClip");
 public static final int /*long*/ sel_setColor_ = sel_registerName("setColor:");

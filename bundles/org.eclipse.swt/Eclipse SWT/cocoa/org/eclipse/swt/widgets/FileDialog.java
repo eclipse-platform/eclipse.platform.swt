@@ -200,6 +200,7 @@ public String open () {
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 		panel = openPanel;
 	}
+	panel.setCanCreateDirectories(true);
 	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	int /*long*/ response = panel.runModal();

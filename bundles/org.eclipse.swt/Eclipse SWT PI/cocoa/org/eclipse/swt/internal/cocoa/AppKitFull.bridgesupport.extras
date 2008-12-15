@@ -17085,9 +17085,9 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="setCanCreateDirectories:">
-      <arg name="flag"></arg>
-      <retval></retval>
+    <method selector="setCanCreateDirectories:" swt_gen="true">
+      <arg name="flag" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setCanSelectHiddenExtension:">
       <arg name="flag"></arg>
