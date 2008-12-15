@@ -213,6 +213,28 @@ NSAttributedString createString() {
 	NSString str = NSString.stringWithCharacters(chars, length);
 	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
 	attribStr.autorelease();
+
+	if ((style & (SWT.RADIO|SWT.CHECK)) != 0 && image != null) {
+		NSFileWrapper wrapper = (NSFileWrapper) new NSFileWrapper().alloc().init();
+		wrapper.setIcon(image.handle);
+		wrapper.autorelease();
+		NSTextAttachment attach = (NSTextAttachment) new NSTextAttachment().alloc();
+		attach.initWithFileWrapper(wrapper);
+		attach.autorelease();
+		NSAttributedString imgString = (NSAttributedString) NSAttributedString.attributedStringWithAttachment(attach);
+		if (text != null) {		
+			NSMutableAttributedString mutable = (NSMutableAttributedString) new NSMutableAttributedString().alloc().init();
+			mutable.appendAttributedString(imgString);
+			NSRange range = new NSRange();
+			range.location = mutable.length();
+			range.length = 0;
+			mutable.replaceCharactersInRange(range, NSString.stringWith(" "));
+			mutable.appendAttributedString(attribStr);
+			mutable.autorelease();
+			return mutable;
+		}
+		return imgString;
+	}
 	return attribStr;
 }
 
@@ -661,7 +683,9 @@ public void setImage (Image image) {
 	}
 	if ((style & SWT.ARROW) != 0) return;
 	this.image = image;
-	((NSButton)view).setImage(image != null ? image.handle : null);
+	if ((style & (SWT.RADIO|SWT.CHECK)) == 0) {
+		((NSButton)view).setImage(image != null ? image.handle : null);
+	}
 }
 
 boolean setRadioSelection (boolean value){

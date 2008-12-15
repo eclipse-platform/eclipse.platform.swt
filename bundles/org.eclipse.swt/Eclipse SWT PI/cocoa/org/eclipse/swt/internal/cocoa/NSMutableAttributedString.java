@@ -24,6 +24,10 @@ public NSMutableAttributedString(id id) {
 	super(id);
 }
 
+public void appendAttributedString(NSAttributedString attrString) {
+	OS.objc_msgSend(this.id, OS.sel_appendAttributedString_, attrString != null ? attrString.id : 0);
+}
+
 public NSMutableString mutableString() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_mutableString);
 	return result != 0 ? new NSMutableString(result) : null;
@@ -47,6 +51,11 @@ public void endEditing() {
 
 public void setAttributedString(NSAttributedString attrString) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedString_, attrString != null ? attrString.id : 0);
+}
+
+public static NSAttributedString attributedStringWithAttachment(NSTextAttachment attachment) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableAttributedString, OS.sel_attributedStringWithAttachment_, attachment != null ? attachment.id : 0);
+	return result != 0 ? new NSAttributedString(result) : null;
 }
 
 }

@@ -3209,9 +3209,9 @@
       <arg name="rangeLimit"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="attributedStringWithAttachment:">
-      <arg name="attachment"></arg>
-      <retval></retval>
+    <method class_method="true" selector="attributedStringWithAttachment:" swt_gen="true">
+      <arg name="attachment" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="attributedSubstringFromRange:">
       <arg name="range"></arg>
@@ -8124,7 +8124,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSFileWrapper">
+  <class name="NSFileWrapper" swt_gen="mixed">
     <method selector="addFileWithPath:">
       <arg name="path"></arg>
       <retval></retval>
@@ -8213,9 +8213,9 @@
       <arg name="filename"></arg>
       <retval></retval>
     </method>
-    <method selector="setIcon:">
-      <arg name="icon"></arg>
-      <retval></retval>
+    <method selector="setIcon:" swt_gen="true">
+      <arg name="icon" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setPreferredFilename:">
       <arg name="filename"></arg>
@@ -11774,9 +11774,9 @@
       <arg name="range"></arg>
       <retval></retval>
     </method>
-    <method selector="appendAttributedString:">
-      <arg name="attrString"></arg>
-      <retval></retval>
+    <method selector="appendAttributedString:" swt_gen="true">
+      <arg name="attrString" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="applyFontTraits:range:">
       <arg name="traitMask"></arg>
@@ -19743,16 +19743,16 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSTextAttachment">
+  <class name="NSTextAttachment" swt_gen="mixed">
     <method selector="attachmentCell">
       <retval></retval>
     </method>
     <method selector="fileWrapper">
       <retval></retval>
     </method>
-    <method selector="initWithFileWrapper:">
-      <arg name="fileWrapper"></arg>
-      <retval></retval>
+    <method selector="initWithFileWrapper:" swt_gen="true">
+      <arg name="fileWrapper" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setAttachmentCell:">
       <arg name="cell"></arg>

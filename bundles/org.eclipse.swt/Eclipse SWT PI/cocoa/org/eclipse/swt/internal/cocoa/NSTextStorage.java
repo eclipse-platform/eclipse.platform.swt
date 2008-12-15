@@ -33,4 +33,9 @@ public NSArray paragraphs() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
+public static NSAttributedString attributedStringWithAttachment(NSTextAttachment attachment) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSTextStorage, OS.sel_attributedStringWithAttachment_, attachment != null ? attachment.id : 0);
+	return result != 0 ? new NSAttributedString(result) : null;
+}
+
 }
