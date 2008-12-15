@@ -40,7 +40,9 @@ public class Library {
 	
 	/* 64-bit support */
 	static final boolean IS_64 = 0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL;
-	static final String SUFFIX_64 = "-64";
+	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
+	static final String SWTDIR_32 = "swt-32";	//$NON-NLS-1$
+	static final String SWTDIR_64 = "swt-64";	//$NON-NLS-1$
 
 static {
 	SEPARATOR = System.getProperty("file.separator");
@@ -216,13 +218,22 @@ public static void loadLibrary (String name, boolean mapName) {
 	/* Try loading library from java library path */
 	if (load (libName1)) return;
 	if (mapName && load (libName2)) return;
-	
+
 	/* Try loading library from the tmp directory if swt library path is not specified */
-	String fileName1 = IS_64 ? System.mapLibraryName (libName1 + SUFFIX_64) : mappedName1;
-	String fileName2 = IS_64 ? System.mapLibraryName (libName2 + SUFFIX_64) : mappedName2;
+	String fileName1 = mappedName1;
+	String fileName2 = mappedName2;
 	if (path == null) {
 		path = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
-		path = new File (path).getAbsolutePath ();
+		File dir = new File (path, IS_64 ? SWTDIR_64 : SWTDIR_32);
+		if ((dir.exists () && dir.isDirectory ()) || dir.mkdir ()) {
+			path = dir.getAbsolutePath ();
+		} else {
+			/* fall back to using the tmp directory */
+			if (IS_64) {
+				fileName1 = System.mapLibraryName (libName1 + SUFFIX_64);
+				fileName2 = System.mapLibraryName (libName2 + SUFFIX_64);
+			}
+		}
 		if (load (path + SEPARATOR + fileName1)) return;
 		if (mapName && load (path + SEPARATOR + fileName2)) return;
 	}
