@@ -364,6 +364,35 @@ public static final int /*long*/ nsEmbedString_get(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsIMemory *)
+ * @param size cast=(size_t)
+ */
+public static final native int /*long*/ _nsIMemory_Alloc(int /*long*/ ptr, int size);
+public static final int /*long*/ nsIMemory_Alloc(int /*long*/ ptr, int size) {
+	lock.lock();
+	try {
+		return _nsIMemory_Alloc(ptr, size);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
+ * @param ptr1 cast=(nsIMemory *)
+ * @param ptr2 cast=(void *)
+ * @param size cast=(size_t)
+ */
+public static final native int /*long*/ _nsIMemory_Realloc(int /*long*/ ptr1, int /*long*/ ptr2, int size);
+public static final int /*long*/ nsIMemory_Realloc(int /*long*/ ptr1, int /*long*/ ptr2, int size) {
+	lock.lock();
+	try {
+		return _nsIMemory_Realloc(ptr1, ptr2, size);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param place cast=(const char *) */
 public static final native int _XPCOMGlueStartup(byte[] place);
 public static final int XPCOMGlueStartup(byte[] place) {

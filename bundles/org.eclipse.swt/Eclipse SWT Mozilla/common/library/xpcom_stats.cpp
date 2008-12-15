@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 178;
-int XPCOM_nativeFunctionCallCount[178];
+int XPCOM_nativeFunctionCount = 180;
+int XPCOM_nativeFunctionCallCount[180];
 char * XPCOM_nativeFunctionNames[] = {
 	"_1Call",
 	"_1NS_1GetComponentManager",
@@ -812,6 +812,8 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1nsID_1Equals",
 	"_1nsID_1delete",
 	"_1nsID_1new",
+	"_1nsIMemory_1Alloc",
+	"_1nsIMemory_1Realloc",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I",
 #else

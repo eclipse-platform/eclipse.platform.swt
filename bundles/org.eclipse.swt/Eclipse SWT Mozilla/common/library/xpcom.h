@@ -18,6 +18,7 @@
 #include "nsXPCOM.h"
 #include "nsEmbedString.h"
 #include "nsIInputStream.h"
+#include "nsIMemory.h"
 #include "nsISupportsUtils.h"
 #include "nsXPCOMGlue.h"
 

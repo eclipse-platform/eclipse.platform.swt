@@ -820,6 +820,8 @@ typedef enum {
 	_1nsID_1Equals_FUNC,
 	_1nsID_1delete_FUNC,
 	_1nsID_1new_FUNC,
+	_1nsIMemory_1Alloc_FUNC,
+	_1nsIMemory_1Realloc_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
 #else

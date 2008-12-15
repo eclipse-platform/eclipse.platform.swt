@@ -5245,6 +5245,32 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsID_1new)
 }
 #endif
 
+#ifndef NO__1nsIMemory_1Alloc
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Alloc)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Alloc)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jintLong rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1nsIMemory_1Alloc_FUNC);
+	rc = (jintLong)((nsIMemory *)arg0)->Alloc((size_t)arg1);
+	XPCOM_NATIVE_EXIT(env, that, _1nsIMemory_1Alloc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1nsIMemory_1Realloc
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Realloc)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Realloc)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
+{
+	jintLong rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1nsIMemory_1Realloc_FUNC);
+	rc = (jintLong)((nsIMemory *)arg0)->Realloc((void *)arg1, (size_t)arg2);
+	XPCOM_NATIVE_EXIT(env, that, _1nsIMemory_1Realloc_FUNC);
+	return rc;
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_mozilla_nsID_2I) && defined(JNI64))
 #ifndef JNI64
 extern "C" JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2);
