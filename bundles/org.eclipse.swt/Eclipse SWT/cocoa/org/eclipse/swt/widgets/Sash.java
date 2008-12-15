@@ -264,6 +264,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	state |= THEME_BACKGROUND;
 	NSView widget = (NSView)new SWTView().alloc();
 	widget.init ();
 	view = widget;

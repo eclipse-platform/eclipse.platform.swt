@@ -359,6 +359,11 @@ public void copy () {
 }
 
 void createHandle () {
+	if ((style & SWT.READ_ONLY) != 0) {
+		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			state |= THEME_BACKGROUND;
+		}
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget;
 		if ((style & SWT.PASSWORD) != 0) {

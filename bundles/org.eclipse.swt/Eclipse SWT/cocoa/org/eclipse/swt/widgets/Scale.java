@@ -129,6 +129,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	state |= THEME_BACKGROUND;
 	NSSlider widget = (NSSlider)new SWTSlider().alloc();
 	NSRect rect = new NSRect();
 		rect.width = 1;

@@ -209,6 +209,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	state |= THEME_BACKGROUND;
 	NSBox widget = (NSBox)new SWTBox().alloc();
 	widget.init();
 	widget.setTitle(NSString.stringWith(""));

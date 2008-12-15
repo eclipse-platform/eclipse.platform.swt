@@ -251,8 +251,10 @@ Control [] computeTabList () {
 
 void createHandle () {
 	state |= CANVAS;
+	boolean scrolled = (style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0;
+	if (!scrolled)  state |= THEME_BACKGROUND;
 	NSRect rect = new NSRect();
-	if ((style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0 || hasBorder ()) {
+	if (scrolled || hasBorder ()) {
 		NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 		scrollWidget.initWithFrame (rect);
 		scrollWidget.setDrawsBackground(false);

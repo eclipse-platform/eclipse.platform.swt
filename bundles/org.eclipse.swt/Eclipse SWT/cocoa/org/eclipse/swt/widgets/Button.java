@@ -217,6 +217,7 @@ NSAttributedString createString() {
 }
 
 void createHandle () {
+	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
 	NSButton widget = (NSButton)new SWTButton().alloc();
 	widget.init();
 	int type = OS.NSMomentaryLightButton;

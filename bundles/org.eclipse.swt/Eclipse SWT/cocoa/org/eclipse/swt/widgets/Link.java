@@ -146,6 +146,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	state |= THEME_BACKGROUND;
 	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 	scrollWidget.init();
 	scrollWidget.setDrawsBackground(false);

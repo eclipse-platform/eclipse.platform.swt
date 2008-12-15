@@ -117,6 +117,7 @@ void deregister () {
 }
 
 void createHandle () {
+	state |= THEME_BACKGROUND;
 	NSBox widget = (NSBox)new SWTBox().alloc();
 	widget.init();
 	widget.setTitlePosition(OS.NSNoTitle);
