@@ -318,6 +318,14 @@ public void test_setMonthI() {
 	datetime.setDate(2008, NOV, 30);
 	datetime.setMonth(FEB); // Feb does not have 30 days, so setMonth should be ignored
 	assertEquals(NOV, datetime.getMonth());
+
+	datetime.setDate(2008, AUG, 31);
+	datetime.setMonth(NOV); // Nov does not have 31 days, so setMonth should be ignored
+	assertEquals(AUG, datetime.getMonth());
+
+	datetime.setDate(2007, NOV, 29);
+	datetime.setMonth(FEB); // Feb 2007 does not have 29 days, so setMonth should be ignored
+	assertEquals(NOV, datetime.getMonth());
 }
 
 public void test_setSecondsI() {
