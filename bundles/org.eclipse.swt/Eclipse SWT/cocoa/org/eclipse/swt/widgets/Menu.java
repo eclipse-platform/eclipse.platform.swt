@@ -309,6 +309,7 @@ void createItem (MenuItem item, int index) {
 	NSMenu emptyMenu = item.createEmptyMenu ();
 	if (emptyMenu != null) {
 		nsItem.setSubmenu (emptyMenu);
+		emptyMenu.autorelease();
 	}
 	//TODO - find a way to disable the menu instead of each item
 	if (!getEnabled ()) nsItem.setEnabled (false);
@@ -336,14 +337,6 @@ void destroyItem (MenuItem item) {
 	items [itemCount] = null;
 	if (itemCount == 0) items = new MenuItem [4];
 	nsMenu.removeItem (item.nsItem);
-}
-
-void destroyWidget () {
-	NSMenu nsMenu = this.nsMenu;
-	releaseHandle ();
-	if (nsMenu != null) {
-		nsMenu.release();
-	}
 }
 
 void fixMenus (Decorations newParent) {
@@ -706,6 +699,7 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	if (nsMenu != null) nsMenu.release();
 	nsMenu = null;
 }
 
