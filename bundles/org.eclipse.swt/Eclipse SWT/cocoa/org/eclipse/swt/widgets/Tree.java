@@ -438,6 +438,11 @@ void createHandle () {
 	scrollWidget.setBorderType(hasBorder () ? OS.NSBezelBorder : OS.NSNoBorder);
 	
 	NSOutlineView widget = (NSOutlineView) new SWTOutlineView ().alloc ();
+	/*
+	* Bug in Cocoa.  Calling init, instead of initWithFrame on an NSOutlineView
+	* cause the NSOutlineView to leak some memory.  The work around is to call 
+	* initWithFrame and pass an empty NSRect instead of calling init. 
+	*/
 	widget.initWithFrame(new NSRect());
 	widget.setAllowsMultipleSelection ((style & SWT.MULTI) != 0);
 	widget.setAllowsColumnReordering (false);
