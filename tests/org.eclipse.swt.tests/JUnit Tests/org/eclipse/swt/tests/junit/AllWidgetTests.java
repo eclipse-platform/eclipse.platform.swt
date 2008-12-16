@@ -59,8 +59,9 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_widgets_Slider.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_ProgressBar.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Composite.suite());
-	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Link.suite());
+	//suite.addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
+	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
 	suite.addTest(Test_org_eclipse_swt_widgets_ColorDialog.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_FileDialog.suite());

@@ -113,6 +113,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_ProgressBar.suite());
 	addTest(Test_org_eclipse_swt_widgets_Composite.suite());
 	addTest(Test_org_eclipse_swt_widgets_Link.suite());
+	//addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
 	//addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
 	addTest(Test_org_eclipse_swt_widgets_ColorDialog.suite());
