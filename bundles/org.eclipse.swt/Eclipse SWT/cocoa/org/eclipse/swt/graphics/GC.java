@@ -3789,6 +3789,7 @@ public Point textExtent(String string, int flags) {
 	try {
 		NSAttributedString str = createString(string, flags);
 		NSSize size = str.size();
+		str.release();
 		return new Point((int)size.width, (int)size.height);
 	} finally {
 		uncheckGC(pool);
