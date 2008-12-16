@@ -954,7 +954,8 @@ public class Accessible {
 
 		returnValue = (event.result != null ? NSString.stringWith(event.result) : null);
 
-		// If no description was provided, try the name.
+		// If no description was provided, and this is a composite or canvas, return a blank string
+		// -- otherwise, let the Cocoa control handle it.
 		if (returnValue == null) {
 			if (control instanceof Composite) returnValue = NSString.stringWith("");
 		}
