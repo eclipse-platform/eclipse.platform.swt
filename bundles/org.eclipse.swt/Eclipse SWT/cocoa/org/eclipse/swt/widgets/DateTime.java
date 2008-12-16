@@ -43,7 +43,9 @@ import org.eclipse.swt.internal.cocoa.*;
  * @since 3.3
  */
 public class DateTime extends Composite {
-
+	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
+	static final int MAX_YEAR = 9999;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -346,6 +348,7 @@ void setBackground (float /*double*/ [] color) {
  */
 public void setDate (int year, int month, int day) {
 	checkWidget ();
+	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(year, month + 1, day,
 			date.hourOfDay(), date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
@@ -514,6 +517,7 @@ public void setTime (int hours, int minutes, int seconds) {
  */
 public void setYear (int year) {
 	checkWidget ();
+	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(year, date.monthOfYear(), date.dayOfMonth(),
 			date.hourOfDay(), date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
