@@ -438,7 +438,7 @@ void createHandle () {
 	scrollWidget.setBorderType(hasBorder () ? OS.NSBezelBorder : OS.NSNoBorder);
 	
 	NSOutlineView widget = (NSOutlineView) new SWTOutlineView ().alloc ();
-	widget.init ();
+	widget.initWithFrame(new NSRect());
 	widget.setAllowsMultipleSelection ((style & SWT.MULTI) != 0);
 	widget.setAllowsColumnReordering (false);
 	widget.setAutoresizesOutlineColumn (false);
