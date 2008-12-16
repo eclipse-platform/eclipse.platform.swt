@@ -592,8 +592,10 @@ boolean isValid(int fieldName, int value) {
 }
 
 boolean isValidDate(int year, int month, int day) {
+	if (year < MIN_YEAR || year > MAX_YEAR) return false;
 	Calendar calendar = Calendar.getInstance();
 	calendar.set(Calendar.YEAR, year);
+	calendar.set(Calendar.DAY_OF_MONTH, 1);
 	calendar.set(Calendar.MONTH, month);
 	calendar.set(Calendar.DAY_OF_MONTH, day);
 	return calendar.get(Calendar.YEAR) == year
@@ -719,6 +721,7 @@ public void setDate (int year, int month, int day) {
 	if (!isValidDate(year, month, day)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
 		calendar.set(Calendar.MONTH, month);
 		redraw();
 		setDay(day, false);
@@ -752,7 +755,7 @@ public void setDate (int year, int month, int day) {
  */
 public void setDay (int day) {
 	checkWidget ();
-	if (!isValid(Calendar.DAY_OF_MONTH, day)) return;
+	if (!isValidDate(getYear(), getMonth(), day)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		setDay(day, false);
 	} else {
@@ -833,7 +836,7 @@ public void setMinutes (int minutes) {
  */
 public void setMonth (int month) {
 	checkWidget ();
-	if (!isValid(Calendar.MONTH, month)) return;
+	if (!isValidDate(getYear(), month, getDay())) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.MONTH, month);
 	} else {
@@ -925,7 +928,7 @@ public void setTime (int hours, int minutes, int seconds) {
  */
 public void setYear (int year) {
 	checkWidget ();
-	//if (!isValid(Calendar.YEAR, year)) return;
+	//if (!isValidDate(year, getMonth(), getDay())) return;
 	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.YEAR, year);
