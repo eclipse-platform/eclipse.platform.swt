@@ -507,7 +507,9 @@ boolean isValidDate(int year, int month, int day) {
 	if (year < MIN_YEAR || year > MAX_YEAR) return false;
 	Calendar valid = Calendar.getInstance();
 	valid.set(year, month, day);
-	return valid.get(Calendar.YEAR) == year && valid.get(Calendar.MONTH) == month && valid.get(Calendar.DAY_OF_MONTH) == day;
+	return valid.get(Calendar.YEAR) == year
+		&& valid.get(Calendar.MONTH) == month
+		&& valid.get(Calendar.DAY_OF_MONTH) == day;
 }
 
 void incrementField(int amount) {
@@ -862,9 +864,7 @@ public void setDate (int year, int month, int day) {
 		OS.gtk_calendar_select_month(handle, month, year);
 		OS.gtk_calendar_select_day(handle, day);
 	} else {
-		calendar.set(Calendar.YEAR, year);
-		calendar.set(Calendar.MONTH, month);
-		calendar.set(Calendar.DAY_OF_MONTH, day);
+		calendar.set(year, month, day);
 		updateControl();
 	}
 }
