@@ -584,8 +584,6 @@ boolean isValidTime(int fieldName, int value) {
 	int year = (style & SWT.TIME) != 0 ? dateAndTime.year : dateRec.year;
 	int month = (style & SWT.TIME) != 0 ? dateAndTime.month : dateRec.month;
 	Calendar calendar = Calendar.getInstance();
-	calendar.set(Calendar.YEAR, year);
-	calendar.set(Calendar.MONTH, month - 1);
 	int min = calendar.getActualMinimum(fieldName);
 	int max = calendar.getActualMaximum(fieldName);
 	return value >= min && value <= max;
@@ -594,10 +592,7 @@ boolean isValidTime(int fieldName, int value) {
 boolean isValidDate(int year, int month, int day) {
 	if (year < MIN_YEAR || year > MAX_YEAR) return false;
 	Calendar calendar = Calendar.getInstance();
-	calendar.set(Calendar.YEAR, year);
-	calendar.set(Calendar.DAY_OF_MONTH, 1);
-	calendar.set(Calendar.MONTH, month);
-	calendar.set(Calendar.DAY_OF_MONTH, day);
+	calendar.set(year, month, day);
 	return calendar.get(Calendar.YEAR) == year
 		&& calendar.get(Calendar.MONTH) == month
 		&& calendar.get(Calendar.DAY_OF_MONTH) == day;
