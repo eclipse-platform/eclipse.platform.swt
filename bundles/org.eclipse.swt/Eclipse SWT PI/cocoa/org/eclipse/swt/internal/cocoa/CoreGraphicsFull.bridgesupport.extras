@@ -302,7 +302,6 @@
   <enum name="kCGDesktopIconWindowLevelKey"></enum>
   <enum name="kCGDesktopWindowLevel"></enum>
   <enum name="kCGDesktopWindowLevelKey"></enum>
-  <enum name="kCGDirectMainDisplay"></enum>
   <enum name="kCGDisplayAddFlag"></enum>
   <enum name="kCGDisplayBeginConfigurationFlag"></enum>
   <enum name="kCGDisplayBlendNormal"></enum>
@@ -3532,4 +3531,5 @@
   <function_alias name="CGAffineTransformMake"></function_alias>
   <function_alias name="CGPointApplyAffineTransform"></function_alias>
   <function_alias name="CGSizeApplyAffineTransform"></function_alias>
+  <enum name="kCGDirectMainDisplay"></enum>
 </signatures>

@@ -64,4 +64,8 @@ public void startAnimation(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_startAnimation_, sender != null ? sender.id : 0);
 }
 
+public void stopAnimation(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_stopAnimation_, sender != null ? sender.id : 0);
+}
+
 }

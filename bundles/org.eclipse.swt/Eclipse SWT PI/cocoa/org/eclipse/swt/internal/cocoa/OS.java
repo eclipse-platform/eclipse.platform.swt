@@ -1298,6 +1298,7 @@ public static final int /*long*/ sel_startAnimation_ = sel_registerName("startAn
 public static final int /*long*/ sel_state = sel_registerName("state");
 public static final int /*long*/ sel_statusItemWithLength_ = sel_registerName("statusItemWithLength:");
 public static final int /*long*/ sel_stop_ = sel_registerName("stop:");
+public static final int /*long*/ sel_stopAnimation_ = sel_registerName("stopAnimation:");
 public static final int /*long*/ sel_stopLoading_ = sel_registerName("stopLoading:");
 public static final int /*long*/ sel_string = sel_registerName("string");
 public static final int /*long*/ sel_stringByAddingPercentEscapesUsingEncoding_ = sel_registerName("stringByAddingPercentEscapesUsingEncoding:");
