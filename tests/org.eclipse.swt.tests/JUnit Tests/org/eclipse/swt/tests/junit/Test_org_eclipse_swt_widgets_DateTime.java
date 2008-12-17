@@ -435,6 +435,10 @@ public void test_setYearI() {
 
 	datetime.setYear(-1947);
 	assertEquals(2005, datetime.getYear());
+	
+	datetime.setDate(2008, FEB, 29);
+	datetime.setYear(2007);
+	assertEquals(2008, datetime.getYear());
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
