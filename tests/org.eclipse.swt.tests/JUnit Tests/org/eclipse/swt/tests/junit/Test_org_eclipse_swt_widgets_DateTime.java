@@ -157,13 +157,19 @@ public void test_setDateIII() {
 	assertEquals(FEB, datetime.getMonth());
 	assertEquals(2008, datetime.getYear());
 
+	datetime.setDate(2007, FEB, 28);
+	assertEquals(28, datetime.getDay());
+	assertEquals(FEB, datetime.getMonth());
+	assertEquals(2007, datetime.getYear());
+
 	datetime.setDate(2008, JAN, 1);
 	assertEquals(1, datetime.getDay());
 	assertEquals(JAN, datetime.getMonth());
 	assertEquals(2008, datetime.getYear());
 
 	// The following lines are commented out because they fail on Windows.
-	// This is because the UK and the US adopted the Gregorian calendar on September 14, 1752.
+	// The UK and the US adopted the Gregorian calendar on September 14, 1752
+	// so the Windows control considers Jan 1, 1752 to be in the Julian calendar.
 //	datetime.setDate(1752, JAN, 1);
 //	assertEquals(1, datetime.getDay());
 //	assertEquals(JAN, datetime.getMonth());
@@ -244,7 +250,7 @@ public void test_setDayI() {
 	}
 
 	int day = datetime.getDay();
-	datetime.setDay(52); // No month has 52 days, so setDay should be ignored
+	datetime.setDay(32); // No month has 32 days, so setDay should be ignored
 	assertEquals(day, datetime.getDay());
 
 	datetime.setDay(-5); // Make sure negative setDay is ignored
@@ -253,6 +259,10 @@ public void test_setDayI() {
 	datetime.setDate(2008, FEB, 1);
 	datetime.setDay(30); // Feb never has 30 days, so setDay should be ignored
 	assertEquals(1, datetime.getDay());
+
+	datetime.setDate(2007, FEB, 5);
+	datetime.setDay(29); // Feb 2007 did not have 29 days, so setDay should be ignored
+	assertEquals(5, datetime.getDay());
 }
 
 public void test_setHoursI() {
