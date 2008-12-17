@@ -177,6 +177,17 @@ void setFont(NSFont font) {
 	((NSBox) view).setTitleFont(font);
 }
 
+void setForeground (float /*double*/ [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed (color[0], color[1], color[2], 1);
+	}
+	NSTextFieldCell cell = new NSTextFieldCell (((NSBox)view).titleCell ().id);
+	cell.setTextColor (nsColor);
+}
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,

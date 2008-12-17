@@ -386,6 +386,16 @@ void setFont(NSFont font) {
 	((NSTextView) view).setFont(font);
 }
 
+void setForeground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+	}
+	((NSTextView) view).setTextColor (nsColor);
+}
+
 /**
  * Sets the receiver's text.
  * <p>
