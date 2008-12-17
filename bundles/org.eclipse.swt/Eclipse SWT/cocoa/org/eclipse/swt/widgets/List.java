@@ -382,7 +382,8 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 		int row = (int)/*64*/widget.rowAtPoint(pt);
 		if (!widget.isRowSelected(row)) {
 			//TODO expand current selection when Shift, Command key pressed??
-			widget.selectRow(row, false);
+			NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
+			widget.selectRowIndexes (indexes, false);
 		}
 	}
 	consume[0] = dragging;
@@ -722,7 +723,8 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 	
 	// figure out if the row that was just clicked on is currently selected
 	if (selectedRowIndexes.containsIndex(row) == false) {
-		table.selectRow(row, false);
+		NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
+		table.selectRowIndexes (indexes, false);
 	}
 	// else that row is currently selected, so don't change anything.
 	

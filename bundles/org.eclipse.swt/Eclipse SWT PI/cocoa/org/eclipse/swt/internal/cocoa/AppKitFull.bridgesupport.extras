@@ -19280,10 +19280,10 @@
       <arg name="extend"></arg>
       <retval></retval>
     </method>
-    <method selector="selectRow:byExtendingSelection:" swt_gen="true">
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="extend" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="selectRow:byExtendingSelection:">
+      <arg name="row"></arg>
+      <arg name="extend"></arg>
+      <retval></retval>
     </method>
     <method selector="selectRowIndexes:byExtendingSelection:" swt_gen="true">
       <arg name="indexes" swt_gen="true"></arg>

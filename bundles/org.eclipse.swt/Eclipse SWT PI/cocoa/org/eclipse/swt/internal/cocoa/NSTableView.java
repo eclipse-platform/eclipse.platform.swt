@@ -140,10 +140,6 @@ public void selectAll(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_selectAll_, sender != null ? sender.id : 0);
 }
 
-public void selectRow(int /*long*/ row, boolean extend) {
-	OS.objc_msgSend(this.id, OS.sel_selectRow_byExtendingSelection_, row, extend);
-}
-
 public void selectRowIndexes(NSIndexSet indexes, boolean extend) {
 	OS.objc_msgSend(this.id, OS.sel_selectRowIndexes_byExtendingSelection_, indexes != null ? indexes.id : 0, extend);
 }

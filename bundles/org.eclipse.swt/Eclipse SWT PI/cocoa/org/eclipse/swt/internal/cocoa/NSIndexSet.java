@@ -40,6 +40,11 @@ public int /*long*/ getIndexes(int[] /*long[]*/ indexBuffer, int /*long*/ buffer
 	return OS.objc_msgSend(this.id, OS.sel_getIndexes_maxCount_inIndexRange_, indexBuffer, bufferSize, range);
 }
 
+public static id indexSetWithIndex(int /*long*/ value) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSIndexSet, OS.sel_indexSetWithIndex_, value);
+	return result != 0 ? new id(result) : null;
+}
+
 public id initWithIndex(int /*long*/ value) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndex_, value);
 	return result != 0 ? new id(result) : null;
