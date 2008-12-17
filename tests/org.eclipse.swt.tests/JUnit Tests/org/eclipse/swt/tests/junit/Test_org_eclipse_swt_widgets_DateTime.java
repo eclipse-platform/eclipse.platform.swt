@@ -141,7 +141,6 @@ public void test_getYear() {
 }
 
 public void test_setDateIII() {
-	System.out.println(style);
 	datetime.setDate(2008, AUG, 31);
 	assertEquals(31, datetime.getDay());
 	assertEquals(AUG, datetime.getMonth());
