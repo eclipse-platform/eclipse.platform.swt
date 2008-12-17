@@ -580,7 +580,7 @@ void hookEvents () {
 	}
 }
 
-boolean isValid(int fieldName, int value) {
+boolean isValidTime(int fieldName, int value) {
 	int year = (style & SWT.TIME) != 0 ? dateAndTime.year : dateRec.year;
 	int month = (style & SWT.TIME) != 0 ? dateAndTime.month : dateRec.month;
 	Calendar calendar = Calendar.getInstance();
@@ -782,7 +782,7 @@ public void setDay (int day) {
  */
 public void setHours (int hours) {
 	checkWidget ();
-	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
+	if (!isValidTime(Calendar.HOUR_OF_DAY, hours)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.HOUR_OF_DAY, hours);
 	} else {
@@ -809,7 +809,7 @@ public void setHours (int hours) {
  */
 public void setMinutes (int minutes) {
 	checkWidget ();
-	if (!isValid(Calendar.MINUTE, minutes)) return;
+	if (!isValidTime(Calendar.MINUTE, minutes)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.MINUTE, minutes);
 	} else {
@@ -863,7 +863,7 @@ public void setMonth (int month) {
  */
 public void setSeconds (int seconds) {
 	checkWidget ();
-	if (!isValid(Calendar.SECOND, seconds)) return;
+	if (!isValidTime(Calendar.SECOND, seconds)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.SECOND, seconds);
 	} else {
@@ -891,9 +891,9 @@ public void setSeconds (int seconds) {
  */
 public void setTime (int hours, int minutes, int seconds) {
 	checkWidget ();
-	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
-	if (!isValid(Calendar.MINUTE, minutes)) return;
-	if (!isValid(Calendar.SECOND, seconds)) return;
+	if (!isValidTime(Calendar.HOUR_OF_DAY, hours)) return;
+	if (!isValidTime(Calendar.MINUTE, minutes)) return;
+	if (!isValidTime(Calendar.SECOND, seconds)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.HOUR_OF_DAY, hours);
 		calendar.set(Calendar.MINUTE, minutes);
