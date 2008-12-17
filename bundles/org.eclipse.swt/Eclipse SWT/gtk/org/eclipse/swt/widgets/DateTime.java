@@ -491,12 +491,10 @@ void hookEvents () {
 	}
 }
 
-boolean isValid(int fieldName, int value) {
+boolean isValidTime(int fieldName, int value) {
 	Calendar validCalendar;
 	if ((style & SWT.CALENDAR) != 0) {
 		validCalendar = Calendar.getInstance();
-		validCalendar.set(Calendar.YEAR, year);
-		validCalendar.set(Calendar.MONTH, month);
 	} else {
 		validCalendar = calendar;
 	}
@@ -505,7 +503,8 @@ boolean isValid(int fieldName, int value) {
 	return value >= min && value <= max;
 }
 
-boolean isValid(int year, int month, int day) {
+boolean isValidDate(int year, int month, int day) {
+	if (year < MIN_YEAR || year > MAX_YEAR) return false;
 	Calendar valid = Calendar.getInstance();
 	valid.set(year, month, day);
 	return valid.get(Calendar.YEAR) == year && valid.get(Calendar.MONTH) == month && valid.get(Calendar.DAY_OF_MONTH) == day;
@@ -855,7 +854,7 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
  */
 public void setDate (int year, int month, int day) {
 	checkWidget ();
-	if (!isValid(year, month, day)) return;
+	if (!isValidDate(year, month, day)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.year = year;
 		this.month = month;
@@ -885,7 +884,7 @@ public void setDate (int year, int month, int day) {
  */
 public void setDay (int day) {
 	checkWidget ();
-	if (!isValid(Calendar.DAY_OF_MONTH, day)) return;
+	if (!isValidDate(getYear(), getMonth(), day)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.day = day;
 		OS.gtk_calendar_select_day(handle, day);
@@ -910,7 +909,7 @@ public void setDay (int day) {
  */
 public void setHours (int hours) {
 	checkWidget ();
-	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
+	if (!isValidTime(Calendar.HOUR_OF_DAY, hours)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.hours = hours;
 	} else {
@@ -934,7 +933,7 @@ public void setHours (int hours) {
  */
 public void setMinutes (int minutes) {
 	checkWidget ();
-	if (!isValid(Calendar.MINUTE, minutes)) return;
+	if (!isValidTime(Calendar.MINUTE, minutes)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.minutes = minutes;
 	} else {
@@ -958,7 +957,7 @@ public void setMinutes (int minutes) {
  */
 public void setMonth (int month) {
 	checkWidget ();
-	if (!isValid(Calendar.MONTH, month)) return;
+	if (!isValidDate(getYear(), month, getDay())) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.month = month;
 		OS.gtk_calendar_select_month(handle, month, year);
@@ -983,7 +982,7 @@ public void setMonth (int month) {
  */
 public void setSeconds (int seconds) {
 	checkWidget ();
-	if (!isValid(Calendar.SECOND, seconds)) return;
+	if (!isValidTime(Calendar.SECOND, seconds)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.seconds = seconds;
 	} else {
@@ -1008,9 +1007,9 @@ public void setSeconds (int seconds) {
  */
 public void setTime (int hours, int minutes, int seconds) {
 	checkWidget ();
-	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
-	if (!isValid(Calendar.MINUTE, minutes)) return;
-	if (!isValid(Calendar.SECOND, seconds)) return;
+	if (!isValidTime(Calendar.HOUR_OF_DAY, hours)) return;
+	if (!isValidTime(Calendar.MINUTE, minutes)) return;
+	if (!isValidTime(Calendar.SECOND, seconds)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.hours = hours;
 		this.minutes = minutes;
@@ -1038,7 +1037,7 @@ public void setTime (int hours, int minutes, int seconds) {
  */
 public void setYear (int year) {
 	checkWidget ();
-	//if (!isValid(Calendar.YEAR, year)) return;
+	//if (!isValidDate(year, getMonth(), getDay())) return;
 	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.year = year;
