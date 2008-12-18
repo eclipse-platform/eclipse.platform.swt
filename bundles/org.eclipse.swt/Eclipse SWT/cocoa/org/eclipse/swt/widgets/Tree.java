@@ -985,7 +985,6 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			nsSelectionBackground.getComponents (components);	
 			Color selectionBackground = Color.cocoa_new (display, components);
 			gc.setBackground (selectionBackground);
-			gc.setBackground (display.getSystemColor (SWT.COLOR_GREEN));
 		} else {
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
