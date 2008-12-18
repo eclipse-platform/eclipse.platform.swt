@@ -1755,6 +1755,9 @@ void onDispose (Display display) {
 	rc = webBrowser.SetParentURIContentListener (0);
 	if (rc != XPCOM.NS_OK) error (rc);
 	
+	rc = webBrowser.SetContainerWindow (0);
+	if (rc != XPCOM.NS_OK) error (rc);
+
 	unhookDOMListeners ();
 	if (listener != null) {
 		int[] folderEvents = new int[] {
