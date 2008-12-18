@@ -1564,11 +1564,14 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT | FOREGROUND_FILL);
 	try {
-		NSPoint pt = new NSPoint();
-		pt.x = x;
-		pt.y = y;
 		NSAttributedString str = createString(string, flags);
-		str.drawAtPoint(pt);
+		NSSize size = str.size();
+		NSRect rect = new NSRect();
+		rect.x = x;
+		rect.y = y;
+		rect.width = size.width;
+		rect.height = size.height;
+		str.drawInRect(rect);
 		str.release();
 	} finally {
 		uncheckGC(pool);
