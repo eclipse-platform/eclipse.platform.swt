@@ -405,10 +405,8 @@ public void setAlignment (int alignment) {
 
 void setBackground (float [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	textView.setDrawsBackground(color != null);
-	if (color == null) return;
 	NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
-	((NSTextField)textView).setBackgroundColor(nsColor);
+	((NSBox)view).setFillColor(nsColor);
 }
 
 void _setAlignment() {

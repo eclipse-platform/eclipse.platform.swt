@@ -1153,6 +1153,7 @@ public static final int /*long*/ sel_setDrawsBackground_ = sel_registerName("set
 public static final int /*long*/ sel_setEditable_ = sel_registerName("setEditable:");
 public static final int /*long*/ sel_setEnabled_ = sel_registerName("setEnabled:");
 public static final int /*long*/ sel_setFill = sel_registerName("setFill");
+public static final int /*long*/ sel_setFillColor_ = sel_registerName("setFillColor:");
 public static final int /*long*/ sel_setFireDate_ = sel_registerName("setFireDate:");
 public static final int /*long*/ sel_setFirstLineHeadIndent_ = sel_registerName("setFirstLineHeadIndent:");
 public static final int /*long*/ sel_setFloatValue_knobProportion_ = sel_registerName("setFloatValue:knobProportion:");

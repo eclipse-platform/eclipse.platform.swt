@@ -54,6 +54,10 @@ public void setContentViewMargins(NSSize offsetSize) {
 	OS.objc_msgSend(this.id, OS.sel_setContentViewMargins_, offsetSize);
 }
 
+public void setFillColor(NSColor fillColor) {
+	OS.objc_msgSend(this.id, OS.sel_setFillColor_, fillColor != null ? fillColor.id : 0);
+}
+
 public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }

@@ -3972,9 +3972,9 @@
 <arg name="cornerRadius"></arg>
 <retval></retval>
 </method>
-<method selector="setFillColor:">
-<arg name="fillColor"></arg>
-<retval></retval>
+<method selector="setFillColor:" swt_gen="true">
+<arg name="fillColor" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setFrameFromContentFrame:">
 <arg name="contentFrame"></arg>
