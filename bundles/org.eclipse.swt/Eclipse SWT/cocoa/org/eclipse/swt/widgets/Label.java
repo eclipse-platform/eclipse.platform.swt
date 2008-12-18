@@ -260,6 +260,9 @@ NSAttributedString createString() {
 		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 		paragraphStyle.autorelease ();
 		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
+		if ((style & SWT.RIGHT) != 0) paragraphStyle.setAlignment(OS.NSRightTextAlignment);
+		if ((style & SWT.LEFT) != 0) paragraphStyle.setAlignment(OS.NSLeftTextAlignment);
+		if ((style & SWT.CENTER) != 0) paragraphStyle.setAlignment(OS.NSCenterTextAlignment);
 		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 	}
 
@@ -409,17 +412,14 @@ void setBackground (float [] color) {
 }
 
 void _setAlignment() {
-	if ((style & SWT.RIGHT) != 0) {
-		textView.setAlignment(OS.NSRightTextAlignment);
-		imageView.setImageAlignment(OS.NSImageAlignRight);
+	if (image != null) {
+		if ((style & SWT.RIGHT) != 0) imageView.setImageAlignment(OS.NSImageAlignRight);
+		if ((style & SWT.LEFT) != 0) imageView.setImageAlignment(OS.NSImageAlignLeft);
+		if ((style & SWT.CENTER) != 0) imageView.setImageAlignment(OS.NSImageAlignCenter);
 	}
-	if ((style & SWT.LEFT) != 0) {
-		textView.setAlignment(OS.NSLeftTextAlignment);
-		imageView.setImageAlignment(OS.NSImageAlignLeft);
-	}
-	if ((style & SWT.CENTER) != 0) {
-		textView.setAlignment(OS.NSCenterTextAlignment);
-		imageView.setImageAlignment(OS.NSImageAlignCenter);
+	if (text != null) {
+		NSCell cell = new NSCell(textView.cell());
+		cell.setAttributedStringValue(createString());
 	}
 }
 
