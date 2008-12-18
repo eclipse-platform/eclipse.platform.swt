@@ -120,6 +120,7 @@ public String getMessage () {
 public String open () {
 	String directoryPath = null;
 	NSOpenPanel panel = NSOpenPanel.openPanel();
+	panel.setCanCreateDirectories(true);
 	panel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
