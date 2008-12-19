@@ -1037,8 +1037,7 @@ public void setTime (int hours, int minutes, int seconds) {
  */
 public void setYear (int year) {
 	checkWidget ();
-	//if (!isValidDate(year, getMonth(), getDay())) return;
-	if (year < MIN_YEAR || year > MAX_YEAR) return;
+	if (!isValidDate(year, getMonth(), getDay())) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.year = year;
 		OS.gtk_calendar_select_month(handle, month, year);
