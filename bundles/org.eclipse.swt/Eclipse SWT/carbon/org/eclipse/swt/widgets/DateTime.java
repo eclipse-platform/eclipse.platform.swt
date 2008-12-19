@@ -581,8 +581,6 @@ void hookEvents () {
 }
 
 boolean isValidTime(int fieldName, int value) {
-	int year = (style & SWT.TIME) != 0 ? dateAndTime.year : dateRec.year;
-	int month = (style & SWT.TIME) != 0 ? dateAndTime.month : dateRec.month;
 	Calendar calendar = Calendar.getInstance();
 	int min = calendar.getActualMinimum(fieldName);
 	int max = calendar.getActualMaximum(fieldName);
@@ -923,8 +921,7 @@ public void setTime (int hours, int minutes, int seconds) {
  */
 public void setYear (int year) {
 	checkWidget ();
-	//if (!isValidDate(year, getMonth(), getDay())) return;
-	if (year < MIN_YEAR || year > MAX_YEAR) return;
+	if (!isValidDate(year, getMonth(), getDay())) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.YEAR, year);
 	} else {

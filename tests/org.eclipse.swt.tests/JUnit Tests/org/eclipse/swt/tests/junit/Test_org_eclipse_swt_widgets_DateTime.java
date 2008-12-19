@@ -418,6 +418,7 @@ public void test_setTimeIII() {
 }
 
 public void test_setYearI() {
+	datetime.setDate(2008, AUG, 1);
 	datetime.setYear(1947);
 	assertEquals(1947, datetime.getYear());
 
