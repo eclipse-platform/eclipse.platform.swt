@@ -459,7 +459,7 @@ public void pack () {
 	int index = parent.indexOf (this);
 	for (int i=0; i<parent.itemCount; i++) {
 		TreeItem item = parent.items [i];
-		if (item != null && !item.isDisposed () && item.cached) {
+		if (item != null && !item.isDisposed ()) {
 			width = Math.max (width, item.calculateWidth (index, gc, true, true));
 			if (isDisposed ()) {
 				gc.dispose ();

@@ -230,6 +230,8 @@ static int checkIndex (int index) {
 
 /* note that the result includes tree hierarchy indentation for column 0 */
 int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasureItem) {
+	if (!cached) return 0;
+
 	int width = 0;
 	if (!callMeasureItem && customWidth != -1) {
 		width = customWidth;
@@ -287,7 +289,7 @@ int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasure
 	if (recurse && expanded) {
 		for (int i = 0; i < items.length; i++) {
 			TreeItem item = items [i];
-			if (item != null && !item.isDisposed () && item.cached) {
+			if (item != null && !item.isDisposed ()) {
 				width = Math.max (width, item.calculateWidth (columnIndex, gc, recurse, callMeasureItem));
 			}
 		}
