@@ -25,6 +25,7 @@ class WebSite extends OleControlSite {
 	COMObject iOleCommandTarget;
 	COMObject iDispatch;
 	boolean ignoreNextMessage;
+	Boolean canExecuteApplets;
 
 	static final int OLECMDID_SHOWSCRIPTERROR = 40;
 	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
@@ -502,35 +503,66 @@ int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, i
 	* all URLs by default.
 	*/
 	int policy = IE.URLPOLICY_ALLOW;
-	/*
-	* The URLACTION_JAVA flags refer to the <applet> tag, which resolves to
-	* the Microsoft VM if the applet is java 1.1.x compliant, or to the OS's
-	* java plug-in VM otherwise.  Applets launched with the MS VM work in the
-	* Browser, but applets launched with the OS's java plug-in VM crash as a
-	* result of the VM failing to load.  Set the policy to URLPOLICY_JAVA_PROHIBIT
-	* so that applets compiled with java compliance > 1.1.x will not crash. 
-	*/
+
 	if (dwAction >= IE.URLACTION_JAVA_MIN && dwAction <= IE.URLACTION_JAVA_MAX) {
-		policy = IE.URLPOLICY_JAVA_PROHIBIT;
-		ignoreNextMessage = true;
+		if (canExecuteApplets ()) {
+			policy = IE.URLPOLICY_JAVA_LOW;
+		} else {
+			policy = IE.URLPOLICY_JAVA_PROHIBIT;
+			ignoreNextMessage = true;
+		}
 	}
-	/*
-	* Note.  Some ActiveX plugins crash when executing
-	* inside the embedded explorer itself running into
-	* a JVM.  The current workaround is to detect when
-	* such ActiveX is about to be started and refuse
-	* to execute it.
-	*/
 	if (dwAction == IE.URLACTION_ACTIVEX_RUN) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, pContext, GUID.sizeof);
-		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge) || COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) {
+		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge) && !canExecuteApplets ()) {
+			policy = IE.URLPOLICY_DISALLOW;
+			ignoreNextMessage = true;
+		}
+		if (COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) {
 			policy = IE.URLPOLICY_DISALLOW;
 			ignoreNextMessage = true;
 		}
 	}
 	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
 	return policy == IE.URLPOLICY_ALLOW ? COM.S_OK : COM.S_FALSE;
+}
+
+boolean canExecuteApplets () {
+	/*
+	* Executing an applet in embedded IE will crash if IE's Java plug-in
+	* launches its jre in IE's process, because this new jre conflicts
+	* with the one running eclipse.  These cases need to be avoided by
+	* vetoing the running of applets.
+	* 
+	* However as of Sun jre 1.6u10, applets can be launched in a separate
+	* process, which avoids the conflict with the jre running eclipse.
+	* Therefore if this condition is detected, and if the required jar 
+	* libraries are available, then applets can be executed. 
+	*/
+
+	/* 
+	* executing applets with IE6 embedded can crash, so do not
+	* attempt this if the version is less than IE7
+	*/
+	if (!IE.IsIE7) return false;
+
+	if (canExecuteApplets == null) {
+		WebBrowser webBrowser = ((Browser)getParent ().getParent ()).webBrowser;
+		String script = "try {var element = document.createElement('object');element.classid='clsid:CAFEEFAC-DEC7-0000-0000-ABCDEFFEDCBA';return element.object.isPlugin2();} catch (err) {};return false;"; //$NON-NLS-1$
+		canExecuteApplets = ((Boolean)webBrowser.evaluate (script)); 
+		if (canExecuteApplets.booleanValue ()) {
+			try {
+				Class.forName ("sun.plugin2.main.server.IExplorerPlugin"); /* plugin.jar */	//$NON-NLS-1$
+				Class.forName ("com.sun.deploy.services.Service"); /* deploy.jar */	//$NON-NLS-1$
+				Class.forName ("com.sun.javaws.Globals"); /* javaws.jar */	//$NON-NLS-1$
+			} catch (ClassNotFoundException e) {
+				/* one or more of the required jar libraries are not available */
+				canExecuteApplets = Boolean.FALSE;
+			}
+		}
+	}
+	return canExecuteApplets.booleanValue ();
 }
 
 int QueryCustomPolicy(int /*long*/ pwszUrl, int /*long*/ guidKey, int /*long*/ ppPolicy, int /*long*/ pcbPolicy, int /*long*/ pContext, int cbContext, int dwReserved) {
