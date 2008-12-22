@@ -418,7 +418,7 @@ public void test_setTimeIII() {
 }
 
 public void test_setYearI() {
-	datetime.setDate(2008, AUG, 1);
+	datetime.setDate(2008, NOV, 1);
 	datetime.setYear(1947);
 	assertEquals(1947, datetime.getYear());
 
@@ -455,7 +455,6 @@ public static Test suite() {
 		suite.addTest(new Test_org_eclipse_swt_widgets_DateTime(methodName, SWT.DATE));
 		suite.addTest(new Test_org_eclipse_swt_widgets_DateTime(methodName, SWT.TIME));
 		suite.addTest(new Test_org_eclipse_swt_widgets_DateTime(methodName, SWT.CALENDAR));
-		// TODO: SWT.SHORT, SWT.MEDIUM, SWT.LONG for each of the above styles
 	}
 	return suite;
 }
