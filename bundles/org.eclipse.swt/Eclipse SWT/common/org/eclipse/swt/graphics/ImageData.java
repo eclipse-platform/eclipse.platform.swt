@@ -247,7 +247,7 @@ public final class ImageData implements CloneableCompatibility {
  * @param palette the palette of the image (must not be null)
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the width or height is negative, or if the depth is not
+ *    <li>ERROR_INVALID_ARGUMENT - if the width or height is zero or negative, or if the depth is not
  *        	one of 1, 2, 4, 8, 16, 24 or 32</li>
  *    <li>ERROR_NULL_ARGUMENT - if the palette is null</li>
  * </ul>
@@ -271,7 +271,7 @@ public ImageData(int width, int height, int depth, PaletteData palette) {
  * @param data the data of the image
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the width or height is negative, or if the depth is not
+ *    <li>ERROR_INVALID_ARGUMENT - if the width or height is zero or negative, or if the depth is not
  *        	one of 1, 2, 4, 8, 16, 24 or 32, or the data array is too small to contain the image data</li>
  *    <li>ERROR_NULL_ARGUMENT - if the palette or data is null</li>
  *    <li>ERROR_CANNOT_BE_ZERO - if the scanlinePad is zero</li>
