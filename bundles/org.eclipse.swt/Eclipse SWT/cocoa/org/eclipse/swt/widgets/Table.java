@@ -2603,6 +2603,7 @@ void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*
 
 void tableView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {
 	TableColumn column = getColumn (new id (tableColumn));
+	if (column == null) return; /* either CHECK column or firstColumn in 0-column Table */
 	column.postEvent (SWT.Selection);
 }
 

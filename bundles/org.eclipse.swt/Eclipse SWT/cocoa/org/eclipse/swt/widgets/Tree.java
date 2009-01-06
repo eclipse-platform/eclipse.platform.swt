@@ -1631,6 +1631,7 @@ int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*
 
 void outlineView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn) {
 	TreeColumn column = getColumn (new id (tableColumn));
+	if (column == null) return; /* either CHECK column or firstColumn in 0-column Tree */
 	column.postEvent (SWT.Selection);
 }
 
