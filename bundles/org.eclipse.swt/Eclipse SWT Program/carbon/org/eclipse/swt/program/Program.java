@@ -363,12 +363,12 @@ public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int rc = -1;
 	char[] unescapedChars = new char[] {'%'};
-	if (fileName.indexOf(':') == -1) {
-		fileName = PREFIX_FILE + fileName;
+	String lowercaseName = fileName.toLowerCase ();
+	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+		unescapedChars = new char[] {'%', '#'};
 	} else {
-		String lowercaseName = fileName.toLowerCase ();
-		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-			unescapedChars = new char[] {'%', '#'};
+		if (!lowercaseName.startsWith (PREFIX_FILE)) {
+			fileName = PREFIX_FILE + fileName;
 		}
 	}
 	char[] chars = new char[fileName.length()];
@@ -419,12 +419,12 @@ public boolean execute (String fileName) {
 			rc = OS.LSOpenApplication(params, null);
 		} else {
 			char[] unescapedChars = new char[] {'%'};
-			if (fileName.indexOf(':') == -1) {
-				fileName = PREFIX_FILE + fileName;
+			String lowercaseName = fileName.toLowerCase ();
+			if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+				unescapedChars = new char[] {'%', '#'};
 			} else {
-				String lowercaseName = fileName.toLowerCase ();
-				if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-					unescapedChars = new char[] {'%', '#'};
+				if (!lowercaseName.startsWith (PREFIX_FILE)) {
+					fileName = PREFIX_FILE + fileName;
 				}
 			}
 			char[] chars = new char[fileName.length()];
