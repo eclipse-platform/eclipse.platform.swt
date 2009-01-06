@@ -669,6 +669,14 @@ public void setMenu (Menu menu) {
 	}
 	nsItem.setSubmenu (menuHandle);
 	
+	if (menu != null) {
+		nsItem.setTarget(null);
+		nsItem.setAction(0);
+	} else {
+		nsItem.setTarget(nsItem);
+		nsItem.setAction(OS.sel_sendSelection);
+	}
+
 	/* Update menu title with parent item title */
 	updateText ();
 }
