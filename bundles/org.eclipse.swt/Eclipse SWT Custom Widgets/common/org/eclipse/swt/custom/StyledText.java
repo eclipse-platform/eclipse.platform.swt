@@ -5295,38 +5295,19 @@ int insertBlockSelectionText(String text) {
 		firstLine = lastLine = getCaretLine();
 		left = right = getPointAtOffset(caretOffset).x;
 	}
-	int index = 0, end = caretOffset, lineIndex = firstLine;
+	boolean fillWithSpaces = isFixedLineHeight() && renderer.fixedPitch;
+	start = caretOffset;
+	int index = 0, lineIndex = firstLine;
 	while (lineIndex <= lastLine) {
-		start = getOffsetAtPoint(left, 0, lineIndex, null);
-		end = getOffsetAtPoint(right, 0, lineIndex, null);
-		Event event = new Event();
-		event.text = index < lineCount ? lines[index++] : "";
-		event.start = start;
-		event.end = end;
-		sendKeyEvent(event);
-		end = start + event.text.length();
+		String string = index < lineCount ? lines[index++] : "";
+		start = sendTextEvent(left, right, lineIndex, string, fillWithSpaces);
 		lineIndex++;
 	}
 	while (index < lineCount) {
-		int maxLines = content.getLineCount();
-		String line;
-		if (lineIndex < maxLines) {
-			start = end = getOffsetAtPoint(left, 0, lineIndex, null);
-			line = lines[index]; 
-		} else {
-			start = end = content.getCharCount();
-			line = content.getLineDelimiter() + lines[index];
-		}
-		Event event = new Event();
-		event.text = line;
-		event.start = start;
-		event.end = end;
-		sendKeyEvent(event);
-		end = start + event.text.length();
+		start = sendTextEvent(left, left, lineIndex, lines[index++], fillWithSpaces);
 		lineIndex++;
-		index++;
 	}
-	return end;
+	return start;
 }
 void insertBlockSelectionText(char key, int action) {
 	if (key == SWT.CR || key == SWT.LF) return;
@@ -7334,6 +7315,45 @@ void sendSelectionEvent() {
 	event.x = selection.x;
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
+}
+int sendTextEvent(int left, int right, int lineIndex, String text, boolean fillWithSpaces) {
+	int lineWidth = 0, start, end;
+	StringBuffer buffer = new StringBuffer();
+	if (lineIndex < content.getLineCount()) {
+		int[] trailing = new int[1];
+		start = getOffsetAtPoint(left, getLinePixel(lineIndex), trailing, true);
+		if (start == -1) {
+			int lineOffset = content.getOffsetAtLine(lineIndex);
+			int lineLegth = content.getLine(lineIndex).length();
+			start = end = lineOffset + lineLegth;
+			if (fillWithSpaces) {
+				TextLayout layout = renderer.getTextLayout(lineIndex);
+				lineWidth = layout.getBounds().width;
+				renderer.disposeTextLayout(layout);
+			}
+		} else {
+			start += trailing[0];
+			end = left == right ? start : getOffsetAtPoint(right, 0, lineIndex, null);
+			fillWithSpaces = false;
+		}
+	} else {
+		start = end = content.getCharCount();
+		buffer.append(content.getLineDelimiter());
+	}
+	if (fillWithSpaces) {
+		int spacesWidth = left - lineWidth + horizontalScrollOffset - leftMargin;
+		int spacesCount = spacesWidth / renderer.averageCharWidth;
+		for (int i = 0; i < spacesCount; i++) {
+			buffer.append(' ');
+		}
+	}
+	buffer.append(text);
+	Event event = new Event();
+	event.start = start;
+	event.end = end;
+	event.text = buffer.toString();
+	sendKeyEvent(event);
+	return event.start + event.text.length();
 }
 int sendWordBoundaryEvent(int eventType, int movement, int offset, int newOffset, String lineText, int lineOffset) {
 	if (isListening(eventType)) {
