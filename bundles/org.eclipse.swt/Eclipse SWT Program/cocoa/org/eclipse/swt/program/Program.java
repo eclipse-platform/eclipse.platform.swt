@@ -222,12 +222,12 @@ public static boolean launch (String fileName) {
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSString unescapedStr = NSString.stringWith("%"); //$NON-NLS-1$
-		if (fileName.indexOf(':') == -1) {
-			fileName = PREFIX_FILE + fileName;
+		String lowercaseName = fileName.toLowerCase ();
+		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+			unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
 		} else {
-			String lowercaseName = fileName.toLowerCase ();
-			if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-				unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
+			if (!lowercaseName.startsWith (PREFIX_FILE)) {
+				fileName = PREFIX_FILE + fileName;
 			}
 		}
 		NSString fullPath = NSString.stringWith(fileName);
@@ -261,19 +261,17 @@ public boolean execute (String fileName) {
 	try {
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 		NSString fullPath = NSString.stringWith(fileName);
-		if (fileName.indexOf(':') == -1) {
-			return workspace.openFile(fullPath, NSString.stringWith(name));
-		}
-		NSString unescapedStr = NSString.stringWith("%"); //$NON-NLS-1$
 		String lowercaseName = fileName.toLowerCase ();
 		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-			unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
+			NSString unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
+			int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
+			NSString escapedString = new NSString(ptr);
+			NSArray urls = NSArray.arrayWithObject(NSURL.URLWithString(escapedString));
+			OS.CFRelease(ptr);
+			return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
+		} else {
+			return workspace.openFile(fullPath, NSString.stringWith(name));
 		}
-		int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
-		NSString escapedString = new NSString(ptr);
-		NSArray urls = NSArray.arrayWithObject(NSURL.URLWithString(escapedString));
-		OS.CFRelease(ptr);
-		return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
 	} finally {
 		pool.release();
 	}
