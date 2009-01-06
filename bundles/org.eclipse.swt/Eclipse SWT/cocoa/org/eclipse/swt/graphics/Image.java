@@ -265,8 +265,7 @@ public Image(Device device, Image srcImage, int flag) {
 				byte[] line = new byte[(int)/*64*/bpr];
 				for (int y=0; y<height; y++) {
 					OS.memmove(line, data + (y * bpr), bpr);
-					boolean alphaFirst = (srcRep.hasAlpha() && (srcRep.bitmapFormat() & OS.NSAlphaFirstBitmapFormat) != 0);
-					int offset = (alphaFirst ? 0 : -1);
+					int offset = 0;
 					for (int x=0; x<width; x++) {
 						int red = line[offset+1] & 0xFF;
 						int green = line[offset+2] & 0xFF;
@@ -291,8 +290,7 @@ public Image(Device device, Image srcImage, int flag) {
 				byte[] line = new byte[(int)/*64*/bpr];
 				for (int y=0; y<height; y++) {
 					OS.memmove(line, data + (y * bpr), bpr);
-					boolean alphaFirst = (srcRep.hasAlpha() && (srcRep.bitmapFormat() & OS.NSAlphaFirstBitmapFormat) != 0);
-					int offset = (alphaFirst ? 0 : -1);
+					int offset = 0;
 					for (int x=0; x<width; x++) {
 						int red = line[offset+1] & 0xFF;
 						int green = line[offset+2] & 0xFF;
@@ -542,31 +540,19 @@ void createAlpha () {
 		int /*long*/ dataSize = height * bpr;
 		byte[] srcData = new byte[(int)/*64*/dataSize];
 		OS.memmove(srcData, imageRep.bitmapData(), dataSize);
-		int /*long*/ dataFormat = imageRep.bitmapFormat();
-		boolean alphaFirst = (dataFormat & OS.NSAlphaFirstBitmapFormat) != 0;
-
 		if (transparentPixel != -1) {
-			if (alphaFirst) {
-				for (int i=0; i<dataSize; i+=4) {
-					int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
-					srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
-				}
-			} else {
-				for (int i=0; i<dataSize; i+=4) {
-					int pixel = ((srcData[i] & 0xFF) << 16) | ((srcData[i+1] & 0xFF) << 8) | (srcData[i+2] & 0xFF);
-					srcData[i + 3] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
-				}				
+			for (int i=0; i<dataSize; i+=4) {
+				int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
+				srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
 			}
 		} else if (alpha != -1) {
-			int startByte = alphaFirst ? 0 : 3;
 			byte a = (byte)this.alpha;
-			for (int i = startByte; i<dataSize; i+=4) {
+			for (int i=0; i<dataSize; i+=4) {
 				srcData[i] = a;				
 			}
 		} else {
 			int /*long*/ width = imageRep.pixelsWide();
-			int startByte = alphaFirst ? 0 : 3;
-			int offset = startByte, alphaOffset = 0;
+			int offset = 0, alphaOffset = 0;
 			for (int y = 0; y<height; y++) {
 				for (int x = 0; x<width; x++) {
 					srcData[offset] = alphaData[alphaOffset];
@@ -688,61 +674,10 @@ public ImageData getImageData() {
 		int /*long*/ bpp = imageRep.bitsPerPixel();
 		int /*long*/ dataSize = height * bpr;
 
-		// Get the bitmap data from the image representation. In the non-planar case it's easy.
 		byte[] srcData = new byte[(int)/*64*/dataSize];
-		byte imageData[] = new byte[(int)/*64*/dataSize];
-		
-		if (!imageRep.isPlanar()) {
-			OS.memmove(imageData, imageRep.bitmapData(), dataSize);
-		} else {
-			int /*long*/ bytesPerPlane = imageRep.bytesPerPlane();
-			int /*long*/ numPlanes = imageRep.numberOfPlanes();
-			
-			// getBitmapDataPlanes always returns an array of five pointers. Non-applicable
-			// data planes are set to NULL (0).
-			int /*long*/ nativeDataPlanes[] = new int /*long*/ [5];
-			imageRep.getBitmapDataPlanes(nativeDataPlanes);
-			
-			byte dataPlanes[][] = new byte[(int)/*64*/numPlanes][(int)/*64*/bytesPerPlane];
-			for (int i = 0; i < numPlanes; i++) {
-				OS.memmove(dataPlanes[i], nativeDataPlanes[i], bytesPerPlane);
-			}
-			
-			// Copy the planar data into the imageData array in ARGB format if there is alpha, and RGB if not.
-			// All non-RGB colorspace images were rejected earlier, so planes 0, 1 and 2 have the R, G, and B
-			// values, respectively. Plane 3 contains alpha values, if there is alpha.
-			NSString colorSpace = imageRep.colorSpaceName();			
-			int /*long*/ colorComponents = OS.NSNumberOfColorComponents(colorSpace.id);
-			boolean hasAlpha = false;
-			
-			if (colorComponents == 3) {
-				if (numPlanes == 4) hasAlpha = true;
-				int samplesPerPixel = (hasAlpha ? 4 : 3);
-				int firstByteOfPixel = (hasAlpha ? 1 : 0);
-				
-				for (int j = 0, k = 0; j < bytesPerPlane; j += samplesPerPixel, k++) {
-					imageData[j + firstByteOfPixel] = dataPlanes[0][k]; // red component
-					imageData[j + firstByteOfPixel + 1] = dataPlanes[1][k]; // blue component
-					imageData[j + firstByteOfPixel + 2] = dataPlanes[2][k]; // green component
-					if (hasAlpha) imageData[j] = dataPlanes[3][k]; // alpha component
-				}
-			}
-		}
-
 		OS.memmove(srcData, imageRep.bitmapData(), dataSize);
 
-		// The RGB mask depends on where the alpha was stored in the pixel data.
-		int /*long*/ dataFormat = imageRep.bitmapFormat();
-		PaletteData palette = null;
-
-		int /*long*/ bps = imageRep.bitsPerSample();
-		int blueMask = (1 << bps) - 1;
-		if (imageRep.hasAlpha() && (dataFormat & OS.NSAlphaFirstBitmapFormat) == 0) blueMask <<= bps;
-		int greenMask = blueMask << bps;
-		int redMask = greenMask << bps;
-		
-		palette = new PaletteData(redMask, greenMask, blueMask);
-
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 		ImageData data = new ImageData((int)/*64*/width, (int)/*64*/height, (int)/*64*/bpp, palette, 4, srcData);
 		data.bytesPerLine = (int)/*64*/bpr;
 
@@ -752,8 +687,7 @@ public ImageData getImageData() {
 			int maskPad = 2;
 			int /*long*/ maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
 			byte[] maskData = new byte[(int)/*64*/(height * maskBpl)];
-			int startByte = ((dataFormat & OS.NSAlphaFirstBitmapFormat) == 0 ? 3 : 0);
-			int offset = startByte, maskOffset = 0;
+			int offset = 0, maskOffset = 0;
 			for (int y = 0; y<height; y++) {
 				for (int x = 0; x<width; x++) {
 					if (srcData[offset] != 0) {
@@ -768,19 +702,14 @@ public ImageData getImageData() {
 			data.maskData = maskData;
 			data.maskPad = maskPad;
 		}
-		
-		int startByte = ((dataFormat & OS.NSAlphaFirstBitmapFormat) == 0 ? 3 : 0);
-		for (int i = startByte; i < srcData.length; i+= 4) {
+		for (int i = 0; i < srcData.length; i+= 4) {
 			srcData[i] = 0;
 		}
-		if (imageRep.hasAlpha()) {
-			data.alpha = alpha;
-			if (alpha == -1 && alphaData != null) {
-				data.alphaData = new byte[alphaData.length];
-				System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
-			}
+		data.alpha = alpha;
+		if (alpha == -1 && alphaData != null) {
+			data.alphaData = new byte[alphaData.length];
+			System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
 		}
-		
 		return data;
 	} finally {
 		if (pool != null) pool.release();
@@ -941,7 +870,6 @@ void init(ImageData image) {
 				buffer[dataIndex] = a;				
 			}
 		} else if (image.alphaData != null) {
-			hasAlpha = true;
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
 			int offset = 0, alphaOffset = 0;
@@ -974,22 +902,22 @@ void init(ImageData image) {
 
 void initNative(String filename) {
 	NSAutoreleasePool pool = null;
+	NSImage nativeImage = null;
+	
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		handle = new NSImage();
-		handle.alloc();
+		nativeImage = new NSImage();
+		nativeImage.alloc();
 		
 		// initByReferencingFile returns null if the file can't be found or is
 		// not an image.
-		handle = handle.initWithContentsOfFile(NSString.stringWith(filename));
-		if (handle == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		nativeImage = nativeImage.initWithContentsOfFile(NSString.stringWith(filename));
+		if (nativeImage == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
 		
-		NSImageRep rep = handle.bestRepresentationForDevice(null);
-		if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
-			rep.retain();
-			imageRep = new NSBitmapImageRep(rep.id);
-		} else {
-			NSArray reps = handle.representations();
+		NSBitmapImageRep nativeRep = null;
+		NSImageRep bestRep = nativeImage.bestRepresentationForDevice(null);
+		if (!bestRep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
+			NSArray reps = nativeImage.representations();
 			if (reps != null) {
 				int /*long*/ repCount = reps.count();
 				
@@ -997,39 +925,80 @@ void initNative(String filename) {
 					NSImageRep currentRep = new NSImageRep(reps.objectAtIndex(i).id);
 
 					if (currentRep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
-						currentRep.retain();
-						imageRep = new NSBitmapImageRep(currentRep.id);
+						nativeRep = new NSBitmapImageRep(currentRep.id);
 						break;
 					}
 				}
 			}
 			
-			// If all else fails, create an NSBitmapImageRep directly from the NSImage.
-			if (imageRep == null) {
-				imageRep = new NSBitmapImageRep(NSBitmapImageRep.imageRepWithData(handle.TIFFRepresentation()).id);
-				// Although addRepresentation will retain the imageRep, we need to retain as well because we will
-				// release it in destroy().
-				imageRep.retain();
-				handle.addRepresentation(imageRep);
+			// If all else fails, get an NSBitmapImageRep directly from the NSImage.
+			if (nativeRep == null) {
+				nativeRep = new NSBitmapImageRep(NSBitmapImageRep.imageRepWithData(nativeImage.TIFFRepresentation()).id);
 			}
+		} else {
+			nativeRep = new NSBitmapImageRep(bestRep.id);
 		}
 
 		// Only RGB images are supported.
-		NSString colorSpace = imageRep.colorSpaceName();
+		NSString colorSpace = nativeRep.colorSpaceName();
 		if (!colorSpace.isEqualToString(OS.NSCalibratedRGBColorSpace))
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		
-		height = (int)/*64*/imageRep.pixelsHigh();
-		width = (int)/*64*/imageRep.pixelsWide();
+		int /*long*/ height = (int)/*64*/nativeRep.pixelsHigh();
+		int /*long*/ width = (int)/*64*/nativeRep.pixelsWide();
 
 		NSSize size = new NSSize();
 		size.height = height;
 		size.width = width;
-		handle.setSize(size);
+		nativeImage.setSize(size);
+
+		// Get the image data. For non-planar images it's easy. For planar images we will walk through
+		// each plane of data.
+		int /*long*/ bpr = nativeRep.bytesPerRow();
+		int /*long*/ dataSize = height * bpr;
+
+		byte imageData[] = new byte[(int)/*64*/dataSize];
+
+		if (!nativeRep.isPlanar()) {
+			OS.memmove(imageData, nativeRep.bitmapData(), dataSize);
+		} else {
+			int /*long*/ bytesPerPlane = nativeRep.bytesPerPlane();
+			int /*long*/ numPlanes = nativeRep.numberOfPlanes();
+			
+			// getBitmapDataPlanes always returns an array of five pointers. Non-applicable
+			// data planes are set to NULL (0).
+			int /*long*/ nativeDataPlanes[] = new int /*long*/ [5];
+			nativeRep.getBitmapDataPlanes(nativeDataPlanes);
+			
+			byte dataPlanes[][] = new byte[(int)/*64*/numPlanes][(int)/*64*/bytesPerPlane];
+			for (int i = 0; i < numPlanes; i++) {
+				OS.memmove(dataPlanes[i], nativeDataPlanes[i], bytesPerPlane);
+			}
+			
+			// Copy the planar data into the imageData array in ARGB format if there is alpha, and RGB if not.
+			// All non-RGB colorspace images were rejected earlier, so planes 0, 1 and 2 have the R, G, and B
+			// values, respectively. Plane 3 contains alpha values, if there is alpha.
+			int /*long*/ colorComponents = OS.NSNumberOfColorComponents(colorSpace.id);
+			boolean hasAlpha = false;
+			
+			if (colorComponents == 3) {
+				if (numPlanes == 4) hasAlpha = true;
+				int samplesPerPixel = (hasAlpha ? 4 : 3);
+				int firstByteOfPixel = (hasAlpha ? 1 : 0);
+				
+				for (int j = 0, k = 0; j < bytesPerPlane; j += samplesPerPixel, k++) {
+					imageData[j + firstByteOfPixel] = dataPlanes[0][k]; // red component
+					imageData[j + firstByteOfPixel + 1] = dataPlanes[1][k]; // blue component
+					imageData[j + firstByteOfPixel + 2] = dataPlanes[2][k]; // green component
+					if (hasAlpha) imageData[j] = dataPlanes[3][k]; // alpha component
+				}
+			}
+		}
+
+		byte[] nativeAlphaData = null;
+		int nativeTransparentColor = -1;
 		
-		byte[] alphaData = null;
-		
-		if (imageRep.hasAlpha()) {
+		if (nativeRep.hasAlpha()) {
 			// Compute any alpha by using CGImageBitmapContext.
 			int /*long*/ bitmapBytesPerRow = width;
 			int /*long*/ bitmapByteCount = bitmapBytesPerRow * height;
@@ -1039,16 +1008,16 @@ void initNative(String filename) {
 			NSGraphicsContext.setCurrentContext(NSGraphicsContext.graphicsContextWithGraphicsPort(alphaBitmapCtx, false));
 			NSRect imageRect = new NSRect();
 			imageRect.x = imageRect.y = 0;
-			imageRect.width = handle.size().width;
-			imageRect.height = handle.size().height;
+			imageRect.width = nativeImage.size().width;
+			imageRect.height = nativeImage.size().height;
 			NSRect zeroRect = new NSRect();
 			zeroRect.x = zeroRect.y = zeroRect.height = zeroRect.width = 0;
-			handle.drawInRect(imageRect, zeroRect, OS.NSCompositeCopy, 1.0f);
+			nativeImage.drawInRect(imageRect, zeroRect, OS.NSCompositeCopy, 1.0f);
 			NSGraphicsContext.static_restoreGraphicsState();
 			
 			// The alphaBitmapBuffer now contains the alpha component as an array of bytes. 
-			alphaData = new byte[(int)/*64*/bitmapByteCount];
-			OS.memmove(alphaData, alphaBitmapData, bitmapByteCount);
+			nativeAlphaData = new byte[(int)/*64*/bitmapByteCount];
+			OS.memmove(nativeAlphaData, alphaBitmapData, bitmapByteCount);
 			OS.free(alphaBitmapData);
 			OS.CGContextRelease(alphaBitmapCtx);
 			
@@ -1060,13 +1029,13 @@ void initNative(String filename) {
 			transparentScan: {
 				for (int y = 0; y < height; y++) {
 					for (int x = 0; x < width; x++) {
-						if (alphaData[alphaOffset] != 0 && alphaData[alphaOffset] != -1) {
-							hasTransparentPixel = false;
+						if (nativeAlphaData[alphaOffset] != 0 && nativeAlphaData[alphaOffset] != -1) {
+							hasTransparentPixel = false;						
 							break transparentScan;
 						}					
 						
-						if (alphaData[alphaOffset] == 0) {
-							NSColor color = imageRep.colorAtX(x, y);
+						if (nativeAlphaData[alphaOffset] == 0) {
+							NSColor color = nativeRep.colorAtX(x, y);
 							int red = (int) (color.redComponent() * 255);
 							int green = (int) (color.greenComponent() * 255);
 							int blue = (int) (color.blueComponent() * 255);
@@ -1076,12 +1045,30 @@ void initNative(String filename) {
 						alphaOffset += 1;
 					}
 				}
-			}
+			}	
 			
-			if (hasTransparentPixel) this.transparentPixel = transparentColor;
+			if (hasTransparentPixel) nativeTransparentColor = transparentColor;
+					
 		}
 		
-		this.alphaData = alphaData;
+		// The RGB mask depends on where the alpha was stored in the pixel data.
+		int /*long*/ dataFormat = nativeRep.bitmapFormat();
+		int /*long*/ bps = nativeRep.bitsPerSample();
+		int blueMask = (1 << bps) - 1;
+		if (nativeRep.hasAlpha() && (dataFormat & OS.NSAlphaFirstBitmapFormat) == 0) blueMask <<= bps;
+		int greenMask = blueMask << bps;
+		int redMask = greenMask << bps;		
+		PaletteData palette = new PaletteData(redMask, greenMask, blueMask);
+
+		// Get the image depth.
+		int /*long*/ bpp = nativeRep.bitsPerPixel();
+
+		// We now have everything we neeed to construct an ImageData object and initialize everything from that.
+		ImageData data = new ImageData((int)/*64*/width, (int)/*64*/height, (int)/*64*/bpp, palette, 4, imageData);
+		data.bytesPerLine = (int)/*64*/bpr;
+		data.transparentPixel = nativeTransparentColor;
+		data.alpha = -1;
+		data.alphaData = nativeAlphaData;
 		
 		// For compatibility, images created from .ico files are treated as SWT.ICON format, even though
 		// they are no different than other bitmaps in Cocoa.
@@ -1090,7 +1077,10 @@ void initNative(String filename) {
 		} else {
 			this.type = SWT.BITMAP;
 		}
+		
+		this.init(data);
 	} finally {
+		if (nativeImage != null) nativeImage.release();
 		if (pool != null) pool.release();
 	}
 
@@ -1127,7 +1117,10 @@ public int /*long*/ internal_new_GC (GCData data) {
 			data.bitmapDataAddress = OS.malloc(C.PTR_SIZEOF);
 			OS.memmove(data.bitmapDataAddress, new int /*long*/[] {bitmapData}, C.PTR_SIZEOF);
 			rep = rep.initWithBitmapDataPlanes(data.bitmapDataAddress, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat , bpr, 32);
-			rep.autorelease();
+			handle.removeRepresentation(imageRep);
+			imageRep.release();
+			handle.addRepresentation(rep);
+			imageRep = rep;
 		}
 		
 		handle.setCacheMode(OS.NSImageCacheNever);
@@ -1251,12 +1244,10 @@ public void setBackground(Color color) {
 		byte newBlue = (byte)((int)(color.handle[2] * 255) & 0xFF);
 		int /*long*/ bpr = imageRep.bytesPerRow();
 		int /*long*/ data = imageRep.bitmapData();
-		boolean alphaFirst = (imageRep.hasAlpha() && (imageRep.bitmapFormat() & OS.NSAlphaFirstBitmapFormat) != 0);
-		int /*long*/ firstColorCompOffset = (alphaFirst ? 0 : -1);
 		byte[] line = new byte[(int)bpr];
 		for (int i = 0, offset = 0; i < height; i++, offset += bpr) {
 			OS.memmove(line, data + offset, bpr);
-			for (int j = (int)/*64*/firstColorCompOffset; j  < line.length; j += 4) {
+			for (int j = 0; j  < line.length; j += 4) {
 				if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
 					line[j + 1] = newRed;
 					line[j + 2] = newGreen;
