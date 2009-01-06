@@ -5253,13 +5253,13 @@ public void insert(String string) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	if (blockSelection) {
-		insertBlockSelectionText(string); 
+		insertBlockSelectionText(string, false); 
 	} else {
 		Point sel = getSelectionRange();
 		replaceTextRange(sel.x, sel.y, string);
 	}
 }
-int insertBlockSelectionText(String text) {
+int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 	int lineCount = 1;
 	for (int i = 0; i < text.length(); i++) {
 		char ch = text.charAt(i);
@@ -5295,7 +5295,6 @@ int insertBlockSelectionText(String text) {
 		firstLine = lastLine = getCaretLine();
 		left = right = getPointAtOffset(caretOffset).x;
 	}
-	boolean fillWithSpaces = isFixedLineHeight() && renderer.fixedPitch;
 	start = caretOffset;
 	int index = 0, lineIndex = firstLine;
 	while (lineIndex <= lastLine) {
@@ -6519,7 +6518,8 @@ public void paste(){
 	String text = (String) getClipboardContent(DND.CLIPBOARD);
 	if (text != null && text.length() > 0) {
 		if (blockSelection) {
-			int offset = insertBlockSelectionText(text);
+			boolean fillWithSpaces = isFixedLineHeight() && renderer.fixedPitch;
+			int offset = insertBlockSelectionText(text, fillWithSpaces);
 			setCaretOffset(offset, SWT.DEFAULT);
 			clearBlockSelection(true, true);
 			setCaretLocation();
