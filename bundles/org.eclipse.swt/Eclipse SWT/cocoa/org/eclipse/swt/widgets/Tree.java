@@ -344,7 +344,7 @@ public void clearAll (boolean all) {
 void clearCustomWidths (TreeItem item) {
 	item.customWidth = -1;
 	for (int i = 0; i < item.itemCount; i++) {
-		clearCustomWidths (items[i]);
+		clearCustomWidths (item.items[i]);
 	}
 }
 
