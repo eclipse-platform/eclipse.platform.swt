@@ -2744,7 +2744,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 			} else {
 				if (isFixedLineHeight() && renderer.fixedPitch) {
 					int avg = renderer.averageCharWidth; 
-					x = ((x + horizontalScrollOffset) / avg * avg) - horizontalScrollOffset;
+					x = ((x + horizontalScrollOffset) / avg * avg) - horizontalScrollOffset + leftMargin;
 				}
 				setBlockSelectionLocation(x, y, true);
 				return;
