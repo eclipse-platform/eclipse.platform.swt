@@ -1626,7 +1626,6 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ index, int /*long*/ itemID) {
 	TreeItem parent = (TreeItem) display.getWidget (itemID);
 	TreeItem item = _getItem (parent, (int)/*64*/index, true);
-	checkData (item, false);
 	return item.handle.id;
 }
 
@@ -1637,6 +1636,7 @@ void outlineView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*l
 
 int /*long*/ outlineView_objectValueForTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn, int /*long*/ itemID) {
 	TreeItem item = (TreeItem) display.getWidget (itemID);
+	checkData (item, false);
 	if (checkColumn != null && tableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
