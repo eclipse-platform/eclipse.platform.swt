@@ -262,10 +262,16 @@ public void setControl (Control control) {
 	}
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
-	int index = parent.indexOf (this);
-	if (index != parent.getSelectionIndex ()) {
-		if (newControl != null) newControl.setVisible (false);
-		return;
+	int index = parent.indexOf (this), selectionIndex = parent.getSelectionIndex();
+	if (index != selectionIndex) {
+		if (newControl != null) {
+			if (selectionIndex != -1) {
+				Control selectedControl = parent.getItem(selectionIndex).getControl();
+				if (selectedControl == newControl) return;
+			}
+			newControl.setVisible(false);
+			return;
+		}
 	}
 	if (newControl != null) {
 		newControl.setBounds (parent.getClientArea ());
