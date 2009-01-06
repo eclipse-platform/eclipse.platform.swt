@@ -405,7 +405,14 @@ public void setAlignment (int alignment) {
 
 void setBackground (float [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	NSColor nsColor = null;
+	
+	if (color != null) {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	} else {
+		nsColor = NSColor.clearColor();
+	}
+	
 	((NSBox)view).setFillColor(nsColor);
 }
 
