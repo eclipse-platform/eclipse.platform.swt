@@ -249,9 +249,16 @@ public void setControl (Control control) {
 	}
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
-	int index = parent.indexOf (this);
-	if (index != parent.getSelectionIndex ()) {
-		if (newControl != null) newControl.setVisible (false);
+	int index = parent.indexOf (this), selectionIndex = parent.getSelectionIndex();;
+	if (index != selectionIndex) {
+		if (newControl != null) {
+			boolean hideControl = true;
+			if (selectionIndex != -1) {
+				Control selectedControl = parent.getItem(selectionIndex).getControl();
+				if (selectedControl == newControl) hideControl=false;
+			} 
+			if (hideControl) newControl.setVisible(false);
+		}
 	} else {
 		if (newControl != null) {
 			newControl.setVisible (true);
