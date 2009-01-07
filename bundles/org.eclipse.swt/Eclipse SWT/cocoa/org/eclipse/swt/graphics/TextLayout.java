@@ -136,7 +136,7 @@ void computeRuns() {
 	layoutManager.addTextContainer(textContainer);
 
 	/*
-	* Feature in Cocoa. Adding attributes directly to a NSTextStorage causes
+	* Bug in Cocoa. Adding attributes directly to a NSTextStorage causes
 	* output to the console and eventually a segmentation fault when printing 
 	* on a thread other than the main thread. The fix is to add attributes to
 	* a separate NSMutableAttributedString and add it to text storage when done.
