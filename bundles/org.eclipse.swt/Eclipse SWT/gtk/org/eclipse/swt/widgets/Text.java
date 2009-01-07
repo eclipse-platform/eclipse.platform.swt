@@ -55,6 +55,7 @@ public class Text extends Scrollable {
 	
 	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = OS.GtkTextIter_sizeof();
+	static final int SPACE_FOR_CURSOR = 1;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -396,6 +397,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trim.y -= yborder;
 	trim.width += 2 * xborder;
 	trim.height += 2 * yborder;
+	trim.width += SPACE_FOR_CURSOR;
 	return new Rectangle (trim.x, trim.y, trim.width, trim.height);
 }
 
