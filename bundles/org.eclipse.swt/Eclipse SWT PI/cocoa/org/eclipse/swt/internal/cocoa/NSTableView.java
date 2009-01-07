@@ -28,10 +28,6 @@ public void addTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, column != null ? column.id : 0);
 }
 
-public int /*long*/ columnAutoresizingStyle() {
-	return OS.objc_msgSend(this.id, OS.sel_columnAutoresizingStyle);
-}
-
 public NSIndexSet columnIndexesInRect(NSRect rect) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_columnIndexesInRect_, rect);
 	return result != 0 ? new NSIndexSet(result) : null;

@@ -579,7 +579,6 @@ public static final int /*long*/ sel_colorUsingColorSpaceName_ = sel_registerNam
 public static final int /*long*/ sel_colorWithDeviceRed_green_blue_alpha_ = sel_registerName("colorWithDeviceRed:green:blue:alpha:");
 public static final int /*long*/ sel_colorWithPatternImage_ = sel_registerName("colorWithPatternImage:");
 public static final int /*long*/ sel_columnAtPoint_ = sel_registerName("columnAtPoint:");
-public static final int /*long*/ sel_columnAutoresizingStyle = sel_registerName("columnAutoresizingStyle");
 public static final int /*long*/ sel_columnIndexesInRect_ = sel_registerName("columnIndexesInRect:");
 public static final int /*long*/ sel_columnWithIdentifier_ = sel_registerName("columnWithIdentifier:");
 public static final int /*long*/ sel_comboBoxSelectionDidChange_ = sel_registerName("comboBoxSelectionDidChange:");

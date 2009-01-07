@@ -400,6 +400,7 @@ void createHandle () {
 	widget.setAllowsColumnReordering (false);
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
+	widget.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 
@@ -716,15 +717,15 @@ void destroyItem (TableColumn column) {
 
 	int oldIndex = (int)/*64*/((NSTableView)view).columnWithIdentifier (column.nsColumn);
 
-	if (columnCount == 1) {
+	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
+	columns [columnCount] = null;
+	if (columnCount == 0) {
 		//TODO - reset attributes
 		firstColumn = column.nsColumn;
-		firstColumn.setWidth (0);
+		setScrollWidth ();
 	} else {
 		((NSTableView)view).removeTableColumn(column.nsColumn);
 	}
-	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
-	columns [columnCount] = null;
 
 	NSArray array = ((NSTableView)view).tableColumns ();
 	int arraySize = (int)/*64*/array.count ();
@@ -2171,15 +2172,8 @@ boolean setScrollWidth (TableItem items[], boolean callMeasureItem) {
 	}
 	gc.dispose ();
 	newWidth += getInsetWidth ();
-	if (firstColumn.width () < newWidth) {
-		NSTableView tableView = (NSTableView)view;
-		int /*long*/ oldResize = tableView.columnAutoresizingStyle ();
-		tableView.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
-		firstColumn.setWidth (newWidth);
-		tableView.setColumnAutoresizingStyle (oldResize);
-		return true;
-	}
-	return false;
+	firstColumn.setWidth (newWidth);
+	return true;
 }
 
 /**

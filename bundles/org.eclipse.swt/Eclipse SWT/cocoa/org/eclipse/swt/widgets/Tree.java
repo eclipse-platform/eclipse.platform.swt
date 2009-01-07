@@ -450,6 +450,7 @@ void createHandle () {
 	widget.setAutosaveExpandedItems (true);
 	widget.setDataSource (widget);
 	widget.setDelegate (widget);
+	widget.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
 	widget.setDoubleAction (OS.sel_sendDoubleSelection);
 	if (!hasBorder ()) widget.setFocusRingType (OS.NSFocusRingTypeNone);
 	
@@ -729,18 +730,18 @@ void destroyItem (TreeColumn column) {
 
 	int oldIndex = (int)/*64*/((NSOutlineView)view).columnWithIdentifier (column.nsColumn);
 
-	if (columnCount == 1) {
+	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
+	columns [columnCount] = null;
+	if (columnCount == 0) {
 		//TODO - reset attributes
 		firstColumn = column.nsColumn;
-		firstColumn.setWidth (0);
+		setScrollWidth ();
 	} else {
 		if (index == 0) {
-			((NSOutlineView)view).setOutlineTableColumn(columns[1].nsColumn);
+			((NSOutlineView)view).setOutlineTableColumn(columns[0].nsColumn);
 		}
 		((NSOutlineView)view).removeTableColumn(column.nsColumn);
 	}
-	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
-	columns [columnCount] = null;
 
 	NSArray array = ((NSOutlineView)view).tableColumns ();
 	int arraySize = (int)/*64*/array.count ();
@@ -2321,15 +2322,8 @@ boolean setScrollWidth (TreeItem[] items, boolean recurse, boolean callMeasureIt
 		}
 	}
 	gc.dispose ();
-	if (firstColumn.width () < newWidth) {
-		NSOutlineView outlineView = (NSOutlineView)view;
-		int /*long*/ oldResize = outlineView.columnAutoresizingStyle ();
-		outlineView.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
-		firstColumn.setWidth (newWidth);
-		outlineView.setColumnAutoresizingStyle (oldResize);
-		return true;
-	}
-	return false;
+	firstColumn.setWidth (newWidth);
+	return true;
 }
 
 /**
