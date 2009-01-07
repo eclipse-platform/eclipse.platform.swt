@@ -825,6 +825,7 @@ void saveFocus () {
 }
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	swFlags = OS.SW_SHOWNOACTIVATE;
 	if (OS.IsWinCE) {
 		swFlags = OS.SW_RESTORE;
 	} else {
