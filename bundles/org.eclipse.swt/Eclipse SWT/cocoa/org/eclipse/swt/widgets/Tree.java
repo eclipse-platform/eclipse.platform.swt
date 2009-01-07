@@ -1771,7 +1771,7 @@ void outlineViewItemDidExpand (int /*long*/ id, int /*long*/ sel, int /*long*/ n
 	NSString key = NSString.stringWith ("NSObject"); //$NON-NLS-1$
 	int /*long*/ itemHandle = info.objectForKey (key).id;
 	TreeItem item = (TreeItem)display.getWidget (itemHandle);
-	setScrollWidth (item.getItems (), true, true);
+	setScrollWidth (item.getItems (), true, true, false);
 }
 
 void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
@@ -2295,14 +2295,14 @@ public void setRedraw (boolean redraw) {
 }
 
 boolean setScrollWidth () {
-	return setScrollWidth (items, true, true);
+	return setScrollWidth (items, true, true, true);
 }
 
 boolean setScrollWidth (TreeItem item, boolean recurse, boolean callMeasureItem) {
-	return setScrollWidth (new TreeItem[] {item}, recurse, callMeasureItem);
+	return setScrollWidth (new TreeItem[] {item}, recurse, callMeasureItem, false);
 }
 
-boolean setScrollWidth (TreeItem[] items, boolean recurse, boolean callMeasureItem) {
+boolean setScrollWidth (TreeItem[] items, boolean recurse, boolean callMeasureItem, boolean isAllItems) {
 	if (columnCount != 0) return false;
 //	if (currentItem != null) {
 //		if (currentItem != item) fixScrollWidth = true;
@@ -2322,7 +2322,13 @@ boolean setScrollWidth (TreeItem[] items, boolean recurse, boolean callMeasureIt
 		}
 	}
 	gc.dispose ();
-	firstColumn.setWidth (newWidth);
+	/*
+	 * update the column width either if it needs to grow, or if all items in the Tree
+	 * were measured (in which case it is safe to shrink the column if appropriate)
+	 */
+	if ((firstColumn.width () < newWidth) || (isAllItems && recurse)) {
+		firstColumn.setWidth (newWidth);
+	}
 	return true;
 }
 

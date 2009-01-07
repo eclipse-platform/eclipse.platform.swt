@@ -2145,14 +2145,14 @@ public void setLinesVisible (boolean show) {
 }
 
 boolean setScrollWidth () {
-	return setScrollWidth (items, true);
+	return setScrollWidth (items, true, true);
 }
 
 boolean setScrollWidth (TableItem item, boolean callMeasureItem) {
-	return setScrollWidth (new TableItem[] {item}, callMeasureItem);
+	return setScrollWidth (new TableItem[] {item}, callMeasureItem, false);
 }
 
-boolean setScrollWidth (TableItem items[], boolean callMeasureItem) {
+boolean setScrollWidth (TableItem items[], boolean callMeasureItem, boolean isAllItems) {
 	if (columnCount != 0) return false;
 	if (currentItem != null) {
 //		if (currentItem != item) fixScrollWidth = true;
@@ -2173,7 +2173,13 @@ boolean setScrollWidth (TableItem items[], boolean callMeasureItem) {
 	}
 	gc.dispose ();
 	newWidth += getInsetWidth ();
-	firstColumn.setWidth (newWidth);
+	/*
+	 * update the column width either if it needs to grow, or if all items in the Table
+	 * were measured (in which case it is safe to shrink the column if appropriate)
+	 */
+	if ((firstColumn.width () < newWidth) || isAllItems) {
+		firstColumn.setWidth (newWidth);
+	}
 	return true;
 }
 
