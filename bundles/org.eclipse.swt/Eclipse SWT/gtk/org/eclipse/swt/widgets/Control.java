@@ -2103,6 +2103,7 @@ public boolean forceFocus () {
 }
 
 boolean forceFocus (int /*long*/ focusHandle) {
+	if( focusHandle != 0 && OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return true;
 	/* When the control is zero sized it must be realized */
 	OS.gtk_widget_realize (focusHandle);
 	OS.gtk_widget_grab_focus (focusHandle);
