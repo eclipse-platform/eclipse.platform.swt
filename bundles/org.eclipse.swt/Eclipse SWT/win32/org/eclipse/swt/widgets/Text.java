@@ -2339,7 +2339,6 @@ LRESULT wmClipboard (int msg, int /*long*/ wParam, int /*long*/ lParam) {
 		case OS.WM_UNDO:
 			if (OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0) != 0) {
 				ignoreModify = ignoreCharacter = true;
-				OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 				callWindowProc (handle, msg, wParam, lParam);
 				int length = OS.GetWindowTextLength (handle);
 				int [] newStart = new int [1], newEnd = new int [1];
@@ -2352,6 +2351,7 @@ LRESULT wmClipboard (int msg, int /*long*/ wParam, int /*long*/ lParam) {
 					newText = "";
 				}
 				callWindowProc (handle, msg, wParam, lParam);
+				OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 				ignoreModify = ignoreCharacter = false;
 			}
 			break;
