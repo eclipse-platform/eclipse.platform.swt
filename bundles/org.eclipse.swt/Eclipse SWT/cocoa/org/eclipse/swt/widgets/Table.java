@@ -407,7 +407,7 @@ void createHandle () {
 	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
 	widget.setHeaderView (null);
 
-	NSString str = NSString.stringWith("");
+	NSString str = NSString.stringWith(""); //$NON-NLS-1$
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn)new NSTableColumn().alloc();
 		checkColumn.initWithIdentifier(checkColumn);
@@ -427,6 +427,7 @@ void createHandle () {
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
 	firstColumn.initWithIdentifier(firstColumn);
 	firstColumn.setMinWidth(0);
+	firstColumn.headerCell ().setTitle (str);
 	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
 	dataCell = (NSBrowserCell)new SWTBrowserCell ().alloc ().init ();
 	firstColumn.setDataCell (dataCell);

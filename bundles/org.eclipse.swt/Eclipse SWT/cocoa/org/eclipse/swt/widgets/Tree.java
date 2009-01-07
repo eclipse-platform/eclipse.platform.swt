@@ -457,7 +457,7 @@ void createHandle () {
 	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
 	widget.setHeaderView (null);
 	
-	NSString str = NSString.stringWith ("");
+	NSString str = NSString.stringWith ("");  //$NON-NLS-1$
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 		checkColumn.initWithIdentifier (checkColumn);
