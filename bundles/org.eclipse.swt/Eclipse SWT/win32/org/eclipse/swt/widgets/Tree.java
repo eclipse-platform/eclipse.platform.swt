@@ -5751,6 +5751,9 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 					rect.right = clientRect.right;
 					rect.left = Math.max (clientRect.left, rect.right - width);
 				}
+			} else {
+				rect.left = Math.max (rect.left, clientRect.left);
+				rect.right = Math.min (rect.right, clientRect.right);
 			}
 			int /*long*/ hRgn = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
 			for (int i = 1; i < count; i++) {
@@ -5760,6 +5763,9 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 				if ((style & SWT.FULL_SELECTION) != 0) {
 					itemRect.left = rect.left;
 					itemRect.right = rect.right;
+				} else {
+					itemRect.left = Math.max (itemRect.left, clientRect.left);
+					itemRect.right = Math.min (itemRect.right, clientRect.right);
 				}
 				int /*long*/ rectRgn = OS.CreateRectRgn (itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
 				OS.CombineRgn (hRgn, hRgn, rectRgn, OS.RGN_OR);
