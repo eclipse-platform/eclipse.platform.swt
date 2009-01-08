@@ -9212,8 +9212,8 @@
 <arg name="antialias" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="shouldAntialias">
-<retval></retval>
+<method selector="shouldAntialias" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 </class>
 <class name="NSHelpManager">

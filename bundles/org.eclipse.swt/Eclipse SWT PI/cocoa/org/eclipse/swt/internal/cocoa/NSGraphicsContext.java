@@ -96,4 +96,8 @@ public void setShouldAntialias(boolean antialias) {
 	OS.objc_msgSend(this.id, OS.sel_setShouldAntialias_, antialias);
 }
 
+public boolean shouldAntialias() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_shouldAntialias);
+}
+
 }

@@ -241,8 +241,10 @@ NSAutoreleasePool checkGC (int mask) {
 			}
 		}
 		if ((data.state & CLIPPING) == 0 || (data.state & TRANSFORM) == 0) {
+			boolean antialias = handle.shouldAntialias();
 			handle.restoreGraphicsState();
 			handle.saveGraphicsState();
+			handle.setShouldAntialias(antialias);
 			if (view != null && data.paintRect == null) {
 				NSAffineTransform transform = NSAffineTransform.transform();
 				NSRect rect = data.windowRect;
