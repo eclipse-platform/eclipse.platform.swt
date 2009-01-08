@@ -768,6 +768,8 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			boolean handled = false;
 			ScrollBar bar = verticalBar;
 			if (delta != 0 && bar != null && bar.getEnabled ()) {
+				if (-1 < delta && delta < 0) delta = -1;
+				if (0 < delta && delta < 1) delta = 1;
 				int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
 				bar.setSelection (selection);
 				Event event = new Event ();
