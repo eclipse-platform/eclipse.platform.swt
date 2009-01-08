@@ -654,13 +654,7 @@ void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	sendEvent (SWT.Show);
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (item != null) {
-			if (item.accelerator == 0) {
-				if (item.nsItem.keyEquivalent ().length () != 0 || item.nsItem.keyEquivalentModifierMask () != 0) {
-					item.nsItem.setHidden (false);
-				}
-			}
-		}
+		if (item != null)  item.updateAccelerator (true);
 	}
 }
 
@@ -669,13 +663,7 @@ void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	visible = false;
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (item != null) {
-			if (item.accelerator == 0) {
-				if (item.nsItem.keyEquivalent().length () != 0 || item.nsItem.keyEquivalentModifierMask () != 0) {
-					item.nsItem.setHidden (true);
-				}
-			}
-		}
+		if (item != null)  item.updateAccelerator (false);
 	}
 }
 

@@ -562,10 +562,6 @@ public void setAccelerator (int accelerator) {
 	if ((accelerator & SWT.COMMAND) != 0) mask |= OS.NSCommandKeyMask;
 	if ((accelerator & SWT.ALT) != 0) mask |= OS.NSAlternateKeyMask;
 	nsItem.setKeyEquivalentModifierMask (mask);
-	nsItem.setHidden (false);
-	if ((this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0)) {
-		updateText ();
-	}
 }
 
 /**
@@ -755,7 +751,7 @@ public void setText (String string) {
 	updateText ();
 }
 	
-void updateText() {
+void updateText () {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
@@ -775,8 +771,23 @@ void updateText() {
 	} else {
 		nsItem.setTitle (label);
 	}
-	if (accelerator == 0) {
-		int mask = 0, key = 0;
+}
+
+void updateAccelerator (boolean show) {
+	if (accelerator != 0) return;
+	int mask = 0, key = 0;
+	if (show) {
+		char [] buffer = new char [text.length ()];
+		text.getChars (0, buffer.length, buffer, 0);
+		int i=0, j=0;
+		while (i < buffer.length) {
+			if (buffer [i] == '\t') break;
+			if ((buffer [j++] = buffer [i++]) == '&') {
+				if (i == buffer.length) {continue;}
+				if (buffer [i] == '&') {i++; continue;}
+				j--;
+			}
+		}
 		if (i < buffer.length && buffer [i] == '\t') {
 			for (j = i + 1; j < buffer.length; j++) {
 				switch (buffer [j]) {
@@ -823,12 +834,10 @@ void updateText() {
 					break;
 			}
 		}
-		NSString string = NSString.stringWith (key == 0 ? "" : (char)key + "");
-		nsItem.setKeyEquivalentModifierMask (mask);
-		nsItem.setKeyEquivalent (string.lowercaseString ());
-		//TODO - only hide when key != 0 (fix all places)
-		nsItem.setHidden (key != 0 || mask != 0);
 	}
+	NSString string = NSString.stringWith (key == 0 ? "" : String.valueOf ((char)key));
+	nsItem.setKeyEquivalentModifierMask (mask);
+	nsItem.setKeyEquivalent (string.lowercaseString ());
 }
 
 }
