@@ -1004,6 +1004,7 @@ public class SWT {
 
 	/**
 	 * Style constant for search behavior (value is 1&lt;&lt;7).
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * </ul></p>
@@ -2494,6 +2495,7 @@ public class SWT {
 	 * valid combinations are OK|CANCEL, YES|NO|CANCEL, RETRY|CANCEL
 	 * (value is 1&lt;&lt;8).  This style constant is also used with 
 	 * <code>Text</code> in combination with SEARCH.
+	 * <br>Note that when used in combination with SEARCH, this is a <em>HINT</em>.
 	 * 
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>MessageBox</code></li>
