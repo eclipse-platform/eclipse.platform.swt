@@ -122,7 +122,7 @@ import org.eclipse.swt.graphics.*;
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
 	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
-	boolean showWithParent;
+	boolean showWithParent, ignoreBounds;
 	int invalRgn;
 	Control lastActive;
 	Rect rgnRect;
@@ -1027,18 +1027,22 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int [] attributes = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
 	if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
-		moved = true;
-		sendEvent (SWT.Move);
-		if (isDisposed ()) return OS.noErr;
+		if (!ignoreBounds) {
+			moved = true;
+			sendEvent (SWT.Move);
+			if (isDisposed ()) return OS.noErr;
+		}
 	}
 	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
-		resized = true;
 		resizeBounds ();
-		sendEvent (SWT.Resize);
-		if (isDisposed ()) return OS.noErr;
-		if (layout != null) {
-			markLayout (false, false);
-			updateLayout (false);
+		if (!ignoreBounds) {
+			resized = true;
+			sendEvent (SWT.Resize);
+			if (isDisposed ()) return OS.noErr;
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false);
+			}
 		}
 		if (region != null && !region.isDisposed()) {
 			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rgnRect);
@@ -1608,7 +1612,9 @@ public void setMaximized (boolean maximized) {
 		pt.v = (short) (rect.bottom - rect.top);
 	}
 	short inPartCode = (short) (maximized ? OS.inZoomOut : OS.inZoomIn);
+	if (!opened) ignoreBounds = true;
 	OS.ZoomWindowIdeal (shellHandle, inPartCode, pt);
+	if (!opened) ignoreBounds = false;
 }
 
 public void setMinimized (boolean minimized) {
