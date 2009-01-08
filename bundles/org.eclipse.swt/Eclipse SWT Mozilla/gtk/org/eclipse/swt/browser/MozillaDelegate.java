@@ -69,6 +69,9 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return Converter.wcsToMbcs (codePage, string, terminate);
 }
 
+void addWindowSubclass () {
+}
+
 int /*long*/ getHandle () {
 	/*
 	* Bug in Mozilla Linux GTK.  Embedding Mozilla into a GtkFixed
@@ -193,6 +196,9 @@ void onDispose (int /*long*/ embedHandle) {
 		listener = null;
 	}
 	browser = null;
+}
+
+void removeWindowSubclass () {
 }
 
 void setSize (int /*long*/ embedHandle, int width, int height) {

@@ -84,6 +84,9 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return Converter.wcsToMbcs (codePage, string, terminate);
 }
 
+void addWindowSubclass () {
+}
+
 int getHandle() {
 	if (Mozilla.BrowserCount == 1) {
 		GTK.gtk_init_check (new int[1], null);
@@ -166,6 +169,9 @@ void onDispose (int embedHandle) {
 	}
 
 	browser = null;
+}
+
+void removeWindowSubclass () {
 }
 
 void setSize(int embedHandle, int width, int height) {

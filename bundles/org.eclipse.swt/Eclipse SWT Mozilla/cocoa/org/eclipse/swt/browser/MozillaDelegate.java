@@ -72,6 +72,9 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return string.getBytes();
 }
 
+void addWindowSubclass () {
+}
+
 int /*long*/ getHandle () {
 	return browser.view.id;
 }
@@ -125,6 +128,9 @@ void onDispose (int /*long*/ embedHandle) {
 		listener = null;
 	}
 	browser = null;
+}
+
+void removeWindowSubclass () {
 }
 
 void setSize (int /*long*/ embedHandle, int width, int height) {

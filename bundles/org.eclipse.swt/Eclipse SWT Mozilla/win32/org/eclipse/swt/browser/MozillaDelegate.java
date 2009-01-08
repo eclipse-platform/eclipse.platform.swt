@@ -11,11 +11,14 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
+	int /*long*/ mozillaProc;
+	Callback subclassProc;
 	
 MozillaDelegate (Browser browser) {
 	super ();
@@ -54,6 +57,13 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return bytes;
 }
 
+void addWindowSubclass () {
+	int /*long*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
+	mozillaProc = OS.GetWindowLong (hwndChild, OS.GWL_WNDPROC);
+	subclassProc = new Callback (this, "windowProc", 4); //$NON-NLS-1$
+	OS.SetWindowLong (hwndChild, OS.GWL_WNDPROC, subclassProc.getAddress ());
+}
+
 int /*long*/ getHandle () {
 	return browser.handle;
 }
@@ -85,9 +95,31 @@ boolean needsSpinup () {
 
 void onDispose (int /*long*/ embedHandle) {
 	browser = null;
+	if (subclassProc != null) {
+		subclassProc.dispose ();
+		subclassProc = null;
+	}
+}
+
+void removeWindowSubclass () {
+	if (subclassProc == null) return;
+	int /*long*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
+	OS.SetWindowLong (hwndChild, OS.GWL_WNDPROC, mozillaProc);
+	subclassProc.dispose ();
+	subclassProc = null;
 }
 
 void setSize (int /*long*/ embedHandle, int width, int height) {
 }
 
+int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
+	switch (msg) {
+		case OS.WM_ERASEBKGND:
+			RECT rect = new RECT ();
+			OS.GetClientRect (hwnd, rect);
+			OS.FillRect (wParam, rect, OS.GetSysColorBrush (OS.COLOR_WINDOW));
+			break;
+	}
+	return OS.CallWindowProc (mozillaProc, hwnd, msg, wParam, lParam);
+}
 }

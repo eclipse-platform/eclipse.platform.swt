@@ -17,6 +17,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
@@ -102,6 +103,9 @@ static int eventProc3 (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return OS.eventNotHandledErr;
+}
+
+void addWindowSubclass () {
 }
 
 int getHandle () {
@@ -225,6 +229,9 @@ void onDispose (int embedHandle) {
 		listener = null;
 	}
 	browser = null;
+}
+
+void removeWindowSubclass () {
 }
 
 void setSize (int embedHandle, int width, int height) {
