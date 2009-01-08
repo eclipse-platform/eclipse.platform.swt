@@ -720,6 +720,10 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
+	return wmScrollWheel (true, wParam, lParam);
+}
+
 LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
 	GCData data = new GCData ();

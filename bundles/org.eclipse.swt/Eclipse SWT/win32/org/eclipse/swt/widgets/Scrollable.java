@@ -276,82 +276,7 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
-	int scrollRemainder = display.scrollRemainder;
-	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
-	*/
-	if ((state & CANVAS) != 0) {
-		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return result;
-		boolean vertical = verticalBar != null && verticalBar.getEnabled ();
-		boolean horizontal = horizontalBar != null && horizontalBar.getEnabled ();
-		int msg = vertical ? OS.WM_VSCROLL : horizontal ? OS.WM_HSCROLL : 0;
-		if (msg == 0) return result;
-		int [] linesToScroll = new int [1];
-		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
-		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
-		boolean pageScroll = linesToScroll [0] == OS.WHEEL_PAGESCROLL;
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-			ScrollBar bar = vertical ? verticalBar : horizontalBar;
-			SCROLLINFO info = new SCROLLINFO ();
-			info.cbSize = SCROLLINFO.sizeof;
-			info.fMask = OS.SIF_POS;
-			OS.GetScrollInfo (handle, bar.scrollBarType (), info);
-			if (vertical && !pageScroll) delta *= linesToScroll [0];
-			int increment = pageScroll ? bar.getPageIncrement () : bar.getIncrement ();
-			info.nPos -=  increment * delta / OS.WHEEL_DELTA;
-			OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
-			OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
-		} else {
-			int code = 0;
-	  		if (pageScroll) {
-	   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
-	  		} else {
-	  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
-	  			if (msg == OS.WM_VSCROLL) delta *= linesToScroll [0];
-	  		}
-	  		/* Check if the delta and the remainder have the same direction (sign) */
-	  		if ((delta ^ scrollRemainder) >= 0) delta += scrollRemainder;
-			int count = Math.abs (delta) / OS.WHEEL_DELTA;
-			for (int i=0; i<count; i++) {
-				OS.SendMessage (handle, msg, code, 0);
-			}
-		}
-		return LRESULT.ZERO;
-	}
-		
-	/*
-	* When the native widget scrolls inside WM_MOUSEWHEEL, it
-	* may or may not send a WM_VSCROLL or WM_HSCROLL to do the
-	* actual scrolling.  This depends on the implementation of
-	* each native widget.  In order to ensure that application
-	* code is notified when the scroll bar moves, compare the
-	* scroll bar position before and after the WM_MOUSEWHEEL.
-	* If the native control sends a WM_VSCROLL or WM_HSCROLL,
-	* then the application has already been notified.  If not
-	* explicitly send the event.
-	*/
-	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
-	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
-	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
-	if (verticalBar != null) {
-		int position = verticalBar.getSelection ();
-		if (position != vPosition) {
-			Event event = new Event ();
-			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			verticalBar.sendEvent (SWT.Selection, event);
-		}
-	}
-	if (horizontalBar != null) {
-		int position = horizontalBar.getSelection ();
-		if (position != hPosition) {
-			Event event = new Event ();
-			event.detail = position < hPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			horizontalBar.sendEvent (SWT.Selection, event);
-		}
-	}
-	return new LRESULT (code);
+	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam);
 }
 
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
@@ -433,6 +358,85 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 		}
 	}
 	return result;
+}
+
+LRESULT wmScrollWheel (boolean update, int /*long*/ wParam, int /*long*/ lParam) {
+	int scrollRemainder = display.scrollRemainder;
+	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
+	*/
+	if (update) {
+		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return result;
+		boolean vertical = verticalBar != null && verticalBar.getEnabled ();
+		boolean horizontal = horizontalBar != null && horizontalBar.getEnabled ();
+		int msg = vertical ? OS.WM_VSCROLL : horizontal ? OS.WM_HSCROLL : 0;
+		if (msg == 0) return result;
+		int [] linesToScroll = new int [1];
+		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
+		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
+		boolean pageScroll = linesToScroll [0] == OS.WHEEL_PAGESCROLL;
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+			ScrollBar bar = vertical ? verticalBar : horizontalBar;
+			SCROLLINFO info = new SCROLLINFO ();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_POS;
+			OS.GetScrollInfo (handle, bar.scrollBarType (), info);
+			if (vertical && !pageScroll) delta *= linesToScroll [0];
+			int increment = pageScroll ? bar.getPageIncrement () : bar.getIncrement ();
+			info.nPos -=  increment * delta / OS.WHEEL_DELTA;
+			OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
+			OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
+		} else {
+			int code = 0;
+	  		if (pageScroll) {
+	   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
+	  		} else {
+	  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
+	  			if (msg == OS.WM_VSCROLL) delta *= linesToScroll [0];
+	  		}
+	  		/* Check if the delta and the remainder have the same direction (sign) */
+	  		if ((delta ^ scrollRemainder) >= 0) delta += scrollRemainder;
+			int count = Math.abs (delta) / OS.WHEEL_DELTA;
+			for (int i=0; i<count; i++) {
+				OS.SendMessage (handle, msg, code, 0);
+			}
+		}
+		return LRESULT.ZERO;
+	}
+		
+	/*
+	* When the native widget scrolls inside WM_MOUSEWHEEL, it
+	* may or may not send a WM_VSCROLL or WM_HSCROLL to do the
+	* actual scrolling.  This depends on the implementation of
+	* each native widget.  In order to ensure that application
+	* code is notified when the scroll bar moves, compare the
+	* scroll bar position before and after the WM_MOUSEWHEEL.
+	* If the native control sends a WM_VSCROLL or WM_HSCROLL,
+	* then the application has already been notified.  If not
+	* explicitly send the event.
+	*/
+	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
+	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
+	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	if (verticalBar != null) {
+		int position = verticalBar.getSelection ();
+		if (position != vPosition) {
+			Event event = new Event ();
+			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
+			verticalBar.sendEvent (SWT.Selection, event);
+		}
+	}
+	if (horizontalBar != null) {
+		int position = horizontalBar.getSelection ();
+		if (position != hPosition) {
+			Event event = new Event ();
+			event.detail = position < hPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
+			horizontalBar.sendEvent (SWT.Selection, event);
+		}
+	}
+	return new LRESULT (code);
 }
 
 LRESULT wmScroll (ScrollBar bar, boolean update, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
