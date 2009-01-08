@@ -17,7 +17,6 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
