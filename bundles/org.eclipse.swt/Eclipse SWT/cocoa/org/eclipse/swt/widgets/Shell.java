@@ -574,7 +574,7 @@ void destroyWidget () {
 	}
 }
 
-void drawWidget (int /*long*/ id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 	if (regionPath != null && background == null) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
 		context.saveGraphicsState();
@@ -582,7 +582,7 @@ void drawWidget (int /*long*/ id, NSRect rect) {
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();
 	}
-	super.drawWidget (id, rect);
+	super.drawWidget (id, rect, sendPaint);
 }
 
 Control findBackgroundControl () {

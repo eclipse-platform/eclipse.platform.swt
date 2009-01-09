@@ -1140,6 +1140,7 @@ public static final int /*long*/ sel_setDataSource_ = sel_registerName("setDataS
 public static final int /*long*/ sel_setDatePickerElements_ = sel_registerName("setDatePickerElements:");
 public static final int /*long*/ sel_setDatePickerStyle_ = sel_registerName("setDatePickerStyle:");
 public static final int /*long*/ sel_setDateValue_ = sel_registerName("setDateValue:");
+public static final int /*long*/ sel_setDefaultButtonCell_ = sel_registerName("setDefaultButtonCell:");
 public static final int /*long*/ sel_setDefaultFlatness_ = sel_registerName("setDefaultFlatness:");
 public static final int /*long*/ sel_setDefaultTabInterval_ = sel_registerName("setDefaultTabInterval:");
 public static final int /*long*/ sel_setDelegate_ = sel_registerName("setDelegate:");

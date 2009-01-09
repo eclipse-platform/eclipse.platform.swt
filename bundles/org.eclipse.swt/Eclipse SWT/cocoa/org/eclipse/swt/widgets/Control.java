@@ -748,7 +748,7 @@ void createWidget () {
 }
 
 Color defaultBackground () {
-	return display.getSystemColor (SWT.COLOR_WIDGET_BACKGROUND);
+	return display.getWidgetColor (SWT.COLOR_WIDGET_BACKGROUND);
 }
 
 Font defaultFont () {
@@ -763,7 +763,7 @@ Font defaultFont () {
 }
 
 Color defaultForeground () {
-	return display.getSystemColor (SWT.COLOR_WIDGET_FOREGROUND);
+	return display.getWidgetColor (SWT.COLOR_WIDGET_FOREGROUND);
 }
 
 void deregister () {
@@ -902,8 +902,9 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-void drawWidget (int /*long*/ id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 	if (id != view.id) return;
+	if (!sendPaint) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
 	/* Send paint event */

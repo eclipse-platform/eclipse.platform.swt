@@ -590,11 +590,11 @@ void createWidget () {
 }
 
 Color defaultBackground () {
-	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
 Color defaultForeground () {
-	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
 /**

@@ -270,10 +270,10 @@ void createHandle () {
 	view = widget;
 }
 
-void drawWidget (int /*long*/ id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 	NSGraphicsContext context = NSGraphicsContext.currentContext();
 	fillBackground (view, context, rect);
-	super.drawWidget (id, rect);
+	super.drawWidget (id, rect, sendPaint);
 }
 
 Cursor findCursor () {

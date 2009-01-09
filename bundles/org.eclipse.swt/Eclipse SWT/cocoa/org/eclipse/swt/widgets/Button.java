@@ -279,7 +279,7 @@ void deregister () {
 	display.removeWidget(((NSControl)view).cell());
 }
 
-void drawWidget (int /*long*/ id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
 		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
@@ -318,7 +318,7 @@ void drawWidget (int /*long*/ id, NSRect rect) {
 		path.fill();
 		context.restoreGraphicsState();
 	}
-	super.drawWidget (id, rect);
+	super.drawWidget (id, rect, sendPaint);
 }
 
 /**
@@ -609,12 +609,12 @@ void setBackground (float [] color) {
 
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
-//	NSWindow window = view.window();
-//	NSButtonCell cell = null;
-//	if (value) {
-//		cell = new NSButtonCell(((NSButton)view).cell());
-//	}
-//	window.setDefaultButtonCell(cell);
+	NSWindow window = view.window ();
+	NSButtonCell cell = null;
+	if (value) {
+		cell = new NSButtonCell (((NSButton)view).cell ());
+	}
+	window.setDefaultButtonCell (cell);
 }
 
 void setFont (NSFont font) {

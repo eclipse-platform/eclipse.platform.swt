@@ -1455,9 +1455,15 @@ public Thread getSyncThread () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
+	Color color = getWidgetColor (id);
+	if (color != null) return color;
+	return super.getSystemColor (id);	
+}
+
+Color getWidgetColor (int id) {
 	NSColor color = null;
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_INFO_FOREGROUND: color = NSColor.blackColor (); break;
 		case SWT.COLOR_INFO_BACKGROUND: return Color.cocoa_new (this, new float /*double*/ [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
 		case SWT.COLOR_TITLE_FOREGROUND: color = NSColor.windowFrameTextColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.secondarySelectedControlColor(); break;
@@ -1471,17 +1477,15 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW: color = NSColor.controlLightHighlightColor(); break;
 		case SWT.COLOR_WIDGET_BACKGROUND: color = NSColor.controlHighlightColor(); break;
 		case SWT.COLOR_WIDGET_FOREGROUND: color = NSColor.controlTextColor(); break;
-		case SWT.COLOR_WIDGET_BORDER: return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_WIDGET_BORDER: color = NSColor.blackColor (); break;
 		case SWT.COLOR_LIST_FOREGROUND: color = NSColor.textColor(); break;
 		case SWT.COLOR_LIST_BACKGROUND: color = NSColor.textBackgroundColor(); break;
 		case SWT.COLOR_LIST_SELECTION_TEXT: color = NSColor.selectedTextColor(); break;
 		case SWT.COLOR_LIST_SELECTION: color = NSColor.selectedTextBackgroundColor(); break;
-		default:
-			return super.getSystemColor (id);	
 	}
-	if (color == null) return super.getSystemColor(id);
+	if (color == null) return null;
 	color = color.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace());
-	if (color == null) return super.getSystemColor(id);
+	if (color == null) return null;
 	float /*double*/[] components = new float /*double*/[(int)/*64*/color.numberOfComponents()];
 	color.getComponents(components);	
 	return Color.cocoa_new (this, new float /*double*/ []{components[0], components[1], components[2], components[3]});

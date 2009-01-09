@@ -310,7 +310,7 @@ void destroyWidget() {
 	super.destroyWidget();
 }
 
-void drawWidget (int /*long*/ id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 	if (id == view.id) {
 		if (getSelection ()) {
 			NSRect bounds = view.bounds();

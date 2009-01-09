@@ -174,6 +174,10 @@ public void setContentView(NSView aView) {
 	OS.objc_msgSend(this.id, OS.sel_setContentView_, aView != null ? aView.id : 0);
 }
 
+public void setDefaultButtonCell(NSButtonCell defButt) {
+	OS.objc_msgSend(this.id, OS.sel_setDefaultButtonCell_, defButt != null ? defButt.id : 0);
+}
+
 public void setDelegate(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
 }

@@ -23344,9 +23344,9 @@
 <arg name="aView" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="setDefaultButtonCell:">
-<arg name="defButt"></arg>
-<retval></retval>
+<method selector="setDefaultButtonCell:" swt_gen="true">
+<arg name="defButt" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setDelegate:" swt_gen="true">
 <arg name="anObject" swt_gen="true"></arg>
