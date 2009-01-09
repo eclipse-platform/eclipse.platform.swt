@@ -1118,7 +1118,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 			OS.memmove(data.bitmapDataAddress, new int /*long*/[] {bitmapData}, C.PTR_SIZEOF);
 			rep = rep.initWithBitmapDataPlanes(data.bitmapDataAddress, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat , bpr, 32);
 			handle.removeRepresentation(imageRep);
-			imageRep.release();
+//			imageRep.release();
 			handle.addRepresentation(rep);
 			imageRep = rep;
 		}
