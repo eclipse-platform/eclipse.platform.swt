@@ -154,29 +154,75 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 			break;
 		}
 		case OS.WM_PAINT: {
-			if (findImageControl () != null) {
+			boolean doubleBuffer = findImageControl () != null;
+			boolean drawMessage = false;
+			if ((style & SWT.SEARCH) != 0) {
+				if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+					drawMessage = hwnd != OS.GetFocus () && OS.GetWindowTextLength (handle) == 0;
+				}
+			}
+			if (doubleBuffer || drawMessage) {
 				int /*long*/ paintDC = 0;
 				PAINTSTRUCT ps = new PAINTSTRUCT ();
 				paintDC = OS.BeginPaint (handle, ps);
 				int width = ps.right - ps.left;
 				int height = ps.bottom - ps.top;
 				if (width != 0 && height != 0) {
-					int /*long*/ hDC = OS.CreateCompatibleDC (paintDC);
-					POINT lpPoint1 = new POINT (), lpPoint2 = new POINT ();
-					OS.SetWindowOrgEx (hDC, ps.left, ps.top, lpPoint1);
-					OS.SetBrushOrgEx (hDC, ps.left, ps.top, lpPoint2);
-					int /*long*/ hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
-					int /*long*/ hOldBitmap = OS.SelectObject (hDC, hBitmap);
-					RECT rect = new RECT ();
-					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-					drawBackground (hDC, rect);
+					int /*long*/ hDC = paintDC, hBitmap = 0, hOldBitmap = 0;
+					POINT lpPoint1 = null, lpPoint2 = null;
+					if (doubleBuffer) {
+						hDC = OS.CreateCompatibleDC (paintDC);
+						lpPoint1 = new POINT ();
+						lpPoint2 = new POINT ();
+						OS.SetWindowOrgEx (hDC, ps.left, ps.top, lpPoint1);
+						OS.SetBrushOrgEx (hDC, ps.left, ps.top, lpPoint2);
+						hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
+						hOldBitmap = OS.SelectObject (hDC, hBitmap);
+						RECT rect = new RECT ();
+						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+						drawBackground (hDC, rect);
+					}
+					
 					OS.CallWindowProc (EditProc, hwnd, OS.WM_PAINT, hDC, lParam);
-					OS.SetWindowOrgEx (hDC, lpPoint1.x, lpPoint1.y, null);
-					OS.SetBrushOrgEx (hDC, lpPoint2.x, lpPoint2.y, null);
-					OS.BitBlt (paintDC, ps.left, ps.top, width, height, hDC, 0, 0, OS.SRCCOPY);
-					OS.SelectObject (hDC, hOldBitmap);
-					OS.DeleteObject (hBitmap);
-					OS.DeleteObject (hDC);
+					/*
+					* Bug in XP. Windows does not draw the cue message on XP when
+					* East Asian language pack is installed. The fix is to draw
+					* the cue messages ourselves.
+					* Note:  This bug is fixed on Vista.
+					*/
+					if (drawMessage) {
+						RECT rect = new RECT();
+						OS.GetClientRect(handle, rect);
+						int margins = OS.SendMessage (handle, OS.EM_GETMARGINS, 0, 0);
+						rect.left += OS.LOWORD (margins);
+						rect.right -= OS.HIWORD (margins);
+						if ((style & SWT.BORDER) != 0) {
+							rect.left++;
+							rect.top++;
+							rect.right--;
+							rect.bottom--;
+						}
+						TCHAR buffer = new TCHAR (getCodePage (), message, false);
+						int uFormat = OS.DT_EDITCONTROL;
+						if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+							uFormat |= OS.DT_RTLREADING | OS.DT_RIGHT;
+						}
+						int /*long*/ hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+						int /*long*/ hOldFont = OS.SelectObject (hDC, hFont);
+						OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+						OS.SetBkMode (hDC, OS.TRANSPARENT);
+						OS.DrawText (hDC, buffer, buffer.length (), rect, uFormat);
+						OS.SelectObject (hDC, hOldFont);
+					}
+					
+					if (doubleBuffer) {
+						OS.SetWindowOrgEx (hDC, lpPoint1.x, lpPoint1.y, null);
+						OS.SetBrushOrgEx (hDC, lpPoint2.x, lpPoint2.y, null);
+						OS.BitBlt (paintDC, ps.left, ps.top, width, height, hDC, 0, 0, OS.SRCCOPY);
+						OS.SelectObject (hDC, hOldBitmap);
+						OS.DeleteObject (hBitmap);
+						OS.DeleteObject (hDC);
+					}
 				}
 				OS.EndPaint (handle, ps);
 				return 0;
@@ -344,7 +390,6 @@ static int checkStyle (int style) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
 	}
-	if (OS.COMCTL32_MAJOR < 6) style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -1605,8 +1650,8 @@ void setMargins () {
 	* margins, causing the first character to be clipped.  The
 	* fix is to set the margins to zero.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if ((style & SWT.SEARCH) != 0) {
+	if ((style & SWT.SEARCH) != 0) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 			OS.SendMessage (handle, OS.EM_SETMARGINS, OS.EC_LEFTMARGIN | OS.EC_RIGHTMARGIN, 0);
 		}
 	}
@@ -1638,8 +1683,8 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if ((style & SWT.SEARCH) != 0) {
+	if ((style & SWT.SEARCH) != 0) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.ES_MULTILINE) == 0) {
 				int length = message.length ();

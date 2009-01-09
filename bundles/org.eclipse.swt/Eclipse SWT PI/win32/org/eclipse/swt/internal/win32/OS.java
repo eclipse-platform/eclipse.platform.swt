@@ -552,6 +552,7 @@ public class OS extends C {
 	public static final int DT_NOPREFIX = 0x800;
 	public static final int DT_RASPRINTER = 0x2;
 	public static final int DT_RIGHT = 0x2;
+	public static final int DT_RTLREADING = 0x00020000;
 	public static final int DT_SINGLELINE = 0x20;
 	public static final int DT_TOP = 0;
 	public static final int DT_VCENTER = 4;
