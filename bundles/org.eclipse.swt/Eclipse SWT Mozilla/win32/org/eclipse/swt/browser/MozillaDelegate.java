@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
-	int /*long*/ mozillaProc;
-	Callback subclassProc;
+	static int /*long*/ MozillaProc;
+	static Callback SubclassProc;
 	
 MozillaDelegate (Browser browser) {
 	super ();
@@ -57,11 +57,24 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return bytes;
 }
 
+static int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
+	switch ((int)/*64*/msg) {
+		case OS.WM_ERASEBKGND:
+			RECT rect = new RECT ();
+			OS.GetClientRect (hwnd, rect);
+			OS.FillRect (wParam, rect, OS.GetSysColorBrush (OS.COLOR_WINDOW));
+			break;
+	}
+	return OS.CallWindowProc (MozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
+}
+
 void addWindowSubclass () {
 	int /*long*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
-	mozillaProc = OS.GetWindowLongPtr (hwndChild, OS.GWL_WNDPROC);
-	subclassProc = new Callback (this, "windowProc", 4); //$NON-NLS-1$
-	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, subclassProc.getAddress ());
+	if (SubclassProc == null) {
+		SubclassProc = new Callback (MozillaDelegate.class, "windowProc", 4); //$NON-NLS-1$
+		MozillaProc = OS.GetWindowLongPtr (hwndChild, OS.GWL_WNDPROC);
+	}
+	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, SubclassProc.getAddress ());
 }
 
 int /*long*/ getHandle () {
@@ -99,24 +112,11 @@ void onDispose (int /*long*/ embedHandle) {
 }
 
 void removeWindowSubclass () {
-	if (subclassProc == null) return;
+	if (SubclassProc == null) return;
 	int /*long*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
-	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, mozillaProc);
-	subclassProc.dispose ();
-	subclassProc = null;
+	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 }
 
 void setSize (int /*long*/ embedHandle, int width, int height) {
-}
-
-int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
-	switch ((int)/*64*/msg) {
-		case OS.WM_ERASEBKGND:
-			RECT rect = new RECT ();
-			OS.GetClientRect (hwnd, rect);
-			OS.FillRect (wParam, rect, OS.GetSysColorBrush (OS.COLOR_WINDOW));
-			break;
-	}
-	return OS.CallWindowProc (mozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
 }
 }

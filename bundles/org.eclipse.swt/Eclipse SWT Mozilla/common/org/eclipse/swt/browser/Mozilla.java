@@ -55,7 +55,7 @@ class Mozilla extends WebBrowser {
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount, NextJSFunctionIndex = 1;
 	static Hashtable AllFunctions = new Hashtable (); 
-	static boolean Initialized, IsPre_1_8, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
+	static boolean Initialized, IsPre_1_8, IsPre_1_9, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
@@ -1185,6 +1185,7 @@ public void create (Composite parent, int style) {
 			new nsISupports (result[0]).Release ();
 		}
 		result[0] = 0;
+		IsPre_1_9 = true;
 
 		/*
 		* A Download factory for contract "Transfer" must be registered iff the GRE's version is 1.8.x.
@@ -1212,17 +1213,7 @@ public void create (Composite parent, int style) {
 				}
 				downloadFactory_1_8.Release ();
 			} else { /* >= 1.9 */
-				/*
-				 * Bug in XULRunner 1.9.  On win32, Mozilla does not clear its background before content has
-				 * been set into it.  As a result, embedders appear broken if they do not immediately display
-				 * a URL or text.  The Mozilla bug for this is https://bugzilla.mozilla.org/show_bug.cgi?id=453523.
-				 * 
-				 * The workaround is to subclass the Mozilla window and clear it whenever WM_ERASEBKGND is received.
-				 * This subclass should be removed once content has been set into the browser.
-				 */
-				delegate.addWindowSubclass ();
-
-				dialogFactory.isPre_1_9 = false;
+				IsPre_1_9 = false;
 			}
 		}
 		result[0] = 0;
@@ -1230,6 +1221,18 @@ public void create (Composite parent, int style) {
 		componentRegistrar.Release ();
 	}
 	componentManager.Release ();
+
+	/*
+	 * Bug in XULRunner 1.9.  On win32, Mozilla does not clear its background before content has
+	 * been set into it.  As a result, embedders appear broken if they do not immediately display
+	 * a URL or text.  The Mozilla bug for this is https://bugzilla.mozilla.org/show_bug.cgi?id=453523.
+	 * 
+	 * The workaround is to subclass the Mozilla window and clear it whenever WM_ERASEBKGND is received.
+	 * This subclass should be removed once content has been set into the browser.
+	 */
+	if (!IsPre_1_9) {
+		delegate.addWindowSubclass ();
+	}
 
 	rc = webBrowser.AddWebBrowserListener (weakReference.getAddress (), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) {

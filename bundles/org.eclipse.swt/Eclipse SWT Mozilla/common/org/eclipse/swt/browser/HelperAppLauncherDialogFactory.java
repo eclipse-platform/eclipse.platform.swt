@@ -17,7 +17,6 @@ class HelperAppLauncherDialogFactory {
 	XPCOMObject supports;
 	XPCOMObject factory;
 	int refCount = 0;
-	boolean isPre_1_9 = true;
 
 HelperAppLauncherDialogFactory () {
 	createCOMInterfaces ();
@@ -89,7 +88,7 @@ int Release () {
 /* nsIFactory */
 
 int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
-	if (isPre_1_9) {
+	if (Mozilla.IsPre_1_9) {
 		HelperAppLauncherDialog helperAppLauncherDialog = new HelperAppLauncherDialog ();
 		helperAppLauncherDialog.AddRef ();
 		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
