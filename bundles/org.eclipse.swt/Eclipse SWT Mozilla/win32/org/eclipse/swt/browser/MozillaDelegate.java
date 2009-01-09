@@ -94,11 +94,8 @@ boolean needsSpinup () {
 }
 
 void onDispose (int /*long*/ embedHandle) {
+	removeWindowSubclass ();
 	browser = null;
-	if (subclassProc != null) {
-		subclassProc.dispose ();
-		subclassProc = null;
-	}
 }
 
 void removeWindowSubclass () {
