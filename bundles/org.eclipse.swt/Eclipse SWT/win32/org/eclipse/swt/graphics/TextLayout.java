@@ -640,18 +640,18 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int /*long*/ selBackground = 0;
 	int selForeground = 0;
 	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
-		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
-		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
+		int fgSel = selectionForeground != null ? selectionForeground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT); 
+		int bgSel = selectionBackground != null ? selectionBackground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHT); 
+		if (gdip) {
+			gdipSelBackground = createGdipBrush(bgSel, alpha);
+			gdipSelForeground = createGdipBrush(fgSel, alpha);
+		} else {
+			selBackground = OS.CreateSolidBrush(bgSel);
+			selForeground = fgSel;
+		}
 		if (hasSelection) {
 			selectionStart = translateOffset(Math.min(Math.max(0, selectionStart), length - 1));
 			selectionEnd = translateOffset(Math.min(Math.max(0, selectionEnd), length - 1));
-		}
-		if (gdip) {
-			gdipSelBackground = createGdipBrush(selectionBackground, alpha);
-			gdipSelForeground = createGdipBrush(selectionForeground, alpha);
-		} else {
-			selBackground = OS.CreateSolidBrush(selectionBackground.handle);
-			selForeground = selectionForeground.handle;
 		}
 	}
 	RECT rect = new RECT();
