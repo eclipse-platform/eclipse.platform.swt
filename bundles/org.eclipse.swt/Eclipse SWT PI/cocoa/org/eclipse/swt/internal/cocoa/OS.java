@@ -1081,6 +1081,7 @@ public static final int /*long*/ sel_selectItem_ = sel_registerName("selectItem:
 public static final int /*long*/ sel_selectItemAtIndex_ = sel_registerName("selectItemAtIndex:");
 public static final int /*long*/ sel_selectRowIndexes_byExtendingSelection_ = sel_registerName("selectRowIndexes:byExtendingSelection:");
 public static final int /*long*/ sel_selectTabViewItemAtIndex_ = sel_registerName("selectTabViewItemAtIndex:");
+public static final int /*long*/ sel_selectText_ = sel_registerName("selectText:");
 public static final int /*long*/ sel_selectedControlTextColor = sel_registerName("selectedControlTextColor");
 public static final int /*long*/ sel_selectedRange = sel_registerName("selectedRange");
 public static final int /*long*/ sel_selectedRow = sel_registerName("selectedRow");

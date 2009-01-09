@@ -24,6 +24,10 @@ public NSTextField(id id) {
 	super(id);
 }
 
+public void selectText(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_selectText_, sender != null ? sender.id : 0);
+}
+
 public void setBackgroundColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
 }

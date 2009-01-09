@@ -1191,8 +1191,8 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
 	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
 	if (type != SWT.KeyDown)  return result;
+	short keyCode = nsEvent.keyCode ();
 	if (stateMask == SWT.COMMAND) {
-		short keyCode = nsEvent.keyCode ();
 		switch (keyCode) {
 			case 7: /* X */
 				cut ();
@@ -1203,15 +1203,17 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 			case 9: /* V */
 				paste ();
 				return false;
+			case 0: /* A */
+				if ((style & SWT.READ_ONLY) == 0) {
+					((NSComboBox)view).selectText(null);
+					return false;
+				}
 		}
 	}
-	if ((style & SWT.SINGLE) != 0) {
-		short keyCode = nsEvent.keyCode ();
-		switch (keyCode) {
-			case 76: /* KP Enter */
-			case 36: /* Return */
-				postEvent (SWT.DefaultSelection);
-		}
+	switch (keyCode) {
+	case 76: /* KP Enter */
+	case 36: /* Return */
+		postEvent (SWT.DefaultSelection);
 	}
 	if ((style & SWT.READ_ONLY) != 0) return result;
 	if ((stateMask & SWT.COMMAND) != 0) return result;
@@ -1219,7 +1221,6 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	int charCount = getCharCount ();
 	Point selection = getSelection ();
 	int start = selection.x, end = selection.y;
-	short keyCode = nsEvent.keyCode ();
 	NSString characters = nsEvent.charactersIgnoringModifiers();
 	char character = (char) characters.characterAtIndex(0);
 	switch (keyCode) {

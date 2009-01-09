@@ -19983,9 +19983,9 @@
 <method selector="isSelectable">
 <retval></retval>
 </method>
-<method selector="selectText:">
-<arg name="sender"></arg>
-<retval></retval>
+<method selector="selectText:" swt_gen="true">
+<arg name="sender" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setAllowsEditingTextAttributes:">
 <arg name="flag"></arg>
