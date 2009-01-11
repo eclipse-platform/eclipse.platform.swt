@@ -193,7 +193,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 					if (drawMessage) {
 						RECT rect = new RECT();
 						OS.GetClientRect(handle, rect);
-						int margins = OS.SendMessage (handle, OS.EM_GETMARGINS, 0, 0);
+						int /*long*/ margins = OS.SendMessage (handle, OS.EM_GETMARGINS, 0, 0);
 						rect.left += OS.LOWORD (margins);
 						rect.right -= OS.HIWORD (margins);
 						if ((style & SWT.BORDER) != 0) {
