@@ -817,6 +817,7 @@ public static final int ROLE_SYSTEM_SLIDER = 0x33;
 //public static final int ROLE_SYSTEM_WHITESPACE = 0x3b;
 public static final int ROLE_SYSTEM_PAGETABLIST = 0x3c;
 //public static final int ROLE_SYSTEM_CLOCK = 0x3d;
+public static final int ROLE_SYSTEM_SPLITBUTTON = 0x3e;
 public static final int STATE_SYSTEM_NORMAL = 0;
 //public static final int STATE_SYSTEM_UNAVAILABLE = 0x1;
 public static final int STATE_SYSTEM_SELECTED = 0x2;
