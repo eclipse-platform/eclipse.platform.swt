@@ -1284,6 +1284,7 @@ public class Accessible {
 			case ACC.ROLE_PUSHBUTTON: return OS.kAXButtonRole;
 			case ACC.ROLE_CHECKBUTTON: return OS.kAXCheckBoxRole;
 			case ACC.ROLE_RADIOBUTTON: return OS.kAXRadioButtonRole;
+			case ACC.ROLE_SPLITBUTTON: return OS.kAXMenuButtonRole;
 			case ACC.ROLE_COMBOBOX: return OS.kAXComboBoxRole;
 			case ACC.ROLE_TEXT: return (control.getStyle () & SWT.MULTI) != 0 ? OS.kAXTextAreaRole : OS.kAXTextFieldRole;
 			case ACC.ROLE_TOOLBAR: return OS.kAXToolbarRole;
@@ -1320,6 +1321,7 @@ public class Accessible {
 		if (osRole.equals(OS.kAXButtonRole)) return ACC.ROLE_PUSHBUTTON;
 		if (osRole.equals(OS.kAXCheckBoxRole)) return ACC.ROLE_CHECKBUTTON;
 		if (osRole.equals(OS.kAXRadioButtonRole)) return ACC.ROLE_RADIOBUTTON;
+		if (osRole.equals(OS.kAXMenuButtonRole)) return ACC.ROLE_SPLITBUTTON;
 		if (osRole.equals(OS.kAXComboBoxRole)) return ACC.ROLE_COMBOBOX;
 		if (osRole.equals(OS.kAXTextFieldRole)) return ACC.ROLE_TEXT;
 		if (osRole.equals(OS.kAXTextAreaRole)) return ACC.ROLE_TEXT;
