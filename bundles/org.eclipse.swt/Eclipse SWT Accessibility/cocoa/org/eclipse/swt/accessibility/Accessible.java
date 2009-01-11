@@ -1394,6 +1394,7 @@ public class Accessible {
 			case ACC.ROLE_PUSHBUTTON: nsReturnValue = OS.NSAccessibilityButtonRole; break;
 			case ACC.ROLE_CHECKBUTTON: nsReturnValue = OS.NSAccessibilityCheckBoxRole; break;
 			case ACC.ROLE_RADIOBUTTON: nsReturnValue = OS.NSAccessibilityRadioButtonRole; break;
+			case ACC.ROLE_SPLITBUTTON: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
 			case ACC.ROLE_COMBOBOX: nsReturnValue = OS.NSAccessibilityComboBoxRole; break;
 			case ACC.ROLE_TEXT: {
 				int style = control.getStyle();
@@ -1441,6 +1442,7 @@ public class Accessible {
 		if (osRole.isEqualToString(OS.NSAccessibilityButtonRole)) return ACC.ROLE_PUSHBUTTON;
 		if (osRole.isEqualToString(OS.NSAccessibilityCheckBoxRole)) return ACC.ROLE_CHECKBUTTON;
 		if (osRole.isEqualToString(OS.NSAccessibilityRadioButtonRole)) return ACC.ROLE_RADIOBUTTON;
+		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_SPLITBUTTON;
 		if (osRole.isEqualToString(OS.NSAccessibilityComboBoxRole)) return ACC.ROLE_COMBOBOX;
 		if (osRole.isEqualToString(OS.NSAccessibilityTextFieldRole)) return ACC.ROLE_TEXT;
 		if (osRole.isEqualToString(OS.NSAccessibilityTextAreaRole)) return ACC.ROLE_TEXT;

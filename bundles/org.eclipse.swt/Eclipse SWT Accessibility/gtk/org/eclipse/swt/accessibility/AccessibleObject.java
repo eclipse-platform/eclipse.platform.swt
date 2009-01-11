@@ -492,6 +492,7 @@ class AccessibleObject {
 					case ACC.ROLE_TREE: return ATK.ATK_ROLE_TREE;
 					case ACC.ROLE_TREEITEM: return ATK.ATK_ROLE_LIST_ITEM;
 					case ACC.ROLE_RADIOBUTTON: return ATK.ATK_ROLE_RADIO_BUTTON;
+					case ACC.ROLE_SPLITBUTTON: return ATK.ATK_ROLE_PUSH_BUTTON;
 					case ACC.ROLE_WINDOW: return ATK.ATK_ROLE_WINDOW;
 				}
 			}

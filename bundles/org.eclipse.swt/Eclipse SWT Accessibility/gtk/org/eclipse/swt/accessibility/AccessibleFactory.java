@@ -35,6 +35,7 @@ class AccessibleFactory {
 	static final int[] actionRoles = {
 		ACC.ROLE_CHECKBUTTON, ACC.ROLE_COMBOBOX, ACC.ROLE_LINK,
 		ACC.ROLE_MENUITEM, ACC.ROLE_PUSHBUTTON, ACC.ROLE_RADIOBUTTON,
+		ACC.ROLE_SPLITBUTTON,
 	};
 	static final int[] hypertextRoles = {ACC.ROLE_LINK};
 	static final int[] selectionRoles = {
