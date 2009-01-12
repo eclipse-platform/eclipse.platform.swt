@@ -2154,10 +2154,10 @@ boolean setScrollWidth (TableItem item, boolean callMeasureItem) {
 
 boolean setScrollWidth (TableItem items[], boolean callMeasureItem, boolean isAllItems) {
 	if (columnCount != 0) return false;
-	if (currentItem != null) {
+//	if (currentItem != null) {
 //		if (currentItem != item) fixScrollWidth = true;
-		return false;
-	}
+//		return false;
+//	}
 	if (/*ignoreRedraw ||*/ drawCount != 0) return false;
 	int newWidth = 0;
 	GC gc = new GC (this);
