@@ -138,7 +138,7 @@ class TextTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"DoubleClickEnabled", "EchoChar", "Editable", "Message", "Orientation", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex"};
+		return new String[] {"DoubleClickEnabled", "EchoChar", "Editable", "Orientation", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex"};
 	}
 
 	/**
