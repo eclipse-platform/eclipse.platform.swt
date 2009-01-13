@@ -978,7 +978,7 @@ public static Display getCurrent () {
 }
 
 int getCaretBlinkTime () {
-	checkDevice ();
+//	checkDevice ();
 	return 560;
 }
 
@@ -1697,6 +1697,8 @@ void initApplicationDelegate() {
 		OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
 		OS.objc_registerClassPair(cls);
 	}	
 	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
@@ -3725,7 +3727,19 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 				display.dispose();
 			}
 		}
-	} 
+	} else if (sel == OS.sel_applicationDidBecomeActive_) {
+		Control control = display.getFocusControl();
+		if (control != null && !control.isDisposed()) {
+			display.focusControl = control;
+			control.sendFocusEvent(SWT.FocusIn, false);
+		}
+	} else if (sel == OS.sel_applicationDidResignActive_) {
+		Control control = display.focusControl;
+		if (control != null && !control.isDisposed()) {
+			display.focusControl = null;
+			control.sendFocusEvent(SWT.FocusOut, false);
+		}
+	}
  	return 0;
 }
 

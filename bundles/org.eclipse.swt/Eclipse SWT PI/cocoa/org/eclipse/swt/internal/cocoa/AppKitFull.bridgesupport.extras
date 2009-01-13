@@ -24017,8 +24017,8 @@
 </method>
 </informal_protocol>
 <informal_protocol name="NSApplicationNotifications" swt_gen="mixed">
-<method selector="applicationDidBecomeActive:">
-<arg name="notification"></arg>
+<method selector="applicationDidBecomeActive:" swt_gen="true">
+<arg name="notification" swt_gen="true"></arg>
 </method>
 <method selector="applicationDidChangeScreenParameters:">
 <arg name="notification"></arg>
@@ -24029,8 +24029,8 @@
 <method selector="applicationDidHide:">
 <arg name="notification"></arg>
 </method>
-<method selector="applicationDidResignActive:">
-<arg name="notification"></arg>
+<method selector="applicationDidResignActive:" swt_gen="true">
+<arg name="notification" swt_gen="true"></arg>
 </method>
 <method selector="applicationDidUnhide:">
 <arg name="notification"></arg>

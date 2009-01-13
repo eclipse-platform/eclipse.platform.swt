@@ -1520,6 +1520,11 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	Display display = this.display;
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
+	Control control = display.getFocusControl();
+	if (control != null && !control.isDisposed() && control != display.focusControl) {
+		display.focusControl = control;
+		control.sendFocusEvent(SWT.FocusIn, false);
+	}
 //	if (!isDisposed ()) {
 //		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 //	}
@@ -1545,6 +1550,11 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 //	Display display = this.display;
 	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return;
+	Control control = display.focusControl;
+	if (control != null && !control.isDisposed() && control.getShell() == this) {
+		display.focusControl = null;
+		control.sendFocusEvent(SWT.FocusOut, false);
+	}
 //	saveFocus ();
 //	if (savedFocus != null) {
 //		/*

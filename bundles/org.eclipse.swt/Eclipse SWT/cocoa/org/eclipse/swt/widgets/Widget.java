@@ -516,8 +516,6 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 }
 
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
-	//TODO offset region to view coordinates
-	//TODO use region from control as well shell region
 	if (getDrawCount() > 0) return;
 	NSGraphicsContext current = NSGraphicsContext.currentContext();
 	current.saveGraphicsState();

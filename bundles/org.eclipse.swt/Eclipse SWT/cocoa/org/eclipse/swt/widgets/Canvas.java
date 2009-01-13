@@ -50,14 +50,15 @@ int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, in
 	return super.attributedSubstringFromRange(id, sel, range);
 }
 
-boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
-	if (caret != null) caret.setFocus ();
-	return super.becomeFirstResponder(id, sel);
-}
-
-boolean resignFirstResponder (int /*long*/ id, int /*long*/ sel) {
-	if (caret != null) caret.killFocus ();
-	return super.resignFirstResponder(id, sel);
+void sendFocusEvent(int type, boolean post) {
+	if (caret != null) {
+		if (type == SWT.FocusIn) {
+			caret.setFocus();	
+		} else {
+			caret.killFocus();
+		}
+	}
+	super.sendFocusEvent(type, post);
 }
 
 
