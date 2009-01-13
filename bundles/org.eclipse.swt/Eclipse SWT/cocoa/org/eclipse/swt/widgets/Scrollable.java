@@ -155,6 +155,9 @@ ScrollBar createScrollBar (int style) {
 	}
 	scroller.setTarget(scrollView);
 	scroller.setAction(actionSelector);
+	if ((state & CANVAS) != 0) {
+		bar.updateBar(0, 0, 100, 10);
+	}
 	return bar;
 }
 

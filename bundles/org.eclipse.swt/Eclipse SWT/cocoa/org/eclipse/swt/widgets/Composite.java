@@ -250,6 +250,16 @@ Control [] computeTabList () {
 	return result;
 }
 
+void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	super.setBounds(x, y, width, height, move, resize);
+	if (scrollView != null) {
+		NSSize newSize = new NSSize();
+		newSize.height = height;
+		newSize.width = width;
+		view.setFrameSize(newSize);
+	}
+}
+
 void createHandle () {
 	state |= CANVAS;
 	boolean scrolled = (style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0;
@@ -263,7 +273,6 @@ void createHandle () {
 		if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
 		scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
 		scrollView = scrollWidget;
-		rect.width = rect.height = 100000;
 	}
 	NSView widget = (NSView)new SWTView().alloc();
 	widget.initWithFrame (rect);
