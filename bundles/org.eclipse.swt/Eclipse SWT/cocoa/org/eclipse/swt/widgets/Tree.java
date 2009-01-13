@@ -432,8 +432,8 @@ void createColumn (TreeItem item, int index) {
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView) new SWTScrollView ().alloc ();
 	scrollWidget.init ();
-	scrollWidget.setHasHorizontalScroller (true);
-	scrollWidget.setHasVerticalScroller (true);
+	scrollWidget.setHasHorizontalScroller ((style & SWT.H_SCROLL) != 0);
+	scrollWidget.setHasVerticalScroller ((style & SWT.V_SCROLL) != 0);
 	scrollWidget.setAutohidesScrollers (true);
 	scrollWidget.setBorderType(hasBorder () ? OS.NSBezelBorder : OS.NSNoBorder);
 	
