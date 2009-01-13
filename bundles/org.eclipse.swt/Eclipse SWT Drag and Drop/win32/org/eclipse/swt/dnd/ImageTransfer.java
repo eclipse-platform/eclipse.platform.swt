@@ -159,7 +159,7 @@ public Object nativeToJava(TransferData transferData) {
 			if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);			
 			int /*long*/ bits = ptr + bmiHeader.biSize;
 			if (bmiHeader.biBitCount <= 8) {
-				bits += (1 << bmiHeader.biBitCount) * 4;
+				bits += (bmiHeader.biClrUsed == 0 ? (1 << bmiHeader.biBitCount) : bmiHeader.biClrUsed) * 4;
 			} else if (bmiHeader.biCompression == OS.BI_BITFIELDS) {
 				bits += 12;
 			}
