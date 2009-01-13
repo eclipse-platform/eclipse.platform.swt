@@ -530,19 +530,21 @@ boolean isTabGroup () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if ((state & CANVAS) != 0) {
-		NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
-		keyInputHappened = false;
-		view.interpretKeyEvents (array);
-		if (!keyInputHappened) {
-			NSEvent nsEvent = new NSEvent (theEvent);
-			boolean [] consume = new boolean [1];
-			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
-			if (isDisposed ()) return;
-			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
-			if (consume [0]) return;
+	if (view.window ().firstResponder ().id == id) {
+		if ((state & CANVAS) != 0) {
+			NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
+			keyInputHappened = false;
+			view.interpretKeyEvents (array);
+			if (!keyInputHappened) {
+				NSEvent nsEvent = new NSEvent (theEvent);
+				boolean [] consume = new boolean [1];
+				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
+				if (isDisposed ()) return;
+				if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
+				if (consume [0]) return;
+			}
+			return;
 		}
-		return;
 	}
 	super.keyDown (id, sel, theEvent);
 }
