@@ -51,7 +51,8 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
 	int layoutCount, backgroundMode;
-
+	boolean keyInputHappened;
+	
 Composite () {
 	/* Do nothing */
 }
@@ -270,6 +271,11 @@ void createHandle () {
 	view = widget;
 }
 
+void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
+	if ((state & CANVAS) != 0) keyInputHappened = true;
+	super.doCommandBySelector (id, sel, selector);
+}
+
 void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
@@ -278,6 +284,11 @@ void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 		}
 	}
 	super.drawWidget (id, rect, sendPaint);
+}
+
+void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if ((state & CANVAS) != 0) keyInputHappened = true;
+	super.flagsChanged (id, sel, theEvent);
 }
 
 Composite findDeferredControl () {
@@ -463,6 +474,13 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
+boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
+	boolean returnValue = super.insertText(id, sel, string);
+	if (returnValue) keyInputHappened = true;
+	return returnValue;
+}
+
+
 /**
  * Returns <code>true</code> if the receiver or any ancestor 
  * up to and including the receiver's nearest ancestor shell
@@ -505,7 +523,16 @@ boolean isTabGroup () {
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if ((state & CANVAS) != 0) {
 		NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
+		keyInputHappened = false;
 		view.interpretKeyEvents (array);
+		if (!keyInputHappened) {
+			NSEvent nsEvent = new NSEvent (theEvent);
+			boolean [] consume = new boolean [1];
+			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
+			if (isDisposed ()) return;
+			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
+			if (consume [0]) return;
+		}
 		return;
 	}
 	super.keyDown (id, sel, theEvent);
@@ -881,6 +908,11 @@ public void setLayoutDeferred (boolean defer) {
 	}
 }
 
+boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
+	boolean returnValue = super.setMarkedText_selectedRange (id, sel, string, range);
+	if (returnValue) keyInputHappened = true;
+	return returnValue;
+}
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	boolean changed = super.setScrollBarVisible (bar, visible);
