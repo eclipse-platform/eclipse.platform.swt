@@ -20098,9 +20098,9 @@
 <arg name="string"></arg>
 <retval></retval>
 </method>
-<method selector="setPlaceholderString:">
-<arg name="string"></arg>
-<retval></retval>
+<method selector="setPlaceholderString:" swt_gen="true">
+<arg name="string" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setTextColor:" swt_gen="true">
 <arg name="color" swt_gen="true"></arg>

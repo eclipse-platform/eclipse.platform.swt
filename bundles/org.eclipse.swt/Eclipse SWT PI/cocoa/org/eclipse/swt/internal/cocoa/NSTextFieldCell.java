@@ -24,6 +24,10 @@ public NSTextFieldCell(id id) {
 	super(id);
 }
 
+public void setPlaceholderString(NSString string) {
+	OS.objc_msgSend(this.id, OS.sel_setPlaceholderString_, string != null ? string.id : 0);
+}
+
 public void setTextColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setTextColor_, color != null ? color.id : 0);
 }

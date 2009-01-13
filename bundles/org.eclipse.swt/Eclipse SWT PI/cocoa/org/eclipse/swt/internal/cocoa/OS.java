@@ -1243,6 +1243,7 @@ public static final int /*long*/ sel_setPanelFont_isMultiple_ = sel_registerName
 public static final int /*long*/ sel_setPartialStringValidationEnabled_ = sel_registerName("setPartialStringValidationEnabled:");
 public static final int /*long*/ sel_setPatternPhase_ = sel_registerName("setPatternPhase:");
 public static final int /*long*/ sel_setPixelFormat_ = sel_registerName("setPixelFormat:");
+public static final int /*long*/ sel_setPlaceholderString_ = sel_registerName("setPlaceholderString:");
 public static final int /*long*/ sel_setPolicyDelegate_ = sel_registerName("setPolicyDelegate:");
 public static final int /*long*/ sel_setPrinter_ = sel_registerName("setPrinter:");
 public static final int /*long*/ sel_setPropertyList_forType_ = sel_registerName("setPropertyList:forType:");
