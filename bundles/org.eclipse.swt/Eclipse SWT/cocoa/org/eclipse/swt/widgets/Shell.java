@@ -1520,7 +1520,7 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	Display display = this.display;
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
-	Control control = display.getFocusControl();
+	Control control = Display.GetFocusControl(window);
 	if (control != null && !control.isDisposed() && control != display.focusControl) {
 		display.focusControl = control;
 		control.sendFocusEvent(SWT.FocusIn, false);
