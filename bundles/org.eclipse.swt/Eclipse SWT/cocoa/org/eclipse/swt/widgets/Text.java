@@ -1514,14 +1514,11 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
-//	if ((style & SWT.SEARCH) != 0) {
-//		char [] buffer = new char [message.length ()];
-//		message.getChars (0, buffer.length, buffer, 0);
-//		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-//		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-//		OS.HISearchFieldSetDescriptiveText (handle, ptr);
-//		OS.CFRelease (ptr);
-//	}
+	if ((style & SWT.SEARCH) != 0) {
+		NSString str = NSString.stringWith (message);
+		NSTextFieldCell cell = new NSTextFieldCell (((NSSearchField) view).cell ());
+		cell.setPlaceholderString (str);
+	}
 }
 
 /**
