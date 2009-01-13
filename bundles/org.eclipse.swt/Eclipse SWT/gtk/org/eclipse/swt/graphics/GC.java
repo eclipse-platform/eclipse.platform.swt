@@ -2839,7 +2839,7 @@ void initCairo() {
 	data.disposeCairo = true;
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 	data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
-	setCairoClip(cairo, data.clipRgn);
+	setCairoClip(data.damageRgn, data.clipRgn);
 }
 
 /**
@@ -3108,15 +3108,13 @@ static void setCairoFont(int /*long*/ cairo, int /*long*/ font) {
 	Cairo.cairo_set_font_size(cairo, height);
 }
 
-static void setCairoClip(int /*long*/ cairo, int /*long*/ clipRgn) {
-	Cairo.cairo_reset_clip(cairo);
-	if (clipRgn == 0) return;
+static void setCairoRegion(int /*long*/ cairo, int /*long*/ rgn) {
 	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-		OS.gdk_cairo_region(cairo, clipRgn);
+		OS.gdk_cairo_region(cairo, rgn);
 	} else {
 		int[] nRects = new int[1];
 		int /*long*/[] rects = new int /*long*/[1];
-		OS.gdk_region_get_rectangles(clipRgn, rects, nRects);
+		OS.gdk_region_get_rectangles(rgn, rects, nRects);
 		GdkRectangle rect = new GdkRectangle();
 		for (int i=0; i<nRects[0]; i++) {
 			OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
@@ -3124,7 +3122,6 @@ static void setCairoClip(int /*long*/ cairo, int /*long*/ clipRgn) {
 		}
 		if (rects[0] != 0) OS.g_free(rects[0]);
 	}
-	Cairo.cairo_clip(cairo);
 }
 
 static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int alpha) {
@@ -3136,6 +3133,22 @@ static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int 
 	Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, aa);
 }
 
+void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
+	int /*long*/ cairo = data.cairo;
+	Cairo.cairo_reset_clip(cairo);
+	if (damageRgn != 0) {
+		double[] matrix = new double[6];
+		Cairo.cairo_get_matrix(cairo, matrix);
+		Cairo.cairo_set_matrix(cairo, identity());
+		setCairoRegion(cairo, damageRgn);
+		Cairo.cairo_set_matrix(cairo, matrix);
+	}
+	if (clipRgn != 0) {
+		setCairoRegion(cairo, clipRgn);
+	}
+	Cairo.cairo_clip(cairo);
+}
+
 void setClipping(int /*long*/ clipRgn) {
 	int /*long*/ cairo = data.cairo;
 	if (clipRgn == 0) {
@@ -3145,7 +3158,7 @@ void setClipping(int /*long*/ clipRgn) {
 		}
 		if (cairo != 0) {
 			data.clippingTransform = null;
-			setCairoClip(cairo, clipRgn);
+			setCairoClip(data.damageRgn, 0);
 		} else {
 			int /*long*/ clipping = data.damageRgn != 0 ? data.damageRgn : 0;
 			OS.gdk_gc_set_clip_region(handle, clipping);
@@ -3157,7 +3170,7 @@ void setClipping(int /*long*/ clipRgn) {
 		if (cairo != 0) {
 			if (data.clippingTransform == null) data.clippingTransform = new double[6];
 			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
-			setCairoClip(cairo, clipRgn);
+			setCairoClip(data.damageRgn, clipRgn);
 		} else {
 			int /*long*/ clipping = clipRgn;
 			if (data.damageRgn != 0) {
