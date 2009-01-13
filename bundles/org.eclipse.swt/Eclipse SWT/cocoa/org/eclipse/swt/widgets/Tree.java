@@ -820,6 +820,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	int nsColumnIndex = 0;
 	if (columnCount != 0) {
 		NSIndexSet columnsSet = outlineView.columnIndexesInRect (rect);
+		if (columnsSet.count () == 0) return;	/* can happen for 0-width column */
 		nsColumnIndex = (int)/*64*/columnsSet.firstIndex ();
 		NSArray nsColumns = outlineView.tableColumns ();
 		nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
