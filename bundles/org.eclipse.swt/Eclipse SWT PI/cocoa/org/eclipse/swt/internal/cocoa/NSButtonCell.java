@@ -24,6 +24,10 @@ public NSButtonCell(id id) {
 	super(id);
 }
 
+public void drawImage(NSImage image, NSRect frame, NSView controlView) {
+	OS.objc_msgSend(this.id, OS.sel_drawImage_withFrame_inView_, image != null ? image.id : 0, frame, controlView != null ? controlView.id : 0);
+}
+
 public void setBackgroundColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
 }

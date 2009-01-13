@@ -212,6 +212,13 @@ void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1
 	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
+void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2);
+}
+
 boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -500,6 +507,9 @@ boolean dragSelectionWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 
 void drawBackground (int control, int context) {
 	/* Do nothing */
+}
+
+void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
 }
 
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {

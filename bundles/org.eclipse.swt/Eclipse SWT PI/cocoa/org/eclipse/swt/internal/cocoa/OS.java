@@ -132,6 +132,8 @@ public static final int kQDRegionToRectsMsgParse = 2;
 /** @method flags=no_gen */
 public static final native int /*long*/ drawRect_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
+public static final native int /*long*/ drawImage_withFrame_inView_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ drawInteriorWithFrame_inView_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ setFrame_CALLBACK(int /*long*/ func);
@@ -228,6 +230,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
  *  @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/**
+ *  @method flags=cast
+ *  @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */
@@ -702,6 +709,7 @@ public static final int /*long*/ sel_drawAtPoint_fromRect_operation_fraction_ = 
 public static final int /*long*/ sel_drawBackgroundForGlyphRange_atPoint_ = sel_registerName("drawBackgroundForGlyphRange:atPoint:");
 public static final int /*long*/ sel_drawFromPoint_toPoint_options_ = sel_registerName("drawFromPoint:toPoint:options:");
 public static final int /*long*/ sel_drawGlyphsForGlyphRange_atPoint_ = sel_registerName("drawGlyphsForGlyphRange:atPoint:");
+public static final int /*long*/ sel_drawImage_withFrame_inView_ = sel_registerName("drawImage:withFrame:inView:");
 public static final int /*long*/ sel_drawInRect_ = sel_registerName("drawInRect:");
 public static final int /*long*/ sel_drawInRect_angle_ = sel_registerName("drawInRect:angle:");
 public static final int /*long*/ sel_drawInRect_fromRect_operation_fraction_ = sel_registerName("drawInRect:fromRect:operation:fraction:");
@@ -1124,6 +1132,7 @@ public static final int /*long*/ sel_setCacheMode_ = sel_registerName("setCacheM
 public static final int /*long*/ sel_setCanChooseDirectories_ = sel_registerName("setCanChooseDirectories:");
 public static final int /*long*/ sel_setCanChooseFiles_ = sel_registerName("setCanChooseFiles:");
 public static final int /*long*/ sel_setCanCreateDirectories_ = sel_registerName("setCanCreateDirectories:");
+public static final int /*long*/ sel_setCell_ = sel_registerName("setCell:");
 public static final int /*long*/ sel_setCellClass_ = sel_registerName("setCellClass:");
 public static final int /*long*/ sel_setClip = sel_registerName("setClip");
 public static final int /*long*/ sel_setColor_ = sel_registerName("setColor:");
@@ -4018,6 +4027,11 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
  * @param arg1 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRange arg1);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, boolean arg1);
 /** @method flags=cast */

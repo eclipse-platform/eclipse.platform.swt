@@ -247,6 +247,7 @@ typedef enum {
 	draggedImage_1beganAt_1CALLBACK_FUNC,
 	draggedImage_1endedAt_1operation_1CALLBACK_FUNC,
 	draggedImage_1movedTo_1CALLBACK_FUNC,
+	drawImage_1withFrame_1inView_1CALLBACK_FUNC,
 	drawInteriorWithFrame_1inView_1CALLBACK_FUNC,
 	drawRect_1CALLBACK_FUNC,
 	firstRectForCharacterRange_1CALLBACK_FUNC,
@@ -450,6 +451,11 @@ typedef enum {
 	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
 #else
 	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
+#else
+	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSRect_2J_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__IIIZ_FUNC,
@@ -663,6 +669,11 @@ typedef enum {
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ_FUNC,
 #else
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJJZ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2J_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,

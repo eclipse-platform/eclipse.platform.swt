@@ -1776,6 +1776,7 @@ void initClasses () {
 
 	int /*long*/ drawRectProc = OS.drawRect_CALLBACK(proc3);
 	int /*long*/ drawInteriorWithFrameInViewProc = OS.drawInteriorWithFrame_inView_CALLBACK (proc4);
+	int /*long*/ drawImageWithFrameInViewProc = OS.drawImage_withFrame_inView_CALLBACK (proc5);
 	int /*long*/ setFrameOriginProc = OS.setFrameOrigin_CALLBACK(proc3);
 	int /*long*/ setFrameSizeProc = OS.setFrameSize_CALLBACK(proc3);
 	int /*long*/ hitTestProc = OS.hitTest_CALLBACK(proc3);
@@ -1898,6 +1899,12 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair (OS.class_NSTableHeaderCell, className, 0);
 	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
+	OS.objc_registerClassPair (cls);
+
+	className = "SWTButtonCell";
+	cls = OS.objc_allocateClassPair (OS.class_NSButtonCell, className, 0);
+	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSFrame}@");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTBrowserCell";
@@ -4000,6 +4007,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		NSSize offset = new NSSize();
 		OS.memmove(offset, arg0, NSSize.sizeof);
 		return (widget.dragSelectionWithEvent(id, sel, arg0, arg1, arg2) ? 1 : 0);
+	} else if (sel == OS.sel_drawImage_withFrame_inView_) {
+		NSRect rect = new NSRect ();
+		OS.memmove (rect, arg1, NSRect.sizeof);
+		widget.drawImageWithFrameInView (id, sel, arg0, rect, arg2);
 	}
 	return 0;
 }

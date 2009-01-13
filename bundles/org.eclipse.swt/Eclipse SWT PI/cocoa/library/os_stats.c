@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 371;
-int OS_nativeFunctionCallCount[371];
+int OS_nativeFunctionCount = 374;
+int OS_nativeFunctionCallCount[374];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -239,6 +239,7 @@ char * OS_nativeFunctionNames[] = {
 	"draggedImage_1beganAt_1CALLBACK",
 	"draggedImage_1endedAt_1operation_1CALLBACK",
 	"draggedImage_1movedTo_1CALLBACK",
+	"drawImage_1withFrame_1inView_1CALLBACK",
 	"drawInteriorWithFrame_1inView_1CALLBACK",
 	"drawRect_1CALLBACK",
 	"firstRectForCharacterRange_1CALLBACK",
@@ -442,6 +443,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRange_2",
 #else
 	"objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSRange_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRect_2I",
+#else
+	"objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSRect_2J",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIIZ",
@@ -655,6 +661,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ",
 #else
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJJZ",
+#endif
+#ifndef JNI64
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
+#else
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2J",
 #endif
 #ifndef JNI64
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSPoint_2",

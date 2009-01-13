@@ -255,6 +255,13 @@ void createHandle () {
 		parent.contentView().addSubview(widget);
 		button = (NSButton)new SWTButton().alloc();
 		button.init();
+		/*
+		* Feature in Cocoa.  NSButtons without borders do not leave any margin
+		* between their edge and their image.  The workaround is to provide a
+		* custom cell that displays the image in a better position. 
+		*/
+		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
+		button.setCell (cell);
 		button.setBordered(false);
 		button.setAction(OS.sel_sendSelection);
 		button.setTarget(button);
@@ -308,6 +315,17 @@ void deregister () {
 void destroyWidget() {
 	parent.destroyItem(this);
 	super.destroyWidget();
+}
+
+void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
+	if (text.length () > 0) {
+		if ((parent.style & SWT.RIGHT) != 0) {
+			rect.x += 3;
+		} else {
+			rect.y += 3;			
+		}
+	}
+	callSuper (id, sel, image, rect, view);
 }
 
 void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
@@ -604,8 +622,11 @@ void releaseParent () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (view != null) view.release();
-	if (button != null) button.release();
+	if (view != null) view.release ();
+	if (button != null) {
+		button.release ();
+		button.cell ().release (); /* using custom cell */
+	}
 	view = button = null;
 	parent = null;
 }

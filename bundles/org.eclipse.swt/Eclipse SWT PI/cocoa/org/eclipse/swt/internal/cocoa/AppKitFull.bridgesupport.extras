@@ -4631,11 +4631,11 @@
 <arg name="controlView"></arg>
 <retval></retval>
 </method>
-<method selector="drawImage:withFrame:inView:">
-<arg name="image"></arg>
-<arg name="frame"></arg>
-<arg name="controlView"></arg>
-<retval></retval>
+<method selector="drawImage:withFrame:inView:" swt_gen="true">
+<arg name="image" swt_gen="true"></arg>
+<arg name="frame" swt_gen="true"></arg>
+<arg name="controlView" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="drawTitle:withFrame:inView:">
 <arg name="title"></arg>
@@ -6563,9 +6563,9 @@
 <arg name="writingDirection"></arg>
 <retval></retval>
 </method>
-<method selector="setCell:">
-<arg name="aCell"></arg>
-<retval></retval>
+<method selector="setCell:" swt_gen="true">
+<arg name="aCell" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method class_method="true" selector="setCellClass:" swt_gen="true">
 <arg name="factoryId" swt_gen="true"></arg>

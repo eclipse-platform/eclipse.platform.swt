@@ -63,6 +63,10 @@ public void setAlignment(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
 }
 
+public void setCell(NSCell aCell) {
+	OS.objc_msgSend(this.id, OS.sel_setCell_, aCell != null ? aCell.id : 0);
+}
+
 public static void setCellClass(int /*long*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSControl, OS.sel_setCellClass_, factoryId);
 }

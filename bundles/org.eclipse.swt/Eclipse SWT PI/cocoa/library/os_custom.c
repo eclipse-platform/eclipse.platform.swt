@@ -89,6 +89,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(drawInteriorWithFrame_1inView_1CALLBACK)
 }
 #endif
 
+#ifndef NO_drawImage_1withFrame_1inView_1CALLBACK
+static jintLong drawImage_1withFrame_1inView_1CALLBACK;
+static void drawImage_1withFrame_1inView(id obj, SEL sel, NSImage* image, NSRect frame, NSView* view)
+{
+	return ((void (*)(id, SEL, NSImage*, NSRect*, NSView*))drawImage_1withFrame_1inView_1CALLBACK)(obj, sel, image, &frame, view);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(drawImage_1withFrame_1inView_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	drawImage_1withFrame_1inView_1CALLBACK = func;
+	return (jintLong)drawImage_1withFrame_1inView;
+}
+#endif
+
 #ifndef NO_class_1getName
 JNIEXPORT jstring JNICALL OS_NATIVE(class_1getName)
 (JNIEnv *env, jclass that, jintLong arg0)
