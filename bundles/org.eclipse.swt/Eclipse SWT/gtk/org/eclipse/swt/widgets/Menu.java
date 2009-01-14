@@ -598,7 +598,7 @@ public boolean getVisible () {
 
 int /*long*/ gtk_hide (int /*long*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
-		display.activeShell = getShell ();
+		if (display.activeShell != null) display.activeShell = getShell ();
 	}
 	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
 		sendEvent (SWT.Hide);
@@ -617,7 +617,7 @@ int /*long*/ gtk_hide (int /*long*/ widget) {
 
 int /*long*/ gtk_show (int /*long*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
-		display.activeShell = getShell ();
+		if (display.activeShell != null) display.activeShell = getShell ();
 		return 0;
 	} 
 	sendEvent (SWT.Show);
