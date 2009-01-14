@@ -204,8 +204,13 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 						}
 						TCHAR buffer = new TCHAR (getCodePage (), message, false);
 						int uFormat = OS.DT_EDITCONTROL;
-						if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-							uFormat |= OS.DT_RTLREADING | OS.DT_RIGHT;
+						boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
+						if (rtl) uFormat |= OS.DT_RTLREADING; 
+						int alignment = style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+						switch (alignment) {
+							case SWT.LEFT: uFormat |= (rtl ? OS.DT_RIGHT : OS.DT_LEFT); break;
+							case SWT.CENTER: uFormat |= OS.DT_CENTER;
+							case SWT.RIGHT: uFormat |= (rtl ? OS.DT_LEFT : OS.DT_RIGHT); break;
 						}
 						int /*long*/ hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 						int /*long*/ hOldFont = OS.SelectObject (hDC, hFont);
