@@ -130,6 +130,8 @@ public static final int kQDRegionToRectsMsgParse = 2;
 /** Custom callbacks */
 
 /** @method flags=no_gen */
+public static final native int /*long*/ isFlipped_CALLBACK();
+/** @method flags=no_gen */
 public static final native int /*long*/ drawRect_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ drawImage_withFrame_inView_CALLBACK(int /*long*/ func);

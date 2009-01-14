@@ -336,3 +336,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(accessibilityHitTest_1CALLBACK)
 	return (jintLong)accessibilityHitTest;
 }
 #endif
+
+#ifndef NO_isFlipped_1CALLBACK
+static BOOL isFlippedProc(id obj, SEL sel)
+{
+	return YES;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(isFlipped_1CALLBACK)
+(JNIEnv *env, jclass that)
+{
+	return (jintLong)isFlippedProc;
+}
+#endif

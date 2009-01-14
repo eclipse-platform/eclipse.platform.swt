@@ -255,6 +255,7 @@ typedef enum {
 	highlightSelectionInClipRect_1CALLBACK_FUNC,
 	hitTest_1CALLBACK_FUNC,
 	instrumentObjcMessageSends_FUNC,
+	isFlipped_1CALLBACK_FUNC,
 	markedRange_1CALLBACK_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I_FUNC,

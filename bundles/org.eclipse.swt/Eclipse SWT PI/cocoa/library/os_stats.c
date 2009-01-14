@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 374;
-int OS_nativeFunctionCallCount[374];
+int OS_nativeFunctionCount = 375;
+int OS_nativeFunctionCallCount[375];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -247,6 +247,7 @@ char * OS_nativeFunctionNames[] = {
 	"highlightSelectionInClipRect_1CALLBACK",
 	"hitTest_1CALLBACK",
 	"instrumentObjcMessageSends",
+	"isFlipped_1CALLBACK",
 	"markedRange_1CALLBACK",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I",

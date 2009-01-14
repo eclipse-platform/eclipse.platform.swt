@@ -769,10 +769,6 @@ boolean isDrawing (NSView control) {
 	return visibleRect.width != 0 && visibleRect.height != 0 && getDrawCount () == 0;
 }
 
-boolean isFlipped (int /*long*/ id, int /*long*/ sel) {
-	return true;
-}
-
 /**
  * Returns <code>true</code> if there are any listeners
  * for the specified event type associated with the receiver,

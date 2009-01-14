@@ -46,8 +46,6 @@ public final class Printer extends Device {
 	NSWindow window;
 	boolean isGCCreated;
 	
-	static Callback IsFlipped;
-
 	static final String DRIVER = "Mac";
 
 /**
@@ -224,9 +222,8 @@ protected void create(DeviceData deviceData) {
 		window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 		String className = "SWTPrinterView"; //$NON-NLS-1$
 		if (OS.objc_lookUpClass(className) == 0) {
-			IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
 			int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
-			OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
+			OS.class_addMethod(cls, OS.sel_isFlipped, OS.isFlipped_CALLBACK(), "@:");
 			OS.objc_registerClassPair(cls);
 		}
 		view = (NSView)new SWTPrinterView().alloc();
@@ -322,10 +319,6 @@ protected void init () {
  */
 public void internal_dispose_GC(int /*long*/ context, GCData data) {
 	if (data != null) isGCCreated = false;
-}
-
-static int /*long*/ isFlipped(int /*long*/ id, int /*long*/ sel) {
-	return 1;
 }
 
 /**	 

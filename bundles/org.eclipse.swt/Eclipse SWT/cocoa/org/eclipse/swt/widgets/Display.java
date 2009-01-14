@@ -1776,6 +1776,7 @@ void initClasses () {
 	int /*long*/ proc6 = windowDelegateCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+	int /*long*/ isFlippedProc = OS.isFlipped_CALLBACK();
 	int /*long*/ drawRectProc = OS.drawRect_CALLBACK(proc3);
 	int /*long*/ drawInteriorWithFrameInViewProc = OS.drawInteriorWithFrame_inView_CALLBACK (proc4);
 	int /*long*/ drawImageWithFrameInViewProc = OS.drawImage_withFrame_inView_CALLBACK (proc5);
@@ -1828,7 +1829,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
 	OS.class_addProtocol(cls, OS.objc_getProtocol("NSTextInput"));
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
@@ -3783,8 +3784,6 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.becomeFirstResponder(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_resignFirstResponder) {
 		return widget.resignFirstResponder(id, sel) ? 1 : 0;
-	} else 	if (sel == OS.sel_isFlipped) {
-		return widget.isFlipped(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_isOpaque) {
 		return widget.isOpaque(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_unmarkText) {
