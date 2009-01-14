@@ -373,7 +373,7 @@ static int checkStyle (Composite parent, int style) {
 	 * that use double buffering which is true in both of these cases.
 	 */
 	String platform = SWT.getPlatform();
-	if ("carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
+	if ("cocoa".equals(platform) || "carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	//TEMPORARY CODE
 	/*
@@ -499,7 +499,11 @@ public void addSelectionListener(SelectionListener listener) {
 void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 	// Don't perform anti-aliasing on Mac and WPF because the platform
 	// already does it.  The simple style also does not require anti-aliasing.
-	if (simple || "carbon".equals(SWT.getPlatform()) || "wpf".equals(SWT.getPlatform())) return; //$NON-NLS-1$
+	if (simple) return;
+	String platform = SWT.getPlatform();
+	if ("cocoa".equals(platform)) return; //$NON-NLS-1$
+	if ("carbon".equals(platform)) return; //$NON-NLS-1$
+	if ("wpf".equals(platform)) return; //$NON-NLS-1$
 	// Don't perform anti-aliasing on low resolution displays
 	if (getDisplay().getDepth() < 15) return;
 	if (outerRGB != null) {
