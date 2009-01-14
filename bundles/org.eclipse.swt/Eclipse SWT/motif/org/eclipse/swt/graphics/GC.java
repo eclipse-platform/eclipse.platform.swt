@@ -3376,7 +3376,7 @@ void initCairo() {
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 	data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
-	setCairoClip(cairo, data.clipRgn);
+	setCairoClip(data.damageRgn, data.clipRgn);
 }
 /**
  * Returns <code>true</code> if the receiver has a clipping
@@ -3659,15 +3659,11 @@ static void setCairoFont(int /*long*/ cairo, Font font) {
 	Cairo.cairo_select_font_face(cairo, buffer, slant, weight);
 	Cairo.cairo_set_font_size(cairo, fd.getHeight());
 }
-static void setCairoClip(int /*long*/ cairo, int /*long*/ clipRgn) {
-	Cairo.cairo_reset_clip(cairo);
-	if (clipRgn == 0) return;
+static void setCairoRegion(int /*long*/ cairo, int /*long*/ rgn) {
 	//TODO - get rectangles from region instead of clip box
 	XRectangle rect = new XRectangle();
-	OS.XClipBox(clipRgn, rect);
+	OS.XClipBox(rgn, rect);
 	Cairo.cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
-	Cairo.cairo_clip(cairo);
-	Cairo.cairo_new_path(cairo);
 }
 static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int alpha) {
 	XColor color = c.handle;
@@ -3676,6 +3672,21 @@ static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int 
 	double green = ((color.green & 0xFFFF) / (double)0xFFFF);
 	double blue = ((color.blue & 0xFFFF) / (double)0xFFFF);
 	Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, aa);
+}
+void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
+	int /*long*/ cairo = data.cairo;
+	Cairo.cairo_reset_clip(cairo);
+	if (damageRgn != 0) {
+		double[] matrix = new double[6];
+		Cairo.cairo_get_matrix(cairo, matrix);
+		Cairo.cairo_identity_matrix(cairo);
+		setCairoRegion(cairo, damageRgn);
+		Cairo.cairo_set_matrix(cairo, matrix);
+	}
+	if (clipRgn != 0) {
+		setCairoRegion(cairo, clipRgn);
+	}
+	Cairo.cairo_clip(cairo);
 }
 void setClipping(int clipRgn) {
 	int /*long*/ cairo = data.cairo;
@@ -3686,7 +3697,7 @@ void setClipping(int clipRgn) {
 		}
 		if (cairo != 0) {
 			data.clippingTransform = null;
-			setCairoClip(cairo, clipRgn);
+			setCairoClip(data.damageRgn, 0);
 		} else {
 			if (data.damageRgn == 0) {
 				OS.XSetClipMask (data.display, handle, OS.None);
@@ -3701,7 +3712,7 @@ void setClipping(int clipRgn) {
 		if (cairo != 0) {
 			if (data.clippingTransform == null) data.clippingTransform = new double[6];
 			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
-			setCairoClip(cairo, clipRgn);
+			setCairoClip(data.damageRgn, clipRgn);
 		} else {
 			int clipping = clipRgn;
 			if (data.damageRgn != 0) {
