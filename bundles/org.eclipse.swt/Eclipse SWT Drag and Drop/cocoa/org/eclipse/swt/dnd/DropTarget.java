@@ -187,8 +187,7 @@ protected void checkSubclass () {
 }
 
 int draggingEntered(NSObject sender) {
-	selectedDataType = null;
-	selectedOperation = 0;
+	if (sender == null) return OS.NSDragOperationNone;	
 	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(sender, event)) {
@@ -201,21 +200,23 @@ int draggingEntered(NSObject sender) {
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
 	
+	selectedDataType = null;
+	selectedOperation = DND.DROP_NONE;
 	notifyListeners(DND.DragEnter, event);
 
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
 	
-	selectedDataType = null;
-	for (int i = 0; i < allowedDataTypes.length; i++) {
-		if (allowedDataTypes[i].type == event.dataType.type) {
-			selectedDataType = allowedDataTypes[i];
-			break;
+	if (event.dataType != null) {
+		for (int i = 0; i < allowedDataTypes.length; i++) {
+			if (allowedDataTypes[i].type == event.dataType.type) {
+				selectedDataType = allowedDataTypes[i];
+				break;
+			}
 		}
 	}
-
-	selectedOperation = DND.DROP_NONE;
+	
 	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
 		selectedOperation = event.detail;
 	}
@@ -275,23 +276,41 @@ int draggingUpdated(NSObject sender) {
 		event.type = DND.DragOperationChanged;
 		event.dataType = selectedDataType;
 	}
+
+	selectedDataType = null;
+	selectedOperation = DND.DROP_NONE;
 	notifyListeners(event.type, event);
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
 	
-	selectedDataType = null;
-	for (int i = 0; i < allowedDataTypes.length; i++) {
-		if (allowedDataTypes[i].type == event.dataType.type) {
-			selectedDataType = allowedDataTypes[i];
-			break;
+	if (event.dataType != null) {
+		for (int i = 0; i < allowedDataTypes.length; i++) {
+			if (allowedDataTypes[i].type == event.dataType.type) {
+				selectedDataType = allowedDataTypes[i];
+				break;
+			}
 		}
 	}
 
-	selectedOperation = DND.DROP_NONE;
-	if (selectedDataType != null && ((allowedOperations & event.detail) == event.detail)) {
+	if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
 		selectedOperation = event.detail;
 	}
+
+	switch (selectedOperation) {
+		case DND.DROP_COPY:
+			OS.SetThemeCursor(OS.kThemeCopyArrowCursor);
+			break;
+		case DND.DROP_LINK:
+			OS.SetThemeCursor(OS.kThemeAliasArrowCursor);
+			break;
+		case DND.DROP_MOVE:
+			NSCursor.arrowCursor().set();
+			break;
+		default:
+			OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+	}
+
 	return opToOsOp(selectedOperation);
 }
 

@@ -329,15 +329,22 @@ void drag(Event dragEvent) {
 		
 		// If no image was provided, just create a trivial image. dragImage requires a non-null image.
 		if (image == null) {
-			newImage = new Image(Display.getCurrent(), 1, 1);
-			image = newImage;
+			newImage = new Image(Display.getCurrent(), 20, 20);
+			GC imageGC = new GC(newImage);
+			imageGC.setForeground(new Color(Display.getCurrent(), 50, 50, 50));
+			imageGC.drawRectangle(0, 0, 19, 19);
+			imageGC.dispose();
+			ImageData newImageData = newImage.getImageData();
+			newImageData.alpha = (int)(255 * .4);
+			Image newImageWithAlpha = new Image(Display.getCurrent(), newImageData);
+			image = newImageWithAlpha;
 		}
 
 		dragImage = image.handle;
 
 		NSSize imageSize = dragImage.size();
 		viewPt.x -= (imageSize.width / 2);
-		viewPt.y -= (imageSize.height / 2);
+		viewPt.y += (imageSize.height / 2);
 		
 		// The third argument to dragImage is ignored as of 10.4.
 		NSSize ignored = new NSSize();
