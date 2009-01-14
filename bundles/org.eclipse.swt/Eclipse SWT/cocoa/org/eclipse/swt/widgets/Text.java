@@ -1330,7 +1330,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO reset to OS default
@@ -1453,7 +1453,7 @@ void setFont(NSFont font) {
 	super.setFont (font);
 }
 
-void setForeground (float [] color) {
+void setForeground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO reset to OS default

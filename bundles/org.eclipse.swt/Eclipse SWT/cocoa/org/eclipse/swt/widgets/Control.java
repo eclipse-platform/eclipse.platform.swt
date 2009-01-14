@@ -2599,20 +2599,6 @@ public void setBackgroundImage (Image image) {
 void setBackground (float /*double*/ [] color) {
 }
 
-void setBackground (int control, float [] color) {
-//	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-//	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-//	if (color != null) {
-//		fontStyle.backColor_red = (short) (color [0] * 0xffff);
-//		fontStyle.backColor_green = (short) (color [1] * 0xffff);
-//		fontStyle.backColor_blue = (short) (color [2] * 0xffff);
-//		fontStyle.flags |= OS.kControlUseBackColorMask;
-//	} else {
-//		fontStyle.flags &= ~OS.kControlUseBackColorMask;
-//	}
-//	OS.SetControlFontStyle (control, fontStyle);
-}
-
 /**
  * Sets the receiver's size and location to the rectangular
  * area specified by the arguments. The <code>x</code> and 
@@ -2882,20 +2868,6 @@ public void setForeground (Color color) {
 }
 
 void setForeground (float /*double*/ [] color) {
-}
-
-void setForeground (int control, float [] color) {
-//	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-//	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-//	if (color != null) {
-//		fontStyle.foreColor_red = (short) (color [0] * 0xffff);
-//		fontStyle.foreColor_green = (short) (color [1] * 0xffff);
-//		fontStyle.foreColor_blue = (short) (color [2] * 0xffff);
-//		fontStyle.flags |= OS.kControlUseForeColorMask;
-//	} else {
-//		fontStyle.flags &= ~OS.kControlUseForeColorMask;
-//	}
-//	OS.SetControlFontStyle (control, fontStyle);
 }
 
 void setFrameOrigin (int /*long*/ id, int /*long*/ sel, NSPoint point) {

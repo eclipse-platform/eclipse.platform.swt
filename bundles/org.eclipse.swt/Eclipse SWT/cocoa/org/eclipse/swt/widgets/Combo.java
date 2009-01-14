@@ -1283,7 +1283,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	super.setBounds (x, y, width, height, move, resize);
 }
 
-void setForeground (float [] color) {
+void setForeground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO reset to OS default

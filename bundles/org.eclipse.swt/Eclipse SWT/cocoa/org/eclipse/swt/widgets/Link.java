@@ -386,7 +386,7 @@ void setFont(NSFont font) {
 	((NSTextView) view).setFont(font);
 }
 
-void setForeground (float [] color) {
+void setForeground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO reset to OS default

@@ -596,7 +596,7 @@ void _setAlignment (int alignment) {
 //	}
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		return;	// TODO set to OS default
@@ -623,7 +623,7 @@ void setFont (NSFont font) {
 	}
 }
 
-void setForeground (float [] color) {
+void setForeground (float /*double*/ [] color) {
 	((NSButton)view).setAttributedTitle(createString());
 }
 

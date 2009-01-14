@@ -403,7 +403,7 @@ public void setAlignment (int alignment) {
 	_setAlignment();
 }
 
-void setBackground (float [] color) {
+void setBackground (float /*double*/ [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	NSColor nsColor = null;
 	
@@ -435,7 +435,7 @@ void setFont(NSFont font) {
 	}
 }
 
-void setForeground (float [] color) {
+void setForeground (float /*double*/ [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	NSCell cell = new NSCell(textView.cell());
 	cell.setAttributedStringValue(createString());
