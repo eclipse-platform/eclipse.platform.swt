@@ -3681,12 +3681,13 @@ void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
 		Cairo.cairo_get_matrix(cairo, matrix);
 		Cairo.cairo_identity_matrix(cairo);
 		setCairoRegion(cairo, damageRgn);
+		Cairo.cairo_clip(cairo);
 		Cairo.cairo_set_matrix(cairo, matrix);
 	}
 	if (clipRgn != 0) {
 		setCairoRegion(cairo, clipRgn);
+		Cairo.cairo_clip(cairo);
 	}
-	Cairo.cairo_clip(cairo);
 }
 void setClipping(int clipRgn) {
 	int /*long*/ cairo = data.cairo;
