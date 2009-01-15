@@ -323,21 +323,24 @@ void drag(Event dragEvent) {
 	
 	// Get the image for the drag. The drag should happen from the middle of the image.
 	NSImage dragImage = null;
-	Image newImage = null;
+	Image defaultDragImage = null;
 	try {	
 		Image image = event.image;
 		
 		// If no image was provided, just create a trivial image. dragImage requires a non-null image.
 		if (image == null) {
-			newImage = new Image(Display.getCurrent(), 20, 20);
-			GC imageGC = new GC(newImage);
-			imageGC.setForeground(new Color(Display.getCurrent(), 50, 50, 50));
+			Image newDragImage = new Image(Display.getCurrent(), 20, 20);
+			GC imageGC = new GC(newDragImage);
+			Color grayColor = new Color(Display.getCurrent(), 50, 50, 50);
+			imageGC.setForeground(grayColor);
 			imageGC.drawRectangle(0, 0, 19, 19);
 			imageGC.dispose();
-			ImageData newImageData = newImage.getImageData();
+			ImageData newImageData = newDragImage.getImageData();
 			newImageData.alpha = (int)(255 * .4);
-			Image newImageWithAlpha = new Image(Display.getCurrent(), newImageData);
-			image = newImageWithAlpha;
+			defaultDragImage = new Image(Display.getCurrent(), newImageData);
+			newDragImage.dispose();
+			grayColor.dispose();
+			image = defaultDragImage;
 		}
 
 		dragImage = image.handle;
@@ -365,7 +368,7 @@ void drag(Event dragEvent) {
 			notifyListeners(DND.DragEnd, event);
 		}
 	} finally {	
-		if (newImage != null) newImage.dispose();
+		if (defaultDragImage != null) defaultDragImage.dispose();
 	}
 }
 
