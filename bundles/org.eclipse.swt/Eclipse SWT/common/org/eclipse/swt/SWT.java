@@ -1004,7 +1004,6 @@ public class SWT {
 
 	/**
 	 * Style constant for search behavior (value is 1&lt;&lt;7).
-	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * </ul></p>

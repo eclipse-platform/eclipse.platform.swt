@@ -941,10 +941,6 @@ public int getOrientation () {
  * with the style <code>SWT.SEARCH</code>, the message text
  * is displayed as a hint for the user, indicating the
  * purpose of the field.
- * <p>
- * Note: This operation is a <em>HINT</em> and is not
- * supported on platforms that do not have this concept.
- * </p>
  * 
  * @return the widget message
  *
@@ -1667,10 +1663,6 @@ void setMargins () {
  * with the style <code>SWT.SEARCH</code>, the message text
  * is displayed as a hint for the user, indicating the
  * purpose of the field.
- * <p>
- * Note: This operation is a <em>HINT</em> and is not
- * supported on platforms that do not have this concept.
- * </p>
  * 
  * @param message the new message
  *
