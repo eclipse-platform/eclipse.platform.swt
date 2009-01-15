@@ -122,7 +122,7 @@ static int checkStyle (int style) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
 	}
-	style &= ~SWT.SEARCH;
+//	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -1258,6 +1258,65 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 		}
 	}
 	return super.gtk_event_after (widget, gdkEvent);
+}
+
+int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
+	if ((state & OBSCURED) != 0) return 0;
+	int /*long*/ result = super.gtk_expose_event (widget, event);
+	if ((style & SWT.SEARCH) != 0 && !OS.GTK_WIDGET_HAS_FOCUS (handle)) {
+		int /*long*/ str = OS.gtk_entry_get_text (handle);
+		if (OS.strlen (str) == 0) {
+			GdkEventExpose gdkEvent = new GdkEventExpose ();
+			OS.memmove (gdkEvent, event, GdkEventExpose.sizeof);
+			int /*long*/ window = paintWindow ();
+			int [] w = new int [1], h = new int [1];
+			OS.gdk_drawable_get_size (window, w, h);
+			int border = INNER_BORDER;
+			int height = h [0] - border - border;
+			int width = w [0] - border - border;
+			int /*long*/ context = OS.gtk_widget_get_pango_context (handle);
+			int /*long*/ lang = OS.pango_context_get_language (context);
+			int /*long*/ metrics = OS.pango_context_get_metrics (context, getFontDescription (), lang);
+			int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
+			int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
+			OS.pango_font_metrics_unref (metrics);
+			byte [] buffer = Converter.wcsToMbcs (null, message, true);
+			int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+			int /*long*/ line = OS.pango_layout_get_line (layout, 0);
+			PangoRectangle rect = new PangoRectangle ();
+			OS.pango_layout_line_get_extents (line, null, rect);
+			rect.y = OS.PANGO_PIXELS (rect.y);
+			rect.height = OS.PANGO_PIXELS (rect.height);
+			rect.width = OS.PANGO_PIXELS (rect.width);
+			int y = (height - ascent - descent) / 2 + ascent + rect.y;
+			if (rect.height > height) {
+				y = (height - rect.height) / 2;
+			} else if (y < 0) {
+				y = 0;
+			} else if (y + rect.height > height) {
+				y = height - rect.height;
+			}
+			y += border;
+			int x = border;
+			boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
+			int alignment = style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+			switch (alignment) {
+				case SWT.LEFT: x = rtl ? width - rect.width: border; break;
+				case SWT.CENTER: x = (width - rect.width) / 2; break;
+				case SWT.RIGHT: x = rtl ? border : width - rect.width; break;
+			}
+			int /*long*/ gc = OS.gdk_gc_new	(window);
+			int /*long*/ style = OS.gtk_widget_get_style (handle);	
+			GdkColor textColor = new GdkColor ();
+			OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
+			GdkColor baseColor = new GdkColor ();
+			OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
+			OS.gdk_draw_layout_with_colors (window, gc, x, y, layout, textColor, baseColor);
+			OS.g_object_unref (gc);
+			OS.g_object_unref (layout);
+		}
+	}
+	return result;
 }
 
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
