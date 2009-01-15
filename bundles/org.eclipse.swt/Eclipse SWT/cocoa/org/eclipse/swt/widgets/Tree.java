@@ -531,14 +531,14 @@ void createItem (TreeColumn column, int index) {
 	nsColumn.setWidth (0);
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	if (columnCount > 1) {
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
-			if (item != null) createColumn (item, index);
-		}
-	} else {
-		for (int i = 0; i < itemCount; i++) {
-			clearCustomWidths (items[i]);
+	for (int i = 0; i < itemCount; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			if (columnCount > 1) {
+				createColumn (item, index);
+			} else {
+				clearCustomWidths (item);
+			}
 		}
 	}
 }

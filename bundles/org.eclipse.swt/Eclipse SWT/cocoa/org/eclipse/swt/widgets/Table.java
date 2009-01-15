@@ -386,6 +386,47 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (rect.width, rect.height);
 }
 
+void createColumn (TableItem item, int index) {
+	String [] strings = item.strings;
+	if (strings != null) {
+		String [] temp = new String [columnCount];
+		System.arraycopy (strings, 0, temp, 0, index);
+		System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+		temp [index] = "";
+		item.strings = temp;
+	}
+	if (index == 0) item.text = "";
+	Image [] images = item.images;
+	if (images != null) {
+		Image [] temp = new Image [columnCount];
+		System.arraycopy (images, 0, temp, 0, index);
+		System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+		item.images = temp;
+	}
+	if (index == 0) item.image = null;
+	Color [] cellBackground = item.cellBackground;
+	if (cellBackground != null) {
+		Color [] temp = new Color [columnCount];
+		System.arraycopy (cellBackground, 0, temp, 0, index);
+		System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+		item.cellBackground = temp;
+	}
+	Color [] cellForeground = item.cellForeground;
+	if (cellForeground != null) {
+		Color [] temp = new Color [columnCount];
+		System.arraycopy (cellForeground, 0, temp, 0, index);
+		System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+		item.cellForeground = temp;
+	}
+	Font [] cellFont = item.cellFont;
+	if (cellFont != null) {
+		Font [] temp = new Font [columnCount];
+		System.arraycopy (cellFont, 0, temp, 0, index);
+		System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+		item.cellFont = temp;
+	}
+}
+
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 	scrollWidget.init();
@@ -467,53 +508,14 @@ void createItem (TableColumn column, int index) {
 	nsColumn.setWidth(0);
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	if (columnCount > 1) {
-		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
-			if (item != null) {
-				String [] strings = item.strings;
-				if (strings != null) {
-					String [] temp = new String [columnCount];
-					System.arraycopy (strings, 0, temp, 0, index);
-					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
-					temp [index] = "";
-					item.strings = temp;
-				}
-				if (index == 0) item.text = "";
-				Image [] images = item.images;
-				if (images != null) {
-					Image [] temp = new Image [columnCount];
-					System.arraycopy (images, 0, temp, 0, index);
-					System.arraycopy (images, index, temp, index+1, columnCount-index-1);
-					item.images = temp;
-				}
-				if (index == 0) item.image = null;
-				Color [] cellBackground = item.cellBackground;
-				if (cellBackground != null) {
-					Color [] temp = new Color [columnCount];
-					System.arraycopy (cellBackground, 0, temp, 0, index);
-					System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
-					item.cellBackground = temp;
-				}
-				Color [] cellForeground = item.cellForeground;
-				if (cellForeground != null) {
-					Color [] temp = new Color [columnCount];
-					System.arraycopy (cellForeground, 0, temp, 0, index);
-					System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
-					item.cellForeground = temp;
-				}
-				Font [] cellFont = item.cellFont;
-				if (cellFont != null) {
-					Font [] temp = new Font [columnCount];
-					System.arraycopy (cellFont, 0, temp, 0, index);
-					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
-					item.cellFont = temp;
-				}
+	for (int i = 0; i < itemCount; i++) {
+		TableItem item = items [i];
+		if (item != null) {
+			if (columnCount > 1) {
+				createColumn (item, index);
+			} else {
+				item.customWidth = -1;
 			}
-		}
-	} else {
-		for (int i = 0; i < itemCount; i++) {
-			items [i].customWidth = -1;
 		}
 	}
 }
