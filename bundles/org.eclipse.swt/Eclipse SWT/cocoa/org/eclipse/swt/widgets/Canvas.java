@@ -136,12 +136,10 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	}
 }
 
-void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
-	super.drawWidget (id, rect, sendPaint);
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+	super.drawWidget (id, context, rect, sendPaint);
 	if (caret == null) return;
 	if (caret.isShowing) {
-		NSGraphicsContext context = NSGraphicsContext.currentContext();
-		
 		Image image = caret.image;
 		if (image != null) {
 			NSRect fromRect = new NSRect ();

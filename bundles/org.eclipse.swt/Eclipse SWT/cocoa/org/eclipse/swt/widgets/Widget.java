@@ -517,8 +517,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	if (getDrawCount() > 0) return;
-	NSGraphicsContext current = NSGraphicsContext.currentContext();
-	current.saveGraphicsState();
+	NSGraphicsContext context = NSGraphicsContext.currentContext();
+	context.saveGraphicsState();
 	setClipRegion(0, 0);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -526,12 +526,12 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	OS.objc_msgSendSuper(super_struct, sel, rect);
 	display.inPaint = true;
 	/* the drawing of the default Button's rect comes in on a non-UI thread */
-	drawWidget (id, rect, Thread.currentThread () == display.thread);
+	drawWidget (id, context, rect, Thread.currentThread () == display.thread);
 	display.inPaint = false;
-	current.restoreGraphicsState();
+	context.restoreGraphicsState();
 }
 
-void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
 }
 
 void redrawWidget (NSView view, boolean children) {

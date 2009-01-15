@@ -328,11 +328,10 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	callSuper (id, sel, image, rect, view);
 }
 
-void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
 	if (id == view.id) {
 		if (getSelection ()) {
 			NSRect bounds = view.bounds();
-			NSGraphicsContext context = NSGraphicsContext.currentContext();
 			context.saveGraphicsState();
 			NSColor.colorWithDeviceRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
 			NSColor.colorWithDeviceRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
@@ -346,7 +345,6 @@ void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 		}
 		if ((style & SWT.DROP_DOWN) != 0) {
 			NSRect bounds = view.bounds();
-			NSGraphicsContext context = NSGraphicsContext.currentContext();
 			context.saveGraphicsState();
 			NSBezierPath path = NSBezierPath.bezierPath();
 			NSPoint pt = new NSPoint();

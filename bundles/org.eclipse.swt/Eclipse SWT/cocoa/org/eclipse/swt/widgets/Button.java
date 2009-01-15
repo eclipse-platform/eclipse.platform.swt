@@ -279,11 +279,10 @@ void deregister () {
 	display.removeWidget(((NSControl)view).cell());
 }
 
-void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
 		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
-		NSGraphicsContext context = NSGraphicsContext.currentContext();
 		context.saveGraphicsState();
 		NSPoint p1 = new NSPoint();
 		p1.x = -arrowSize / 2;
@@ -318,7 +317,7 @@ void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
 		path.fill();
 		context.restoreGraphicsState();
 	}
-	super.drawWidget (id, rect, sendPaint);
+	super.drawWidget (id, context, rect, sendPaint);
 }
 
 /**

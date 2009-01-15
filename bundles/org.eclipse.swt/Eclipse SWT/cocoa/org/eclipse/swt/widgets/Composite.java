@@ -285,14 +285,13 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 	super.doCommandBySelector (id, sel, selector);
 }
 
-void drawWidget (int /*long*/ id, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
-			NSGraphicsContext context = NSGraphicsContext.currentContext();
 			fillBackground (view, context, rect);
 		}
 	}
-	super.drawWidget (id, rect, sendPaint);
+	super.drawWidget (id, context, rect, sendPaint);
 }
 
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
