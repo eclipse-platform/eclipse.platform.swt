@@ -807,11 +807,11 @@ void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	callSuper(id, sel, theEvent);
+	superKeyDown(id, sel, theEvent);
 }
 
 void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	callSuper(id, sel, theEvent);
+	superKeyUp(id, sel, theEvent);
 }
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -1404,6 +1404,14 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 
 boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
 	return true;
+}
+
+void superKeyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper (id, sel, theEvent);
+}
+
+void superKeyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper (id, sel, theEvent);
 }
 
 void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {

@@ -1827,6 +1827,18 @@ void initClasses () {
 
 	className = "SWTView";
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
+	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
+	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.objc_registerClassPair(cls);
+
+	className = "SWTCanvasView";
+	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
 	OS.class_addProtocol(cls, OS.objc_getProtocol("NSTextInput"));
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");

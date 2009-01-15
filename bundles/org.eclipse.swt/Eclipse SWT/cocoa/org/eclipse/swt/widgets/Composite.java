@@ -276,7 +276,7 @@ void createHandle () {
 		scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
 		scrollView = scrollWidget;
 	}
-	NSView widget = (NSView)new SWTView().alloc();
+	NSView widget = (NSView)new SWTCanvasView().alloc();
 	widget.initWithFrame (rect);
 //	widget.setFocusRingType(OS.NSFocusRingTypeExterior);
 	view = widget;
