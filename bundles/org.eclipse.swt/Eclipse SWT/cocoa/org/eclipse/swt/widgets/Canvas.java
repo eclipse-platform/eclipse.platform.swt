@@ -292,20 +292,20 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (sourceRect.intersects (clientRect)) {
 		update (all);
 	}
-	NSRect damage = new NSRect();
-	damage.x = x;
-	damage.y = y;
-	damage.width = width;
-	damage.height = height;
-
-	NSPoint dest = new NSPoint();
-	dest.x = destX;
-	dest.y = destY;
 	Control control = findBackgroundControl ();
-	if ((control != null && control.backgroundImage != null)) {
+	if (control != null && control.backgroundImage != null) {
 		redrawWidget (view, x, y, width, height, false);
 		redrawWidget (view, destX, destY, width, height, false);
 	} else {
+		NSRect damage = new NSRect();
+		damage.x = x;
+		damage.y = y;
+		damage.width = width;
+		damage.height = height;
+		NSPoint dest = new NSPoint();
+		dest.x = destX;
+		dest.y = destY;
+
 		view.lockFocus();
 		OS.NSCopyBits(0, damage , dest);
 		view.unlockFocus();
