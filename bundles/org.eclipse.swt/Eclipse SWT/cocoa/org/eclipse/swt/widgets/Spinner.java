@@ -702,6 +702,16 @@ void sendSelection () {
 	setSelection (getSelection(), false, true, true);
 }
 
+void setBackground (float /*double*/ [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+	}
+	((NSTextField) textView).setBackgroundColor (nsColor);
+}
+
 /**
  * Sets the number of decimal places used by the receiver.
  * <p>
@@ -734,6 +744,16 @@ public void setDigits (int value) {
 
 void setFont(NSFont font) {
 	textView.setFont(font);
+}
+
+void setForeground (float /*double*/ [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+	}
+	((NSTextField) textView).setTextColor (nsColor);
 }
 
 /**
