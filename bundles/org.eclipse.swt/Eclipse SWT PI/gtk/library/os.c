@@ -3771,6 +3771,26 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1create
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cairo_1create)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1create_FUNC);
+/*
+	rc = (jintLong)gdk_cairo_create(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, gdk_cairo_create)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1create_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1cairo_1region
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -7765,6 +7785,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1filter)
 }
 #endif
 
+#ifndef NO__1gtk_1file_1chooser_1get_1uri
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1uri)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1get_1uri_FUNC);
+/*
+	rc = (jintLong)gtk_file_chooser_get_uri(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_file_chooser_get_uri)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1get_1uri_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1set_1current_1folder
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -7874,6 +7914,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1filter)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1filter_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1file_1chooser_1set_1local_1only
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1local_1only)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1local_1only_FUNC);
+/*
+	gtk_file_chooser_set_local_only(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_file_chooser_set_local_only)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1local_1only_FUNC);
 }
 #endif
 

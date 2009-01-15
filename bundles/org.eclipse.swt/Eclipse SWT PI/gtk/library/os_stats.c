@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1276;
-int OS_nativeFunctionCallCount[1276];
+int OS_nativeFunctionCount = 1278;
+int OS_nativeFunctionCallCount[1278];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -345,6 +345,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1atom_1name",
 	"_1gdk_1beep",
 	"_1gdk_1bitmap_1create_1from_1data",
+	"_1gdk_1cairo_1create",
 	"_1gdk_1cairo_1region",
 	"_1gdk_1cairo_1set_1source_1color",
 	"_1gdk_1color_1white",
@@ -640,12 +641,14 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1file_1chooser_1get_1filename",
 	"_1gtk_1file_1chooser_1get_1filenames",
 	"_1gtk_1file_1chooser_1get_1filter",
+	"_1gtk_1file_1chooser_1get_1uri",
 	"_1gtk_1file_1chooser_1set_1current_1folder",
 	"_1gtk_1file_1chooser_1set_1current_1name",
 	"_1gtk_1file_1chooser_1set_1do_1overwrite_1confirmation",
 	"_1gtk_1file_1chooser_1set_1extra_1widget",
 	"_1gtk_1file_1chooser_1set_1filename",
 	"_1gtk_1file_1chooser_1set_1filter",
+	"_1gtk_1file_1chooser_1set_1local_1only",
 	"_1gtk_1file_1chooser_1set_1select_1multiple",
 	"_1gtk_1file_1filter_1add_1pattern",
 	"_1gtk_1file_1filter_1get_1name",
@@ -1352,7 +1355,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1layout_1iter_1next_1line",
 	"_1pango_1layout_1iter_1next_1run",
 	"_1pango_1layout_1line_1get_1extents",
-	"_1pango_1layout_1line_1get_1resolved_1dir",
 	"_1pango_1layout_1line_1x_1to_1index",
 	"_1pango_1layout_1new",
 	"_1pango_1layout_1set_1alignment",

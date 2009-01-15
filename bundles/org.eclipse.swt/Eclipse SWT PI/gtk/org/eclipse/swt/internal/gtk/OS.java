@@ -2963,6 +2963,16 @@ public static final int /*long*/ gdk_bitmap_create_from_data(int /*long*/ window
 	}
 }
 /** @method flags=dynamic */
+public static final native int /*long*/ _gdk_cairo_create(int /*long*/ drawable);
+public static final int /*long*/ gdk_cairo_create(int /*long*/ drawable) {
+	lock.lock();
+	try {
+		return _gdk_cairo_create(drawable);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gdk_cairo_region(int /*long*/ cairo, int /*long*/ region);
 public static final void gdk_cairo_region(int /*long*/ cairo, int /*long*/ region) {
 	lock.lock();
@@ -6092,12 +6102,12 @@ public static final int /*long*/ gtk_entry_get_layout (int /*long*/ entry) {
 		lock.unlock();
 	}
 }
-/** @param layout cast=(GtkEntry *) */
-public static final native void _gtk_entry_get_layout_offsets (int /*long*/ layout, int[] x, int[] y);
-public static final void gtk_entry_get_layout_offsets (int /*long*/ layout, int[] x, int[] y) {
+/** @param entry cast=(GtkEntry *) */
+public static final native void _gtk_entry_get_layout_offsets (int /*long*/ entry, int[] x, int[] y);
+public static final void gtk_entry_get_layout_offsets (int /*long*/ entry, int[] x, int[] y) {
 	lock.lock();
 	try {
-		_gtk_entry_get_layout_offsets(layout, x, y);
+		_gtk_entry_get_layout_offsets(entry, x, y);
 	} finally {
 		lock.unlock();
 	}
@@ -6379,6 +6389,16 @@ public static final int /*long*/ gtk_file_chooser_get_filenames(int /*long*/ cho
 	}
 }
 /** @method flags=dynamic */
+public static final native int /*long*/ _gtk_file_chooser_get_uri(int /*long*/ chooser);
+public static final int /*long*/ gtk_file_chooser_get_uri(int /*long*/ chooser) {
+	lock.lock();
+	try {
+		return _gtk_file_chooser_get_uri(chooser);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native int /*long*/ _gtk_file_chooser_get_filter(int /*long*/ chooser);
 public static final int /*long*/ gtk_file_chooser_get_filter(int /*long*/ chooser) {
 	lock.lock();
@@ -6404,6 +6424,16 @@ public static final void gtk_file_chooser_set_current_name(int /*long*/ chooser,
 	lock.lock();
 	try {
 		_gtk_file_chooser_set_current_name(chooser, name);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_file_chooser_set_local_only(int /*long*/ chooser, boolean local_only);
+public static final void gtk_file_chooser_set_local_only(int /*long*/ chooser, boolean local_only) {
+	lock.lock();
+	try {
+		_gtk_file_chooser_set_local_only(chooser, local_only);
 	} finally {
 		lock.unlock();
 	}
