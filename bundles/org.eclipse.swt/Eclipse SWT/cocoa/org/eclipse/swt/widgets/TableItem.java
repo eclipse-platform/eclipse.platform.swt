@@ -42,6 +42,8 @@ public class TableItem extends Item {
 	Font font;
 	Font[] cellFont;
 	int customWidth = -1;
+
+	static final int IMAGETEXT_MARGIN = 2;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -134,6 +136,10 @@ int calculateWidth (int columnIndex, GC gc, boolean callMeasureItem) {
 	cell.setImage (image != null ? image.handle : null);
 	NSSize size = cell.cellSize ();
 	int width = (int)Math.ceil (size.width);
+	if (image != null) {
+		/* margin between item image and text */
+		width += IMAGETEXT_MARGIN;
+	}
 
 	if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
 		NSTableView tableView = (NSTableView)parent.view;
@@ -204,6 +210,11 @@ NSAttributedString createString (int index) {
 	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 	paragraphStyle.autorelease ();
 	paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
+	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
+	if (image != null) {
+		/* margin between item image and text */
+		paragraphStyle.setFirstLineHeadIndent (IMAGETEXT_MARGIN);
+	}
 	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 	if (parent.columnCount > 0) {
 		TableColumn column = parent.getColumn (index);
@@ -601,9 +612,9 @@ public Rectangle getTextBounds (int index) {
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	//TODO is this right?
 	if (image != null) {
-		int imageWidth = image.getBounds().width;
-		rect.x += imageWidth;
-		rect.width -= imageWidth;
+		int offset = image.getBounds ().width + IMAGETEXT_MARGIN;
+		rect.x += offset;
+		rect.width -= offset;
 	}
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
