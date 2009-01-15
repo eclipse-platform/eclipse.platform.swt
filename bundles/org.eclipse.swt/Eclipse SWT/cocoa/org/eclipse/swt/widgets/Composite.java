@@ -254,10 +254,8 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	super.setBounds(x, y, width, height, move, resize);
 	if ((state & CANVAS) != 0) { 
 		if (scrollView != null) {
-			NSSize newSize = new NSSize();
-			newSize.height = height;
-			newSize.width = width;
-			view.setFrameSize(newSize);
+			NSSize size = scrollView.contentSize();
+			view.setFrameSize(size);
 		}
 	}
 }
