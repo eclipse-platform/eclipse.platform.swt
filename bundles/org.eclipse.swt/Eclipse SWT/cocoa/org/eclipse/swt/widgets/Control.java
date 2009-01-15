@@ -752,12 +752,11 @@ Color defaultBackground () {
 }
 
 Font defaultFont () {
-	//TODO - Controls only, does this leak?
-	if (view instanceof NSControl) {
-		NSFont nsFont = ((NSControl)view).font ();
-		if (nsFont != null) {
-			return Font.cocoa_new (display, nsFont);
-		}
+	NSFont nsFont = null;
+	if (view instanceof NSControl) nsFont = ((NSControl)view).font ();
+	if (view instanceof NSText) nsFont = ((NSText)view).font ();
+	if (nsFont != null) {
+		return Font.cocoa_new (display, nsFont);
 	}
 	return display.getSystemFont ();
 }
