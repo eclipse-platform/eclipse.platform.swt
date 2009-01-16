@@ -420,14 +420,14 @@ public boolean getStippled () {
 }
 
 void mouse (NSEvent nsEvent) {
-	NSPoint location = nsEvent.locationInWindow();
-	if (parent != null) {
-		location = parent.view.convertPoint_toView_(location, parent.view);
+	NSPoint location;
+	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {
+		location = NSEvent.mouseLocation();
 	} else {
-		NSWindow eventWindow = nsEvent.window();
-		location = eventWindow.convertBaseToScreen(location);
-		location.y = display.getPrimaryFrame().height - location.y;
+		location = nsEvent.locationInWindow();
+		location = nsEvent.window().convertBaseToScreen(location);
 	}
+	location.y = display.getPrimaryFrame().height - location.y;
 	int newX = (int)location.x, newY = (int)location.y;
 	if (newX != oldX || newY != oldY) {
 		Rectangle [] oldRectangles = rectangles;
