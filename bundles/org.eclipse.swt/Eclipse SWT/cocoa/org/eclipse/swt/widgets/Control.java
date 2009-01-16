@@ -934,6 +934,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect) {
 	if (image != null && !image.isDisposed()) {
 		context.saveGraphicsState();
 		NSColor.colorWithPatternImage(image.handle).setFill();
+//		NSColor.blackColor().setFill();
 		NSPoint phase = new NSPoint();
 		NSView controlView = control.view;
 		NSView contentView = controlView.window().contentView();
