@@ -771,34 +771,34 @@ public boolean loadFont (String path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	//TEMPORARY CODE
 	if (true) return false;
-	int index = path.lastIndexOf ("/");
-	if (index != -1) path = path.substring (0, index);
-	int [] ndirs = new int [1];
-	int dirs = OS.XGetFontPath (xDisplay, ndirs);
-	int [] ptr = new int [1];
-	for (int i = 0; i < ndirs [0]; i++) {
-		OS.memmove (ptr, dirs + (i * 4), 4);
-		int length = OS.strlen (ptr [0]);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, ptr [0], length);
-		if (Converter.mbcsToWcs (null, buffer).equals (path)) {
-			OS.XFreeFontPath (dirs);
-			return true;
-		}
-	}
-	int newDirs = OS.XtMalloc ((ndirs [0] + 1) * 4);
-	int[] dirsBuffer = new int [ndirs [0] + 1];
-	OS.memmove (dirsBuffer, dirs, ndirs [0] * 4);
-	byte[] buffer = Converter.wcsToMbcs (null, path, true);
-	int pathPtr = OS.XtMalloc (buffer.length);
-	OS.memmove (pathPtr, buffer, buffer.length);
-	dirsBuffer [dirsBuffer.length - 1] = pathPtr;
-	OS.memmove (newDirs, dirsBuffer, dirsBuffer.length * 4);
-	OS.XSetFontPath (xDisplay, newDirs, dirsBuffer.length);
-	OS.XFreeFontPath (dirs);
-	OS.XFree (newDirs);
-	OS.XFree (pathPtr);
-	return true;
+//	int index = path.lastIndexOf ("/");
+//	if (index != -1) path = path.substring (0, index);
+//	int [] ndirs = new int [1];
+//	int dirs = OS.XGetFontPath (xDisplay, ndirs);
+//	int [] ptr = new int [1];
+//	for (int i = 0; i < ndirs [0]; i++) {
+//		OS.memmove (ptr, dirs + (i * 4), 4);
+//		int length = OS.strlen (ptr [0]);
+//		byte [] buffer = new byte [length];
+//		OS.memmove (buffer, ptr [0], length);
+//		if (Converter.mbcsToWcs (null, buffer).equals (path)) {
+//			OS.XFreeFontPath (dirs);
+//			return true;
+//		}
+//	}
+//	int newDirs = OS.XtMalloc ((ndirs [0] + 1) * 4);
+//	int[] dirsBuffer = new int [ndirs [0] + 1];
+//	OS.memmove (dirsBuffer, dirs, ndirs [0] * 4);
+//	byte[] buffer = Converter.wcsToMbcs (null, path, true);
+//	int pathPtr = OS.XtMalloc (buffer.length);
+//	OS.memmove (pathPtr, buffer, buffer.length);
+//	dirsBuffer [dirsBuffer.length - 1] = pathPtr;
+//	OS.memmove (newDirs, dirsBuffer, dirsBuffer.length * 4);
+//	OS.XSetFontPath (xDisplay, newDirs, dirsBuffer.length);
+//	OS.XFreeFontPath (dirs);
+//	OS.XFree (newDirs);
+//	OS.XFree (pathPtr);
+//	return true;
 }
 	
 void new_Object (Object object) {

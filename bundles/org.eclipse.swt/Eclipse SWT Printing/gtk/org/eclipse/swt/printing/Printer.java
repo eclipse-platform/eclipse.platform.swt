@@ -600,8 +600,8 @@ public Point getDPI() {
 	if (DEBUG) System.out.println("print_settings.resolution=" + resolution);
 	//TODO: Return 72 (1/72 inch = 1 point) until gtk bug 346245 is fixed
 	//TODO: Fix this: gtk_print_settings_get_resolution returns 0? (see gtk bug 346252)
-	if (true || resolution == 0) return new Point(72, 72);
-	return new Point(resolution, resolution);
+	/*if (resolution == 0)*/ return new Point(72, 72);
+//	return new Point(resolution, resolution);
 }
 
 /**
