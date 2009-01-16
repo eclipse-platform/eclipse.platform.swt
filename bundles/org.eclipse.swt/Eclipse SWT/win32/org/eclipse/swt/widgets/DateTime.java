@@ -422,44 +422,42 @@ String getComputeSizeString () {
 }
 
 String getCustomShortDateFormat () {
-	if (true) {
-		TCHAR tchar = new TCHAR (getCodePage (), 80);
-		int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SYEARMONTH, tchar, 80);
-		return size != 0 ? tchar.toString (0, size - 1) : "M/yyyy"; //$NON-NLS-1$
-	}
+	TCHAR tchar = new TCHAR (getCodePage (), 80);
+	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SYEARMONTH, tchar, 80);
+	return size != 0 ? tchar.toString (0, size - 1) : "M/yyyy"; //$NON-NLS-1$
 	
 	//TODO: Not currently used, but may need for WinCE (or if numeric short date is required)
-	StringBuffer buffer = new StringBuffer (getShortDateFormat ());
-	int length = buffer.length ();
-	boolean inQuotes = false;
-	int start = 0, end = 0;
-	while (start < length) {
-		char ch = buffer.charAt (start);
-		if (ch == SINGLE_QUOTE) inQuotes = !inQuotes;
-		else if (ch == DAY_FORMAT_CONSTANT && !inQuotes) {
-			end = start + 1;
-			while (end < length && buffer.charAt (end) == DAY_FORMAT_CONSTANT) end++;
-			int ordering = getShortDateFormatOrdering ();
-			switch (ordering) {
-			case MONTH_DAY_YEAR:
-				// skip the following separator
-				while (end < length && buffer.charAt (end) != YEAR_FORMAT_CONSTANT) end++;
-				break;
-			case DAY_MONTH_YEAR:
-				// skip the following separator
-				while (end < length && buffer.charAt (end) != MONTH_FORMAT_CONSTANT) end++;
-				break;
-			case YEAR_MONTH_DAY:
-				// skip the preceding separator
-				while (start > 0 && buffer.charAt (start) != MONTH_FORMAT_CONSTANT) start--;
-				break;
-			}
-			break;
-		}
-		start++;
-	}
-	if (start < end) buffer.delete (start, end);
-	return buffer.toString ();
+//	StringBuffer buffer = new StringBuffer (getShortDateFormat ());
+//	int length = buffer.length ();
+//	boolean inQuotes = false;
+//	int start = 0, end = 0;
+//	while (start < length) {
+//		char ch = buffer.charAt (start);
+//		if (ch == SINGLE_QUOTE) inQuotes = !inQuotes;
+//		else if (ch == DAY_FORMAT_CONSTANT && !inQuotes) {
+//			end = start + 1;
+//			while (end < length && buffer.charAt (end) == DAY_FORMAT_CONSTANT) end++;
+//			int ordering = getShortDateFormatOrdering ();
+//			switch (ordering) {
+//			case MONTH_DAY_YEAR:
+//				// skip the following separator
+//				while (end < length && buffer.charAt (end) != YEAR_FORMAT_CONSTANT) end++;
+//				break;
+//			case DAY_MONTH_YEAR:
+//				// skip the following separator
+//				while (end < length && buffer.charAt (end) != MONTH_FORMAT_CONSTANT) end++;
+//				break;
+//			case YEAR_MONTH_DAY:
+//				// skip the preceding separator
+//				while (start > 0 && buffer.charAt (start) != MONTH_FORMAT_CONSTANT) start--;
+//				break;
+//			}
+//			break;
+//		}
+//		start++;
+//	}
+//	if (start < end) buffer.delete (start, end);
+//	return buffer.toString ();
 }
 
 String getCustomShortTimeFormat () {
