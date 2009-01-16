@@ -3055,7 +3055,8 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 		};
 		MetaFileEnumProc object = new MetaFileEnumProc();
 		/* Avoid compiler warnings */
-		if (false) object.metaFileEnumProc(0, 0, 0, 0, 0);
+		boolean compilerWarningWorkaround = false;
+		if (compilerWarningWorkaround) object.metaFileEnumProc(0, 0, 0, 0, 0);
 		Callback callback = new Callback(object, "metaFileEnumProc", 5);
 		int /*long*/ address = callback.getAddress();
 		if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
