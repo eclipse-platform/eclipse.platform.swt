@@ -19559,8 +19559,8 @@
 <method selector="drawsBackground">
 <retval></retval>
 </method>
-<method selector="font">
-<retval></retval>
+<method selector="font" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="importsGraphics">
 <retval></retval>

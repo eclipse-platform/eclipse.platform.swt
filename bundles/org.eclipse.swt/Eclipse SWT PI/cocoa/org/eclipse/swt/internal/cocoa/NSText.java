@@ -32,6 +32,11 @@ public void cut(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_cut_, sender != null ? sender.id : 0);
 }
 
+public NSFont font() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
+	return result != 0 ? new NSFont(result) : null;
+}
+
 public void paste(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_paste_, sender != null ? sender.id : 0);
 }
