@@ -801,7 +801,7 @@ public boolean open () {
 		* tracker has finished its work.
 		*/
 		boolean dispatch = true;
-		if (!(tracking && !cancelled)) {
+		if (tracking && !cancelled) {
 			switch (type) {
 				case OS.NSLeftMouseDown:
 				case OS.NSLeftMouseUp:
@@ -821,7 +821,7 @@ public boolean open () {
 					dispatch = false;
 			}
 		}
-		if (dispatch && down) application.sendEvent(event);
+		if (dispatch) application.sendEvent(event);
 		if (clientCursor != null && resizeCursor == null) {
 			clientCursor.handle.set();
 		}

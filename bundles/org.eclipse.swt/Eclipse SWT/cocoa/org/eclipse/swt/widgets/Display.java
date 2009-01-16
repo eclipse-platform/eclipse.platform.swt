@@ -3503,8 +3503,9 @@ Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim, bool
 	NSPoint point = NSEvent.mouseLocation();
 	NSView view = null;
 	NSWindow window = nsEvent != null ? nsEvent.window() : null;
-	if (window != null) {
-		view = window.contentView().hitTest (window.convertScreenToBase(point));
+ 	if (window != null) {
+		NSView contentView = window.contentView();
+		if (contentView != null) view = contentView.hitTest (window.convertScreenToBase(point));
 	}
 	if (view == null && checkWindows) {
 		NSArray windows = application.orderedWindows();
