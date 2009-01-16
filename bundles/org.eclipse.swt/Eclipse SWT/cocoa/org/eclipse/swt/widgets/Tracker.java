@@ -821,7 +821,7 @@ public boolean open () {
 					dispatch = false;
 			}
 		}
-		if (dispatch) application.sendEvent(event);
+		if (dispatch && down) application.sendEvent(event);
 		if (clientCursor != null && resizeCursor == null) {
 			clientCursor.handle.set();
 		}
