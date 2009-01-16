@@ -24,7 +24,7 @@ class SWTAccessibleDelegate extends NSObject {
 	 * using <code>setData(String, Object)</code>.
 	 */
 	static final String ACCESSIBLE_KEY = "Accessible"; //$NON-NLS-1$
-	static final String SWT_OBJECT = "SWT_OBJECT";
+	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 
 	static Callback accessible2Args, accessible3Args, accessible4Args;
 	static int /*long*/ proc2Args, proc3Args, proc4Args;
@@ -60,7 +60,7 @@ class SWTAccessibleDelegate extends NSObject {
 		String className = "SWTAccessibleDelegate";
 
 		// TODO: These should either move out of Display or be accessible to this class.
-		String types = "*";
+		byte[] types = {'*','\0'};
 		int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
 		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);

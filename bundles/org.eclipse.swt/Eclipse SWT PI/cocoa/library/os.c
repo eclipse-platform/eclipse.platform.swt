@@ -2680,18 +2680,34 @@ JNIEXPORT void JNICALL OS_NATIVE(UnionRgn)
 
 #ifndef NO_class_1addIvar
 JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addIvar)
-	(JNIEnv *env, jclass that, jintLong arg0, jstring arg1, jintLong arg2, jbyte arg3, jstring arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jbyte arg3, jbyteArray arg4)
 {
-	const char *lparg1= NULL;
-	const char *lparg4= NULL;
+	jbyte *lparg1=NULL;
+	jbyte *lparg4=NULL;
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, class_1addIvar_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetStringUTFChars(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jboolean)class_addIvar((Class)arg0, lparg1, arg2, arg3, lparg4);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+		if (arg4) if ((lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+		if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	}
+	rc = (jboolean)class_addIvar((Class)arg0, (const char *)lparg1, arg2, arg3, (const char *)lparg4);
 fail:
-	if (arg4 && lparg4) (*env)->ReleaseStringUTFChars(env, arg4, lparg4);
-	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg4 && lparg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
+	} else
+#endif
+	{
+		if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+		if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	}
 	OS_NATIVE_EXIT(env, that, class_1addIvar_FUNC);
 	return rc;
 }
@@ -6145,18 +6161,34 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(object_1getClassName)
 
 #ifndef NO_object_1getInstanceVariable
 JNIEXPORT jintLong JNICALL OS_NATIVE(object_1getInstanceVariable)
-	(JNIEnv *env, jclass that, jintLong arg0, jstring arg1, jintLongArray arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLongArray arg2)
 {
-	const char *lparg1= NULL;
+	jbyte *lparg1=NULL;
 	jintLong *lparg2=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, object_1getInstanceVariable_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)object_getInstanceVariable((id)arg0, lparg1, (void **)lparg2);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+		if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	}
+	rc = (jintLong)object_getInstanceVariable((id)arg0, (const char*)lparg1, (void **)lparg2);
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
+	} else
+#endif
+	{
+		if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+		if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	}
 	OS_NATIVE_EXIT(env, that, object_1getInstanceVariable_FUNC);
 	return rc;
 }
@@ -6176,15 +6208,29 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(object_1setClass)
 
 #ifndef NO_object_1setInstanceVariable
 JNIEXPORT jintLong JNICALL OS_NATIVE(object_1setInstanceVariable)
-	(JNIEnv *env, jclass that, jintLong arg0, jstring arg1, jintLong arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2)
 {
-	const char *lparg1= NULL;
+	jbyte *lparg1=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, object_1setInstanceVariable_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)object_setInstanceVariable((id)arg0, lparg1, (void *)arg2);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	}
+	rc = (jintLong)object_setInstanceVariable((id)arg0, (const char*)lparg1, (void *)arg2);
 fail:
-	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
+	} else
+#endif
+	{
+		if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	}
 	OS_NATIVE_EXIT(env, that, object_1setInstanceVariable_FUNC);
 	return rc;
 }

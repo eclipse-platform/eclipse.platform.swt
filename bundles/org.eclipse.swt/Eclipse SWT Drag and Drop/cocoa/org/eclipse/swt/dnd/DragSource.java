@@ -99,13 +99,13 @@ import org.eclipse.swt.widgets.*;
 public class DragSource extends Widget {
 
 	static Callback dragSource2Args, dragSource3Args, dragSource4Args, dragSource5Args;
-	static final String SWT_OBJECT = "SWT_OBJECT";
+	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 
 	static {
 		String className = "SWTDragSourceDelegate";
 
 		// TODO: These should either move out of Display or be accessible to this class.
-		String types = "*";
+		byte[] types = {'*','\0'};
 		int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
 		Class clazz = DragSource.class;

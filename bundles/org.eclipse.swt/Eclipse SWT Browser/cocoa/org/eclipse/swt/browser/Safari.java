@@ -49,7 +49,7 @@ class Safari extends WebBrowser {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
-	static final String SWT_OBJECT = "SWT_OBJECT"; //$NON-NLS-1$
+	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 
 	/* event strings */
 	static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
@@ -97,7 +97,7 @@ public void create (Composite parent, int style) {
 		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		String className = "SWTWebViewDelegate"; //$NON-NLS-1$
-		String types = "*"; //$NON-NLS-1$
+		byte[] types = {'*','\0'};
 		int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 		delegateClass = OS.objc_allocateClassPair (OS.class_NSObject, className, 0);
 

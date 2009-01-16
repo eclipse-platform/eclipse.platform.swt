@@ -241,7 +241,7 @@ public class Display extends Device {
 
 	static String APP_NAME = "SWT";
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
-	static final String SWT_OBJECT = "SWT_OBJECT"; //$NON-NLS-1$
+	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -1745,7 +1745,7 @@ void addAccessibilityMethods(int /*long*/ cls, int /*long*/ proc2, int /*long*/ 
 	OS.class_addMethod(cls, OS.sel_accessibilityActionDescription_, proc3, "@:@");	
 }
 
-int /*long*/ registerCellSubclass(int /*long*/ cellClass, int size, int align, String types) {
+int /*long*/ registerCellSubclass(int /*long*/ cellClass, int size, int align, byte[] types) {
 	String cellClassName = OS.class_getName(cellClass);
 	int /*long*/ cls = OS.objc_allocateClassPair(cellClass, "SWTAccessible" + cellClassName, 0);	
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
@@ -1793,7 +1793,7 @@ void initClasses () {
 	int /*long*/ textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
 	int /*long*/ accessibilityHitTestProc = OS.accessibilityHitTest_CALLBACK(proc3);
 	
-	String types = "*";
+	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
 	String className = "SWTWindowDelegate";

@@ -180,8 +180,12 @@ public static final native void NSIntersectionRect (NSRect result, NSRect aRect,
 
 /** Objective-C runtime */
 
-/** @param cls cast=(Class) */
-public static final native boolean class_addIvar(int /*long*/ cls, String name, int /*long*/ size, byte alignment, String types);
+/**
+ * @param cls cast=(Class)
+ * @param name cast=(const char *),flags=critical
+ * @param types cast=(const char *),flags=critical
+ */
+public static final native boolean class_addIvar(int /*long*/ cls, byte[] name, int /*long*/ size, byte alignment, byte[] types);
 /**
  * @param cls cast=(Class)
  * @param name cast=(SEL)
@@ -250,14 +254,16 @@ public static final native int /*long*/ object_getClass(int /*long*/ obj);
 
 /**
  * @param obj cast=(id)
- * @param outValue cast=(void **)
+ * @param name cast=(const char*),flags=critical
+ * @param outValue cast=(void **),flags=critical
  */
-public static final native int /*long*/ object_getInstanceVariable(int /*long*/ obj, String name, int /*long*/ [] outValue);
+public static final native int /*long*/ object_getInstanceVariable(int /*long*/ obj, byte[] name, int /*long*/ [] outValue);
 /**
  * @param obj cast=(id)
- * @param value cast=(void *)
+ * @param name cast=(const char*),flags=critical
+ * @param value cast=(void *),flags=critical
  */
-public static final native int /*long*/ object_setInstanceVariable(int /*long*/ obj, String name, int /*long*/ value);
+public static final native int /*long*/ object_setInstanceVariable(int /*long*/ obj, byte[] name, int /*long*/ value);
 /**
  * @param obj cast=(id)
  * @param clazz cast=(Class) 
