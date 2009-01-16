@@ -625,7 +625,7 @@ LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 		int height = struct.bottom - struct.top;
 		if (width != 0 && height != 0) {
 			boolean drawImage = image != null;
-			boolean drawText = IMAGE_AND_TEXT && text.length () != 0;
+			boolean drawText = IMAGE_AND_TEXT /*&& text.length () != 0*/;
 			int margin = drawText && drawImage ? MARGIN : 0;
 			int imageWidth = 0, imageHeight = 0;
 			if (drawImage) {
