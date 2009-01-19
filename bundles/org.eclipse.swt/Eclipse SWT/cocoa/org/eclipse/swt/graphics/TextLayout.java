@@ -373,28 +373,47 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		int length = translateOffset(text.length());
 		if (length == 0 && flags == 0) return;
 		gc.handle.saveGraphicsState();
-		float /*double*/ [] fg = gc.data.foreground;
-		NSColor foreground = NSColor.colorWithDeviceRed(fg[0], fg[1], fg[2], fg[3]);
 		NSPoint pt = new NSPoint();
 		pt.x = x;
 		pt.y = y;
+		NSRange range = new NSRange();
 		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-		NSRange selectionRange = null;
-		NSColor selectionColor = null;
 		if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 			if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
-			selectionColor = NSColor.colorWithDeviceRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
-		}
-		if (hasSelection) {
-			selectionRange = new NSRange();
-			selectionRange.location = translateOffset(selectionStart);
-			selectionRange.length = translateOffset(selectionEnd - selectionStart + 1);
-			layoutManager.addTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionColor, selectionRange);
+			NSColor selectionColor = NSColor.colorWithDeviceRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
+			NSBezierPath path = NSBezierPath.bezierPath();
+			NSRect rect = new NSRect();
+			if (hasSelection) {
+				int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
+				range.location = translateOffset(selectionStart);
+				range.length = translateOffset(selectionEnd - selectionStart + 1);
+				int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
+				int /*long*/ [] rectCount = new int /*long*/ [1];
+				OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
+				OS.free(pRectCount);
+				for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
+					OS.memmove(rect, pArray, NSRect.sizeof);
+					rect.x += pt.x;
+					rect.y += pt.y;
+					path.appendBezierPathWithRect(rect);
+				}
+			}
+			if ((flags & SWT.LAST_LINE_SELECTION) != 0) {
+				NSRect bounds = lineBounds[lineBounds.length - 1];
+				rect.x = pt.x + bounds.x + bounds.width;
+				rect.y = y + bounds.y;
+				rect.width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : bounds.height / 3;
+				rect.height = bounds.height;
+				path.appendBezierPathWithRect(rect);
+			}
+			selectionColor.setFill();
+			path.fill();
 		}
 		//TODO draw selection for flags (DELIMITER_SELECTION)
 		int /*long*/ numberOfGlyphs = layoutManager.numberOfGlyphs();
 		if (numberOfGlyphs > 0) {
-			NSRange range = new NSRange();
+			float /*double*/ [] fg = gc.data.foreground;
+			NSColor foreground = NSColor.colorWithDeviceRed(fg[0], fg[1], fg[2], fg[3]);
 			for (int i = 0; i < styles.length - 1; i++) {
 				StyleItem run = styles[i];
 				if (run.style != null && run.style.foreground != null) continue;
@@ -546,21 +565,6 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				}
 
 			}
-		}
-		if ((flags & SWT.LAST_LINE_SELECTION) != 0) {
-			NSRect bounds = lineBounds[lineBounds.length - 1];
-			NSRect rect = new NSRect();
-			rect.x = pt.x + bounds.x + bounds.width;
-			rect.y = y + bounds.y;
-			rect.width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : bounds.height / 3;
-			rect.height = bounds.height;
-			selectionColor.setFill();
-			NSBezierPath path = NSBezierPath.bezierPath();
-			path.appendBezierPathWithRect(rect);
-			path.fill();
-		}
-		if (selectionRange != null) {
-			layoutManager.removeTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionRange);
 		}
 		gc.handle.restoreGraphicsState();
 	} finally {
