@@ -930,7 +930,7 @@ public static Display getCurrent () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-	if (true/*OS.GetSystemMetrics (OS.SM_CMONITORS) < 2*/) {
+//	if (true/*OS.GetSystemMetrics (OS.SM_CMONITORS) < 2*/) {
 		int rect = OS.SystemParameters_WorkArea ();
 		int x = (int) OS.Rect_X (rect);
 		int y = (int) OS.Rect_Y (rect);
@@ -938,12 +938,12 @@ public Rectangle getClientArea () {
 		int height = (int) OS.Rect_Height (rect);
 		OS.GCHandle_Free (rect);
 		return new Rectangle (x, y, width, height);
-	}
-	int x = (int) OS.SystemParameters_VirtualScreenLeft ();
-	int y = (int) OS.SystemParameters_VirtualScreenTop ();
-	int width = (int) OS.SystemParameters_VirtualScreenWidth ();
-	int height = (int) OS.SystemParameters_VirtualScreenHeight ();
-	return new Rectangle (x, y, width, height);
+//	}
+//	int x = (int) OS.SystemParameters_VirtualScreenLeft ();
+//	int y = (int) OS.SystemParameters_VirtualScreenTop ();
+//	int width = (int) OS.SystemParameters_VirtualScreenWidth ();
+//	int height = (int) OS.SystemParameters_VirtualScreenHeight ();
+//	return new Rectangle (x, y, width, height);
 }
 
 Widget getWidget (int handle) {
