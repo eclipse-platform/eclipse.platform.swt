@@ -50,6 +50,7 @@ public class Text extends Scrollable {
 	boolean ignoreChange;
 	String hiddenText, message;
 	int drawCount;
+	Color disabledColor;
 	
 	static final boolean IsGB18030;
 	/**
@@ -67,6 +68,8 @@ public class Text extends Scrollable {
 	* this delimiter.
 	*/
 	public static final String DELIMITER;
+	
+	static final RGB MSG_FOREGROUND = new RGB (172, 168, 153);
 	
 	/*
 	* These values can be different on different platforms.
@@ -232,7 +235,6 @@ static int checkStyle (int style) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
 	}
-	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -434,6 +436,9 @@ void createWidget (int index) {
 	super.createWidget (index);	
 	hiddenText = message = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar ('*');
+	if ((style & SWT.SEARCH) != 0) {
+		disabledColor = new Color (display, MSG_FOREGROUND);
+	}
 }
 /**
  * Cuts the selected text.
@@ -1063,6 +1068,8 @@ public void paste () {
 void releaseWidget () {
 	super.releaseWidget ();
 	hiddenText = message = null;
+	if (disabledColor != null) disabledColor.dispose ();
+	disabledColor = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1587,6 +1594,35 @@ int traversalCode (int key, XKeyEvent xEvent) {
 	}
 	return bits;
 }
+int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if ((style & SWT.SEARCH) != 0 && !hasFocus () && OS.XmTextGetLastPosition (handle) == 0) {
+		/* 
+		* Feature in Motif. XmText fills its background during exposure 
+		* without respecting the damage clipping. This erases all previous
+		* paints. The fix is always to draw the entire content ignoring
+		* the damage.
+		*/
+		int [] argList = new int [] {
+			OS.XmNmarginWidth, 0,
+			OS.XmNmarginHeight, 0,
+			OS.XmNshadowThickness, 0,
+			OS.XmNhighlightThickness, 0,
+			OS.XmNwidth, 0,
+			OS.XmNheight, 0,
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int marginWidth = argList [1] + argList[5] + argList[7];
+		int marginHeight = argList [3] + argList[5] + argList[7];
+		Rectangle rect = new Rectangle (marginWidth, marginHeight, argList [9] - 2 * marginWidth, argList [11] - 2 * marginHeight);
+		GCData data = new GCData ();
+		GC gc = GC.motif_new (this, data);
+		gc.setForeground (disabledColor);
+		gc.setClipping (rect);
+		gc.drawString (message, rect.x, rect.y, true);
+		gc.dispose ();
+	}
+	return super.XExposure (w, client_data, call_data, continue_to_dispatch);
+}
 int xFocusIn (XFocusChangeEvent xEvent) {
 	super.xFocusIn (xEvent);
 	// widget could be disposed at this point
@@ -1594,6 +1630,9 @@ int xFocusIn (XFocusChangeEvent xEvent) {
 	if ((style & (SWT.READ_ONLY | SWT.SINGLE)) != 0) {
 		int [] argList = {OS.XmNcursorPositionVisible, 1};
 		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
+	if ((style & SWT.SEARCH) != 0) {
+		redrawHandle (0, 0, 0, 0, true, handle);
 	}
 	return 0;
 }
@@ -1604,7 +1643,9 @@ int xFocusOut (XFocusChangeEvent xEvent) {
 	if ((style & (SWT.READ_ONLY | SWT.SINGLE)) != 0) {
 		int [] argList = {OS.XmNcursorPositionVisible, 0};
 		OS.XtSetValues (handle, argList, argList.length / 2);
-		return 0;
+	}
+	if ((style & SWT.SEARCH) != 0) {
+		redrawHandle (0, 0, 0, 0, true, handle);
 	}
 	return 0;
 }
