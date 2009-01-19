@@ -552,16 +552,11 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
-	XRectangle xrect = new XRectangle ();
-	xrect.x = (short) xEvent.x;
-	xrect.y = (short) xEvent.y;
-	xrect.width = (short) xEvent.width;
-	xrect.height = (short) xEvent.height;
 	int damageRgn = OS.XCreateRegion ();
-	OS.XUnionRectWithRegion (xrect, damageRgn, damageRgn);
-	GCData data = new GCData();
+	OS.XtAddExposureToRegion (call_data, damageRgn);
+	GCData data = new GCData ();
 	data.damageRgn = damageRgn;
-	GC gc = GC.motif_new(this, data);
+	GC gc = GC.motif_new (this, data);
 	OS.XSetRegion (xDisplay, gc.handle, damageRgn);
 	int selStart = selection.x;
 	int selEnd = selection.y;
@@ -581,21 +576,10 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 			Rectangle rect = rects [i];
 			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);					
 		}
-	}	
-	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
-		Event event = new Event ();
-		event.count = xEvent.count;
-		event.x = xEvent.x;
-		event.y = xEvent.y;
-		event.width = xEvent.width;
-		event.height = xEvent.height;
-		event.gc = GC.motif_new (this, data);
-		sendEvent (SWT.Paint, event);
-		event.gc = null;		
-	}	
+	}
 	gc.dispose ();
-	OS.XDestroyRegion(damageRgn);
-	return 0;
+	OS.XDestroyRegion (damageRgn);
+	return super.XExposure (w, client_data, call_data, continue_to_dispatch);
 }
 int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XFocusChange (w, client_data, call_data, continue_to_dispatch);
