@@ -798,7 +798,7 @@ public boolean loadFont (String path) {
 //	OS.XFreeFontPath (dirs);
 //	OS.XFree (newDirs);
 //	OS.XFree (pathPtr);
-//	return true;
+	return true;
 }
 	
 void new_Object (Object object) {
