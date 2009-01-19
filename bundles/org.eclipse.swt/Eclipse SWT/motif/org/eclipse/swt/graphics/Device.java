@@ -770,7 +770,7 @@ public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	//TEMPORARY CODE
-	if (true) return false;
+	/*if (true)*/ return false;
 //	int index = path.lastIndexOf ("/");
 //	if (index != -1) path = path.substring (0, index);
 //	int [] ndirs = new int [1];
@@ -798,7 +798,7 @@ public boolean loadFont (String path) {
 //	OS.XFreeFontPath (dirs);
 //	OS.XFree (newDirs);
 //	OS.XFree (pathPtr);
-	return true;
+//	return true;
 }
 	
 void new_Object (Object object) {
