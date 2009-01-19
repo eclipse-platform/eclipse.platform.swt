@@ -412,22 +412,30 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		//TODO draw selection for flags (DELIMITER_SELECTION)
 		int /*long*/ numberOfGlyphs = layoutManager.numberOfGlyphs();
 		if (numberOfGlyphs > 0) {
-			float /*double*/ [] fg = gc.data.foreground;
-			NSColor foreground = NSColor.colorWithDeviceRed(fg[0], fg[1], fg[2], fg[3]);
-			for (int i = 0; i < styles.length - 1; i++) {
-				StyleItem run = styles[i];
-				if (run.style != null && run.style.foreground != null) continue;
-				if (run.style != null && run.style.underline && run.style.underlineStyle == SWT.UNDERLINE_LINK) continue;
-				range.location = length != 0 ? translateOffset(run.start) : 0;
-				range.length = translateOffset(styles[i + 1].start) - range.location;
-				layoutManager.addTemporaryAttribute(OS.NSForegroundColorAttributeName, foreground, range);
-			}
 			range.location = 0;
 			range.length = numberOfGlyphs;
 			layoutManager.drawBackgroundForGlyphRange(range, pt);
+			NSColor foreground = null;
+			float /*double*/ [] fg = gc.data.foreground;
+			if (!(fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1)) {
+				foreground = NSColor.colorWithDeviceRed(fg[0], fg[1], fg[2], fg[3]);
+				for (int i = 0; i < styles.length - 1; i++) {
+					StyleItem run = styles[i];
+					if (run.style != null && run.style.foreground != null) continue;
+					if (run.style != null && run.style.underline && run.style.underlineStyle == SWT.UNDERLINE_LINK) continue;
+					range.location = length != 0 ? translateOffset(run.start) : 0;
+					range.length = translateOffset(styles[i + 1].start) - range.location;
+					layoutManager.addTemporaryAttribute(OS.NSForegroundColorAttributeName, foreground, range);
+				}
+			}
+			range.location = 0;
+			range.length = numberOfGlyphs;
 			layoutManager.drawGlyphsForGlyphRange(range, pt);
-			range.length = length;
-			layoutManager.removeTemporaryAttribute(OS.NSForegroundColorAttributeName, range);
+			if (foreground != null) {
+				range.location = 0;
+				range.length = length;
+				layoutManager.removeTemporaryAttribute(OS.NSForegroundColorAttributeName, range);
+			}
 			NSPoint point = new NSPoint();
 			for (int j = 0; j < styles.length; j++) {
 				StyleItem run = styles[j];
@@ -563,7 +571,6 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						}
 					}
 				}
-
 			}
 		}
 		gc.handle.restoreGraphicsState();
