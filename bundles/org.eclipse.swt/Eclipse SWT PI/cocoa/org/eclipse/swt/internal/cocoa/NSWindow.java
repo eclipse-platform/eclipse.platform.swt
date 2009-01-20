@@ -214,7 +214,7 @@ public void setToolbar(NSToolbar toolbar) {
 	OS.objc_msgSend(this.id, OS.sel_setToolbar_, toolbar != null ? toolbar.id : 0);
 }
 
-public NSButton standardWindowButton(int b) {
+public NSButton standardWindowButton(int /*long*/ b) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_standardWindowButton_, b);
 	return result != 0 ? new NSButton(result) : null;
 }
