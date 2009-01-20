@@ -53,7 +53,6 @@ public class Text extends Scrollable {
 	boolean doubleClick;
 	String message = "";
 	
-	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = OS.GtkTextIter_sizeof();
 	static final int SPACE_FOR_CURSOR = 1;
 	
@@ -379,8 +378,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 			xborder += OS.gtk_style_get_xthickness (style);
 			yborder += OS.gtk_style_get_ythickness (style);
 		}
-		xborder += INNER_BORDER;
-		yborder += INNER_BORDER;
+		GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
+		trim.x -= innerBorder.left;
+		trim.y -= innerBorder.top;
+		trim.width += innerBorder.left + innerBorder.right;
+		trim.height += innerBorder.top + innerBorder.bottom;
 	} else {
 		int borderWidth = OS.gtk_container_get_border_width (handle);  
 		xborder += borderWidth;
@@ -1271,9 +1273,9 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 			int /*long*/ window = paintWindow ();
 			int [] w = new int [1], h = new int [1];
 			OS.gdk_drawable_get_size (window, w, h);
-			int border = INNER_BORDER;
-			int height = h [0] - border - border;
-			int width = w [0] - border - border;
+			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
+			int width = w [0] - innerBorder.left - innerBorder.right;
+			int height = h [0] - innerBorder.top - innerBorder.bottom;
 			int /*long*/ context = OS.gtk_widget_get_pango_context (handle);
 			int /*long*/ lang = OS.pango_context_get_language (context);
 			int /*long*/ metrics = OS.pango_context_get_metrics (context, getFontDescription (), lang);
@@ -1296,14 +1298,14 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 			} else if (y + rect.height > height) {
 				y = height - rect.height;
 			}
-			y += border;
-			int x = border;
+			y += innerBorder.top;
+			int x = innerBorder.left;
 			boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
 			int alignment = style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 			switch (alignment) {
-				case SWT.LEFT: x = rtl ? width - rect.width: border; break;
+				case SWT.LEFT: x = rtl ? width - rect.width: innerBorder.left; break;
 				case SWT.CENTER: x = (width - rect.width) / 2; break;
-				case SWT.RIGHT: x = rtl ? border : width - rect.width; break;
+				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
 			}
 			int /*long*/ gc = OS.gdk_gc_new	(window);
 			int /*long*/ style = OS.gtk_widget_get_style (handle);	

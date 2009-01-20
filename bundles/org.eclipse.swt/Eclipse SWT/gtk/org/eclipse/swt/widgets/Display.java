@@ -272,6 +272,9 @@ public class Display extends Device {
 	/* Click count*/
 	int clickCount = 1;
 	
+	/* Entry inner border */
+	static final int INNER_BORDER = 2;
+	
 	/* Timestamp of the Last Received Events */
 	int lastEventTime, lastUserEventTime;
 	
@@ -1434,6 +1437,29 @@ public Control getCursorControl () {
 		}
 	} while ((handle = OS.gtk_widget_get_parent (handle)) != 0);
 	return null;
+}
+
+static GtkBorder getEntryInnerBorder (int /*long*/ handle) {
+    GtkBorder gtkBorder = new GtkBorder();
+    if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+	    int /*long*/ border = OS.gtk_entry_get_inner_border (handle);
+	    if (border != 0) {
+	    	OS.memmove (gtkBorder, border, GtkBorder.sizeof);
+	    	return gtkBorder;
+	    }
+	    int [] /*long*/ borderPtr = new int /*long*/ [1];
+	    OS.gtk_widget_style_get (handle, OS.inner_border, borderPtr,0);
+	    if (borderPtr[0] != 0) {
+	        OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
+	        OS.gtk_border_free(borderPtr[0]);
+	        return gtkBorder;
+	    }
+    }
+    gtkBorder.left = INNER_BORDER;
+    gtkBorder.top = INNER_BORDER;
+    gtkBorder.right = INNER_BORDER;
+    gtkBorder.bottom = INNER_BORDER;
+    return gtkBorder;
 }
 
 boolean filterEvent (Event event) {

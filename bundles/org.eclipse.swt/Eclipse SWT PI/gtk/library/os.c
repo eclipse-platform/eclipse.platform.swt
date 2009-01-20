@@ -6313,6 +6313,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1bin_1get_1child)
 }
 #endif
 
+#ifndef NO__1gtk_1border_1free
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1border_1free)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1border_1free_FUNC);
+	gtk_border_free((GtkBorder *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1border_1free_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1box_1set_1child_1packing
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1box_1set_1child_1packing)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2, jboolean arg3, jint arg4, jint arg5)
@@ -7341,6 +7351,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1editable_1set_1position)
 	OS_NATIVE_ENTER(env, that, _1gtk_1editable_1set_1position_FUNC);
 	gtk_editable_set_position((GtkEditable *)arg0, (gint)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1editable_1set_1position_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1entry_1get_1inner_1border
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1entry_1get_1inner_1border)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1get_1inner_1border_FUNC);
+	rc = (jintLong)gtk_entry_get_inner_border((GtkEntry *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1get_1inner_1border_FUNC);
+	return rc;
 }
 #endif
 

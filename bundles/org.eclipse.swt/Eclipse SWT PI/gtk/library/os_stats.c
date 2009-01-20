@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1278;
-int OS_nativeFunctionCallCount[1278];
+int OS_nativeFunctionCount = 1280;
+int OS_nativeFunctionCallCount[1280];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -535,6 +535,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1arrow_1new",
 	"_1gtk_1arrow_1set",
 	"_1gtk_1bin_1get_1child",
+	"_1gtk_1border_1free",
 	"_1gtk_1box_1set_1child_1packing",
 	"_1gtk_1box_1set_1spacing",
 	"_1gtk_1button_1clicked",
@@ -612,6 +613,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1editable_1select_1region",
 	"_1gtk_1editable_1set_1editable",
 	"_1gtk_1editable_1set_1position",
+	"_1gtk_1entry_1get_1inner_1border",
 	"_1gtk_1entry_1get_1invisible_1char",
 	"_1gtk_1entry_1get_1layout",
 	"_1gtk_1entry_1get_1layout_1offsets",

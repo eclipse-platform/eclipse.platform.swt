@@ -492,6 +492,7 @@ public class OS extends C {
 	public static final byte[] gtk_cursor_blink_time = ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");
 	public static final byte[] gtk_entry_select_on_focus = ascii("gtk-entry-select-on-focus");
+	public static final byte[] inner_border = ascii("inner-border");
 	public static final byte[] horizontal_separator = ascii("horizontal-separator");
 	public static final byte[] inconsistent = ascii("inconsistent");
 	public static final byte[] interior_focus = ascii("interior-focus");
@@ -5179,6 +5180,16 @@ public static final int /*long*/ gtk_bin_get_child(int /*long*/ bin) {
 		lock.unlock();
 	}
 }
+/** @param border cast=(GtkBorder *) */
+public static final native void _gtk_border_free(int /*long*/ border);
+public static final void gtk_border_free(int /*long*/ border) {
+	lock.lock();
+	try {
+		_gtk_border_free(border);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param box cast=(GtkBox *) */
 public static final native void _gtk_box_set_spacing(int /*long*/ box, int spacing);
 public static final void gtk_box_set_spacing(int /*long*/ box, int spacing) {
@@ -6078,6 +6089,17 @@ public static final void gtk_editable_set_position(int /*long*/ editable, int po
 	lock.lock();
 	try {
 		_gtk_editable_set_position(editable, position);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+/** @param entry cast=(GtkEntry *) */
+public static final native int /*long*/ _gtk_entry_get_inner_border (int /*long*/ entry);
+public static final int  /*long*/ gtk_entry_get_inner_border (int /*long*/ entry) {
+	lock.lock();
+	try {
+		return _gtk_entry_get_inner_border(entry);
 	} finally {
 		lock.unlock();
 	}

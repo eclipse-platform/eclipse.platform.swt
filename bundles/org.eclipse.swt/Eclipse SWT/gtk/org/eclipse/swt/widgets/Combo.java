@@ -63,8 +63,6 @@ public class Combo extends Composite {
 	String [] items = new String [0];
 	boolean ignoreSelect, lockText;
 
-	static final int INNER_BORDER = 2;
-
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -372,7 +370,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_widget_realize (entryHandle);
 	int /*long*/ layout = OS.gtk_entry_get_layout (entryHandle);
 	OS.pango_layout_get_size (layout, w, h);
-	int xborder = INNER_BORDER, yborder = INNER_BORDER;
+	int xborder = Display.INNER_BORDER, yborder = Display.INNER_BORDER;
 	int /*long*/ style = OS.gtk_widget_get_style (entryHandle);
 	xborder += OS.gtk_style_get_xthickness (style);
 	yborder += OS.gtk_style_get_ythickness (style);
