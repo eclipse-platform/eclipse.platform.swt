@@ -37,7 +37,8 @@ public class FileTransfer extends ByteArrayTransfer {
 	private static FileTransfer _instance = new FileTransfer();
 	private static final String URI_LIST = "text/uri-list"; //$NON-NLS-1$
 	private static final int URI_LIST_ID = registerType(URI_LIST);
-	private static final byte[] separator = new byte[]{'\r', '\n'};
+	private static final String GNOME_LIST = "x-special/gnome-copied-files"; //$NON-NLS-1$
+	private static final int GNOME_LIST_ID = registerType(GNOME_LIST);
 	
 private FileTransfer() {}
 
@@ -67,8 +68,16 @@ public void javaToNative(Object object, TransferData transferData) {
 	if (!checkFile(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
+	boolean gnomeList = transferData.type == GNOME_LIST_ID;
+	byte[] buffer, separator; 
+	if (gnomeList) {
+		buffer = new byte[] {'c','o','p','y'};
+		separator = new byte[] {'\n'};
+	} else {
+		buffer = new byte[0];
+		separator = new byte[] {'\r', '\n'};
+	}
 	String[] files = (String[])object;
-	byte[] buffer = new byte[0];
 	for (int i = 0; i < files.length; i++) {
 		String string = files[i];
 		if (string == null) continue;
@@ -89,10 +98,10 @@ public void javaToNative(Object object, TransferData transferData) {
 		byte[] temp = new byte[length];
 		OS.memmove (temp, uriPtr, length);
 		OS.g_free(uriPtr);
-		int newLength = (i > 0) ? buffer.length+separator.length+temp.length :  temp.length;
+		int newLength = (buffer.length > 0) ? buffer.length+separator.length+temp.length :  temp.length;
 		byte[] newBuffer = new byte[newLength];
 		int offset = 0;
-		if (i > 0) {
+		if (buffer.length > 0) {
 			System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);
 			offset +=  buffer.length;
 			System.arraycopy(separator, 0, newBuffer, offset, separator.length);
@@ -126,23 +135,29 @@ public Object nativeToJava(TransferData transferData) {
 	int length = transferData.length;
 	byte[] temp = new byte[length];
 	OS.memmove(temp, transferData.pValue, length);
+	boolean gnomeList = transferData.type == GNOME_LIST_ID;
+	int sepLength = gnomeList ? 1 : 2;
 	int /*long*/[] files = new int /*long*/[0];
 	int offset = 0;
 	for (int i = 0; i < temp.length - 1; i++) {
-		if (temp[i] == '\r' && temp[i+1] == '\n') {
-			int size =  i - offset;
-			int /*long*/ file = OS.g_malloc(size + 1);
-			byte[] fileBuffer = new byte[size + 1];
-			System.arraycopy(temp, offset, fileBuffer, 0, size);
-			OS.memmove(file, fileBuffer, size + 1);
-			int /*long*/[] newFiles = new int /*long*/[files.length + 1];
-			System.arraycopy(files, 0, newFiles, 0, files.length);
-			newFiles[files.length] = file;
-			files = newFiles;
-			offset = i + 2;
+		boolean terminator = gnomeList ? temp[i] == '\n' : temp[i] == '\r' && temp[i+1] == '\n';
+		if (terminator) {
+			if (!(gnomeList && offset == 0)) {
+				/* The content of the first line in a gnome-list is always either 'copy' or 'cut' */
+				int size =  i - offset;
+				int /*long*/ file = OS.g_malloc(size + 1);
+				byte[] fileBuffer = new byte[size + 1];
+				System.arraycopy(temp, offset, fileBuffer, 0, size);
+				OS.memmove(file, fileBuffer, size + 1);
+				int /*long*/[] newFiles = new int /*long*/[files.length + 1];
+				System.arraycopy(files, 0, newFiles, 0, files.length);
+				newFiles[files.length] = file;
+				files = newFiles;
+			}
+			offset = i + sepLength;
 		}
 	}
-	if (offset < temp.length - 2) {
+	if (offset < temp.length - sepLength) {
 		int size =  temp.length - offset;
 		int /*long*/ file = OS.g_malloc(size + 1);
 		byte[] fileBuffer = new byte[size + 1];
@@ -180,11 +195,11 @@ public Object nativeToJava(TransferData transferData) {
 }
 
 protected int[] getTypeIds(){
-	return new int[]{URI_LIST_ID};
+	return new int[]{URI_LIST_ID, GNOME_LIST_ID};
 }
 
 protected String[] getTypeNames(){
-	return new String[]{URI_LIST};
+	return new String[]{URI_LIST, GNOME_LIST};
 }
 
 boolean checkFile(Object object) {
