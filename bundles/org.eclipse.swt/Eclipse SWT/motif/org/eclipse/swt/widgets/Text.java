@@ -317,18 +317,24 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					height = OS.XmStringHeight (fontList, xmString);
 				}
 			}
-			if (wHint == SWT.DEFAULT) width = OS.XmStringWidth(fontList, xmString);
+			if (wHint == SWT.DEFAULT) width = OS.XmStringWidth (fontList, xmString);
 			OS.XmStringFree (xmString);
 		}
 		OS.XtFree (ptr);
+		if ((style & SWT.SEARCH) != 0 && message.length () != 0) {
+			if (wHint == SWT.DEFAULT) {
+				byte [] buffer = Converter.wcsToMbcs (getCodePage (), message, true);
+				int xmString = OS.XmStringGenerate (
+						buffer,
+						OS.XmFONTLIST_DEFAULT_TAG,
+						OS.XmCHARSET_TEXT,
+						null);
+				int fontList = font.handle;
+				width = Math.max (width, OS.XmStringWidth (fontList, xmString));
+				OS.XmStringFree (xmString);
+			}
+		}
 	}
-	//This code is intentionally commented
-//	if ((style & SWT.SEARCH) != 0 && message.length () != 0) {
-//		GC gc = new GC (this);
-//		Point size = gc.stringExtent (message);
-//		width = Math.max (width, size.x);
-//		gc.dispose ();
-//	}
 	Rectangle trim = computeTrim (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
