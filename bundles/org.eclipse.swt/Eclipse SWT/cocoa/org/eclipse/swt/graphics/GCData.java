@@ -48,6 +48,7 @@ public final class GCData {
 	public int /*long*/ bitmapDataAddress;
 	public Image image;
 	
+	public NSColor fg, bg;
 	public float /*double*/ drawXOffset, drawYOffset;
 	public NSRect paintRect;
 	public NSBezierPath path;

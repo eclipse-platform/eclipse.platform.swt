@@ -42,6 +42,8 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
+	NSMutableParagraphStyle paragraphStyle;
+	
 	/* Device DPI */
 	Point dpi;
 	
@@ -510,6 +512,13 @@ protected void init () {
 	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 	
+	paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
+	paragraphStyle.setAlignment(OS.NSLeftTextAlignment);
+	paragraphStyle.setLineBreakMode(OS.NSLineBreakByClipping);
+	NSArray tabs = new NSArray(new NSArray().alloc().init());
+	paragraphStyle.setTabStops(tabs);
+	tabs.release();
+	
 	/* Initialize the system font slot */
 	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
 	float /*double*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
@@ -634,6 +643,9 @@ void new_Object (Object object) {
  * @see #destroy
  */
 protected void release () {
+	if (paragraphStyle != null) paragraphStyle.release();
+	paragraphStyle = null;
+	
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;

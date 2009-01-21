@@ -272,7 +272,10 @@ NSAutoreleasePool checkGC (int mask) {
 			if (pattern.color != null) pattern.color.setStroke();
 		} else {
 			float /*double*/ [] color = data.foreground;
-			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setStroke();
+			if (data.fg != null) data.fg.release();
+			NSColor fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
+			fg.retain();
+			fg.setStroke();
 		}
 	}
 	if ((state & FOREGROUND_FILL) != 0) {
@@ -281,7 +284,10 @@ NSAutoreleasePool checkGC (int mask) {
 			if (pattern.color != null) pattern.color.setFill();
 		} else {
 			float /*double*/ [] color = data.foreground;
-			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
+			if (data.fg != null) data.fg.release();
+			NSColor fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
+			fg.retain();
+			fg.setFill();
 		}
 		data.state &= ~BACKGROUND;
 	}
@@ -291,7 +297,10 @@ NSAutoreleasePool checkGC (int mask) {
 			if (pattern.color != null) pattern.color.setFill();
 		} else {
 			float /*double*/ [] color = data.background;
-			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
+			if (data.bg != null) data.bg.release();
+			NSColor bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
+			bg.retain();
+			bg.setFill();
 		}
 		data.state &= ~FOREGROUND_FILL;
 	}
@@ -747,29 +756,25 @@ NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
 	return bezierPath;	
 }
 
-NSAttributedString createString(String string, int flags) {
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-	float /*double*/ [] foreground = data.foreground;	
-	Pattern pattern = data.foregroundPattern;
-	if (pattern != null) {
-		if (pattern.color != null) dict.setObject(pattern.color, OS.NSForegroundColorAttributeName);
-	} else {
-		NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], data.alpha / 255f);
-		dict.setObject(color, OS.NSForegroundColorAttributeName);
-	}
+NSAttributedString createString(String string, int flags, boolean draw) {
+	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(3);
 	dict.setObject(data.font.handle, OS.NSFontAttributeName);
-	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-		float /*double*/ [] background = data.background;
-		NSColor color = NSColor.colorWithDeviceRed(background[0], background[1], background[2], data.alpha / 255f);
-		dict.setObject(color, OS.NSBackgroundColorAttributeName);
+	if (draw) {
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) {
+			if (pattern.color != null) dict.setObject(pattern.color, OS.NSForegroundColorAttributeName);
+		} else {
+			NSColor fg = data.fg;
+			if (fg == null) {
+				float /*double*/ [] color = data.foreground;
+				fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
+				fg.retain();
+			}
+			dict.setObject(fg, OS.NSForegroundColorAttributeName);
+		}
 	}
 	if ((flags & SWT.DRAW_TAB) == 0) {
-		NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
-		paragraph.setAlignment(OS.NSLeftTextAlignment);
-		paragraph.setLineBreakMode(OS.NSLineBreakByClipping);
-		paragraph.setTabStops(NSArray.array());
-		dict.setObject(paragraph, OS.NSParagraphStyleAttributeName);
-		paragraph.release();
+		dict.setObject(device.paragraphStyle, OS.NSParagraphStyleAttributeName);
 	}
 	int length = string.length();
 	char[] chars = new char[length];
@@ -809,8 +814,11 @@ NSAttributedString createString(String string, int flags) {
 		}
 		length = j;
 	}
-	NSString str = NSString.stringWithCharacters(chars, length);
-	return ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+	NSString str = ((NSString)new NSString().alloc()).initWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+	dict.release();
+	str.release();
+	return attribStr;
 }
 
 void destroy() {
@@ -820,12 +828,15 @@ void destroy() {
 		image.memGC = null;
 		image.createAlpha();
 	}
+	if (data.fg != null) data.fg.release();
+	if (data.bg != null) data.bg.release();
 	if (data.path != null) data.path.release();
 	if (data.clipPath != null) data.clipPath.release();
 	if (data.transform != null) data.transform.release();
 	if (data.inverseTransform != null) data.inverseTransform.release();
 	data.path = data.clipPath = null;
 	data.transform = data.inverseTransform = null;
+	data.fg = data.bg = null;
 	
 	/* Dispose the GC */
 	if (drawable != null) drawable.internal_dispose_GC(handle.id, data);
@@ -1564,15 +1575,25 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT | FOREGROUND_FILL);
+	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT);
 	try {
-		NSAttributedString str = createString(string, flags);
+		NSAttributedString str = createString(string, flags, true);
 		NSSize size = str.size();
 		NSRect rect = new NSRect();
 		rect.x = x;
 		rect.y = y;
 		rect.width = size.width;
 		rect.height = size.height;
+		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+			NSColor bg = data.bg;
+			if (bg == null) {
+				float /*double*/ [] color = data.background;
+				bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
+				bg.retain();
+			}
+			bg.setFill();
+			NSBezierPath.fillRect(rect);
+		}
 		str.drawInRect(rect);
 		str.release();
 	} finally {
@@ -3792,7 +3813,7 @@ public Point textExtent(String string, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = checkGC(FONT);
 	try {
-		NSAttributedString str = createString(string, flags);
+		NSAttributedString str = createString(string, flags, false);
 		NSSize size = str.size();
 		str.release();
 		return new Point((int)size.width, (int)size.height);
