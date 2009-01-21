@@ -55,6 +55,7 @@
 #define gtk_combo_box_popup_LIB "libgtk-x11-2.0.so.0"
 #define gtk_combo_box_popdown_LIB "libgtk-x11-2.0.so.0"
 #define gtk_entry_text_index_to_layout_index_LIB "libgtk-x11-2.0.so.0"
+#define gtk_entry_get_inner_border_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_add_filter_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_dialog_new_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_get_current_folder_LIB "libgtk-x11-2.0.so.0"

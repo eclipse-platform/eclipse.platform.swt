@@ -1447,7 +1447,7 @@ static GtkBorder getEntryInnerBorder (int /*long*/ handle) {
 	    	OS.memmove (gtkBorder, border, GtkBorder.sizeof);
 	    	return gtkBorder;
 	    }
-	    int [] /*long*/ borderPtr = new int /*long*/ [1];
+	    int /*long*/ []  borderPtr = new int /*long*/ [1];
 	    OS.gtk_widget_style_get (handle, OS.inner_border, borderPtr,0);
 	    if (borderPtr[0] != 0) {
 	        OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
