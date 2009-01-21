@@ -353,13 +353,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	int width = OS.PANGO_PIXELS (w [0]);
 	int height = OS.PANGO_PIXELS (h [0]);
-	//This code is intentionally commented
-//	if ((style & SWT.SEARCH) != 0 && message.length () != 0) {
-//		GC gc = new GC (this);
-//		Point size = gc.stringExtent (message);
-//		width = Math.max (width, size.x);
-//		gc.dispose ();
-//	}
+	if ((style & SWT.SEARCH) != 0 && message.length () != 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, message, true);
+		int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+		OS.pango_layout_get_size (layout, w, h);
+		OS.g_object_unref (layout);
+		width = Math.max (width, OS.PANGO_PIXELS (w [0]));
+	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
