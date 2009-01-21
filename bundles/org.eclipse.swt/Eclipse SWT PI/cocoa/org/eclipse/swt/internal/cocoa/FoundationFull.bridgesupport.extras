@@ -6542,9 +6542,9 @@
 <arg name="numItems" swt_gen="true"></arg>
 <retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
 </method>
-<method selector="initWithCapacity:">
-<arg name="numItems"></arg>
-<retval></retval>
+<method selector="initWithCapacity:" swt_gen="true">
+<arg name="numItems" swt_gen="true"></arg>
+<retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
 </method>
 <method selector="removeAllObjects">
 <retval></retval>
@@ -10664,10 +10664,10 @@
 <arg name="freeBuffer"></arg>
 <retval></retval>
 </method>
-<method selector="initWithCharacters:length:">
-<arg name="characters"></arg>
-<arg name="length"></arg>
-<retval></retval>
+<method selector="initWithCharacters:length:" swt_gen="true">
+<arg name="characters" swt_gen="true" swt_java_type="char[]"></arg>
+<arg name="length" swt_gen="true"></arg>
+<retval swt_gen="true" swt_java_type="NSString"></retval>
 </method>
 <method selector="initWithCharactersNoCopy:length:freeWhenDone:">
 <arg name="characters"></arg>

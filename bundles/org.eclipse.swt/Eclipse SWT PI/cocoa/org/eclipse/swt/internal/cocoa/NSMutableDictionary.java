@@ -29,6 +29,11 @@ public static NSMutableDictionary dictionaryWithCapacity(int /*long*/ numItems) 
 	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
+public NSMutableDictionary initWithCapacity(int /*long*/ numItems) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_, numItems);
+	return result == this.id ? this : (result != 0 ? new NSMutableDictionary(result) : null);
+}
+
 public void setObject(id anObject, id aKey) {
 	OS.objc_msgSend(this.id, OS.sel_setObject_forKey_, anObject != null ? anObject.id : 0, aKey != null ? aKey.id : 0);
 }

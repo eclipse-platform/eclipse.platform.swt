@@ -52,6 +52,11 @@ public void getCharacters(char[] buffer, NSRange aRange) {
 	OS.objc_msgSend(this.id, OS.sel_getCharacters_range_, buffer, aRange);
 }
 
+public NSString initWithCharacters(char[] characters, int /*long*/ length) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithCharacters_length_, characters, length);
+	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
+}
+
 public boolean isEqualToString(NSString aString) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isEqualToString_, aString != null ? aString.id : 0);
 }
