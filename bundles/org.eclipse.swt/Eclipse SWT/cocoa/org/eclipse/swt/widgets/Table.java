@@ -2122,6 +2122,13 @@ public void setRedraw (boolean redraw) {
 	checkWidget ();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) {
+	 	/* Resize the item array to match the item count */
+		if (items.length > 4 && items.length - itemCount > 3) {
+			int length = Math.max (4, (itemCount + 3) / 4 * 4);
+			TableItem [] newItems = new TableItem [length];
+			System.arraycopy (items, 0, newItems, 0, itemCount);
+			items = newItems;
+		}
 		setScrollWidth ();
 	}
 }
