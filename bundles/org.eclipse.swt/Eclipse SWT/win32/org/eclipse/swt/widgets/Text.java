@@ -462,22 +462,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.DrawText (hDC, buffer, length, rect, flags);
 			width = rect.right - rect.left;
 		}
-		//This code is intentionally commented
-//		if (OS.COMCTL32_MAJOR >= 6) {
-//			if ((style & SWT.SEARCH) != 0) {
-//				length = message.length ();
-//				if (length != 0) {
-//					char [] buffer = new char [length + 1];
-//					message.getChars (0, length, buffer, 0);
-//					SIZE size = new SIZE ();
-//					OS.GetTextExtentPoint32W (hDC, buffer, length, size);
-//					width = Math.max (width, size.cx);
-//				}
-//			}
-//		}
 		if (wrap && hHint == SWT.DEFAULT) {
 			int newHeight = rect.bottom - rect.top;
 			if (newHeight != 0) height = newHeight;
+		}
+		if ((style & SWT.SEARCH) != 0) {
+			OS.SetRect (rect, 0, 0, 0, 0);
+			TCHAR buffer = new TCHAR (getCodePage (), message, false);
+			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			width = Math.max (width, rect.right - rect.left);
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
