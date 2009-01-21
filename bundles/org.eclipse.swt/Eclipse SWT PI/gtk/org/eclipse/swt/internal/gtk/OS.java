@@ -6094,7 +6094,6 @@ public static final void gtk_editable_set_position(int /*long*/ editable, int po
 	}
 }
 /** @method flags=dynamic */
-/** @param entry cast=(GtkEntry *) */
 public static final native int /*long*/ _gtk_entry_get_inner_border (int /*long*/ entry);
 public static final int /*long*/ gtk_entry_get_inner_border (int /*long*/ entry) {
 	lock.lock();

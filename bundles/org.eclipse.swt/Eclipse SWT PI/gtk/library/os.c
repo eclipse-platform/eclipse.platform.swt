@@ -7360,7 +7360,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1entry_1get_1inner_1border)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1get_1inner_1border_FUNC);
-	rc = (jintLong)gtk_entry_get_inner_border((GtkEntry *)arg0);
+/*
+	rc = (jintLong)gtk_entry_get_inner_border(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_entry_get_inner_border)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1get_1inner_1border_FUNC);
 	return rc;
 }
