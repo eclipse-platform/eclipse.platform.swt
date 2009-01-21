@@ -9390,6 +9390,38 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsWindowVisible)
 }
 #endif
 
+#ifndef NO_KLGetCurrentKeyboardLayout
+JNIEXPORT jint JNICALL OS_NATIVE(KLGetCurrentKeyboardLayout)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, KLGetCurrentKeyboardLayout_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)KLGetCurrentKeyboardLayout((KeyboardLayoutRef *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, KLGetCurrentKeyboardLayout_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_KLGetKeyboardLayoutProperty
+JNIEXPORT jint JNICALL OS_NATIVE(KLGetKeyboardLayoutProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, KLGetKeyboardLayoutProperty_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)KLGetKeyboardLayoutProperty((KeyboardLayoutRef)arg0, (KeyboardLayoutPropertyTag)arg1, (const void **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, KLGetKeyboardLayoutProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_KeyTranslate
 JNIEXPORT jint JNICALL OS_NATIVE(KeyTranslate)
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
@@ -9413,6 +9445,18 @@ JNIEXPORT void JNICALL OS_NATIVE(KillPicture)
 	OS_NATIVE_ENTER(env, that, KillPicture_FUNC);
 	KillPicture((PicHandle)arg0);
 	OS_NATIVE_EXIT(env, that, KillPicture_FUNC);
+}
+#endif
+
+#ifndef NO_LMGetKbdType
+JNIEXPORT jbyte JNICALL OS_NATIVE(LMGetKbdType)
+	(JNIEnv *env, jclass that)
+{
+	jbyte rc = 0;
+	OS_NATIVE_ENTER(env, that, LMGetKbdType_FUNC);
+	rc = (jbyte)LMGetKbdType();
+	OS_NATIVE_EXIT(env, that, LMGetKbdType_FUNC);
+	return rc;
 }
 #endif
 
@@ -13205,6 +13249,28 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setPointFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, TrackMouseLocationWithOptions_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UCKeyTranslate
+JNIEXPORT jint JNICALL OS_NATIVE(UCKeyTranslate)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jint arg7, jintArray arg8, jcharArray arg9)
+{
+	jint *lparg6=NULL;
+	jint *lparg8=NULL;
+	jchar *lparg9=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UCKeyTranslate_FUNC);
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = (*env)->GetCharArrayElements(env, arg9, NULL)) == NULL) goto fail;
+	rc = (jint)UCKeyTranslate((const UCKeyboardLayout *)arg0, (UInt16)arg1, (UInt16)arg2, (UInt32)arg3, (UInt32)arg4, (OptionBits)arg5, (UInt32 *)lparg6, (UniCharCount)arg7, (UniCharCount *)lparg8, (UniChar *)lparg9);
+fail:
+	if (arg9 && lparg9) (*env)->ReleaseCharArrayElements(env, arg9, lparg9, 0);
+	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	OS_NATIVE_EXIT(env, that, UCKeyTranslate_FUNC);
 	return rc;
 }
 #endif

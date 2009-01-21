@@ -1944,29 +1944,51 @@ boolean setKeyState (Event event, int type, int theEvent) {
 					display.kchrPtr = kchrPtr;
 					display.kchrState [0] = 0;
 				}
-				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
-				if (result <= 0x7f) {
-					event.keyCode = result & 0x7f;
-				} else {
-					int [] encoding = new int [1];
-					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
-					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
-					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
-						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
-							encoding [0] = OS.kTextEncodingMacRoman;
-						}
+				int [] layoutRef = new int [1];
+				int layoutKind = OS.kKLKCHRKind;
+				if (OS.KLGetCurrentKeyboardLayout (layoutRef) == OS.noErr) {
+					int [] layoutKindRef = new int [1];
+					OS.KLGetKeyboardLayoutProperty (layoutRef[0], OS.kKLKind, layoutKindRef);
+					layoutKind = layoutKindRef [0];
+				}
+				if (layoutKind == OS.kKLuchrKind) {
+					int [] layoutPtr = new int [1];
+					OS.KLGetKeyboardLayoutProperty (layoutRef[0], OS.kKLuchrData, layoutPtr);
+					int maxStringLength = 256;
+					char [] output = new char [maxStringLength];
+					int [] actualStringLength = new int [1];
+					OS.UCKeyTranslate (layoutPtr[0], (short)keyCode[0], (short)OS.kUCKeyActionDown, 0, OS.LMGetKbdType (), 0, display.kchrState, maxStringLength, actualStringLength, output);
+					if (actualStringLength[0] < 1) {
+						// part of a multi-key key
+						event.keyCode = 0;
+					} else {
+						event.keyCode = output[0];
 					}
-					int [] encodingInfo = new int [1];
-					OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
-					if (encodingInfo [0] != 0) {
-						char [] chars = new char [1];
-						int [] nchars = new int [1];
-						byte [] buffer = new byte [2];
-						buffer [0] = 1;
-						buffer [1] = (byte) (result & 0xFF);
-						OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
-						OS.DisposeTextToUnicodeInfo (encodingInfo);
-						event.keyCode = chars [0];
+				} else {
+					int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
+					if (result <= 0x7f) {
+						event.keyCode = result & 0x7f;
+					} else {
+						int [] encoding = new int [1];
+						short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+						short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+							if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+								encoding [0] = OS.kTextEncodingMacRoman;
+							}
+						}
+						int [] encodingInfo = new int [1];
+						OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
+						if (encodingInfo [0] != 0) {
+							char [] chars = new char [1];
+							int [] nchars = new int [1];
+							byte [] buffer = new byte [2];
+							buffer [0] = 1;
+							buffer [1] = (byte) (result & 0xFF);
+							OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
+							OS.DisposeTextToUnicodeInfo (encodingInfo);
+							event.keyCode = chars [0];
+						}
 					}
 				}
 			}

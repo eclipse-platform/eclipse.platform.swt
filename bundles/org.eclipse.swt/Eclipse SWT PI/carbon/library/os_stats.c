@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 976;
-int OS_nativeFunctionCallCount[976];
+int OS_nativeFunctionCount = 980;
+int OS_nativeFunctionCallCount[980];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -667,8 +667,11 @@ char * OS_nativeFunctionNames[] = {
 	"IsWindowCollapsed",
 	"IsWindowVisible",
 	"JNIGetObject",
+	"KLGetCurrentKeyboardLayout",
+	"KLGetKeyboardLayoutProperty",
 	"KeyTranslate",
 	"KillPicture",
+	"LMGetKbdType",
 	"LSCopyAllRoleHandlersForContentType",
 	"LSCopyDisplayNameForRef",
 	"LSFindApplicationForInfo",
@@ -948,6 +951,7 @@ char * OS_nativeFunctionNames[] = {
 	"TextSize",
 	"TrackDrag",
 	"TrackMouseLocationWithOptions",
+	"UCKeyTranslate",
 	"UTTypeCreateAllIdentifiersForTag",
 	"UTTypeCreatePreferredIdentifierForTag",
 	"UnionRect",

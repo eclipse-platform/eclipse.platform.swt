@@ -550,6 +550,12 @@ public class OS extends C {
 	public static final int kHIScrollViewOptionsAllowGrow = (1 << 2);
 	public static final int kHIThemeFrameTextFieldSquare = 0;
 	public static final int kHIThemeGroupBoxKindPrimary = 0;
+	public static final int kKLKCHRuchrKind = 0;
+	public static final int kKLKCHRKind = 1;
+	public static final int kKLuchrKind = 2;
+	public static final int kKLKind = 7;
+	public static final int kKLuchrData = 1;
+	public static final int kUCKeyActionDown = 0;
 	public static final int kHIThemeFrameListBox = 1;
 	public static final int kRedrawHighlighting = 1;
 	public static final int kTSMOutsideOfBody = 1;
@@ -3848,6 +3854,28 @@ public static final native boolean IsWindowVisible(int window);
  * @param state cast=(UInt32 *)
  */
 public static final native int KeyTranslate(int transData, short keycode, int[] state);
+/** @param oKeyboardLayout cast=(KeyboardLayoutRef *) */
+public static final native int KLGetCurrentKeyboardLayout(int[] oKeyboardLayout);
+/**
+ * @param iKeyboardLayout cast=(KeyboardLayoutRef)
+ * @param iPropertyTag cast=(KeyboardLayoutPropertyTag)
+ * @param oValue cast=(const void **)
+ */
+public static final native int KLGetKeyboardLayoutProperty(int iKeyboardLayout, int iPropertyTag, int[] oValue);
+public static final native byte LMGetKbdType();
+/**
+ * @param keyLayoutPtr cast=(const UCKeyboardLayout *)
+ * @param virtualKeyCode cast=(UInt16)
+ * @param keyAction cast=(UInt16)
+ * @param modifierKeyState cast=(UInt32)
+ * @param keyboardType cast=(UInt32)
+ * @param keyTranslateOptions cast=(OptionBits)
+ * @param deadKeyState cast=(UInt32 *)
+ * @param maxStringLength cast=(UniCharCount)
+ * @param actualStringLength cast=(UniCharCount *)
+ * @param unicodeString cast=(UniChar *)
+ */
+public static final native int UCKeyTranslate (int keyLayoutPtr, short virtualKeyCode, short keyAction, int modifierKeyState, int keyboardType, int keyTranslateOptions, int[] deadKeyState, int maxStringLength, int[] actualStringLength, char[] unicodeString);
 /** @param pictHandle cast=(PicHandle) */
 public static final native void KillPicture(int pictHandle);
 /**
