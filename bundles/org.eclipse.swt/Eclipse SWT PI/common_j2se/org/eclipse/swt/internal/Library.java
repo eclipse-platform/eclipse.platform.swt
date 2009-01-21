@@ -39,7 +39,7 @@ public class Library {
 	static final String SEPARATOR;
 	
 	/* 64-bit support */
-	static final boolean IS_64 = 0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL;
+	static /*final*/ boolean IS_64 = 0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL;
 	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
 	static final String SWTDIR_32 = "swt-32";	//$NON-NLS-1$
 	static final String SWTDIR_64 = "swt-64";	//$NON-NLS-1$
