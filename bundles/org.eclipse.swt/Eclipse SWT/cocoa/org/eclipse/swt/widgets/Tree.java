@@ -83,7 +83,7 @@ public class Tree extends Composite {
 	int columnCount;
 	int sortDirection;
 	float /*double*/ levelIndent;
-	boolean ignoreExpand, ignoreSelect;
+	boolean ignoreExpand, ignoreSelect, reloadPending;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -260,6 +260,12 @@ static int checkStyle (int style) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void checkItems () {
+	if (!reloadPending) return;
+	reloadPending = false;
+	((NSOutlineView)view).reloadItem (null);
 }
 
 void clear (TreeItem parentItem, int index, boolean all) {
@@ -578,8 +584,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 		this.itemCount = count;
 	}
 	ignoreExpand = true;
-	NSOutlineView widget = (NSOutlineView)view;
-	widget.reloadItem(parentItem != null ? parentItem.handle : null, true);
+	reloadItem (parentItem, true);
 	ignoreExpand = false;
 }
 
@@ -778,12 +783,10 @@ void destroyItem (TreeItem item) {
 	if (parentItem != null) {
 		parentItem.itemCount = count;
 		if (count == 0) parentItem.expanded = false;
-		((NSOutlineView) view).reloadItem (parentItem.handle, true);
 	} else {
 		this.itemCount = count;
-		((NSOutlineView) view).reloadItem (null);
 	}
-	
+	reloadItem (parentItem, true);
 //	setScrollWidth (true);
 //	fixScrollBar ();
 }
@@ -1281,6 +1284,7 @@ public TreeItem getItem (int index) {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	checkItems ();
 	NSOutlineView widget = (NSOutlineView)view;
 	NSPoint pt = new NSPoint();
 	pt.x = point.x;
@@ -1511,19 +1515,16 @@ public int getSortDirection () {
  */
 public TreeItem getTopItem () {
 	checkWidget ();
-//	//TODO - optimize
-//	Rect rect = new Rect ();
-//	int y = getBorder () + getHeaderHeight ();
-//	for (int i=0; i<items.length; i++) {
-//		TreeItem item = items [i];
-//		if (item != null) {
-//			int columnId = (columnCount == 0) ? column_id : columns [0].id;
-//			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//				if (rect.top <= y && y <= rect.bottom) return item;
-//			}
-//		}
-//	}
-	return null;
+	//TODO - partial item at the top
+	NSRect rect = scrollView.documentVisibleRect ();
+	NSPoint point = new NSPoint ();
+	point.x = rect.x;
+	point.y = rect.y;
+	NSOutlineView outlineView = (NSOutlineView)view;
+	int /*long*/ index = outlineView.rowAtPoint (point);
+	if (index == -1) return null; /* empty */
+	id item = outlineView.itemAtRow (index);
+	return (TreeItem)display.getWidget (item.id);
 }
 
 void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
@@ -1880,6 +1881,19 @@ void releaseWidget () {
 	sortColumn = null;
 }
 
+void reloadItem (TreeItem item, boolean recurse) {
+	if (drawCount == 0) {
+		NSOutlineView widget = (NSOutlineView)view;
+		if (item != null) {
+			widget.reloadItem (item.handle, recurse);
+		} else {
+			widget.reloadItem (null);
+		}
+	} else {
+		reloadPending = true;
+	}
+}
+
 /**
  * Removes all of the items from the receiver.
  * 
@@ -1986,6 +2000,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
+	checkItems ();
 	NSOutlineView widget = (NSOutlineView) view;
 	ignoreSelect = true;
 	widget.selectAll (null);
@@ -2013,6 +2028,7 @@ public void select (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	checkItems ();
 	showItem (item);
 	NSOutlineView outlineView = (NSOutlineView) view;
 	int /*long*/ row = outlineView.rowForItem (item.handle);
@@ -2171,10 +2187,10 @@ public void setHeaderVisible (boolean show) {
  */
 public void setItemCount (int count) {
 	checkWidget ();
+	checkItems ();
 	count = Math.max (0, count);
 	setItemCount (null, count);
 }
-
 
 void setItemCount (TreeItem parentItem, int count) {
 	int itemCount = getItemCount (parentItem);
@@ -2291,6 +2307,7 @@ public void setRedraw (boolean redraw) {
 	checkWidget ();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) {
+		checkItems ();
 		setScrollWidth ();
 	}
 }
@@ -2384,6 +2401,7 @@ public void setSelection (TreeItem item) {
 public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	checkItems ();
 	deselectAll ();
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
@@ -2500,6 +2518,7 @@ public void setTopItem (TreeItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	checkItems ();
 	showItem (item, false);
 	NSOutlineView outlineView = (NSOutlineView) view;
 	//FIXME
@@ -2557,6 +2576,7 @@ public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	checkItems ();
 	showItem (item, true);
 }
 
@@ -2586,7 +2606,7 @@ void showItem (TreeItem item, boolean scroll) {
  */
 public void showSelection () {
 	checkWidget ();
-	//checkItems (false);
+	checkItems ();
 	//TODO - optimize
 	TreeItem [] selection = getSelection ();
 	if (selection.length > 0) showItem (selection [0], true);

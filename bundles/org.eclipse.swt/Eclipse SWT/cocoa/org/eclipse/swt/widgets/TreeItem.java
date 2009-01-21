@@ -495,6 +495,7 @@ public Color getBackground (int index) {
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	parent.checkItems ();
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	NSRect rect = outlineView.rectOfRow (outlineView.rowForItem (handle));
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
@@ -519,6 +520,7 @@ public Rectangle getBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!(0 <= index && index < Math.max (1, parent.columnCount))) return new Rectangle (0, 0, 0, 0);
 
+	parent.checkItems ();
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	if (parent.columnCount == 0) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
@@ -720,6 +722,7 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!(0 <= index && index < Math.max (1, parent.columnCount))) return new Rectangle (0, 0, 0, 0);
 
+	parent.checkItems ();
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if (parent.columnCount == 0) {
@@ -894,6 +897,7 @@ public Rectangle getTextBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!(0 <= index && index < Math.max (1, parent.columnCount))) return new Rectangle (0, 0, 0, 0);
 
+	parent.checkItems ();
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if (parent.columnCount == 0) {
@@ -1130,6 +1134,7 @@ public void setExpanded (boolean expanded) {
 	/* Do nothing when the item is a leaf or already expanded */
 	if (itemCount == 0 || expanded == getExpanded ()) return;
 
+	parent.checkItems ();
 	parent.ignoreExpand = true;
 	this.expanded = expanded;
 	if (expanded) {
