@@ -392,12 +392,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += metric [0] * 2;
 			OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, metric);
 			height += metric [0] * 2;
-			//This code is intentionally commented
-//			int [] ptr2 = new int [1];
-//			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
-//			Point size2 = textExtent (ptr2 [0], 0);
-//			width = Math.max (width, size2.x);
-//			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
+			int [] ptr2 = new int [1];
+			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
+			Point size2 = textExtent (ptr2 [0], 0);
+			width = Math.max (width, size2.x);
+			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
 		} else {
 			if ((style & SWT.RIGHT) != 0) {
 				OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
