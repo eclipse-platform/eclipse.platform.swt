@@ -272,7 +272,9 @@ void clear (TreeItem parentItem, int index, boolean all) {
 	TreeItem item = _getItem (parentItem, index, false);
 	if (item != null) {
 		item.clear();
-		((NSOutlineView) view).reloadItem (item.handle);
+		NSOutlineView outlineView = (NSOutlineView) view;
+		NSRect rect = outlineView.rectOfRow (outlineView.rowForItem (item.handle));
+		outlineView.setNeedsDisplayInRect (rect);
 		if (all) {
 			clearAll (item, true);
 		}
@@ -287,7 +289,9 @@ void clearAll (TreeItem parentItem, boolean all) {
 		TreeItem item = children [i];
 		if (item != null) {
 			item.clear ();
-			((NSOutlineView) view).reloadItem (item.handle);
+			NSOutlineView outlineView = (NSOutlineView) view;
+			NSRect rect = outlineView.rectOfRow (outlineView.rowForItem (item.handle));
+			outlineView.setNeedsDisplayInRect (rect);
 			if (all) clearAll (item, true);
 		}
 	}
