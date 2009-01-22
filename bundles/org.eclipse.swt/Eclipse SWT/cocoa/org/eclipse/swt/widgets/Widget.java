@@ -524,10 +524,13 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, rect);
-	display.inPaint = true;
-	/* the drawing of the default Button's rect comes in on a non-UI thread */
-	drawWidget (id, context, rect, Thread.currentThread () == display.thread);
-	display.inPaint = false;
+	if (!isDisposed()) {
+		Display display = this.display;
+		display.inPaint = true;
+		/* the drawing of the default Button's rect comes in on a non-UI thread */
+		drawWidget (id, context, rect, Thread.currentThread () == display.thread);
+		display.inPaint = false;
+	}
 	context.restoreGraphicsState();
 }
 
