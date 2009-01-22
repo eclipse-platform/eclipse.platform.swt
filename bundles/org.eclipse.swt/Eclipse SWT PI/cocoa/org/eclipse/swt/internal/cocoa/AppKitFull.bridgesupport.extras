@@ -17491,7 +17491,7 @@
 <retval></retval>
 </method>
 </class>
-<class name="NSSearchFieldCell" swt_superclass="NSTextFieldCell">
+<class name="NSSearchFieldCell" swt_gen="mixed" swt_superclass="NSTextFieldCell">
 <method selector="cancelButtonCell">
 <retval></retval>
 </method>
@@ -17534,9 +17534,9 @@
 <method selector="sendsWholeSearchString">
 <retval></retval>
 </method>
-<method selector="setCancelButtonCell:">
-<arg name="cell"></arg>
-<retval></retval>
+<method selector="setCancelButtonCell:" swt_gen="true">
+<arg name="cell" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setMaximumRecents:">
 <arg name="maxRecents"></arg>
@@ -17550,9 +17550,9 @@
 <arg name="string"></arg>
 <retval></retval>
 </method>
-<method selector="setSearchButtonCell:">
-<arg name="cell"></arg>
-<retval></retval>
+<method selector="setSearchButtonCell:" swt_gen="true">
+<arg name="cell" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setSearchMenuTemplate:">
 <arg name="menu"></arg>
