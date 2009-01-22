@@ -2646,9 +2646,7 @@ void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ 
 		event.item = item;
 		event.index = (int)/*64*/rowIndex;
 		postEvent (SWT.Selection, event);
-		NSTableView tableView = (NSTableView)view;
-		NSRect rect = tableView.rectOfRow (rowIndex);
-		tableView.setNeedsDisplayInRect (rect);
+		item.redraw (-1);
 	}
 }
 

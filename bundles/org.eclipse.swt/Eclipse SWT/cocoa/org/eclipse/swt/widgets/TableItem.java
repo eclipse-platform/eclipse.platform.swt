@@ -625,6 +625,25 @@ void redraw () {
 	((NSTableView) parent.view).tile ();
 }
 
+void redraw (int columnIndex) {
+	/* redraw the full item if columnIndex == -1 */
+	NSTableView tableView = (NSTableView) parent.view;
+	NSRect rect = null;
+	if (columnIndex == -1 || parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+		rect = tableView.rectOfRow (parent.indexOf (this));
+	} else {
+		int index;
+		if (parent.columnCount == 0) {
+			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+		} else {
+			TableColumn column = parent.getColumn (columnIndex);
+			index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+		}
+		rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	}
+	tableView.setNeedsDisplayInRect (rect);	
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
@@ -672,9 +691,7 @@ public void setBackground (Color color) {
 	background = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.rectOfRow (parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+	redraw (-1);
 }
 
 /**
@@ -711,21 +728,7 @@ public void setBackground (int index, Color color) {
 	cellBackground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-
-	NSTableView tableView = (NSTableView) parent.view;
-	NSRect rect = null;
-	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		rect = tableView.rectOfRow (parent.indexOf (this));
-	} else {
-		if (parent.columnCount == 0) {
-			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
-		} else {
-			TableColumn column = parent.getColumn (index);
-			index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
-		}
-		rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	}
-	tableView.setNeedsDisplayInRect (rect);
+	redraw (index);	
 }
 
 /**
@@ -745,9 +748,7 @@ public void setChecked (boolean checked) {
 	if (this.checked == checked) return;
 	this.checked = checked;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.rectOfRow (parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+	redraw (-1);
 }
 
 /**
@@ -777,9 +778,7 @@ public void setFont (Font font) {
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.rectOfRow (parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+	redraw (-1);
 }
 
 /**
@@ -817,21 +816,7 @@ public void setFont (int index, Font font) {
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-
-	NSTableView tableView = (NSTableView) parent.view;
-	NSRect rect = null;
-	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		rect = tableView.rectOfRow (parent.indexOf (this));
-	} else {
-		if (parent.columnCount == 0) {
-			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
-		} else {
-			TableColumn column = parent.getColumn (index);
-			index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
-		}
-		rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	}
-	tableView.setNeedsDisplayInRect (rect);
+	redraw (index);
 }
 
 /**
@@ -861,9 +846,7 @@ public void setForeground (Color color) {
 	foreground = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.rectOfRow (parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+	redraw (-1);
 }
 
 /**
@@ -900,21 +883,7 @@ public void setForeground (int index, Color color) {
 	cellForeground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-
-	NSTableView tableView = (NSTableView) parent.view;
-	NSRect rect = null;
-	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		rect = tableView.rectOfRow (parent.indexOf (this));
-	} else {
-		if (parent.columnCount == 0) {
-			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
-		} else {
-			TableColumn column = parent.getColumn (index);
-			index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
-		}
-		rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	}
-	tableView.setNeedsDisplayInRect (rect);
+	redraw (index);
 }
 
 /**
@@ -934,9 +903,7 @@ public void setGrayed (boolean grayed) {
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.rectOfRow (parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+	redraw (-1);
 }
 
 /**
@@ -1003,20 +970,7 @@ public void setImage (int index, Image image) {
 //	cached = true;
 //	if (index == 0) parent.setScrollWidth (this);
 	
-	NSTableView tableView = (NSTableView) parent.view;
-	NSRect rect = null;
-	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		rect = tableView.rectOfRow (parent.indexOf (this));
-	} else {
-		if (parent.columnCount == 0) {
-			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
-		} else {
-			TableColumn column = parent.getColumn (index);
-			index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
-		}
-		rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	}
-	tableView.setNeedsDisplayInRect (rect);
+	redraw (index);
 }
 
 public void setImage (Image image) {
@@ -1096,21 +1050,7 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this, true);
-
-	NSTableView tableView = (NSTableView) parent.view;
-	NSRect rect = null;
-	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		rect = tableView.rectOfRow (parent.indexOf (this));
-	} else {
-		if (parent.columnCount == 0) {
-			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
-		} else {
-			TableColumn column = parent.getColumn (index);
-			index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
-		}
-		rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	}
-	tableView.setNeedsDisplayInRect (rect);
+	redraw (index);
 }
 
 public void setText (String string) {
