@@ -527,7 +527,10 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	if (!isDisposed()) {
 		Display display = this.display;
 		display.inPaint = true;
-		/* the drawing of the default Button's rect comes in on a non-UI thread */
+		/* 
+		 * the drawing of the default Button and indetermine ProgressBar
+		 * rects come in on a non-UI thread
+		 */
 		drawWidget (id, context, rect, Thread.currentThread () == display.thread);
 		display.inPaint = false;
 	}
