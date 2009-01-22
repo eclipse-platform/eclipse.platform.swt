@@ -122,6 +122,10 @@ public Text (Composite parent, int style) {
 		* supplied by the programmer.
 		*/
 		if ((style & SWT.CANCEL) != 0) this.style |= SWT.CANCEL;
+		if ((style & SWT.CANCEL) == 0) {
+			NSSearchFieldCell cell = new NSSearchFieldCell (((NSSearchField) view).cell ());
+			cell.setCancelButtonCell (null);
+		}
 	}
 }
 
@@ -379,6 +383,10 @@ void createHandle () {
 		if ((style & SWT.BORDER) == 0) {
 			widget.setFocusRingType (OS.NSFocusRingTypeNone);
 			widget.setBordered (false);
+		}
+		if ((style & SWT.SEARCH) != 0) {
+			NSSearchFieldCell cell = new NSSearchFieldCell (((NSSearchField) widget).cell ());
+			cell.setSearchButtonCell (null);
 		}
 		int align = OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
