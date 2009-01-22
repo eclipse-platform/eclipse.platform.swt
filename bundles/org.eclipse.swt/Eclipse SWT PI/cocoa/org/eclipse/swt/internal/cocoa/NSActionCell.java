@@ -24,12 +24,29 @@ public NSActionCell(id id) {
 	super(id);
 }
 
+public int /*long*/ action() {
+	return OS.objc_msgSend(this.id, OS.sel_action);
+}
+
+public void setAction(int /*long*/ aSelector) {
+	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
+}
+
 public void setAlignment(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
 }
 
 public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
+}
+
+public void setTarget(id anObject) {
+	OS.objc_msgSend(this.id, OS.sel_setTarget_, anObject != null ? anObject.id : 0);
+}
+
+public id target() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_target);
+	return result != 0 ? new id(result) : null;
 }
 
 }

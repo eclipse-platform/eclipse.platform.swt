@@ -24,6 +24,16 @@ public NSSearchFieldCell(id id) {
 	super(id);
 }
 
+public NSButtonCell cancelButtonCell() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_cancelButtonCell);
+	return result != 0 ? new NSButtonCell(result) : null;
+}
+
+public NSButtonCell searchButtonCell() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_searchButtonCell);
+	return result != 0 ? new NSButtonCell(result) : null;
+}
+
 public void setCancelButtonCell(NSButtonCell cell) {
 	OS.objc_msgSend(this.id, OS.sel_setCancelButtonCell_, cell != null ? cell.id : 0);
 }

@@ -2325,8 +2325,8 @@
 </method>
 </class>
 <class name="NSActionCell" swt_gen="mixed" swt_superclass="NSCell">
-<method selector="action">
-<retval></retval>
+<method selector="action" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="controlView">
 <retval></retval>
@@ -2343,9 +2343,9 @@
 <method selector="integerValue">
 <retval></retval>
 </method>
-<method selector="setAction:">
-<arg name="aSelector"></arg>
-<retval></retval>
+<method selector="setAction:" swt_gen="true">
+<arg name="aSelector" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setAlignment:" swt_gen="true">
 <arg name="mode" swt_gen="true"></arg>
@@ -2389,9 +2389,9 @@
 <arg name="anInt"></arg>
 <retval></retval>
 </method>
-<method selector="setTarget:">
-<arg name="anObject"></arg>
-<retval></retval>
+<method selector="setTarget:" swt_gen="true">
+<arg name="anObject" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="stringValue">
 <retval></retval>
@@ -2399,8 +2399,8 @@
 <method selector="tag">
 <retval></retval>
 </method>
-<method selector="target">
-<retval></retval>
+<method selector="target" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 </class>
 <class name="NSAffineTransform" swt_gen="mixed">
@@ -17492,8 +17492,8 @@
 </method>
 </class>
 <class name="NSSearchFieldCell" swt_gen="mixed" swt_superclass="NSTextFieldCell">
-<method selector="cancelButtonCell">
-<retval></retval>
+<method selector="cancelButtonCell" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="cancelButtonRectForBounds:">
 <arg name="rect"></arg>
@@ -17514,8 +17514,8 @@
 <method selector="resetSearchButtonCell">
 <retval></retval>
 </method>
-<method selector="searchButtonCell">
-<retval></retval>
+<method selector="searchButtonCell" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="searchButtonRectForBounds:">
 <arg name="rect"></arg>

@@ -31,6 +31,8 @@ public class OS extends C {
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
 
+	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
+	public static final int /*long*/ sel_sendCancelSelection = sel_registerName("sendCancelSelection");
 	public static final int /*long*/ sel_sendSelection = sel_registerName("sendSelection");
 	public static final int /*long*/ sel_sendDoubleSelection = sel_registerName("sendDoubleSelection");
 	public static final int /*long*/ sel_sendVerticalSelection = sel_registerName("sendVerticalSelection");
@@ -560,6 +562,7 @@ public static final int /*long*/ sel_canGoBack = sel_registerName("canGoBack");
 public static final int /*long*/ sel_canGoForward = sel_registerName("canGoForward");
 public static final int /*long*/ sel_canShowMIMEType_ = sel_registerName("canShowMIMEType:");
 public static final int /*long*/ sel_cancel = sel_registerName("cancel");
+public static final int /*long*/ sel_cancelButtonCell = sel_registerName("cancelButtonCell");
 public static final int /*long*/ sel_cancelTracking = sel_registerName("cancelTracking");
 public static final int /*long*/ sel_cascadeTopLeftFromPoint_ = sel_registerName("cascadeTopLeftFromPoint:");
 public static final int /*long*/ sel_cell = sel_registerName("cell");
@@ -1095,6 +1098,7 @@ public static final int /*long*/ sel_scrollRowToVisible_ = sel_registerName("scr
 public static final int /*long*/ sel_scrollToPoint_ = sel_registerName("scrollToPoint:");
 public static final int /*long*/ sel_scrollWheel_ = sel_registerName("scrollWheel:");
 public static final int /*long*/ sel_scrollerWidth = sel_registerName("scrollerWidth");
+public static final int /*long*/ sel_searchButtonCell = sel_registerName("searchButtonCell");
 public static final int /*long*/ sel_secondOfMinute = sel_registerName("secondOfMinute");
 public static final int /*long*/ sel_secondarySelectedControlColor = sel_registerName("secondarySelectedControlColor");
 public static final int /*long*/ sel_selectAll_ = sel_registerName("selectAll:");
