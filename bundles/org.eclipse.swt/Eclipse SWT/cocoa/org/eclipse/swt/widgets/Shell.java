@@ -491,8 +491,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.y = trim.y;
 	rect.width = trim.width;
 	rect.height = trim.height;
-	NSWindow myWindow = (window != null ? window : view.window());
-	rect = myWindow.frameRectForContentRect(rect);
+	if (window != null) {
+		if (!fixResize()) {
+			rect = window.frameRectForContentRect(rect);
+		}
+	}
 	return new Rectangle ((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
@@ -594,6 +597,15 @@ Cursor findCursor () {
 	return cursor;
 }
 
+boolean fixResize () {
+	if ((style & SWT.NO_TRIM) == 0) {
+		if ((style & SWT.RESIZE) != 0 && (style & (SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX)) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void fixShell (Shell newShell, Control control) {
 	if (this == newShell) return;
 	if (control == lastActive) setActiveControl (null);
@@ -658,15 +670,15 @@ public Rectangle getBounds () {
 
 public Rectangle getClientArea () {
 	checkWidget();
-	//TODO why super implementation fails
-	if (window == null) {
-		// In embedded frames, the whole view is the client area.
-		NSRect rect = view.frame();
-		int width = (int)rect.width, height = (int)rect.height;
-		return new Rectangle (0, 0, width, height);
+	NSRect rect;
+	if (window != null) {
+		rect = window.frame();
+		if (!fixResize ()) {
+			rect = window.contentRectForFrameRect(rect);
+		}
+	} else {
+		rect = scrollView != null ? scrollView.frame() : view.frame();
 	}
-
-	NSRect rect = window.contentRectForFrameRect(window.frame());
 	int width = (int)rect.width, height = (int)rect.height;
 	if (scrollView != null) {
 		NSSize size = new NSSize();
@@ -1462,6 +1474,11 @@ void setZOrder () {
 	if (scrollView != null) scrollView.setDocumentView (view);
 	if (window == null) return;
 	window.setContentView (scrollView != null ? scrollView : view);
+	if (fixResize ()) {
+		NSRect rect = window.frame();
+		rect.x = rect.y = 0;
+		window.contentView().setFrame(rect);
+	}
 }
 
 void setZOrder (Control control, boolean above) {
@@ -1548,6 +1565,11 @@ void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification)
 }
 
 void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	if (fixResize ()) {
+		NSRect rect = window.frame ();
+		rect.x = rect.y = 0;
+		window.contentView ().setFrame (rect);
+	}
 	resized = true;
 	sendEvent (SWT.Resize);
 	if (isDisposed ()) return;
