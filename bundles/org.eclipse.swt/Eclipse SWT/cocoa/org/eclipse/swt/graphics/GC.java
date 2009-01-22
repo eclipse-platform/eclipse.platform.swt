@@ -2993,8 +2993,7 @@ public void setAntialias(int antialias) {
 	switch (antialias) {
 		case SWT.DEFAULT:
 			/* Printer is off by default */
-//			if (data.window == 0 && data.control == 0 && data.image == null) mode = false;
-			mode = true;
+			if (!handle.isDrawingToScreen()) mode = false;
 			break;
 		case SWT.OFF: mode = false; break;
 		case SWT.ON: mode = true; break;
