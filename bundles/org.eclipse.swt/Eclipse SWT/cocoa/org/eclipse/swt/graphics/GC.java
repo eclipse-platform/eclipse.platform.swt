@@ -1592,6 +1592,7 @@ public void drawText (String string, int x, int y, int flags) {
 				bg.retain();
 			}
 			bg.setFill();
+			data.state &= ~FOREGROUND_FILL;
 			NSBezierPath.fillRect(rect);
 		}
 		str.drawInRect(rect);
@@ -3020,6 +3021,8 @@ public void setBackground(Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.background = color.handle;
 	data.backgroundPattern = null;
+	if (data.bg != null) data.bg.release();
+	data.bg = null;
 	data.state &= ~BACKGROUND;
 }
 
@@ -3267,6 +3270,8 @@ public void setForeground(Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
 	data.foregroundPattern = null;
+	if (data.fg != null) data.fg.release();
+	data.fg = null;
 	data.state &= ~(FOREGROUND | FOREGROUND_FILL);
 }
 
