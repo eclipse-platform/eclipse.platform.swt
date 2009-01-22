@@ -1294,7 +1294,6 @@ public static final int /*long*/ sel_setUIDelegate_ = sel_registerName("setUIDel
 public static final int /*long*/ sel_setURL_ = sel_registerName("setURL:");
 public static final int /*long*/ sel_setUpPrintOperationDefaultValues = sel_registerName("setUpPrintOperationDefaultValues");
 public static final int /*long*/ sel_setUsesAlternatingRowBackgroundColors_ = sel_registerName("setUsesAlternatingRowBackgroundColors:");
-public static final int /*long*/ sel_setUsesThreadedAnimation_ = sel_registerName("setUsesThreadedAnimation:");
 public static final int /*long*/ sel_setValue_forKey_ = sel_registerName("setValue:forKey:");
 public static final int /*long*/ sel_setValueWraps_ = sel_registerName("setValueWraps:");
 public static final int /*long*/ sel_setVerticalScroller_ = sel_registerName("setVerticalScroller:");

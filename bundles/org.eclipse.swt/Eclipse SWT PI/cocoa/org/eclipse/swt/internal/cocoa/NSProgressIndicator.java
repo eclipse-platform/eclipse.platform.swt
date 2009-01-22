@@ -52,10 +52,6 @@ public void setMinValue(double newMinimum) {
 	OS.objc_msgSend(this.id, OS.sel_setMinValue_, newMinimum);
 }
 
-public void setUsesThreadedAnimation(boolean threadedAnimation) {
-	OS.objc_msgSend(this.id, OS.sel_setUsesThreadedAnimation_, threadedAnimation);
-}
-
 public void sizeToFit() {
 	OS.objc_msgSend(this.id, OS.sel_sizeToFit);
 }

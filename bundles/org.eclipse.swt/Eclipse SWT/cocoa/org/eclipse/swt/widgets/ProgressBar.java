@@ -97,7 +97,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	NSProgressIndicator widget = (NSProgressIndicator)new SWTProgressIndicator().alloc();
 	widget.init();
-	widget.setUsesThreadedAnimation(false);
+	/*
+	* Bug in Cocoa.  Turning off threaded animation in NSProgressIndicator can cause
+	* the widget to attempt to access a deallocated NSBitmapGraphicsContext when  
+	* drawing itself.  The work around is to leave threaded animation on.
+	* 
+	*  This code is intentionally commented.
+	*/
+//	widget.setUsesThreadedAnimation(false);
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
 	if ((style & SWT.INDETERMINATE) != 0) widget.startAnimation(null);
 	view = widget;
@@ -168,19 +175,6 @@ public int getSelection () {
 public int getState () {
 	checkWidget ();
 	return SWT.NORMAL;
-}
-
-void releaseWidget() {
-	NSProgressIndicator widget = (NSProgressIndicator)view;
-	/* Feature in Cocoa.  Updates to an NSProgressIndication are added to 
-	* the event queue instead of processed immediately.  As a result, there
-	* may be outstanding updates in the queue after the NSProgressIndicator has
-	* been released.  The work around is to stop animation, and update the 
-	* widget before releasing it. 
-	*/
-	if ((style & SWT.INDETERMINATE) != 0) widget.stopAnimation(null);
-	widget.displayIfNeeded();
-	super.releaseWidget();
 }
 
 /**
@@ -271,5 +265,4 @@ public void setState (int state) {
 	checkWidget ();
 	//NOT IMPLEMENTED
 }
-
 }

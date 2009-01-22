@@ -16184,9 +16184,9 @@
 <arg name="style"></arg>
 <retval></retval>
 </method>
-<method selector="setUsesThreadedAnimation:" swt_gen="true">
-<arg name="threadedAnimation" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method selector="setUsesThreadedAnimation:">
+<arg name="threadedAnimation"></arg>
+<retval></retval>
 </method>
 <method selector="sizeToFit" swt_gen="true">
 <retval swt_gen="true"></retval>
