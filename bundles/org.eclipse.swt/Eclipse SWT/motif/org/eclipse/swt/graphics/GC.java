@@ -2328,7 +2328,7 @@ public int getAdvanceWidth(char ch) {
 							 */
 							 charWidth = fontStruct.max_bounds_width;
 						} else {
-							OS.memmove(charStruct, perCharPtr + (val - fontStruct.min_char_or_byte2 * XCharStruct.sizeof), XCharStruct.sizeof);
+							OS.memmove(charStruct, perCharPtr + ((val - fontStruct.min_char_or_byte2) * XCharStruct.sizeof), XCharStruct.sizeof);
 							charWidth = charStruct.width;
 						}
 						if (charWidth != 0) {
@@ -2367,7 +2367,7 @@ public int getAdvanceWidth(char ch) {
 		}
 	}
 	OS.XmFontListFreeFontContext(context);
-	return 0;
+	return stringExtent(new String(new char[]{ch})).x;
 }
 /**
  * Returns <code>true</code> if receiver is using the operating system's
@@ -2602,7 +2602,7 @@ public int getCharWidth(char ch) {
 							lBearing = fontStruct.min_bounds_lbearing;
 							rBearing = fontStruct.max_bounds_rbearing;
 						} else {
-							OS.memmove(charStruct, perCharPtr + (val - fontStruct.min_char_or_byte2 * XCharStruct.sizeof), XCharStruct.sizeof);
+							OS.memmove(charStruct, perCharPtr + ((val - fontStruct.min_char_or_byte2) * XCharStruct.sizeof), XCharStruct.sizeof);
 							charWidth = charStruct.width;
 							lBearing = charStruct.lbearing;
 							rBearing = charStruct.rbearing;
@@ -2649,7 +2649,7 @@ public int getCharWidth(char ch) {
 		}
 	}
 	OS.XmFontListFreeFontContext(context);
-	return 0;
+	return stringExtent(new String(new char[]{ch})).x;
 }
 /** 
  * Returns the bounding rectangle of the receiver's clipping
