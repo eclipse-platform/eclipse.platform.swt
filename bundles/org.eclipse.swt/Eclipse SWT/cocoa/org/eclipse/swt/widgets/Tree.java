@@ -272,9 +272,7 @@ void clear (TreeItem parentItem, int index, boolean all) {
 	TreeItem item = _getItem (parentItem, index, false);
 	if (item != null) {
 		item.clear();
-		NSOutlineView outlineView = (NSOutlineView) view;
-		NSRect rect = outlineView.rectOfRow (outlineView.rowForItem (item.handle));
-		outlineView.setNeedsDisplayInRect (rect);
+		item.redraw (-1);
 		if (all) {
 			clearAll (item, true);
 		}
@@ -289,9 +287,7 @@ void clearAll (TreeItem parentItem, boolean all) {
 		TreeItem item = children [i];
 		if (item != null) {
 			item.clear ();
-			NSOutlineView outlineView = (NSOutlineView) view;
-			NSRect rect = outlineView.rectOfRow (outlineView.rowForItem (item.handle));
-			outlineView.setNeedsDisplayInRect (rect);
+			item.redraw (-1);
 			if (all) clearAll (item, true);
 		}
 	}
@@ -1834,10 +1830,7 @@ void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*lo
 		event.detail = SWT.CHECK;
 		event.item = item;
 		postEvent (SWT.Selection, event);
-		NSOutlineView view = (NSOutlineView)this.view;
-		int rowIndex = (int)/*64*/view.rowForItem (new id (itemID));
-		NSRect rect = view.rectOfRow (rowIndex);
-		view.setNeedsDisplayInRect (rect);
+		item.redraw (-1);
 	}
 }
 
