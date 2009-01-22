@@ -598,6 +598,11 @@ Cursor findCursor () {
 }
 
 boolean fixResize () {
+	/*
+	* Feature in Cocoa.  It is not possible to have a resizable window
+	* without the title bar.  The fix is to resize the content view on
+	* top of the title bar.
+	*/
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.RESIZE) != 0 && (style & (SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX)) == 0) {
 			return true;
