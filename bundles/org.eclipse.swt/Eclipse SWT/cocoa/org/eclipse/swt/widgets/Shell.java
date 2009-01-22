@@ -564,8 +564,6 @@ void destroyWidget () {
 	Display display = this.display;
 	releaseHandle ();
 	if (window != null) {
-		NSWindow parentWindow = window.parentWindow ();
-		if (parentWindow != null) parentWindow.removeChildWindow (window);
 		window.close();
 	}
 	//If another shell is not going to become active, clear the menu bar.
@@ -1009,7 +1007,7 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	display.clearModal (this);
-//	disposed = true;
+	updateParent (false);
 	lastActive = null;
 }
 
@@ -1430,9 +1428,7 @@ void setWindowVisible (boolean visible, boolean key) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		if (parent != null) {
-			((Shell)parent).window.addChildWindow (window, OS.NSWindowAbove);
-		}
+		updateParent (visible);
 		topView ().setHidden (false);
 		if (key) {
 			window.makeKeyAndOrderFront (null);
@@ -1455,8 +1451,7 @@ void setWindowVisible (boolean visible, boolean key) {
 			}
 		}
 	} else {
-		NSWindow parentWindow = window.parentWindow ();
-		if (parentWindow != null) parentWindow.removeChildWindow (window);
+		updateParent (visible);
 		window.orderOut (null);
 		topView ().setHidden (true);
 		sendEvent (SWT.Hide);
@@ -1488,6 +1483,24 @@ boolean traverseEscape () {
 
 void updateModal () {
 	// do nothing
+}
+
+void updateParent (boolean visible) {
+	if (visible) {
+		if (parent != null && parent.getVisible ()) {
+			((Shell)parent).window.addChildWindow (window, OS.NSWindowAbove);
+		}		
+	} else {
+		NSWindow parentWindow = window.parentWindow ();
+		if (parentWindow != null) parentWindow.removeChildWindow (window);
+	}
+	Shell [] shells = getShells ();
+	for (int i = 0; i < shells.length; i++) {
+		Shell shell = shells [i];
+		if (shell.parent == this && shell.getVisible ()) {
+			shell.updateParent (visible);
+		}
+	}
 }
 
 void updateSystemUIMode () {
