@@ -1578,13 +1578,13 @@ public void drawText (String string, int x, int y, int flags) {
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT);
 	try {
 		NSAttributedString str = createString(string, flags, true);
-		NSSize size = str.size();
-		NSRect rect = new NSRect();
-		rect.x = x;
-		rect.y = y;
-		rect.width = size.width;
-		rect.height = size.height;
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+			NSSize size = str.size();
+			NSRect rect = new NSRect();
+			rect.x = x;
+			rect.y = y;
+			rect.width = size.width;
+			rect.height = size.height;
 			NSColor bg = data.bg;
 			if (bg == null) {
 				float /*double*/ [] color = data.background;
@@ -1594,8 +1594,13 @@ public void drawText (String string, int x, int y, int flags) {
 			bg.setFill();
 			data.state &= ~FOREGROUND_FILL;
 			NSBezierPath.fillRect(rect);
+			str.drawInRect(rect);
+		} else {
+			NSPoint pt = new NSPoint();
+			pt.x = x;
+			pt.y = y;
+			str.drawAtPoint(pt);
 		}
-		str.drawInRect(rect);
 		str.release();
 	} finally {
 		uncheckGC(pool);
