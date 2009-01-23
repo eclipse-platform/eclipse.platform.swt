@@ -4009,8 +4009,8 @@
 <method selector="titleCell" swt_gen="true">
 <retval swt_gen="true" swt_java_type="NSCell"></retval>
 </method>
-<method selector="titleFont">
-<retval></retval>
+<method selector="titleFont" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="titlePosition">
 <retval></retval>

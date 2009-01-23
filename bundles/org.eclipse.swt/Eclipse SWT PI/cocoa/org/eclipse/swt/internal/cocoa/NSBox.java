@@ -79,4 +79,9 @@ public NSCell titleCell() {
 	return result != 0 ? new NSCell(result) : null;
 }
 
+public NSFont titleFont() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_titleFont);
+	return result != 0 ? new NSFont(result) : null;
+}
+
 }

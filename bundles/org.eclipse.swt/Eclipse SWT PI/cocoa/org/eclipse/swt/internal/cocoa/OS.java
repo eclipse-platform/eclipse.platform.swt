@@ -1389,6 +1389,7 @@ public static final int /*long*/ sel_tile = sel_registerName("tile");
 public static final int /*long*/ sel_timeZone = sel_registerName("timeZone");
 public static final int /*long*/ sel_title = sel_registerName("title");
 public static final int /*long*/ sel_titleCell = sel_registerName("titleCell");
+public static final int /*long*/ sel_titleFont = sel_registerName("titleFont");
 public static final int /*long*/ sel_titleOfSelectedItem = sel_registerName("titleOfSelectedItem");
 public static final int /*long*/ sel_titleRectForBounds_ = sel_registerName("titleRectForBounds:");
 public static final int /*long*/ sel_toggleToolbarShown_ = sel_registerName("toggleToolbarShown:");
