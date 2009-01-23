@@ -49,6 +49,8 @@ public class Text extends Scrollable {
 	boolean doubleClick, receivingFocus;
 	String hiddenText, message;
 	NSRange selectionRange;
+	id targetSearch, targetCancel;
+	int /*long*/ actionSearch, actionCancel;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -112,19 +114,34 @@ public class Text extends Scrollable {
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	if ((style & SWT.SEARCH) != 0) {
-//		int inAttributesToSet = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
-//		OS.HISearchFieldChangeAttributes (handle, inAttributesToSet, 0);
 		/*
-		* Ensure that SWT.CANCEL is set.
-		* NOTE: CANCEL has the same value as H_SCROLL so it is
+		* Ensure that SWT.ICON_CANCEL and ICON_SEARCH are set.
+		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
+		* ICON_SEARCH has the same value as V_SCROLL so it is
 		* necessary to first clear these bits to avoid a scroll
 		* bar and then reset the bit using the original style
 		* supplied by the programmer.
 		*/
-		if ((style & SWT.CANCEL) != 0) this.style |= SWT.CANCEL;
-		if ((style & SWT.CANCEL) == 0) {
-			NSSearchFieldCell cell = new NSSearchFieldCell (((NSSearchField) view).cell ());
+		NSSearchFieldCell cell = new NSSearchFieldCell (((NSSearchField) view).cell ());
+		if ((style & SWT.ICON_CANCEL) != 0) {
+			this.style |= SWT.ICON_CANCEL;
+			NSButtonCell cancelCell = cell.cancelButtonCell();
+			targetCancel = cancelCell.target();
+			actionCancel = cancelCell.action();
+			cancelCell.setTarget (view);
+			cancelCell.setAction (OS.sel_sendCancelSelection);
+		} else {
 			cell.setCancelButtonCell (null);
+		}
+		if ((style & SWT.ICON_SEARCH) != 0) {
+			this.style |= SWT.ICON_SEARCH;
+			NSButtonCell searchCell = cell.searchButtonCell();
+			targetSearch = searchCell.target();
+			actionSearch = searchCell.action();
+			searchCell.setTarget (view);
+			searchCell.setAction (OS.sel_sendSearchSelection);
+		} else {
+			cell.setSearchButtonCell (null);
 		}
 	}
 }
@@ -383,10 +400,6 @@ void createHandle () {
 		if ((style & SWT.BORDER) == 0) {
 			widget.setFocusRingType (OS.NSFocusRingTypeNone);
 			widget.setBordered (false);
-		}
-		if ((style & SWT.SEARCH) != 0) {
-			NSSearchFieldCell cell = new NSSearchFieldCell (((NSSearchField) widget).cell ());
-			cell.setSearchButtonCell (null);
 		}
 		int align = OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
@@ -1336,6 +1349,24 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		if (newText.length () != 0) sendEvent (SWT.Modify);
 	}
 	return result;
+}
+
+void sendSearchSelection () {
+	if (targetSearch != null) {
+		((NSSearchField)view).sendAction(actionSearch, targetSearch);
+	}
+	Event event = new Event ();
+	event.detail = SWT.ICON_SEARCH;
+	postEvent (SWT.DefaultSelection, event);
+}
+
+void sendCancelSelection () {
+	if (targetCancel != null) {
+		((NSSearchField)view).sendAction(actionCancel, targetCancel);
+	}
+	Event event = new Event ();
+	event.detail = SWT.ICON_CANCEL;
+	postEvent (SWT.DefaultSelection, event);
 }
 
 void setBackground (float /*double*/ [] color) {
