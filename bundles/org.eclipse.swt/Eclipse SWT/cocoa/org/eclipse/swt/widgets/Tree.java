@@ -85,6 +85,8 @@ public class Tree extends Composite {
 	float /*double*/ levelIndent;
 	boolean ignoreExpand, ignoreSelect, reloadPending;
 
+	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -483,7 +485,14 @@ void createHandle () {
 	
 	firstColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 	firstColumn.initWithIdentifier (firstColumn);
-	firstColumn.setMinWidth(0);
+	/*
+	* Feature in Cocoa.  If a column's width is too small to show any content
+	* then outlineView_objectValueForTableColumn_byItem is never invoked to
+	* query for item values, which is a problem for VIRTUAL Trees.  The
+	* workaround is to ensure that, for 0-column Trees, the internal first
+	* column always has a minimal width that makes this call come in.
+	*/
+	firstColumn.setMinWidth (FIRST_COLUMN_MINIMUM_WIDTH);
 	firstColumn.headerCell ().setTitle (str);
 	widget.addTableColumn (firstColumn);
 	widget.setOutlineTableColumn (firstColumn);
@@ -512,6 +521,7 @@ void createItem (TreeColumn column, int index) {
 	if (columnCount == 0) {
 		//TODO - clear attributes, alignment etc.
 		nsColumn = firstColumn;
+		nsColumn.setMinWidth (0);
 		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
@@ -740,6 +750,14 @@ void destroyItem (TreeColumn column) {
 		//TODO - reset attributes
 		firstColumn = column.nsColumn;
 		firstColumn.retain ();
+		/*
+		* Feature in Cocoa.  If a column's width is too small to show any content
+		* then outlineView_objectValueForTableColumn_byItem is never invoked to
+		* query for item values, which is a problem for VIRTUAL Trees.  The
+		* workaround is to ensure that, for 0-column Trees, the internal first
+		* column always has a minimal width that makes this call come in.
+		*/
+		firstColumn.setMinWidth (FIRST_COLUMN_MINIMUM_WIDTH);
 		setScrollWidth ();
 	} else {
 		if (index == 0) {

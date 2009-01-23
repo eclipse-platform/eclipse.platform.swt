@@ -76,6 +76,8 @@ public class Table extends Composite {
 	int columnCount, itemCount, lastIndexOf, sortDirection;
 	boolean ignoreSelect;
 
+	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -469,7 +471,14 @@ void createHandle () {
 
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
 	firstColumn.initWithIdentifier(firstColumn);
-	firstColumn.setMinWidth(0);
+	/*
+	* Feature in Cocoa.  If a column's width is too small to show any content
+	* then tableView_objectValueForTableColumn_row is never invoked to
+	* query for item values, which is a problem for VIRTUAL Tables.  The
+	* workaround is to ensure that, for 0-column Tables, the internal first
+	* column always has a minimal width that makes this call come in.
+	*/
+	firstColumn.setMinWidth (FIRST_COLUMN_MINIMUM_WIDTH);
 	firstColumn.headerCell ().setTitle (str);
 	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
 	dataCell = (NSBrowserCell)new SWTBrowserCell ().alloc ().init ();
@@ -491,6 +500,7 @@ void createItem (TableColumn column, int index) {
 	if (columnCount == 0) {
 		//TODO - clear attributes, alignment etc.
 		nsColumn = firstColumn;
+		nsColumn.setMinWidth (0);
 		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
@@ -726,6 +736,14 @@ void destroyItem (TableColumn column) {
 		//TODO - reset attributes
 		firstColumn = column.nsColumn;
 		firstColumn.retain ();
+		/*
+		* Feature in Cocoa.  If a column's width is too small to show any content
+		* then tableView_objectValueForTableColumn_row is never invoked to
+		* query for item values, which is a problem for VIRTUAL Tables.  The
+		* workaround is to ensure that, for 0-column Tables, the internal first
+		* column always has a minimal width that makes this call come in.
+		*/
+		firstColumn.setMinWidth (FIRST_COLUMN_MINIMUM_WIDTH);
 		setScrollWidth ();
 	} else {
 		((NSTableView)view).removeTableColumn(column.nsColumn);
