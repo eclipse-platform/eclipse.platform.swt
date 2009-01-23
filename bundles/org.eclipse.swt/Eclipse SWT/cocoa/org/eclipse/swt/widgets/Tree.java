@@ -267,7 +267,7 @@ protected void checkSubclass () {
 void checkItems () {
 	if (!reloadPending) return;
 	reloadPending = false;
-	((NSOutlineView)view).reloadItem (null);
+	((NSOutlineView)view).reloadData ();
 }
 
 void clear (TreeItem parentItem, int index, boolean all) {
@@ -1902,7 +1902,7 @@ void reloadItem (TreeItem item, boolean recurse) {
 		if (item != null) {
 			widget.reloadItem (item.handle, recurse);
 		} else {
-			widget.reloadItem (null);
+			widget.reloadData ();
 		}
 	} else {
 		reloadPending = true;
@@ -1925,7 +1925,7 @@ public void removeAll () {
 	}
 	items = new TreeItem [4];
 	itemCount = 0;
-	((NSOutlineView) view).reloadItem (null);
+	((NSOutlineView) view).reloadData ();
 }
 
 /**

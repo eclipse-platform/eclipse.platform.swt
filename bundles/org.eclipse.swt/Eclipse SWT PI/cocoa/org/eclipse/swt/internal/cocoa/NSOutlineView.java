@@ -50,10 +50,6 @@ public NSTableColumn outlineTableColumn() {
 	return result != 0 ? new NSTableColumn(result) : null;
 }
 
-public void reloadItem(id item) {
-	OS.objc_msgSend(this.id, OS.sel_reloadItem_, item != null ? item.id : 0);
-}
-
 public void reloadItem(id item, boolean reloadChildren) {
 	OS.objc_msgSend(this.id, OS.sel_reloadItem_reloadChildren_, item != null ? item.id : 0, reloadChildren);
 }

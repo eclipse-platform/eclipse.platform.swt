@@ -14686,9 +14686,9 @@
 <arg name="item"></arg>
 <retval></retval>
 </method>
-<method selector="reloadItem:" swt_gen="true">
-<arg name="item" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method selector="reloadItem:">
+<arg name="item"></arg>
+<retval></retval>
 </method>
 <method selector="reloadItem:reloadChildren:" swt_gen="true">
 <arg name="item" swt_gen="true"></arg>

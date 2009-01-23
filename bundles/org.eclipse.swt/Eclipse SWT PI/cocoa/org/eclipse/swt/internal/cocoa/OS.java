@@ -1040,7 +1040,6 @@ public static final int /*long*/ sel_registerForDraggedTypes_ = sel_registerName
 public static final int /*long*/ sel_release = sel_registerName("release");
 public static final int /*long*/ sel_reload_ = sel_registerName("reload:");
 public static final int /*long*/ sel_reloadData = sel_registerName("reloadData");
-public static final int /*long*/ sel_reloadItem_ = sel_registerName("reloadItem:");
 public static final int /*long*/ sel_reloadItem_reloadChildren_ = sel_registerName("reloadItem:reloadChildren:");
 public static final int /*long*/ sel_removeAllItems = sel_registerName("removeAllItems");
 public static final int /*long*/ sel_removeAllPoints = sel_registerName("removeAllPoints");
