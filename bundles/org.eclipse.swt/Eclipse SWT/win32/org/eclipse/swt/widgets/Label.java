@@ -51,7 +51,7 @@ public class Label extends Control {
 	String text = "";
 	Image image;
 	static final int MARGIN = 4;
-	static final boolean IMAGE_AND_TEXT = false;
+	static /*final*/ boolean IMAGE_AND_TEXT = false;
 	static final int /*long*/ LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
@@ -625,7 +625,7 @@ LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 		int height = struct.bottom - struct.top;
 		if (width != 0 && height != 0) {
 			boolean drawImage = image != null;
-			boolean drawText = IMAGE_AND_TEXT /*&& text.length () != 0*/;
+			boolean drawText = IMAGE_AND_TEXT && text.length () != 0;
 			int margin = drawText && drawImage ? MARGIN : 0;
 			int imageWidth = 0, imageHeight = 0;
 			if (drawImage) {
