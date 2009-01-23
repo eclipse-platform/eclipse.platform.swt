@@ -14716,9 +14716,9 @@
 <arg name="drawInCell"></arg>
 <retval></retval>
 </method>
-<method selector="setIndentationPerLevel:" swt_gen="true">
-<arg name="indentationPerLevel" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method selector="setIndentationPerLevel:">
+<arg name="indentationPerLevel"></arg>
+<retval></retval>
 </method>
 <method selector="setOutlineTableColumn:" swt_gen="true">
 <arg name="outlineTableColumn" swt_gen="true"></arg>

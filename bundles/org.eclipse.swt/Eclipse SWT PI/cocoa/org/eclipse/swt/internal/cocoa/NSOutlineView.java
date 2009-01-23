@@ -70,10 +70,6 @@ public void setAutosaveExpandedItems(boolean save) {
 	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_, save);
 }
 
-public void setIndentationPerLevel(float /*double*/ indentationPerLevel) {
-	OS.objc_msgSend(this.id, OS.sel_setIndentationPerLevel_, indentationPerLevel);
-}
-
 public void setOutlineTableColumn(NSTableColumn outlineTableColumn) {
 	OS.objc_msgSend(this.id, OS.sel_setOutlineTableColumn_, outlineTableColumn != null ? outlineTableColumn.id : 0);
 }

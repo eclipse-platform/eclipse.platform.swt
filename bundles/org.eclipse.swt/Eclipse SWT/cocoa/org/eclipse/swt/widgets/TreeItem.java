@@ -284,13 +284,8 @@ int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasure
 	}
 
 	if (columnIndex == 0) {
-		NSTableColumn column = parent.columnCount == 0 ? parent.firstColumn : parent.columns[0].nsColumn;
 		NSOutlineView outlineView = (NSOutlineView)parent.view;
-		int rowIndex = (int)/*64*/outlineView.rowForItem (handle);
-		int nsColumnIndex = (int)/*64*/outlineView.columnWithIdentifier (column);
-		NSRect columnRect = outlineView.rectOfColumn (nsColumnIndex);
-		NSRect cellRect = outlineView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
-		width += (cellRect.x - columnRect.x);
+		width += outlineView.indentationPerLevel () * (1 + outlineView.levelForItem (handle));
 	}
 	if (recurse && expanded) {
 		for (int i = 0; i < items.length; i++) {

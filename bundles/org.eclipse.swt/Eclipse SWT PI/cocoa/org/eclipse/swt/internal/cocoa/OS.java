@@ -1216,7 +1216,6 @@ public static final int /*long*/ sel_setImageInterpolation_ = sel_registerName("
 public static final int /*long*/ sel_setImagePosition_ = sel_registerName("setImagePosition:");
 public static final int /*long*/ sel_setImageScaling_ = sel_registerName("setImageScaling:");
 public static final int /*long*/ sel_setIncrement_ = sel_registerName("setIncrement:");
-public static final int /*long*/ sel_setIndentationPerLevel_ = sel_registerName("setIndentationPerLevel:");
 public static final int /*long*/ sel_setIndeterminate_ = sel_registerName("setIndeterminate:");
 public static final int /*long*/ sel_setJavaEnabled_ = sel_registerName("setJavaEnabled:");
 public static final int /*long*/ sel_setJobDisposition_ = sel_registerName("setJobDisposition:");
