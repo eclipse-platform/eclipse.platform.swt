@@ -131,7 +131,7 @@ public void add (String string) {
 		items = newItems;
 	}
 	items [itemCount++] = string;
-	((NSTableView)view).reloadData();
+	((NSTableView)view).noteNumberOfRowsChanged ();
 	//TODO adjust horizontal scrollbar
 }
 
@@ -170,7 +170,7 @@ public void add (String string, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = string;
-	((NSTableView)view).reloadData();
+	((NSTableView)view).noteNumberOfRowsChanged ();
 }
 
 /**
@@ -1094,7 +1094,9 @@ public void setItem (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	items [index] = string;
-	((NSTableView)view).reloadData();
+	NSTableView tableView = (NSTableView)view;
+	NSRect rect = tableView.rectOfRow (index);
+	tableView.setNeedsDisplayInRect (rect);
 }
 
 /**
