@@ -2527,13 +2527,10 @@ public class SWT {
 	/**
 	 * The <code>MessageBox</code> style constant for a CANCEL button;
 	 * valid combinations are OK|CANCEL, YES|NO|CANCEL, RETRY|CANCEL
-	 * (value is 1&lt;&lt;8).  This style constant is also used with 
-	 * <code>Text</code> in combination with SEARCH.
-	 * <br>Note that when used in combination with SEARCH, this is a <em>HINT</em>.
+	 * (value is 1&lt;&lt;8).
 	 * 
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>MessageBox</code></li>
-	 * <li><code>Text</code></li>
 	 * </ul></p>
 	 */
 	public static final int CANCEL = 1 << 8;
