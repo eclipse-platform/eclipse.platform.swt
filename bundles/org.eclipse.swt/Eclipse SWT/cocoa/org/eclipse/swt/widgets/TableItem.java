@@ -619,12 +619,6 @@ public Rectangle getTextBounds (int index) {
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
-void redraw () {
-//	0[aTableView setNeedsDisplayInRect:[aTableView rectOfRow:row]];
-	((NSTableView) parent.view).reloadData ();
-	((NSTableView) parent.view).tile ();
-}
-
 void redraw (int columnIndex) {
 	/* redraw the full item if columnIndex == -1 */
 	NSTableView tableView = (NSTableView) parent.view;
