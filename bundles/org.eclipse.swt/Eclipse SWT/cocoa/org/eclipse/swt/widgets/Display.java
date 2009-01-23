@@ -2126,6 +2126,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
+	OS.class_addMethod(cls, OS.sel_sendSearchSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendCancelSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	cls = registerCellSubclass(NSSearchField.cellClass(), size, align, types);
@@ -3791,6 +3793,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		widget.sendVerticalSelection();
 	} else if (sel == OS.sel_sendHorizontalSelection) {
 		widget.sendHorizontalSelection();
+	} else if (sel == OS.sel_sendSearchSelection) {
+		widget.sendSearchSelection();
+	} else if (sel == OS.sel_sendCancelSelection) {
+		widget.sendCancelSelection();
 	} else if (sel == OS.sel_acceptsFirstResponder) {
 		return widget.acceptsFirstResponder(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_becomeFirstResponder) {

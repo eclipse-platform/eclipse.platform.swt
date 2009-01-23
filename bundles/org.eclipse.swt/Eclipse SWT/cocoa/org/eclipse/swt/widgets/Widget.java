@@ -1181,6 +1181,12 @@ boolean sendKeyEvent (int type, Event event) {
 void sendHorizontalSelection () {
 }
 
+void sendCancelSelection () {
+}
+
+void sendSearchSelection () {
+}
+
 void sendSelection () {
 }
 

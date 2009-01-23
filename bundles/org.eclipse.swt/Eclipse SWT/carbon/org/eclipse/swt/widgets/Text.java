@@ -134,16 +134,26 @@ public class Text extends Scrollable {
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	if ((style & SWT.SEARCH) != 0) {
-		int inAttributesToSet = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
-		OS.HISearchFieldChangeAttributes (handle, inAttributesToSet, 0);
 		/*
-		* Ensure that SWT.CANCEL is set.
-		* NOTE: CANCEL has the same value as H_SCROLL so it is
+		* Ensure that SWT.ICON_CANCEL and ICON_SEARCH are set.
+		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
+		* ICON_SEARCH has the same value as V_SCROLL so it is
 		* necessary to first clear these bits to avoid a scroll
 		* bar and then reset the bit using the original style
 		* supplied by the programmer.
 		*/
-		if ((style & SWT.CANCEL) != 0) this.style |= SWT.CANCEL;
+		int attributes = OS.kHISearchFieldNoAttributes;
+		if ((style & SWT.ICON_CANCEL) != 0) {
+			this.style |= SWT.ICON_CANCEL;
+			attributes |= OS.kHISearchFieldAttributesCancel;
+		}
+		if ((style & SWT.ICON_SEARCH) != 0) {
+			this.style |= SWT.ICON_SEARCH;
+			attributes |= OS.kHISearchFieldAttributesSearchIcon;
+		}
+		if (attributes != OS.kHISearchFieldNoAttributes) {
+			OS.HISearchFieldChangeAttributes (handle, attributes, 0);
+		}
 	}
 }
 
@@ -572,8 +582,7 @@ void createHandle () {
 		OS.DisposePtr (ptr);
 	} else {
 		if ((style & SWT.SEARCH) != 0) {
-			int attributes = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
-			OS.HISearchFieldCreate (null, attributes, 0, 0, outControl);
+			OS.HISearchFieldCreate (null, OS.kHISearchFieldNoAttributes, 0, 0, outControl);
 		} else {
 			int window = OS.GetControlOwner (parent.handle);
 			OS.CreateEditUnicodeTextControl (window, null, 0, (style & SWT.PASSWORD) != 0, null, outControl);
@@ -1284,6 +1293,7 @@ void hookEvents () {
 		int searchProc = display.searchProc;
 		int [] mask = new int [] {
 			OS.kEventClassSearchField, OS.kEventSearchFieldCancelClicked,
+			OS.kEventClassSearchField, OS.kEventSearchFieldSearchClicked,
 		};
 		int controlTarget = OS.GetControlEventTarget (handle);
 		OS.InstallEventHandler (controlTarget, searchProc, mask.length / 2, mask, handle, null);
@@ -1494,7 +1504,16 @@ int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData)
 	if (result == OS.noErr) return result;
 	setText ("");
 	Event event = new Event ();
-	event.detail = SWT.CANCEL;
+	event.detail = SWT.ICON_CANCEL;
+	postEvent (SWT.DefaultSelection, event);
+	return result;
+}
+
+int kEventSearchFieldSearchClicked (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventSearchFieldSearchClicked (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	Event event = new Event ();
+	event.detail = SWT.ICON_SEARCH;
 	postEvent (SWT.DefaultSelection, event);
 	return result;
 }
