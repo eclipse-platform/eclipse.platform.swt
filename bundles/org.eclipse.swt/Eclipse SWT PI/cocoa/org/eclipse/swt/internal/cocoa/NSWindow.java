@@ -69,6 +69,10 @@ public NSPoint convertScreenToBase(NSPoint aPoint) {
 	return result;
 }
 
+public void deminiaturize(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_deminiaturize_, sender != null ? sender.id : 0);
+}
+
 public void disableCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_disableCursorRects);
 }
@@ -114,8 +118,16 @@ public boolean isKeyWindow() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isKeyWindow);
 }
 
+public boolean isMiniaturized() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isMiniaturized);
+}
+
 public boolean isVisible() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isVisible);
+}
+
+public boolean isZoomed() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isZoomed);
 }
 
 public boolean makeFirstResponder(NSResponder aResponder) {
@@ -124,6 +136,10 @@ public boolean makeFirstResponder(NSResponder aResponder) {
 
 public void makeKeyAndOrderFront(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_makeKeyAndOrderFront_, sender != null ? sender.id : 0);
+}
+
+public void miniaturize(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_miniaturize_, sender != null ? sender.id : 0);
 }
 
 public NSPoint mouseLocationOutsideOfEventStream() {
@@ -229,6 +245,10 @@ public void toggleToolbarShown(id sender) {
 
 public int /*long*/ windowNumber() {
 	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
+}
+
+public void zoom(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_zoom_, sender != null ? sender.id : 0);
 }
 
 }

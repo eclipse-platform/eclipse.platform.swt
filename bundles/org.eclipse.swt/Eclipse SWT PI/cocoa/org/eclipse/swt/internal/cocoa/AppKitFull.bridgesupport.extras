@@ -22854,9 +22854,9 @@
 <method selector="delegate">
 <retval></retval>
 </method>
-<method selector="deminiaturize:">
-<arg name="sender"></arg>
-<retval></retval>
+<method selector="deminiaturize:" swt_gen="true">
+<arg name="sender" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="depthLimit">
 <retval></retval>
@@ -23043,8 +23043,8 @@
 <method selector="isMiniaturizable">
 <retval></retval>
 </method>
-<method selector="isMiniaturized">
-<retval></retval>
+<method selector="isMiniaturized" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="isModalPanel">
 <retval></retval>
@@ -23073,8 +23073,8 @@
 <method selector="isZoomable">
 <retval></retval>
 </method>
-<method selector="isZoomed">
-<retval></retval>
+<method selector="isZoomed" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="keyDown:">
 <arg name="theEvent"></arg>
@@ -23115,9 +23115,9 @@
 <method selector="minSize">
 <retval></retval>
 </method>
-<method selector="miniaturize:">
-<arg name="sender"></arg>
-<retval></retval>
+<method selector="miniaturize:" swt_gen="true">
+<arg name="sender" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="miniwindowImage">
 <retval></retval>
@@ -23604,9 +23604,9 @@
 <method selector="worksWhenModal">
 <retval></retval>
 </method>
-<method selector="zoom:">
-<arg name="sender"></arg>
-<retval></retval>
+<method selector="zoom:" swt_gen="true">
+<arg name="sender" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 </class>
 <class name="NSWindowController" swt_superclass="NSResponder">

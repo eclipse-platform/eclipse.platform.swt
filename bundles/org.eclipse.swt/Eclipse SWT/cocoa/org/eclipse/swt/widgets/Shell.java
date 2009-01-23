@@ -751,8 +751,8 @@ public Point getLocation () {
 
 public boolean getMaximized () {
 	checkWidget();
-	//NOT DONE
-	return !fullScreen && super.getMaximized ();
+	if (window == null) return false;
+	return !fullScreen && window.isZoomed();
 }
 
 Shell getModalShell () {
@@ -786,8 +786,8 @@ Shell getModalShell () {
 public boolean getMinimized () {
 	checkWidget();
 	if (!getVisible ()) return super.getMinimized ();
-//	return OS.IsWindowCollapsed (shellHandle);
-	return false;
+	if (window == null) return false;
+	return window.isMiniaturized();
 }
 
 /**
@@ -1285,26 +1285,20 @@ public void setImeInputMode (int mode) {
 public void setMaximized (boolean maximized) {
 	checkWidget();
 	super.setMaximized (maximized);
-//	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-//	if (maximized) {
-//		Rect rect = new Rect ();
-//		int gdevice = OS.GetMainDevice ();
-//		OS.GetAvailableWindowPositioningBounds (gdevice, rect);
-//		pt.h = (short) (rect.right - rect.left);
-//		pt.v = (short) (rect.bottom - rect.top);
-//	}
-//	short inPartCode = (short) (maximized ? OS.inZoomOut : OS.inZoomIn);
-//	OS.ZoomWindowIdeal (shellHandle, inPartCode, pt);
+	if (window == null) return;
+	if (window.isZoomed () == maximized) return;
+	window.zoom (null);
 }
 
 public void setMinimized (boolean minimized) {
 	checkWidget();
-	if (this.minimized == minimized) return;
 	super.setMinimized (minimized);
-//	if (!minimized && OS.IsWindowCollapsed (shellHandle)) {
-//		OS.SelectWindow (shellHandle);
-//	}
-//	OS.CollapseWindow (shellHandle, minimized);
+	if (window == null) return;
+	if (minimized) {
+		window.miniaturize (null);
+	} else {
+		window.deminiaturize (null);
+	}
 }
 
 /**
