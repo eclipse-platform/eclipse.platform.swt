@@ -30,6 +30,9 @@ case $OS in
 	"SunOS")
 		SWT_OS=solaris
 		MAKEFILE=make_solaris.mak
+		if uname -p > /dev/null 2>&1; then
+			MODEL=`uname -p`
+		fi
 		;;
 	"FreeBSD")
 		SWT_OS=freebsd
@@ -43,8 +46,8 @@ esac
 
 # Determine which CPU type we are building for
 if [ "${MODEL}" = "" ]; then
-	if uname -p > /dev/null 2>&1; then
-		MODEL=`uname -p`
+	if uname -i > /dev/null 2>&1; then
+		MODEL=`uname -i`
 	else
 		MODEL=`uname -m`
 	fi
