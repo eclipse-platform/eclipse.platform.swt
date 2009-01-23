@@ -1172,6 +1172,10 @@ int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData)
 	return OS.eventNotHandledErr;
 }
 
+int kEventSearchFieldSearchClicked (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	return kEventRawKeyPressed (nextHandler, theEvent, userData);
 }
@@ -1556,6 +1560,7 @@ int searchProc (int nextHandler, int theEvent, int userData) {
 	int kind = OS.GetEventKind (theEvent);
 	switch (kind) {
 		case OS.kEventSearchFieldCancelClicked: return kEventSearchFieldCancelClicked (nextHandler, theEvent, userData);
+		case OS.kEventSearchFieldSearchClicked: return kEventSearchFieldSearchClicked (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }
