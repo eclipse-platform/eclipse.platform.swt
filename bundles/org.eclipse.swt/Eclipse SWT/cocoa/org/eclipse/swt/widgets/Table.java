@@ -240,8 +240,7 @@ public void clear (int index) {
 	TableItem item = items [index];
 	if (item != null) {
 		item.clear ();
-		NSTableView widget = (NSTableView) view;
-		widget.reloadData ();
+		item.redraw (-1);
 	}
 }
 /**
@@ -278,10 +277,11 @@ public void clear (int start, int end) {
 	} else {
 		for (int i=start; i<=end; i++) {
 			TableItem item = items [i];
-			if (item != null) item.clear ();
+			if (item != null) {
+				item.clear ();
+				item.redraw (-1);
+			}
 		}
-		NSTableView widget = (NSTableView) view;
-		widget.reloadData ();
 	}
 }
 
@@ -318,10 +318,11 @@ public void clear (int [] indices) {
 	}
 	for (int i=0; i<indices.length; i++) {
 		TableItem item = items [indices [i]];
-		if (item != null) item.clear ();
+		if (item != null) {
+			item.clear ();
+			item.redraw (-1);
+		}
 	}
-	NSTableView widget = (NSTableView) view;
-	widget.reloadData ();
 }
 
 /**
@@ -344,10 +345,11 @@ public void clearAll () {
 	checkWidget ();
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
-		if (item != null) item.clear ();
+		if (item != null) {
+			item.clear ();
+			item.redraw (-1);
+		}
 	}
-	NSTableView widget = (NSTableView) view;
-	widget.reloadData ();
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -531,8 +533,7 @@ void createItem (TableItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	//TODO - use noteNumberOfRowsChanged?
-	((NSTableView)view).reloadData();
+	((NSTableView)view).noteNumberOfRowsChanged ();
 }
 
 void createWidget () {
