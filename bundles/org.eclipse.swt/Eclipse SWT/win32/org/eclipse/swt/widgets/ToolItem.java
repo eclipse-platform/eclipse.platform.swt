@@ -538,7 +538,7 @@ public void setControl (Control control) {
 		if (control == null) {
 			if ((info.fsStyle & OS.BTNS_SEP) == 0) {
 				changed = true;
-				info.fsStyle &= ~OS.BTNS_BUTTON;
+				info.fsStyle &= ~(OS.BTNS_BUTTON | OS.BTNS_SHOWTEXT);
 				info.fsStyle |= OS.BTNS_SEP;
 				if ((state & DISABLED) != 0) {
 					info.fsState &= ~OS.TBSTATE_ENABLED;
@@ -550,7 +550,7 @@ public void setControl (Control control) {
 			if ((info.fsStyle & OS.BTNS_SEP) != 0) {
 				changed = true;
 				info.fsStyle &= ~OS.BTNS_SEP;
-				info.fsStyle |= OS.BTNS_BUTTON;
+				info.fsStyle |= OS.BTNS_BUTTON | OS.BTNS_SHOWTEXT;
 				info.fsState &= ~OS.TBSTATE_ENABLED;
 				info.dwMask |= OS.TBIF_IMAGE;
 				info.iImage = OS.I_IMAGENONE;
