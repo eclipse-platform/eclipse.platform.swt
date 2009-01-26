@@ -22,7 +22,7 @@ class TextTab extends ScrollableTab {
 	Group textGroup;
 
 	/* Style widgets added to the "Style" group */
-	Button wrapButton, readOnlyButton, passwordButton, searchButton, cancelButton;
+	Button wrapButton, readOnlyButton, passwordButton, searchButton, iconCancelButton, iconSearchButton;
 	Button leftButton, centerButton, rightButton;
 	
 	/**
@@ -60,7 +60,8 @@ class TextTab extends ScrollableTab {
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (passwordButton.getSelection ()) style |= SWT.PASSWORD;
 		if (searchButton.getSelection ()) style |= SWT.SEARCH;
-		if (cancelButton.getSelection ()) style |= SWT.CANCEL;
+		if (iconCancelButton.getSelection ()) style |= SWT.ICON_CANCEL;
+		if (iconSearchButton.getSelection ()) style |= SWT.ICON_SEARCH;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (leftButton.getSelection ()) style |= SWT.LEFT;
 		if (centerButton.getSelection ()) style |= SWT.CENTER;
@@ -86,8 +87,10 @@ class TextTab extends ScrollableTab {
 		passwordButton.setText ("SWT.PASSWORD");
 		searchButton = new Button (styleGroup, SWT.CHECK);
 		searchButton.setText ("SWT.SEARCH");
-		cancelButton = new Button (styleGroup, SWT.CHECK);
-		cancelButton.setText ("SWT.CANCEL");
+		iconCancelButton = new Button (styleGroup, SWT.CHECK);
+		iconCancelButton.setText ("SWT.ICON_CANCEL");
+		iconSearchButton = new Button (styleGroup, SWT.CHECK);
+		iconSearchButton.setText ("SWT.ICON_SEARCH");
 
 		Composite alignmentGroup = new Composite (styleGroup, SWT.NONE);
 		GridLayout layout = new GridLayout ();
@@ -161,19 +164,25 @@ class TextTab extends ScrollableTab {
 		centerButton.setSelection ((text.getStyle () & SWT.CENTER) != 0);
 		rightButton.setSelection ((text.getStyle () & SWT.RIGHT) != 0);
 		
-		/* Special case: CANCEL and H_SCROLL have the same value,
+		/* Special case: ICON_CANCEL and H_SCROLL have the same value,
+		 * and ICON_SEARCH and V_SCROLL have the same value,
 		 * so to avoid confusion, only set CANCEL if SEARCH is set. */
 		if ((text.getStyle () & SWT.SEARCH) != 0) {
-			cancelButton.setSelection ((text.getStyle () & SWT.CANCEL) != 0);
+			iconCancelButton.setSelection ((text.getStyle () & SWT.ICON_CANCEL) != 0);
+			iconSearchButton.setSelection ((text.getStyle () & SWT.ICON_SEARCH) != 0);
 			horizontalButton.setSelection (false);
+			verticalButton.setSelection (false);
 		} else {
-			cancelButton.setSelection (false);
+			iconCancelButton.setSelection (false);
+			iconSearchButton.setSelection (false);
 			horizontalButton.setSelection ((text.getStyle () & SWT.H_SCROLL) != 0);
+			verticalButton.setSelection ((text.getStyle () & SWT.V_SCROLL) != 0);
 		}
 
 		passwordButton.setEnabled ((text.getStyle () & SWT.SINGLE) != 0);
 		searchButton.setEnabled ((text.getStyle () & SWT.SINGLE) != 0);
-		cancelButton.setEnabled ((text.getStyle () & SWT.SEARCH) != 0);
+		iconCancelButton.setEnabled ((text.getStyle () & SWT.SEARCH) != 0);
+		iconSearchButton.setEnabled ((text.getStyle () & SWT.SEARCH) != 0);
 		wrapButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
 		horizontalButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
 		verticalButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
