@@ -288,7 +288,7 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
-			fillBackground (view, context, rect);
+			fillBackground (view, context, rect, -1);
 		}
 	}
 	super.drawWidget (id, context, rect, sendPaint);

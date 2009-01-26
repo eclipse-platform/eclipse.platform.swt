@@ -130,7 +130,9 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 		rect.y = y;
 		rect.width = width;
 		rect.height = height;
-		control.fillBackground (view, gc.handle, rect);
+		int imgHeight = -1;
+		if (gc.getGCData().image != null) imgHeight =  gc.getGCData().image.getBounds().height;
+		control.fillBackground (view, gc.handle, rect, imgHeight);
 	} else {
 		gc.fillRectangle (x, y, width, height);
 	}

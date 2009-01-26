@@ -927,7 +927,7 @@ void enableWidget (boolean enabled) {
 	}
 }
 
-void fillBackground (NSView view, NSGraphicsContext context, NSRect rect) {
+void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
@@ -936,9 +936,13 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect) {
 		NSColor.colorWithPatternImage(image.handle).setFill();
 		NSPoint phase = new NSPoint();
 		NSView controlView = control.view;
-		NSView contentView = controlView.window().contentView();
-		phase = controlView.convertPoint_toView_(phase, contentView);
-		phase.y = contentView.bounds().height - phase.y;
+		if ( imgHeight == -1) {
+			NSView contentView = controlView.window().contentView();
+			phase = controlView.convertPoint_toView_(phase, contentView);
+			phase.y = contentView.bounds().height - phase.y;
+		} else {
+			phase.y = imgHeight - backgroundImage.getBounds().height;
+		}
 		context.setPatternPhase(phase);
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();
