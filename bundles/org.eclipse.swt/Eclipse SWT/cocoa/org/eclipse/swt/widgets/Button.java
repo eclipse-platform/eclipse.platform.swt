@@ -45,9 +45,12 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Button extends Control {
-	String text = "";
+	String text;
 	Image image;
 	boolean grayed;
+	
+	static final int EXTRA_HEIGHT = 2;
+	static final int EXTRA_WIDTH = 6;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -183,6 +186,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = (int)Math.ceil (size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
+	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		height += EXTRA_HEIGHT;
+	}
+	width += EXTRA_WIDTH;
 	return new Point (width, height);
 }
 
@@ -242,6 +249,16 @@ void createHandle () {
 	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
 	NSButton widget = (NSButton)new SWTButton().alloc();
 	widget.init();
+	/*
+	* Feature in Cocoa.  Images touch the edge of rounded buttons
+	* when set to small size. The fix to subclass the button cell
+    * and offset the image drawing.
+	*/
+	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
+		widget.setCell (cell);
+		cell.release ();
+	}
 	int type = OS.NSMomentaryLightButton;
 	if ((style & SWT.PUSH) != 0) {
 		if ((style & SWT.FLAT) != 0) {
@@ -274,9 +291,31 @@ void createHandle () {
 	_setAlignment(style);
 }
 
+void createWidget() {
+	text = "";
+	super.createWidget ();
+}
+
+NSFont defaultNSFont() {
+	return display.buttonFont;
+}
+
 void deregister () {
 	super.deregister ();
 	display.removeWidget(((NSControl)view).cell());
+}
+
+void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
+	/*
+	* Feature in Cocoa.  Images touch the edge of rounded buttons
+	* when set to small size. The fix to subclass the button cell
+    * and offset the image drawing.
+	*/
+	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		rect.y += EXTRA_HEIGHT / 2;
+		rect.height += EXTRA_HEIGHT;
+	}
+	callSuper (id, sel, image, rect, view);
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
@@ -685,6 +724,7 @@ public void setImage (Image image) {
 	if ((style & (SWT.RADIO|SWT.CHECK)) == 0) {
 		((NSButton)view).setImage(image != null ? image.handle : null);
 	}
+	updateAlignment ();
 }
 
 boolean setRadioSelection (boolean value){
@@ -759,6 +799,7 @@ public void setText (String string) {
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
 	((NSButton)view).setAttributedTitle(createString());
+	updateAlignment ();
 }
 
 int traversalCode (int key, NSEvent theEvent) {
@@ -766,6 +807,17 @@ int traversalCode (int key, NSEvent theEvent) {
 	if ((style & SWT.ARROW) != 0) code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	return code;
+}
+
+void updateAlignment () {
+	NSButton widget = (NSButton)view;
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+		if (text.length() != 0 && image != null) {
+			widget.setImagePosition(OS.NSImageLeft);
+		} else {	
+			widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
+		}
+	}
 }
 
 }

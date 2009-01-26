@@ -269,6 +269,10 @@ Color defaultBackground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+NSFont defaultNSFont () {
+	return display.tableViewFont;
+}
+
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
@@ -1344,6 +1348,7 @@ int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long
 		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
 		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
+	Font font = this.font != null ? this.font : defaultFont ();
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName);
 	}

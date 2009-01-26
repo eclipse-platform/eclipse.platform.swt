@@ -507,6 +507,13 @@ Color defaultBackground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+NSFont defaultNSFont () {
+	if ((style & SWT.MULTI) != 0) return display.textViewFont;
+	if ((style & SWT.SEARCH) != 0) return display.searchFieldFont;
+	if ((style & SWT.PASSWORD) != 0) return display.secureTextFieldFont;
+	return display.textFieldFont;
+}
+
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }

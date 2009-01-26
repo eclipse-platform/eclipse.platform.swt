@@ -171,6 +171,10 @@ void createHandle () {
 	view = widget;
 }
 
+NSFont defaultNSFont() {
+	return display.datePickerFont;
+}
+
 NSCalendarDate getCalendarDate () {
 	NSDate date = ((NSDatePicker)view).dateValue();
 	return date.dateWithCalendarFormat(null, null);

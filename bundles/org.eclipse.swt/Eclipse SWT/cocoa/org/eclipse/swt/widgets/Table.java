@@ -75,6 +75,7 @@ public class Table extends Composite {
 	NSBrowserCell dataCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
 	boolean ignoreSelect;
+	Rectangle imageBounds;
 
 	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
 
@@ -556,6 +557,10 @@ Color defaultBackground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+NSFont defaultNSFont () {
+	return display.tableViewFont;
+}
+
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
@@ -1011,7 +1016,7 @@ void fixSelection (int index, boolean add) {
 }
 
 int getCheckColumnWidth () {
-	return 20; //TODO - compute width
+	return (int)checkColumn.dataCell().cellSize().width;
 }
 
 TableColumn getColumn (id id) {
@@ -2052,12 +2057,10 @@ public void setColumnOrder (int [] order) {
 	}
 }
 
-void setFont(NSFont font) {
+void setFont (NSFont font) {
 	super.setFont (font);
 	if (!hooks (SWT.MeasureItem)) {
-		float /*double*/ ascent = font.ascender ();
-		float /*double*/ descent = -font.descender () + font.leading ();
-		((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
+		setItemHeight (null, font);
 	} else {
 		view.setNeedsDisplay (true);
 	}
@@ -2133,7 +2136,23 @@ public void setItemCount (int count) {
 	if (itemHeight == -1) {
 		//TODO - reset item height, ensure other API's such as setFont don't do this
 	} else {
-//		OS.SetDataBrowserTableViewRowHeight (handle, (short) itemHeight);
+		((NSTableView)view).setRowHeight (itemHeight);
+	}
+}
+
+void setItemHeight (Image image, NSFont font) {
+	if (font == null) font = getFont ().handle;
+	float /*double*/ ascent = font.ascender ();
+	float /*double*/ descent = -font.descender () + font.leading ();
+	int height = (int)Math.ceil (ascent + descent) + 1;
+	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
+	if (bounds != null) {
+		imageBounds = bounds;
+		height = Math.max (height, bounds.height);
+	}
+	NSTableView widget = (NSTableView)view;
+	if (widget.rowHeight () < height) {
+		widget.setRowHeight (height);
 	}
 }
 
@@ -2382,6 +2401,11 @@ public void setSelection (TableItem [] items) {
 		select (indices);
 		showIndex (indices [0] - 1);
 	}
+}
+
+void setSmallSize () {
+	if (checkColumn == null) return;
+	checkColumn.dataCell ().setControlSize (OS.NSSmallControlSize);
 }
 
 /**

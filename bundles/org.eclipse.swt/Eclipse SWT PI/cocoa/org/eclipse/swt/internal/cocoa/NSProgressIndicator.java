@@ -24,6 +24,10 @@ public NSProgressIndicator(id id) {
 	super(id);
 }
 
+public int /*long*/ controlSize() {
+	return OS.objc_msgSend(this.id, OS.sel_controlSize);
+}
+
 public double doubleValue() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_doubleValue);
 }
@@ -34,6 +38,10 @@ public double maxValue() {
 
 public double minValue() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_minValue);
+}
+
+public void setControlSize(int /*long*/ size) {
+	OS.objc_msgSend(this.id, OS.sel_setControlSize_, size);
 }
 
 public void setDoubleValue(double doubleValue) {

@@ -24,6 +24,10 @@ public NSSlider(id id) {
 	super(id);
 }
 
+public float /*double*/ knobThickness() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_knobThickness);
+}
+
 public double maxValue() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_maxValue);
 }

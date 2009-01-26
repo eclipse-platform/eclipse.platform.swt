@@ -109,6 +109,10 @@ NSView contentView () {
 	return contentView;
 }
 
+NSFont defaultNSFont () {
+	return display.boxFont;
+}
+
 void deregister () {
 	super.deregister ();
 	display.removeWidget (contentView);

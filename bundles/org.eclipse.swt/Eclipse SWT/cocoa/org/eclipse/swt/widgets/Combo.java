@@ -450,10 +450,14 @@ Color defaultBackground () {
     return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+NSFont defaultNSFont() {
+	if ((style & SWT.READ_ONLY) != 0) return display.popUpButtonFont;		
+	return display.comboBoxFont;
+}
+
 Color defaultForeground () {
     return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
-
 
 void deregister() {
 	super.deregister();

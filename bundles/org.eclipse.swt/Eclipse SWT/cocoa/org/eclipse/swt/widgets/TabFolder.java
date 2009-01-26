@@ -181,6 +181,10 @@ void createWidget () {
 	items = new TabItem [4];
 }
 
+NSFont defaultNSFont () {
+	return display.tabViewFont;
+}
+
 void destroyItem (TabItem item) {
 	int count = itemCount;
 	int index = 0;
@@ -557,6 +561,10 @@ void setSelection (int index, boolean notify, boolean force) {
 			}
 		}
 	}
+}
+
+void setSmallSize () {
+	((NSTabView)view).setControlSize (OS.NSSmallControlSize);
 }
 
 boolean traversePage (boolean next) {

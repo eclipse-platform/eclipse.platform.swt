@@ -84,6 +84,7 @@ public class Tree extends Composite {
 	int sortDirection;
 	float /*double*/ levelIndent;
 	boolean ignoreExpand, ignoreSelect, reloadPending;
+	Rectangle imageBounds;
 
 	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
 
@@ -608,6 +609,10 @@ Color defaultBackground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
+NSFont defaultNSFont () {
+	return display.outlineViewFont;
+}
+
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
@@ -1043,7 +1048,7 @@ void fixScrollBar () {
 }
 
 int getCheckColumnWidth () {
-	return 20; //TODO - compute width
+	return (int)checkColumn.dataCell().cellSize().width;
 }
 
 TreeColumn getColumn (id id) {
@@ -2154,12 +2159,10 @@ public void setColumnOrder (int [] order) {
 	}
 }
 
-void setFont(NSFont font) {
+void setFont (NSFont font) {
 	super.setFont (font);
 	if (!hooks (SWT.MeasureItem)) {
-		float /*double*/ ascent = font.ascender ();
-		float /*double*/ descent = -font.descender () + font.leading ();
-		((NSOutlineView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
+		setItemHeight (null, font);
 	} else {
 		view.setNeedsDisplay (true);
 	}
@@ -2279,20 +2282,24 @@ void setItemCount (TreeItem parentItem, int count) {
 	if (itemHeight == -1) {
 		//TODO - reset item height, ensure other API's such as setFont don't do this
 	} else {
-//		OS.SetDataBrowserTableViewRowHeight (handle, (short) itemHeight);
+		((NSOutlineView)view).setRowHeight (itemHeight);
 	}
 }
 
-void setItemHeight (Image image) {
-//	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
-//	if (bounds == null) return;
-//	imageBounds = bounds;
-//	short [] height = new short [1];
-//	if (OS.GetDataBrowserTableViewRowHeight (handle, height) == OS.noErr) {
-//		if (height [0] < bounds.height) {
-//			OS.SetDataBrowserTableViewRowHeight (handle, (short) bounds.height);
-//		}
-//	}
+void setItemHeight (Image image, NSFont font) {
+	if (font == null) font = getFont ().handle;
+	float /*double*/ ascent = font.ascender ();
+	float /*double*/ descent = -font.descender () + font.leading ();
+	int height = (int)Math.ceil (ascent + descent) + 1;
+	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
+	if (bounds != null) {
+		imageBounds = bounds;
+		height = Math.max (height, bounds.height);
+	}
+	NSTableView widget = (NSTableView)view;
+	if (widget.rowHeight () < height) {
+		widget.setRowHeight (height);
+	}
 }
 
 /**
@@ -2443,6 +2450,11 @@ public void setSelection (TreeItem [] items) {
 			}
 		}
 	}
+}
+
+void setSmallSize () {
+	if (checkColumn == null) return;
+	checkColumn.dataCell ().setControlSize (OS.NSSmallControlSize);
 }
 
 /**

@@ -169,6 +169,10 @@ void createWidget () {
 	text = "";
 }
 
+NSFont defaultNSFont () {
+	return display.textViewFont;
+}
+
 void deregister () {
 	super.deregister ();
 	if (scrollView != null) display.removeWidget (scrollView);

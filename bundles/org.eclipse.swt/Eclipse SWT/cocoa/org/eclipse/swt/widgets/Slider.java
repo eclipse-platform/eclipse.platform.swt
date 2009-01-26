@@ -155,10 +155,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		height = (int)NSScroller.scrollerWidth();
+		height = (int)NSScroller.scrollerWidthForControlSize(((NSScroller)view).controlSize());
 		width = height * 10;
 	} else {
-		width = (int)NSScroller.scrollerWidth();
+		width = (int)NSScroller.scrollerWidthForControlSize(((NSScroller)view).controlSize());
 		height = width * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -186,6 +186,10 @@ void createWidget () {
 	maximum = 100;
 	thumb = 10;
 	super.createWidget();
+}
+
+NSFont defaultNSFont () {
+	return display.scrollerFont;
 }
 
 /**
@@ -444,6 +448,11 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget();
 	updateBar(value, minimum, maximum, thumb);
+}
+
+void setSmallSize () {
+	/* This code is intentionally comment */
+//	((NSScroller)view).setControlSize (OS.NSSmallControlSize);
 }
 
 void updateBar (int selection, int minimum, int maximum, int thumb) {

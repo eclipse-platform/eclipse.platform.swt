@@ -116,6 +116,13 @@ public class Display extends Device {
 	boolean inPaint;
 
 	NSDictionary markedAttributes;
+	
+	/* Fonts */
+	boolean smallFonts;
+	NSFont buttonFont, popUpButtonFont, textFieldFont, secureTextFieldFont;
+	NSFont searchFieldFont, comboBoxFont, sliderFont, scrollerFont;
+	NSFont textViewFont, tableViewFont, outlineViewFont, datePickerFont;
+	NSFont boxFont, tabViewFont, progressIndicatorFont;
 
 	Shell [] modalShells;
 	
@@ -1667,6 +1674,7 @@ Widget getWidget (NSView view) {
 protected void init () {
 	super.init ();
 	initClasses ();
+	initFonts ();
 	
 	if (!isEmbedded) {
 		initApplicationDelegate();	
@@ -2156,6 +2164,42 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
+}
+
+NSFont getFont (int /*long*/ cls, int /*long*/ sel) {
+	int /*long*/ widget = OS.objc_msgSend (OS.objc_msgSend (cls, OS.sel_alloc), OS.sel_init);
+	int /*long*/ font = 0;
+	if (OS.objc_msgSend_bool (widget, OS.sel_respondsToSelector_, sel)) {
+		font = OS.objc_msgSend (widget, sel);
+	}
+	NSFont result = null;
+	if (font != 0) {
+		result = new NSFont (font);
+	} else {
+		result = NSFont.systemFontOfSize (NSFont.systemFontSizeForControlSize (OS.NSRegularControlSize));
+	}
+	result.retain ();	
+	OS.objc_msgSend (widget, OS.sel_release);
+	return result;
+}
+
+void initFonts () {
+	smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
+	buttonFont = getFont (OS.class_NSButton, OS.sel_font);
+	popUpButtonFont = getFont (OS.class_NSPopUpButton, OS.sel_font);
+	textFieldFont = getFont (OS.class_NSTextField, OS.sel_font);
+	secureTextFieldFont = getFont (OS.class_NSSecureTextField, OS.sel_font);
+	searchFieldFont = getFont (OS.class_NSSearchField, OS.sel_font);
+	comboBoxFont = getFont (OS.class_NSComboBox, OS.sel_font);
+	sliderFont = getFont (OS.class_NSSlider, OS.sel_font);
+	scrollerFont = getFont (OS.class_NSScroller, OS.sel_font);
+	textViewFont = getFont (OS.class_NSTextView, OS.sel_font);
+	tableViewFont = getFont (OS.class_NSTableView, OS.sel_font);
+	outlineViewFont = getFont (OS.class_NSOutlineView, OS.sel_font);
+	datePickerFont = getFont (OS.class_NSDatePicker, OS.sel_font);
+	boxFont = getFont (OS.class_NSBox, OS.sel_titleFont);
+	tabViewFont = getFont (OS.class_NSTabView, OS.sel_font);
+	progressIndicatorFont = getFont (OS.class_NSProgressIndicator, OS.sel_font);
 }
 
 /**	 
@@ -2800,6 +2844,27 @@ void releaseDisplay () {
 		if (cursors [i] != null) cursors [i].dispose ();
 	}
 	cursors = null;
+	
+	/* Release default fonts */
+	if (buttonFont != null) buttonFont.release ();
+	if (popUpButtonFont != null) popUpButtonFont.release ();
+	if (textFieldFont != null) textFieldFont.release ();
+	if (secureTextFieldFont != null) secureTextFieldFont.release ();
+	if (searchFieldFont != null) searchFieldFont.release ();
+	if (comboBoxFont != null) comboBoxFont.release ();
+	if (sliderFont != null) sliderFont.release ();
+	if (scrollerFont != null) scrollerFont.release ();
+	if (textViewFont != null) textViewFont.release ();
+	if (tableViewFont != null) tableViewFont.release ();
+	if (outlineViewFont != null) outlineViewFont.release ();
+	if (datePickerFont != null) datePickerFont.release ();
+	if (boxFont != null) boxFont.release ();
+	if (tabViewFont != null) tabViewFont.release ();
+	if (progressIndicatorFont != null) progressIndicatorFont.release ();
+	buttonFont = popUpButtonFont = textFieldFont = secureTextFieldFont = null;
+	searchFieldFont = comboBoxFont = sliderFont = scrollerFont;
+	textViewFont = tableViewFont = outlineViewFont = datePickerFont = null;
+	boxFont = tabViewFont = progressIndicatorFont = null;
 	
 	/* Release Dock image */
 	if (dockImage != null) dockImage.release();

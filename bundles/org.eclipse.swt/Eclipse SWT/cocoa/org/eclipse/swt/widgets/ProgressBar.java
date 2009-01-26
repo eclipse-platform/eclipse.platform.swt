@@ -110,6 +110,10 @@ void createHandle () {
 	view = widget;
 }
 
+NSFont defaultNSFont () {
+	return display.progressIndicatorFont;
+}
+
 /**
  * Returns the maximum value which the receiver will allow.
  *

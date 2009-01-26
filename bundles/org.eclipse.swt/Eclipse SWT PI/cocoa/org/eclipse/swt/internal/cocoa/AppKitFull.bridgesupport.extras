@@ -4992,9 +4992,9 @@
 <method selector="image">
 <retval></retval>
 </method>
-<method selector="imageRectForBounds:">
-<arg name="theRect"></arg>
-<retval></retval>
+<method selector="imageRectForBounds:" swt_gen="true">
+<arg name="theRect" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="importsGraphics">
 <retval></retval>
@@ -5160,9 +5160,9 @@
 <arg name="flag"></arg>
 <retval></retval>
 </method>
-<method selector="setControlSize:">
-<arg name="size"></arg>
-<retval></retval>
+<method selector="setControlSize:" swt_gen="true">
+<arg name="size" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setControlTint:">
 <arg name="controlTint"></arg>
@@ -8279,9 +8279,9 @@
 <method selector="capHeight">
 <retval></retval>
 </method>
-<method class_method="true" selector="controlContentFontOfSize:">
-<arg name="fontSize"></arg>
-<retval></retval>
+<method class_method="true" selector="controlContentFontOfSize:" swt_gen="true">
+<arg name="fontSize" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="coveredCharacterSet">
 <retval></retval>
@@ -16116,8 +16116,8 @@
 <method selector="animationDelay">
 <retval></retval>
 </method>
-<method selector="controlSize">
-<retval></retval>
+<method selector="controlSize" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="controlTint">
 <retval></retval>
@@ -16152,9 +16152,9 @@
 <arg name="flag"></arg>
 <retval></retval>
 </method>
-<method selector="setControlSize:">
-<arg name="size"></arg>
-<retval></retval>
+<method selector="setControlSize:" swt_gen="true">
+<arg name="size" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setControlTint:">
 <arg name="tint"></arg>
@@ -17395,8 +17395,8 @@
 <method selector="checkSpaceForParts">
 <retval></retval>
 </method>
-<method selector="controlSize">
-<retval></retval>
+<method selector="controlSize" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="controlTint">
 <retval></retval>
@@ -17434,17 +17434,17 @@
 <method class_method="true" selector="scrollerWidth" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method class_method="true" selector="scrollerWidthForControlSize:">
-<arg name="controlSize"></arg>
-<retval></retval>
+<method class_method="true" selector="scrollerWidthForControlSize:" swt_gen="true">
+<arg name="controlSize" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setArrowsPosition:">
 <arg name="where"></arg>
 <retval></retval>
 </method>
-<method selector="setControlSize:">
-<arg name="controlSize"></arg>
-<retval></retval>
+<method selector="setControlSize:" swt_gen="true">
+<arg name="controlSize" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setControlTint:">
 <arg name="controlTint"></arg>
@@ -17851,8 +17851,8 @@
 <method selector="isVertical">
 <retval></retval>
 </method>
-<method selector="knobThickness">
-<retval></retval>
+<method selector="knobThickness" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="maxValue" swt_gen="true">
 <retval swt_gen="true"></retval>
@@ -18813,9 +18813,9 @@
 <arg name="allowTruncatedLabels"></arg>
 <retval></retval>
 </method>
-<method selector="setControlSize:">
-<arg name="controlSize"></arg>
-<retval></retval>
+<method selector="setControlSize:" swt_gen="true">
+<arg name="controlSize" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setControlTint:">
 <arg name="controlTint"></arg>
@@ -18913,8 +18913,8 @@
 </method>
 </class>
 <class name="NSTableColumn" swt_gen="mixed">
-<method selector="dataCell">
-<retval></retval>
+<method selector="dataCell" swt_gen="true">
+<retval swt_gen="true" swt_java_type="NSCell"></retval>
 </method>
 <method selector="dataCellForRow:">
 <arg name="row"></arg>

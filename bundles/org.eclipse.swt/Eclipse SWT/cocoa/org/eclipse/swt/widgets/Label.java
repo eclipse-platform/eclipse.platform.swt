@@ -48,7 +48,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Label extends Control {
-	String text = "";
+	String text;
 	Image image;
 	boolean isImage;
 	NSTextField textView;
@@ -247,6 +247,11 @@ void createHandle () {
 	view = widget;
 }
 
+void createWidget() {
+	text = "";
+	super.createWidget ();
+}
+
 NSAttributedString createString() {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	if (foreground != null) {
@@ -274,6 +279,10 @@ NSAttributedString createString() {
 	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
 	attribStr.autorelease();
 	return attribStr;
+}
+
+NSFont defaultNSFont () {
+	return display.textFieldFont;
 }
 
 void deregister () {
@@ -432,6 +441,7 @@ void setFont(NSFont font) {
 	if (textView != null) {
 		NSCell cell = new NSCell(textView.cell());
 		cell.setAttributedStringValue(createString());
+		textView.setFont (font);
 	}
 }
 

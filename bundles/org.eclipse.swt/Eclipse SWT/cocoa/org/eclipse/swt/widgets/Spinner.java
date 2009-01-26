@@ -308,6 +308,10 @@ void enableWidget (boolean enabled) {
 	textView.setEnabled(enabled);
 }
 
+NSFont defaultNSFont () {
+	return display.textFieldFont;
+}
+
 NSView focusView () {
 	return textView;
 }
@@ -583,13 +587,16 @@ void removeVerifyListener (VerifyListener listener) {
 void resized () {
 	super.resized ();
 	buttonView.sizeToFit();
+	NSSize textSize = textView.cell ().cellSize ();
 	NSRect buttonFrame = buttonView.bounds();
 	NSRect frame = view.frame();
 	buttonFrame.x = frame.width - buttonFrame.width;
-	buttonFrame.y = 0;
+	buttonFrame.y = (frame.height - buttonFrame.height) / 2;
+	int textHeight = (int)Math.min(textSize.height, frame.height);
 	frame.x = 0;
-	frame.y = 0;
+	frame.y = (frame.height - textHeight) / 2;
 	frame.width -= buttonFrame.width + GAP;
+	frame.height = textHeight;
 	textView.setFrame(frame);
 	buttonView.setFrame(buttonFrame);
 }
@@ -900,6 +907,11 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		sendEvent (SWT.Modify);
 	}
 	if (notify) postEvent (SWT.Selection);
+}
+
+void setSmallSize () {
+	textView.cell ().setControlSize (OS.NSSmallControlSize);
+	buttonView.cell ().setControlSize (OS.NSSmallControlSize);
 }
 
 char [] setText (String string, int /*long*/ start, int /*long*/ end, boolean notify) {

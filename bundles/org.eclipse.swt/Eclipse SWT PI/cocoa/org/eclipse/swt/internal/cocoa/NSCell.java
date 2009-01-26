@@ -51,6 +51,12 @@ public NSFont font() {
 	return result != 0 ? new NSFont(result) : null;
 }
 
+public NSRect imageRectForBounds(NSRect theRect) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_imageRectForBounds_, theRect);
+	return result;
+}
+
 public int /*long*/ nextState() {
 	return OS.objc_msgSend(this.id, OS.sel_nextState);
 }
@@ -61,6 +67,10 @@ public void setAllowsMixedState(boolean flag) {
 
 public void setAttributedStringValue(NSAttributedString obj) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedStringValue_, obj != null ? obj.id : 0);
+}
+
+public void setControlSize(int /*long*/ size) {
+	OS.objc_msgSend(this.id, OS.sel_setControlSize_, size);
 }
 
 public void setFont(NSFont fontObj) {

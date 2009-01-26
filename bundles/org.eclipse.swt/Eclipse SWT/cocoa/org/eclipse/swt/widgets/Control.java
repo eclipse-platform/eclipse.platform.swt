@@ -752,17 +752,16 @@ Color defaultBackground () {
 }
 
 Font defaultFont () {
-	NSFont nsFont = null;
-	if (view instanceof NSControl) nsFont = ((NSControl)view).font ();
-	if (view instanceof NSText) nsFont = ((NSText)view).font ();
-	if (nsFont != null) {
-		return Font.cocoa_new (display, nsFont);
-	}
-	return display.getSystemFont ();
+	if (display.smallFonts) return display.getSystemFont ();
+	return Font.cocoa_new (display, defaultNSFont ());
 }
 
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_WIDGET_FOREGROUND);
+}
+
+NSFont defaultNSFont () {
+	return display.getSystemFont().handle;
 }
 
 void deregister () {
@@ -2734,7 +2733,10 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-//	if (display.smallFonts) setFontStyle (defaultFont ());
+	if (display.smallFonts) {
+		setFont (defaultFont ().handle);
+		setSmallSize ();
+	}
 }
 
 /**
@@ -2832,6 +2834,9 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
+	if (this instanceof Table) {
+		System.out.println();
+	}
 	setFont (font != null ? font.handle : defaultFont().handle);
 }
 
@@ -3159,6 +3164,13 @@ public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
+}
+
+void setSmallSize () {
+	if (view instanceof NSControl) {
+		NSCell cell = ((NSControl)view).cell();
+		if (cell != null) cell.setControlSize (OS.NSSmallControlSize);
+	}
 }
 
 boolean setTabGroupFocus () {

@@ -201,12 +201,6 @@ NSAttributedString createString (int index) {
 		NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
 		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
-	Font font = cellFont != null ? cellFont [index] : null;
-	if (font == null) font = this.font;
-	if (font == null) font = parent.font;
-	if (font != null) {
-		dict.setObject (font.handle, OS.NSFontAttributeName);
-	}
 	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 	paragraphStyle.autorelease ();
 	paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
@@ -943,9 +937,9 @@ public void setImage (int index, Image image) {
 	}
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
-//	if (parent.imageBounds == null && image != null) {
-//		parent.setItemHeight (image);
-//	}
+	if (parent.imageBounds == null && image != null) {
+		parent.setItemHeight (image, null);
+	}
 	if (index == 0)  {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (this.image)) return;

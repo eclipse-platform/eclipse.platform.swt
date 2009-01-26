@@ -24,6 +24,11 @@ public NSTableColumn(id id) {
 	super(id);
 }
 
+public NSCell dataCell() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dataCell);
+	return result != 0 ? new NSCell(result) : null;
+}
+
 public NSTableHeaderCell headerCell() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_headerCell);
 	return result != 0 ? new NSTableHeaderCell(result) : null;

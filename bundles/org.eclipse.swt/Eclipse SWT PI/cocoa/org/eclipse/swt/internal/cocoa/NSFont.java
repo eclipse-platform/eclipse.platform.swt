@@ -28,6 +28,11 @@ public float /*double*/ ascender() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_ascender);
 }
 
+public static NSFont controlContentFontOfSize(float /*double*/ fontSize) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_controlContentFontOfSize_, fontSize);
+	return result != 0 ? new NSFont(result) : null;
+}
+
 public float /*double*/ descender() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_descender);
 }
