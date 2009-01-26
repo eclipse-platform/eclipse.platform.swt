@@ -48,64 +48,65 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int attrib [] = new int [MAX_ATTRIBUTES];
 	int pos = 0;
-	//TODO use color options
-//	attrib [pos++] = OS.AGL_RGBA;
+
 	if (data.doubleBuffer) attrib [pos++] = OS.NSOpenGLPFADoubleBuffer;
+	
 	if (data.stereo) attrib [pos++] = OS.NSOpenGLPFAStereo;
-//	if (data.redSize > 0) {
-//		attrib [pos++] = OS.AGL_RED_SIZE;
-//		attrib [pos++] = data.redSize;
-//	}
-//	if (data.greenSize > 0) {
-//		attrib [pos++] = OS.AGL_GREEN_SIZE;
-//		attrib [pos++] = data.greenSize;
-//	}
-//	if (data.blueSize > 0) {
-//		attrib [pos++] = OS.AGL_BLUE_SIZE;
-//		attrib [pos++] = data.blueSize;
-//	}
+
+	/*
+	 * Feature in Cocoa: NSOpenGL/CoreOpenGL only supports specifying the total number of bits
+	 * in the size of the color component. If specified, the color size is the sum of the red, green
+	 * and blue values in the GLData. 
+	 */
+	if ((data.redSize + data.blueSize + data.greenSize) > 0) {
+		attrib [pos++] = OS.NSOpenGLPFAColorSize;
+		attrib [pos++] = data.redSize + data.greenSize + data.blueSize;
+	}
+	
 	if (data.alphaSize > 0) {
 		attrib [pos++] = OS.NSOpenGLPFAAlphaSize;
 		attrib [pos++] = data.alphaSize;
 	}
+	
 	if (data.depthSize > 0) {
 		attrib [pos++] = OS.NSOpenGLPFADepthSize;
 		attrib [pos++] = data.depthSize;
 	}
+	
 	if (data.stencilSize > 0) {
 		attrib [pos++] = OS.NSOpenGLPFAStencilSize;
 		attrib [pos++] = data.stencilSize;
 	}
-//	if (data.accumRedSize > 0) {
-//		attrib [pos++] = OS.AGL_ACCUM_RED_SIZE;
-//		attrib [pos++] = data.accumRedSize;
-//	}
-//	if (data.accumGreenSize > 0) {
-//		attrib [pos++] = OS.AGL_ACCUM_GREEN_SIZE;
-//		attrib [pos++] = data.accumGreenSize;
-//	}
-//	if (data.accumBlueSize > 0) {
-//		attrib [pos++] = OS.AGL_ACCUM_BLUE_SIZE;
-//		attrib [pos++] = data.accumBlueSize;
-//	}
-//	if (data.accumAlphaSize > 0) {
-//		attrib [pos++] = OS.AGL_ACCUM_ALPHA_SIZE;
-//		attrib [pos++] = data.accumAlphaSize;
-//	}
+	
+	/*
+	 * Feature in Cocoa: NSOpenGL/CoreOpenGL only supports specifying the total number of bits
+	 * in the size of the color accumulator component. If specified, the color size is the sum of the red, green,
+	 * blue and alpha accum values in the GLData. 
+	 */
+	if ((data.accumRedSize + data.accumBlueSize + data.accumGreenSize) > 0) {
+		attrib [pos++] = OS.NSOpenGLPFAAccumSize;
+		attrib [pos++] = data.accumRedSize + data.accumGreenSize + data.accumBlueSize + data.accumAlphaSize;
+	}
+	
 	if (data.sampleBuffers > 0) {
 		attrib [pos++] = OS.NSOpenGLPFASampleBuffers;
 		attrib [pos++] = data.sampleBuffers;
 	}
+	
 	if (data.samples > 0) {
 		attrib [pos++] = OS.NSOpenGLPFASamples;
 		attrib [pos++] = data.samples;
 	}
+	
 	attrib [pos++] = 0;
+	
 	pixelFormat = (NSOpenGLPixelFormat)new NSOpenGLPixelFormat().alloc();
+	
 	if (pixelFormat == null) {		
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
+	
 	pixelFormat.initWithAttributes(attrib);
 	
 	glView = (NSOpenGLView)new NSOpenGLView().alloc();
@@ -147,36 +148,50 @@ public GLCanvas (Composite parent, int style, GLData data) {
 public GLData getGLData () {
 	checkWidget ();
 	GLData data = new GLData ();
-	int [] value = new int [1];
-	//TODO implement getGLData()
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_DOUBLEBUFFER, value);
-//	data.doubleBuffer = value [0] != 0;
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_STEREO, value);
-//	data.stereo = value [0] != 0;
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_RED_SIZE, value);
-//	data.redSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_GREEN_SIZE, value);
-//	data.greenSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_BLUE_SIZE, value);
-//	data.blueSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ALPHA_SIZE, value);
-//	data.alphaSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_DEPTH_SIZE, value);
-//	data.depthSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_STENCIL_SIZE, value);
-//	data.stencilSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_RED_SIZE, value);
-//	data.accumRedSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_GREEN_SIZE, value);
-//	data.accumGreenSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_BLUE_SIZE, value);
-//	data.accumBlueSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_ALPHA_SIZE, value);
-//	data.accumAlphaSize = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_SAMPLE_BUFFERS_ARB, value);
-//	data.sampleBuffers = value [0];
-//	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_SAMPLES_ARB, value);
-	data.samples = value [0];
+	int /*long*/ [] value = new int /*long*/ [1];
+	pixelFormat.getValues(value, OS.NSOpenGLPFADoubleBuffer, 0);
+	data.doubleBuffer = value [0] != 0;
+	pixelFormat.getValues(value, OS.NSOpenGLPFAStereo, 0);
+	data.stereo = value [0] != 0;
+
+	pixelFormat.getValues(value, OS.NSOpenGLPFAAlphaSize, 0);
+	data.alphaSize = (int/*64*/)value [0];
+
+	/*
+	 * Feature in Cocoa: NSOpenGL/CoreOpenGL only supports specifying the total number of bits
+	 * in the size of the color component. For compatibility we split the color size less any alpha
+	 * into thirds and allocate a third to each color.
+	 */
+	pixelFormat.getValues(value, OS.NSOpenGLPFAColorSize, 0);
+
+	int colorSize = ((int/*64*/)(value[0] - data.alphaSize)) / 3;
+
+	data.redSize = colorSize;
+	data.greenSize = colorSize;
+	data.blueSize = colorSize;
+	
+	pixelFormat.getValues(value, OS.NSOpenGLPFADepthSize, 0);
+	data.depthSize = (int/*64*/)value [0];
+	pixelFormat.getValues(value, OS.NSOpenGLPFAStencilSize, 0);
+	data.stencilSize = (int/*64*/)value [0];
+	
+	/*
+	 * Feature(?) in Cocoa: NSOpenGL/CoreOpenGL doesn't support setting an accumulation buffer alpha, but
+	 * has an alpha if the color values for the accumulation buffer were set. Allocate the values evenly
+	 * in that case.
+	 */
+	pixelFormat.getValues(value, OS.NSOpenGLPFAAccumSize, 0);
+
+	int accumColorSize = (int/*64*/)(value[0]) / 4;	
+	data.accumRedSize = accumColorSize;
+	data.accumGreenSize = accumColorSize;
+	data.accumBlueSize = accumColorSize;
+	data.accumAlphaSize = accumColorSize;
+
+	pixelFormat.getValues(value, OS.NSOpenGLPFASampleBuffers, 0);
+	data.sampleBuffers = (int/*64*/)value [0];
+	pixelFormat.getValues(value, OS.NSOpenGLPFASamples, 0);
+	data.samples = (int/*64*/)value [0];
 	return data;
 }
 

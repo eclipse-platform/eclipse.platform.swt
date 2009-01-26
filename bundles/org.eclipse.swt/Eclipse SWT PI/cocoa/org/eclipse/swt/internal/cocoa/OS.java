@@ -775,6 +775,7 @@ public static final int /*long*/ sel_getGlyphs_range_ = sel_registerName("getGly
 public static final int /*long*/ sel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_ = sel_registerName("getGlyphsInRange:glyphs:characterIndexes:glyphInscriptions:elasticBits:bidiLevels:");
 public static final int /*long*/ sel_getIndexes_maxCount_inIndexRange_ = sel_registerName("getIndexes:maxCount:inIndexRange:");
 public static final int /*long*/ sel_getInfoForFile_application_type_ = sel_registerName("getInfoForFile:application:type:");
+public static final int /*long*/ sel_getValues_forAttribute_forVirtualScreen_ = sel_registerName("getValues:forAttribute:forVirtualScreen:");
 public static final int /*long*/ sel_glyphIndexForCharacterAtIndex_ = sel_registerName("glyphIndexForCharacterAtIndex:");
 public static final int /*long*/ sel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_ = sel_registerName("glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:");
 public static final int /*long*/ sel_glyphRangeForCharacterRange_actualCharacterRange_ = sel_registerName("glyphRangeForCharacterRange:actualCharacterRange:");
@@ -4083,7 +4084,7 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0);
 /** @method flags=cast */
-public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0, int arg1, int arg2);
 /** @method flags=cast */
 public static final native int objc_msgSend(int id, int sel, float arg0);
 /** @method flags=cast */
@@ -4092,6 +4093,8 @@ public static final native long objc_msgSend(long id, long sel, float arg0, doub
 public static final native long objc_msgSend(long id, long sel, int arg0);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, int[] arg0);
+/** @method flags=cast */
+public static final native long objc_msgSend(long id, long sel, long[] arg0, long arg1, long arg2);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSAffineTransformStruct result, int /*long*/ id, int /*long*/ sel);
 /** @method flags=cast */

@@ -14498,11 +14498,11 @@
 <method selector="attributes">
 <retval></retval>
 </method>
-<method selector="getValues:forAttribute:forVirtualScreen:">
-<arg name="vals"></arg>
-<arg name="attrib"></arg>
-<arg name="screen"></arg>
-<retval></retval>
+<method selector="getValues:forAttribute:forVirtualScreen:" swt_gen="true">
+<arg name="vals" swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+<arg name="attrib" swt_gen="true"></arg>
+<arg name="screen" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="initWithAttributes:" swt_gen="true">
 <arg name="attribs" swt_gen="true" swt_java_type="int[]"></arg>

@@ -646,11 +646,12 @@ typedef enum {
 #ifndef JNI64
 	objc_1msgSend__II_3III_FUNC,
 #else
-	objc_1msgSend__JJ_3JJJ_FUNC,
+	objc_1msgSend__JJ_3JII_FUNC,
 #endif
 	objc_1msgSend__JJFD_FUNC,
 	objc_1msgSend__JJI_FUNC,
 	objc_1msgSend__JJ_3I_FUNC,
+	objc_1msgSend__JJ_3JJJ_FUNC,
 #ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I_FUNC,
 #else
