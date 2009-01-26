@@ -377,6 +377,12 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		pt.x = x;
 		pt.y = y;
 		NSRange range = new NSRange();
+		int /*long*/ numberOfGlyphs = layoutManager.numberOfGlyphs();
+		if (numberOfGlyphs > 0) {
+			range.location = 0;
+			range.length = numberOfGlyphs;
+			layoutManager.drawBackgroundForGlyphRange(range, pt);
+		}
 		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 		if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 			if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
@@ -398,6 +404,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					path.appendBezierPathWithRect(rect);
 				}
 			}
+			//TODO draw full selection for wrapped text
 			if ((flags & SWT.LAST_LINE_SELECTION) != 0) {
 				NSRect bounds = lineBounds[lineBounds.length - 1];
 				rect.x = pt.x + bounds.x + bounds.width;
@@ -409,12 +416,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			selectionColor.setFill();
 			path.fill();
 		}
-		//TODO draw selection for flags (DELIMITER_SELECTION)
-		int /*long*/ numberOfGlyphs = layoutManager.numberOfGlyphs();
 		if (numberOfGlyphs > 0) {
 			range.location = 0;
 			range.length = numberOfGlyphs;
-			layoutManager.drawBackgroundForGlyphRange(range, pt);
 			float /*double*/ [] fg = gc.data.foreground;
 			boolean defaultFg = fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1;
 			if (!defaultFg) {
