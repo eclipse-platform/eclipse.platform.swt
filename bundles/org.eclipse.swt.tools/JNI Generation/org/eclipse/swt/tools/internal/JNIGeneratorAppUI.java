@@ -156,7 +156,8 @@ void generateAll() {
 		Control child = children[i];
 		if (child instanceof Button) child.setEnabled(false);				
 	}
-	final boolean showProgress = true;
+	boolean showProgress = true;
+	final boolean finalShowProgress = showProgress; /* avoid dead code warning below */
 	if (showProgress) {
 		progressLabel.setText("");
 		progressBar.setSelection(0);
@@ -167,7 +168,7 @@ void generateAll() {
 	new Thread() {
 		public void run() {
 			try {
-				app.generate(!showProgress ? null : new ProgressMonitor() {
+				app.generate(!finalShowProgress ? null : new ProgressMonitor() {
 					int total, step, maximum = 100;
 					public void setTotal(final int total) {
 						this.total = total;

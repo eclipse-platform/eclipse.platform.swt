@@ -27,7 +27,7 @@ public class JNIGeneratorApp {
 	String mainClassName, outputDir, classpath;
 	MetaData metaData;
 	
-	static final boolean USE_AST = true;
+	static boolean USE_AST = true;
 
 public JNIGeneratorApp() {
 }
