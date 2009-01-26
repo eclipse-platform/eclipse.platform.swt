@@ -341,6 +341,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSSize size = widget.cell ().cellSize ();
 	width = (int)Math.ceil (size.width);
 	height = (int)Math.ceil (size.height);
+
+	if ((style & SWT.READ_ONLY) == 0) {
+		NSComboBoxCell cell = new NSComboBoxCell (((NSComboBox)view).cell ().id);
+		NSArray array = cell.objectValues ();
+		int length = (int)/*64*/array.count ();
+		if (length > 0) {
+			cell = new NSComboBoxCell (cell.copy ());
+			for (int i = 0; i < length; i++) {
+				id object = array.objectAtIndex (i);
+				cell.setTitle (new NSString (object));
+				size = cell.cellSize ();
+				width = Math.max (width, (int)Math.ceil (size.width));
+			}
+			cell.release ();
+		}
+	}
+
 	/*
 	* Feature in Cocoa.  Attempting to create an NSComboBox with a
 	* height > 27 spews a very long warning message to stdout and

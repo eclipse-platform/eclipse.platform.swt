@@ -6315,7 +6315,7 @@
 <retval></retval>
 </method>
 </class>
-<class name="NSComboBoxCell" swt_superclass="NSTextFieldCell">
+<class name="NSComboBoxCell" swt_gen="mixed" swt_superclass="NSTextFieldCell">
 <method selector="addItemWithObjectValue:">
 <arg name="object"></arg>
 <retval></retval>
@@ -6378,8 +6378,8 @@
 <method selector="objectValueOfSelectedItem">
 <retval></retval>
 </method>
-<method selector="objectValues">
-<retval></retval>
+<method selector="objectValues" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="reloadData">
 <retval></retval>
