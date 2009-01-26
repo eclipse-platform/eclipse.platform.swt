@@ -939,6 +939,14 @@ void initNative(String filename) {
 			nativeRep = new NSBitmapImageRep(bestRep.id);
 		}
 
+		// Check the image depth now. ImageData can't handle anything over 32
+		// so if that fails fall back to emulated reading.
+		int /*long*/ bpp = nativeRep.bitsPerPixel();
+		
+		if (bpp > 32) {
+			return;
+		}
+
 		// Only RGB images are supported.
 		NSString colorSpace = nativeRep.colorSpaceName();
 		if (!colorSpace.isEqualToString(OS.NSCalibratedRGBColorSpace))
@@ -1059,9 +1067,6 @@ void initNative(String filename) {
 		int greenMask = blueMask << bps;
 		int redMask = greenMask << bps;		
 		PaletteData palette = new PaletteData(redMask, greenMask, blueMask);
-
-		// Get the image depth.
-		int /*long*/ bpp = nativeRep.bitsPerPixel();
 
 		// We now have everything we neeed to construct an ImageData object and initialize everything from that.
 		ImageData data = new ImageData((int)/*64*/width, (int)/*64*/height, (int)/*64*/bpp, palette, 4, imageData);
