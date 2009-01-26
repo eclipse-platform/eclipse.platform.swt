@@ -238,15 +238,16 @@ public void test_isVisible() {
 	// If we add menu items to the menu then a second problem is encountered 
 	// because menu.setVisible() enters into a modal loop and execution of 
 	// the JUnit test case will not continue until the menu is selected and closed.
-	if (true) return;
-	menu.setVisible(true);
-	assertTrue(menu.isVisible());
-
-	// api not implemented yet
-	if (fCheckVisibility) {
-		menu.setVisible(false);
-		assertEquals(menu.isVisible(), false);
-	}
+	return;
+	
+//	menu.setVisible(true);
+//	assertTrue(menu.isVisible());
+//
+//	// api not implemented yet
+//	if (fCheckVisibility) {
+//		menu.setVisible(false);
+//		assertEquals(menu.isVisible(), false);
+//	}
 }
 
 public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
@@ -295,14 +296,15 @@ public void test_setVisibleZ() {
 	// If we add menu items to the menu then a second problem is encountered 
 	// because menu.setVisible() enters into a modal loop and execution of 
 	// the JUnit test case will not continue until the menu is selected and closed.
-	if (true) return;
-	menu.setVisible(true);
-	assertTrue(menu.getVisible());
-	// API not implemented yet 
-	if (fCheckVisibility) {
-		menu.setVisible(false);
-		assertEquals(menu.getVisible(), false);
-	}
+	return;
+	
+//	menu.setVisible(true);
+//	assertTrue(menu.getVisible());
+//	// API not implemented yet 
+//	if (fCheckVisibility) {
+//		menu.setVisible(false);
+//		assertEquals(menu.getVisible(), false);
+//	}
 }
 
 public static Test suite() {
