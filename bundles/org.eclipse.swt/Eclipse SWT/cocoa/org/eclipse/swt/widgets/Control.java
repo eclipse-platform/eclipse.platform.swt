@@ -2834,9 +2834,6 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	if (this instanceof Table) {
-		System.out.println();
-	}
 	setFont (font != null ? font.handle : defaultFont().handle);
 }
 

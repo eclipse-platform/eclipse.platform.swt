@@ -370,7 +370,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if ((style & SWT.READ_ONLY) != 0 || hHint < height) height = hHint;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
-	System.out.println(width + " " + height);
 	return new Point (width, height);
 }
 
