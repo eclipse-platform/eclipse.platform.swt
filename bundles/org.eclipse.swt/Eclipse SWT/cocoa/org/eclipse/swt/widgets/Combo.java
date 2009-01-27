@@ -338,12 +338,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	NSControl widget = (NSControl)view;
-	NSSize size = widget.cell ().cellSize ();
+	NSCell viewCell = widget.cell ();
+	NSSize size = viewCell.cellSize ();
 	width = (int)Math.ceil (size.width);
 	height = (int)Math.ceil (size.height);
 
 	if ((style & SWT.READ_ONLY) == 0) {
-		NSComboBoxCell cell = new NSComboBoxCell (((NSComboBox)view).cell ().id);
+		NSComboBoxCell cell = new NSComboBoxCell (viewCell.id);
 		NSArray array = cell.objectValues ();
 		int length = (int)/*64*/array.count ();
 		if (length > 0) {
@@ -369,6 +370,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if ((style & SWT.READ_ONLY) != 0 || hHint < height) height = hHint;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
+	System.out.println(width + " " + height);
 	return new Point (width, height);
 }
 
@@ -760,8 +762,13 @@ char [] getText (int start, int end) {
  */
 public int getTextHeight () {
 	checkWidget();
-	//TODO - not supported by the OS
-	return 26;
+	NSCell cell;
+	if ((style & SWT.READ_ONLY) != 0) {
+		cell = ((NSPopUpButton)view).cell();
+	} else {
+		cell = ((NSComboBox)view).cell();
+	}
+	return (int)cell.cellSize().height;
 }
 
 /**
