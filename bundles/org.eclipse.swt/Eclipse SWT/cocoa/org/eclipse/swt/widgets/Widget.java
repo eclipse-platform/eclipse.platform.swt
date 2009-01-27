@@ -860,6 +860,13 @@ void mouseExited(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
+boolean shouldDelayWindowOrderingForEvent_(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, theEvent) != 0;
+}
+
 boolean menuHasKeyEquivalent_forEvent_target_action(int /*long*/ id, int /*long*/ sel, int /*long*/ menu, int /*long*/ event, int /*long*/ target, int /*long*/ action) {
 	return true;
 }

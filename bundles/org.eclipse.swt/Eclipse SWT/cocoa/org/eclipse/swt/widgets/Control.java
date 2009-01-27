@@ -3266,6 +3266,12 @@ void setZOrder () {
 	parent.contentView().addSubview(topView, OS.NSWindowBelow, null);
 }
 
+boolean shouldDelayWindowOrderingForEvent_ (int id, int sel, int theEvent) {
+	Shell shell = getShell ();
+	if ((shell.style & SWT.ON_TOP) != 0) return false;
+	return super.shouldDelayWindowOrderingForEvent_ (id, sel, theEvent);
+}
+
 void setZOrder (Control sibling, boolean above) {
 	int index = 0, siblingIndex = 0, oldNextIndex = -1;
 	Control[] children = null;

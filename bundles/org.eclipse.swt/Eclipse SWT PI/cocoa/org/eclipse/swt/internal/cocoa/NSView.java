@@ -227,6 +227,10 @@ public void setToolTip(NSString string) {
 	OS.objc_msgSend(this.id, OS.sel_setToolTip_, string != null ? string.id : 0);
 }
 
+public boolean shouldDelayWindowOrderingForEvent(NSEvent theEvent) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_shouldDelayWindowOrderingForEvent_, theEvent != null ? theEvent.id : 0);
+}
+
 public NSArray subviews() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_subviews);
 	return result != 0 ? new NSArray(result) : null;

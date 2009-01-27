@@ -1551,7 +1551,7 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	Control control = Display.GetFocusControl(window);
 	if (control != null && !control.isDisposed() && control != display.focusControl) {
 		display.focusControl = control;
-		control.sendFocusEvent(SWT.FocusIn, false);
+		control.sendFocusEvent(SWT.FocusIn, true);
 	}
 //	if (!isDisposed ()) {
 //		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
@@ -1586,7 +1586,7 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	Control control = display.focusControl;
 	if (control != null && !control.isDisposed() && control.getShell() == this) {
 		display.focusControl = null;
-		control.sendFocusEvent(SWT.FocusOut, false);
+		control.sendFocusEvent(SWT.FocusOut, true);
 	}
 //	saveFocus ();
 //	if (savedFocus != null) {

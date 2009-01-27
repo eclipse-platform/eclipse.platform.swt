@@ -22527,9 +22527,9 @@
 <method selector="shadow">
 <retval></retval>
 </method>
-<method selector="shouldDelayWindowOrderingForEvent:">
-<arg name="theEvent"></arg>
-<retval></retval>
+<method selector="shouldDelayWindowOrderingForEvent:" swt_gen="true">
+<arg name="theEvent" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="shouldDrawColor">
 <retval></retval>

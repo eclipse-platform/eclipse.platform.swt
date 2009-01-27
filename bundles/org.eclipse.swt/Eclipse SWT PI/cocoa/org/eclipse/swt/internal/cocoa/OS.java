@@ -1329,6 +1329,7 @@ public static final int /*long*/ sel_sharedPrintInfo = sel_registerName("sharedP
 public static final int /*long*/ sel_sharedWorkspace = sel_registerName("sharedWorkspace");
 public static final int /*long*/ sel_shiftKey = sel_registerName("shiftKey");
 public static final int /*long*/ sel_shouldAntialias = sel_registerName("shouldAntialias");
+public static final int /*long*/ sel_shouldDelayWindowOrderingForEvent_ = sel_registerName("shouldDelayWindowOrderingForEvent:");
 public static final int /*long*/ sel_size = sel_registerName("size");
 public static final int /*long*/ sel_sizeToFit = sel_registerName("sizeToFit");
 public static final int /*long*/ sel_sizeValue = sel_registerName("sizeValue");
