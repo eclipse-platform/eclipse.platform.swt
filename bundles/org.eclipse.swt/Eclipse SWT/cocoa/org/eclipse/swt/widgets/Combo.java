@@ -924,6 +924,7 @@ public void paste () {
 	String leftText = text.substring (0, start);
 	String rightText = text.substring (end, text.length ());
 	String newText = getClipboardText ();
+	if (newText == null) return;
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		newText = verifyText (newText, start, end, null);
 		if (newText == null) return;

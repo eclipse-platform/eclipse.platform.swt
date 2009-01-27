@@ -1164,6 +1164,7 @@ public void paste () {
 	if (paste) {
 		if ((style & SWT.SINGLE) != 0) {
 			if (oldText == null) oldText = getClipboardText ();
+			if (oldText == null) return;
 			insertEditText (oldText);
 		} else {
 			//TODO check text limit
