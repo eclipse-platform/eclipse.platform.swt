@@ -1564,8 +1564,10 @@ abstract class Tab {
 	 * Logs a string to the event console.
 	 */
 	void log (String string) {
-		eventConsole.append (string);
-		eventConsole.append ("\n");
+		if (eventConsole.isDisposed()) {
+			eventConsole.append (string);
+			eventConsole.append ("\n");
+		}
 	}
 
 	/**
