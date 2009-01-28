@@ -30,9 +30,9 @@ public class Snippet258 {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(2, false));
 		
-		final Text text = new Text(shell, SWT.SEARCH | SWT.CANCEL);
+		final Text text = new Text(shell, SWT.SEARCH | SWT.ICON_CANCEL);
 		Image image = null;
-		if ((text.getStyle() & SWT.CANCEL) == 0) {
+		if ((text.getStyle() & SWT.ICON_CANCEL) == 0) {
 			image = display.getSystemImage(SWT.ICON_ERROR);
 			ToolBar toolBar = new ToolBar (shell, SWT.FLAT);
 			ToolItem item = new ToolItem (toolBar, SWT.PUSH);
