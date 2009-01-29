@@ -247,6 +247,11 @@ public void test_imageDrawing() {
 
 public void test_windowDrawing() {
 	PerformanceMeter meter = createMeter("Draw on a window");
+	Performance performance= Performance.getDefault();
+	performance.setComment(meter, 
+			Performance.EXPLAINS_DEGRADATION_COMMENT, 
+			"Regression due to a issue on the Releng test machine");
+			
 	int samples;
 	
 	for(samples = 0; samples < 10; samples++) {
