@@ -2083,7 +2083,7 @@ void releaseWidget () {
 		display.timerExec(-1, display.hoverTimer);
 	}
 	if (display.grabControl == this) {
-		display.grabControl = null;
+		display.setGrabControl (null);
 	}
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();

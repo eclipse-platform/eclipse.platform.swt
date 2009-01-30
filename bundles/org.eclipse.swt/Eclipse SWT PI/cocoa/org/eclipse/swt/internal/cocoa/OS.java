@@ -741,6 +741,7 @@ public static final int /*long*/ sel_drawStatusBarBackgroundInRect_withHighlight
 public static final int /*long*/ sel_drawingRectForBounds_ = sel_registerName("drawingRectForBounds:");
 public static final int /*long*/ sel_elementAtIndex_associatedPoints_ = sel_registerName("elementAtIndex:associatedPoints:");
 public static final int /*long*/ sel_elementCount = sel_registerName("elementCount");
+public static final int /*long*/ sel_enableCursorRects = sel_registerName("enableCursorRects");
 public static final int /*long*/ sel_enableFreedObjectCheck_ = sel_registerName("enableFreedObjectCheck:");
 public static final int /*long*/ sel_endDocument = sel_registerName("endDocument");
 public static final int /*long*/ sel_endEditing = sel_registerName("endEditing");

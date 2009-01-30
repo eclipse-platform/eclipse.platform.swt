@@ -3054,10 +3054,8 @@ boolean runPopups () {
 		int length = popups.length;
 		System.arraycopy (popups, 1, popups, 0, --length);
 		popups [length] = null;
-//		clearMenuFlags ();
 		runDeferredEvents ();
 		if (!menu.isDisposed ()) menu._setVisible (true);
-//		clearMenuFlags ();
 		result = true;
 	}
 	popups = null;
@@ -3270,6 +3268,22 @@ public void setData (String key, Object value) {
 	newValues [values.length] = value;
 	keys = newKeys;
 	values = newValues;
+}
+
+void setGrabControl (Control control) {
+	Control oldGrabControl = grabControl;
+	grabControl = control;
+	if (control != null) {
+		NSView view = control.view;
+		NSWindow window = view.window();
+		window.disableCursorRects();
+	} else {
+		if (oldGrabControl != null) {
+			NSView view = oldGrabControl.view;
+			NSWindow window = view.window();
+			window.enableCursorRects();
+		}
+	}
 }
 
 void setMenuBar (Menu menu) {
@@ -3623,7 +3637,8 @@ boolean applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
 		case OS.NSOtherMouseDown: {
-			Control control = grabControl = findControl(nsEvent, false, true, false);
+			Control control = findControl(nsEvent, false, true, false);
+			setGrabControl (control);
 			consume[0] = false;
 			if (control != null) {
 				if (nsEvent.clickCount() == 1 && (control.state & Widget.DRAG_DETECT) != 0 && control.hooks (SWT.DragDetect)) {
@@ -3648,7 +3663,7 @@ boolean applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 			if (control != null) {
 				control.sendMouseEvent (nsEvent, SWT.MouseUp, send);
 			}
-			grabControl = null;
+			setGrabControl (null);
 			up = true;
 			//FALL THROUGH
 		}
@@ -3656,6 +3671,7 @@ boolean applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
 		case OS.NSMouseMoved: {
+			if (type == OS.NSMouseMoved) setGrabControl (null);
 			Control control = findControl(nsEvent, true, true, type == OS.NSMouseMoved);
 			if (dragging) {
 				dragging = false;

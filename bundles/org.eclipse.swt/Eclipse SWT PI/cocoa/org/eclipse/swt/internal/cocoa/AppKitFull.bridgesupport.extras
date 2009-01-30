@@ -22912,8 +22912,8 @@
 <method selector="drawers">
 <retval></retval>
 </method>
-<method selector="enableCursorRects">
-<retval></retval>
+<method selector="enableCursorRects" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="enableFlushWindow">
 <retval></retval>
