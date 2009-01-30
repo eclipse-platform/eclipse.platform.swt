@@ -1328,7 +1328,7 @@ public void setImage (int index, Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (parent.imageBounds == null && image != null) {
-		parent.setItemHeight (image, null);
+		parent.setItemHeight (image, null, false);
 	}
 	if (index == 0)  {
 		if (image != null && image.type == SWT.ICON) {

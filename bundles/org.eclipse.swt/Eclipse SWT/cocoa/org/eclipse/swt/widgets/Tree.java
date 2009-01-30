@@ -2108,11 +2108,8 @@ public void setColumnOrder (int [] order) {
 
 void setFont (NSFont font) {
 	super.setFont (font);
-	if (!hooks (SWT.MeasureItem)) {
-		setItemHeight (null, font);
-	} else {
-		view.setNeedsDisplay (true);
-	}
+	setItemHeight (null, font, !hooks (SWT.MeasureItem));
+	view.setNeedsDisplay (true);
 	clearCachedWidth (items);
 	setScrollWidth ();
 }
@@ -2229,13 +2226,13 @@ void setItemCount (TreeItem parentItem, int count) {
 	checkWidget ();
 	if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (itemHeight == -1) {
-		setItemHeight (null, null);
+		setItemHeight (null, null, true);
 	} else {
 		((NSOutlineView)view).setRowHeight (itemHeight);
 	}
 }
 
-void setItemHeight (Image image, NSFont font) {
+void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
 	float /*double*/ ascent = font.ascender ();
 	float /*double*/ descent = -font.descender () + font.leading ();
@@ -2246,7 +2243,7 @@ void setItemHeight (Image image, NSFont font) {
 		height = Math.max (height, bounds.height);
 	}
 	NSTableView widget = (NSTableView)view;
-	if (widget.rowHeight () < height) {
+	if (set || widget.rowHeight () < height) {
 		widget.setRowHeight (height);
 	}
 }
