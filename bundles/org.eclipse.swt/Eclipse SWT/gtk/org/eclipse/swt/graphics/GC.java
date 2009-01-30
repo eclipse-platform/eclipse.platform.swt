@@ -1624,6 +1624,7 @@ public void drawText (String string, int x, int y, int flags) {
 	}
 	setString(string, flags);
 	if (cairo != 0) {
+		checkGC(FONT);
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 			checkGC(BACKGROUND);
 			int[] width = new int[1], height = new int[1];
@@ -1631,7 +1632,7 @@ public void drawText (String string, int x, int y, int flags) {
 			Cairo.cairo_rectangle(cairo, x, y, OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
 			Cairo.cairo_fill(cairo);
 		}
-		checkGC(FOREGROUND | FONT);
+		checkGC(FOREGROUND);
 		if ((data.style & SWT.MIRRORED) != 0) {
 			Cairo.cairo_save(cairo);
 			int[] width = new int[1], height = new int[1];
