@@ -25,6 +25,50 @@ JNIEXPORT void JNICALL OS_NATIVE(CFRelease)
 }
 #endif
 
+#ifndef NO_CFRunLoopAddObserver
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopAddObserver)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopAddObserver_FUNC);
+	CFRunLoopAddObserver((CFRunLoopRef)arg0, (CFRunLoopObserverRef)arg1, (CFStringRef)arg2);
+	OS_NATIVE_EXIT(env, that, CFRunLoopAddObserver_FUNC);
+}
+#endif
+
+#ifndef NO_CFRunLoopGetCurrent
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFRunLoopGetCurrent)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFRunLoopGetCurrent_FUNC);
+	rc = (jintLong)CFRunLoopGetCurrent();
+	OS_NATIVE_EXIT(env, that, CFRunLoopGetCurrent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFRunLoopObserverCreate
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFRunLoopObserverCreate)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2, jintLong arg3, jintLong arg4, jintLong arg5)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFRunLoopObserverCreate_FUNC);
+	rc = (jintLong)CFRunLoopObserverCreate((CFAllocatorRef)arg0, (CFOptionFlags)arg1, (Boolean)arg2, (CFIndex)arg3, (CFRunLoopObserverCallBack)arg4, (CFRunLoopObserverContext*)arg5);
+	OS_NATIVE_EXIT(env, that, CFRunLoopObserverCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFRunLoopObserverInvalidate
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopObserverInvalidate)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopObserverInvalidate_FUNC);
+	CFRunLoopObserverInvalidate((CFRunLoopObserverRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRunLoopObserverInvalidate_FUNC);
+}
+#endif
+
 #ifndef NO_CFURLCreateStringByAddingPercentEscapes
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4)
@@ -2780,6 +2824,18 @@ JNIEXPORT void JNICALL OS_NATIVE(instrumentObjcMessageSends)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, instrumentObjcMessageSends_FUNC);
+}
+#endif
+
+#ifndef NO_kCFRunLoopCommonModes
+JNIEXPORT jintLong JNICALL OS_NATIVE(kCFRunLoopCommonModes)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFRunLoopCommonModes_FUNC);
+	rc = (jintLong)kCFRunLoopCommonModes;
+	OS_NATIVE_EXIT(env, that, kCFRunLoopCommonModes_FUNC);
+	return rc;
 }
 #endif
 

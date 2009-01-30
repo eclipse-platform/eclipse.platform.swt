@@ -26,6 +26,10 @@ extern char* OS_nativeFunctionNames[];
 
 typedef enum {
 	CFRelease_FUNC,
+	CFRunLoopAddObserver_FUNC,
+	CFRunLoopGetCurrent_FUNC,
+	CFRunLoopObserverCreate_FUNC,
+	CFRunLoopObserverInvalidate_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
 	CGBitmapContextCreate_FUNC,
 	CGBitmapContextGetData_FUNC,
@@ -256,6 +260,7 @@ typedef enum {
 	hitTest_1CALLBACK_FUNC,
 	instrumentObjcMessageSends_FUNC,
 	isFlipped_1CALLBACK_FUNC,
+	kCFRunLoopCommonModes_FUNC,
 	markedRange_1CALLBACK_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I_FUNC,

@@ -14,10 +14,14 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 376;
-int OS_nativeFunctionCallCount[376];
+int OS_nativeFunctionCount = 381;
+int OS_nativeFunctionCallCount[381];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
+	"CFRunLoopAddObserver",
+	"CFRunLoopGetCurrent",
+	"CFRunLoopObserverCreate",
+	"CFRunLoopObserverInvalidate",
 	"CFURLCreateStringByAddingPercentEscapes",
 	"CGBitmapContextCreate",
 	"CGBitmapContextGetData",
@@ -248,6 +252,7 @@ char * OS_nativeFunctionNames[] = {
 	"hitTest_1CALLBACK",
 	"instrumentObjcMessageSends",
 	"isFlipped_1CALLBACK",
+	"kCFRunLoopCommonModes",
 	"markedRange_1CALLBACK",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I",

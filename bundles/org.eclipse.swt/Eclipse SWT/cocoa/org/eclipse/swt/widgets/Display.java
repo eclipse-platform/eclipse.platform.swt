@@ -144,6 +144,9 @@ public class Display extends Device {
 
 	int[] screenID = new int[32];
 	NSPoint[] screenCascade = new NSPoint[32];
+	
+	int /*long*/ runLoopObserver;
+	Callback observerCallback;
 
 	// the following Callbacks are never freed
 	static Callback applicationDelegateCallback3;
@@ -1680,6 +1683,14 @@ protected void init () {
 		initApplicationDelegate();	
 		application.finishLaunching();
 	}
+	
+	observerCallback = new Callback (this, "observerProc", 3); //$NON-NLS-1$
+	int /*long*/ observerProc = observerCallback.getAddress ();
+	if (observerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	int activities = OS.kCFRunLoopBeforeWaiting;
+	runLoopObserver = OS.CFRunLoopObserverCreate (0, activities, true, 0, observerProc, 0);
+	if (runLoopObserver == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.CFRunLoopAddObserver (OS.CFRunLoopGetCurrent (), runLoopObserver, OS.kCFRunLoopCommonModes ());
 		
 	timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	
@@ -2695,6 +2706,17 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	return rectangle;
 }
 
+int /*long*/ observerProc (int /*long*/ observer, int /*long*/ activity, int /*long*/ info) {
+	switch ((int)/*64*/activity) {
+		case OS.kCFRunLoopBeforeWaiting:
+			if (runAsyncMessages) {
+				if (runAsyncMessages (false)) wakeThread ();
+			}
+			break;
+	}
+	return 0;
+}
+
 /**
  * Reads an event from the operating system's event queue,
  * dispatches it appropriately, and returns <code>true</code>
@@ -2889,6 +2911,14 @@ void releaseDisplay () {
 	}
 	application = null;
 	applicationClass = 0;
+	
+	if (runLoopObserver != 0) {
+		OS.CFRunLoopObserverInvalidate (runLoopObserver);
+		OS.CFRelease (runLoopObserver);
+	}
+	runLoopObserver = 0;
+	if (observerCallback != null) observerCallback.dispose();
+	observerCallback = null;
 }
 
 void removeContext (NSGraphicsContext context) {

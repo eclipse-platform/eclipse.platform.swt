@@ -2434,6 +2434,7 @@ public static final int NSWritingDirectionNatural = -1;
 public static final int NSWritingDirectionRightToLeft = 1;
 public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
+public static final int kCFRunLoopBeforeWaiting = 32;
 public static final int kCFStringEncodingUTF8 = 134217984;
 public static final int kCGImageAlphaOnly = 7;
 public static final int kCGLineCapButt = 0;
@@ -3628,6 +3629,8 @@ public static final NSString NSUnderlineColorAttributeName = new NSString(NSUnde
 public static final native int /*long*/ NSUnderlineStyleAttributeName();
 public static final NSString NSUnderlineStyleAttributeName = new NSString(NSUnderlineStyleAttributeName());
 /** @method flags=const */
+public static final native int /*long*/ kCFRunLoopCommonModes();
+/** @method flags=const */
 public static final native int /*long*/ NSDefaultRunLoopMode();
 public static final NSString NSDefaultRunLoopMode = new NSString(NSDefaultRunLoopMode());
 /** @method flags=const */
@@ -3695,6 +3698,26 @@ public static final native int /*long*/ NSNumberOfColorComponents(int /*long*/ c
  * @param cf cast=(CFTypeRef)
  */
 public static final native void CFRelease(int /*long*/ cf);
+/**
+ * @param rl cast=(CFRunLoopRef)
+ * @param observer cast=(CFRunLoopObserverRef)
+ * @param mode cast=(CFStringRef)
+ */
+public static final native void CFRunLoopAddObserver(int /*long*/ rl, int /*long*/ observer, int /*long*/ mode);
+public static final native int /*long*/ CFRunLoopGetCurrent();
+/**
+ * @param allocator cast=(CFAllocatorRef)
+ * @param activities cast=(CFOptionFlags)
+ * @param repeats cast=(Boolean)
+ * @param order cast=(CFIndex)
+ * @param callout cast=(CFRunLoopObserverCallBack)
+ * @param context cast=(CFRunLoopObserverContext*)
+ */
+public static final native int /*long*/ CFRunLoopObserverCreate(int /*long*/ allocator, int /*long*/ activities, boolean repeats, int /*long*/ order, int /*long*/ callout, int /*long*/ context);
+/**
+ * @param observer cast=(CFRunLoopObserverRef)
+ */
+public static final native void CFRunLoopObserverInvalidate(int /*long*/ observer);
 /**
  * @param allocator cast=(CFAllocatorRef)
  * @param originalString cast=(CFStringRef)
