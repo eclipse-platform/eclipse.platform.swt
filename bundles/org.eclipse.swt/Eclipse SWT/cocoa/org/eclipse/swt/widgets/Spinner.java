@@ -290,6 +290,15 @@ public void cut () {
 	textView.window().fieldEditor(false, textView).cut(null);
 }
 
+void enableWidget (boolean enabled) {
+	buttonView.setEnabled(enabled);
+	textView.setEnabled(enabled);
+}
+
+NSFont defaultNSFont () {
+	return display.textFieldFont;
+}
+
 void deregister () {
 	super.deregister ();
 	if (textView != null) {
@@ -301,15 +310,6 @@ void deregister () {
 		display.removeWidget (buttonView);
 		display.removeWidget (buttonView.cell());
 	}
-}
-
-void enableWidget (boolean enabled) {
-	buttonView.setEnabled(enabled);
-	textView.setEnabled(enabled);
-}
-
-NSFont defaultNSFont () {
-	return display.textFieldFont;
 }
 
 NSView focusView () {
@@ -509,6 +509,11 @@ void releaseHandle () {
 	textFormatter = null;
 	buttonView = null;
 	textView = null;
+}
+
+void releaseWidget () {	
+	super.releaseWidget ();
+	if (textView != null) textView.abortEditing();
 }
 
 /**

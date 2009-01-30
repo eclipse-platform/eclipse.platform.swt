@@ -455,6 +455,7 @@ public static final int /*long*/ sel_URL = sel_registerName("URL");
 public static final int /*long*/ sel_URLFromPasteboard_ = sel_registerName("URLFromPasteboard:");
 public static final int /*long*/ sel_URLWithString_ = sel_registerName("URLWithString:");
 public static final int /*long*/ sel_UTF8String = sel_registerName("UTF8String");
+public static final int /*long*/ sel_abortEditing = sel_registerName("abortEditing");
 public static final int /*long*/ sel_absoluteString = sel_registerName("absoluteString");
 public static final int /*long*/ sel_acceptsFirstResponder = sel_registerName("acceptsFirstResponder");
 public static final int /*long*/ sel_accessibilityActionDescription_ = sel_registerName("accessibilityActionDescription:");

@@ -24,6 +24,10 @@ public NSControl(id id) {
 	super(id);
 }
 
+public boolean abortEditing() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_abortEditing);
+}
+
 public int /*long*/ action() {
 	return OS.objc_msgSend(this.id, OS.sel_action);
 }

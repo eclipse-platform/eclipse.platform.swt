@@ -901,6 +901,19 @@ void insertEditText (String string) {
 	}
 }
 
+void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	// If this is a combo box with an editor field and the control is disposed
+	// while the view's cell editor is open we crash while tearing down the
+	// popup window. Fix is to retain the view before letting Cocoa track
+	// the mouse events.
+	
+	// 'view' will be cleared if disposed during the mouseDown so cache it.
+	NSView viewCopy = view;
+	viewCopy.retain();
+	super.mouseDown(id, sel, theEvent);
+	viewCopy.release();
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
@@ -948,6 +961,9 @@ void register() {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if ((style & SWT.READ_ONLY) == 0) {
+		((NSControl)view).abortEditing();
+	}
 	selectionRange = null;
 }
 
