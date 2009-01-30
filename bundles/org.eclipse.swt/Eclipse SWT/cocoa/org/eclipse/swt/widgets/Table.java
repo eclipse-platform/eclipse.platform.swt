@@ -818,16 +818,16 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	boolean hooksPaint = hooks (SWT.PaintItem);
 	boolean hooksMeasure = hooks (SWT.MeasureItem);
 
-	NSTableView outlineView = (NSTableView)this.view;
+	NSTableView tableView = (NSTableView)this.view;
 	NSBrowserCell cell = new NSBrowserCell (id);
 	NSPoint pt = new NSPoint();
 	pt.x = rect.x + rect.width / 2;
 	pt.y = rect.y + rect.height / 2;
-	int rowIndex = (int)outlineView.rowAtPoint(pt);
+	int rowIndex = (int)tableView.rowAtPoint(pt);
 	TableItem item = _getItem (rowIndex);
 	int columnIndex = 0;
 	if (columnCount != 0) {
-		columnIndex = (int)outlineView.columnAtPoint(pt);
+		columnIndex = (int)tableView.columnAtPoint(pt);
 		if ((style & SWT.CHECK) != 0) columnIndex -= 1;
 	}
 
@@ -835,7 +835,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	if (background == null) background = item.background;
 	boolean drawBackground = background != null;
 	boolean drawForeground = true;
-	boolean isSelected = outlineView.isRowSelected (rowIndex);
+	boolean isSelected = tableView.isRowSelected (rowIndex);
 	boolean drawSelection = isSelected;
 
 	Color selectionBackground = null;
@@ -848,7 +848,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			nsSelectionForeground = NSColor.selectedControlTextColor ();
 		}
 		nsSelectionForeground = nsSelectionForeground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
-		nsSelectionBackground = cell.highlightColorInView (outlineView);
+		nsSelectionBackground = cell.highlightColorInView (tableView);
 		nsSelectionBackground = nsSelectionBackground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
 		float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
 		nsSelectionForeground.getComponents (components);	
@@ -859,15 +859,15 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	}
 	
 	NSSize contentSize = cell.cellSize();
-	NSSize spacing = outlineView.intercellSpacing();
+	NSSize spacing = tableView.intercellSpacing();
 	int contentWidth = (int)Math.ceil (contentSize.width);
-	int itemHeight = (int)Math.ceil (outlineView.rowHeight() + spacing.height);
+	int itemHeight = (int)Math.ceil (tableView.rowHeight() + spacing.height);
 	
-	NSRect cellRect = outlineView.rectOfColumn (columnIndex + ((style & SWT.CHECK) != 0 ? 1 : 0));
+	NSRect cellRect = tableView.rectOfColumn (columnIndex + ((style & SWT.CHECK) != 0 ? 1 : 0));
 	cellRect.y = rect.y;
 	cellRect.height = rect.height + spacing.height;
 	if (columnCount == 0) {
-		NSRect rowRect = outlineView.rectOfRow (rowIndex);
+		NSRect rowRect = tableView.rectOfRow (rowIndex);
 		cellRect.width = rowRect.width;
 	}
 	
@@ -886,11 +886,11 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		gc.dispose ();
 		if (isDisposed ()) return;
 		if (itemHeight < event.height) {
-			outlineView.setRowHeight (event.height);
+			tableView.setRowHeight (event.height);
 		}
 		if (columnCount == 0 && columnIndex == 0 && contentWidth != event.width) {
 			if (setScrollWidth (item)) {
-				outlineView.setNeedsDisplay(true);
+				tableView.setNeedsDisplay(true);
 			}
 		}
 	}	
@@ -931,7 +931,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		}
 		if (drawSelection) {
 			cellRect.height -= spacing.height;
-			callSuper (outlineView.id, OS.sel_highlightSelectionInClipRect_, cellRect);
+			callSuper (tableView.id, OS.sel_highlightSelectionInClipRect_, cellRect);
 			cellRect.height += spacing.height;
 		}
 	}
@@ -1614,7 +1614,7 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 	NSEvent event = new NSEvent(theEvent);
 	NSTableView table = (NSTableView)view;
 	
-	// get the current selections for the outline view. 
+	// get the current selections for the table view. 
 	NSIndexSet selectedRowIndexes = table.selectedRowIndexes();
 	
 	// select the row that was clicked before showing the menu for the event
