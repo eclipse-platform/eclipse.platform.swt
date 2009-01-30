@@ -305,6 +305,12 @@ void deregister () {
 	display.removeWidget(((NSControl)view).cell());
 }
 
+boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
+	boolean dragging = super.dragDetect(x, y, filter, consume);
+	consume[0] = dragging;
+	return dragging;
+}
+
 void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
 	/*
 	* Feature in Cocoa.  Images touch the edge of rounded buttons
