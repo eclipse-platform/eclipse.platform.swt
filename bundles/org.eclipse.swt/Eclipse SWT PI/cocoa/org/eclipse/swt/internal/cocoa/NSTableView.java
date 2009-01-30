@@ -28,6 +28,14 @@ public void addTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, column != null ? column.id : 0);
 }
 
+public boolean allowsColumnReordering() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_allowsColumnReordering);
+}
+
+public int /*long*/ columnAtPoint(NSPoint point) {
+	return OS.objc_msgSend(this.id, OS.sel_columnAtPoint_, point);
+}
+
 public NSIndexSet columnIndexesInRect(NSRect rect) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_columnIndexesInRect_, rect);
 	return result != 0 ? new NSIndexSet(result) : null;
@@ -179,6 +187,10 @@ public void setDoubleAction(int /*long*/ aSelector) {
 
 public void setHeaderView(NSTableHeaderView headerView) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderView_, headerView != null ? headerView.id : 0);
+}
+
+public void setIntercellSpacing(NSSize aSize) {
+	OS.objc_msgSend(this.id, OS.sel_setIntercellSpacing_, aSize);
 }
 
 public void setRowHeight(float /*double*/ rowHeight) {

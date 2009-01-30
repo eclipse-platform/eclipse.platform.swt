@@ -19060,8 +19060,8 @@
 <arg name="column" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="allowsColumnReordering">
-<retval></retval>
+<method selector="allowsColumnReordering" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="allowsColumnResizing">
 <retval></retval>
@@ -19101,9 +19101,9 @@
 <method selector="clickedRow">
 <retval></retval>
 </method>
-<method selector="columnAtPoint:">
-<arg name="point"></arg>
-<retval></retval>
+<method selector="columnAtPoint:" swt_gen="true">
+<arg name="point" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="columnAutoresizingStyle">
 <retval></retval>
@@ -19425,9 +19425,9 @@
 <arg name="tc"></arg>
 <retval></retval>
 </method>
-<method selector="setIntercellSpacing:">
-<arg name="aSize"></arg>
-<retval></retval>
+<method selector="setIntercellSpacing:" swt_gen="true">
+<arg name="aSize" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setRowHeight:" swt_gen="true">
 <arg name="rowHeight" swt_gen="true"></arg>
