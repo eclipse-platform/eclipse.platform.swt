@@ -868,8 +868,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	cellRect.y = rect.y;
 	cellRect.height = rect.height + spacing.height;
 	if (columnCount == 0) {
-		NSSize clientSize = scrollView.contentSize();
-		cellRect.width = clientSize.width - cellRect.x;
+		NSRect rowRect = outlineView.rectOfRow (rowIndex);
+		cellRect.width = rowRect.width;
 	}
 	
 	if (hooksMeasure) {
