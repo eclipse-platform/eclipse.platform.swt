@@ -881,7 +881,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	
 	if (hooksMeasure) {
 		GCData data = new GCData ();
-		data.paintRect = cellRect;
+		data.paintRect = tableView.frame ();
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
 		Event event = new Event ();
@@ -904,8 +904,20 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	}	
 
 	if (hooksErase) {
+		// TODO how to handle rearranged columns?  The third clause below ensures that
+		// there are either 0 columns or that column 0 is still the first physical column.
+		NSRect eraseItemRect = null;
+		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || tableView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
+			eraseItemRect = new NSRect ();
+			eraseItemRect.y = cellRect.y;
+			eraseItemRect.width = cellRect.x + cellRect.width;
+			eraseItemRect.height = cellRect.height;
+		} else {
+			eraseItemRect = cellRect;
+		}
+
 		GCData data = new GCData ();
-		data.paintRect = cellRect;
+		data.paintRect = eraseItemRect;
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
 		if (isSelected) {
@@ -915,7 +927,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-		gc.setClipping((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
+		gc.setClipping ((int)eraseItemRect.x, (int)eraseItemRect.y, (int)eraseItemRect.width, (int)eraseItemRect.height);
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
@@ -923,10 +935,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		event.detail = SWT.FOREGROUND;
 		if (drawBackground) event.detail |= SWT.BACKGROUND;
 		if (isSelected) event.detail |= SWT.SELECTED;
-		event.x = (int)cellRect.x;
-		event.y = (int)cellRect.y;
-		event.width = (int)cellRect.width;
-		event.height = (int)cellRect.height;
+		event.x = (int)eraseItemRect.x;
+		event.y = (int)eraseItemRect.y;
+		event.width = (int)eraseItemRect.width;
+		event.height = (int)eraseItemRect.height;
 		sendEvent (SWT.EraseItem, event);
 		gc.dispose ();
 		if (item.isDisposed ()) return;
@@ -960,9 +972,21 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	}
 
 	if (hooksPaint) {
+		// TODO how to handle rearranged columns?  The third clause below ensures that
+		// there are either 0 columns or that column 0 is still the first physical column.
+		NSRect clipRect;
+		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || tableView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
+			clipRect = new NSRect ();
+			clipRect.y = cellRect.y;
+			clipRect.width = cellRect.x + cellRect.width;
+			clipRect.height = cellRect.height;
+		} else {
+			clipRect = cellRect;
+		}
+
 		NSRect contentRect = cell.titleRectForBounds (rect);
 		GCData data = new GCData ();
-		data.paintRect = cellRect;
+		data.paintRect = clipRect;
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
 		if (isSelected) {
@@ -972,7 +996,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-		gc.setClipping((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
+		gc.setClipping ((int)clipRect.x, (int)clipRect.y, (int)clipRect.width, (int)clipRect.height);
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
