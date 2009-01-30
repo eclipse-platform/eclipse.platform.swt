@@ -51,6 +51,7 @@ public class ACC {
 	public static final int ROLE_PUSHBUTTON = 0x2b;
 	public static final int ROLE_CHECKBUTTON = 0x2c;
 	public static final int ROLE_RADIOBUTTON = 0x2d;
+	/** @since 3.5 */
 	public static final int ROLE_SPLITBUTTON = 0x3e;
 	public static final int ROLE_COMBOBOX = 0x2e;
 	public static final int ROLE_TEXT = 0x2a;
