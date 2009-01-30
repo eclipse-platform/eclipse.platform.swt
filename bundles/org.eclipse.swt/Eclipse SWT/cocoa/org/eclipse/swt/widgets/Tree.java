@@ -845,10 +845,18 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	pt.y = rect.y + rect.height / 2;
 	int rowIndex = (int)outlineView.rowAtPoint(pt);
 	TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
+	int nsColumnIndex = 0;
 	int columnIndex = 0;
 	if (columnCount != 0) {
-		columnIndex = (int)outlineView.columnAtPoint(pt);
-		if ((style & SWT.CHECK) != 0) columnIndex -= 1;
+		nsColumnIndex = (int)outlineView.columnAtPoint (pt);
+		NSArray nsColumns = outlineView.tableColumns ();
+		id nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
+		for (int i = 0; i < columnCount; i++) {
+			if (columns[i].nsColumn.id == nsColumn.id) {
+				columnIndex = indexOf (columns[i]);
+				break;
+			}
+		}
 	}
 
 	Color background = item.cellBackground != null ? item.cellBackground [columnIndex] : null;
@@ -883,7 +891,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	int contentWidth = (int)Math.ceil (contentSize.width);
 	int itemHeight = (int)Math.ceil (outlineView.rowHeight() + spacing.height);
 	
-	NSRect cellRect = outlineView.rectOfColumn (columnIndex + ((style & SWT.CHECK) != 0 ? 1 : 0));
+	NSRect cellRect = outlineView.rectOfColumn (nsColumnIndex);
 	cellRect.y = rect.y;
 	cellRect.height = rect.height + spacing.height;
 	if (columnCount == 0) {

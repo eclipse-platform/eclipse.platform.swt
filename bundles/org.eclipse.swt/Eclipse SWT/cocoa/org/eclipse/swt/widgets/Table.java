@@ -825,10 +825,18 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	pt.y = rect.y + rect.height / 2;
 	int rowIndex = (int)tableView.rowAtPoint(pt);
 	TableItem item = _getItem (rowIndex);
+	int nsColumnIndex = 0;
 	int columnIndex = 0;
 	if (columnCount != 0) {
-		columnIndex = (int)tableView.columnAtPoint(pt);
-		if ((style & SWT.CHECK) != 0) columnIndex -= 1;
+		nsColumnIndex = (int)tableView.columnAtPoint (pt);
+		NSArray nsColumns = tableView.tableColumns ();
+		id nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
+		for (int i = 0; i < columnCount; i++) {
+			if (columns[i].nsColumn.id == nsColumn.id) {
+				columnIndex = indexOf (columns[i]);
+				break;
+			}
+		}
 	}
 
 	Color background = item.cellBackground != null ? item.cellBackground [columnIndex] : null;
@@ -863,7 +871,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	int contentWidth = (int)Math.ceil (contentSize.width);
 	int itemHeight = (int)Math.ceil (tableView.rowHeight() + spacing.height);
 	
-	NSRect cellRect = tableView.rectOfColumn (columnIndex + ((style & SWT.CHECK) != 0 ? 1 : 0));
+	NSRect cellRect = tableView.rectOfColumn (nsColumnIndex);
 	cellRect.y = rect.y;
 	cellRect.height = rect.height + spacing.height;
 	if (columnCount == 0) {
