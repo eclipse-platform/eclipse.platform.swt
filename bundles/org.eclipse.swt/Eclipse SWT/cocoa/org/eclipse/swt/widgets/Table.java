@@ -827,7 +827,9 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	TableItem item = _getItem (rowIndex);
 	int nsColumnIndex = 0;
 	int columnIndex = 0;
-	if (columnCount != 0) {
+	if (columnCount == 0) {
+		nsColumnIndex = (style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
 		nsColumnIndex = (int)tableView.columnAtPoint (pt);
 		NSArray nsColumns = tableView.tableColumns ();
 		id nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
@@ -897,6 +899,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			tableView.setRowHeight (event.height);
 		}
 		if (columnCount == 0 && columnIndex == 0 && contentWidth != event.width) {
+			item.width = event.width;
 			if (setScrollWidth (item)) {
 				tableView.setNeedsDisplay(true);
 			}

@@ -847,7 +847,9 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
 	int nsColumnIndex = 0;
 	int columnIndex = 0;
-	if (columnCount != 0) {
+	if (columnCount == 0) {
+		nsColumnIndex = (style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
 		nsColumnIndex = (int)outlineView.columnAtPoint (pt);
 		NSArray nsColumns = outlineView.tableColumns ();
 		id nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
@@ -917,6 +919,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			outlineView.setRowHeight (event.height);
 		}
 		if (columnCount == 0 && columnIndex == 0 && contentWidth != event.width) {
+			item.width = event.width;
+			item.width += outlineView.indentationPerLevel () * (1 + outlineView.levelForItem (item.handle));
 			if (setScrollWidth (item)) {
 				outlineView.setNeedsDisplay(true);
 			}
