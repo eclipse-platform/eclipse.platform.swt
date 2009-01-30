@@ -2205,6 +2205,7 @@ boolean setScrollWidth (TableItem item) {
 }
 
 boolean setScrollWidth (TableItem [] items, boolean set) {
+	if (items == null) return false;
 	if (columnCount != 0) return false;
 	if (drawCount != 0) return false;
 	if (currentItem != null) {

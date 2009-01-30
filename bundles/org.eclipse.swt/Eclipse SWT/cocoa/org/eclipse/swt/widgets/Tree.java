@@ -2254,6 +2254,7 @@ boolean setScrollWidth () {
 }
 
 boolean setScrollWidth (boolean set, TreeItem[] items, boolean recurse) {
+	if (items == null) return false;
 	if (ignoreRedraw || drawCount != 0) return false;
 	if (columnCount != 0 || items == null) return false;
 	GC gc = new GC (this);
