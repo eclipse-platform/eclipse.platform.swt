@@ -853,7 +853,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		id nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
 		for (int i = 0; i < columnCount; i++) {
 			if (columns[i].nsColumn.id == nsColumn.id) {
-				columnIndex = indexOf (columns[i]);
+				columnIndex = i;
 				break;
 			}
 		}
