@@ -1984,22 +1984,20 @@ void onMouse(Event event) {
 			break;
 		}
 		case SWT.MouseDown: {
+			if (event.button != 1) return;
 			if (minRect.contains(x, y)) {
-				if (event.button != 1) return;
 				minImageState = SELECTED;
 				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
 				update();
 				return;
 			}
 			if (maxRect.contains(x, y)) {
-				if (event.button != 1) return;
 				maxImageState = SELECTED;
 				redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 				update();
 				return;
 			}
 			if (chevronRect.contains(x, y)) {
-				if (event.button != 1) return;
 				if (chevronImageState != HOT) {
 					chevronImageState = HOT;
 				} else {
@@ -2027,7 +2025,6 @@ void onMouse(Event event) {
 			}
 			if (item != null) {
 				if (item.closeRect.contains(x,y)){
-					if (event.button != 1) return;
 					item.closeImageState = SELECTED;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					update();
