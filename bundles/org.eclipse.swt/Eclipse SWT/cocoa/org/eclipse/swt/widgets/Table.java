@@ -499,7 +499,6 @@ void createHandle () {
 	widget.addTableColumn (firstColumn);
 	dataCell = (NSBrowserCell)new SWTBrowserCell ().alloc ().init ();
 	dataCell.setLeaf (true);
-	dataCell.setLineBreakMode(OS.NSLineBreakByClipping);
 	firstColumn.setDataCell (dataCell);
 
 	scrollView = scrollWidget;
