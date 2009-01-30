@@ -82,8 +82,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	float /*double*/ levelIndent;
-	boolean ignoreExpand, ignoreSelect, reloadPending;
+	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending;
 	Rectangle imageBounds;
 
 	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
@@ -123,6 +122,11 @@ public class Tree extends Composite {
  */
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+void _addListener (int eventType, Listener listener) {
+	super._addListener (eventType, listener);
+	clearCachedWidth (items);
 }
 
 TreeItem _getItem (TreeItem parentItem, int index, boolean create) {
@@ -225,6 +229,22 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
+int calculateWidth (TreeItem[] items, int index, GC gc, boolean recurse) {
+	if (items == null) return 0;
+	int width = 0;
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			int itemWidth = item.calculateWidth (index, gc);
+			width = Math.max (width, itemWidth);
+			if (recurse && item.getExpanded ()) {
+				width = Math.max (width, calculateWidth (item.items, index, gc, recurse));
+			}
+		}
+	}
+	return width;
+}
+
 boolean checkData (TreeItem item, boolean redraw) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
@@ -233,13 +253,13 @@ boolean checkData (TreeItem item, boolean redraw) {
 		TreeItem parentItem = item.getParentItem ();
 		event.item = item;
 		event.index = parentItem == null ? indexOf (item) : parentItem.indexOf (item);
-//		ignoreRedraw = true;
+		ignoreRedraw = true;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
-//		ignoreRedraw = false;
+		ignoreRedraw = false;
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) {
-//			if (!setScrollWidth (item)) item.redraw (OS.kDataBrowserNoItem);
+			if (!setScrollWidth (item)) item.redraw (-1);
 		}
 	}
 	return true;
@@ -258,6 +278,8 @@ static int checkStyle (int style) {
 	if ((style & SWT.NO_SCROLL) == 0) {
 		style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	}
+	/* This platform is always FULL_SELECTION */
+	style |= SWT.FULL_SELECTION;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
@@ -350,10 +372,13 @@ public void clearAll (boolean all) {
 	clearAll (null, all);
 }
 
-void clearCustomWidths (TreeItem item) {
-	item.customWidth = -1;
-	for (int i = 0; i < item.itemCount; i++) {
-		clearCustomWidths (item.items[i]);
+void clearCachedWidth (TreeItem[] items) {
+	if (items == null) return;
+	for (int i = 0; i < items.length; i++) {
+		TreeItem item = items [i];
+		if (item == null) break;
+		item.width = -1;
+		clearCachedWidth (item.items);
 	}
 }
 
@@ -366,16 +391,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width += columns [i].getWidth ();
 			}
 		} else {
-//			int levelIndent = DISCLOSURE_COLUMN_LEVEL_INDENT;
-//			if (OS.VERSION >= 0x1040) {
-//				float [] metric = new float [1];
-//				OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricDisclosureColumnPerDepthGap, null, metric);
-//				levelIndent = (int) metric [0];
-//			}
-//			GC gc = new GC (this);
-//			width = calculateWidth (childIds, gc, true, 0, levelIndent);
-//			gc.dispose ();
-//			width += getInsetWidth (column_id, true);
+			GC gc = new GC (this);
+			width = calculateWidth (items, 0, gc, true);
+			gc.dispose ();
 		}
 		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
 	} else {
@@ -460,6 +478,9 @@ void createHandle () {
 	widget.setDataSource (widget);
 	widget.setDelegate (widget);
 	widget.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
+	NSSize spacing = new NSSize();
+	spacing.width = spacing.height = 1;
+	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction (OS.sel_sendDoubleSelection);
 	if (!hasBorder ()) widget.setFocusRingType (OS.NSFocusRingTypeNone);
 	
@@ -500,7 +521,6 @@ void createHandle () {
 	dataCell = (NSBrowserCell)new SWTBrowserCell ().alloc ().init ();
 	dataCell.setLeaf (true);
 	firstColumn.setDataCell (dataCell);
-	levelIndent = widget.indentationPerLevel ();
 	
 	scrollView = scrollWidget;
 	view = widget;
@@ -553,8 +573,6 @@ void createItem (TreeColumn column, int index) {
 		if (item != null) {
 			if (columnCount > 1) {
 				createColumn (item, index);
-			} else {
-				clearCustomWidths (item);
 			}
 		}
 	}
@@ -660,29 +678,12 @@ public void deselect (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-//	ignoreSelect = true;
-//	/*
-//	* Bug in the Macintosh.  When the DataBroswer selection flags includes
-//	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
-//	* two items are selected when SetDataBrowserSelectedItems() is called
-//	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
-//	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
-//	* restore kDataBrowserNeverEmptySelectionSet around each call to
-//	* SetDataBrowserSelectedItems().
-//	*/
-//	int [] selectionFlags = null;
-//	if ((style & SWT.SINGLE) != 0) {
-//		selectionFlags = new int [1];
-//		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
-//		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
-//	}
-//	OS.SetDataBrowserSelectedItems (handle, 1, new int [] {item.id}, OS.kDataBrowserItemsRemove);
-//	if ((style & SWT.SINGLE) != 0) {
-//		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
-//	}
-//	ignoreSelect = false;
+	NSOutlineView widget = (NSOutlineView)view;
+	int /*long*/ row = widget.rowForItem(item.handle);
+	ignoreSelect = true;
+	widget.deselectRow (row);
+	ignoreSelect = false;
 }
-
 
 void destroyItem (TreeColumn column) {
 	int index = 0;
@@ -800,7 +801,6 @@ void destroyItem (TreeItem item) {
 		if (items [index] == item) break;
 		index++;
 	}
-//	if (index != itemCount - 1) fixSelection (index, false); 
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
 	if (parentItem != null) {
@@ -810,8 +810,7 @@ void destroyItem (TreeItem item) {
 		this.itemCount = count;
 	}
 	reloadItem (parentItem, true);
-//	setScrollWidth (true);
-//	fixScrollBar ();
+	setScrollWidth ();
 }
 
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
@@ -835,27 +834,21 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
 	NSRect rect = new NSRect ();
 	OS.memmove (rect, cellFrame, NSRect.sizeof);
+	boolean hooksErase = hooks (SWT.EraseItem);
+	boolean hooksPaint = hooks (SWT.PaintItem);
+	boolean hooksMeasure = hooks (SWT.MeasureItem);
 
 	NSOutlineView outlineView = (NSOutlineView)this.view;
 	NSBrowserCell cell = new NSBrowserCell (id);
-	NSRange rowsRange = outlineView.rowsInRect (rect);
-	int rowIndex = (int)/*64*/rowsRange.location;
+	NSPoint pt = new NSPoint();
+	pt.x = rect.x + rect.width / 2;
+	pt.y = rect.y + rect.height / 2;
+	int rowIndex = (int)outlineView.rowAtPoint(pt);
 	TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
 	int columnIndex = 0;
-	id nsColumn = null;
-	int nsColumnIndex = 0;
 	if (columnCount != 0) {
-		NSIndexSet columnsSet = outlineView.columnIndexesInRect (rect);
-		if (columnsSet.count () == 0) return;	/* can happen for 0-width column */
-		nsColumnIndex = (int)/*64*/columnsSet.firstIndex ();
-		NSArray nsColumns = outlineView.tableColumns ();
-		nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
-		for (int i = 0; i < columnCount; i++) {
-			if (columns[i].nsColumn.id == nsColumn.id) {
-				columnIndex = indexOf (columns[i]);
-				break;
-			}
-		}
+		columnIndex = (int)outlineView.columnAtPoint(pt);
+		if ((style & SWT.CHECK) != 0) columnIndex -= 1;
 	}
 
 	Color background = item.cellBackground != null ? item.cellBackground [columnIndex] : null;
@@ -865,9 +858,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	boolean isSelected = outlineView.isRowSelected (rowIndex);
 	boolean drawSelection = isSelected;
 
-	NSColor nsSelectionBackground = null;
-	NSColor nsSelectionForeground = null;
-	if (isSelected) {
+	Color selectionBackground = null;
+	Color selectionForeground = null;
+	if (isSelected && (hooksErase || hooksPaint)) {
+		NSColor nsSelectionForeground, nsSelectionBackground;
 		if (isFocusControl ()) {
 			nsSelectionForeground = NSColor.alternateSelectedControlTextColor ();
 		} else {
@@ -876,59 +870,64 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		nsSelectionForeground = nsSelectionForeground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
 		nsSelectionBackground = cell.highlightColorInView (outlineView);
 		nsSelectionBackground = nsSelectionBackground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
+		float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
+		nsSelectionForeground.getComponents (components);	
+		selectionForeground = Color.cocoa_new (display, components);
+		components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
+		nsSelectionBackground.getComponents (components);	
+		selectionBackground = Color.cocoa_new (display, components);
 	}
-
-	NSRect fullRect = new NSRect ();
-	fullRect.y = rect.y; fullRect.height = rect.height;
+	
+	NSSize contentSize = cell.cellSize();
+	NSSize spacing = outlineView.intercellSpacing();
+	int contentWidth = (int)Math.ceil (contentSize.width);
+	int itemHeight = (int)Math.ceil (outlineView.rowHeight() + spacing.height);
+	
+	NSRect cellRect = outlineView.rectOfColumn (columnIndex + ((style & SWT.CHECK) != 0 ? 1 : 0));
+	cellRect.y = rect.y;
+	cellRect.height = rect.height + spacing.height;
 	if (columnCount == 0) {
-		fullRect.x = rect.x;
-		if (item.customWidth != -1) {
-			fullRect.width = item.customWidth;
-		} else {
-			NSSize contentSize = cell.cellSizeForBounds (rect);
-			fullRect.width = contentSize.width;
-		}
-	} else {
-		NSSize spacing = outlineView.intercellSpacing ();
-		if (nsColumn.id == outlineView.outlineTableColumn ().id) {
-			NSRect columnRect = outlineView.rectOfColumn (nsColumnIndex);
-			fullRect.x = columnRect.x; fullRect.width = columnRect.width + spacing.width;
-		} else {
-			fullRect.x = rect.x;
-			fullRect.width = rect.width + spacing.width;
-		}
+		NSSize clientSize = scrollView.contentSize();
+		cellRect.width = clientSize.width - cellRect.x;
 	}
-
-	if (hooks (SWT.EraseItem)) {
-		NSRect eraseItemRect = null;
-		// TODO how to handle rearranged columns?  The third clause below ensures that
-		// there are either 0 columns or that column 0 is still the first physical column.
-		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || outlineView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
-			eraseItemRect = new NSRect ();
-			eraseItemRect.y = fullRect.y;
-			eraseItemRect.width = fullRect.x + fullRect.width;
-			eraseItemRect.height = fullRect.height;
-		} else {
-			eraseItemRect = fullRect;
-		}
+	
+	if (hooksMeasure) {
 		GCData data = new GCData ();
-		data.paintRect = eraseItemRect;
+		data.paintRect = cellRect;
+		GC gc = GC.cocoa_new (this, data);
+		gc.setFont (item.getFont (columnIndex));
+		Event event = new Event ();
+		event.item = item;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.width = contentWidth;
+		event.height = itemHeight;
+		sendEvent (SWT.MeasureItem, event);
+		gc.dispose ();
+		if (isDisposed ()) return;
+		if (itemHeight < event.height) {
+			outlineView.setRowHeight (event.height);
+		}
+		if (columnCount == 0 && columnIndex == 0 && contentWidth != event.width) {
+			if (setScrollWidth (item)) {
+				outlineView.setNeedsDisplay(true);
+			}
+		}
+	}	
+
+	if (hooksErase) {
+		GCData data = new GCData ();
+		data.paintRect = cellRect;
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
 		if (isSelected) {
-			float /*double*/ [] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
-			nsSelectionForeground.getComponents (components);	
-			Color selectionForeground = Color.cocoa_new (display, components);
 			gc.setForeground (selectionForeground);
-			components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
-			nsSelectionBackground.getComponents (components);	
-			Color selectionBackground = Color.cocoa_new (display, components);
 			gc.setBackground (selectionBackground);
 		} else {
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-
+		gc.setClipping((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
@@ -936,10 +935,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		event.detail = SWT.FOREGROUND;
 		if (drawBackground) event.detail |= SWT.BACKGROUND;
 		if (isSelected) event.detail |= SWT.SELECTED;
-		event.x = (int)eraseItemRect.x;
-		event.y = (int)eraseItemRect.y;
-		event.width = (int)eraseItemRect.width;
-		event.height = (int)eraseItemRect.height;
+		event.x = (int)cellRect.x;
+		event.y = (int)cellRect.y;
+		event.width = (int)cellRect.width;
+		event.height = (int)cellRect.height;
 		sendEvent (SWT.EraseItem, event);
 		gc.dispose ();
 		if (item.isDisposed ()) return;
@@ -951,23 +950,9 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
 		}
 		if (drawSelection) {
-			NSRect selectionRect = new NSRect ();
-			selectionRect.y = rect.y; selectionRect.height = rect.height;
-			if (columnCount > 0) {
-				NSRect columnRect = outlineView.rectOfColumn (nsColumnIndex);
-				selectionRect.x = columnRect.x; selectionRect.width = columnRect.width;
-			} else {
-				NSRect rowRect = outlineView.rectOfRow (rowIndex);
-				if ((style & SWT.CHECK) != 0) {
-					/* highlighting at this stage draws over the checkbox, so don't include its column */
-					int checkWidth = (int)/*64*/checkColumn.width ();
-					selectionRect.x = checkWidth;
-					selectionRect.width = rowRect.width - checkWidth;
-				} else {
-					selectionRect.width = rowRect.width;
-				}
-			}
-			callSuper (outlineView.id, OS.sel_highlightSelectionInClipRect_, selectionRect);
+			cellRect.height -= spacing.height;
+			callSuper (outlineView.id, OS.sel_highlightSelectionInClipRect_, cellRect);
+			cellRect.height += spacing.height;
 		}
 	}
 
@@ -977,7 +962,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		float /*double*/ [] colorRGB = background.handle;
 		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 		color.setFill ();
-		NSBezierPath.fillRect (fullRect);
+		NSBezierPath.fillRect (cellRect);
 		context.restoreGraphicsState ();
 	}
 
@@ -986,38 +971,20 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		callSuper (id, sel, rect, view);
 	}
 
-	if (hooks (SWT.PaintItem)) {
+	if (hooksPaint) {
 		NSRect contentRect = cell.titleRectForBounds (rect);
-		NSSize contentSize = cell.cellSizeForBounds (rect);
-
 		GCData data = new GCData ();
-		// TODO how to handle rearranged columns?  The third clause below ensures that
-		// there are either 0 columns or that column 0 is still the first physical column.
-		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || outlineView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
-			NSRect gcRect = new NSRect ();
-			gcRect.y = fullRect.y;
-			gcRect.width = fullRect.x + fullRect.width;
-			gcRect.height = fullRect.height;
-			data.paintRect = gcRect;
-		} else {
-			data.paintRect = fullRect;
-		}
+		data.paintRect = cellRect;
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
 		if (isSelected) {
-			float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
-			nsSelectionForeground.getComponents (components);	
-			Color selectionForeground = Color.cocoa_new (display, components);
 			gc.setForeground (selectionForeground);
-			components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
-			nsSelectionBackground.getComponents (components);	
-			Color selectionBackground = Color.cocoa_new (display, components);
 			gc.setBackground (selectionBackground);
 		} else {
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-
+		gc.setClipping((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
@@ -1025,26 +992,11 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		if (isSelected) event.detail |= SWT.SELECTED;
 		event.x = (int)contentRect.x;
 		event.y = (int)contentRect.y;
-		event.width = (int)Math.ceil (contentSize.width);
-		event.height = (int)Math.ceil (fullRect.height);
+		event.width = contentWidth;
+		event.height = itemHeight;
 		sendEvent (SWT.PaintItem, event);
 		gc.dispose ();
 	}
-}
-
-void fixScrollBar () {
-	/*
-	* Bug in the Macintosh. For some reason, the data browser does not update
-	* the vertical scrollbar when it is scrolled to the bottom and items are
-	* removed.  The fix is to check if the scrollbar value is bigger the
-	* maximum number of visible items and clamp it when needed.
-	*/
-//	int [] top = new int [1], left = new int [1];
-//	OS.GetDataBrowserScrollPosition (handle, top, left);
-//	int maximum = Math.max (0, getItemHeight () * visibleCount - getClientArea ().height);
-//	if (top [0] > maximum) {
-//		OS.SetDataBrowserScrollPosition (handle, maximum, left [0]);
-//	}
 }
 
 int getCheckColumnWidth () {
@@ -1252,11 +1204,6 @@ public boolean getHeaderVisible () {
 	return ((NSOutlineView) view).headerView () != null;
 }
 
-int getInsetWidth () {
-	//TODO - wrong
-	return 20;
-}
-
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -1458,7 +1405,6 @@ public TreeItem [] getSelection () {
 		id id = widget.itemAtRow (indexBuffer [i]);
 		Widget item = display.getWidget (id.id);
 		if (item != null && item instanceof TreeItem) {
-			//TODO virtual
 			result[i] = (TreeItem) item;
 		}
 	}
@@ -1694,53 +1640,16 @@ int /*long*/ outlineView_numberOfChildrenOfItem (int /*long*/ id, int /*long*/ s
 void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TreeItem item = (TreeItem) display.getWidget(itemID);
-	Image image = item.image;
 	int columnIndex = 0;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
-			image = item.getImage (i);
 			columnIndex = i;
+			break;
 		}
 	}
+	Image image = item.getImage (columnIndex);
 	NSBrowserCell browserCell = new NSBrowserCell (cell);
 	browserCell.setImage (image != null ? image.handle : null);
-	browserCell.setFont (item.getFont (columnIndex).handle);
-
-	if (hooks (SWT.MeasureItem)) {
-		NSOutlineView view = (NSOutlineView)this.view;
-		int nsColumnIndex = (int)/*64*/view.columnWithIdentifier (new id (tableColumn));
-		int rowIndex = (int)/*64*/view.rowForItem (new id (itemID));
-		NSRect rect = view.frameOfCellAtColumn (nsColumnIndex, rowIndex);
-		NSRect contentRect = browserCell.titleRectForBounds (rect);
-		NSSize contentSize = browserCell.cellSizeForBounds (rect);
-
-		GCData data = new GCData ();
-		data.paintRect = view.frame ();
-		GC gc = GC.cocoa_new (this, data);
-		gc.setFont (item.getFont (columnIndex));
-		int rowHeight = (int)view.rowHeight ();
-		Event event = new Event ();
-		event.item = item;
-		event.gc = gc;
-		event.index = columnIndex;
-		event.x = (int)contentRect.x;
-		event.y = (int)contentRect.y;
-		event.width = (int)Math.ceil (contentSize.width);
-		event.height = rowHeight;
-		sendEvent (SWT.MeasureItem, event);
-		gc.dispose ();
-		if (isDisposed ()) return;
-		if (rowHeight < event.height) {
-			view.setRowHeight (event.height);
-		}
-		if (columnCount == 0) {
-			int change = event.width - (item.customWidth != -1 ? item.customWidth : (int)Math.ceil (contentSize.width));
-			if (item.customWidth != -1 || event.width != (int)Math.ceil (contentSize.width)) {
-				item.customWidth = event.width;	
-			}
-			if (change != 0) setScrollWidth (item, false, false);
-		}
-	}
 }
 
 void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
@@ -1796,7 +1705,7 @@ void outlineViewItemDidExpand (int /*long*/ id, int /*long*/ sel, int /*long*/ n
 	NSString key = NSString.stringWith ("NSObject"); //$NON-NLS-1$
 	int /*long*/ itemHandle = info.objectForKey (key).id;
 	TreeItem item = (TreeItem)display.getWidget (itemHandle);
-	setScrollWidth (item.getItems (), true, true, false);
+	setScrollWidth (false, item.items, false);
 }
 
 void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
@@ -1821,10 +1730,12 @@ boolean outlineView_shouldCollapseItem (int /*long*/ id, int /*long*/ sel, int /
 		Event event = new Event ();
 		event.item = item;
 		sendEvent (SWT.Collapse, event);
+		if (isDisposed ()) return false;
 		item.expanded = false;
 		ignoreExpand = true;
 		((NSOutlineView) view).collapseItem (item.handle);
 		ignoreExpand = false;
+		setScrollWidth ();
 		return false;
 	}
 	return !item.expanded;
@@ -1836,6 +1747,7 @@ boolean outlineView_shouldExpandItem (int /*long*/ id, int /*long*/ sel, int /*l
 		Event event = new Event ();
 		event.item = item;
 		sendEvent (SWT.Expand, event);
+		if (isDisposed ()) return false;
 		item.expanded = true;
 		ignoreExpand = true;
 		((NSOutlineView) view).expandItem (item.handle);
@@ -1931,6 +1843,7 @@ public void removeAll () {
 	items = new TreeItem [4];
 	itemCount = 0;
 	((NSOutlineView) view).reloadData ();
+	setScrollWidth ();
 }
 
 /**
@@ -2166,6 +2079,8 @@ void setFont (NSFont font) {
 	} else {
 		view.setNeedsDisplay (true);
 	}
+	clearCachedWidth (items);
+	setScrollWidth ();
 }
 
 /**
@@ -2280,7 +2195,7 @@ void setItemCount (TreeItem parentItem, int count) {
 	checkWidget ();
 	if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (itemHeight == -1) {
-		//TODO - reset item height, ensure other API's such as setFont don't do this
+		setItemHeight (null, null);
 	} else {
 		((NSOutlineView)view).setRowHeight (itemHeight);
 	}
@@ -2335,41 +2250,37 @@ public void setRedraw (boolean redraw) {
 }
 
 boolean setScrollWidth () {
-	return setScrollWidth (items, true, true, true);
+	return setScrollWidth (true, items, true);
 }
 
-boolean setScrollWidth (TreeItem item, boolean recurse, boolean callMeasureItem) {
-	return setScrollWidth (new TreeItem[] {item}, recurse, callMeasureItem, false);
-}
-
-boolean setScrollWidth (TreeItem[] items, boolean recurse, boolean callMeasureItem, boolean isAllItems) {
-	if (columnCount != 0) return false;
-//	if (currentItem != null) {
-//		if (currentItem != item) fixScrollWidth = true;
-//		return false;
-//	}
-	if (/*ignoreRedraw ||*/ drawCount != 0) return false;
-	int newWidth = 0;
+boolean setScrollWidth (boolean set, TreeItem[] items, boolean recurse) {
+	if (ignoreRedraw || drawCount != 0) return false;
+	if (columnCount != 0 || items == null) return false;
 	GC gc = new GC (this);
-	for (int i = 0; i < items.length; i++) {
-		TreeItem item = items[i];
-		if (item != null && !item.isDisposed ()) {
-			newWidth = Math.max (newWidth, item.calculateWidth (0, gc, recurse, callMeasureItem));
-			if (isDisposed ()) {
-				gc.dispose ();
-				return false;
-			}
-		}
-	}
+	int newWidth = calculateWidth (items, 0, gc, recurse);
 	gc.dispose ();
-	/*
-	 * update the column width either if it needs to grow, or if all items in the Tree
-	 * were measured (in which case it is safe to shrink the column if appropriate)
-	 */
-	if ((firstColumn.width () < newWidth) || (isAllItems && recurse)) {
-		firstColumn.setWidth (newWidth);
+	if (!set) {
+		int oldWidth = (int)firstColumn.width ();
+		if (oldWidth >= newWidth) return false;
 	}
+	firstColumn.setWidth (newWidth);
 	return true;
+}
+
+boolean setScrollWidth (TreeItem item) {
+	if (ignoreRedraw || drawCount != 0) return false;
+	if (columnCount != 0) return false;
+	TreeItem parentItem = item.parentItem;
+	if (parentItem != null && !parentItem.getExpanded ()) return false;
+	GC gc = new GC (this);
+	int newWidth = item.calculateWidth (0, gc);
+	gc.dispose ();
+	int oldWidth = (int)firstColumn.width ();
+	if (oldWidth < newWidth) {
+		firstColumn.setWidth (newWidth);
+		return true;
+	}
+	return false;
 }
 
 /**

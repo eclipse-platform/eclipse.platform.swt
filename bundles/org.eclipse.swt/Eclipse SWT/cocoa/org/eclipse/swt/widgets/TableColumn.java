@@ -354,10 +354,7 @@ public Table getParent () {
  */
 public boolean getMoveable () {
 	checkWidget ();
-//	int [] flags = new int [1];
-//	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
-//	return (flags [0] & OS.kDataBrowserListViewMovableColumn) != 0;
-	return false;
+	return ((NSTableView)parent.view).allowsColumnReordering();
 }
 
 /**
@@ -455,19 +452,9 @@ public void pack () {
 	/* compute item widths down column */
 	GC gc = new GC (parent);
 	int index = parent.indexOf (this);
-	for (int i=0; i<parent.itemCount; i++) {
-		TableItem item = parent.items [i];
-		if (item != null && !item.isDisposed () && item.cached) {
-			width = Math.max (width, item.calculateWidth (index, gc, true));
-			if (isDisposed ()) {
-				gc.dispose ();
-				return;
-			}
-			if (gc.isDisposed ()) gc = new GC (parent);
-		}
-	}
+	width = Math.max (width, parent.calculateWidth (parent.items, index, gc));
 	gc.dispose ();
-	setWidth (width + parent.getInsetWidth ());
+	setWidth (width);
 }
 
 void releaseHandle () {
@@ -609,14 +596,6 @@ public void setMoveable (boolean moveable) {
 	if (moveable) {
 		((NSTableView)parent.view).setAllowsColumnReordering (true);
 	}
-//	int [] flags = new int [1];
-//	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
-//	if (moveable) {
-//		flags [0] |= OS.kDataBrowserListViewMovableColumn;
-//	} else {
-//		flags [0] &= ~OS.kDataBrowserListViewMovableColumn;
-//	}
-//	OS.SetDataBrowserPropertyFlags (parent.handle, id, flags [0]);
 }
 
 /**

@@ -41,7 +41,7 @@ public class TableItem extends Item {
 	Color[] cellForeground, cellBackground;
 	Font font;
 	Font[] cellFont;
-	int customWidth = -1;
+	int width = -1;
 
 	static final int IMAGETEXT_MARGIN = 2;
 	
@@ -126,52 +126,43 @@ static Table checkNull (Table control) {
 	return control;
 }
 
-int calculateWidth (int columnIndex, GC gc, boolean callMeasureItem) {
-	if (!callMeasureItem && customWidth != -1) return customWidth;
-
+int calculateWidth (int index, GC gc) {
+	if (index == 0 && width != -1) return width;
+	Font font = null;
+	if (cellFont != null) font = cellFont[index];
+	if (font == null) font = this.font;
+	if (font == null) font = parent.font;
+	if (font == null) font = parent.defaultFont();
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
 	NSBrowserCell cell = parent.dataCell;
-	cell.setFont (getFont (columnIndex).handle);
-	cell.setTitle (NSString.stringWith (getText (columnIndex)));
-	Image image = getImage (columnIndex);
+	cell.setFont (font.handle);
+	cell.setTitle (NSString.stringWith(text != null ? text : ""));
 	cell.setImage (image != null ? image.handle : null);
 	NSSize size = cell.cellSize ();
 	int width = (int)Math.ceil (size.width);
-	if (image != null) {
-		/* margin between item image and text */
-		width += IMAGETEXT_MARGIN;
+	boolean sendMeasure = true;
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		sendMeasure = cached;
 	}
-
-	if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
-		NSTableView tableView = (NSTableView)parent.view;
-		int /*long*/ nsColumnIndex = 0;
-		if (parent.columnCount > 0) {
-			nsColumnIndex = tableView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
-		}
-		int rowIndex = parent.indexOf (this);
-		NSRect rect = tableView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
-		NSRect contentRect = cell.titleRectForBounds (rect);
-		int rowHeight = (int)tableView.rowHeight ();
+	if (sendMeasure && parent.hooks (SWT.MeasureItem)) {
+		gc.setFont (font);
 		Event event = new Event ();
 		event.item = this;
-		event.index = columnIndex;
+		event.index = index;
 		event.gc = gc;
-		event.x = (int)contentRect.x;
-		event.y = (int)contentRect.y;
+		NSTableView widget = (NSTableView)parent.view;
+		int height = (int)widget.rowHeight ();
 		event.width = width;
-		event.height = rowHeight;
+		event.height = height;
 		parent.sendEvent (SWT.MeasureItem, event);
-		if (rowHeight < event.height) {
-			tableView.setRowHeight (event.height);
-		}
-		if (parent.columnCount == 0) {
-			int change = event.width - (customWidth != -1 ? customWidth : width);
-			if (customWidth != -1 || event.width != width) {
-				customWidth = event.width;	
-			}
-			if (change != 0) parent.setScrollWidth (this, false);
+		if (height < event.height) {
+			widget.setRowHeight (event.height);
+			widget.setNeedsDisplay (true);
 		}
 		width = event.width;
 	}
+	if (index == 0) this.width = width;
 	return width;
 }
 
@@ -189,42 +180,44 @@ void clear () {
 	cellForeground = cellBackground = null;
 	font = null;
 	cellFont = null;
-	customWidth = -1;
+	width = -1;
 }
 
-NSAttributedString createString (int index) {
+NSObject createString (int index) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
 	Color foreground = cellForeground != null ? cellForeground [index] : null;
 	if (foreground == null) foreground = this.foreground;
 	if (foreground == null) foreground = parent.foreground;
 	if (foreground != null) {
 		NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName);
+		dict.setObject (color, OS.NSForegroundColorAttributeName);
+	}
+	Font font = cellFont != null ? cellFont [index] : null;
+	if (font == null) font = this.font;
+	if (font == null) font = parent.font;
+	if (font == null) font = parent.defaultFont ();
+	if (font != null) {
+		dict.setObject (font.handle, OS.NSFontAttributeName);
 	}
 	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-	paragraphStyle.autorelease ();
 	paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if (image != null) {
 		/* margin between item image and text */
 		paragraphStyle.setFirstLineHeadIndent (IMAGETEXT_MARGIN);
 	}
-	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 	if (parent.columnCount > 0) {
-		TableColumn column = parent.getColumn (index);
-		int style = column.getStyle ();
+		int style = parent.getColumn (index).getStyle ();
 		if ((style & SWT.CENTER) != 0) {
 			paragraphStyle.setAlignment (OS.NSCenterTextAlignment);
 		} else if ((style & SWT.RIGHT) != 0) {
 			paragraphStyle.setAlignment (OS.NSRightTextAlignment);
 		}
 	}
-
-	String text = getText (index);
-	int length = text.length ();
-	char[] chars = new char [length];
-	text.getChars(0, length, chars, 0);
-	NSString str = NSString.stringWithCharacters (chars, length);
+	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+	paragraphStyle.release ();
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	NSString str = NSString.stringWith(text != null ? text : "");
 	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (str, dict);
 	attribStr.autorelease ();
 	return attribStr;
@@ -614,6 +607,7 @@ public Rectangle getTextBounds (int index) {
 }
 
 void redraw (int columnIndex) {
+	if (parent.currentItem == this || parent.drawCount != 0) return;
 	/* redraw the full item if columnIndex == -1 */
 	NSTableView tableView = (NSTableView) parent.view;
 	NSRect rect = null;
@@ -765,6 +759,7 @@ public void setFont (Font font) {
 	if (oldFont == font) return;
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
+	width = -1;
 	cached = true;
 	redraw (-1);
 }
@@ -803,6 +798,7 @@ public void setFont (int index, Font font) {
 	if (oldFont == font) return;
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
+	width = -1;
 	cached = true;
 	redraw (index);
 }
@@ -944,7 +940,7 @@ public void setImage (int index, Image image) {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (this.image)) return;
 		}
-		customWidth = -1;
+		width = -1;
 		super.setImage (image);
 	}
 	int count = Math.max (1, parent.columnCount);
@@ -955,9 +951,8 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;	
 	}
-//	cached = true;
-//	if (index == 0) parent.setScrollWidth (this);
-	
+	cached = true;
+	if (index == 0) parent.setScrollWidth (this);	
 	redraw (index);
 }
 
@@ -1027,7 +1022,7 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == 0) {
 		if (string.equals (text)) return;
-		customWidth = -1;
+		width = -1;
 		super.setText (string);
 	}
 	int count = Math.max (1, parent.columnCount);
@@ -1037,7 +1032,7 @@ public void setText (int index, String string) {
 		strings [index] = string;
 	}
 	cached = true;
-	if (index == 0) parent.setScrollWidth (this, true);
+	if (index == 0) parent.setScrollWidth (this);
 	redraw (index);
 }
 

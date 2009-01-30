@@ -45,7 +45,7 @@ public class TreeItem extends Item {
 	Color [] cellForeground, cellBackground;
 	Font font;
 	Font [] cellFont;
-	int customWidth = -1;
+	int width = -1;
 	/**
 	 * the handle to the OS resource 
 	 * (Warning: This field is platform dependent)
@@ -230,70 +230,46 @@ static int checkIndex (int index) {
 	return index;
 }
 
-/* note that the result includes tree hierarchy indentation for column 0 */
-int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasureItem) {
-	if (!cached) return 0;
-
-	int width = 0;
-	if (!callMeasureItem && customWidth != -1) {
-		width = customWidth;
-	} else {
-		NSBrowserCell cell = parent.dataCell;
-		cell.setFont (getFont (columnIndex).handle);
-		cell.setTitle (NSString.stringWith (getText (columnIndex)));
-		Image image = getImage (columnIndex);
-		cell.setImage (image != null ? image.handle : null);
-		NSSize size = cell.cellSize ();
-		width = (int)Math.ceil (size.width);
-		if (image != null) {
-			/* margin between item image and text */
-			width += IMAGETEXT_MARGIN;
-		}
-
-		if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
-			NSOutlineView outlineView = (NSOutlineView)parent.view;
-			int /*long*/ nsColumnIndex = 0;
-			if (parent.columnCount > 0) {
-				nsColumnIndex = outlineView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
-			}
-			int rowIndex = (int)/*64*/outlineView.rowForItem (handle);
-			NSRect rect = outlineView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
-			NSRect contentRect = cell.titleRectForBounds (rect);
-			int rowHeight = (int)outlineView.rowHeight ();
-			Event event = new Event ();
-			event.item = this;
-			event.index = columnIndex;
-			event.gc = gc;
-			event.x = (int)contentRect.x;
-			event.y = (int)contentRect.y;
-			event.width = width;
-			event.height = rowHeight;
-			parent.sendEvent (SWT.MeasureItem, event);
-			if (rowHeight < event.height) {
-				outlineView.setRowHeight (event.height);
-			}
-			if (parent.columnCount == 0) {
-				int change = event.width - (customWidth != -1 ? customWidth : width);
-				if (customWidth != -1 || event.width != width) {
-					customWidth = event.width;	
-				}
-				if (change != 0) parent.setScrollWidth (this, false, false);
-			}
-			width = event.width;
-		}
+int calculateWidth (int index, GC gc) {
+	if (index == 0 && width != -1) return width;
+	Font font = null;
+	if (cellFont != null) font = cellFont[index];
+	if (font == null) font = this.font;
+	if (font == null) font = parent.font;
+	if (font == null) font = parent.defaultFont();
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
+	NSBrowserCell cell = parent.dataCell;
+	cell.setFont (font.handle);
+	cell.setTitle (NSString.stringWith(text != null ? text : ""));
+	cell.setImage (image != null ? image.handle : null);
+	NSSize size = cell.cellSize ();
+	int width = (int)Math.ceil (size.width);
+	boolean sendMeasure = true;
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		sendMeasure = cached;
 	}
-
-	if (columnIndex == 0) {
+	if (sendMeasure && parent.hooks (SWT.MeasureItem)) {
+		gc.setFont (font);
+		Event event = new Event ();
+		event.item = this;
+		event.index = index;
+		event.gc = gc;
+		NSTableView widget = (NSTableView)parent.view;
+		int height = (int)widget.rowHeight ();
+		event.width = width;
+		event.height = height;
+		parent.sendEvent (SWT.MeasureItem, event);
+		if (height < event.height) {
+			widget.setRowHeight (event.height);
+			widget.setNeedsDisplay (true);
+		}
+		width = event.width;
+	}
+	if (index == 0) {
 		NSOutlineView outlineView = (NSOutlineView)parent.view;
 		width += outlineView.indentationPerLevel () * (1 + outlineView.levelForItem (handle));
-	}
-	if (recurse && expanded) {
-		for (int i = 0; i < items.length; i++) {
-			TreeItem item = items [i];
-			if (item != null && !item.isDisposed ()) {
-				width = Math.max (width, item.calculateWidth (columnIndex, gc, recurse, callMeasureItem));
-			}
-		}
+		this.width = width;
 	}
 	return width;
 }
@@ -313,6 +289,7 @@ void clear () {
 	cellForeground = cellBackground = null;
 	font = null;
 	cellFont = null;
+	width = -1;
 }
 
 /**
@@ -383,8 +360,8 @@ void clearSelection () {
 	}
 }
 
-NSAttributedString createString(int index) {
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+NSObject createString(int index) {
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
 	Color foreground = cellForeground != null ? cellForeground [index] : null;
 	if (foreground == null) foreground = this.foreground;
 	if (foreground == null) foreground = parent.foreground;
@@ -392,27 +369,32 @@ NSAttributedString createString(int index) {
 		NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
 		dict.setObject (color, OS.NSForegroundColorAttributeName);
 	}
+	Font font = cellFont != null ? cellFont [index] : null;
+	if (font == null) font = this.font;
+	if (font == null) font = parent.font;
+	if (font == null) font = parent.defaultFont ();
+	if (font != null) {
+		dict.setObject (font.handle, OS.NSFontAttributeName);
+	}
 	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-	paragraphStyle.autorelease ();
 	paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if (image != null) {
 		/* margin between item image and text */
 		paragraphStyle.setFirstLineHeadIndent (IMAGETEXT_MARGIN);
 	}
-	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 	if (parent.columnCount > 0) {
-		TreeColumn column = parent.getColumn (index);
-		int style = column.getStyle ();
+		int style = parent.getColumn (index).getStyle ();
 		if ((style & SWT.CENTER) != 0) {
 			paragraphStyle.setAlignment (OS.NSCenterTextAlignment);
 		} else if ((style & SWT.RIGHT) != 0) {
 			paragraphStyle.setAlignment (OS.NSRightTextAlignment);
 		}
 	}
-
-	String text = getText (index);
-	NSString str = NSString.stringWith(text);
+	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+	paragraphStyle.release ();
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	NSString str = NSString.stringWith(text != null ? text : "");
 	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (str, dict);
 	attribStr.autorelease ();
 	return attribStr;
@@ -936,6 +918,7 @@ public int indexOf (TreeItem item) {
 }
 
 void redraw (int columnIndex) {
+	if (parent.ignoreRedraw || parent.drawCount != 0) return;
 	/* redraw the full item if columnIndex == -1 */
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	NSRect rect;
@@ -1014,12 +997,7 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-//	for (int i=itemCount - 1; i >= 0; i--) {
-//		TreeItem item = parent._getItem (childIds [i], false);
-//		if (item != null && !item.isDisposed ()) {
-//			item.dispose ();
-//		}
-//	}
+	parent.setItemCount (0);
 }
 
 /**
@@ -1138,12 +1116,9 @@ public void setExpanded (boolean expanded) {
 	}
 	parent.ignoreExpand = false;
 	cached = true;
-//	if (expanded) {
-//		parent.setScrollWidth (false, childIds, false);
-//	} else {
-//		parent.setScrollWidth (true);
-//		parent.fixScrollBar ();
-//	}
+	if (!expanded) {
+		parent.setScrollWidth ();
+	}
 }
 
 /**
@@ -1172,6 +1147,7 @@ public void setFont (Font font) {
 	if (oldFont == font) return;
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
+	width = -1;
 	cached = true;
 	redraw (-1);
 }
@@ -1210,6 +1186,7 @@ public void setFont (int index, Font font) {
 	if (oldFont == font) return;
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
+	width = -1;
 	cached = true;
 	redraw (index);
 }
@@ -1357,7 +1334,7 @@ public void setImage (int index, Image image) {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (this.image)) return;
 		}
-		customWidth = -1;
+		width = -1;
 		super.setImage (image);
 	}
 	int count = Math.max (1, parent.columnCount);
@@ -1368,8 +1345,8 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;	
 	}
-//	cached = true;
-	if (index == 0) parent.setScrollWidth (this, false, true);
+	cached = true;
+	if (index == 0) parent.setScrollWidth (this);
 	if (0 <= index && index < count) redraw (index);
 }
 
@@ -1441,7 +1418,7 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == 0) {
 		if (string.equals (text)) return;
-		customWidth = -1;
+		width = -1;
 		super.setText (string);
 	}
 	int count = Math.max (1, parent.columnCount);
@@ -1451,7 +1428,7 @@ public void setText (int index, String string) {
 		strings [index] = string;
 	}
 	cached = true;
-	if (index == 0) parent.setScrollWidth (this, false, true);
+	if (index == 0) parent.setScrollWidth (this);
 	if (0 <= index && index < count) redraw (index);
 }
 
