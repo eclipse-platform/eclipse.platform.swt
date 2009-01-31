@@ -139,8 +139,6 @@ public class Display extends Device {
 	NSWindow screenWindow;
 	NSAutoreleasePool pool;
 	int loopCounter = 0;
-	boolean idle;
-	static final short SWT_IDLE_TYPE = 1;
 
 	int[] screenID = new int[32];
 	NSPoint[] screenCascade = new NSPoint[32];
@@ -2748,24 +2746,17 @@ public boolean readAndDispatch () {
 		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	}
 	loopCounter ++;
-	boolean events = false;
-	events |= runTimers ();
-	events |= runContexts ();
-	events |= runPopups ();
-	NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
-	
 	try {
-	if (event != null) {
-		events = true;
-		application.sendEvent(event);
-	}
-//		NSEvent event = NSEvent.otherEventWithType(OS.NSApplicationDefined, new NSPoint(), 0, 0, 0, null, SWT_IDLE_TYPE, 0, 0);
-//		application.postEvent(event, false);
-//		idle = true;
-//		application.run();
-//		events |= !idle;
-		if (events) {
-			runDeferredEvents ();
+		boolean events = false;
+		events |= runTimers ();
+		events |= runContexts ();
+		events |= runPopups ();
+		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
+		if (event != null) {
+			events = true;
+			application.sendEvent(event);
+		}
+		if (events || runDeferredEvents ()) {
 			return true;
 		}
 		return runAsyncMessages (false);
@@ -3040,6 +3031,7 @@ boolean runContexts () {
 }
 
 boolean runDeferredEvents () {
+	boolean run = false;
 	/*
 	* Run deferred events.  This code is always
 	* called  in the Display's thread so it must
@@ -3059,6 +3051,7 @@ boolean runDeferredEvents () {
 		if (widget != null && !widget.isDisposed ()) {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
+				run = true;
 				widget.notifyListeners (event.type, event);
 			}
 		}
@@ -3072,7 +3065,7 @@ boolean runDeferredEvents () {
 
 	/* Clear the queue */
 	eventQueue = null;
-	return true;
+	return run;
 }
 
 boolean runPopups () {
@@ -3765,12 +3758,6 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
 	OS.objc_msgSendSuper (super_struct, sel, event);
-//	if (nsEvent.type() == OS.NSApplicationDefined && nsEvent.subtype() == SWT_IDLE_TYPE) {
-//		idle = true;
-//	} else {
-//		idle = false;
-//	}
-//	application.stop(null);
 }
 
 // #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
