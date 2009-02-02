@@ -177,8 +177,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) {
 		// TODO use some OS metric instead of hardcoded values
-		int width = wHint != SWT.DEFAULT ? wHint : 23;
-		int height = hHint != SWT.DEFAULT ? hHint : 23;
+		int width = wHint != SWT.DEFAULT ? wHint : 14;
+		int height = hHint != SWT.DEFAULT ? hHint : 14;
 		return new Point (width, height);
 	}
 	NSSize size = ((NSButton)view).cell ().cellSize ();
@@ -280,7 +280,7 @@ void createHandle () {
 			widget.setBezelStyle(OS.NSRoundedBezelStyle);
 		}
 	} else if ((style & SWT.ARROW) != 0) {
-		widget.setBezelStyle(OS.NSRegularSquareBezelStyle);
+		widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
 	}
 	widget.setButtonType(type);
 	widget.setTitle(NSString.stringWith(""));
