@@ -1391,6 +1391,7 @@ void setToolbarsVisible(int visible) {
 
 void mouseDidMoveOverElement (int elementInformation, int modifierFlags) {
 	if (elementInformation == 0) return;
+	if (!browser.isEnabled ()) return;
 
 	int length = WebElementLinkURLKey.length();
 	char[] chars = new char[length];
@@ -1525,6 +1526,8 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 /* DOMEventListener */
 
 void handleEvent(int evt) {
+	if (!browser.isEnabled ()) return;
+
 	int type = Cocoa.objc_msgSend(evt, Cocoa.S_type);
 	int length = OS.CFStringGetLength(type);
 	char[] buffer = new char[length];
