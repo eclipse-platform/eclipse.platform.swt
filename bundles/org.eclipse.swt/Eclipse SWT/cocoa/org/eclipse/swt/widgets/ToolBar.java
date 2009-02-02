@@ -251,12 +251,6 @@ void enableWidget(boolean enabled) {
 	}
 }
 
-public Rectangle getClientArea () {
-	checkWidget();
-	NSRect rect = view.bounds();
-	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-}
-
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
