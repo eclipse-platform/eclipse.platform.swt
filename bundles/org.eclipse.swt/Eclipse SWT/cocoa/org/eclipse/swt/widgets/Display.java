@@ -1987,6 +1987,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_tabView_willSelectTabViewItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tabView_didSelectTabViewItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2110,6 +2111,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_clickedOnLink_atIndex_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_dragSelectionWithEvent_offset_slideBack_, proc5, "@:@@@");
+	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTEditorView";
@@ -3626,8 +3628,10 @@ Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim, bool
 		do {
 			Widget widget = getWidget (view);
 			if (widget instanceof Control) {
-				control = (Control)widget;
-				break;
+				if ((widget.state & Widget.DISABLED) == 0) {
+					control = (Control)widget;
+					break;
+				}
 			}
 			view = view.superview();
 		} while (view != null);

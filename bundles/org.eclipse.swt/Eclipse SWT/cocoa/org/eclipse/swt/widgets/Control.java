@@ -597,6 +597,11 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
+boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
+	if ((state & DISABLED) != 0) return false;
+	return super.becomeFirstResponder (id, sel);
+}
+
 void checkBackground () {
 	Shell shell = getShell ();
 	if (this == shell) return;

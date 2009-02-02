@@ -273,6 +273,12 @@ void sendVerticalSelection () {
 	verticalBar.sendSelection ();
 }
 
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	if (horizontalBar != null) horizontalBar.setEnabled (enabled);
+	if (verticalBar != null) verticalBar.setEnabled (enabled);
+}
+
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	if (scrollView == null) return false;
 	if ((state & CANVAS) == 0) return false;
