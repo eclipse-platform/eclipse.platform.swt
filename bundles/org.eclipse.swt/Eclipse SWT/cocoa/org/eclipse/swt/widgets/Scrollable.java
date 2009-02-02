@@ -275,8 +275,8 @@ void sendVerticalSelection () {
 
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
-	if (horizontalBar != null) horizontalBar.setEnabled (enabled);
-	if (verticalBar != null) verticalBar.setEnabled (enabled);
+	if (horizontalBar != null) horizontalBar.enableWidget (enabled);
+	if (verticalBar != null) verticalBar.enableWidget (enabled);
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {

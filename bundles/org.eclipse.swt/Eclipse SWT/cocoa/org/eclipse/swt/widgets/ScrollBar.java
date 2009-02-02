@@ -488,7 +488,13 @@ public void setEnabled (boolean enabled) {
 		if ((state & DISABLED) != 0) return;
 		state |= DISABLED;
 	}
-	view.setEnabled(enabled);
+	enableWidget (enabled);
+}
+
+void enableWidget (boolean enabled) {
+	if (!enabled || (state & DISABLED) == 0) {
+		view.setEnabled (enabled);
+	}
 }
 
 /**
