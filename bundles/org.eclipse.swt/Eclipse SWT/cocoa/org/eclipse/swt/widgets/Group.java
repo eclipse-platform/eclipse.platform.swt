@@ -109,17 +109,6 @@ NSView contentView () {
 	return contentView;
 }
 
-NSFont defaultNSFont () {
-	return display.boxFont;
-}
-
-void deregister () {
-	super.deregister ();
-	display.removeWidget (contentView);
-	SWTBox box = (SWTBox)view;
-	display.removeWidget (box.titleCell());
-}
-
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSBox widget = (NSBox)new SWTBox().alloc();
@@ -131,6 +120,21 @@ void createHandle () {
 	widget.setContentView(contentWidget);
 	contentView = contentWidget;
 	view = widget;
+}
+
+NSFont defaultNSFont () {
+	return display.boxFont;
+}
+
+void deregister () {
+	super.deregister ();
+	display.removeWidget (contentView);
+	SWTBox box = (SWTBox)view;
+	display.removeWidget (box.titleCell());
+}
+
+NSView eventView () {
+	return contentView;
 }
 
 public Rectangle getClientArea () {

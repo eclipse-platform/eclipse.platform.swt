@@ -2054,6 +2054,7 @@ void initClasses () {
 	className = "SWTDatePicker";
 	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -2063,6 +2064,7 @@ void initClasses () {
 	className = "SWTImageView";
 	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2576,13 +2578,13 @@ public Point map (Control from, Control to, int x, int y) {
 	} else {
 		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
-			NSView view = from.contentView ();
+			NSView view = from.eventView ();
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
 		}
 		if (to != null) {
-			NSView view = to.contentView ();
+			NSView view = to.eventView ();
 			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);
@@ -2689,13 +2691,13 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	} else {
 		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
-			NSView view = from.contentView ();
+			NSView view = from.eventView ();
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
 		}
 		if (to != null) {
-			NSView view = to.contentView ();
+			NSView view = to.eventView ();
 			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);

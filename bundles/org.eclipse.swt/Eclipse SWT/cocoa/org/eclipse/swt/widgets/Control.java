@@ -981,6 +981,10 @@ void enableWidget (boolean enabled) {
 	}
 }
 
+NSView eventView () {
+	return view;
+}
+
 void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
@@ -2579,6 +2583,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	}
 	if (event.button != 0) event.count = (int)/*64*/nsEvent.clickCount();
 	NSPoint windowPoint;
+	NSView view = eventView ();
 	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {
 		windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation()); 
 	} else {

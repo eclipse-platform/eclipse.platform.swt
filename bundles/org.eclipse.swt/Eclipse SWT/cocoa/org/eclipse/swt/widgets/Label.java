@@ -215,7 +215,7 @@ void createHandle () {
 	widget.setTitle(NSString.stringWith(""));
 	if ((style & SWT.SEPARATOR) != 0) {
 		widget.setBoxType(OS.NSBoxSeparator);
-		NSView child = (NSView) new NSView().alloc().init().autorelease();
+		NSView child = (NSView) new SWTView().alloc().init().autorelease();
 		widget.setContentView(child);
 	} else {
 		widget.setBorderType(OS.NSNoBorder);
@@ -295,6 +295,10 @@ void deregister () {
 		display.removeWidget (imageView);
 		display.removeWidget (imageView.cell());
 	}
+}
+
+NSView eventView () {
+	return ((NSBox)view).contentView();
 }
 
 /**
