@@ -190,6 +190,7 @@ typedef enum {
 	NSDragPboard_FUNC,
 	NSEqualRects_FUNC,
 	NSErrorFailingURLStringKey_FUNC,
+	NSEventTrackingRunLoopMode_FUNC,
 	NSFileTypeForHFSTypeCode_FUNC,
 	NSFilenamesPboardType_FUNC,
 	NSFontAttributeName_FUNC,

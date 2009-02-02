@@ -1031,6 +1031,7 @@ public static final int /*long*/ sel_pointSize = sel_registerName("pointSize");
 public static final int /*long*/ sel_pointValue = sel_registerName("pointValue");
 public static final int /*long*/ sel_pointingHandCursor = sel_registerName("pointingHandCursor");
 public static final int /*long*/ sel_popUpContextMenu_withEvent_forView_ = sel_registerName("popUpContextMenu:withEvent:forView:");
+public static final int /*long*/ sel_postEvent_atStart_ = sel_registerName("postEvent:atStart:");
 public static final int /*long*/ sel_prependTransform_ = sel_registerName("prependTransform:");
 public static final int /*long*/ sel_preventDefault = sel_registerName("preventDefault");
 public static final int /*long*/ sel_printDocumentView = sel_registerName("printDocumentView");
@@ -1060,6 +1061,7 @@ public static final int /*long*/ sel_removeFromSuperview = sel_registerName("rem
 public static final int /*long*/ sel_removeItem_ = sel_registerName("removeItem:");
 public static final int /*long*/ sel_removeItemAtIndex_ = sel_registerName("removeItemAtIndex:");
 public static final int /*long*/ sel_removeItemAtPath_error_ = sel_registerName("removeItemAtPath:error:");
+public static final int /*long*/ sel_removeLastObject = sel_registerName("removeLastObject");
 public static final int /*long*/ sel_removeObject_ = sel_registerName("removeObject:");
 public static final int /*long*/ sel_removeObjectAtIndex_ = sel_registerName("removeObjectAtIndex:");
 public static final int /*long*/ sel_removeObserver_ = sel_registerName("removeObserver:");
@@ -3554,6 +3556,9 @@ public static final NSString NSDeviceResolution = new NSString(NSDeviceResolutio
 /** @method flags=const */
 public static final native int /*long*/ NSDragPboard();
 public static final NSString NSDragPboard = new NSString(NSDragPboard());
+/** @method flags=const */
+public static final native int /*long*/ NSEventTrackingRunLoopMode();
+public static final NSString NSEventTrackingRunLoopMode = new NSString(NSEventTrackingRunLoopMode());
 /** @method flags=const */
 public static final native int /*long*/ NSFilenamesPboardType();
 public static final NSString NSFilenamesPboardType = new NSString(NSFilenamesPboardType());

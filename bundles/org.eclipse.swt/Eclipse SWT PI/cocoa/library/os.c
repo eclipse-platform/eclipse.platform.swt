@@ -2039,6 +2039,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSErrorFailingURLStringKey)
 }
 #endif
 
+#ifndef NO_NSEventTrackingRunLoopMode
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSEventTrackingRunLoopMode)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSEventTrackingRunLoopMode_FUNC);
+	rc = (jintLong)NSEventTrackingRunLoopMode;
+	OS_NATIVE_EXIT(env, that, NSEventTrackingRunLoopMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSFileTypeForHFSTypeCode
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSFileTypeForHFSTypeCode)
 	(JNIEnv *env, jclass that, jint arg0)

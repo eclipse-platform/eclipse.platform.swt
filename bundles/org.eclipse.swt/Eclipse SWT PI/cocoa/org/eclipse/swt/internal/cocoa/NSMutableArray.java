@@ -37,6 +37,10 @@ public static NSMutableArray arrayWithCapacity(int /*long*/ numItems) {
 	return result != 0 ? new NSMutableArray(result) : null;
 }
 
+public void removeLastObject() {
+	OS.objc_msgSend(this.id, OS.sel_removeLastObject);
+}
+
 public void removeObject(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_removeObject_, anObject != null ? anObject.id : 0);
 }

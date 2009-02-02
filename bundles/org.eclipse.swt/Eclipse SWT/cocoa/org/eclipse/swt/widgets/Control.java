@@ -55,7 +55,6 @@ public abstract class Control extends Widget implements Drawable {
 	String toolTipText;
 	Object layoutData;
 	int drawCount;
-//	int visibleRgn;
 	Menu menu;
 	Color foreground, background;
 	Image backgroundImage;
@@ -63,11 +62,15 @@ public abstract class Control extends Widget implements Drawable {
 	Cursor cursor;
 	Region region;
 	NSBezierPath regionPath;
-//	GCData gcs[];
 	Accessible accessible;
 
 //	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
 
+	/**
+	 * Magic number comes from experience. There's no API for this value in Cocoa or Carbon.
+	 */
+	static final int DEFAULT_DRAG_HYSTERESIS = 5;
+	
 Control () {
 	/* Do nothing */
 }
@@ -896,9 +899,56 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	/**
+	 * Feature in Cocoa. Mouse drag events do not account for hysteresis.
+	 * As soon as the mouse drags a mouse dragged event is fired.  Fix is to
+	 * check for another mouse drag event that is at least 5 pixels away 
+	 * from the start of the drag. 
+	 */
 	NSApplication application = NSApplication.sharedApplication();
-	NSEvent event = application.nextEventMatchingMask(OS.NSLeftMouseDraggedMask, NSDate.dateWithTimeIntervalSinceNow(0.2), OS.NSDefaultRunLoopMode, false);
-	return (event != null);
+	boolean dragging = false;
+	int /*long*/ eventType = OS.NSLeftMouseDown;
+	float /*double*/ dragX = x;
+	float /*double*/ dragY = y;
+	
+	/**
+	 * To check for an actual drag we need to pull off mouse moved and mouse up events
+	 * to detect if the user dragged outside of a 10 x 10 box centered on the mouse down location.
+	 * We still want the view to see the events, so save them and re-post when done checking.
+	 */
+	NSEvent mouseUpEvent = null;
+	NSMutableArray dragEvents = NSMutableArray.arrayWithCapacity(10);
+
+	while (eventType != OS.NSLeftMouseUp) {
+		NSEvent event = application.nextEventMatchingMask((OS.NSLeftMouseUpMask | OS.NSLeftMouseDraggedMask),
+				NSDate.distantFuture(), OS.NSEventTrackingRunLoopMode, true);
+		eventType = event.type();
+		
+		if (eventType == OS.NSLeftMouseDragged) {
+			dragEvents.addObject(event);
+			NSPoint windowLoc = event.locationInWindow();
+			NSPoint viewLoc = view.convertPoint_fromView_(windowLoc, null);
+			if ((Math.abs(viewLoc.x - dragX) > DEFAULT_DRAG_HYSTERESIS) || (Math.abs(viewLoc.y - dragY) > DEFAULT_DRAG_HYSTERESIS)) {
+				dragging = true;
+				break;
+			}
+		} else if (eventType == OS.NSLeftMouseUp) {
+			mouseUpEvent = event;
+		}
+	}
+
+	// Push back any events we took out of the queue so the control can receive them. 
+	if (mouseUpEvent != null) application.postEvent(mouseUpEvent, true);
+
+	if (dragEvents.count() > 0) {
+		while (dragEvents.count() > 0) {
+			NSEvent currEvent = new NSEvent(dragEvents.objectAtIndex(dragEvents.count() - 1).id);
+			dragEvents.removeLastObject();
+			application.postEvent(currEvent, true);
+		}
+	}
+
+	return dragging;
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {

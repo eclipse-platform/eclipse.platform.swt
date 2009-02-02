@@ -73,6 +73,10 @@ public NSArray orderedWindows() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
+public void postEvent(NSEvent event, boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_postEvent_atStart_, event != null ? event.id : 0, flag);
+}
+
 public void run() {
 	OS.objc_msgSend(this.id, OS.sel_run);
 }

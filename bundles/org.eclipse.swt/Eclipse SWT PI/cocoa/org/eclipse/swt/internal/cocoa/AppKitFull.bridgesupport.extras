@@ -414,7 +414,7 @@
 <constant name="NSEditableBinding"></constant>
 <constant name="NSEditorDocumentAttribute"></constant>
 <constant name="NSEnabledBinding"></constant>
-<constant name="NSEventTrackingRunLoopMode"></constant>
+<constant name="NSEventTrackingRunLoopMode" swt_gen="true"></constant>
 <constant name="NSExcludedElementsDocumentAttribute"></constant>
 <constant name="NSExcludedKeysBinding"></constant>
 <constant name="NSExpansionAttributeName"></constant>
@@ -2852,10 +2852,10 @@
 <method selector="orderedWindows" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method selector="postEvent:atStart:">
-<arg name="event"></arg>
-<arg name="flag"></arg>
-<retval></retval>
+<method selector="postEvent:atStart:" swt_gen="true">
+<arg name="event" swt_gen="true"></arg>
+<arg name="flag" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="preventWindowOrdering">
 <retval></retval>
