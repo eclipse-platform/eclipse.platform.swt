@@ -19549,8 +19549,8 @@
 <arg name="sender" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="delegate">
-<retval></retval>
+<method selector="delegate" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="delete:">
 <arg name="sender"></arg>

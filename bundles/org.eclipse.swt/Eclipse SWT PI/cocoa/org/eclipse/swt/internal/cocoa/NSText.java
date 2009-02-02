@@ -32,6 +32,11 @@ public void cut(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_cut_, sender != null ? sender.id : 0);
 }
 
+public id delegate() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_delegate);
+	return result != 0 ? new id(result) : null;
+}
+
 public NSFont font() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;

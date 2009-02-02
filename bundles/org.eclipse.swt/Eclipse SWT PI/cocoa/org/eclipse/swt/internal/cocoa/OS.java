@@ -676,6 +676,7 @@ public static final int /*long*/ sel_defaultLineHeightForFont_ = sel_registerNam
 public static final int /*long*/ sel_defaultManager = sel_registerName("defaultManager");
 public static final int /*long*/ sel_defaultPrinter = sel_registerName("defaultPrinter");
 public static final int /*long*/ sel_defaultTimeZone = sel_registerName("defaultTimeZone");
+public static final int /*long*/ sel_delegate = sel_registerName("delegate");
 public static final int /*long*/ sel_deleteCookie_ = sel_registerName("deleteCookie:");
 public static final int /*long*/ sel_deliverResult = sel_registerName("deliverResult");
 public static final int /*long*/ sel_deltaX = sel_registerName("deltaX");

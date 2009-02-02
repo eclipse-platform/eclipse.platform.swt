@@ -3149,8 +3149,8 @@
 <arg name="order" swt_gen="true"></arg>
 <arg name="callout" swt_gen="true">
 <arg swt_gen="true"></arg>
-<arg swt_gen="true"></arg>
-<arg swt_gen="true"></arg>
+<arg></arg>
+<arg></arg>
 <retval swt_gen="true"></retval>
 </arg>
 <arg name="context" swt_gen="true"></arg>
