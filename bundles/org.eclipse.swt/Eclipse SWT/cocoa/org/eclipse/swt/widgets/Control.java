@@ -1496,7 +1496,11 @@ boolean hasBorder () {
 }
 
 boolean hasFocus () {
-	return (view.window().firstResponder().id == view.id);
+	NSWindow window = view.window();
+	NSResponder nsResponder = window.firstResponder();
+	if (nsResponder.id == view.id) return true;
+	NSText fieldEditor = window.fieldEditor(false, topView ());
+	return nsResponder.id == fieldEditor.id;
 }
 
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
