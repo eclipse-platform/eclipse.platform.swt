@@ -347,7 +347,11 @@ void drag(Event dragEvent) {
 
 		NSSize imageSize = dragImage.size();
 		viewPt.x -= (imageSize.width / 2);
-		viewPt.y += (imageSize.height / 2);
+		
+		if (control.view.isFlipped())
+			viewPt.y += (imageSize.height / 2);
+		else
+			viewPt.y -= (imageSize.height / 2);
 		
 		// The third argument to dragImage is ignored as of 10.4.
 		NSSize ignored = new NSSize();
