@@ -1554,8 +1554,38 @@ void setBounds (int x, int y, int width, int height, int flags) {
 				return;
 			}
 		}
-	}	
+	}
 	super.setBounds (x, y, width, height, flags);
+	
+	/*
+	* Bug in Windows. If the client area height is smaller than 
+	* the font height, then the multi-line text widget does not
+	* update the formatting rectangle when resized. The fix is to
+	* detect this case and explicitly set the formatting rectangle.
+	*/
+	if ((flags & OS.SWP_NOSIZE) == 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.ES_MULTILINE) != 0) {
+			int /*long*/ newFont, oldFont = 0;
+			int /*long*/ hDC = OS.GetDC (handle);
+			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+			OS.GetTextMetrics (hDC, tm);
+			if (newFont != 0) OS.SelectObject (hDC, oldFont);
+			OS.ReleaseDC (handle, hDC);
+			RECT rect = new RECT();
+			OS.GetClientRect (handle, rect);
+			if ((rect.bottom - rect.top) < tm.tmHeight) {
+				int /*long*/ margins = OS.SendMessage (handle, OS.EM_GETMARGINS, 0, 0);
+				rect.left += OS.LOWORD (margins);
+				rect.right -= OS.HIWORD (margins);
+				rect.top = 0;
+				rect.bottom = tm.tmHeight;
+				OS.SendMessage (handle, OS.EM_SETRECT, 0, rect);
+			}
+		}
+	}
 }
 
 void setDefaultFont () {
