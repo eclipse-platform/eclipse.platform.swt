@@ -620,6 +620,7 @@ public class OS extends C {
 	public static final int EM_SETCUEBANNER = 0x1500 + 1;
 	public static final int EM_SETREADONLY = 0xcf;
 	public static final int EM_SETSEL = 0xb1;
+	public static final int EM_SETRECTNP = 0xb4;
 	public static final int EM_SETTABSTOPS = 0xcb;
 	public static final int EM_UNDO = 199;
 	public static final int EMR_EXTCREATEFONTINDIRECTW = 82;
