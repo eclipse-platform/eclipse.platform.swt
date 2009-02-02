@@ -252,7 +252,6 @@ void createHandle () {
 	} else {
 		NSView widget = (NSView)new SWTView().alloc();
 		widget.init();
-		parent.contentView().addSubview(widget);
 		button = (NSButton)new SWTButton().alloc();
 		button.init();
 		/*
