@@ -3929,8 +3929,8 @@
 <method selector="boxType">
 <retval></retval>
 </method>
-<method selector="contentView">
-<retval swt_java_type="NSView"></retval>
+<method selector="contentView" swt_gen="true">
+<retval swt_gen="true" swt_java_type="NSView"></retval>
 </method>
 <method selector="contentViewMargins" swt_gen="true">
 <retval swt_gen="true"></retval>

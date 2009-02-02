@@ -28,6 +28,11 @@ public float /*double*/ borderWidth() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_borderWidth);
 }
 
+public NSView contentView() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
+	return result != 0 ? new NSView(result) : null;
+}
+
 public NSSize contentViewMargins() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_contentViewMargins);
