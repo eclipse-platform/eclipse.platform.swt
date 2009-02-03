@@ -152,6 +152,7 @@ public class Display extends Device {
 	static Callback windowDelegateCallback6;
 	static Callback dialogCallback3;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
+	static Callback fieldEditorCallback3;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -1792,6 +1793,9 @@ void initClasses () {
 	windowDelegateCallback6 = new Callback(clazz, "windowDelegateProc", 6);
 	int /*long*/ proc6 = windowDelegateCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	fieldEditorCallback3 = new Callback(clazz, "fieldEditorProc", 3);
+	int /*long*/ fieldEditorProc3 = fieldEditorCallback3.getAddress();
+	if (fieldEditorProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	int /*long*/ isFlippedProc = OS.isFlipped_CALLBACK();
 	int /*long*/ drawRectProc = OS.drawRect_CALLBACK(proc3);
@@ -1922,7 +1926,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -1971,7 +1974,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2118,10 +2120,11 @@ void initClasses () {
 	
 	className = "SWTEditorView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-	OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
+	OS.class_addMethod(cls, OS.sel_keyDown_, fieldEditorProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyUp_, fieldEditorProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_insertText_, fieldEditorProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, fieldEditorProc3, "@::");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_, fieldEditorProc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
@@ -3888,6 +3891,33 @@ static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	return 0;
 }
 
+static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	Control control = null;
+	NSView view = new NSView (id);
+	do {
+		Widget widget = GetWidget (view.id);
+		if (widget instanceof Control) {
+			control = (Control)widget;
+			break;
+		}
+		view = view.superview ();
+	} while (view != null);
+	if (control == null) return 0;
+
+	if (sel == OS.sel_keyDown_) {
+		control.keyDown (id, sel, arg0);
+	} else if (sel == OS.sel_keyUp_) {
+		control.keyUp (id, sel, arg0);
+	} else if (sel == OS.sel_insertText_) {
+		return control.insertText (id, sel, arg0) ? 1 : 0;
+	} else if (sel == OS.sel_doCommandBySelector_) {
+		control.doCommandBySelector (id, sel, arg0);
+	} else if (sel == OS.sel_menuForEvent_) {
+		return control.menuForEvent (id, sel, arg0);
+	}
+	return 0;
+}
+
 static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
@@ -3955,9 +3985,6 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		return display.timerProc (id, sel, arg0);
 	}
 	Widget widget = GetWidget(id);
-	if (widget == null && (sel == OS.sel_keyDown_ ||sel == OS.sel_keyUp_ ||sel == OS.sel_insertText_ ||sel == OS.sel_doCommandBySelector_))  {
-		widget = GetFocusControl (new NSView (id).window ());
-	}
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_) {
 		widget.windowWillClose(id, sel, arg0);
@@ -4060,7 +4087,7 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
 	} else if (sel == OS.sel_insertText_) {
-		widget.insertText (id, sel, arg0);
+		return widget.insertText (id, sel, arg0) ? 1 : 0;
 	} else if (sel == OS.sel_doCommandBySelector_) {
 		widget.doCommandBySelector (id, sel, arg0);
 	} else if (sel == OS.sel_highlightSelectionInClipRect_) {

@@ -1831,6 +1831,8 @@ void markLayout (boolean changed, boolean all) {
 }
 
 int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!isEnabled ()) return 0;
+
 	NSPoint pt = NSEvent.mouseLocation();
 	pt.y = (int) (display.getPrimaryFrame().height - pt.y);
 	int x = (int) pt.x;
