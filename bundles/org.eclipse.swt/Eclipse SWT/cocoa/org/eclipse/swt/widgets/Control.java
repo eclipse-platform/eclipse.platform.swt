@@ -1561,7 +1561,9 @@ boolean hasFocus () {
 	NSText fieldEditor = window.fieldEditor(false, null);
 	if (nsResponder.isKindOfClass(OS.class_NSTextView) && fieldEditor != null) {
 		id delegate = fieldEditor.delegate();
-		return delegate.id == focusView().id;
+		if (delegate != null) {
+			return delegate.id == focusView().id;
+		}
 	}
 	return false;
 }
