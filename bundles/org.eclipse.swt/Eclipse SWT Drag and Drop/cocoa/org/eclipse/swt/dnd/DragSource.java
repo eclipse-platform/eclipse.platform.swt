@@ -298,6 +298,7 @@ void drag(Event dragEvent) {
 	
 	NSPasteboard dragBoard = NSPasteboard.pasteboardWithName(OS.NSDragPboard);
 	NSMutableArray nativeTypeArray = NSMutableArray.arrayWithCapacity(10);
+	Transfer fileTrans = null;
 	
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
@@ -307,11 +308,35 @@ void drag(Event dragEvent) {
 			for (int j = 0; j < typeNames.length; j++) {
 				nativeTypeArray.addObject(NSString.stringWith(typeNames[j]));
 			}	
+
+			if (transfer instanceof FileTransfer) {
+				fileTrans = transfer;
+			}			
 		}		
 	}
 
 	if (nativeTypeArray != null)
 		dragBoard.declareTypes(nativeTypeArray, dragSourceDelegate);
+
+	if (fileTrans != null) {
+		int[] types = fileTrans.getTypeIds();
+		TransferData transferData = new TransferData();
+		transferData.type = types[0];
+		DNDEvent event2 = new DNDEvent();
+		event2.widget = this;
+		event2.time = (int)System.currentTimeMillis(); 
+		event2.dataType = transferData; 
+		notifyListeners(DND.DragSetData, event2);
+		if (event2.data != null) {
+			for (int j = 0; j < types.length; j++) {
+				transferData.type = types[j];
+				fileTrans.javaToNative(event2.data, transferData);
+				if (transferData.data != null) {
+					dragBoard.setPropertyList(transferData.data, OS.NSFilenamesPboardType);
+				}
+			}
+		}
+	}
 
 	// Start the drag here from the Control's view.
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
