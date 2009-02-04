@@ -2530,7 +2530,7 @@ public void showItem (TreeItem item) {
 
 void showItem (TreeItem item, boolean scroll) {
 	TreeItem parentItem = item.parentItem;
-	if (parentItem != null && !parentItem.expanded) {
+	if (parentItem != null) {
 		showItem (parentItem, false);
 		parentItem.setExpanded (true);
 	}
