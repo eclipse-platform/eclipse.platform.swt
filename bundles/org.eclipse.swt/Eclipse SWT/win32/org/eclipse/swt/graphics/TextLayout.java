@@ -64,6 +64,9 @@ public final class TextLayout extends Resource {
 		OS.IIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}\0".toCharArray(), IID_IMLangFontLink2);
 	}
 	
+	static final int MERGE_MAX = 512;
+	static final int TOO_MANY_RUNS = 1024;
+	
 	/* IME has a copy of these constants */
 	static final int UNDERLINE_IME_DOT = 1 << 16;
 	static final int UNDERLINE_IME_DASH = 2 << 16;
@@ -255,6 +258,20 @@ void computeRuns (GC gc) {
 				if (lastTabWidth > 0) {
 					while (tabX <= lineWidth) tabX += lastTabWidth;
 					run.width = tabX - lineWidth;
+				}
+			}
+			int length = run.length;
+			if (length > 1) {
+				int stop = j + length - 1;
+				if (stop < tabsLength) {
+					run.width += tabs[stop] - tabs[j];
+				} else {
+					if (j < tabsLength) {
+						run.width += tabs[tabsLength - 1] - tabs[j];
+						length -= (tabsLength - 1) - j;
+					}
+					int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+					run.width += lastTabWidth * (length - 1);
 				}
 			}
 		} 
@@ -2462,6 +2479,8 @@ StyleItem[] merge (int /*long*/ items, int itemCount) {
 	int itemLimit = -1;
 	int nextItemIndex = 0;
 	boolean linkBefore = false;
+	boolean merge = itemCount > TOO_MANY_RUNS;
+	SCRIPT_PROPERTIES sp = new SCRIPT_PROPERTIES();
 	while (start < end) {
 		StyleItem item = new StyleItem();
 		item.start = start;
@@ -2492,6 +2511,24 @@ StyleItem[] merge (int /*long*/ items, int itemCount) {
 				nextItemIndex = itemIndex + 2;
 				OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 				itemLimit = scriptItem.iCharPos;
+			}
+			if (nextItemIndex < itemCount && merge) {
+				if (!item.lineBreak) {
+					OS.MoveMemory(sp, device.scripts[item.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+					if (!sp.fComplex || item.tab) {
+						for (int i = 0; i < MERGE_MAX; i++) {
+							if (nextItemIndex == itemCount) break;
+							char c = segmentsText.charAt(itemLimit);
+							if (c == '\n' || c == '\r') break;
+							if (c == '\t' != item.tab) break;
+							OS.MoveMemory(sp, device.scripts[scriptItem.a.eScript], SCRIPT_PROPERTIES.sizeof);
+							if (!item.tab && sp.fComplex) break;
+							nextItemIndex++;
+							OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
+							itemLimit = scriptItem.iCharPos;
+						}
+					}
+				}
 			}
 		}
 		
