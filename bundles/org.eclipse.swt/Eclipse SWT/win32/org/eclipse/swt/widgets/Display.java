@@ -1311,7 +1311,9 @@ int /*long*/ foregroundIdleProc (int /*long*/ code, int /*long*/ wParam, int /*l
 					runAsyncMessages (false);
 				}
 			}
-			wakeThread ();
+			MSG msg = new MSG();
+			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+			if (!OS.PeekMessage (msg, 0, 0, 0, flags)) wakeThread ();
 		}
 	}
 	return OS.CallNextHookEx (idleHook, (int)/*64*/code, wParam, lParam);
