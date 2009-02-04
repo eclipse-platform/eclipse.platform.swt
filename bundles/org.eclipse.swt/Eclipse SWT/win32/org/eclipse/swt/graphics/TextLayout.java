@@ -241,45 +241,20 @@ void computeRuns (GC gc) {
 	int lineWidth = indent, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
-		if (run.length == 1) {
-			char ch = segmentsText.charAt(run.start);
-			switch (ch) {
-				case '\t': {
-					run.tab = true;
-					if (tabs == null) break;
-					int tabsLength = tabs.length, j;
-					for (j = 0; j < tabsLength; j++) {
-						if (tabs[j] > lineWidth) {
-							run.width = tabs[j] - lineWidth;
-							break;
-						}
-					}
-					if (j == tabsLength) {
-						int tabX = tabs[tabsLength-1];
-						int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
-						if (lastTabWidth > 0) {
-							while (tabX <= lineWidth) tabX += lastTabWidth;
-							run.width = tabX - lineWidth;
-						}
-					}
+		if (tabs != null && run.tab) {
+			int tabsLength = tabs.length, j;
+			for (j = 0; j < tabsLength; j++) {
+				if (tabs[j] > lineWidth) {
+					run.width = tabs[j] - lineWidth;
 					break;
 				}
-				case '\n': {
-					run.lineBreak = true;
-					break;
-				}
-				case '\r': {
-					run.lineBreak = true;
-					StyleItem next = allRuns[i + 1];
-					if (next.length != 0 && segmentsText.charAt(next.start) == '\n') {
-						run.length += 1;
-						next.free();
-						StyleItem[] newAllRuns = new StyleItem[allRuns.length - 1];
-						System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
-						System.arraycopy(allRuns, i + 2, newAllRuns, i + 1, allRuns.length - i - 2);
-						allRuns = newAllRuns;
-					}
-					break;
+			}
+			if (j == tabsLength) {
+				int tabX = tabs[tabsLength-1];
+				int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+				if (lastTabWidth > 0) {
+					while (tabX <= lineWidth) tabX += lastTabWidth;
+					run.width = tabX - lineWidth;
 				}
 			}
 		} 
@@ -2484,6 +2459,8 @@ StyleItem[] merge (int /*long*/ items, int itemCount) {
 	int count = 0, start = 0, end = segmentsText.length(), itemIndex = 0, styleIndex = 0;
 	StyleItem[] runs = new StyleItem[itemCount + stylesCount];
 	SCRIPT_ITEM scriptItem = new SCRIPT_ITEM();
+	int itemLimit = -1;
+	int nextItemIndex = 0;
 	boolean linkBefore = false;
 	while (start < end) {
 		StyleItem item = new StyleItem();
@@ -2492,13 +2469,32 @@ StyleItem[] merge (int /*long*/ items, int itemCount) {
 		runs[count++] = item;
 		OS.MoveMemory(scriptItem, items + itemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 		item.analysis = scriptItem.a;
+		scriptItem.a = new SCRIPT_ANALYSIS();
 		if (linkBefore) {
 			item.analysis.fLinkBefore = true;
 			linkBefore = false;
 		}
-		scriptItem.a = new SCRIPT_ANALYSIS();
-		OS.MoveMemory(scriptItem, items + (itemIndex + 1) * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
-		int itemLimit = scriptItem.iCharPos;
+		char ch = segmentsText.charAt(start);
+		switch (ch) {
+			case '\r':
+			case '\n':
+				item.lineBreak = true;
+				break;
+			case '\t':
+				item.tab = true;
+				break;
+		}
+		if (itemLimit == -1) {
+			nextItemIndex = itemIndex + 1;
+			OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
+			itemLimit = scriptItem.iCharPos;
+			if (ch == '\r' && segmentsText.charAt(itemLimit) == '\n') {
+				nextItemIndex = itemIndex + 2;
+				OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
+				itemLimit = scriptItem.iCharPos;
+			}
+		}
+		
 		int styleLimit = translateOffset(styles[styleIndex + 1].start);
 		if (styleLimit <= itemLimit) {
 			styleIndex++;
@@ -2513,8 +2509,9 @@ StyleItem[] merge (int /*long*/ items, int itemCount) {
 			}
 		}
 		if (itemLimit <= styleLimit) {
-			itemIndex++;
+			itemIndex = nextItemIndex;
 			start = itemLimit;
+			itemLimit = -1;
 		}
 		item.length = start - item.start;
 	}
@@ -3008,6 +3005,7 @@ boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
  * Generate glyphs for one Run.
  */
 void shape (final int /*long*/ hdc, final StyleItem run) {
+	if (run.tab || run.lineBreak) return;
 	final int[] buffer = new int[1];
 	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
