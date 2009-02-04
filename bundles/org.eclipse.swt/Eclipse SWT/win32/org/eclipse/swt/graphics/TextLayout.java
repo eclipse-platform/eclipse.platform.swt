@@ -2488,7 +2488,7 @@ StyleItem[] merge (int /*long*/ items, int itemCount) {
 			nextItemIndex = itemIndex + 1;
 			OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 			itemLimit = scriptItem.iCharPos;
-			if (ch == '\r' && segmentsText.charAt(itemLimit) == '\n') {
+			if (nextItemIndex < itemCount && ch == '\r' && segmentsText.charAt(itemLimit) == '\n') {
 				nextItemIndex = itemIndex + 2;
 				OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 				itemLimit = scriptItem.iCharPos;
