@@ -4569,6 +4569,11 @@ public static final native int ImmGetCompositionStringA (int /*long*/ hIMC, int 
  * @param lpBuf cast=(LPWSTR)
  */
 public static final native int ImmGetCompositionStringW (int /*long*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
+/**
+ * @param hIMC cast=(HIMC)
+ * @param lpBuf cast=(LPWSTR)
+ */
+public static final native int ImmGetCompositionStringW (int /*long*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen); 
 /** @param hWnd cast=(HWND) */
 public static final native int /*long*/ ImmGetContext (int /*long*/ hWnd);
 /**

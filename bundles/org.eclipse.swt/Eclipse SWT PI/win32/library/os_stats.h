@@ -513,6 +513,11 @@ typedef enum {
 	ImmGetCompositionFontW_FUNC,
 	ImmGetCompositionStringA_FUNC,
 #ifndef JNI64
+	ImmGetCompositionStringW__II_3BI_FUNC,
+#else
+	ImmGetCompositionStringW__JI_3BI_FUNC,
+#endif
+#ifndef JNI64
 	ImmGetCompositionStringW__II_3CI_FUNC,
 #else
 	ImmGetCompositionStringW__JI_3CI_FUNC,

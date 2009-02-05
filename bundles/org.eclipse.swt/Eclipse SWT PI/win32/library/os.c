@@ -6869,6 +6869,33 @@ fail:
 }
 #endif
 
+#if (!defined(NO_ImmGetCompositionStringW__II_3BI) && !defined(JNI64)) || (!defined(NO_ImmGetCompositionStringW__JI_3BI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringW__II_3BI)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jint arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringW__JI_3BI)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jint arg3)
+#endif
+{
+	jbyte *lparg2=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringW__II_3BI_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringW__JI_3BI_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)ImmGetCompositionStringW((HIMC)arg0, arg1, (LPWSTR)lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringW__II_3BI_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringW__JI_3BI_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_ImmGetCompositionStringW__II_3CI) && !defined(JNI64)) || (!defined(NO_ImmGetCompositionStringW__JI_3CI) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringW__II_3CI)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jcharArray arg2, jint arg3)
