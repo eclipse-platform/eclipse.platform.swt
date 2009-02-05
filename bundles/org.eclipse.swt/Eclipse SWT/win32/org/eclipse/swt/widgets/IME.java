@@ -420,10 +420,10 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 					}
 				}
 				if ((lParam & OS.GCS_COMPATTR) != 0 && clauses != null) {
-					length = OS.ImmGetCompositionStringA (hIMC, OS.GCS_COMPATTR, (byte [])null, 0);
+					length = OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPATTR, (byte [])null, 0);
 					if (length > 0) {
 						byte [] attrs = new byte [length];
-						OS.ImmGetCompositionStringA (hIMC, OS.GCS_COMPATTR, attrs, length);
+						OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPATTR, attrs, length);
 						length = clauses.length - 1;
 						ranges = new int [length * 2];
 						styles = new TextStyle [length];
