@@ -178,6 +178,18 @@ void deregister () {
 	if (scrollView != null) display.removeWidget (scrollView);
 }
 
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	NSColor nsColor = null; 
+	if (!enabled) {
+		nsColor = NSColor.disabledControlTextColor();
+	} else {
+		if (foreground != null) nsColor = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+	}
+	NSTextView widget = (NSTextView)view;
+	widget.setTextColor(nsColor);
+}
+
 String getNameText () {
 	return getText ();
 }
