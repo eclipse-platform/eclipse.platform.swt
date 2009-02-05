@@ -534,7 +534,8 @@ void createHandle () {
 		super.createHandle ();
 		topView ().setHidden (true);
 	} else {
-//		OS.object_setClass (window.id, OS.objc_getClass("SWTWindow"));
+		int /*long*/ cls = OS.objc_lookUpClass ("SWTWindow");
+		OS.object_setClass(window.id, cls);
 		state &= ~HIDDEN;
 		//TODO - get the content of the foreign window instead of creating it
 		super.createHandle ();
