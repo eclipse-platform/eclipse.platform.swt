@@ -133,6 +133,11 @@ void deregister () {
 	display.removeWidget (box.titleCell());
 }
 
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+	fillBackground (view, context, rect, -1);
+	super.drawWidget (id, context, rect, sendPaint);
+}
+
 NSView eventView () {
 	return contentView;
 }
