@@ -254,6 +254,7 @@ void drag(Event dragEvent) {
 				event.time = (int)System.currentTimeMillis(); 
 				event.dataType = transferData; 
 				notifyListeners(DND.DragSetData, event);
+				if (!event.doit) return;
 				transfer.javaToNative(event.data, transferData);
 				if (transferData.pValue != 0) {
 					int pFormat = Transfer.getWPFFormat(transferData.type);

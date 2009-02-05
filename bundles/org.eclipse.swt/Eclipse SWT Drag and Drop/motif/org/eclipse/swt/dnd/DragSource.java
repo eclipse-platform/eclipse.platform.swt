@@ -311,6 +311,7 @@ int convertProcCallback(int widget, int pSelection, int pTarget, int pType_retur
 	event.dataType = transferData;
 	notifyListeners(DND.DragSetData,event);
 
+	if (!event.doit) return 0;
 	Transfer transferAgent = null;
 	for (int i = 0; i < transferAgents.length; i++){
 		Transfer transfer = transferAgents[i];

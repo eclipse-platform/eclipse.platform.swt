@@ -52,6 +52,7 @@ public void dragStart(DragSourceEvent event);
  * <li>(in)time
  * <li>(in)dataType - the type of data requested.
  * <li>(out)data    - the application inserts the actual data here (must match the dataType)
+ * <li>(out)doit    - set this to cancel the drag
  * </ul></p>
  *
  * @param event the information associated with the drag set data event

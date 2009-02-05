@@ -455,6 +455,8 @@ private int GetData(int /*long*/ pFormatetc, int /*long*/ pmedium) {
 	event.dataType = transferData;
 	notifyListeners(DND.DragSetData,event);
 	
+	if (!event.doit) return COM.E_FAIL;
+	
 	// get matching transfer agent to perform conversion
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++){

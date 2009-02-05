@@ -39,7 +39,9 @@ public class DragSourceEvent extends TypedEvent {
  	 * <p>Flag to determine if the drag and drop operation should proceed.
  	 * The application can set this value to false to prevent the drag from starting. 
  	 * Set to true by default.</p>
- 	 * 
+ 	 * <p>In dragSetData:</p>
+ 	 * <p>This will be set to true when the call to dragSetData is made.  Set it to 
+ 	 * false to cancel the drag.</p>
  	 * <p>In dragFinished:</p>
  	 * <p>Flag to indicate if the operation was performed successfully. 
  	 * True if the operation was performed successfully.</p>

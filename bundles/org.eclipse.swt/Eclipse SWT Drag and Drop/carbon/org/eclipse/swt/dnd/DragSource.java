@@ -377,6 +377,7 @@ int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDra
 	event.time = (int)System.currentTimeMillis(); 
 	event.dataType = transferData; 
 	notifyListeners(DND.DragSetData, event);
+	if (!event.doit) return OS.dragNotAcceptedErr;
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transferAgent = transferAgents[i];

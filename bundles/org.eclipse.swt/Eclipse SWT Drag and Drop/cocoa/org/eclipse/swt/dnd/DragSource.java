@@ -644,6 +644,7 @@ void pasteboard_provideDataForType(NSPasteboard pasteboard, NSString dataType) {
 	event.time = (int)System.currentTimeMillis(); 
 	event.dataType = transferData; 
 	notifyListeners(DND.DragSetData, event);
+	if (!event.doit) return;
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transferAgent = transferAgents[i];
