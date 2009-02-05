@@ -805,7 +805,6 @@ void destroyItem (TreeItem item) {
 	items [count] = null;
 	if (parentItem != null) {
 		parentItem.itemCount = count;
-		if (count == 0) parentItem.expanded = false;
 	} else {
 		this.itemCount = count;
 	}
@@ -1743,14 +1742,13 @@ boolean outlineView_shouldCollapseItem (int /*long*/ id, int /*long*/ sel, int /
 		event.item = item;
 		sendEvent (SWT.Collapse, event);
 		if (isDisposed ()) return false;
-		item.expanded = false;
 		ignoreExpand = true;
 		((NSOutlineView) view).collapseItem (item.handle);
 		ignoreExpand = false;
 		setScrollWidth ();
 		return false;
 	}
-	return !item.expanded;
+	return true;
 }
 
 boolean outlineView_shouldExpandItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ itemID) {
@@ -1760,13 +1758,12 @@ boolean outlineView_shouldExpandItem (int /*long*/ id, int /*long*/ sel, int /*l
 		event.item = item;
 		sendEvent (SWT.Expand, event);
 		if (isDisposed ()) return false;
-		item.expanded = true;
 		ignoreExpand = true;
 		((NSOutlineView) view).expandItem (item.handle);
 		ignoreExpand = false;
 		return false;
 	}
-	return item.expanded;
+	return true;
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ itemID) {

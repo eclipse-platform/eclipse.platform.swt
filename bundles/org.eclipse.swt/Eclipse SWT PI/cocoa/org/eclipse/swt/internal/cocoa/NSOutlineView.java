@@ -36,6 +36,10 @@ public float /*double*/ indentationPerLevel() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_indentationPerLevel);
 }
 
+public boolean isItemExpanded(id item) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isItemExpanded_, item != null ? item.id : 0);
+}
+
 public id itemAtRow(int /*long*/ row) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtRow_, row);
 	return result != 0 ? new id(result) : null;

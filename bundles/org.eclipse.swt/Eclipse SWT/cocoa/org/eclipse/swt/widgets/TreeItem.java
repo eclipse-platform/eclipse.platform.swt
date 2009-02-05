@@ -40,7 +40,7 @@ public class TreeItem extends Item {
 	int itemCount;
 	String [] strings;
 	Image [] images;
-	boolean checked, grayed, cached, expanded;
+	boolean checked, grayed, cached;
 	Color foreground, background;
 	Color [] cellForeground, cellBackground;
 	Font font;
@@ -352,7 +352,7 @@ void clearSelection () {
 	NSOutlineView widget = (NSOutlineView) parent.view;
 	int /*long*/ row = widget.rowForItem (handle);
 	if (widget.isRowSelected(row)) widget.deselectRow (row);
-	if (items != null && expanded) {
+	if (items != null && getExpanded ()) {
 		for (int i = 0; i < items.length; i++) {
 			TreeItem item = items [i];
 			if (item != null && !item.isDisposed ()) item.clearSelection ();
@@ -536,7 +536,7 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget ();
-	return expanded;
+	return ((NSOutlineView)parent.view).isItemExpanded (handle);
 }
 
 /**
@@ -1108,7 +1108,6 @@ public void setExpanded (boolean expanded) {
 
 	parent.checkItems ();
 	parent.ignoreExpand = true;
-	this.expanded = expanded;
 	if (expanded) {
 		((NSOutlineView) parent.view).expandItem (handle);
 	} else {
