@@ -29,7 +29,7 @@ import java.util.Vector;
 public final class Program {
 	String name, fullPath, identifier;
 
-	static final String PREFIX_FILE = "file://"; //$NON-NLS-1$
+	static final String PREFIX_FILE = "file:"; //$NON-NLS-1$
 	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 
@@ -260,9 +260,9 @@ public boolean execute (String fileName) {
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-		NSString fullPath = NSString.stringWith(fileName);
 		String lowercaseName = fileName.toLowerCase ();
 		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+			NSString fullPath = NSString.stringWith(fileName);
 			NSString unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
 			int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
 			NSString escapedString = new NSString(ptr);
@@ -270,7 +270,11 @@ public boolean execute (String fileName) {
 			OS.CFRelease(ptr);
 			return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
 		} else {
-			return workspace.openFile(fullPath, NSString.stringWith(name));
+			if (fileName.startsWith (PREFIX_FILE)) {
+				fileName = fileName.substring (PREFIX_FILE.length ());
+			}
+			NSString fullPath = NSString.stringWith (fileName);
+			return workspace.openFile (fullPath, NSString.stringWith (name));
 		}
 	} finally {
 		pool.release();
