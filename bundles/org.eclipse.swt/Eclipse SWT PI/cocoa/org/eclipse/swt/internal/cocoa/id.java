@@ -34,4 +34,8 @@ public int /*long*/ objc_getClass() {
 	if (index != -1) name = name.substring(index + 1);
 	return OS.objc_getClass(name);
 }
+
+public String toString() {
+	return getClass().getName() + "{" + id +  "}";
+}
 }
