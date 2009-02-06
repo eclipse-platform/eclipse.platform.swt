@@ -3859,6 +3859,11 @@ public static final native int /*long*/ NSFileTypeForHFSTypeCode(int hfsFileType
  */
 public static final native int /*long*/ NSGetSizeAndAlignment(int /*long*/ typePtr, int[] /*long[]*/ sizep, int[] /*long[]*/ alignp);
 /**
+ * @param aPoint flags=struct
+ * @param aRect flags=struct
+ */
+public static final native boolean NSPointInRect(NSPoint aPoint, NSRect aRect);
+/**
  * @param directory cast=(NSSearchPathDirectory)
  * @param domainMask cast=(NSSearchPathDomainMask)
  * @param expandTilde cast=(BOOL)

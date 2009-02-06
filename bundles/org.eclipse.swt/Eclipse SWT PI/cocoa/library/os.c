@@ -2166,6 +2166,25 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
 }
 #endif
 
+#ifndef NO_NSPointInRect
+JNIEXPORT jboolean JNICALL OS_NATIVE(NSPointInRect)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	NSPoint _arg0, *lparg0=NULL;
+	NSRect _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPointInRect_FUNC);
+	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getNSRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jboolean)NSPointInRect(*lparg0, *lparg1);
+fail:
+	if (arg1 && lparg1) setNSRectFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, NSPointInRect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSPoint_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(NSPoint_1sizeof)
 	(JNIEnv *env, jclass that)

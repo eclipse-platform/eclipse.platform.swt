@@ -201,6 +201,7 @@ typedef enum {
 	NSLinkAttributeName_FUNC,
 	NSNumberOfColorComponents_FUNC,
 	NSParagraphStyleAttributeName_FUNC,
+	NSPointInRect_FUNC,
 	NSPoint_1sizeof_FUNC,
 	NSPrintAllPages_FUNC,
 	NSPrintCopies_FUNC,

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 382;
-int OS_nativeFunctionCallCount[382];
+int OS_nativeFunctionCount = 383;
+int OS_nativeFunctionCallCount[383];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFRunLoopAddObserver",
@@ -193,6 +193,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSLinkAttributeName",
 	"NSNumberOfColorComponents",
 	"NSParagraphStyleAttributeName",
+	"NSPointInRect",
 	"NSPoint_1sizeof",
 	"NSPrintAllPages",
 	"NSPrintCopies",
