@@ -165,7 +165,7 @@ public String getText () {
 }
 
 float getThemeAlpha () {
-	return 0.25f * parent.getThemeAlpha ();
+	return (background != null ? 1 : 0.25f) * parent.getThemeAlpha ();
 }
 
 /**
