@@ -129,7 +129,10 @@ Control [] _getTabList () {
 
 boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if ((state & CANVAS) != 0) {
-		return ((style & SWT.NO_FOCUS) == 0);
+		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+			if (contentView().subviews().count() == 0) return true;
+		}
+		return false;
 	}
 	return super.acceptsFirstResponder (id, sel);
 }
