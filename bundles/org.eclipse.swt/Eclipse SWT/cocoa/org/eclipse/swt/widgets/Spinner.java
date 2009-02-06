@@ -821,7 +821,6 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int min = getMinimum ();
 	if (value <= min) return;
 	int pos = getSelection();
