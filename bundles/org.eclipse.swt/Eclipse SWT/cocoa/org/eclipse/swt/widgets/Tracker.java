@@ -761,8 +761,11 @@ public boolean open () {
 	NSEvent currentEvent = application.currentEvent();
 	switch ((int)/*64*/currentEvent.type()) {
 		case OS.NSLeftMouseDown:
+		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDown:
+		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDown:
+		case OS.NSOtherMouseDragged:
 			down = true;
 	}
 	if (down) {
