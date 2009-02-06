@@ -121,6 +121,7 @@ public class CTabFolder extends Composite {
 	int[] priority = new int[0];
 	boolean mru = false;
 	Listener listener;
+	boolean ignoreTraverse;
 	
 	/* External Listener management */
 	CTabFolder2Listener[] folderListeners = new CTabFolder2Listener[0];
@@ -1925,14 +1926,14 @@ void onFocus(Event event) {
 		setSelection(0, true);
 	}
 }
-boolean onMnemonic (Event event) {
+boolean onMnemonic (Event event, boolean doit) {
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
 			char mnemonic = _findMnemonic (items[i].getText ());
 			if (mnemonic != '\0') {
 				if (Character.toLowerCase (key) == mnemonic) {
-					setSelection(i, true);
+					if (doit) setSelection(i, true);
 					return true;
 				}
 			}
@@ -2218,9 +2219,9 @@ void onMouse(Event event) {
 		}
 	}
 }
-boolean onPageTraversal(Event event) {
+void onPageTraversal(Event event) {
 	int count = items.length;
-	if (count == 0) return false;
+	if (count == 0) return;
 	int index = selectedIndex; 
 	if (index  == -1) {
 		index = 0;
@@ -2257,12 +2258,10 @@ boolean onPageTraversal(Event event) {
 						showList(chevronRect);
 					}
 				}
-				return true;
 			}
 		}
 	}
 	setSelection (index, true);
-	return true;
 }
 void onPaint(Event event) {
 	if (inDispose) return;
@@ -2326,6 +2325,7 @@ void onResize() {
 	oldSize = size;
 }
 void onTraverse (Event event) {
+	if (ignoreTraverse) return;
 	switch (event.detail) {
 		case SWT.TRAVERSE_ESCAPE:
 		case SWT.TRAVERSE_RETURN:
@@ -2335,12 +2335,27 @@ void onTraverse (Event event) {
 			if (focusControl == this) event.doit = true;
 			break;
 		case SWT.TRAVERSE_MNEMONIC:
-			event.doit = onMnemonic(event);
-			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
+			event.doit = onMnemonic(event, false);
 			break;
 		case SWT.TRAVERSE_PAGE_NEXT:
 		case SWT.TRAVERSE_PAGE_PREVIOUS:
-			event.doit = onPageTraversal(event);
+			event.doit = items.length > 0;
+			break;
+	}
+	ignoreTraverse = true;
+	notifyListeners(SWT.Traverse, event);
+	ignoreTraverse = false;
+	event.type = SWT.None;
+	if (isDisposed()) return;
+	if (!event.doit) return;
+	switch (event.detail) {
+		case SWT.TRAVERSE_MNEMONIC:
+			onMnemonic(event, true);
+			event.detail = SWT.TRAVERSE_NONE;
+			break;
+		case SWT.TRAVERSE_PAGE_NEXT:
+		case SWT.TRAVERSE_PAGE_PREVIOUS:
+			onPageTraversal(event);
 			event.detail = SWT.TRAVERSE_NONE;
 			break;
 	}
