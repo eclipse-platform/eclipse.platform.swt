@@ -139,7 +139,6 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
-	fillBackground (view, context, rect, -1);
 	super.drawWidget (id, context, rect, sendPaint);
 	if (caret == null) return;
 	if (caret.isShowing) {
