@@ -1575,7 +1575,7 @@ boolean hasFocus () {
 
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	if ((state & DISABLED) != 0) return 0;
-	if (isActive ()) return 0;
+	if (!isActive ()) return 0;
 	if (regionPath != null) {
 		NSPoint pt = view.superview().convertPoint_toView_(point, view);
 		return regionPath.containsPoint(pt) ? view.id : 0;
