@@ -3689,7 +3689,6 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
 	int type = (int)/*64*/nsEvent.type ();
-//	System.out.println("send=" + type);
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
