@@ -293,6 +293,10 @@ public int getYear () {
 	return (int)/*64*/getCalendarDate().yearOfCommonEra();
 }
 
+boolean isEventView (int /*long*/ id) {
+	return true;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected by the user.

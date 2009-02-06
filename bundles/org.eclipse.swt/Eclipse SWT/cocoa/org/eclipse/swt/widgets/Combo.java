@@ -901,6 +901,10 @@ void insertEditText (String string) {
 	}
 }
 
+boolean isEventView (int /*long*/ id) {
+	return true;
+}
+
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	// If this is a combo box with an editor field and the control is disposed
 	// while the view's cell editor is open we crash while tearing down the

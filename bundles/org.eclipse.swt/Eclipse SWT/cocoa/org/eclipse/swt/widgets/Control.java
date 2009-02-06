@@ -1877,10 +1877,14 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.scrollWheel(id, sel, theEvent); 
 }
 
+boolean isEventView (int /*long*/ id) {
+	return true;
+}
+
 boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
-	if (id != eventView ().id) return true;
 	if (!display.sendEvent) return true;
 	display.sendEvent = false;
+	if (!isEventView (id)) return true;
 	Control control = this;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	int nsType = (int)/*64*/nsEvent.type();
@@ -1921,10 +1925,11 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
+	boolean set = isEventView (id);
 	Display display = this.display;
-	display.trackingControl = this;
+	if (set) display.trackingControl = this;
 	super.mouseDown(id, sel, theEvent);
-	display.trackingControl = null;
+	if (set) display.trackingControl = null;
 }
 
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -2648,6 +2653,7 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	System.out.println(type + " " + this);
 	NSInputManager manager = NSInputManager.currentInputManager ();
 	if (manager != null && manager.wantsToHandleMouseEvents ()) {
 		if (manager.handleMouseEvent (nsEvent)) {

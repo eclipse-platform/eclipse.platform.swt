@@ -233,6 +233,10 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
+boolean isEventView (int /*long*/ id) {
+	return id == eventView ().id;
+}
+
 boolean isTrim (NSView view) {
 	if (scrollView != null) {
 		if (scrollView.id == view.id) return true;

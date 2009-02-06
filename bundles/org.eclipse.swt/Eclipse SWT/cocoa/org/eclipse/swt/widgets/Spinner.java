@@ -490,6 +490,10 @@ public int getTextLimit () {
     return textLimit;
 }
 
+boolean isEventView (int /*long*/ id) {
+	return true;
+}
+
 /**
  * Pastes text from clipboard.
  * <p>

@@ -1127,6 +1127,11 @@ void insertEditText (String string) {
 	}
 }
 
+boolean isEventView (int /*long*/ id) {
+	if ((style & SWT.MULTI) != 0) return super.isEventView (id);
+	return true;
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
