@@ -859,6 +859,7 @@ public void setWidth (int width) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int /*long*/ hwnd = parent.handle;
+	if (width == ((int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0))) return;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, width);
 }
 
