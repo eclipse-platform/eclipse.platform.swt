@@ -3679,6 +3679,7 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 		case OS.NSOtherMouseDragged:
 			//TODO hover does not happen while tracking because timer are not dispatched
 			checkEnterExit (trackingControl, nsEvent, true);
+			//FALL THROUGH
 		case OS.NSMouseMoved:
 			trackingControl.sendMouseEvent (nsEvent, SWT.MouseMove, true);
 			break;
