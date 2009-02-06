@@ -490,7 +490,6 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	return returnValue;
 }
 
-
 /**
  * Returns <code>true</code> if the receiver or any ancestor 
  * up to and including the receiver's nearest ancestor shell
