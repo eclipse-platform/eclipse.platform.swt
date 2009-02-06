@@ -1008,7 +1008,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 	}
 
 	Color background = control.background;
-	float alpha;
+	float /*double*/ alpha;
 	if (background == null || background.isDisposed ()) {
 		background = control.defaultBackground ();
 		alpha = getThemeAlpha ();
@@ -1107,7 +1107,7 @@ public boolean forceFocus () {
 	checkWidget();
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
-	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
+	if (!isEnabled () || !isVisible () || !isActive ()) return false;
 	if (isFocusControl ()) return true;
 	shell.setSavedFocus (null);
 	shell.bringToTop (false);
@@ -1575,6 +1575,7 @@ boolean hasFocus () {
 
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	if ((state & DISABLED) != 0) return 0;
+	if (isActive ()) return 0;
 	if (regionPath != null) {
 		NSPoint pt = view.superview().convertPoint_toView_(point, view);
 		return regionPath.containsPoint(pt) ? view.id : 0;
@@ -1629,6 +1630,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		graphicsContext = flippedContext;
 		display.addContext (graphicsContext);
 		context = graphicsContext.id;
+		if (data != null) data.flippedContext = flippedContext;
 	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1665,12 +1667,12 @@ public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	NSGraphicsContext graphicsContext = new NSGraphicsContext (context);
 	display.removeContext (graphicsContext);
 	if (data != null) {
-		if (data.paintRect != null) {
-			NSGraphicsContext.setCurrentContext (graphicsContext);
-		} else {
-			graphicsContext.flushGraphics ();
-		}
+		if (data.paintRect == null) graphicsContext.flushGraphics ();
 	}
+}
+
+boolean isActive () {
+	return getShell().getModalShell() == null;
 }
 
 /*
@@ -1872,14 +1874,102 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			}
 		}
 	}
-	super.scrollWheel(id, sel, theEvent);
+	super.scrollWheel(id, sel, theEvent); 
+}
+
+boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
+	if (id != eventView ().id) return true;
+	if (!display.sendEvent) return true;
+	display.sendEvent = false;
+	Control control = this;
+	NSEvent nsEvent = new NSEvent(theEvent);
+	int nsType = (int)/*64*/nsEvent.type();
+	switch (nsType) {
+		case OS.NSMouseMoved:
+			control = display.findControl(true);
+			display.checkEnterExit (control, nsEvent, false);
+			break;
+		case OS.NSLeftMouseDragged:
+		case OS.NSRightMouseDragged:
+		case OS.NSOtherMouseDragged:
+			display.checkEnterExit (this, nsEvent, false);
+			break;
+		case OS.NSLeftMouseUp:
+		case OS.NSRightMouseUp:
+		case OS.NSOtherMouseUp:
+			display.checkEnterExit (display.findControl(true), nsEvent, false);
+			break;
+	}
+	if (control == null) return true;
+	boolean dragging = false;
+	boolean[] consume = new boolean[1];
+	if (nsType == OS.NSLeftMouseDown && nsEvent.clickCount() == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+		NSPoint windowLoc = nsEvent.locationInWindow();
+		NSPoint viewLoc = view.convertPoint_fromView_(windowLoc, null);
+		dragging = dragDetect((int)viewLoc.x, (int)viewLoc.y, false, consume);
+	}
+	control.sendMouseEvent (nsEvent, type, false);	
+	if (type == SWT.MouseDown && nsEvent.clickCount() == 2) {
+		control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
+	}
+	if (dragging) {
+		control.sendDragEvent(nsEvent);
+	}
+	if (consume[0]) return false;
+	return true;
 }
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
 	Display display = this.display;
 	display.trackingControl = this;
 	super.mouseDown(id, sel, theEvent);
 	display.trackingControl = null;
+}
+
+void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseUp)) return;
+	super.mouseUp(id, sel, theEvent);
+}
+
+void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
+	super.mouseMoved(id, sel, theEvent);
+}
+
+void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
+	super.mouseDragged(id, sel, theEvent);
+}
+
+void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
+	super.rightMouseDown(id, sel, theEvent);
+}
+
+void rightMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseUp)) return;
+	super.rightMouseUp(id, sel, theEvent);
+}
+
+void rightMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
+	super.rightMouseDragged(id, sel, theEvent);
+}
+
+void otherMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
+	super.otherMouseDown(id, sel, theEvent);
+}
+
+void otherMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseUp)) return;
+	super.otherMouseUp(id, sel, theEvent);
+}
+
+void otherMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
+	super.otherMouseDragged(id, sel, theEvent);
 }
 
 void moved () {
@@ -2157,9 +2247,6 @@ void releaseWidget () {
 	if (display.currentControl == this) {
 		display.currentControl = null;
 		display.timerExec(-1, display.hoverTimer);
-	}
-	if (display.grabControl == this) {
-		display.setGrabControl (null);
 	}
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();

@@ -349,6 +349,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 	NSRect frame = window.frame();
 	NSGraphicsContext context = window.graphicsContext();
+	NSGraphicsContext.static_saveGraphicsState();
 	NSGraphicsContext.setCurrentContext(context);
 	NSAffineTransform transform = NSAffineTransform.transform();
 	context.saveGraphicsState();
@@ -380,6 +381,7 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 	}
 	context.flushGraphics();
 	context.restoreGraphicsState();
+	NSGraphicsContext.static_restoreGraphicsState();
 }
 
 /**
@@ -699,6 +701,7 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget ();
+	Display display = this.display;
 	cancelled = false;
 	tracking = true;
 	window = (NSWindow)new NSWindow().alloc();
@@ -729,10 +732,12 @@ public boolean open () {
 	window.setOpaque(false);
 	window.setContentView(null);
 	NSGraphicsContext context = window.graphicsContext();
+	NSGraphicsContext.static_saveGraphicsState();
 	NSGraphicsContext.setCurrentContext(context);
 	context.setCompositingOperation(OS.NSCompositeClear);
 	frame.x = frame.y = 0;
 	NSBezierPath.fillRect(frame);
+	NSGraphicsContext.static_restoreGraphicsState();
 	window.orderFrontRegardless();
 
 	drawRectangles (window, rectangles, false);
@@ -774,6 +779,8 @@ public boolean open () {
 		oldY = cursorPos.y;
 	}
 
+	Control oldTrackingControl = display.trackingControl;
+	display.trackingControl = null;
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	while (tracking && !cancelled) {
 		NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
@@ -784,6 +791,7 @@ public boolean open () {
 			case OS.NSLeftMouseUp:
 			case OS.NSRightMouseUp:
 			case OS.NSOtherMouseUp:
+				event.window().enableCursorRects();
 			case OS.NSMouseMoved:
 			case OS.NSLeftMouseDragged:
 			case OS.NSRightMouseDragged:
@@ -796,30 +804,24 @@ public boolean open () {
 				key(event);
 				break;
 		}
-		/*
-		* Don't dispatch mouse and key events in general, EXCEPT once this
-		* tracker has finished its work.
-		*/
 		boolean dispatch = true;
-		if (tracking && !cancelled) {
-			switch (type) {
-				case OS.NSLeftMouseDown:
-				case OS.NSLeftMouseUp:
-				case OS.NSRightMouseDown:
-				case OS.NSRightMouseUp:
-				case OS.NSOtherMouseDown:
-				case OS.NSOtherMouseUp:
-				case OS.NSMouseMoved:
-				case OS.NSLeftMouseDragged:
-				case OS.NSRightMouseDragged:
-				case OS.NSOtherMouseDragged:
-				case OS.NSMouseEntered:
-				case OS.NSMouseExited:
-				case OS.NSKeyDown:
-				case OS.NSKeyUp:
-				case OS.NSFlagsChanged:
-					dispatch = false;
-			}
+		switch (type) {
+			case OS.NSLeftMouseDown:
+			case OS.NSLeftMouseUp:
+			case OS.NSRightMouseDown:
+			case OS.NSRightMouseUp:
+			case OS.NSOtherMouseDown:
+			case OS.NSOtherMouseUp:
+			case OS.NSMouseMoved:
+			case OS.NSLeftMouseDragged:
+			case OS.NSRightMouseDragged:
+			case OS.NSOtherMouseDragged:
+			case OS.NSMouseEntered:
+			case OS.NSMouseExited:
+			case OS.NSKeyDown:
+			case OS.NSKeyUp:
+			case OS.NSFlagsChanged:
+				dispatch = false;
 		}
 		if (dispatch) application.sendEvent(event);
 		if (clientCursor != null && resizeCursor == null) {
@@ -827,6 +829,8 @@ public boolean open () {
 		}
 		pool.release();
 	}
+	display.trackingControl = oldTrackingControl;
+	display.setCursor(display.findControl(true));
 	if (!isDisposed()) {
 		drawRectangles (window, rectangles, true);
 	}

@@ -270,9 +270,8 @@ void createHandle () {
 	view = widget;
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	fillBackground (view, context, rect, -1);
-	super.drawWidget (id, context, rect, sendPaint);
 }
 
 Cursor findCursor () {
@@ -347,7 +346,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
-//	super.mouseDown(id, sel, theEvent);
+	super.mouseDown(id, sel, theEvent);
 	NSEvent nsEvent = new NSEvent(theEvent);
 	if (nsEvent.clickCount() != 1) return;
 	NSPoint location = nsEvent.locationInWindow();
@@ -372,7 +371,7 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 
 void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
-//	super.mouseDragged(id, sel, theEvent);
+	super.mouseDragged(id, sel, theEvent);
 	if (!dragging) return;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint location = nsEvent.locationInWindow();
@@ -402,7 +401,7 @@ void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
-//	super.mouseUp(id, sel, theEvent);
+	super.mouseUp(id, sel, theEvent);
 	if (!dragging) return;
 	dragging = false;
 	NSRect frame = view.frame();

@@ -108,10 +108,8 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
-	boolean dragging;
-	boolean [] consume = {false};
-	
-	Control currentControl, grabControl, trackingControl;
+	boolean sendEvent;
+	Control currentControl, trackingControl;
 	
 	boolean inPaint;
 
@@ -508,6 +506,20 @@ protected void checkDevice () {
 	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+}
+
+void checkEnterExit (Control control, NSEvent nsEvent, boolean send) {
+	if (control != currentControl) {
+		if (currentControl != null) {
+			currentControl.sendMouseEvent (nsEvent, SWT.MouseExit, send);
+		}
+		currentControl = control;
+		if (control != null) {
+			control.sendMouseEvent (nsEvent, SWT.MouseEnter, send);
+		}
+		setCursor (control);
+	}
+	if (control != null) timerExec (getToolTipTime (), hoverTimer);
 }
 
 /**
@@ -1029,7 +1041,7 @@ public Rectangle getClientArea () {
  */
 public Control getCursorControl () {
 	checkDevice();
-	return findControl(null, false, false, true);
+	return findControl(false);
 }
 
 /**
@@ -1723,25 +1735,36 @@ void initApplicationDelegate() {
 	application.setDelegate(applicationDelegate);
 }
 
-void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, int /*long*/ drawRectProc) {
-	OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseUp_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_scrollWheel_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_rightMouseDown_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_rightMouseUp_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_otherMouseDown_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_otherMouseUp_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseDragged_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseMoved_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseEntered_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseExited_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_drawRect_, drawRectProc, "@:{NSRect}");
+void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, int /*long*/ drawRectProc, int /*long*/ hitTestProc) {
+	if (proc3 != 0) {
+		OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_scrollWheel_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rightMouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_otherMouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseDragged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseMoved_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseEntered_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_mouseExited_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
+	}
+	if (proc2 != 0) {
+		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
+	}
+	if (drawRectProc != 0) {
+		OS.class_addMethod(cls, OS.sel_drawRect_, drawRectProc, "@:{NSRect}");
+	}
+	if (hitTestProc != 0) {
+		OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");		
+	}
 }
 
 void addFrameMethods(int /*long*/ cls, int /*long*/ setFrameOriginProc, int /*long*/ setFrameSizeProc) {
@@ -1852,22 +1875,17 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTCanvasView";
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
-	OS.class_addProtocol(cls, OS.objc_getProtocol("NSTextInput"));
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
-	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
 	
 	//NSTextInput protocol
+	OS.class_addProtocol(cls, OS.objc_getProtocol("NSTextInput"));
 	OS.class_addMethod(cls, OS.sel_hasMarkedText, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_markedRange, markedRangeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_selectedRange, selectedRangeProc, "@:");
@@ -1880,7 +1898,10 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_firstRectForCharacterRange_, firstRectForCharacterRangeProc, "@:{NSRange}");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
+	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1893,7 +1914,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_pageDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_pageUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_reflectScrolledClipView_, proc3, "@:@");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1902,7 +1923,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
 	
@@ -1926,7 +1947,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1953,6 +1974,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSTableHeaderView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
+	//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTOutlineView";
@@ -1974,7 +1996,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1989,8 +2011,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_tabView_willSelectTabViewItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tabView_didSelectTabViewItem_, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1998,7 +2019,7 @@ void initClasses () {
 	className = "SWTBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSBox, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2006,7 +2027,7 @@ void initClasses () {
 	className = "SWTProgressIndicator";
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls); 
@@ -2014,7 +2035,7 @@ void initClasses () {
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls); 
@@ -2027,7 +2048,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2044,7 +2065,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2058,7 +2079,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2067,7 +2088,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2080,7 +2101,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2093,7 +2114,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2107,7 +2128,7 @@ void initClasses () {
 	className = "SWTTextView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
@@ -2115,22 +2136,20 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_clickedOnLink_atIndex_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_dragSelectionWithEvent_offset_slideBack_, proc5, "@:@@@");
-	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTEditorView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-	OS.class_addMethod(cls, OS.sel_keyDown_, fieldEditorProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_, fieldEditorProc3, "@:@");
+	//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
+	addEventMethods(cls, 0, fieldEditorProc3, 0, 0);
 	OS.class_addMethod(cls, OS.sel_insertText_, fieldEditorProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, fieldEditorProc3, "@::");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_, fieldEditorProc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -2146,7 +2165,7 @@ void initClasses () {
 	className = "SWTSearchField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSearchField, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -2163,7 +2182,7 @@ void initClasses () {
 	className = "SWTSecureTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSecureTextField, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -3300,22 +3319,6 @@ public void setData (String key, Object value) {
 	values = newValues;
 }
 
-void setGrabControl (Control control) {
-	Control oldGrabControl = grabControl;
-	grabControl = control;
-	if (control != null) {
-		NSView view = control.view;
-		NSWindow window = view.window();
-		window.disableCursorRects();
-	} else {
-		if (oldGrabControl != null) {
-			NSView view = oldGrabControl.view;
-			NSWindow window = view.window();
-			window.enableCursorRects();
-		}
-	}
-}
-
 void setMenuBar (Menu menu) {
 	if (menu == menuBar) return;
 	menuBar = menu;
@@ -3611,22 +3614,21 @@ void wakeThread () {
 	object.performSelectorOnMainThread(OS.sel_release, null, false);
 }
 
-Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim, boolean checkWindows) {
-	if (checkGrab && grabControl != null && !grabControl.isDisposed()) return grabControl;
-	NSPoint point = NSEvent.mouseLocation();
+Control findControl (boolean checkTrim) {
 	NSView view = null;
-	NSWindow window = nsEvent != null ? nsEvent.window() : null;
- 	if (window != null) {
+	NSPoint screenLocation = NSEvent.mouseLocation();
+	NSArray windows = application.orderedWindows();
+	for (int i = 0, count = (int)/*64*/windows.count(); i < count && view == null; i++) {
+		NSWindow window = new NSWindow(windows.objectAtIndex(i));
 		NSView contentView = window.contentView();
-		if (contentView != null) view = contentView.hitTest (window.convertScreenToBase(point));
-	}
-	if (view == null && checkWindows) {
-		NSArray windows = application.orderedWindows();
-		for (int i = 0; i < windows.count() && view == null; i++) {
-			window = new NSWindow(windows.objectAtIndex(i));
-			NSView contentView = window.contentView();
-			if (contentView != null) view = contentView.hitTest (window.convertScreenToBase(point));
-		}
+		if (contentView != null && OS.NSPointInRect(screenLocation, window.frame())) {
+			NSPoint location = window.convertScreenToBase(screenLocation);
+			view = contentView.hitTest (location);
+			if (view == null && !checkTrim) {
+				view = contentView;
+			}
+			break;
+		}			
 	}
 	Control control = null;
 	if (view != null) {
@@ -3655,78 +3657,35 @@ int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel
 	if (result != 0) {
 		if (trackingControl != null && dequeue != 0) {
 			NSEvent nsEvent = new NSEvent(result);
-			applicationSendMouseEvent(nsEvent, true);
+			applicationSendTrackingEvent(nsEvent);
 		}
 	}
 	return result;
 }
 
-boolean applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
-	if (send) runDeferredEvents();
-	boolean up = false;
+boolean applicationSendTrackingEvent (NSEvent nsEvent) {
+	runDeferredEvents();
 	int type = (int)/*64*/nsEvent.type();
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
-		case OS.NSOtherMouseDown: {
-			Control control = findControl(nsEvent, false, true, false);
-			setGrabControl (control);
-			consume[0] = false;
-			if (control != null) {
-				if (type == OS.NSLeftMouseDown && nsEvent.clickCount() == 1 && (control.state & Widget.DRAG_DETECT) != 0 && control.hooks (SWT.DragDetect)) {
-					NSPoint windowLoc = nsEvent.locationInWindow();
-					NSPoint viewLoc = control.view.convertPoint_fromView_(windowLoc, null);
-					if (control.dragDetect((int)viewLoc.x, (int)viewLoc.y, false, consume)) {
-						dragging = true;
-					}
-				}
-				control.sendMouseEvent (nsEvent, SWT.MouseDown, send);
-				if (nsEvent.clickCount() == 2) {
-					control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, send);
-				}
-				if (consume [0]) return true;
-			}
+		case OS.NSOtherMouseDown:
+			trackingControl.sendMouseEvent (nsEvent, SWT.MouseDown, true);
 			break;
-		}
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
-		case OS.NSOtherMouseUp: {
-			Control control = findControl(nsEvent, true, true, false);
-			if (control != null) {
-				control.sendMouseEvent (nsEvent, SWT.MouseUp, send);
-			}
-			setGrabControl (null);
-			up = true;
-			//FALL THROUGH
-		}
+		case OS.NSOtherMouseUp:
+			nsEvent.window().enableCursorRects();
+			trackingControl.sendMouseEvent (nsEvent, SWT.MouseUp, true);
+			break;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
-		case OS.NSMouseMoved: {
-			if (type == OS.NSMouseMoved) setGrabControl (null);
-			Control control = findControl(nsEvent, true, true, type == OS.NSMouseMoved);
-			if (dragging) {
-				dragging = false;
-				control.sendDragEvent(nsEvent);
-			}
-			if (control != currentControl) {
-				if (currentControl != null) {
-					currentControl.sendMouseEvent (nsEvent, SWT.MouseExit, send);
-				}
-				currentControl = control;
-				if (control != null) {
-					control.sendMouseEvent (nsEvent, SWT.MouseEnter, send);
-					if (up) timerExec (getToolTipTime (), hoverTimer);
-				}
-				setCursor (control);
-			}
-			if (!up && control != null) {
-				timerExec (getToolTipTime (), hoverTimer);
-				control.sendMouseEvent (nsEvent, SWT.MouseMove, send);
-			}
-			if (consume [0]) return true;
+			//TODO hover does not happen while tracking because timer are not dispatched
+			checkEnterExit (trackingControl, nsEvent, true);
+		case OS.NSMouseMoved:
+			trackingControl.sendMouseEvent (nsEvent, SWT.MouseMove, true);
 			break;
-		}
 	}
 	return false;
 }
@@ -3734,6 +3693,18 @@ boolean applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
 	int type = (int)/*64*/nsEvent.type ();
+	switch (type) {
+		case OS.NSLeftMouseDown:
+		case OS.NSRightMouseDown:
+		case OS.NSOtherMouseDown:
+			nsEvent.window().disableCursorRects();
+			break;
+		case OS.NSLeftMouseUp:
+		case OS.NSRightMouseUp:
+		case OS.NSOtherMouseUp:
+			nsEvent.window().enableCursorRects();
+			break;
+	}
 	boolean beep = false;
 	switch (type) {
 		case OS.NSLeftMouseDown:
@@ -3742,15 +3713,15 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 			beep = true;
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
-		case OS.NSMouseMoved:
+		case OS.NSOtherMouseUp:
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
+		case OS.NSOtherMouseDragged:
+		case OS.NSMouseMoved:
 		case OS.NSMouseEntered:
 		case OS.NSMouseExited:
 		case OS.NSKeyDown:
 		case OS.NSKeyUp:
-		case OS.NSOtherMouseUp:
-		case OS.NSOtherMouseDragged:
 		case OS.NSScrollWheel:
 			NSWindow window = nsEvent.window ();
 			if (window != null) {
@@ -3762,11 +3733,12 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 			}
 			break;
 	}
-	if (applicationSendMouseEvent (nsEvent, false)) return;
+	sendEvent = true;
 	objc_super super_struct = new objc_super ();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
 	OS.objc_msgSendSuper (super_struct, sel, event);
+	sendEvent = false;
 }
 
 // #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
@@ -3892,28 +3864,50 @@ static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 }
 
 static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	Control control = null;
+	Widget widget = null;
 	NSView view = new NSView (id);
 	do {
-		Widget widget = GetWidget (view.id);
-		if (widget instanceof Control) {
-			control = (Control)widget;
-			break;
-		}
+		widget = GetWidget (view.id);
+		if (widget != null) break;
 		view = view.superview ();
 	} while (view != null);
-	if (control == null) return 0;
-
+	if (widget == null) return 0;
 	if (sel == OS.sel_keyDown_) {
-		control.keyDown (id, sel, arg0);
+		widget.keyDown (id, sel, arg0);
 	} else if (sel == OS.sel_keyUp_) {
-		control.keyUp (id, sel, arg0);
+		widget.keyUp (id, sel, arg0);
+	} else if (sel == OS.sel_flagsChanged_) {
+		widget.flagsChanged(id, sel, arg0);
 	} else if (sel == OS.sel_insertText_) {
-		return control.insertText (id, sel, arg0) ? 1 : 0;
+		return widget.insertText (id, sel, arg0) ? 1 : 0;
 	} else if (sel == OS.sel_doCommandBySelector_) {
-		control.doCommandBySelector (id, sel, arg0);
+		widget.doCommandBySelector (id, sel, arg0);
 	} else if (sel == OS.sel_menuForEvent_) {
-		return control.menuForEvent (id, sel, arg0);
+		return widget.menuForEvent (id, sel, arg0);
+	} else if (sel == OS.sel_mouseDown_) {
+		widget.mouseDown(id, sel, arg0);
+	} else if (sel == OS.sel_mouseUp_) {
+		widget.mouseUp(id, sel, arg0);
+	} else if (sel == OS.sel_mouseMoved_) {
+		widget.mouseMoved(id, sel, arg0);
+	} else if (sel == OS.sel_mouseDragged_) {
+		widget.mouseDragged(id, sel, arg0);
+	} else if (sel == OS.sel_mouseEntered_) {
+		widget.mouseEntered(id, sel, arg0);
+	} else if (sel == OS.sel_mouseExited_) {
+		widget.mouseExited(id, sel, arg0);
+	} else if (sel == OS.sel_rightMouseDown_) {
+		widget.rightMouseDown(id, sel, arg0);
+	} else if (sel == OS.sel_rightMouseDragged_) {
+		widget.rightMouseDragged(id, sel, arg0);
+	} else if (sel == OS.sel_rightMouseUp_) {
+		widget.rightMouseUp(id, sel, arg0);
+	} else if (sel == OS.sel_otherMouseDown_) {
+		widget.otherMouseDown(id, sel, arg0);
+	} else if (sel == OS.sel_otherMouseUp_) {
+		widget.otherMouseUp(id, sel, arg0);
+	} else if (sel == OS.sel_otherMouseDragged_) {
+		widget.otherMouseDragged(id, sel, arg0);
 	}
 	return 0;
 }
@@ -4018,12 +4012,16 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.mouseUp(id, sel, arg0);
 	} else if (sel == OS.sel_rightMouseDown_) {
 		widget.rightMouseDown(id, sel, arg0);
+	} else if (sel == OS.sel_rightMouseDragged_) {
+		widget.rightMouseDragged(id, sel, arg0);
 	} else if (sel == OS.sel_rightMouseUp_) {
 		widget.rightMouseUp(id, sel, arg0);
 	} else if (sel == OS.sel_otherMouseDown_) {
 		widget.otherMouseDown(id, sel, arg0);
 	} else if (sel == OS.sel_otherMouseUp_) {
 		widget.otherMouseUp(id, sel, arg0);
+	} else if (sel == OS.sel_otherMouseDragged_) {
+		widget.otherMouseDragged(id, sel, arg0);
 	} else if (sel == OS.sel_mouseMoved_) {
 		widget.mouseMoved(id, sel, arg0);
 	} else if (sel == OS.sel_mouseDragged_) {

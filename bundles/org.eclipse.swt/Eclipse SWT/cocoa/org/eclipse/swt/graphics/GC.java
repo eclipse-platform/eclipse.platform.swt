@@ -224,8 +224,11 @@ int /*long*/ applierFunc(int /*long*/ info, int /*long*/ elementPtr) {
 NSAutoreleasePool checkGC (int mask) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	if ((mask & (CLIPPING | TRANSFORM)) != 0) {
+	if (data.flippedContext != null) {
+		NSGraphicsContext.static_saveGraphicsState();
 		NSGraphicsContext.setCurrentContext(handle);
+	}
+	if ((mask & (CLIPPING | TRANSFORM)) != 0) {
 		NSView view = data.view;
 		if (view != null && data.paintRect == null) {
 			NSRect rect = view.convertRect_toView_(view.bounds(), null);
@@ -3843,6 +3846,9 @@ public String toString () {
 }
 
 void uncheckGC(NSAutoreleasePool pool) {
+	if (data.flippedContext != null) {
+		NSGraphicsContext.static_restoreGraphicsState();
+	}
 	NSView view = data.view;
 	if (view != null && data.paintRect == null) {
 		if (data.thread != Thread.currentThread()) flush();

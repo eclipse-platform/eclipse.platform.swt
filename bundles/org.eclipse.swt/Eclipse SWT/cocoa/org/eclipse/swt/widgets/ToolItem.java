@@ -563,6 +563,7 @@ int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEv
 }
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseDown)) return;
 	Display display = this.display;
 	display.trackingControl = parent;
 	super.mouseDown(id, sel, theEvent);
@@ -575,6 +576,51 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		event.y = (int)(frame.y + frame.height);
 		postEvent (SWT.Selection, event);
 	}
+}
+
+void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseUp)) return;
+	super.mouseUp(id, sel, theEvent);
+}
+
+void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
+	super.mouseMoved(id, sel, theEvent);
+}
+
+void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
+	super.mouseDragged(id, sel, theEvent);
+}
+
+void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseDown)) return;
+	super.rightMouseDown(id, sel, theEvent);
+}
+
+void rightMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseUp)) return;
+	super.rightMouseUp(id, sel, theEvent);
+}
+
+void rightMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
+	super.rightMouseDragged(id, sel, theEvent);
+}
+
+void otherMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseDown)) return;
+	super.otherMouseDown(id, sel, theEvent);
+}
+
+void otherMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseUp)) return;
+	super.otherMouseUp(id, sel, theEvent);
+}
+
+void otherMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
+	super.otherMouseDragged(id, sel, theEvent);
 }
 
 void register () {

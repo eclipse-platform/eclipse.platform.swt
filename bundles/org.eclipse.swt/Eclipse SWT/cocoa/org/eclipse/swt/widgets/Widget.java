@@ -505,7 +505,7 @@ boolean dragSelectionWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	return false;
 }
 
-void drawBackground (int control, int context) {
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	/* Do nothing */
 }
 
@@ -520,6 +520,7 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	NSGraphicsContext context = NSGraphicsContext.currentContext();
 	context.saveGraphicsState();
 	setClipRegion(0, 0);
+	drawBackground (id, context, rect);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -828,22 +829,6 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	callSuper(id, sel, theEvent);
-}
-
-void rightMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	callSuper(id, sel, theEvent);
-}
-
-void otherMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	callSuper(id, sel, theEvent);
-}
-
-void otherMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	callSuper(id, sel, theEvent);
-}
-
 void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
@@ -857,6 +842,30 @@ void mouseEntered(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void mouseExited(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void rightMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void rightMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void otherMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void otherMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void otherMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
