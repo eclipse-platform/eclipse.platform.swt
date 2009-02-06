@@ -449,6 +449,26 @@ int getSelectionText (boolean[] parseFail) {
 }
 
 /**
+ * Returns a string containing a copy of the contents of the
+ * receiver's text field, or an empty string if there are no
+ * contents.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public String getText () {
+	checkWidget ();
+	NSString str = new NSTextFieldCell (textView.cell ()).title ();
+	return str.getString ();
+}
+
+/**
  * Returns the maximum number of characters that the receiver's
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
