@@ -1472,6 +1472,7 @@ void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 void textDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	callSuper (id, sel, aNotification);
 }
 
 void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {

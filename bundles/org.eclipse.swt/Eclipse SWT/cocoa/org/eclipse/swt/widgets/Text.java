@@ -1824,6 +1824,7 @@ void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	if ((style & SWT.SINGLE) != 0) super.textDidChange (id, sel, aNotification);
 	postEvent (SWT.Modify);
 }
 

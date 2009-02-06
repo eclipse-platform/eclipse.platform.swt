@@ -1045,6 +1045,7 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 }
 
 void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	super.textDidChange (id, sel, aNotification);
 	postEvent (SWT.Modify);
 }
 
