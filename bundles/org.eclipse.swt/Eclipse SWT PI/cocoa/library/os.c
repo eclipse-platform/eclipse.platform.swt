@@ -2816,6 +2816,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addProtocol)
 }
 #endif
 
+#ifndef NO_class_1getInstanceMethod
+JNIEXPORT jintLong JNICALL OS_NATIVE(class_1getInstanceMethod)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, class_1getInstanceMethod_FUNC);
+	rc = (jintLong)class_getInstanceMethod((Class)arg0, (SEL)arg1);
+	OS_NATIVE_EXIT(env, that, class_1getInstanceMethod_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_class_1getMethodImplementation
 JNIEXPORT jintLong JNICALL OS_NATIVE(class_1getMethodImplementation)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -3317,6 +3329,18 @@ fail:
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJ_FUNC);
 #endif
+}
+#endif
+
+#ifndef NO_method_1setImplementation
+JNIEXPORT jintLong JNICALL OS_NATIVE(method_1setImplementation)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, method_1setImplementation_FUNC);
+	rc = (jintLong)method_setImplementation(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, method_1setImplementation_FUNC);
+	return rc;
 }
 #endif
 

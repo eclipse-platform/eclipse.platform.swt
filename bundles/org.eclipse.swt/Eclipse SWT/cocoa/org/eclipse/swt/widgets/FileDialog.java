@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -40,7 +41,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
 	int filterIndex = -1;
-	boolean overwrite = true; //TODO: if setOverwrite(false) is implemented, change default to false for consistency
+	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
 
 /**
@@ -192,9 +193,19 @@ public String open () {
 	String fullPath = null;
 	fileNames = new String [0];
 	NSSavePanel panel;
+	int /*long*/ method = 0;
+	int /*long*/ methodImpl = 0;
+	Callback callback = null;
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
 		panel = savePanel;
+		if (overwrite) {
+			callback = new Callback(this, "_overwriteExistingFileCheck", 3);
+			int /*long*/ proc = callback.getAddress();
+			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
+			methodImpl = OS.method_setImplementation(method, proc);
+		}
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
@@ -204,6 +215,10 @@ public String open () {
 	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	int /*long*/ response = panel.runModal();
+	if (overwrite) {
+		OS.method_setImplementation(method, methodImpl);
+		callback.dispose();
+	}
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		fullPath = filename.getString();
@@ -235,6 +250,10 @@ public String open () {
 		filterIndex = -1;
 	}
 	return fullPath;	
+}
+
+int /*long*/ _overwriteExistingFileCheck (int /*long*/ id, int /*long*/ sel, int /*long*/ str) {
+	return 1;
 }
 
 /**
@@ -339,8 +358,6 @@ public void setFilterPath (String string) {
  * @since 3.4
  */
 public void setOverwrite (boolean overwrite) {
-	//TODO: May be able to implement this with private NSSavePanel method (BOOL)_overwriteExistingFileCheck:(NSString *)filename
-	/* See bug 223703 */
-	//this.overwrite = overwrite;
+	this.overwrite = overwrite;
 }
 }

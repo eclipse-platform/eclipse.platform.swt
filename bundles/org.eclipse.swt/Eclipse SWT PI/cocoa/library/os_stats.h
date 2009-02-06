@@ -247,6 +247,7 @@ typedef enum {
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,
 	class_1addProtocol_FUNC,
+	class_1getInstanceMethod_FUNC,
 	class_1getMethodImplementation_FUNC,
 	class_1getName_FUNC,
 	dragSelectionWithEvent_1offset_1slideBack_1CALLBACK_FUNC,
@@ -354,6 +355,7 @@ typedef enum {
 #else
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJ_FUNC,
 #endif
+	method_1setImplementation_FUNC,
 	objc_1allocateClassPair_FUNC,
 	objc_1getClass_FUNC,
 	objc_1getMetaClass_FUNC,

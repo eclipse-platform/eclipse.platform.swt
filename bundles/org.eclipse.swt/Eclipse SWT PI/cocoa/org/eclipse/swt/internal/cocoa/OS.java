@@ -41,7 +41,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
 	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
-	
+	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
+
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
@@ -204,6 +205,17 @@ public static final native boolean class_addProtocol(int /*long*/ cls, int /*lon
  * @param name cast=(SEL)
  */
 public static final native int /*long*/ class_getMethodImplementation(int /*long*/ cls, int /*long*/ name);
+/**
+ * @param cls cast=(Class)
+ * @param name cast=(SEL)
+ */
+public static final native int /*long*/ class_getInstanceMethod(int /*long*/ cls, int /*long*/ name);
+/**
+ * @param cls cast=(Method)
+ * @param name cast=(IMP)
+ */
+public static final native int /*long*/ method_setImplementation(int /*long*/ method, int /*long*/ imp);
+
 /** @method flags=no_gen */
 public static final native String class_getName(int /*long*/ cls);
 /** @method flags=dynamic */

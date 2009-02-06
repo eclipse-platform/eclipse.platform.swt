@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 383;
-int OS_nativeFunctionCallCount[383];
+int OS_nativeFunctionCount = 385;
+int OS_nativeFunctionCallCount[385];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFRunLoopAddObserver",
@@ -239,6 +239,7 @@ char * OS_nativeFunctionNames[] = {
 	"class_1addIvar",
 	"class_1addMethod",
 	"class_1addProtocol",
+	"class_1getInstanceMethod",
 	"class_1getMethodImplementation",
 	"class_1getName",
 	"dragSelectionWithEvent_1offset_1slideBack_1CALLBACK",
@@ -346,6 +347,7 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJ",
 #endif
+	"method_1setImplementation",
 	"objc_1allocateClassPair",
 	"objc_1getClass",
 	"objc_1getMetaClass",
