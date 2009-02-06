@@ -845,7 +845,6 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int max = getMaximum();
 	if (value >= max) return;
 	int pos = getSelection();
@@ -1033,7 +1032,6 @@ public void setTextLimit (int limit) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (minimum < 0) return;
 	if (maximum <= minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
