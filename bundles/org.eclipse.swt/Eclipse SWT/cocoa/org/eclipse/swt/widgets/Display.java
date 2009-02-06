@@ -3650,21 +3650,17 @@ Control findControl (boolean checkTrim) {
 }
 
 int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel, int /*long*/ mask, int /*long*/ expiration, int /*long*/ mode, int /*long*/ dequeue) {
+	boolean run = trackingControl != null && dequeue != 0;
+	if (run) runDeferredEvents();
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	int /*long*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
-	if (result != 0) {
-		if (trackingControl != null && dequeue != 0) {
-			NSEvent nsEvent = new NSEvent(result);
-			applicationSendTrackingEvent(nsEvent);
-		}
-	}
+	if (result != 0 && run) applicationSendTrackingEvent(new NSEvent(result));
 	return result;
 }
 
 boolean applicationSendTrackingEvent (NSEvent nsEvent) {
-	runDeferredEvents();
 	int type = (int)/*64*/nsEvent.type();
 	switch (type) {
 		case OS.NSLeftMouseDown:
@@ -3693,6 +3689,7 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
 	int type = (int)/*64*/nsEvent.type ();
+//	System.out.println("send=" + type);
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
