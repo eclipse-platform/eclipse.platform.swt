@@ -2653,7 +2653,6 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	System.out.println(type + " " + this);
 	NSInputManager manager = NSInputManager.currentInputManager ();
 	if (manager != null && manager.wantsToHandleMouseEvents ()) {
 		if (manager.handleMouseEvent (nsEvent)) {
