@@ -1062,6 +1062,7 @@ void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotifica
 		value = (int)buttonView.doubleValue();
 		setSelection (value, false, true, false);
 	}
+	super.textDidEndEditing(id, sel, aNotification);
 }
 
 String verifyText (String string, int /*long*/ start, int /*long*/ end, Event keyEvent) {

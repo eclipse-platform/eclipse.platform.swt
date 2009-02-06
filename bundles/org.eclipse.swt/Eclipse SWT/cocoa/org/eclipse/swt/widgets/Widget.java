@@ -1475,6 +1475,7 @@ void textDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification
 }
 
 void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	callSuper(id, sel, aNotification);
 }
 
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
