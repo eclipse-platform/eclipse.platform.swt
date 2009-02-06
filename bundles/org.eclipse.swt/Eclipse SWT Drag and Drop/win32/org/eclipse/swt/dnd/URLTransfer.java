@@ -26,6 +26,7 @@ import org.eclipse.swt.internal.win32.*;
  * </code></pre>
  *
  * @see Transfer
+ * @since 3.4
  */
 public class URLTransfer extends ByteArrayTransfer {
 
