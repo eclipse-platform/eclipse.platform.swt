@@ -1006,15 +1006,20 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 		context.restoreGraphicsState();
 		return;
 	}
-	Color background = control.getBackgroundColor ();
-	if (background != null && !background.isDisposed ()) {
-		float /*double*/ [] color = background.handle;
-		context.saveGraphicsState();
-		NSColor.colorWithDeviceRed(color [0], color [1], color [2], getThemeAlpha()).setFill();
-		NSBezierPath.fillRect(rect);
-		context.restoreGraphicsState();
-		return;
+
+	Color background = control.background;
+	float alpha;
+	if (background == null || background.isDisposed ()) {
+		background = control.defaultBackground ();
+		alpha = getThemeAlpha ();
+	} else {
+		alpha = background.handle[3];
 	}
+	float /*double*/ [] color = background.handle;
+	context.saveGraphicsState ();
+	NSColor.colorWithDeviceRed (color [0], color [1], color [2], alpha).setFill ();
+	NSBezierPath.fillRect (rect);
+	context.restoreGraphicsState ();
 }
 
 Cursor findCursor () {

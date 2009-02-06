@@ -398,6 +398,18 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
+void setBackground (float /*double*/ [] color) {
+	NSColor nsColor;
+	NSTextView widget = (NSTextView)view; 
+	if (color == null) {
+		widget.setDrawsBackground (false);
+	} else {
+		widget.setDrawsBackground (true);
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+		widget.setBackgroundColor (nsColor);
+	}
+}
+
 void setFont(NSFont font) {
 	((NSTextView) view).setFont(font);
 }
