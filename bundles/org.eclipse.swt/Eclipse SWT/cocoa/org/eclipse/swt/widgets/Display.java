@@ -3543,6 +3543,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 	NSNumber userInfo = NSNumber.numberWithInt(index);
 	NSTimer timer = NSTimer.scheduledTimerWithTimeInterval(milliseconds / 1000.0, timerDelegate, OS.sel_timerProc_, userInfo, false);
+	NSRunLoop.currentRunLoop().addTimer(timer, OS.NSEventTrackingRunLoopMode);
 	timer.retain();
 	if (timer != null) {
 		nsTimers [index] = timer;
@@ -3677,7 +3678,6 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
-			//TODO hover does not happen while tracking because timer are not dispatched
 			checkEnterExit (trackingControl, nsEvent, true);
 			//FALL THROUGH
 		case OS.NSMouseMoved:
