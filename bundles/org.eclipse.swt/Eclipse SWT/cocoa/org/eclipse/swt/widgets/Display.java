@@ -3176,13 +3176,9 @@ Runnable caretTimer = new Runnable () {
 	}
 };
 void setCurrentCaret (Caret caret) {
-//	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
-//	caretID = 0;
 	currentCaret = caret;
-	if (currentCaret != null) {
-		int blinkRate = currentCaret.blinkRate;
-		timerExec (blinkRate, caretTimer);
-	}
+	int blinkRate = currentCaret != null ? currentCaret.blinkRate : -1;
+	timerExec (blinkRate, caretTimer);
 }
 
 void setCursor (Control control) {
