@@ -288,7 +288,9 @@ protected void checkSubclass () {
 void checkItems () {
 	if (!reloadPending) return;
 	reloadPending = false;
+	TreeItem[] selectedItems = getSelection ();
 	((NSOutlineView)view).reloadData ();
+	selectItems (selectedItems, true);
 }
 
 void clear (TreeItem parentItem, int index, boolean all) {
@@ -1823,11 +1825,13 @@ void releaseWidget () {
 void reloadItem (TreeItem item, boolean recurse) {
 	if (drawCount == 0) {
 		NSOutlineView widget = (NSOutlineView)view;
+		TreeItem[] selectedItems = getSelection ();
 		if (item != null) {
 			widget.reloadItem (item.handle, recurse);
 		} else {
 			widget.reloadData ();
 		}
+		selectItems (selectedItems, true);
 	} else {
 		reloadPending = true;
 	}
@@ -1995,6 +1999,27 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+void selectItems (TreeItem[] items, boolean ignoreDisposed) {
+	NSOutlineView outlineView = (NSOutlineView) view;
+	NSMutableIndexSet rows = (NSMutableIndexSet) new NSMutableIndexSet ().alloc ().init ();
+	rows.autorelease ();
+	int length = items.length;
+	for (int i=0; i<length; i++) {
+		if (items [i] != null) {
+			if (items [i].isDisposed ()) {
+				if (ignoreDisposed) continue;
+				error (SWT.ERROR_INVALID_ARGUMENT);
+			}
+			TreeItem item = items [i];
+			if (!ignoreDisposed) showItem (items [i], false);
+			rows.addIndex (outlineView.rowForItem (item.handle));
+		}
+	}
+	ignoreSelect = true;
+	outlineView.selectRowIndexes (rows, false);
+	ignoreSelect = false;
+}
+
 void setBackground (float /*double*/ [] color) {
 	super.setBackground (color);
 	NSColor nsColor;
@@ -2157,7 +2182,9 @@ void setItemCount (TreeItem parentItem, int count) {
 				if (item != null && !item.isDisposed ()) item.clearSelection ();
 			}
 		}
+		TreeItem[] selectedItems = getSelection ();
 		widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
+		selectItems (selectedItems, true);
 		for (int index = count; index < itemCount; index ++) {
 			TreeItem item = children [index];
 			if (item != null && !item.isDisposed()) item.release (false);
@@ -2190,7 +2217,9 @@ void setItemCount (TreeItem parentItem, int count) {
 				parentItem.items = newItems;
 				parentItem.itemCount = count;
 			}
+			TreeItem[] selectedItems = getSelection ();
 			widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
+			selectItems (selectedItems, true);
 		}
 	}
 }
@@ -2343,20 +2372,7 @@ public void setSelection (TreeItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	NSOutlineView outlineView = (NSOutlineView) view;
-	NSMutableIndexSet rows = (NSMutableIndexSet) new NSMutableIndexSet ().alloc ().init ();
-	rows.autorelease ();
-	for (int i=0; i<length; i++) {
-		if (items [i] != null) {
-			if (items [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-			TreeItem item = items [i];
-			showItem (items [i], false);
-			rows.addIndex (outlineView.rowForItem (item.handle));
-		}
-	}
-	ignoreSelect = true;
-	outlineView.selectRowIndexes (rows, false);
-	ignoreSelect = false;
+	selectItems (items, false);
 	if (items.length > 0) {
 		for (int i = 0; i < items.length; i++) {
 			TreeItem item = items[i];
