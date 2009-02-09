@@ -24,6 +24,10 @@ public NSRunLoop(id id) {
 	super(id);
 }
 
+public void addTimer(NSTimer timer, NSString mode) {
+	OS.objc_msgSend(this.id, OS.sel_addTimer_forMode_, timer != null ? timer.id : 0, mode != null ? mode.id : 0);
+}
+
 public static NSRunLoop currentRunLoop() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_currentRunLoop);
 	return result != 0 ? new NSRunLoop(result) : null;

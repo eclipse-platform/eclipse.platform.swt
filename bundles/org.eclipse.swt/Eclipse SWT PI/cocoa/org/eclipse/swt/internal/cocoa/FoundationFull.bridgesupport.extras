@@ -9522,10 +9522,10 @@
 <arg name="mode"></arg>
 <retval></retval>
 </method>
-<method selector="addTimer:forMode:">
-<arg name="timer"></arg>
-<arg name="mode"></arg>
-<retval></retval>
+<method selector="addTimer:forMode:" swt_gen="true">
+<arg name="timer" swt_gen="true"></arg>
+<arg name="mode" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="cancelPerformSelector:target:argument:">
 <arg name="aSelector"></arg>

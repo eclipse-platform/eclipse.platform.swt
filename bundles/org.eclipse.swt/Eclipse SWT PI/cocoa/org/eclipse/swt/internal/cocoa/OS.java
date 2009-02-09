@@ -505,6 +505,7 @@ public static final int /*long*/ sel_addTabViewItem_ = sel_registerName("addTabV
 public static final int /*long*/ sel_addTableColumn_ = sel_registerName("addTableColumn:");
 public static final int /*long*/ sel_addTemporaryAttribute_value_forCharacterRange_ = sel_registerName("addTemporaryAttribute:value:forCharacterRange:");
 public static final int /*long*/ sel_addTextContainer_ = sel_registerName("addTextContainer:");
+public static final int /*long*/ sel_addTimer_forMode_ = sel_registerName("addTimer:forMode:");
 public static final int /*long*/ sel_addTypes_owner_ = sel_registerName("addTypes:owner:");
 public static final int /*long*/ sel_alignment = sel_registerName("alignment");
 public static final int /*long*/ sel_allKeys = sel_registerName("allKeys");
