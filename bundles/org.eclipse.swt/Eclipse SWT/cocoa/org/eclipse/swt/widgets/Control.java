@@ -1886,9 +1886,24 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 	display.sendEvent = false;
 	if (!isEventView (id)) return true;
 	Control control = this;
+	boolean dragging = false;
+	boolean[] consume = null;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	int nsType = (int)/*64*/nsEvent.type();
+	NSInputManager manager = NSInputManager.currentInputManager ();
+	if (manager != null && manager.wantsToHandleMouseEvents ()) {
+		if (manager.handleMouseEvent (nsEvent)) {
+			return true;
+		}
+	}
 	switch (nsType) {
+		case OS.NSLeftMouseDown:
+			if (nsEvent.clickCount() == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+				consume = new boolean[1];
+				NSPoint location = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
+				dragging = dragDetect((int)location.x, (int)location.y, false, consume);
+			}
+			break;
 		case OS.NSMouseMoved:
 			control = display.findControl(true);
 			display.checkEnterExit (control, nsEvent, false);
@@ -1905,21 +1920,12 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 			break;
 	}
 	if (control == null) return true;
-	boolean dragging = false;
-	boolean[] consume = new boolean[1];
-	if (nsType == OS.NSLeftMouseDown && nsEvent.clickCount() == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
-		NSPoint windowLoc = nsEvent.locationInWindow();
-		NSPoint viewLoc = view.convertPoint_fromView_(windowLoc, null);
-		dragging = dragDetect((int)viewLoc.x, (int)viewLoc.y, false, consume);
-	}
 	control.sendMouseEvent (nsEvent, type, false);	
 	if (type == SWT.MouseDown && nsEvent.clickCount() == 2) {
 		control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
 	}
-	if (dragging) {
-		control.sendDragEvent(nsEvent);
-	}
-	if (consume[0]) return false;
+	if (dragging) control.sendMouseEvent(nsEvent, SWT.DragDetect, false);
+	if (consume != null && consume[0]) return false;
 	return true;
 }
 
@@ -2599,31 +2605,6 @@ boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	return event.doit;
 }
 
-boolean sendDragEvent (NSEvent nsEvent) {
-	int button = (int)/*64*/nsEvent.buttonNumber();
-	NSPoint windowPoint;
-	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {
-		windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation()); 
-	} else {
-		windowPoint = nsEvent.locationInWindow();
-	}
-	NSPoint viewPoint = view.convertPoint_fromView_(windowPoint, null);
-	Event event = new Event ();
-	switch (button) {
-		case 0: event.button = 1; break;
-		case 1: event.button = 3; break;
-		case 2: event.button = 2; break;
-		case 3: event.button = 4; break;
-		case 4: event.button = 5; break;
-	}
-
-	event.x = (int)viewPoint.x;
-	event.y = (int)viewPoint.y;
-	setInputState(event, nsEvent, SWT.DragDetect);
-	postEvent (SWT.DragDetect, event);
-	return event.doit;
-}
-
 void sendFocusEvent (int type, boolean post) {
 	Display display = this.display;
 	Shell shell = getShell ();
@@ -2653,12 +2634,6 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	NSInputManager manager = NSInputManager.currentInputManager ();
-	if (manager != null && manager.wantsToHandleMouseEvents ()) {
-		if (manager.handleMouseEvent (nsEvent)) {
-			return true;
-		}
-	}
 	Shell shell = null;
 	Event event = new Event ();
 	switch (type) {
@@ -2667,6 +2642,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 			//FALL THROUGH
 		case SWT.MouseUp:
 		case SWT.MouseDoubleClick:
+		case SWT.DragDetect:
 			int button = (int)/*64*/nsEvent.buttonNumber();
 			switch (button) {
 				case 0: event.button = 1; break;
