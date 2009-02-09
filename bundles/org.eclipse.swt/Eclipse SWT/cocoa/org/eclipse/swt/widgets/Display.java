@@ -3188,8 +3188,8 @@ void setCurrentCaret (Caret caret) {
 void setCursor (Control control) {
 	Cursor cursor = null;
 	if (control != null) cursor = control.findCursor ();
-	if (cursor == null) cursor = getSystemCursor (SWT.CURSOR_ARROW);
-	cursor.handle.set ();
+	if (cursor == null && control == null) cursor = getSystemCursor (SWT.CURSOR_ARROW);
+	if (cursor != null) cursor.handle.set ();
 }
 
 /**
