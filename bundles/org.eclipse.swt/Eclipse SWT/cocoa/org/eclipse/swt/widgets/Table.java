@@ -550,6 +550,7 @@ void createItem (TableColumn column, int index) {
 
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (index != itemCount) fixSelection (index, true);
 	if (itemCount == items.length) {
 		/* Grow the array faster when redraw is off */
 		int length = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
