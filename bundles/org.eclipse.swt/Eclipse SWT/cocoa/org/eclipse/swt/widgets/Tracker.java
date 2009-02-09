@@ -794,7 +794,6 @@ public boolean open () {
 			case OS.NSLeftMouseUp:
 			case OS.NSRightMouseUp:
 			case OS.NSOtherMouseUp:
-				event.window().enableCursorRects();
 			case OS.NSMouseMoved:
 			case OS.NSLeftMouseDragged:
 			case OS.NSRightMouseDragged:

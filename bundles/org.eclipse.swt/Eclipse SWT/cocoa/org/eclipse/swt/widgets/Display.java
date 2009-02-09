@@ -3657,7 +3657,25 @@ int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	int /*long*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
-	if (result != 0 && run) applicationSendTrackingEvent(new NSEvent(result));
+	if (result != 0) {
+		NSEvent nsEvent = new NSEvent(result);
+		if (dequeue != 0) {
+			int type = (int)/*64*/nsEvent.type();
+			switch (type) {
+				case OS.NSLeftMouseDown:
+				case OS.NSRightMouseDown:
+				case OS.NSOtherMouseDown:
+					nsEvent.window().disableCursorRects();
+					break;
+				case OS.NSLeftMouseUp:
+				case OS.NSRightMouseUp:
+				case OS.NSOtherMouseUp:
+					nsEvent.window().enableCursorRects();
+					break;
+			}
+		}
+		if (run) applicationSendTrackingEvent(nsEvent);
+	}
 	return result;
 }
 
@@ -3672,7 +3690,6 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
-			nsEvent.window().enableCursorRects();
 			trackingControl.sendMouseEvent (nsEvent, SWT.MouseUp, true);
 			break;
 		case OS.NSLeftMouseDragged:
@@ -3690,18 +3707,6 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
 	int type = (int)/*64*/nsEvent.type ();
-	switch (type) {
-		case OS.NSLeftMouseDown:
-		case OS.NSRightMouseDown:
-		case OS.NSOtherMouseDown:
-			nsEvent.window().disableCursorRects();
-			break;
-		case OS.NSLeftMouseUp:
-		case OS.NSRightMouseUp:
-		case OS.NSOtherMouseUp:
-			nsEvent.window().enableCursorRects();
-			break;
-	}
 	boolean beep = false;
 	switch (type) {
 		case OS.NSLeftMouseDown:
