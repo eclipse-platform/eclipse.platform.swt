@@ -193,7 +193,11 @@ int calculateWidth (TableItem[] items, int index, GC gc) {
 	return width;
 }
 
-boolean checkData (TableItem item, boolean redraw) {
+boolean checkData (TableItem item) {
+	return checkData (item, indexOf (item));
+}
+
+boolean checkData (TableItem item, int index) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
@@ -205,9 +209,7 @@ boolean checkData (TableItem item, boolean redraw) {
 		//widget could be disposed at this point
 		currentItem = null;
 		if (isDisposed () || item.isDisposed ()) return false;
-		if (redraw) {
-			if (!setScrollWidth (item)) item.redraw (-1);
-		}
+		if (!setScrollWidth (item)) item.redraw (-1);
 	}
 	return true;
 }
@@ -2667,8 +2669,9 @@ void tableView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*lon
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	TableItem item = _getItem ((int)/*64*/rowIndex);
-	checkData (item, false);
+	int index = (int)/*64*/rowIndex;
+	TableItem item = _getItem (index);
+	checkData (item, index);
 	if (checkColumn != null && aTableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {

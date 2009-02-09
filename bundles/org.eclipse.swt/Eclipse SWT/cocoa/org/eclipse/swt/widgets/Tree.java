@@ -245,7 +245,7 @@ int calculateWidth (TreeItem[] items, int index, GC gc, boolean recurse) {
 	return width;
 }
 
-boolean checkData (TreeItem item, boolean redraw) {
+boolean checkData (TreeItem item) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
@@ -258,9 +258,7 @@ boolean checkData (TreeItem item, boolean redraw) {
 		//widget could be disposed at this point
 		ignoreRedraw = false;
 		if (isDisposed () || item.isDisposed ()) return false;
-		if (redraw) {
-			if (!setScrollWidth (item)) item.redraw (-1);
-		}
+		if (!setScrollWidth (item)) item.redraw (-1);
 	}
 	return true;
 }
@@ -1620,7 +1618,7 @@ void outlineView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*l
 
 int /*long*/ outlineView_objectValueForTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn, int /*long*/ itemID) {
 	TreeItem item = (TreeItem) display.getWidget (itemID);
-	checkData (item, false);
+	checkData (item);
 	if (checkColumn != null && tableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
