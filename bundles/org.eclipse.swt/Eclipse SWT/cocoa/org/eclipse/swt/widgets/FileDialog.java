@@ -204,7 +204,7 @@ public String open () {
 			int /*long*/ proc = callback.getAddress();
 			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
-			methodImpl = OS.method_setImplementation(method, proc);
+			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
 		}
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
@@ -216,7 +216,7 @@ public String open () {
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	int /*long*/ response = panel.runModal();
 	if (overwrite) {
-		OS.method_setImplementation(method, methodImpl);
+		if (method != 0) OS.method_setImplementation(method, methodImpl);
 		callback.dispose();
 	}
 	if (response == OS.NSFileHandlingPanelOKButton) {
