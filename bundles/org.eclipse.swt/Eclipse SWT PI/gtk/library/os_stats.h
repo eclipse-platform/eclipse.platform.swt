@@ -778,6 +778,7 @@ typedef enum {
 	_1gtk_1main_1iteration_FUNC,
 	_1gtk_1major_1version_FUNC,
 	_1gtk_1menu_1bar_1new_FUNC,
+	_1gtk_1menu_1get_1attach_1widget_FUNC,
 	_1gtk_1menu_1item_1get_1submenu_FUNC,
 	_1gtk_1menu_1item_1remove_1submenu_FUNC,
 	_1gtk_1menu_1item_1set_1submenu_FUNC,

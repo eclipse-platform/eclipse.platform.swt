@@ -7545,6 +7545,16 @@ public static final int /*long*/ gtk_menu_bar_new() {
 		lock.unlock();
 	}
 }
+/** @param menu cast=(GtkMenu *) */
+public static final native int /*long*/ _gtk_menu_get_attach_widget(int /*long*/ menu);
+public static final int /*long*/ gtk_menu_get_attach_widget(int /*long*/ menu) {
+	lock.lock();
+	try {
+		return _gtk_menu_get_attach_widget(menu);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param menu_item cast=(GtkMenuItem *) */
 public static final native void _gtk_menu_item_remove_submenu(int /*long*/ menu_item);
 public static final void gtk_menu_item_remove_submenu(int /*long*/ menu_item) {

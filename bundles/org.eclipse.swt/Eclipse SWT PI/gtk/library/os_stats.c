@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1280;
-int OS_nativeFunctionCallCount[1280];
+int OS_nativeFunctionCount = 1281;
+int OS_nativeFunctionCallCount[1281];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -770,6 +770,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1main_1iteration",
 	"_1gtk_1major_1version",
 	"_1gtk_1menu_1bar_1new",
+	"_1gtk_1menu_1get_1attach_1widget",
 	"_1gtk_1menu_1item_1get_1submenu",
 	"_1gtk_1menu_1item_1remove_1submenu",
 	"_1gtk_1menu_1item_1set_1submenu",

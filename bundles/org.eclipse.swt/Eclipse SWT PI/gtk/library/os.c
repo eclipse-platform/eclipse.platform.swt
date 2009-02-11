@@ -9173,6 +9173,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1menu_1bar_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1menu_1get_1attach_1widget
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1menu_1get_1attach_1widget)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1get_1attach_1widget_FUNC);
+	rc = (jintLong)gtk_menu_get_attach_widget((GtkMenu *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1get_1attach_1widget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1menu_1item_1get_1submenu
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1menu_1item_1get_1submenu)
 	(JNIEnv *env, jclass that, jintLong arg0)

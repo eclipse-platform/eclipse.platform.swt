@@ -2677,8 +2677,16 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 				int /*long*/ grabHandle = OS.gtk_grab_get_current ();
 				if (grabHandle != 0) {
 					if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
-						display.ignoreFocus = true;
-						break;
+						/*
+						 * Feature in GTK. The GTK combo box popup that is implemented 
+						 * as a GTK_MENU is always attached to the combo box. If the menu
+						 * being shown is attached to the current control, then it is safe
+						 * to ignore focus.
+						 */
+						if (handle == OS.gtk_menu_get_attach_widget (grabHandle)) {
+							display.ignoreFocus = true;
+							break;
+						}
 					}
 				}
 			}
