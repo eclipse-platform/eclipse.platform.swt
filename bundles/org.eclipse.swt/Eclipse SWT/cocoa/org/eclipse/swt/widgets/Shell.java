@@ -965,6 +965,7 @@ public void open () {
 	} else {
 		updateModal ();
 	}
+	bringToTop (false);
 	setWindowVisible (true, true);
 	if (isDisposed ()) return;
 //	if (active) {
