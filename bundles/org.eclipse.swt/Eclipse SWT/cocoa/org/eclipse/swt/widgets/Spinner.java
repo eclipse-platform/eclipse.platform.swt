@@ -263,7 +263,6 @@ void createHandle () {
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
 	textFormatter = new NSNumberFormatter();
 	textFormatter.alloc().init();
-	textFormatter.setNumberStyle(OS.NSNumberFormatterDecimalStyle);
 	widget.addSubview(textWidget);
 	widget.addSubview(buttonWidget);
 	buttonView = buttonWidget;
@@ -775,7 +774,6 @@ public void setDigits (int value) {
 	if (value == digits) return;
 	digits = value;
 	int pos = (int)buttonView.doubleValue();	
-	textFormatter.setMaximumFractionDigits(digits);
 	setSelection (pos, false, true, false);
 }
 
@@ -830,7 +828,6 @@ public void setMaximum (int value) {
 	if (value <= min) return;
 	int pos = getSelection();
 	buttonView.setMaxValue(value);
-	textFormatter.setMaximum(NSNumber.numberWithInt(value));
 	if (pos > value) setSelection (value, true, true, false);	
 }
 
@@ -853,7 +850,6 @@ public void setMinimum (int value) {
 	if (value >= max) return;
 	int pos = getSelection();
 	buttonView.setMinValue(value);
-	textFormatter.setMinimum(NSNumber.numberWithInt(value));
 	if (pos < value) setSelection (value, true, true, false);
 }
 
