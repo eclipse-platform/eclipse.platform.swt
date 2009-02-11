@@ -85,6 +85,8 @@ public static final int kThemeAliasArrowCursor = 2;
 
 public static final native int getpid();
 
+public static final native void call(int /*long*/ proc, int /*long*/ id, int /*long*/ sel);
+
 /** QuickDraw calls */
 
 /** @method flags=dynamic */
@@ -211,8 +213,8 @@ public static final native int /*long*/ class_getMethodImplementation(int /*long
  */
 public static final native int /*long*/ class_getInstanceMethod(int /*long*/ cls, int /*long*/ name);
 /**
- * @param cls cast=(Method)
- * @param name cast=(IMP)
+ * @param method cast=(Method)
+ * @param imp cast=(IMP)
  */
 public static final native int /*long*/ method_setImplementation(int /*long*/ method, int /*long*/ imp);
 
@@ -411,6 +413,7 @@ public static final int /*long*/ class_NSThread = objc_getClass("NSThread");
 public static final int /*long*/ class_NSTimeZone = objc_getClass("NSTimeZone");
 public static final int /*long*/ class_NSTimer = objc_getClass("NSTimer");
 public static final int /*long*/ class_NSToolbar = objc_getClass("NSToolbar");
+public static final int /*long*/ class_NSTrackingArea = objc_getClass("NSTrackingArea");
 public static final int /*long*/ class_NSTypesetter = objc_getClass("NSTypesetter");
 public static final int /*long*/ class_NSURL = objc_getClass("NSURL");
 public static final int /*long*/ class_NSURLDownload = objc_getClass("NSURLDownload");
@@ -532,6 +535,7 @@ public static final int /*long*/ sel_applicationShouldTerminate_ = sel_registerN
 public static final int /*long*/ sel_applicationWillFinishLaunching_ = sel_registerName("applicationWillFinishLaunching:");
 public static final int /*long*/ sel_applicationWillTerminate_ = sel_registerName("applicationWillTerminate:");
 public static final int /*long*/ sel_archivedDataWithRootObject_ = sel_registerName("archivedDataWithRootObject:");
+public static final int /*long*/ sel_areCursorRectsEnabled = sel_registerName("areCursorRectsEnabled");
 public static final int /*long*/ sel_array = sel_registerName("array");
 public static final int /*long*/ sel_arrayWithCapacity_ = sel_registerName("arrayWithCapacity:");
 public static final int /*long*/ sel_arrayWithObject_ = sel_registerName("arrayWithObject:");
@@ -669,6 +673,7 @@ public static final int /*long*/ sel_currentInputManager = sel_registerName("cur
 public static final int /*long*/ sel_currentPoint = sel_registerName("currentPoint");
 public static final int /*long*/ sel_currentRunLoop = sel_registerName("currentRunLoop");
 public static final int /*long*/ sel_currentThread = sel_registerName("currentThread");
+public static final int /*long*/ sel_cursorUpdate_ = sel_registerName("cursorUpdate:");
 public static final int /*long*/ sel_curveToPoint_controlPoint1_controlPoint2_ = sel_registerName("curveToPoint:controlPoint1:controlPoint2:");
 public static final int /*long*/ sel_cut_ = sel_registerName("cut:");
 public static final int /*long*/ sel_dataCell = sel_registerName("dataCell");
@@ -710,10 +715,12 @@ public static final int /*long*/ sel_dictionaryWithCapacity_ = sel_registerName(
 public static final int /*long*/ sel_dictionaryWithObject_forKey_ = sel_registerName("dictionaryWithObject:forKey:");
 public static final int /*long*/ sel_disableCursorRects = sel_registerName("disableCursorRects");
 public static final int /*long*/ sel_disabledControlTextColor = sel_registerName("disabledControlTextColor");
+public static final int /*long*/ sel_discardCursorRects = sel_registerName("discardCursorRects");
 public static final int /*long*/ sel_displayIfNeeded = sel_registerName("displayIfNeeded");
 public static final int /*long*/ sel_displayRectIgnoringOpacity_inContext_ = sel_registerName("displayRectIgnoringOpacity:inContext:");
 public static final int /*long*/ sel_distantFuture = sel_registerName("distantFuture");
 public static final int /*long*/ sel_doCommandBySelector_ = sel_registerName("doCommandBySelector:");
+public static final int /*long*/ sel_documentCursor = sel_registerName("documentCursor");
 public static final int /*long*/ sel_documentSource = sel_registerName("documentSource");
 public static final int /*long*/ sel_documentView = sel_registerName("documentView");
 public static final int /*long*/ sel_documentViewShouldHandlePrint = sel_registerName("documentViewShouldHandlePrint");
@@ -862,6 +869,7 @@ public static final int /*long*/ sel_initWithIdentifier_ = sel_registerName("ini
 public static final int /*long*/ sel_initWithImage_hotSpot_ = sel_registerName("initWithImage:hotSpot:");
 public static final int /*long*/ sel_initWithIndex_ = sel_registerName("initWithIndex:");
 public static final int /*long*/ sel_initWithIndexesInRange_ = sel_registerName("initWithIndexesInRange:");
+public static final int /*long*/ sel_initWithRect_options_owner_userInfo_ = sel_registerName("initWithRect:options:owner:userInfo:");
 public static final int /*long*/ sel_initWithSize_ = sel_registerName("initWithSize:");
 public static final int /*long*/ sel_initWithStartingColor_endingColor_ = sel_registerName("initWithStartingColor:endingColor:");
 public static final int /*long*/ sel_initWithString_ = sel_registerName("initWithString:");
@@ -1084,11 +1092,13 @@ public static final int /*long*/ sel_removeStatusItem_ = sel_registerName("remov
 public static final int /*long*/ sel_removeTabViewItem_ = sel_registerName("removeTabViewItem:");
 public static final int /*long*/ sel_removeTableColumn_ = sel_registerName("removeTableColumn:");
 public static final int /*long*/ sel_removeTemporaryAttribute_forCharacterRange_ = sel_registerName("removeTemporaryAttribute:forCharacterRange:");
+public static final int /*long*/ sel_removeTrackingArea_ = sel_registerName("removeTrackingArea:");
 public static final int /*long*/ sel_replaceCharactersInRange_withString_ = sel_registerName("replaceCharactersInRange:withString:");
 public static final int /*long*/ sel_representation = sel_registerName("representation");
 public static final int /*long*/ sel_representations = sel_registerName("representations");
 public static final int /*long*/ sel_request = sel_registerName("request");
 public static final int /*long*/ sel_requestWithURL_ = sel_registerName("requestWithURL:");
+public static final int /*long*/ sel_resetCursorRects = sel_registerName("resetCursorRects");
 public static final int /*long*/ sel_resignFirstResponder = sel_registerName("resignFirstResponder");
 public static final int /*long*/ sel_resizeDownCursor = sel_registerName("resizeDownCursor");
 public static final int /*long*/ sel_resizeLeftCursor = sel_registerName("resizeLeftCursor");
@@ -1207,6 +1217,7 @@ public static final int /*long*/ sel_setDefaultTabInterval_ = sel_registerName("
 public static final int /*long*/ sel_setDelegate_ = sel_registerName("setDelegate:");
 public static final int /*long*/ sel_setDestination_allowOverwrite_ = sel_registerName("setDestination:allowOverwrite:");
 public static final int /*long*/ sel_setDirectory_ = sel_registerName("setDirectory:");
+public static final int /*long*/ sel_setDocumentCursor_ = sel_registerName("setDocumentCursor:");
 public static final int /*long*/ sel_setDocumentView_ = sel_registerName("setDocumentView:");
 public static final int /*long*/ sel_setDoubleAction_ = sel_registerName("setDoubleAction:");
 public static final int /*long*/ sel_setDoubleValue_ = sel_registerName("setDoubleValue:");
@@ -1425,6 +1436,7 @@ public static final int /*long*/ sel_titleFont = sel_registerName("titleFont");
 public static final int /*long*/ sel_titleOfSelectedItem = sel_registerName("titleOfSelectedItem");
 public static final int /*long*/ sel_titleRectForBounds_ = sel_registerName("titleRectForBounds:");
 public static final int /*long*/ sel_toggleToolbarShown_ = sel_registerName("toggleToolbarShown:");
+public static final int /*long*/ sel_trackingAreas = sel_registerName("trackingAreas");
 public static final int /*long*/ sel_transform = sel_registerName("transform");
 public static final int /*long*/ sel_transformPoint_ = sel_registerName("transformPoint:");
 public static final int /*long*/ sel_transformSize_ = sel_registerName("transformSize:");
@@ -1440,6 +1452,7 @@ public static final int /*long*/ sel_unhideAllApplications_ = sel_registerName("
 public static final int /*long*/ sel_unlockFocus = sel_registerName("unlockFocus");
 public static final int /*long*/ sel_unmarkText = sel_registerName("unmarkText");
 public static final int /*long*/ sel_unregisterDraggedTypes = sel_registerName("unregisterDraggedTypes");
+public static final int /*long*/ sel_updateTrackingAreas = sel_registerName("updateTrackingAreas");
 public static final int /*long*/ sel_use = sel_registerName("use");
 public static final int /*long*/ sel_usedRectForTextContainer_ = sel_registerName("usedRectForTextContainer:");
 public static final int /*long*/ sel_userInfo = sel_registerName("userInfo");
@@ -4057,6 +4070,11 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
  * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3, int /*long*/ arg4);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

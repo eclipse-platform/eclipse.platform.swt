@@ -191,6 +191,13 @@ int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, in
 	return 0;
 }
 
+void callSuper(int /*long*/ id, int /*long*/ sel) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel);
+}
+
 void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -845,6 +852,10 @@ void mouseExited(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
+void cursorUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
 void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
@@ -1496,6 +1507,14 @@ public String toString () {
 		if (isValidThread ()) string = getNameText ();
 	}
 	return getName () + " {" + string + "}";
+}
+
+void resetCursorRects (int /*long*/ id, int /*long*/ sel) {
+	callSuper (id, sel);
+}
+
+void updateTrackingAreas (int /*long*/ id, int /*long*/ sel) {
+	callSuper (id, sel);
 }
 
 int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {

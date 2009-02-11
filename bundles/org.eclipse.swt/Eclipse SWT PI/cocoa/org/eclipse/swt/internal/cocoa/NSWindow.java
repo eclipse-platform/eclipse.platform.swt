@@ -32,6 +32,10 @@ public float /*double*/ alphaValue() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
 }
 
+public boolean areCursorRectsEnabled() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_areCursorRectsEnabled);
+}
+
 public boolean canBecomeKeyWindow() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_canBecomeKeyWindow);
 }

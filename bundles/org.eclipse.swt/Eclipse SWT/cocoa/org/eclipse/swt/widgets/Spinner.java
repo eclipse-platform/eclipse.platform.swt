@@ -291,6 +291,7 @@ public void cut () {
 }
 
 void enableWidget (boolean enabled) {
+	super.enableWidget(enabled);
 	buttonView.setEnabled(enabled);
 	textView.setEnabled(enabled);
 }
@@ -1068,6 +1069,12 @@ void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotifica
 		setSelection (value, false, true, false);
 	}
 	super.textDidEndEditing(id, sel, aNotification);
+}
+
+void updateCursorRects (boolean enabled) {
+	super.updateCursorRects (enabled);
+	updateCursorRects (enabled, textView);
+	updateCursorRects (enabled, buttonView);
 }
 
 String verifyText (String string, int /*long*/ start, int /*long*/ end, Event keyEvent) {

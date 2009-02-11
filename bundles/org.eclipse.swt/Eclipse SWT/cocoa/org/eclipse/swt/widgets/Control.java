@@ -980,6 +980,7 @@ void enableWidget (boolean enabled) {
 	if (view instanceof NSControl) {
 		((NSControl)view).setEnabled(enabled);
 	}
+	updateCursorRects (isEnabled ());
 }
 
 NSView eventView () {
@@ -3823,6 +3824,31 @@ void updateBackgroundMode () {
 	checkBackground ();
 	if (oldState != (state & PARENT_BACKGROUND)) {
 		setBackground ();
+	}
+}
+
+void resetCursorRects (int /*long*/ id, int /*long*/ sel) {
+	if (isEnabled ()) callSuper (id, sel);
+}
+
+void updateTrackingAreas (int /*long*/ id, int /*long*/ sel) {
+	if (isEnabled ()) callSuper (id, sel);
+}
+
+void updateCursorRects (boolean enabled) {
+	updateCursorRects (enabled, view);
+}
+
+void updateCursorRects (boolean enabled, NSView widget) {
+	if (enabled) {
+		widget.resetCursorRects ();
+		widget.updateTrackingAreas ();
+	} else {
+		widget.discardCursorRects ();
+		NSArray areas = widget.trackingAreas ();
+		for (int i = 0; i < areas.count(); i++) {
+			widget.removeTrackingArea (new NSTrackingArea (areas.objectAtIndex (i)));
+		}
 	}
 }
 

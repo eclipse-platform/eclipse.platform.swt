@@ -143,6 +143,10 @@ public class Display extends Device {
 	
 	int /*long*/ runLoopObserver;
 	Callback observerCallback;
+	
+	boolean lockCursor = true;
+	int /*long*/ oldCursorSetProc;
+	Callback cursorSetCallback;
 
 	// the following Callbacks are never freed
 	static Callback applicationDelegateCallback3;
@@ -743,8 +747,17 @@ void createDisplay (DeviceData data) {
 	} else {
 		isEmbedded = true;
 	}
+}
 
-	//	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
+int /*long*/ cursorSetProc (int /*long*/ id, int /*long*/ sel) {
+	if (lockCursor) {
+		if (currentControl != null) {
+			Cursor cursor = currentControl.findCursor ();
+			if (cursor != null && cursor.handle.id != id) return 0;
+		}
+	}
+	OS.call (oldCursorSetProc, id, sel);
+	return 0;
 }
 
 static void deregister (Display display) {
@@ -1702,6 +1715,12 @@ protected void init () {
 	runLoopObserver = OS.CFRunLoopObserverCreate (0, activities, true, 0, observerProc, 0);
 	if (runLoopObserver == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.CFRunLoopAddObserver (OS.CFRunLoopGetCurrent (), runLoopObserver, OS.kCFRunLoopCommonModes ());
+	
+	cursorSetCallback = new Callback(this, "cursorSetProc", 2);
+	int /*long*/ cursorSetProc = cursorSetCallback.getAddress();
+	if (cursorSetProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	int /*long*/ method = OS.class_getInstanceMethod(OS.class_NSCursor, OS.sel_set);
+	if (method != 0) oldCursorSetProc = OS.method_setImplementation(method, cursorSetProc);
 		
 	timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	
@@ -1754,10 +1773,13 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_cursorUpdate_, proc3, "@:@");
 	}
 	if (proc2 != 0) {
 		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
 	}
 	if (drawRectProc != 0) {
 		OS.class_addMethod(cls, OS.sel_drawRect_, drawRectProc, "@:{NSRect}");
@@ -1974,6 +1996,8 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSTableHeaderView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
 	//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
 	OS.objc_registerClassPair(cls);
 
@@ -2920,6 +2944,13 @@ void releaseDisplay () {
 	
 	if (markedAttributes != null) markedAttributes.release();
 	markedAttributes = null;
+	
+	if (oldCursorSetProc != 0) {
+		int /*long*/ method = OS.class_getInstanceMethod(OS.class_NSCursor, OS.sel_set);
+		OS.method_setImplementation(method, oldCursorSetProc);
+	}
+	if (cursorSetCallback != null) cursorSetCallback.dispose();
+	cursorSetCallback = null;
 
 	// The autorelease pool is cleaned up when we call NSApplication.terminate().
 
@@ -3184,8 +3215,20 @@ void setCurrentCaret (Caret caret) {
 void setCursor (Control control) {
 	Cursor cursor = null;
 	if (control != null) cursor = control.findCursor ();
-	if (cursor == null && control == null) cursor = getSystemCursor (SWT.CURSOR_ARROW);
-	if (cursor != null) cursor.handle.set ();
+	if (cursor == null) {
+		NSWindow window = application.keyWindow();
+		if (window != null) {
+			if (window.areCursorRectsEnabled ()) {
+				window.disableCursorRects ();
+				window.enableCursorRects ();
+			}
+			return;
+		}
+		cursor = getSystemCursor (SWT.CURSOR_ARROW);
+	}
+	lockCursor = false;
+	cursor.handle.set ();
+	lockCursor = true;
 }
 
 /**
@@ -3625,17 +3668,15 @@ Control findControl (boolean checkTrim) {
 				view = contentView;
 			}
 			break;
-		}			
+		}
 	}
 	Control control = null;
 	if (view != null) {
 		do {
 			Widget widget = getWidget (view);
 			if (widget instanceof Control) {
-				if ((widget.state & Widget.DISABLED) == 0) {
-					control = (Control)widget;
-					break;
-				}
+				control = (Control)widget;
+				break;
 			}
 			view = view.superview();
 		} while (view != null);
@@ -3654,23 +3695,7 @@ int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	int /*long*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
 	if (result != 0) {
-		NSEvent nsEvent = new NSEvent(result);
-		if (dequeue != 0) {
-			int type = (int)/*64*/nsEvent.type();
-			switch (type) {
-				case OS.NSLeftMouseDown:
-				case OS.NSRightMouseDown:
-				case OS.NSOtherMouseDown:
-					nsEvent.window().disableCursorRects();
-					break;
-				case OS.NSLeftMouseUp:
-				case OS.NSRightMouseUp:
-				case OS.NSOtherMouseUp:
-					nsEvent.window().enableCursorRects();
-					break;
-			}
-		}
-		if (run) applicationSendTrackingEvent(nsEvent);
+		if (run) applicationSendTrackingEvent(new NSEvent(result));
 	}
 	return result;
 }
@@ -3686,6 +3711,7 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
+			checkEnterExit (findControl (true), nsEvent, true);
 			trackingControl.sendMouseEvent (nsEvent, SWT.MouseUp, true);
 			break;
 		case OS.NSLeftMouseDragged:
@@ -3894,6 +3920,8 @@ static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*lon
 		widget.mouseEntered(id, sel, arg0);
 	} else if (sel == OS.sel_mouseExited_) {
 		widget.mouseExited(id, sel, arg0);
+	} else if (sel == OS.sel_cursorUpdate_) {
+		widget.cursorUpdate(id, sel, arg0);
 	} else if (sel == OS.sel_rightMouseDown_) {
 		widget.rightMouseDown(id, sel, arg0);
 	} else if (sel == OS.sel_rightMouseDragged_) {
@@ -3965,6 +3993,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return (widget.accessibilityIsIgnored(id, sel) ? 1 : 0);
 	} else if (sel == OS.sel_nextState) {
 		return widget.nextState(id, sel);
+	} else if (sel == OS.sel_resetCursorRects) {
+		widget.resetCursorRects(id, sel);
+	} else if (sel == OS.sel_updateTrackingAreas) {
+		widget.updateTrackingAreas(id, sel);
 	}
 	return 0;
 }
@@ -4028,6 +4060,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.mouseEntered(id, sel, arg0);
 	} else if (sel == OS.sel_mouseExited_) {
 		widget.mouseExited(id, sel, arg0);
+	} else if (sel == OS.sel_cursorUpdate_) {
+		widget.cursorUpdate(id, sel, arg0);
 	} else if (sel == OS.sel_menuForEvent_) {
 		return widget.menuForEvent(id, sel, arg0);
 	} else if (sel == OS.sel_shouldDelayWindowOrderingForEvent_) {

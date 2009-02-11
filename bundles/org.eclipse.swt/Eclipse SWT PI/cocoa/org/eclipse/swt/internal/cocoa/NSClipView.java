@@ -24,8 +24,21 @@ public NSClipView(id id) {
 	super(id);
 }
 
+public NSCursor documentCursor() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_documentCursor);
+	return result != 0 ? new NSCursor(result) : null;
+}
+
 public void scrollToPoint(NSPoint newOrigin) {
 	OS.objc_msgSend(this.id, OS.sel_scrollToPoint_, newOrigin);
+}
+
+public void setDocumentCursor(NSCursor anObj) {
+	OS.objc_msgSend(this.id, OS.sel_setDocumentCursor_, anObj != null ? anObj.id : 0);
+}
+
+public void setDrawsBackground(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setDrawsBackground_, flag);
 }
 
 }

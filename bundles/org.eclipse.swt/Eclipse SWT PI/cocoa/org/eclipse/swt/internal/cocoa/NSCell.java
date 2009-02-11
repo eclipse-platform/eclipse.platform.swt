@@ -73,6 +73,10 @@ public void setControlSize(int /*long*/ size) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, size);
 }
 
+public void setEnabled(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setEnabled_, flag);
+}
+
 public void setFont(NSFont fontObj) {
 	OS.objc_msgSend(this.id, OS.sel_setFont_, fontObj != null ? fontObj.id : 0);
 }

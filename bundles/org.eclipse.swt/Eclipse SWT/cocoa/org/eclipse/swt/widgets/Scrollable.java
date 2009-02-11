@@ -312,4 +312,13 @@ NSView topView () {
 	if (scrollView != null) return scrollView;
 	return super.topView ();
 }
+
+void updateCursorRects (boolean enabled) {
+	super.updateCursorRects (enabled);
+	if (scrollView == null) return;
+	updateCursorRects (enabled, scrollView);	
+	NSClipView contentView = scrollView.contentView ();
+	updateCursorRects (enabled, contentView);
+}
+
 }

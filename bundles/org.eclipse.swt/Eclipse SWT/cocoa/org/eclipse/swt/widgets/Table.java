@@ -2721,4 +2721,10 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 	NSBrowserCell browserCell = new NSBrowserCell (cell);
 	browserCell.setImage (image != null ? image.handle : null);
 }
+
+void updateCursorRects (boolean enabled) {
+	super.updateCursorRects (enabled);
+	if (headerView == null) return;
+	updateCursorRects (enabled, headerView);
+}
 }

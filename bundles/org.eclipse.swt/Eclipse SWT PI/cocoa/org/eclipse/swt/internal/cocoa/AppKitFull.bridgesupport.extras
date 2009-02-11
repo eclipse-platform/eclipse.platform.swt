@@ -5180,9 +5180,9 @@
 <arg name="flag"></arg>
 <retval></retval>
 </method>
-<method selector="setEnabled:">
-<arg name="flag"></arg>
-<retval></retval>
+<method selector="setEnabled:" swt_gen="true">
+<arg name="flag" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setEntryType:">
 <arg name="aType"></arg>
@@ -5406,8 +5406,8 @@
 <method selector="copiesOnScroll">
 <retval></retval>
 </method>
-<method selector="documentCursor">
-<retval></retval>
+<method selector="documentCursor" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="documentRect">
 <retval></retval>
@@ -5433,17 +5433,17 @@
 <arg name="flag"></arg>
 <retval></retval>
 </method>
-<method selector="setDocumentCursor:">
-<arg name="anObj"></arg>
-<retval></retval>
+<method selector="setDocumentCursor:" swt_gen="true">
+<arg name="anObj" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setDocumentView:">
 <arg name="aView"></arg>
 <retval></retval>
 </method>
-<method selector="setDrawsBackground:">
-<arg name="flag"></arg>
-<retval></retval>
+<method selector="setDrawsBackground:" swt_gen="true">
+<arg name="flag" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="viewBoundsChanged:">
 <arg name="notification"></arg>
@@ -16238,9 +16238,9 @@
 <arg name="sender"></arg>
 <retval></retval>
 </method>
-<method selector="cursorUpdate:">
-<arg name="event"></arg>
-<retval></retval>
+<method selector="cursorUpdate:" swt_gen="true">
+<arg name="event" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="deleteBackward:">
 <arg name="sender"></arg>
@@ -21270,13 +21270,13 @@
 <retval></retval>
 </method>
 </class>
-<class name="NSTrackingArea">
-<method selector="initWithRect:options:owner:userInfo:">
-<arg name="rect"></arg>
-<arg name="options"></arg>
-<arg name="owner"></arg>
-<arg name="userInfo"></arg>
-<retval></retval>
+<class name="NSTrackingArea" swt_gen="mixed">
+<method selector="initWithRect:options:owner:userInfo:" swt_gen="true">
+<arg name="rect" swt_gen="true"></arg>
+<arg name="options" swt_gen="true"></arg>
+<arg name="owner" swt_gen="true"></arg>
+<arg name="userInfo" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="options">
 <retval></retval>
@@ -22019,8 +22019,8 @@
 <arg name="subview"></arg>
 <retval></retval>
 </method>
-<method selector="discardCursorRects">
-<retval></retval>
+<method selector="discardCursorRects" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="display">
 <retval></retval>
@@ -22304,9 +22304,9 @@
 <arg name="tag"></arg>
 <retval></retval>
 </method>
-<method selector="removeTrackingArea:">
-<arg name="trackingArea"></arg>
-<retval></retval>
+<method selector="removeTrackingArea:" swt_gen="true">
+<arg name="trackingArea" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="removeTrackingRect:">
 <arg name="tag"></arg>
@@ -22320,8 +22320,8 @@
 <arg name="newView"></arg>
 <retval></retval>
 </method>
-<method selector="resetCursorRects">
-<retval></retval>
+<method selector="resetCursorRects" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="resizeSubviewsWithOldSize:">
 <arg name="oldSize"></arg>
@@ -22556,8 +22556,8 @@
 <method selector="toolTip">
 <retval></retval>
 </method>
-<method selector="trackingAreas">
-<retval></retval>
+<method selector="trackingAreas" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="translateOriginToPoint:">
 <arg name="translation"></arg>
@@ -22574,8 +22574,8 @@
 <method selector="unregisterDraggedTypes" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method selector="updateTrackingAreas">
-<retval></retval>
+<method selector="updateTrackingAreas" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="viewDidEndLiveResize">
 <retval></retval>
@@ -22721,8 +22721,8 @@
 <arg name="newFrame"></arg>
 <retval></retval>
 </method>
-<method selector="areCursorRectsEnabled">
-<retval></retval>
+<method selector="areCursorRectsEnabled" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="aspectRatio">
 <retval></retval>

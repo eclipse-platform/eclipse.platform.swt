@@ -978,6 +978,15 @@ void updateBackgroundMode () {
 	}
 }
 
+void updateCursorRects (boolean enabled) {
+	super.updateCursorRects (enabled);
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		Control control = children [i];
+		control.updateCursorRects (enabled && control.isEnabled ());
+	}
+}
+
 void updateLayout (boolean all) {
 	Composite parent = findDeferredControl ();
 	if (parent != null) {

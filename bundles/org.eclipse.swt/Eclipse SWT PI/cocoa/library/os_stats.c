@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 385;
-int OS_nativeFunctionCallCount[385];
+int OS_nativeFunctionCount = 387;
+int OS_nativeFunctionCallCount[387];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFRunLoopAddObserver",
@@ -235,6 +235,7 @@ char * OS_nativeFunctionNames[] = {
 	"UnionRgn",
 	"accessibilityHitTest_1CALLBACK",
 	"attributedSubstringFromRange_1CALLBACK",
+	"call",
 	"characterIndexForPoint_1CALLBACK",
 	"class_1addIvar",
 	"class_1addMethod",
@@ -553,6 +554,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2II",
 #else
 	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2III",
+#else
+	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZ",

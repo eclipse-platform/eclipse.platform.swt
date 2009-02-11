@@ -118,6 +118,10 @@ public NSSize convertSizeToBase(NSSize aSize) {
 	return result;
 }
 
+public void discardCursorRects() {
+	OS.objc_msgSend(this.id, OS.sel_discardCursorRects);
+}
+
 public void displayIfNeeded() {
 	OS.objc_msgSend(this.id, OS.sel_displayIfNeeded);
 }
@@ -183,6 +187,14 @@ public void removeFromSuperview() {
 	OS.objc_msgSend(this.id, OS.sel_removeFromSuperview);
 }
 
+public void removeTrackingArea(NSTrackingArea trackingArea) {
+	OS.objc_msgSend(this.id, OS.sel_removeTrackingArea_, trackingArea != null ? trackingArea.id : 0);
+}
+
+public void resetCursorRects() {
+	OS.objc_msgSend(this.id, OS.sel_resetCursorRects);
+}
+
 public boolean scrollRectToVisible(NSRect aRect) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_scrollRectToVisible_, aRect);
 }
@@ -241,12 +253,21 @@ public NSView superview() {
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
+public NSArray trackingAreas() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_trackingAreas);
+	return result != 0 ? new NSArray(result) : null;
+}
+
 public void unlockFocus() {
 	OS.objc_msgSend(this.id, OS.sel_unlockFocus);
 }
 
 public void unregisterDraggedTypes() {
 	OS.objc_msgSend(this.id, OS.sel_unregisterDraggedTypes);
+}
+
+public void updateTrackingAreas() {
+	OS.objc_msgSend(this.id, OS.sel_updateTrackingAreas);
 }
 
 public NSRect visibleRect() {

@@ -472,6 +472,15 @@ NSView topView () {
 	return scrollView;
 }
 
+void updateCursorRects (boolean enabled) {
+	super.updateCursorRects (enabled);
+	if (scrollView == null) return;
+	updateCursorRects (enabled, scrollView);	
+	NSClipView contentView = scrollView.contentView ();
+	updateCursorRects (enabled, contentView);
+	contentView.setDocumentCursor (enabled ? NSCursor.IBeamCursor () : null);
+}
+
 //int traversalCode (int key, int theEvent) {
 //	if (offsets.length == 0) return 0;
 //	int bits = super.traversalCode (key, theEvent);

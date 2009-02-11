@@ -273,7 +273,9 @@ Point adjustResizeCursor (boolean movePointer) {
 				newCursor = new Cursor(display, SWT.CURSOR_SIZEALL);
 				break;
 		}
+		display.lockCursor = false;
 		newCursor.handle.set();
+		display.lockCursor = true;
 		if (resizeCursor != null) {
 			resizeCursor.dispose ();
 		}
@@ -827,7 +829,9 @@ public boolean open () {
 		}
 		if (dispatch) application.sendEvent(event);
 		if (clientCursor != null && resizeCursor == null) {
+			display.lockCursor = false;
 			clientCursor.handle.set();
+			display.lockCursor = true;
 		}
 		pool.release();
 	}
@@ -1044,7 +1048,9 @@ public void setCursor (Cursor newCursor) {
 	checkWidget ();
 	clientCursor = newCursor;
 	if (newCursor != null) {
+		display.lockCursor = false;
 		if (inEvent) newCursor.handle.set();
+		display.lockCursor = true;
 	}
 }
 

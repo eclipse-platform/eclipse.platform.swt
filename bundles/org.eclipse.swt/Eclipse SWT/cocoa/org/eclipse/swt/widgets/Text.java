@@ -1863,6 +1863,13 @@ int traversalCode (int key, NSEvent theEvent) {
 	return bits;
 }
 
+void updateCursorRects (boolean enabled) {
+	super.updateCursorRects (enabled);
+	if (scrollView == null) return;
+	NSClipView contentView = scrollView.contentView ();
+	contentView.setDocumentCursor (enabled ? NSCursor.IBeamCursor () : null);
+}
+
 String verifyText (String string, int start, int end, NSEvent keyEvent) {
 	Event event = new Event ();
 	if (keyEvent != null) setKeyState(event, SWT.MouseDown, keyEvent);

@@ -243,6 +243,7 @@ typedef enum {
 	UnionRgn_FUNC,
 	accessibilityHitTest_1CALLBACK_FUNC,
 	attributedSubstringFromRange_1CALLBACK_FUNC,
+	call_FUNC,
 	characterIndexForPoint_1CALLBACK_FUNC,
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,
@@ -561,6 +562,11 @@ typedef enum {
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC,
 #else
 	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2III_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJJ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZ_FUNC,

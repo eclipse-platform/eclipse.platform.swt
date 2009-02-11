@@ -2571,5 +2571,11 @@ public void showSelection () {
 	if (selection.length > 0) showItem (selection [0], true);
 }
 
+void updateCursorRects (boolean enabled) {
+	super.updateCursorRects (enabled);
+	if (headerView == null) return;
+	updateCursorRects (enabled, headerView);
+}
+
 }
 
