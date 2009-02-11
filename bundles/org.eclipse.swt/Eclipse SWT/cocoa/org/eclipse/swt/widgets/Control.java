@@ -63,6 +63,7 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	NSBezierPath regionPath;
 	Accessible accessible;
+	boolean keyInputHappened;
 
 //	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
 
@@ -787,21 +788,21 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
-			// TODO is this workaround ok?
 			/*
 			 * Feature in Cocoa.  Pressing Alt+UpArrow invokes doCommandBySelector 
 			 * twice, with selectors moveBackward and moveToBeginningOfParagraph
 			 * (Alt+DownArrow behaves similarly).  In order to avoid sending
-			 * multiple events for these keys, do not send a KeyDown if the
-			 * selector is moveToBeginningOfParagraph or moveToEndOfParagraph.
+			 * multiple events for these keys, do not send a KeyDown if we already sent one
+			 * during this keystroke. 
 			 */
-			if (selector == OS.sel_moveToBeginningOfParagraph_|| selector == OS.sel_moveToEndOfParagraph_) return;
-
-			boolean [] consume = new boolean [1];
-			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
-			if (isDisposed ()) return;
-			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
-			if (consume [0]) return;
+			if (keyInputHappened == false) {
+				keyInputHappened = true;
+				boolean [] consume = new boolean [1];
+				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
+				if (isDisposed ()) return;
+				if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
+				if (consume [0]) return;
+			}
 		}
 		if ((state & CANVAS) != 0) return;
 	}
@@ -1586,7 +1587,7 @@ int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
-		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
+		if (!keyInputHappened && nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			NSString str = new NSString (string);
 			if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
 				str = new NSAttributedString (string).string ();
@@ -1595,10 +1596,11 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 			char[] buffer = new char [length];
 			str.getCharacters(buffer);
 			for (int i = 0; i < buffer.length; i++) {
+				keyInputHappened = true;
 				Event event = new Event ();
-				if (length == 1) setKeyState (event, SWT.KeyDown, nsEvent);
+				if (i == 0) setKeyState (event, SWT.KeyDown, nsEvent);
 				event.character = buffer [i];
-				if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return false;
+				if (!sendKeyEvent (SWT.KeyDown, event)) return false;
 			}
 		}
 		if ((state & CANVAS) != 0) return true;
@@ -1811,6 +1813,7 @@ public boolean isVisible () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	keyInputHappened = false;
 	if (view.window ().firstResponder ().id == id) {
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;
 		if (!textInput) {
@@ -1820,9 +1823,16 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			if (isDisposed ()) return;
 			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
 			if (consume [0]) return;
+			keyInputHappened = true;
 		}
 	}
 	super.keyDown (id, sel, theEvent);
+	
+	if (!keyInputHappened) {
+		NSEvent nsEvent = new NSEvent (theEvent);
+		if (isDisposed ()) return;
+		sendKeyEvent (nsEvent, SWT.KeyDown);
+	}
 }
 
 void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

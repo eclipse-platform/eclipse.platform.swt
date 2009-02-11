@@ -51,7 +51,6 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
 	int layoutCount, backgroundMode;
-	boolean keyInputHappened;
 	
 Composite () {
 	/* Do nothing */
@@ -283,22 +282,12 @@ void createHandle () {
 	view = widget;
 }
 
-void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
-	if ((state & CANVAS) != 0) keyInputHappened = true;
-	super.doCommandBySelector (id, sel, selector);
-}
-
 void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			fillBackground (view, context, rect, -1);
 		}
 	}
-}
-
-void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if ((state & CANVAS) != 0) keyInputHappened = true;
-	super.flagsChanged (id, sel, theEvent);
 }
 
 Composite findDeferredControl () {
@@ -484,12 +473,6 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
-boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
-	boolean returnValue = super.insertText(id, sel, string);
-	if (returnValue) keyInputHappened = true;
-	return returnValue;
-}
-
 /**
  * Returns <code>true</code> if the receiver or any ancestor 
  * up to and including the receiver's nearest ancestor shell
@@ -536,6 +519,7 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			keyInputHappened = false;
 			view.interpretKeyEvents (array);
 			if (!keyInputHappened) {
+				keyInputHappened = false;
 				NSEvent nsEvent = new NSEvent (theEvent);
 				boolean [] consume = new boolean [1];
 				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
