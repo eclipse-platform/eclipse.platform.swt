@@ -45,4 +45,8 @@ public int /*long*/ pixelsWide() {
 	return OS.objc_msgSend(this.id, OS.sel_pixelsWide);
 }
 
+public void setAlpha(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setAlpha_, flag);
+}
+
 }

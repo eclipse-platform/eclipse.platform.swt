@@ -561,6 +561,10 @@ void createAlpha () {
 				}
 			}
 		}
+
+		// Since we just calculated alpha for the image rep, tell it that it now has an alpha component.
+		imageRep.setAlpha(true);
+
 		OS.memmove(imageRep.bitmapData(), srcData, dataSize);
 	} finally {
 		if (pool != null) pool.release();
@@ -870,6 +874,7 @@ void init(ImageData image) {
 				buffer[dataIndex] = a;				
 			}
 		} else if (image.alphaData != null) {
+			hasAlpha = true;
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
 			int offset = 0, alphaOffset = 0;
@@ -1113,20 +1118,9 @@ public int /*long*/ internal_new_GC (GCData data) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSBitmapImageRep rep = imageRep;
-		
-		if (imageRep.hasAlpha()) {
-			int bpr = width * 4;
-			rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-			int /*long*/ bitmapData = imageRep.bitmapData();
-			if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
-			data.bitmapDataAddress = OS.malloc(C.PTR_SIZEOF);
-			OS.memmove(data.bitmapDataAddress, new int /*long*/[] {bitmapData}, C.PTR_SIZEOF);
-			rep = rep.initWithBitmapDataPlanes(data.bitmapDataAddress, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat , bpr, 32);
-			handle.removeRepresentation(imageRep);
-//			imageRep.release();
-			handle.addRepresentation(rep);
-			imageRep = rep;
-		}
+
+		// Can't perform transforms on image reps with alpha.
+		imageRep.setAlpha(false);
 		
 		handle.setCacheMode(OS.NSImageCacheNever);
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);

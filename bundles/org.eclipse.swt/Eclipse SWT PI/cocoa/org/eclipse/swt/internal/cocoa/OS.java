@@ -1158,6 +1158,7 @@ public static final int /*long*/ sel_setAllowsColumnReordering_ = sel_registerNa
 public static final int /*long*/ sel_setAllowsFloats_ = sel_registerName("setAllowsFloats:");
 public static final int /*long*/ sel_setAllowsMixedState_ = sel_registerName("setAllowsMixedState:");
 public static final int /*long*/ sel_setAllowsMultipleSelection_ = sel_registerName("setAllowsMultipleSelection:");
+public static final int /*long*/ sel_setAlpha_ = sel_registerName("setAlpha:");
 public static final int /*long*/ sel_setAlphaValue_ = sel_registerName("setAlphaValue:");
 public static final int /*long*/ sel_setApplicationIconImage_ = sel_registerName("setApplicationIconImage:");
 public static final int /*long*/ sel_setApplicationNameForUserAgent_ = sel_registerName("setApplicationNameForUserAgent:");
