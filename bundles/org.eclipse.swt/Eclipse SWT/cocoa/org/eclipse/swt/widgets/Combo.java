@@ -1304,7 +1304,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 void setBackground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
-		return;	// TODO reset to OS default
+		nsColor = NSColor.textBackgroundColor ();
 	} else {
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	}
@@ -1334,7 +1334,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 void setForeground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
-		return;	// TODO reset to OS default
+		nsColor = NSColor.textColor ();
 	} else {
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	}

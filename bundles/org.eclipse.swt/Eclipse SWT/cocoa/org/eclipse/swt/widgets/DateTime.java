@@ -329,7 +329,11 @@ void sendSelection () {
 void setBackground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
-		return;	// TODO reset to OS default
+		if ((style & SWT.CALENDAR) != 0) {
+			nsColor = NSColor.controlBackgroundColor ();
+		} else {
+			nsColor = NSColor.textBackgroundColor ();
+		}
 	} else {
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	}
@@ -391,7 +395,11 @@ public void setDay (int day) {
 void setForeground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
-		return;	// TODO reset to OS default
+		if ((style & SWT.CALENDAR) != 0) {
+			nsColor = NSColor.controlTextColor ();
+		} else {
+			nsColor = NSColor.textColor ();
+		}
 	} else {
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	}

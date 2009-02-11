@@ -636,6 +636,7 @@ public static final int /*long*/ sel_contentSizeForFrameSize_hasHorizontalScroll
 public static final int /*long*/ sel_contentView = sel_registerName("contentView");
 public static final int /*long*/ sel_contentViewMargins = sel_registerName("contentViewMargins");
 public static final int /*long*/ sel_context = sel_registerName("context");
+public static final int /*long*/ sel_controlBackgroundColor = sel_registerName("controlBackgroundColor");
 public static final int /*long*/ sel_controlContentFontOfSize_ = sel_registerName("controlContentFontOfSize:");
 public static final int /*long*/ sel_controlDarkShadowColor = sel_registerName("controlDarkShadowColor");
 public static final int /*long*/ sel_controlHighlightColor = sel_registerName("controlHighlightColor");

@@ -67,6 +67,11 @@ public static NSColor colorWithPatternImage(NSImage image) {
 	return result != 0 ? new NSColor(result) : null;
 }
 
+public static NSColor controlBackgroundColor() {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlBackgroundColor);
+	return result != 0 ? new NSColor(result) : null;
+}
+
 public static NSColor controlDarkShadowColor() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlDarkShadowColor);
 	return result != 0 ? new NSColor(result) : null;
