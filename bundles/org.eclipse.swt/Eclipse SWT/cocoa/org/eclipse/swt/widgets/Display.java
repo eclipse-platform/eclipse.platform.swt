@@ -99,6 +99,9 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 	boolean disposing;
 
+	/* Key event management */
+	boolean keyInputHappened;
+
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer;
 	Thread thread;
@@ -3206,6 +3209,7 @@ Runnable caretTimer = new Runnable () {
 		
 	}
 };
+
 void setCurrentCaret (Caret caret) {
 	currentCaret = caret;
 	int blinkRate = currentCaret != null ? currentCaret.blinkRate : -1;

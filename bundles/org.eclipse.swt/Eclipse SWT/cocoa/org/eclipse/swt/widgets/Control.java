@@ -63,10 +63,6 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	NSBezierPath regionPath;
 	Accessible accessible;
-	boolean keyInputHappened;
-
-//	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
-
 	/**
 	 * Magic number comes from experience. There's no API for this value in Cocoa or Carbon.
 	 */
@@ -795,8 +791,8 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 			 * multiple events for these keys, do not send a KeyDown if we already sent one
 			 * during this keystroke. 
 			 */
-			if (keyInputHappened == false) {
-				keyInputHappened = true;
+			if (display.keyInputHappened == false) {
+				display.keyInputHappened = true;
 				boolean [] consume = new boolean [1];
 				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
 				if (isDisposed ()) return;
@@ -1588,7 +1584,7 @@ int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
-		if (!keyInputHappened && nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
+		if (!display.keyInputHappened && nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			NSString str = new NSString (string);
 			if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
 				str = new NSAttributedString (string).string ();
@@ -1597,7 +1593,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 			char[] buffer = new char [length];
 			str.getCharacters(buffer);
 			for (int i = 0; i < buffer.length; i++) {
-				keyInputHappened = true;
+				display.keyInputHappened = true;
 				Event event = new Event ();
 				if (i == 0) setKeyState (event, SWT.KeyDown, nsEvent);
 				event.character = buffer [i];
@@ -1814,7 +1810,7 @@ public boolean isVisible () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	keyInputHappened = false;
+	display.keyInputHappened = false;
 	if (view.window ().firstResponder ().id == id) {
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;
 		if (!textInput) {
@@ -1824,12 +1820,12 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			if (isDisposed ()) return;
 			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
 			if (consume [0]) return;
-			keyInputHappened = true;
+			display.keyInputHappened = true;
 		}
 	}
 	super.keyDown (id, sel, theEvent);
 	
-	if (!keyInputHappened) {
+	if (!display.keyInputHappened) {
 		NSEvent nsEvent = new NSEvent (theEvent);
 		if (isDisposed ()) return;
 		sendKeyEvent (nsEvent, SWT.KeyDown);

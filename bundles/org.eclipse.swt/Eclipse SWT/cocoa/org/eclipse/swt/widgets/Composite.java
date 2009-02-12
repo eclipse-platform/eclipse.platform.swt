@@ -516,10 +516,10 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (view.window ().firstResponder ().id == id) {
 		if ((state & CANVAS) != 0) {
 			NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
-			keyInputHappened = false;
+			display.keyInputHappened = false;
 			view.interpretKeyEvents (array);
-			if (!keyInputHappened) {
-				keyInputHappened = false;
+			if (!display.keyInputHappened) {
+				display.keyInputHappened = false;
 				NSEvent nsEvent = new NSEvent (theEvent);
 				boolean [] consume = new boolean [1];
 				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
@@ -905,7 +905,7 @@ public void setLayoutDeferred (boolean defer) {
 
 boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
 	boolean returnValue = super.setMarkedText_selectedRange (id, sel, string, range);
-	if (returnValue) keyInputHappened = true;
+	if (returnValue) display.keyInputHappened = true;
 	return returnValue;
 }
 
