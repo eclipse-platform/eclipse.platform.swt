@@ -190,7 +190,9 @@ public Rectangle getClientArea () {
 	checkWidget();
 	if (scrollView != null) {
 		NSSize size = scrollView.contentSize();
-		return new Rectangle(0, 0, (int)size.width, (int)size.height);
+		NSClipView contentView = scrollView.contentView();
+		NSRect bounds = contentView.bounds();
+		return new Rectangle((int)bounds.x, (int)bounds.y, (int)size.width, (int)size.height);
 	} else {
 		NSRect rect = view.bounds();
 		return new Rectangle(0, 0, (int)rect.width, (int)rect.height);
