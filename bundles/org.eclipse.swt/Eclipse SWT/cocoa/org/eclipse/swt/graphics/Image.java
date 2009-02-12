@@ -11,7 +11,6 @@
 package org.eclipse.swt.graphics;
 
  
-import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 import java.io.*;
