@@ -556,7 +556,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								float /*double*/ [] lengths = null;
 								if (dashes != null) {
 									lengths = new float /*double*/[dashes.length];
-									System.arraycopy(dashes, 0, lengths, 0, lengths.length);
+									for (int k = 0; k < lengths.length; k++) {
+										lengths[k] = width == 0 ? dashes[k] : dashes[k] * width;
+									}
 								}
 								for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
 									OS.memmove(rect, pArray, NSRect.sizeof);
