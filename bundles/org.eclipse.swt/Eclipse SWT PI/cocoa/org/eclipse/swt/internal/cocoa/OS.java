@@ -606,6 +606,7 @@ public static final int /*long*/ sel_clearColor = sel_registerName("clearColor")
 public static final int /*long*/ sel_clearCurrentContext = sel_registerName("clearCurrentContext");
 public static final int /*long*/ sel_clearGLContext = sel_registerName("clearGLContext");
 public static final int /*long*/ sel_clickCount = sel_registerName("clickCount");
+public static final int /*long*/ sel_clickedRow = sel_registerName("clickedRow");
 public static final int /*long*/ sel_clientX = sel_registerName("clientX");
 public static final int /*long*/ sel_clientY = sel_registerName("clientY");
 public static final int /*long*/ sel_close = sel_registerName("close");

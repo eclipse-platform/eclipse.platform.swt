@@ -1981,7 +1981,14 @@ public void select (TreeItem item) {
 }
 
 void sendDoubleSelection() {
-	postEvent (SWT.DefaultSelection);
+	NSOutlineView outlineView = (NSOutlineView)view;
+	int index = (int)/*64*/outlineView.clickedRow (); 
+	if (index != -1) {
+		TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (index).id);
+		Event event = new Event ();
+		event.item = item;
+		postEvent (SWT.DefaultSelection, event);
+	}
 }
 
 boolean sendKeyEvent (NSEvent nsEvent, int type) {

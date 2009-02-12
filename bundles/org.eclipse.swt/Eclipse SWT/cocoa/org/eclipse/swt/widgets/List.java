@@ -1041,7 +1041,9 @@ public void selectAll () {
 }
 
 void sendDoubleSelection() {
-	postEvent (SWT.DefaultSelection);	
+	if (((NSTableView)view).clickedRow () != -1) {
+		postEvent (SWT.DefaultSelection);
+	}
 }
 
 boolean sendKeyEvent (NSEvent nsEvent, int type) {

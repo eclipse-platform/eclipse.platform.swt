@@ -2570,7 +2570,12 @@ public void showSelection () {
 }
 
 void sendDoubleSelection() {
-	postEvent (SWT.DefaultSelection);
+	int index = (int)/*64*/((NSTableView)view).clickedRow (); 
+	if (index != -1) {
+		Event event = new Event ();
+		event.item = _getItem (index);
+		postEvent (SWT.DefaultSelection, event);
+	}
 }
 
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
