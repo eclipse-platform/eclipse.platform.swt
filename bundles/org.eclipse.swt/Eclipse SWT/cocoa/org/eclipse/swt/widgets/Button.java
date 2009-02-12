@@ -729,6 +729,13 @@ public void setImage (Image image) {
 	this.image = image;
 	if ((style & (SWT.RADIO|SWT.CHECK)) == 0) {
 		((NSButton)view).setImage(image != null ? image.handle : null);
+		/*
+		 * Feature in Cocoa.  If the NSImage object being set into the button is
+		 * the same NSImage object that is already there then the button does not
+		 * redraw itself.  This results in the button's image not visually updating
+		 * if the NSImage object's content has changed since it was last set
+		 * into the button.  The workaround is to explicitly redraw the button.
+		 */
 		view.setNeedsDisplay(true);
 	}
 	updateAlignment ();

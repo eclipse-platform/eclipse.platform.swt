@@ -980,6 +980,13 @@ void updateImage (boolean layout) {
 		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
 	}
 	parent.relayout();
+	/*
+	 * Feature in Cocoa.  If the NSImage object being set into the button is
+	 * the same NSImage object that is already there then the button does not
+	 * redraw itself.  This results in the button's image not visually updating
+	 * if the NSImage object's content has changed since it was last set
+	 * into the button.  The workaround is to explicitly redraw the button.
+	 */
 	widget.setNeedsDisplay(true);
 }
 
