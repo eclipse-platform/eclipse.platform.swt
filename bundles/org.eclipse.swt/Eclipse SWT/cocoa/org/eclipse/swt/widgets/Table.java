@@ -2437,21 +2437,8 @@ public void setSortColumn (TableColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (column == sortColumn) return;
-	TableColumn oldSortColumn = sortColumn;
 	sortColumn = column;
-	if (sortDirection == SWT.NONE) return;
-	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
-	if (headerView == null) return;
-	if (oldSortColumn != null) {
-		int /*long*/ index = ((NSTableView)view).columnWithIdentifier (oldSortColumn.nsColumn);
-		NSRect rect = headerView.headerRectOfColumn (index);
-		headerView.setNeedsDisplayInRect (rect);
-	}
-	if (sortColumn != null) {
-		int /*long*/ index = ((NSTableView)view).columnWithIdentifier (sortColumn.nsColumn);
-		NSRect rect = headerView.headerRectOfColumn (index);
-		headerView.setNeedsDisplayInRect (rect);
-	}
+	((NSTableView)view).setHighlightedTableColumn (column == null ? null : column.nsColumn);
 }
 
 /**

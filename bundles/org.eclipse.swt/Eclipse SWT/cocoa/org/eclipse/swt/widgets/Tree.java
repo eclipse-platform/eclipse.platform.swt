@@ -2410,21 +2410,8 @@ public void setSortColumn (TreeColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (column == sortColumn) return;
-	TreeColumn oldSortColumn = sortColumn;
 	sortColumn = column;
-	if (sortDirection == SWT.NONE) return;
-	NSTableHeaderView headerView = ((NSOutlineView)view).headerView ();
-	if (headerView == null) return;
-	if (oldSortColumn != null) {
-		int /*long*/ index = ((NSOutlineView)view).columnWithIdentifier (oldSortColumn.nsColumn);
-		NSRect rect = headerView.headerRectOfColumn (index);
-		headerView.setNeedsDisplayInRect (rect);
-	}
-	if (sortColumn != null) {
-		int /*long*/ index = ((NSOutlineView)view).columnWithIdentifier (sortColumn.nsColumn);
-		NSRect rect = headerView.headerRectOfColumn (index);
-		headerView.setNeedsDisplayInRect (rect);
-	}
+	((NSOutlineView)view).setHighlightedTableColumn (column == null ? null : column.nsColumn);
 }
 
 /**
