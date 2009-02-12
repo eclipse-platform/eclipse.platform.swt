@@ -231,6 +231,9 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		paragraphStyle.autorelease ();
 		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
 		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+		if ((parent.state & DISABLED) != 0) {
+			dict.setObject (NSColor.disabledControlTextColor (), OS.NSForegroundColorAttributeName);
+		}
 		NSString string = NSString.stringWith (displayText);
 		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
 		stringSize = attrString.size ();
