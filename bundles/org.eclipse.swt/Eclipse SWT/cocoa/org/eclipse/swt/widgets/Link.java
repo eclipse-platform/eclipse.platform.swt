@@ -181,10 +181,14 @@ void deregister () {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	NSColor nsColor = null; 
-	if (!enabled) {
-		nsColor = NSColor.disabledControlTextColor();
+	if (enabled) {
+		if (foreground == null) {
+			nsColor = NSColor.textColor ();
+		} else {
+			nsColor = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+		}
 	} else {
-		if (foreground != null) nsColor = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+		nsColor = NSColor.disabledControlTextColor();
 	}
 	NSTextView widget = (NSTextView)view;
 	widget.setTextColor(nsColor);
@@ -415,6 +419,7 @@ void setFont(NSFont font) {
 }
 
 void setForeground (float /*double*/ [] color) {
+	if (!getEnabled ()) return;
 	NSColor nsColor;
 	if (color == null) {
 		nsColor = NSColor.textColor ();
