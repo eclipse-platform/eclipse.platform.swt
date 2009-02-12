@@ -980,6 +980,7 @@ void updateImage (boolean layout) {
 		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
 	}
 	parent.relayout();
+	widget.setNeedsDisplay(true);
 }
 
 }
