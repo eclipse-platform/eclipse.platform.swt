@@ -189,6 +189,10 @@ public void setHeaderView(NSTableHeaderView headerView) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderView_, headerView != null ? headerView.id : 0);
 }
 
+public void setHighlightedTableColumn(NSTableColumn tc) {
+	OS.objc_msgSend(this.id, OS.sel_setHighlightedTableColumn_, tc != null ? tc.id : 0);
+}
+
 public void setIntercellSpacing(NSSize aSize) {
 	OS.objc_msgSend(this.id, OS.sel_setIntercellSpacing_, aSize);
 }

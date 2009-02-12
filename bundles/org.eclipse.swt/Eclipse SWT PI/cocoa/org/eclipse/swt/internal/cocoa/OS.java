@@ -1248,6 +1248,7 @@ public static final int /*long*/ sel_setHidden_ = sel_registerName("setHidden:")
 public static final int /*long*/ sel_setHiddenUntilMouseMoves_ = sel_registerName("setHiddenUntilMouseMoves:");
 public static final int /*long*/ sel_setHighlightMode_ = sel_registerName("setHighlightMode:");
 public static final int /*long*/ sel_setHighlighted_ = sel_registerName("setHighlighted:");
+public static final int /*long*/ sel_setHighlightedTableColumn_ = sel_registerName("setHighlightedTableColumn:");
 public static final int /*long*/ sel_setHorizontalScroller_ = sel_registerName("setHorizontalScroller:");
 public static final int /*long*/ sel_setHorizontallyResizable_ = sel_registerName("setHorizontallyResizable:");
 public static final int /*long*/ sel_setIcon_ = sel_registerName("setIcon:");

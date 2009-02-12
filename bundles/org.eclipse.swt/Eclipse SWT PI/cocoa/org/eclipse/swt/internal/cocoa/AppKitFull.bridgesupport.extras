@@ -19416,9 +19416,9 @@
 <arg name="headerView" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="setHighlightedTableColumn:">
-<arg name="tc"></arg>
-<retval></retval>
+<method selector="setHighlightedTableColumn:" swt_gen="true">
+<arg name="tc" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setIndicatorImage:inTableColumn:">
 <arg name="anImage"></arg>
