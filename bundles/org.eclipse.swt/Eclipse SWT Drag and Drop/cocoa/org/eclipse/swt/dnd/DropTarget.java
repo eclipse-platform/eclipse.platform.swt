@@ -187,6 +187,7 @@ protected void checkSubclass () {
 }
 
 int draggingEntered(NSObject sender) {
+	NSCursor.currentCursor().push();
 	if (sender == null) return OS.NSDragOperationNone;	
 	
 	DNDEvent event = new DNDEvent();
@@ -221,27 +222,13 @@ int draggingEntered(NSObject sender) {
 		selectedOperation = event.detail;
 	}
 	
-	int osOperation = opToOsOp(selectedOperation);
+	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
 
-	switch (selectedOperation) {
-		case DND.DROP_COPY:
-			if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeCopyArrowCursor);
-			break;
-		case DND.DROP_LINK:
-			if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeAliasArrowCursor);
-			break;
-		case DND.DROP_MOVE:
-			NSCursor.arrowCursor().set();
-			break;
-		default:
-			if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
-	}
-
-	return osOperation;
+	return opToOsOp(selectedOperation);
 }
 
 void draggingExited(NSObject sender) {
-	NSCursor.arrowCursor().set();
+	NSCursor.pop();
 	if (keyOperation == -1) return;
 	keyOperation = -1;
 	
@@ -296,19 +283,7 @@ int draggingUpdated(NSObject sender) {
 		selectedOperation = event.detail;
 	}
 	
-	switch (selectedOperation) {
-		case DND.DROP_COPY:
-			if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeCopyArrowCursor);
-			break;
-		case DND.DROP_LINK:
-			if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeAliasArrowCursor);
-			break;
-		case DND.DROP_MOVE:
-			NSCursor.arrowCursor().set();
-			break;
-		default:
-			if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
-	}
+	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
 
 	return opToOsOp(selectedOperation);
 }

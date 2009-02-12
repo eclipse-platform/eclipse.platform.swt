@@ -39,6 +39,11 @@ public static NSCursor crosshairCursor() {
 	return result != 0 ? new NSCursor(result) : null;
 }
 
+public static NSCursor currentCursor() {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_currentCursor);
+	return result != 0 ? new NSCursor(result) : null;
+}
+
 public NSCursor initWithImage(NSImage newImage, NSPoint aPoint) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithImage_hotSpot_, newImage != null ? newImage.id : 0, aPoint);
 	return result == this.id ? this : (result != 0 ? new NSCursor(result) : null);
@@ -47,6 +52,14 @@ public NSCursor initWithImage(NSImage newImage, NSPoint aPoint) {
 public static NSCursor pointingHandCursor() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_pointingHandCursor);
 	return result != 0 ? new NSCursor(result) : null;
+}
+
+public static void pop() {
+	OS.objc_msgSend(OS.class_NSCursor, OS.sel_pop);
+}
+
+public void push() {
+	OS.objc_msgSend(this.id, OS.sel_push);
 }
 
 public static NSCursor resizeDownCursor() {
