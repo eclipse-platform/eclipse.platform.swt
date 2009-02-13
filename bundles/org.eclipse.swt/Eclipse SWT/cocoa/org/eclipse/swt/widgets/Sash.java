@@ -369,6 +369,11 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
+boolean mouseEvent (int id, int sel, int theEvent, int type) {
+	super.mouseEvent (id, sel, theEvent, type);
+	return new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
+}
+
 void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDragged(id, sel, theEvent);
