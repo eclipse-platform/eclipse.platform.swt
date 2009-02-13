@@ -9382,10 +9382,6 @@ public static final void gtk_spin_button_update(int /*long*/ spin_button) {
 }
 /**
  * @method flags=dynamic
- * @param handle cast=(GtkStatusIcon *)
- * @param screen cast=(GdkScreen **)
- * @param area cast=(GdkRectangle *)
- * @param orientation cast=(GtkOrientation *)
  */
 public static final native boolean _gtk_status_icon_get_geometry(int /*long*/ handle, int /*long*/ screen, GdkRectangle area, int /*long*/ orientation);
 public static final boolean gtk_status_icon_get_geometry(int /*long*/ handle, int /*long*/ screen, GdkRectangle area, int /*long*/ orientation) {
@@ -9398,7 +9394,6 @@ public static final boolean gtk_status_icon_get_geometry(int /*long*/ handle, in
 }
 /**
  * @method flags=dynamic
- * @param handle cast=(GtkStatusIcon *)
  */
 public static final native boolean _gtk_status_icon_get_visible(int /*long*/ handle);
 public static final boolean gtk_status_icon_get_visible(int /*long*/ handle) {
@@ -9421,8 +9416,6 @@ public static final int /*long*/ gtk_status_icon_new() {
 }
 /**
  * @method flags=dynamic
- * @param handle cast=(GtkStatusIcon *)
- * @param pixbuf cast=(GdkPixbuf *)
  */
 public static final native void _gtk_status_icon_set_from_pixbuf(int /*long*/ handle, int /*long*/ pixbuf);
 public static final void gtk_status_icon_set_from_pixbuf(int /*long*/ handle, int /*long*/ pixbuf) {
@@ -9435,8 +9428,6 @@ public static final void gtk_status_icon_set_from_pixbuf(int /*long*/ handle, in
 }
 /**
  * @method flags=dynamic
- * @param handle cast=(GtkStatusIcon *)
- * @param visible cast=(Bool)
  */
 public static final native void _gtk_status_icon_set_visible(int /*long*/ handle, boolean visible);
 public static final void gtk_status_icon_set_visible(int /*long*/ handle, boolean visible) {
@@ -9449,8 +9440,6 @@ public static final void gtk_status_icon_set_visible(int /*long*/ handle, boolea
 }
 /**
  * @method flags=dynamic
- * @param handle cast=(GtkStatusIcon *)
- * @param tip_text cast=(const gchar *)
  */
 public static final native void _gtk_status_icon_set_tooltip(int /*long*/ handle, byte[] tip_text);
 public static final void gtk_status_icon_set_tooltip(int /*long*/ handle, byte[] tip_text) {
