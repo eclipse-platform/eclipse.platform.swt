@@ -68,13 +68,13 @@ public class Snippet274 {
 	        }
 	    });
 	    for (int i = 0; i < 4; i++) {
-	        TreeItem itemI = new TreeItem(tree, SWT.NULL);
+	        TreeItem itemI = new TreeItem(tree, SWT.NONE);
 	        itemI.setText("Item " + i);
 	        for (int j = 0; j < 4; j++) {
-	            TreeItem itemJ = new TreeItem(itemI, SWT.NULL);
+	            TreeItem itemJ = new TreeItem(itemI, SWT.NONE);
 	            itemJ.setText("Item " + i + " " + j);
 	            for (int k = 0; k < 4; k++) {
-	                TreeItem itemK = new TreeItem(itemJ, SWT.NULL);
+	                TreeItem itemK = new TreeItem(itemJ, SWT.NONE);
 	                itemK.setText("Item " + i + " " + j + " " + k);
 	            }
 	        }

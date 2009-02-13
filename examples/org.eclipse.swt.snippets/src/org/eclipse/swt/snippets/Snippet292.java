@@ -29,7 +29,7 @@ public class Snippet292 {
 		final Shell shell = new Shell(display);
 		final Tree tree = new Tree(shell, SWT.BORDER);
 		for (int i = 0; i < 5; i++) {
-			TreeItem treeItem = new TreeItem (tree, SWT.NULL);
+			TreeItem treeItem = new TreeItem (tree, SWT.NONE);
 			treeItem.setText ("TreeItem " + i);
 			for (int j = 0; j < 3; j++) {
 				TreeItem subItem = new TreeItem(treeItem, SWT.NONE);

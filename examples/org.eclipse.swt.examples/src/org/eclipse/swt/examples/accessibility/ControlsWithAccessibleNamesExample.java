@@ -474,9 +474,9 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCCombo.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 				
 //		CTabFolder cTabFolder, overrideCTabFolder;
-		cTabFolder = new CTabFolder(shell, SWT.NULL);
+		cTabFolder = new CTabFolder(shell, SWT.NONE);
 		for (int i = 0; i < 3; i++) {
-			CTabItem item = new CTabItem(cTabFolder, SWT.NULL);
+			CTabItem item = new CTabItem(cTabFolder, SWT.NONE);
 			item.setText("CTabItem &" + i);
 			item.setToolTipText("TabItem ToolTip" + i);
 			Text itemText = new Text(cTabFolder, SWT.MULTI | SWT.BORDER);
@@ -485,9 +485,9 @@ public class ControlsWithAccessibleNamesExample {
 		}
 		cTabFolder.setSelection(cTabFolder.getItem(0));
 		
-		overrideCTabFolder = new CTabFolder(shell, SWT.NULL);
+		overrideCTabFolder = new CTabFolder(shell, SWT.NONE);
 		for (int i = 0; i < 3; i++) {
-			CTabItem item = new CTabItem(overrideCTabFolder, SWT.NULL);
+			CTabItem item = new CTabItem(overrideCTabFolder, SWT.NONE);
 			item.setText("CTabItem &" + i);
 			item.setToolTipText("TabItem ToolTip" + i);
 			Text itemText = new Text(overrideCTabFolder, SWT.MULTI | SWT.BORDER);
