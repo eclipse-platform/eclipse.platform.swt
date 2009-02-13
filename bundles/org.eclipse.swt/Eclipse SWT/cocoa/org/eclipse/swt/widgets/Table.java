@@ -2486,6 +2486,7 @@ void setTableEmpty () {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
+	//TODO fails when item is visible already, needs to do max
 	NSRect rect = ((NSTableView)view).rectOfRow(index);
 	((NSTableView)view).scrollRectToVisible(rect);
 }

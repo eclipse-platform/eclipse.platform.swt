@@ -82,6 +82,7 @@ public final class GC extends Resource {
 	final static int DRAW_OFFSET = 1 << 9;
 	final static int CLIPPING = 1 << 10;
 	final static int TRANSFORM = 1 << 11;
+	final static int VISIBLE_REGION = 1 << 12;
 	final static int DRAW = CLIPPING | TRANSFORM | FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT | DRAW_OFFSET;
 	final static int FILL = CLIPPING | TRANSFORM | BACKGROUND;
 
@@ -230,31 +231,25 @@ NSAutoreleasePool checkGC (int mask) {
 	}
 	if ((mask & (CLIPPING | TRANSFORM)) != 0) {
 		NSView view = data.view;
-		if (view != null && data.paintRect == null) {
-			NSRect rect = view.convertRect_toView_(view.bounds(), null);
-			NSRect visibleRect = view.visibleRect();
-			if (data.windowRect == null || rect.x != data.windowRect.x || rect.y != data.windowRect.y ||
-				rect.width != data.windowRect.width || rect.height != data.windowRect.height ||
-				visibleRect.x != data.visibleRect.x || visibleRect.y != data.visibleRect.y ||
-				visibleRect.width != data.visibleRect.width || visibleRect.height != data.visibleRect.height)
-			{
-				data.state &= ~CLIPPING;
-				data.windowRect = rect;
-				data.visibleRect = visibleRect;
-			}
-		}
-		if ((data.state & CLIPPING) == 0 || (data.state & TRANSFORM) == 0) {
+		if ((data.state & CLIPPING) == 0 || (data.state & TRANSFORM) == 0 || (data.state & VISIBLE_REGION) == 0) {
 			boolean antialias = handle.shouldAntialias();
 			handle.restoreGraphicsState();
 			handle.saveGraphicsState();
 			handle.setShouldAntialias(antialias);
 			if (view != null && data.paintRect == null) {
 				NSAffineTransform transform = NSAffineTransform.transform();
-				NSRect rect = data.windowRect;
+				NSRect rect = view.convertRect_toView_(view.bounds(), null);
 				transform.translateXBy(rect.x, rect.y + rect.height);
 				transform.scaleXBy(1, -1);
 				transform.concat();
-				NSBezierPath.bezierPathWithRect(data.visibleRect).addClip();
+				if (data.visibleRgn != 0) {
+					if (data.visiblePath == null || (data.state & VISIBLE_REGION) == 0) {
+						if (data.visiblePath != null) data.visiblePath.release();
+						data.visiblePath = Region.cocoa_new(device, data.visibleRgn).getPath();
+					}
+					data.visiblePath.addClip();
+					data.state |= VISIBLE_REGION;
+				}
 			}
 			if (data.clipPath != null) data.clipPath.addClip();
 			if (data.transform != null) data.transform.concat();
@@ -835,9 +830,10 @@ void destroy() {
 	if (data.bg != null) data.bg.release();
 	if (data.path != null) data.path.release();
 	if (data.clipPath != null) data.clipPath.release();
+	if (data.visiblePath != null) data.visiblePath.release();
 	if (data.transform != null) data.transform.release();
 	if (data.inverseTransform != null) data.inverseTransform.release();
-	data.path = data.clipPath = null;
+	data.path = data.clipPath = data.visiblePath = null;
 	data.transform = data.inverseTransform = null;
 	data.fg = data.bg = null;
 	

@@ -907,6 +907,11 @@ void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
+void invalidateVisibleRegion () {
+	resetVisibleRegion ();
+	invalidateChildrenVisibleRegion ();
+}
+
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();
@@ -1442,6 +1447,7 @@ void setWindowVisible (boolean visible, boolean key) {
 		if (isDisposed ()) return;
 		updateParent (visible);
 		topView ().setHidden (false);
+		invalidateVisibleRegion();
 		if (key) {
 			window.makeKeyAndOrderFront (null);
 		} else {
@@ -1466,6 +1472,7 @@ void setWindowVisible (boolean visible, boolean key) {
 		updateParent (visible);
 		window.orderOut (null);
 		topView ().setHidden (true);
+		invalidateVisibleRegion();
 		sendEvent (SWT.Hide);
 	}
 }

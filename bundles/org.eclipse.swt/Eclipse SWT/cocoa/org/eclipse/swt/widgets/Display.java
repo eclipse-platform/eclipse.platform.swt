@@ -107,7 +107,7 @@ public class Display extends Device {
 	Thread thread;
 	boolean allowTimers, runAsyncMessages;
 
-	NSGraphicsContext[] contexts;
+	GCData[] contexts;
 
 	Caret currentCaret;
 	
@@ -324,15 +324,15 @@ static int untranslateKey (int key) {
 	return 0;
 }
 
-void addContext (NSGraphicsContext context) {
-	if (contexts == null) contexts = new NSGraphicsContext [12];
+void addContext (GCData context) {
+	if (contexts == null) contexts = new GCData [12];
 	for (int i=0; i<contexts.length; i++) {
-		if (contexts[i] != null && contexts [i].id == context.id) {
+		if (contexts[i] != null && contexts [i] == context) {
 			contexts [i] = context;
 			return;
 		}
 	}
-	NSGraphicsContext [] newContexts = new NSGraphicsContext [contexts.length + 12];
+	GCData [] newContexts = new GCData [contexts.length + 12];
 	newContexts [contexts.length] = context;
 	System.arraycopy (contexts, 0, newContexts, 0, contexts.length);
 	contexts = newContexts;
@@ -526,7 +526,7 @@ void checkEnterExit (Control control, NSEvent nsEvent, boolean send) {
 		}
 		setCursor (control);
 	}
-	if (control != null) timerExec (getToolTipTime (), hoverTimer);
+	timerExec (control != null ? getToolTipTime () : -1, hoverTimer);
 }
 
 /**
@@ -2972,12 +2972,12 @@ void releaseDisplay () {
 	observerCallback = null;
 }
 
-void removeContext (NSGraphicsContext context) {
+void removeContext (GCData context) {
 	if (contexts == null) return;
 	int count = 0;
 	for (int i = 0; i < contexts.length; i++) {
 		if (contexts[i] != null) {
-			if (contexts [i].id == context.id) {
+			if (contexts [i] == context) {
 				contexts[i] = null;
 			} else {
 				count++;
@@ -3084,7 +3084,9 @@ boolean runAsyncMessages (boolean all) {
 boolean runContexts () {
 	if (contexts != null) {
 		for (int i = 0; i < contexts.length; i++) {
-			if (contexts[i] != null) contexts[i].flushGraphics();
+			if (contexts[i] != null && contexts[i].flippedContext != null) {
+				contexts[i].flippedContext.flushGraphics();
+			}
 		}
 	}
 	return false;

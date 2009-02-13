@@ -293,7 +293,9 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		update (all);
 	}
 	Control control = findBackgroundControl ();
-	if (control != null && control.backgroundImage != null) {
+	boolean redraw = control != null && control.backgroundImage != null;
+	if (!redraw) redraw = isObscured ();
+	if (redraw) {
 		redrawWidget (view, x, y, width, height, false);
 		redrawWidget (view, destX, destY, width, height, false);
 	} else {

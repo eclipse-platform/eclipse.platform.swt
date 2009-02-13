@@ -473,6 +473,15 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
+void invalidateChildrenVisibleRegion () {
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		child.resetVisibleRegion ();
+		child.invalidateChildrenVisibleRegion ();
+	}
+}
+
 /**
  * Returns <code>true</code> if the receiver or any ancestor 
  * up to and including the receiver's nearest ancestor shell

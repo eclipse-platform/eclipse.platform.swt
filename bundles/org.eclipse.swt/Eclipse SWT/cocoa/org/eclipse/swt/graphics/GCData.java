@@ -53,10 +53,10 @@ public final class GCData {
 	public NSRect paintRect;
 	public NSBezierPath path;
 	public NSAffineTransform transform, inverseTransform;
-	public NSBezierPath clipPath;
+	public NSBezierPath clipPath, visiblePath;
+	public int /*long*/ visibleRgn;
 	public NSView view;
 	public NSSize size;
-	public NSRect windowRect, visibleRect;
 	public Thread thread;
 	public NSGraphicsContext flippedContext;
 }

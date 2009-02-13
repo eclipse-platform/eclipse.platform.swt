@@ -62,7 +62,12 @@ public abstract class Control extends Widget implements Drawable {
 	Cursor cursor;
 	Region region;
 	NSBezierPath regionPath;
+	int /*long*/ visibleRgn;
 	Accessible accessible;
+	
+	final static int CLIPPING = 1 << 10;
+	final static int VISIBLE_REGION = 1 << 12;
+	
 	/**
 	 * Magic number comes from experience. There's no API for this value in Cocoa or Carbon.
 	 */
@@ -600,6 +605,51 @@ public void addTraverseListener (TraverseListener listener) {
 boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if ((state & DISABLED) != 0) return false;
 	return super.becomeFirstResponder (id, sel);
+}
+
+void calculateVisibleRegion (NSView view, int /*long*/ visibleRgn, boolean clipChildren) {
+	int /*long*/ tempRgn = OS.NewRgn ();
+	if (!view.isHiddenOrHasHiddenAncestor() && getDrawCount() == 0) {
+		int /*long*/ childRgn = OS.NewRgn ();
+		NSWindow window = view.window ();
+		NSView contentView = window.contentView();
+		NSView frameView = contentView.superview();
+		NSRect bounds = contentView.visibleRect();
+		bounds = contentView.convertRect_toView_(bounds, view);
+		short[] rect = new short[4];
+		OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
+		OS.RectRgn(visibleRgn, rect);
+		NSView tempView = view, lastControl = null;
+		while (tempView.id != frameView.id) {
+			bounds = tempView.visibleRect();
+			bounds = tempView.convertRect_toView_(bounds, view);
+			OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
+			OS.RectRgn(tempRgn, rect);
+			OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
+			if (OS.EmptyRgn (visibleRgn)) break;
+			if (clipChildren || tempView.id != view.id) {
+				NSArray subviews = tempView.subviews();
+				int /*long*/ count = subviews.count();
+				for (int i = 0; i < count; i++) {
+					NSView child = new NSView (subviews.objectAtIndex(count - i - 1));
+					if (lastControl != null && child.id == lastControl.id) break;
+					if (child.isHidden()) continue;
+					bounds = child.visibleRect();
+					bounds = child.convertRect_toView_(bounds, view);
+					OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
+					OS.RectRgn(tempRgn, rect);
+					OS.UnionRgn (tempRgn, childRgn, childRgn);
+				}
+			}
+			lastControl = tempView;
+			tempView = tempView.superview();
+		}
+		OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
+		OS.DisposeRgn (childRgn);
+	} else {
+		OS.CopyRgn (tempRgn, visibleRgn);
+	}
+	OS.DisposeRgn (tempRgn);
 }
 
 void checkBackground () {
@@ -1553,6 +1603,16 @@ public boolean getVisible () {
 	return (state & HIDDEN) == 0;
 }
 
+int /*long*/ getVisibleRegion () {
+	if (visibleRgn == 0) {
+		visibleRgn = OS.NewRgn ();
+		calculateVisibleRegion (view, visibleRgn, true);
+	}
+	int /*long*/ result = OS.NewRgn ();
+	OS.CopyRgn (visibleRgn, result);
+	return result;
+}
+
 boolean hasBorder () {
 	return (style & SWT.BORDER) != 0;
 }
@@ -1627,9 +1687,13 @@ public int /*long*/ internal_new_GC (GCData data) {
 		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (view.window ());
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
 		graphicsContext = flippedContext;
-		display.addContext (graphicsContext);
 		context = graphicsContext.id;
-		if (data != null) data.flippedContext = flippedContext;
+		if (data != null) {
+			data.flippedContext = flippedContext;
+			data.state &= ~VISIBLE_REGION;
+			data.visibleRgn = getVisibleRegion();
+			display.addContext (data);
+		}
 	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1664,10 +1728,27 @@ public int /*long*/ internal_new_GC (GCData data) {
 public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	checkWidget ();
 	NSGraphicsContext graphicsContext = new NSGraphicsContext (context);
-	display.removeContext (graphicsContext);
+	display.removeContext (data);
 	if (data != null) {
 		if (data.paintRect == null) graphicsContext.flushGraphics ();
+		if (data.visibleRgn != 0) OS.DisposeRgn(data.visibleRgn);
+		data.visibleRgn = 0;
 	}
+}
+
+void invalidateChildrenVisibleRegion () {
+}
+
+void invalidateVisibleRegion () {
+	int index = 0;
+	Control[] siblings = parent._getChildren ();
+	while (index < siblings.length && siblings [index] != this) index++;
+	for (int i=index; i<siblings.length; i++) {
+		Control sibling = siblings [i];
+		sibling.resetVisibleRegion ();
+		sibling.invalidateChildrenVisibleRegion ();
+	}
+	parent.resetVisibleRegion ();
 }
 
 boolean isActive () {
@@ -1728,6 +1809,19 @@ boolean isFocusAncestor (Control control) {
 public boolean isFocusControl () {
 	checkWidget();
 	return hasFocus ();
+}
+
+boolean isObscured () {
+	int /*long*/ visibleRgn = getVisibleRegion(), boundsRgn = OS.NewRgn();
+	short[] rect = new short[4];
+	NSRect bounds = view.visibleRect();
+	OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
+	OS.RectRgn(boundsRgn, rect);
+	OS.DiffRgn(boundsRgn, visibleRgn, boundsRgn);
+	boolean obscured = !OS.EmptyRgn (boundsRgn);
+	OS.DisposeRgn(boundsRgn);
+	OS.DisposeRgn(visibleRgn);
+	return obscured;
 }
 
 /**
@@ -2257,6 +2351,7 @@ void releaseHandle () {
 }
 
 void releaseParent () {
+	invalidateVisibleRegion ();
 	parent.removeControl (this);
 }
 
@@ -2270,6 +2365,8 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
+	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
+	visibleRgn = 0;
 	layoutData = null;
 	if (accessible != null) {
 		accessible.internal_dispose_Accessible ();
@@ -2596,6 +2693,28 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
+}
+
+void resetVisibleRegion () {
+	if (visibleRgn != 0) {
+		OS.DisposeRgn (visibleRgn);
+		visibleRgn = 0;
+	}
+	GCData[] gcs = display.contexts;
+	if (gcs != null) {
+		int /*long*/ visibleRgn = 0;
+		for (int i=0; i<gcs.length; i++) {
+			GCData data = gcs [i];
+			if (data != null) {
+				if (data.view == view) {
+					if (visibleRgn == 0) visibleRgn = getVisibleRegion ();
+					data.state &= ~VISIBLE_REGION;
+					OS.CopyRgn (visibleRgn, data.visibleRgn);
+				}
+			}
+		}
+		if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
+	}
 }
 
 void resized () {
@@ -3036,6 +3155,7 @@ void setFrameOrigin (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	NSRect frame = topView.frame();
 	super.setFrameOrigin(id, sel, point);
 	if (frame.x != point.x || frame.y != point.y) {
+		invalidateVisibleRegion();
 		moved ();
 	}
 }
@@ -3049,6 +3169,7 @@ void setFrameSize (int /*long*/ id, int /*long*/ sel, NSSize size) {
 	NSRect frame = topView.frame();
 	super.setFrameSize(id, sel, size);
 	if (frame.width != size.width || frame.height != size.height) {
+		invalidateVisibleRegion();
 		resized ();
 	}
 }
@@ -3213,12 +3334,12 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
-//			invalidateVisibleRegion (handle);
+			invalidateVisibleRegion ();
 			redrawWidget(view, true);
 		}
 	} else {
 		if (drawCount == 0) {
-//			invalidateVisibleRegion (handle);
+			invalidateVisibleRegion ();
 		}
 		drawCount++;
 	}
@@ -3406,6 +3527,7 @@ public void setVisible (boolean visible) {
 		fixFocus = isFocusAncestor (control);
 	}
 	topView().setHidden(!visible);
+	invalidateVisibleRegion();
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -3465,6 +3587,7 @@ void setZOrder (Control sibling, boolean above) {
 	view.removeFromSuperview();
 	parent.contentView().addSubview(view, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
 	view.release();
+	invalidateVisibleRegion();
 	
 	/* determine the receiver's new index in the parent */
 	if (sibling != null) {

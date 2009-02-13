@@ -272,10 +272,16 @@ void releaseChildren (boolean destroy) {
 }
 
 void sendHorizontalSelection () {
+	if ((state & CANVAS) == 0 && scrollView != null && visibleRgn == 0) {
+		scrollView.contentView().setCopiesOnScroll(!isObscured());
+	}
 	horizontalBar.sendSelection ();
 }
 
 void sendVerticalSelection () {
+	if ((state & CANVAS) == 0 && scrollView != null && visibleRgn == 0) {
+		scrollView.contentView().setCopiesOnScroll(!isObscured());
+	}
 	verticalBar.sendSelection ();
 }
 
