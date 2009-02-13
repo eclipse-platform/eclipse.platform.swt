@@ -22159,8 +22159,8 @@
 <method selector="isFlipped" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method selector="isHidden">
-<retval></retval>
+<method selector="isHidden" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="isHiddenOrHasHiddenAncestor">
 <retval></retval>

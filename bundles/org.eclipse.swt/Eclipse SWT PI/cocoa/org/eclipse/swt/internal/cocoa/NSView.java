@@ -166,6 +166,10 @@ public boolean isFlipped() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isFlipped);
 }
 
+public boolean isHidden() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isHidden);
+}
+
 public boolean isOpaque() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isOpaque);
 }
