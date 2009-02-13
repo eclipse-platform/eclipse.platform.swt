@@ -161,7 +161,8 @@ public abstract class Widget {
 	static final int ACTIVATE_INVERSE = 60;
 	static final int DAY_SELECTED = 61;
 	static final int MONTH_CHANGED = 62;
-	static final int LAST_SIGNAL = 63;
+	static final int STATUS_ICON_POPUP_MENU = 63;
+	static final int LAST_SIGNAL = 64;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -777,6 +778,10 @@ int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 }
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+	return 0;
+}
+
+int /*long*/ gtk_status_icon_popup_menu (int /*long*/ handle, int /*long*/ button, int /*long*/ activate_time) {
 	return 0;
 }
 
@@ -1565,6 +1570,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
 		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
 		case SCROLL_CHILD: return gtk_scroll_child (handle, arg0, arg1);
+		case STATUS_ICON_POPUP_MENU: return gtk_status_icon_popup_menu (handle, arg0, arg1);
 		case SWITCH_PAGE: return gtk_switch_page (handle, arg0, arg1);
 		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);

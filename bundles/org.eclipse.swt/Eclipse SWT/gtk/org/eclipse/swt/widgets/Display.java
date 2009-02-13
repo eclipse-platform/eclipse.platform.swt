@@ -2444,6 +2444,7 @@ void initializeCallbacks () {
 	closures [Widget.DELETE_TEXT] = OS.g_cclosure_new (windowProc4, Widget.DELETE_TEXT, 0);
 	closures [Widget.ROW_ACTIVATED] = OS.g_cclosure_new (windowProc4, Widget.ROW_ACTIVATED, 0);
 	closures [Widget.SCROLL_CHILD] = OS.g_cclosure_new (windowProc4, Widget.SCROLL_CHILD, 0);
+	closures [Widget.STATUS_ICON_POPUP_MENU] = OS.g_cclosure_new (windowProc4, Widget.STATUS_ICON_POPUP_MENU, 0);
 	closures [Widget.SWITCH_PAGE] = OS.g_cclosure_new (windowProc4, Widget.SWITCH_PAGE, 0);
 	closures [Widget.TEST_COLLAPSE_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_COLLAPSE_ROW, 0);
 	closures [Widget.TEST_EXPAND_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_EXPAND_ROW, 0);

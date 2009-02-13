@@ -150,39 +150,46 @@ void createWidget (int index) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	handle = OS.gtk_plug_new (0);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	imageHandle = OS.gtk_image_new ();
-	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (handle, imageHandle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_show (imageHandle);
-	int /*long*/ id = OS.gtk_plug_get_id (handle);
-	int monitor = 0;
-	int /*long*/ screen = OS.gdk_screen_get_default ();
-	if (screen != 0) {
-		monitor = OS.gdk_screen_get_number (screen);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		handle = OS.gtk_status_icon_new ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		imageHandle = OS.gtk_image_new ();
+		OS.gtk_status_icon_set_visible (handle,true);
+	} else {
+		handle = OS.gtk_plug_new (0);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		imageHandle = OS.gtk_image_new ();
+		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (handle, imageHandle);
+		OS.gtk_widget_show (handle);
+		OS.gtk_widget_show (imageHandle);
+		int /*long*/ id = OS.gtk_plug_get_id (handle);
+		int monitor = 0;
+		int /*long*/ screen = OS.gdk_screen_get_default ();
+		if (screen != 0) {
+			monitor = OS.gdk_screen_get_number (screen);
+		}
+		byte [] trayBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_S" + monitor, true);
+		int /*long*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
+		int /*long*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
+		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int /*long*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
+		byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
+		int /*long*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
+		int /*long*/ xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
+		XClientMessageEvent event = new XClientMessageEvent ();
+		event.type = OS.ClientMessage;
+		event.window = trayWindow;
+		event.message_type = xMessageAtom;
+		event.format = 32;
+		event.data [0] = OS.GDK_CURRENT_TIME;
+		event.data [1] = OS.SYSTEM_TRAY_REQUEST_DOCK;
+		event.data [2] = id;
+		int /*long*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
+		OS.memmove (clientEvent, event, XClientMessageEvent.sizeof);
+		OS.XSendEvent (xDisplay, trayWindow, false, OS.NoEventMask, clientEvent);
+		OS.g_free (clientEvent);
 	}
-	byte [] trayBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_S" + monitor, true);
-	int /*long*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
-	int /*long*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
-	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
-	int /*long*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
-	byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
-	int /*long*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
-	int /*long*/ xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
-	XClientMessageEvent event = new XClientMessageEvent ();
-	event.type = OS.ClientMessage;
-	event.window = trayWindow;
-	event.message_type = xMessageAtom;
-	event.format = 32;
-	event.data [0] = OS.GDK_CURRENT_TIME;
-	event.data [1] = OS.SYSTEM_TRAY_REQUEST_DOCK;
-	event.data [2] = id;
-	int /*long*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
-	OS.memmove (clientEvent, event, XClientMessageEvent.sizeof);
-	OS.XSendEvent (xDisplay, trayWindow, false, OS.NoEventMask, clientEvent);
-	OS.g_free (clientEvent);
 }
 
 void deregister () {
@@ -246,6 +253,31 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+int /*long*/ gtk_activate (int /*long*/ widget) {
+	postEvent (SWT.Selection);
+	/*
+	* Feature in GTK. GTK will generate a single-click event before sending 
+	* a double-click event. To know when to send a DefaultSelection, look for 
+	* the single-click as the current event and for the double-click in the
+	* event queue.
+	*/
+	int /*long*/ nextEvent = OS.gdk_event_peek ();
+	if (nextEvent != 0) {
+		int nextEventType = OS.GDK_EVENT_TYPE (nextEvent);
+		int /*long*/ currEvent = OS.gtk_get_current_event ();
+		int currEventType = 0;
+		if (currEvent != 0) {
+			currEventType = OS.GDK_EVENT_TYPE (currEvent);
+			OS.gdk_event_free (currEvent);
+		}
+		OS.gdk_event_free (nextEvent);
+		if (currEventType == OS.GDK_BUTTON_PRESS && nextEventType == OS.GDK_2BUTTON_PRESS) {
+			postEvent (SWT.DefaultSelection);
+		}
+	}
+	return 0;
+}
+
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
@@ -295,12 +327,22 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	return 0;
 }
 
+int /*long*/ gtk_status_icon_popup_menu (int /*long*/ widget, int /*long*/ button, int /*long*/ activate_time) {
+	sendEvent (SWT.MenuDetect);
+	return 0;
+}
+
 void hookEvents () {
-	int eventMask = OS.GDK_BUTTON_PRESS_MASK;
-	OS.gtk_widget_add_events (handle, eventMask);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-	OS.g_signal_connect_closure_by_id (imageHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
- }
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
+		OS.g_signal_connect_closure (handle, OS.popup_menu, display.closures [STATUS_ICON_POPUP_MENU], false);
+	} else {
+		int eventMask = OS.GDK_BUTTON_PRESS_MASK;
+		OS.gtk_widget_add_events (handle, eventMask);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+		OS.g_signal_connect_closure_by_id (imageHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
+	}
+}
 
 /**
  * Returns <code>true</code> if the receiver is visible and 
@@ -315,6 +357,9 @@ void hookEvents () {
  */
 public boolean getVisible () {
 	checkWidget ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		return OS.gtk_status_icon_get_visible (handle);
+	}
 	return OS.GTK_WIDGET_VISIBLE (handle);
 }
 
@@ -324,7 +369,13 @@ void register () {
 }
 
 void releaseHandle () {
-	if (handle != 0) OS.gtk_widget_destroy (handle);
+	if (handle != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			OS.g_object_unref (handle);
+		} else {
+			OS.gtk_widget_destroy (handle);
+		}
+	}
 	handle = imageHandle = 0;
 	super.releaseHandle ();
 	parent = null;
@@ -409,8 +460,6 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
-		OS.gtk_widget_set_size_request (handle, rect.width, rect.height);
 		if (imageList == null) imageList = new ImageList ();
 		int imageIndex = imageList.indexOf (image);
 		if (imageIndex == -1) {
@@ -419,12 +468,24 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
-		OS.gtk_widget_show (imageHandle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			OS.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
+			OS.gtk_status_icon_set_visible (handle, true);
+		} else {
+			Rectangle rect = image.getBounds ();
+			OS.gtk_widget_set_size_request (handle, rect.width, rect.height);
+			OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+			OS.gtk_widget_show (imageHandle);
+		}
 	} else {
 		OS.gtk_widget_set_size_request (handle, 1, 1);
-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
-		OS.gtk_widget_hide (imageHandle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			OS.gtk_status_icon_set_from_pixbuf (handle, 0);
+			OS.gtk_status_icon_set_visible (handle, false);
+		} else {
+			OS.gtk_image_set_from_pixbuf (imageHandle, 0);
+			OS.gtk_widget_hide (imageHandle);
+		}
 	}
 }
 
@@ -473,7 +534,10 @@ public void setToolTipText (String string) {
 		OS.g_object_ref (tooltipsHandle);
 		OS.gtk_object_sink (tooltipsHandle);
 	}
-	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		OS.gtk_status_icon_set_tooltip (handle, buffer);
+	} else
+		OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
 }
 
 /**
@@ -489,7 +553,11 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (OS.GTK_WIDGET_VISIBLE (handle) == visible) return;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		if(OS.gtk_status_icon_get_visible (handle) == visible) return;	
+	} else {
+		if (OS.GTK_WIDGET_VISIBLE (handle) == visible) return;
+	}
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -498,9 +566,15 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		OS.gtk_widget_show (handle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			OS.gtk_status_icon_set_visible (handle, visible);
+		} else
+			OS.gtk_widget_show (handle);
 	} else {
-		OS.gtk_widget_hide (handle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			OS.gtk_status_icon_set_visible (handle, visible);
+		} else
+			OS.gtk_widget_hide (handle);
 		sendEvent (SWT.Hide);
 	}
 }

@@ -11680,6 +11680,128 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1update)
 }
 #endif
 
+#ifndef NO__1gtk_1status_1icon_1get_1geometry
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1status_1icon_1get_1geometry)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jintLong arg3)
+{
+	GdkRectangle _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1get_1geometry_FUNC);
+	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	rc = (jboolean)gtk_status_icon_get_geometry((GtkStatusIcon *)arg0, (GdkScreen **)arg1, (GdkRectangle *)lparg2, (GtkOrientation *)arg3);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_status_icon_get_geometry)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkStatusIcon *, GdkScreen **, GdkRectangle *, GtkOrientation *))fp)((GtkStatusIcon *)arg0, (GdkScreen **)arg1, (GdkRectangle *)lparg2, (GtkOrientation *)arg3);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1get_1geometry_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1status_1icon_1get_1visible
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1status_1icon_1get_1visible)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1get_1visible_FUNC);
+/*
+	rc = (jboolean)gtk_status_icon_get_visible((GtkStatusIcon *)arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_status_icon_get_visible)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkStatusIcon *))fp)((GtkStatusIcon *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1get_1visible_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1status_1icon_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1status_1icon_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1new_FUNC);
+/*
+	rc = (jintLong)gtk_status_icon_new();
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_status_icon_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1status_1icon_1set_1from_1pixbuf
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1from_1pixbuf)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1set_1from_1pixbuf_FUNC);
+/*
+	gtk_status_icon_set_from_pixbuf((GtkStatusIcon *)arg0, (GdkPixbuf *)arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_status_icon_set_from_pixbuf)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkStatusIcon *, GdkPixbuf *))fp)((GtkStatusIcon *)arg0, (GdkPixbuf *)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1set_1from_1pixbuf_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1status_1icon_1set_1tooltip
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1tooltip)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1set_1tooltip_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_status_icon_set_tooltip((GtkStatusIcon *)arg0, (const gchar *)lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_status_icon_set_tooltip)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkStatusIcon *, const gchar *))fp)((GtkStatusIcon *)arg0, (const gchar *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1set_1tooltip_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1status_1icon_1set_1visible
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1visible)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1set_1visible_FUNC);
+/*
+	gtk_status_icon_set_visible((GtkStatusIcon *)arg0, (Bool)arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_status_icon_set_visible)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkStatusIcon *, Bool))fp)((GtkStatusIcon *)arg0, (Bool)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1set_1visible_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1get_1base
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1base)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
