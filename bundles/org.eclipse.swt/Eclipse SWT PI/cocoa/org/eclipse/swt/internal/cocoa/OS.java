@@ -901,6 +901,7 @@ public static final int /*long*/ sel_isEqualToString_ = sel_registerName("isEqua
 public static final int /*long*/ sel_isFilePackageAtPath_ = sel_registerName("isFilePackageAtPath:");
 public static final int /*long*/ sel_isFlipped = sel_registerName("isFlipped");
 public static final int /*long*/ sel_isHidden = sel_registerName("isHidden");
+public static final int /*long*/ sel_isHiddenOrHasHiddenAncestor = sel_registerName("isHiddenOrHasHiddenAncestor");
 public static final int /*long*/ sel_isItemExpanded_ = sel_registerName("isItemExpanded:");
 public static final int /*long*/ sel_isKeyWindow = sel_registerName("isKeyWindow");
 public static final int /*long*/ sel_isKindOfClass_ = sel_registerName("isKindOfClass:");

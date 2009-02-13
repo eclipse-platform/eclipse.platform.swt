@@ -22162,8 +22162,8 @@
 <method selector="isHidden" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method selector="isHiddenOrHasHiddenAncestor">
-<retval></retval>
+<method selector="isHiddenOrHasHiddenAncestor" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="isInFullScreenMode">
 <retval></retval>

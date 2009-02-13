@@ -170,6 +170,10 @@ public boolean isHidden() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isHidden);
 }
 
+public boolean isHiddenOrHasHiddenAncestor() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isHiddenOrHasHiddenAncestor);
+}
+
 public boolean isOpaque() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isOpaque);
 }
