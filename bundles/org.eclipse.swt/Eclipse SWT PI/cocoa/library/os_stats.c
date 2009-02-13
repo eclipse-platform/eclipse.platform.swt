@@ -14,9 +14,11 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 387;
-int OS_nativeFunctionCallCount[387];
+int OS_nativeFunctionCount = 394;
+int OS_nativeFunctionCallCount[394];
 char * OS_nativeFunctionNames[] = {
+	"CFDataGetBytePtr",
+	"CFDataGetLength",
 	"CFRelease",
 	"CFRunLoopAddObserver",
 	"CFRunLoopGetCurrent",
@@ -36,6 +38,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSetLineJoin",
 	"CGContextSetLineWidth",
 	"CGContextSetMiterLimit",
+	"CGEventGetIntegerValueField",
 	"CGPathAddCurveToPoint",
 	"CGPathAddLineToPoint",
 	"CGPathApply",
@@ -231,7 +234,10 @@ char * OS_nativeFunctionNames[] = {
 	"SetFrontProcess",
 	"SetRect",
 	"SetThemeCursor",
+	"TISCopyCurrentKeyboardInputSource",
+	"TISGetInputSourceProperty",
 	"TransformProcessType",
+	"UCKeyTranslate",
 	"UnionRgn",
 	"accessibilityHitTest_1CALLBACK",
 	"attributedSubstringFromRange_1CALLBACK",
@@ -257,6 +263,7 @@ char * OS_nativeFunctionNames[] = {
 	"instrumentObjcMessageSends",
 	"isFlipped_1CALLBACK",
 	"kCFRunLoopCommonModes",
+	"kTISPropertyUnicodeKeyLayoutData",
 	"markedRange_1CALLBACK",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I",

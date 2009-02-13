@@ -101,7 +101,9 @@ public class Display extends Device {
 
 	/* Key event management */
 	boolean keyInputHappened;
-
+	int [] deadKeyState = new int[1];
+	int currentKeyboardUCHRdata;
+	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer;
 	Thread thread;
@@ -2955,6 +2957,8 @@ void releaseDisplay () {
 	if (cursorSetCallback != null) cursorSetCallback.dispose();
 	cursorSetCallback = null;
 
+	deadKeyState = null;
+	
 	// The autorelease pool is cleaned up when we call NSApplication.terminate().
 
 	if (application != null && applicationClass != 0) {

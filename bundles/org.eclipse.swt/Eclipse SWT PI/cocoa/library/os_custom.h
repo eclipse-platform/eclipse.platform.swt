@@ -32,3 +32,7 @@
 #define SetThemeCursor_LIB "com.apple.Carbon"
 #define GetCurrentButtonState_LIB "com.apple.Carbon"
 #define CGContextCopyPath_LIB "com.apple.Cocoa"
+#define TISCopyCurrentKeyboardInputSource_LIB "com.apple.Carbon"
+#define TISGetInputSourceProperty_LIB "com.apple.Carbon"
+#define UCKeyTranslate_LIB "com.apple.CoreServices"
+#define kTISPropertyUnicodeKeyLayoutData_LIB "com.apple.Carbon"

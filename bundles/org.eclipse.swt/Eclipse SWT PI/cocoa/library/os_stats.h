@@ -25,6 +25,8 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	CFDataGetBytePtr_FUNC,
+	CFDataGetLength_FUNC,
 	CFRelease_FUNC,
 	CFRunLoopAddObserver_FUNC,
 	CFRunLoopGetCurrent_FUNC,
@@ -44,6 +46,7 @@ typedef enum {
 	CGContextSetLineJoin_FUNC,
 	CGContextSetLineWidth_FUNC,
 	CGContextSetMiterLimit_FUNC,
+	CGEventGetIntegerValueField_FUNC,
 	CGPathAddCurveToPoint_FUNC,
 	CGPathAddLineToPoint_FUNC,
 	CGPathApply_FUNC,
@@ -239,7 +242,10 @@ typedef enum {
 	SetFrontProcess_FUNC,
 	SetRect_FUNC,
 	SetThemeCursor_FUNC,
+	TISCopyCurrentKeyboardInputSource_FUNC,
+	TISGetInputSourceProperty_FUNC,
 	TransformProcessType_FUNC,
+	UCKeyTranslate_FUNC,
 	UnionRgn_FUNC,
 	accessibilityHitTest_1CALLBACK_FUNC,
 	attributedSubstringFromRange_1CALLBACK_FUNC,
@@ -265,6 +271,7 @@ typedef enum {
 	instrumentObjcMessageSends_FUNC,
 	isFlipped_1CALLBACK_FUNC,
 	kCFRunLoopCommonModes_FUNC,
+	kTISPropertyUnicodeKeyLayoutData_FUNC,
 	markedRange_1CALLBACK_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I_FUNC,

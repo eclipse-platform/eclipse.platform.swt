@@ -2034,18 +2034,18 @@
 <arg name="theData"></arg>
 <arg name="range"></arg>
 </function>
-<function name="CFDataGetBytePtr">
-<arg name="theData"></arg>
-<retval></retval>
+<function name="CFDataGetBytePtr" swt_gen="true">
+<arg name="theData" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </function>
 <function name="CFDataGetBytes">
 <arg name="theData"></arg>
 <arg name="range"></arg>
 <arg name="buffer"></arg>
 </function>
-<function name="CFDataGetLength">
-<arg name="theData"></arg>
-<retval></retval>
+<function name="CFDataGetLength" swt_gen="true">
+<arg name="theData" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </function>
 <function name="CFDataGetMutableBytePtr">
 <arg name="theData"></arg>

@@ -76,6 +76,30 @@ public static final native int GetCurrentButtonState();
 /** @method flags=dynamic 
     @param  cast=(CGContextRef) */
 public static final native int /*long*/ CGContextCopyPath(int /*long*/ context);
+/** @method flags=dynamic */
+public static final native int /*long*/ TISCopyCurrentKeyboardInputSource();
+/** @method flags=dynamic 
+    @param  cast=(TISInputSourceRef) 
+    @param  cast=(CFStringRef) */
+public static final native int /*long*/ TISGetInputSourceProperty (int /*long*/ inputSource, int /*long*/ propertyKey);
+/** @method flags=no_gen */
+public static final native int /*long*/ kTISPropertyUnicodeKeyLayoutData();
+/**
+ * @method flags=dynamic
+ * @param keyLayoutPtr cast=(const UCKeyboardLayout *)
+ * @param virtualKeyCode cast=(UInt16)
+ * @param keyAction cast=(UInt16)
+ * @param modifierKeyState cast=(UInt32)
+ * @param keyboardType cast=(UInt32)
+ * @param keyTranslateOptions cast=(OptionBits)
+ * @param deadKeyState cast=(UInt32 *)
+ * @param maxStringLength cast=(UniCharCount)
+ * @param actualStringLength cast=(UniCharCount *)
+ * @param unicodeString cast=(UniChar *)
+ */
+public static final native int UCKeyTranslate (int /*long*/ keyLayoutPtr, short virtualKeyCode, short keyAction, int modifierKeyState, int keyboardType, int keyTranslateOptions, int[] deadKeyState, int maxStringLength, int[] actualStringLength, char[] unicodeString);
+
+public static final int kUCKeyActionDown = 0;
 
 public static final int kThemeCopyArrowCursor = 1;
 public static final int kThemeNotAllowedCursor = 18;
@@ -463,6 +487,7 @@ public static final int /*long*/ protocol_WebResourceLoadDelegate = objc_getProt
 public static final int /*long*/ protocol_WebUIDelegate = objc_getProtocol("WebUIDelegate");
 
 /** Selectors */
+public static final int /*long*/ sel_CGEvent = sel_registerName("CGEvent");
 public static final int /*long*/ sel_DOMDocument = sel_registerName("DOMDocument");
 public static final int /*long*/ sel_IBeamCursor = sel_registerName("IBeamCursor");
 public static final int /*long*/ sel_TIFFRepresentation = sel_registerName("TIFFRepresentation");
@@ -2477,6 +2502,7 @@ public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFRunLoopBeforeWaiting = 32;
 public static final int kCFStringEncodingUTF8 = 134217984;
 public static final int kCGImageAlphaOnly = 7;
+public static final int kCGKeyboardEventKeyboardType = 10;
 public static final int kCGLineCapButt = 0;
 public static final int kCGLineCapRound = 1;
 public static final int kCGLineCapSquare = 2;
@@ -3738,6 +3764,14 @@ public static final native void NSCopyBits(int /*long*/ srcGState, NSRect srcRec
  */
 public static final native int /*long*/ NSNumberOfColorComponents(int /*long*/ colorSpaceName);
 /**
+ * @param theData cast=(CFDataRef)
+ */
+public static final native int /*long*/ CFDataGetBytePtr(int /*long*/ theData);
+/**
+ * @param theData cast=(CFDataRef)
+ */
+public static final native int /*long*/ CFDataGetLength(int /*long*/ theData);
+/**
  * @param cf cast=(CFTypeRef)
  */
 public static final native void CFRelease(int /*long*/ cf);
@@ -3831,6 +3865,11 @@ public static final native void CGContextSetLineWidth(int /*long*/ c, float /*do
  * @param limit cast=(CGFloat)
  */
 public static final native void CGContextSetMiterLimit(int /*long*/ c, float /*double*/ limit);
+/**
+ * @param event cast=(CGEventRef)
+ * @param field cast=(CGEventField)
+ */
+public static final native long CGEventGetIntegerValueField(int /*long*/ event, int field);
 /**
  * @param path cast=(CGMutablePathRef)
  * @param m cast=(CGAffineTransform*)

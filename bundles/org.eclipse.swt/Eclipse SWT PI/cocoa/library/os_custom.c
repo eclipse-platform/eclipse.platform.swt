@@ -348,3 +348,21 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(isFlipped_1CALLBACK)
 	return (jintLong)isFlippedProc;
 }
 #endif
+
+#ifndef NO_kTISPropertyUnicodeKeyLayoutData
+JNIEXPORT jintLong JNICALL OS_NATIVE(kTISPropertyUnicodeKeyLayoutData)
+(JNIEnv *env, jclass that)
+{
+	// Technically this CFStringRef should be CFRetain'ed but we have no opportunity to release it.
+	// The pointer won't disappear unless the Carbon framework bundle is somehow unloaded, which is unlikely to happen.
+	static int initialized = 0;
+	static CFStringRef *var = NULL;
+	if (!initialized) {
+		CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.Carbon"));
+		if (bundle) var = (CFStringRef *)CFBundleGetDataPointerForName(bundle, CFSTR("kTISPropertyUnicodeKeyLayoutData"));
+		initialized = 1;
+	} 
+	
+	return (jintLong)(*var);
+}
+#endif

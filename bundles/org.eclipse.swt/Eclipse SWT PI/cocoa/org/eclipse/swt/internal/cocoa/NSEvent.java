@@ -24,6 +24,10 @@ public NSEvent(id id) {
 	super(id);
 }
 
+public int /*long*/ CGEvent() {
+	return OS.objc_msgSend(this.id, OS.sel_CGEvent);
+}
+
 public int /*long*/ buttonNumber() {
 	return OS.objc_msgSend(this.id, OS.sel_buttonNumber);
 }

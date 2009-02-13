@@ -15,6 +15,30 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
+#ifndef NO_CFDataGetBytePtr
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFDataGetBytePtr)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFDataGetBytePtr_FUNC);
+	rc = (jintLong)CFDataGetBytePtr((CFDataRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFDataGetBytePtr_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFDataGetLength
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFDataGetLength)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFDataGetLength_FUNC);
+	rc = (jintLong)CFDataGetLength((CFDataRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFDataGetLength_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFRelease
 JNIEXPORT void JNICALL OS_NATIVE(CFRelease)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -226,6 +250,18 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
 	OS_NATIVE_ENTER(env, that, CGContextSetMiterLimit_FUNC);
 	CGContextSetMiterLimit((CGContextRef)arg0, (CGFloat)arg1);
 	OS_NATIVE_EXIT(env, that, CGContextSetMiterLimit_FUNC);
+}
+#endif
+
+#ifndef NO_CGEventGetIntegerValueField
+JNIEXPORT jlong JNICALL OS_NATIVE(CGEventGetIntegerValueField)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGEventGetIntegerValueField_FUNC);
+	rc = (jlong)CGEventGetIntegerValueField((CGEventRef)arg0, (CGEventField)arg1);
+	OS_NATIVE_EXIT(env, that, CGEventGetIntegerValueField_FUNC);
+	return rc;
 }
 #endif
 
@@ -2719,6 +2755,46 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
 }
 #endif
 
+#ifndef NO_TISCopyCurrentKeyboardInputSource
+JNIEXPORT jintLong JNICALL OS_NATIVE(TISCopyCurrentKeyboardInputSource)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, TISCopyCurrentKeyboardInputSource_FUNC);
+/*
+	rc = (jintLong)TISCopyCurrentKeyboardInputSource();
+*/
+	{
+		LOAD_FUNCTION(fp, TISCopyCurrentKeyboardInputSource)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, TISCopyCurrentKeyboardInputSource_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TISGetInputSourceProperty
+JNIEXPORT jintLong JNICALL OS_NATIVE(TISGetInputSourceProperty)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, TISGetInputSourceProperty_FUNC);
+/*
+	rc = (jintLong)TISGetInputSourceProperty(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, TISGetInputSourceProperty)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, TISGetInputSourceProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TransformProcessType
 JNIEXPORT jint JNICALL OS_NATIVE(TransformProcessType)
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
@@ -2731,6 +2807,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(TransformProcessType)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, TransformProcessType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UCKeyTranslate
+JNIEXPORT jint JNICALL OS_NATIVE(UCKeyTranslate)
+	(JNIEnv *env, jclass that, jintLong arg0, jshort arg1, jshort arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jint arg7, jintArray arg8, jcharArray arg9)
+{
+	jint *lparg6=NULL;
+	jint *lparg8=NULL;
+	jchar *lparg9=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UCKeyTranslate_FUNC);
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = (*env)->GetCharArrayElements(env, arg9, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)UCKeyTranslate((const UCKeyboardLayout *)arg0, (UInt16)arg1, (UInt16)arg2, (UInt32)arg3, (UInt32)arg4, (OptionBits)arg5, (UInt32 *)lparg6, (UniCharCount)arg7, (UniCharCount *)lparg8, (UniChar *)lparg9);
+*/
+	{
+		LOAD_FUNCTION(fp, UCKeyTranslate)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(const UCKeyboardLayout *, UInt16, UInt16, UInt32, UInt32, OptionBits, UInt32 *, UniCharCount, UniCharCount *, UniChar *))fp)((const UCKeyboardLayout *)arg0, (UInt16)arg1, (UInt16)arg2, (UInt32)arg3, (UInt32)arg4, (OptionBits)arg5, (UInt32 *)lparg6, (UniCharCount)arg7, (UniCharCount *)lparg8, (UniChar *)lparg9);
+		}
+	}
+fail:
+	if (arg9 && lparg9) (*env)->ReleaseCharArrayElements(env, arg9, lparg9, 0);
+	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	OS_NATIVE_EXIT(env, that, UCKeyTranslate_FUNC);
 	return rc;
 }
 #endif

@@ -1429,9 +1429,38 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 				if (chars.length() > 0) event.character = (char)chars.characterAtIndex (0);
 			}
 			if (event.keyCode == 0) {
-				//TODO this is wrong for shifted keys like ';', '1' and non-english keyboards
-				NSString unmodifiedChars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
-				if (unmodifiedChars.length() > 0) event.keyCode = (char)unmodifiedChars.characterAtIndex(0);
+				int /*long*/ uchrPtr = 0;
+				int /*long*/ currentKbd = OS.TISCopyCurrentKeyboardInputSource();
+				int /*long*/ uchrCFData = OS.TISGetInputSourceProperty(currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
+				
+				if (uchrCFData != 0) {
+					// If the keyboard changed since the last keystroke clear the dead key state.
+					if (uchrCFData != display.currentKeyboardUCHRdata) display.deadKeyState[0] = 0;
+					uchrPtr = OS.CFDataGetBytePtr(uchrCFData);
+					
+					if (uchrPtr != 0 && OS.CFDataGetLength(uchrCFData) > 0) {
+						int /*long*/ cgEvent = nsEvent.CGEvent();
+						long keyboardType = OS.CGEventGetIntegerValueField(cgEvent, OS.kCGKeyboardEventKeyboardType);
+						
+						int maxStringLength = 256;
+						char [] output = new char [maxStringLength];
+						int [] actualStringLength = new int [1];
+						OS.UCKeyTranslate (uchrPtr, (short)keyCode, (short)OS.kUCKeyActionDown, 0, (int)keyboardType, 0, display.deadKeyState, maxStringLength, actualStringLength, output);
+						if (actualStringLength[0] < 1) {
+							// part of a multi-key key
+							event.keyCode = 0;
+						} else {
+							event.keyCode = output[0];
+						}
+					}
+				} else {
+					// KCHR keyboard layouts are no longer supported, so fall back to the basic but flawed
+					// method of determining which key was pressed.
+					NSString unmodifiedChars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
+					if (unmodifiedChars.length() > 0) event.keyCode = (char)unmodifiedChars.characterAtIndex(0);
+				}
+				
+				if (currentKbd != 0) OS.CFRelease(currentKbd);
 			}
 	}
 	if (event.keyCode == 0 && event.character == 0) {

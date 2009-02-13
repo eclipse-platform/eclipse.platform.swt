@@ -424,7 +424,7 @@
   <enum name="kCGInterpolationLow"></enum>
   <enum name="kCGInterpolationNone"></enum>
   <enum name="kCGKeyboardEventAutorepeat"></enum>
-  <enum name="kCGKeyboardEventKeyboardType"></enum>
+  <enum name="kCGKeyboardEventKeyboardType" swt_gen="true"></enum>
   <enum name="kCGKeyboardEventKeycode"></enum>
   <enum name="kCGLineCapButt" swt_gen="true"></enum>
   <enum name="kCGLineCapRound" swt_gen="true"></enum>
@@ -1847,10 +1847,10 @@
     <arg name="event"></arg>
     <retval></retval>
   </function>
-  <function name="CGEventGetIntegerValueField">
-    <arg name="event"></arg>
-    <arg name="field"></arg>
-    <retval></retval>
+  <function name="CGEventGetIntegerValueField" swt_gen="true">
+    <arg name="event" swt_gen="true"></arg>
+    <arg name="field" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGEventGetLocation">
     <arg name="event"></arg>
