@@ -3564,6 +3564,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		} else {
 			if (milliseconds < 0) {
 				timer.invalidate();
+				timer.release();
 				timerList [index] = null;
 				nsTimers [index] = null;
 			} else {
@@ -3612,6 +3613,7 @@ int /*long*/ timerProc (int /*long*/ id, int /*long*/ sel, int /*long*/ timerID)
 			wakeThread ();
 		}
 	}
+	timer.invalidate();
 	timer.release();
 	return 0;
 }
