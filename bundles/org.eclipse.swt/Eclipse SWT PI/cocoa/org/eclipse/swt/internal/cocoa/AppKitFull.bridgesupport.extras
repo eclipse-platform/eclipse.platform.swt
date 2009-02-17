@@ -22887,8 +22887,8 @@
 <arg name="lastEvent"></arg>
 <retval></retval>
 </method>
-<method selector="display">
-<retval></retval>
+<method selector="display" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="displayIfNeeded">
 <retval></retval>
@@ -22978,8 +22978,8 @@
 <method selector="hasDynamicDepthLimit">
 <retval></retval>
 </method>
-<method selector="hasShadow">
-<retval></retval>
+<method selector="hasShadow" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="hasTitleBar">
 <retval></retval>
@@ -23016,8 +23016,8 @@
 <arg name="aView"></arg>
 <retval></retval>
 </method>
-<method selector="invalidateShadow">
-<retval></retval>
+<method selector="invalidateShadow" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="isAutodisplay">
 <retval></retval>

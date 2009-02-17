@@ -516,7 +516,7 @@ void createHandle () {
 		if (parent != null) screen = parent.getShell().window.screen();
 		if (screen == null) screen = primaryScreen;
 		window = window.initWithContentRect(new NSRect(), styleMask, OS.NSBackingStoreBuffered, false, screen);
-		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
+		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & SWT.TOOL) != 0) {
 			window.setHasShadow (true);
 		}
 		display.cascadeWindow(window, screen);
@@ -575,14 +575,15 @@ void destroyWidget () {
 	}
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if (regionPath != null && background == null) {
 		context.saveGraphicsState();
 		NSColor.windowBackgroundColor().setFill();
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();
+		return;
 	}
-	super.drawWidget (id, context, rect, sendPaint);
+	super.drawBackground (id, context, rect);
 }
 
 Control findBackgroundControl () {
@@ -1403,6 +1404,10 @@ public void setRegion (Region region) {
 		window.setOpaque(true);
 	}
 	window.contentView().setNeedsDisplay(true);
+	if (isVisible() && window.hasShadow()) {
+		window.display();
+		window.invalidateShadow();
+	}
 }
 
 public void setText (String string) {
@@ -1445,7 +1450,6 @@ void setWindowVisible (boolean visible, boolean key) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		updateParent (visible);
 		topView ().setHidden (false);
 		invalidateVisibleRegion();
 		if (key) {
@@ -1453,6 +1457,7 @@ void setWindowVisible (boolean visible, boolean key) {
 		} else {
 			window.orderFront (null);
 		}
+		updateParent (visible);
 		opened = true;
 		if (!moved) {
 			moved = true;
