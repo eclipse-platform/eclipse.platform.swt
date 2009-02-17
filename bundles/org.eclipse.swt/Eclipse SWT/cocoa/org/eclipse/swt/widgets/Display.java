@@ -136,6 +136,7 @@ public class Display extends Device {
 	int /*long*/ applicationClass;
 	NSImage dockImage;
 	boolean isEmbedded;
+	static boolean launched = false;
 	
 	Control focusControl;
 	
@@ -1709,8 +1710,18 @@ protected void init () {
 	initFonts ();
 	
 	if (!isEmbedded) {
-		initApplicationDelegate();	
-		application.finishLaunching();
+		initApplicationDelegate();
+		
+		/*
+		 * Feature in Cocoa:  NSApplication.finishLaunching() adds an apple menu to the menu bar that isn't accessible via NSMenu.
+		 * If Display objects are created and disposed of multiple times in a single process, another apple menu is added to the menu bar.
+		 * It must be called or the dock icon will continue to bounce. So, it should only be called once per process, not just once per
+		 * creation of a Display.  Use a static so creation of additional Display objects won't affect the menu bar. 
+		 */
+		if (!Display.launched) {
+			application.finishLaunching();
+			Display.launched = true;
+		}
 	}
 	
 	observerCallback = new Callback (this, "observerProc", 3); //$NON-NLS-1$
@@ -2965,6 +2976,21 @@ void releaseDisplay () {
 	cursorSetCallback = null;
 
 	deadKeyState = null;
+	
+	// Clear the menu bar if we created it.
+	if (!isEmbedded) {
+		//remove all existing menu items except the application menu
+		NSMenu menubar = application.mainMenu();
+		int /*long*/ count = menubar.numberOfItems();
+		while (count > 1) {
+			menubar.removeItemAtIndex(count - 1);
+			count--;
+		}
+
+		application.setDelegate(null);
+		applicationDelegate.release();
+		applicationDelegate = null;
+	}
 	
 	// The autorelease pool is cleaned up when we call NSApplication.terminate().
 
