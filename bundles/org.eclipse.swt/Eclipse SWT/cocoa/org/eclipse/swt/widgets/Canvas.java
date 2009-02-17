@@ -132,14 +132,14 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 		rect.height = height;
 		int imgHeight = -1;
 		GCData data = gc.getGCData();
+		if (data.image != null) imgHeight =  data.image.getBounds().height;
 		NSGraphicsContext context = gc.handle;
-		if (data.image != null) {
-			imgHeight =  data.image.getBounds().height;
+		if (data.flippedContext != null) {
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(context);
 		}
 		control.fillBackground (view, gc.handle, rect, imgHeight);
-		if (data.image != null) {
+		if (data.flippedContext != null) {
 			NSGraphicsContext.static_restoreGraphicsState();
 		}
 	} else {
