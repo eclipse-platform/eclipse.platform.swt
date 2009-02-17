@@ -832,6 +832,7 @@ void destroyWidget () {
 
 void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
 	if (view.window ().firstResponder ().id == id) {
+		Display display = this.display;
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			/*
@@ -1644,6 +1645,7 @@ int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (view.window ().firstResponder ().id == id) {
+		Display display = this.display;
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (!display.keyInputHappened && nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			NSString str = new NSString (string);
@@ -1905,6 +1907,7 @@ public boolean isVisible () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	Display display = this.display;
 	display.keyInputHappened = false;
 	if (view.window ().firstResponder ().id == id) {
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;

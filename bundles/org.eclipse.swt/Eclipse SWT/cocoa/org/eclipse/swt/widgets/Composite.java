@@ -524,6 +524,7 @@ boolean isTabGroup () {
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (view.window ().firstResponder ().id == id) {
 		if ((state & CANVAS) != 0) {
+			Display display = this.display;
 			NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
 			display.keyInputHappened = false;
 			view.interpretKeyEvents (array);
@@ -918,6 +919,7 @@ public void setLayoutDeferred (boolean defer) {
 }
 
 boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
+	Display display = this.display;
 	boolean returnValue = super.setMarkedText_selectedRange (id, sel, string, range);
 	if (returnValue) display.keyInputHappened = true;
 	return returnValue;
