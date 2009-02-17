@@ -1316,32 +1316,6 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 				postEvent (SWT.DefaultSelection);
 		}
 	}
-	if ((stateMask & SWT.COMMAND) != 0) return result;
-	int charCount = getCharCount ();
-	Point selection = getSelection ();
-	int start = selection.x, end = selection.y;
-	short keyCode = nsEvent.keyCode ();
-	NSString characters = nsEvent.charactersIgnoringModifiers();
-	char character = (char) characters.characterAtIndex(0);
-	switch (keyCode) {
-		case 51: /* Backspace */
-			if (start == end) {
-				if (start == 0) return true;
-				start = Math.max (0, start - 1);
-			}
-			break;
-		case 117: /* Delete */
-			if (start == end) {
-				if (start == charCount) return true;
-				end = Math.min (end + 1, charCount);
-			}
-			break;
-		case 36: /* Return */
-			if ((style & SWT.SINGLE) != 0) return true;
-			break;
-		default:
-			if (character != '\t' && character < 0x20) return true;
-	}
 	return result;
 }
 

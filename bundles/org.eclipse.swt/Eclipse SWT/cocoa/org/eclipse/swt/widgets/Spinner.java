@@ -630,62 +630,6 @@ void resized () {
 	buttonView.setFrame(buttonFrame);
 }
 
-boolean sendKeyEvent (int type, Event event) {
-	if (!super.sendKeyEvent (type, event)) {
-		return false;
-	}
-	if (type != SWT.KeyDown) return true;
-	if ((style & SWT.READ_ONLY) != 0) return true;
-	if (event.character == 0) return true;
-	if ((event.stateMask & SWT.COMMAND) != 0) return true;
-//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
-	String oldText = "", newText = "";
-	int /*long*/ charCount = 0;
-	charCount = textView.stringValue().length();
-	NSText fieldEditor = textView.window().fieldEditor(false, textView);
-	NSRange selection = fieldEditor.selectedRange();
-	int /*long*/ start = selection.location, end = selection.location + selection.length;
-	switch (event.character) {
-		case SWT.BS:
-			if (start == end) {
-				if (start == 0) return true;
-				start = Math.max (0, start - 1);
-			}
-			break;
-		case SWT.DEL:
-			if (start == end) {
-				if (start == charCount) return true;
-				end = Math.min (end + 1, charCount);
-			}
-			break;
-		case SWT.CR:
-			return true;
-		default:
-			if (event.character != '\t' && event.character < 0x20) return true;
-			oldText = new String (new char [] {event.character});
-	}
-	newText = verifyText (oldText, start, end, event);
-	if (newText == null) return false;
-	if (charCount - (end - start) + newText.length () > textLimit) {
-		return false;
-	}
-	if (newText != oldText) {
-		setText (newText, start, end, false);
-		start += newText.length ();
-		selection.location = start;
-		selection.length = 0;
-		fieldEditor.setSelectedRange(selection);
-	}
-	/*
-	* Post the modify event so that the character will be inserted
-	* into the widget when the modify event is delivered.  Normally,
-	* modify events are sent but it is safe to post the event here
-	* because this method is called from the event loop.
-	*/
-	postEvent (SWT.Modify);
-	return newText == oldText;	
-}
-
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -941,7 +885,7 @@ void setSmallSize () {
 char [] setText (String string, int /*long*/ start, int /*long*/ end, boolean notify) {
 	if (notify) {
 		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-			string = verifyText (string, start, end, null);
+			string = verifyText (string, (int)/*64*/start, (int)/*64*/end, null);
 			if (string == null) return null;
 		}
 	}
@@ -1045,6 +989,36 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	setSelection (selection, true, true, false);
 }
 
+boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ affectedCharRange, int /*long*/ replacementString) {
+	NSRange range = new NSRange();
+	OS.memmove(range, affectedCharRange, NSRange.sizeof);
+	boolean result = callSuperBoolean(id, sel, range, replacementString);
+	if (hooks (SWT.Verify)) {
+		String text = new NSString(replacementString).getString();
+		NSEvent currentEvent = display.application.currentEvent();
+		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
+		if (newText == null) return false;
+		if (text != newText) {
+			int length = newText.length();
+			NSText fieldEditor = textView.currentEditor ();
+			NSRange selectedRange = fieldEditor.selectedRange();
+			if (textLimit != LIMIT) {
+				int /*long*/ charCount = fieldEditor.string().length();
+				if (charCount - selectedRange.length + length > textLimit) {
+					length = (int)/*64*/(textLimit - charCount + selectedRange.length);
+				}
+			}
+			char [] buffer = new char [length];
+			newText.getChars (0, buffer.length, buffer, 0);
+			NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
+			fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
+			result = false;
+		}
+		if (!result) sendEvent (SWT.Modify);
+	}
+	return result;
+}
+
 void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	super.textDidChange (id, sel, aNotification);
 	postEvent (SWT.Modify);
@@ -1073,16 +1047,12 @@ void updateCursorRects (boolean enabled) {
 	updateCursorRects (enabled, buttonView);
 }
 
-String verifyText (String string, int /*long*/ start, int /*long*/ end, Event keyEvent) {
+String verifyText (String string, int start, int end, NSEvent keyEvent) {
 	Event event = new Event ();
+	if (keyEvent != null) setKeyState(event, SWT.MouseDown, keyEvent);
 	event.text = string;
-	event.start = (int)/*64*/start;
-	event.end = (int)/*64*/end;
-	if (keyEvent != null) {
-		event.character = keyEvent.character;
-		event.keyCode = keyEvent.keyCode;
-		event.stateMask = keyEvent.stateMask;
-	}
+	event.start = start;
+	event.end = end;
 	int index = 0;
 	if (digits > 0) {
 		String decimalSeparator = ".";//getDecimalSeparator ();

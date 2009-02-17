@@ -120,4 +120,9 @@ public void sizeToFit() {
 	OS.objc_msgSend(this.id, OS.sel_sizeToFit);
 }
 
+public NSString string() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_string);
+	return result != 0 ? new NSString(result) : null;
+}
+
 }

@@ -81,10 +81,6 @@ public void disableCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_disableCursorRects);
 }
 
-public void display() {
-	OS.objc_msgSend(this.id, OS.sel_display);
-}
-
 public void enableCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_enableCursorRects);
 }
@@ -116,10 +112,6 @@ public NSGraphicsContext graphicsContext() {
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
-public boolean hasShadow() {
-	return OS.objc_msgSend_bool(this.id, OS.sel_hasShadow);
-}
-
 public NSWindow initWithContentRect(NSRect contentRect, int /*long*/ aStyle, int /*long*/ bufferingType, boolean flag) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_, contentRect, aStyle, bufferingType, flag);
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
@@ -128,10 +120,6 @@ public NSWindow initWithContentRect(NSRect contentRect, int /*long*/ aStyle, int
 public NSWindow initWithContentRect(NSRect contentRect, int /*long*/ aStyle, int /*long*/ bufferingType, boolean flag, NSScreen screen) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, screen != null ? screen.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
-}
-
-public void invalidateShadow() {
-	OS.objc_msgSend(this.id, OS.sel_invalidateShadow);
 }
 
 public boolean isKeyWindow() {

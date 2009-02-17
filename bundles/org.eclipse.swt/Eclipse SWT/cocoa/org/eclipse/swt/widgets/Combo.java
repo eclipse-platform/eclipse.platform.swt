@@ -1263,41 +1263,6 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	case 36: /* Return */
 		postEvent (SWT.DefaultSelection);
 	}
-	if ((style & SWT.READ_ONLY) != 0) return result;
-	if ((stateMask & SWT.COMMAND) != 0) return result;
-	String oldText = "";
-	int charCount = getCharCount ();
-	Point selection = getSelection ();
-	int start = selection.x, end = selection.y;
-	NSString characters = nsEvent.charactersIgnoringModifiers();
-	char character = (char) characters.characterAtIndex(0);
-	switch (keyCode) {
-		case 51: /* Backspace */
-			if (start == end) {
-				if (start == 0) return true;
-				start = Math.max (0, start - 1);
-			}
-			break;
-		case 117: /* Delete */
-			if (start == end) {
-				if (start == charCount) return true;
-				end = Math.min (end + 1, charCount);
-			}
-			break;
-		default:
-			if (character != '\t' && character < 0x20) return true;
-			oldText = new String (new char [] {character});
-	}
-	String newText = verifyText (oldText, start, end, nsEvent);
-	if (newText == null) return false;
-	if (charCount - (end - start) + newText.length () > textLimit) {
-		return false;
-	}
-	result = newText == oldText;
-	if (newText != oldText) {
-		insertEditText (newText);
-		if (newText.length () != 0) sendEvent (SWT.Modify);
-	}
 	return result;
 }
 
@@ -1589,6 +1554,24 @@ public void setVisibleItemCount (int count) {
 	} else {
 		((NSComboBox)view).setNumberOfVisibleItems(count);
 	}
+}
+
+boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ affectedCharRange, int /*long*/ replacementString) {
+	NSRange range = new NSRange();
+	OS.memmove(range, affectedCharRange, NSRange.sizeof);
+	boolean result = callSuperBoolean(id, sel, range, replacementString);
+	if (hooks (SWT.Verify)) {
+		String text = new NSString(replacementString).getString();
+		NSEvent currentEvent = display.application.currentEvent();
+		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
+		if (newText == null) return false;
+		if (text != newText) {
+			insertEditText(newText);
+			result = false;
+		}
+		if (!result) sendEvent (SWT.Modify);
+	}
+	return result;
 }
 
 void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
