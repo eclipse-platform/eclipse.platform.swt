@@ -1042,12 +1042,13 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 		NSColor.colorWithPatternImage(image.handle).setFill();
 		NSPoint phase = new NSPoint();
 		NSView controlView = control.view;
-		if ( imgHeight == -1) {
+		if (imgHeight == -1) {
 			NSView contentView = controlView.window().contentView();
 			phase = controlView.convertPoint_toView_(phase, contentView);
 			phase.y = contentView.bounds().height - phase.y;
 		} else {
-			phase.y = imgHeight - backgroundImage.getBounds().height;
+			phase = view.convertPoint_toView_(phase, controlView);
+			phase.y += imgHeight - backgroundImage.getBounds().height;
 		}
 		context.setPatternPhase(phase);
 		NSBezierPath.fillRect(rect);
