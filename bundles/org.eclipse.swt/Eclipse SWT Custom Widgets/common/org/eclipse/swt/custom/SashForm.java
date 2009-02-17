@@ -95,6 +95,13 @@ static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
 }
+Sash createSash() {
+	Sash sash = new Sash(this, sashStyle);
+	sash.setBackground(background);
+	sash.setForeground(foreground);
+	sash.addListener(SWT.Selection, sashListener);
+	return sash;
+}
 /**
  * Returns SWT.HORIZONTAL if the controls in the SashForm are laid out side by side
  * or SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
@@ -296,10 +303,7 @@ public void setOrientation(int orientation) {
 	sashStyle |= orientation == SWT.VERTICAL ? SWT.HORIZONTAL : SWT.VERTICAL;
 	for (int i = 0; i < sashes.length; i++) {
 		sashes[i].dispose();
-		sashes[i] = new Sash(this, sashStyle);
-		sashes[i].setBackground(background);
-		sashes[i].setForeground(foreground);
-		sashes[i].addListener(SWT.Selection, sashListener);
+		sashes[i] = createSash();
 	}
 	layout(false);
 }

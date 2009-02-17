@@ -112,10 +112,7 @@ protected void layout(Composite composite, boolean flushCache) {
 		Sash[] newSashes = new Sash[controls.length - 1];
 		System.arraycopy(sashForm.sashes, 0, newSashes, 0, sashForm.sashes.length);
 		for (int i = sashForm.sashes.length; i < newSashes.length; i++) {
-			newSashes[i] = new Sash(sashForm, sashForm.sashStyle);
-			newSashes[i].setBackground(sashForm.background);
-			newSashes[i].setForeground(sashForm.foreground);
-			newSashes[i].addListener(SWT.Selection, sashForm.sashListener);
+			newSashes[i] = sashForm.createSash();
 		}
 		sashForm.sashes = newSashes;
 	}
