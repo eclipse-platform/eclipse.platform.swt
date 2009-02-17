@@ -244,6 +244,13 @@ boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	return OS.objc_msgSendSuper(super_struct, sel, arg0) != 0;
 }
 
+boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, NSRange range, int /*long*/ arg1) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, range, arg1) != 0;
+}
+
 int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -1472,6 +1479,10 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 
 boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
 	return true;
+}
+
+boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	return false;
 }
 
 void superKeyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

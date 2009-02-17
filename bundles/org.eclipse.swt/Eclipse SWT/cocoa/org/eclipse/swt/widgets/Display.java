@@ -159,7 +159,7 @@ public class Display extends Device {
 	static Callback windowDelegateCallback6;
 	static Callback dialogCallback3;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
-	static Callback fieldEditorCallback3;
+	static Callback fieldEditorCallback3, fieldEditorCallback4;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -1846,6 +1846,9 @@ void initClasses () {
 	fieldEditorCallback3 = new Callback(clazz, "fieldEditorProc", 3);
 	int /*long*/ fieldEditorProc3 = fieldEditorCallback3.getAddress();
 	if (fieldEditorProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	fieldEditorCallback4 = new Callback(clazz, "fieldEditorProc", 4);
+	int /*long*/ fieldEditorProc4 = fieldEditorCallback4.getAddress();
+	if (fieldEditorProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	int /*long*/ isFlippedProc = OS.isFlipped_CALLBACK();
 	int /*long*/ drawRectProc = OS.drawRect_CALLBACK(proc3);
@@ -1863,6 +1866,8 @@ void initClasses () {
 	int /*long*/ firstRectForCharacterRangeProc = OS.firstRectForCharacterRange_CALLBACK(proc3);	
 	int /*long*/ textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
 	int /*long*/ accessibilityHitTestProc = OS.accessibilityHitTest_CALLBACK(proc3);
+	int /*long*/ shouldChangeTextInRange_replacementString_Proc = OS.shouldChangeTextInRange_replacementString_CALLBACK(fieldEditorProc4);
+	int /*long*/ shouldChangeTextInRange_replacementString_fieldEditorProc = shouldChangeTextInRange_replacementString_Proc;
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -2165,6 +2170,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_clickedOnLink_atIndex_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_dragSelectionWithEvent_offset_slideBack_, proc5, "@:@@@");
+	OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_Proc, "@:{NSRange}@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTEditorView";
@@ -2173,6 +2179,7 @@ void initClasses () {
 	addEventMethods(cls, 0, fieldEditorProc3, 0, 0);
 	OS.class_addMethod(cls, OS.sel_insertText_, fieldEditorProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, fieldEditorProc3, "@::");
+	OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_fieldEditorProc, "@:{NSRange}@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
@@ -3950,6 +3957,20 @@ static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*lon
 	return 0;
 }
 
+static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	Widget widget = null;
+	NSView view = new NSView (id);
+	do {
+		widget = GetWidget (view.id);
+		if (widget != null) break;
+		view = view.superview ();
+	} while (view != null);
+	if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
+		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
+	}
+	return 0;
+}
+
 static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
@@ -4189,6 +4210,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.tableView_didClickTableColumn (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_outlineView_didClickTableColumn_) {
 		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
+		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
 	}
 	return 0;
 }

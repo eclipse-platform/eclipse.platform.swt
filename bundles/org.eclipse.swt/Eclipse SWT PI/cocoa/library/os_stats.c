@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 394;
-int OS_nativeFunctionCallCount[394];
+int OS_nativeFunctionCount = 397;
+int OS_nativeFunctionCallCount[397];
 char * OS_nativeFunctionNames[] = {
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
@@ -697,6 +697,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSPoint_2",
 #endif
 #ifndef JNI64
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRange_2I",
+#else
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRange_2J",
+#endif
+#ifndef JNI64
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2",
 #else
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2",
@@ -745,6 +750,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 #else
 	"objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRange_2I",
+#else
+	"objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRange_2J",
 #endif
 #ifndef JNI64
 	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
@@ -889,6 +899,7 @@ char * OS_nativeFunctionNames[] = {
 	"setFrameSize_1CALLBACK",
 	"setFrame_1CALLBACK",
 	"setMarkedText_1selectedRange_1CALLBACK",
+	"shouldChangeTextInRange_1replacementString_1CALLBACK",
 	"textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK",
 	"webView_1setFrame_1CALLBACK",
 };

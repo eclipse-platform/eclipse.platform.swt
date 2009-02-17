@@ -366,3 +366,17 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(kTISPropertyUnicodeKeyLayoutData)
 	return (jintLong)(*var);
 }
 #endif
+
+#ifndef NO_shouldChangeTextInRange_1replacementString_1CALLBACK
+static jintLong shouldChangeTextInRange_1replacementString_1CALLBACK;
+static BOOL shouldChangeTextInRange_1replacementString(id obj, SEL sel, NSRange affectedCharRange, NSString *replacementString)
+{
+	return ((BOOL (*)(id, SEL, NSRange*, NSString*))shouldChangeTextInRange_1replacementString_1CALLBACK)(obj, sel, &affectedCharRange, replacementString);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(shouldChangeTextInRange_1replacementString_1CALLBACK)
+(JNIEnv *env, jclass that, jintLong func)
+{
+	shouldChangeTextInRange_1replacementString_1CALLBACK = func;
+	return (jintLong)shouldChangeTextInRange_1replacementString;
+}
+#endif

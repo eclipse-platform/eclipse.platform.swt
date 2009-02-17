@@ -20823,10 +20823,10 @@
 <arg name="flag"></arg>
 <retval></retval>
 </method>
-<method selector="shouldChangeTextInRange:replacementString:">
-<arg name="affectedCharRange"></arg>
-<arg name="replacementString"></arg>
-<retval></retval>
+<method selector="shouldChangeTextInRange:replacementString:" swt_gen="true">
+<arg name="affectedCharRange" swt_gen="true"></arg>
+<arg name="replacementString" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="shouldChangeTextInRanges:replacementStrings:">
 <arg name="affectedRanges"></arg>

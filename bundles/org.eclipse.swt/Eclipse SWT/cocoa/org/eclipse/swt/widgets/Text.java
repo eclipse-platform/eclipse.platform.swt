@@ -1317,7 +1317,6 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		}
 	}
 	if ((stateMask & SWT.COMMAND) != 0) return result;
-	String oldText = "";
 	int charCount = getCharCount ();
 	Point selection = getSelection ();
 	int start = selection.x, end = selection.y;
@@ -1339,28 +1338,9 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 			break;
 		case 36: /* Return */
 			if ((style & SWT.SINGLE) != 0) return true;
-			oldText = DELIMITER;
 			break;
 		default:
 			if (character != '\t' && character < 0x20) return true;
-			oldText = new String (new char [] {character});
-	}
-	String newText = verifyText (oldText, start, end, nsEvent);
-	if (newText == null) return false;
-	if (charCount - (end - start) + newText.length () > textLimit) {
-		return false;
-	}
-	result = newText == oldText;
-	if (newText != oldText || hiddenText != null) {
-		if ((style & SWT.SINGLE) != 0) {
-			insertEditText (newText);
-		} else {
-			NSString str = NSString.stringWith (newText);
-			NSTextView widget = (NSTextView) view;
-			NSRange range = widget.selectedRange ();
-			widget.textStorage ().replaceCharactersInRange (range, str);
-		}
-		if (newText.length () != 0) sendEvent (SWT.Modify);
 	}
 	return result;
 }
@@ -1444,18 +1424,13 @@ public void setDoubleClickEnabled (boolean doubleClick) {
 public void setEchoChar (char echo) {
 	checkWidget ();
 	if ((style & SWT.MULTI) != 0) return;
-//	if (txnObject == 0) {
-//		if ((style & SWT.PASSWORD) == 0) {
-//			Point selection = getSelection ();
-//			String text = getText ();
-//			echoCharacter = echo;
-//			setEditText (text);
-//			setSelection (selection);
-//		}
-//	} else {
-//		OS.TXNEchoMode (txnObject, echo, OS.kTextEncodingMacUnicode, echo != '\0');
-//	}
-	echoCharacter = echo;
+	if ((style & SWT.PASSWORD) == 0) {
+			Point selection = getSelection ();
+			String text = getText ();
+			echoCharacter = echo;
+			setEditText (text);
+			setSelection (selection);
+	}
 }
 
 /**
@@ -1797,6 +1772,36 @@ public void setTopIndex (int index) {
 //	NSRange range = new NSRange ();
 //	NSRect rect = widget.firstRectForCharacterRange (range);
 //	view.scrollRectToVisible (rect);
+}
+
+boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ affectedCharRange, int /*long*/ replacementString) {
+	NSRange range = new NSRange();
+	OS.memmove(range, affectedCharRange, NSRange.sizeof);
+	boolean result = callSuperBoolean(id, sel, range, replacementString);
+	if (hooks (SWT.Verify)) {
+		String text = new NSString(replacementString).getString();
+		NSEvent currentEvent = display.application.currentEvent();
+		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
+		if (newText == null) return false;
+		if ((style & SWT.SINGLE) != 0) {
+			if (text != newText || echoCharacter != '\0') {
+				insertEditText(newText);
+				result = false;
+			}
+		} else {
+			if (text != newText) {
+				NSTextView widget = (NSTextView) view;
+				Point selection = getSelection();
+				NSRange selRange = new NSRange();
+				selRange.location = selection.x;
+				selRange.length = selection.x + selection.y;
+				widget.textStorage ().replaceCharactersInRange (selRange, NSString.stringWith(newText));
+				result = false;
+			}
+		}
+		if (!result) sendEvent (SWT.Modify);
+	}
+	return result;
 }
 
 /**

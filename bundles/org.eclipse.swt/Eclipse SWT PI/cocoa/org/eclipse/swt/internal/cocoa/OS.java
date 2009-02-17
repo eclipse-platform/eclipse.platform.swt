@@ -202,6 +202,9 @@ public static final native int /*long*/ draggedImage_endedAt_operation_CALLBACK(
 public static final native int /*long*/ accessibilityHitTest_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ dragSelectionWithEvent_offset_slideBack_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ shouldChangeTextInRange_replacementString_CALLBACK(int /*long*/ func);
+
 /** Custom structure return */
 
 /** @method flags=no_gen */
@@ -276,6 +279,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
  *  @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/**
+ *  @method flags=cast
+ *  @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
 /**
  *  @method flags=cast
  *  @param arg1 flags=struct
@@ -1396,6 +1404,7 @@ public static final int /*long*/ sel_sharedPrintInfo = sel_registerName("sharedP
 public static final int /*long*/ sel_sharedWorkspace = sel_registerName("sharedWorkspace");
 public static final int /*long*/ sel_shiftKey = sel_registerName("shiftKey");
 public static final int /*long*/ sel_shouldAntialias = sel_registerName("shouldAntialias");
+public static final int /*long*/ sel_shouldChangeTextInRange_replacementString_ = sel_registerName("shouldChangeTextInRange:replacementString:");
 public static final int /*long*/ sel_shouldDelayWindowOrderingForEvent_ = sel_registerName("shouldDelayWindowOrderingForEvent:");
 public static final int /*long*/ sel_size = sel_registerName("size");
 public static final int /*long*/ sel_sizeToFit = sel_registerName("sizeToFit");
@@ -3955,6 +3964,11 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
  * @param arg0 flags=struct
  */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSPoint arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

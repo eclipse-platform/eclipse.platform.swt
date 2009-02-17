@@ -41,6 +41,10 @@ public void setRichText(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setRichText_, flag);
 }
 
+public boolean shouldChangeTextInRange(NSRange affectedCharRange, NSString replacementString) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_shouldChangeTextInRange_replacementString_, affectedCharRange, replacementString != null ? replacementString.id : 0);
+}
+
 public NSTextContainer textContainer() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_textContainer);
 	return result != 0 ? new NSTextContainer(result) : null;

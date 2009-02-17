@@ -705,6 +705,11 @@ typedef enum {
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
 #endif
 #ifndef JNI64
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
 #else
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
@@ -753,6 +758,11 @@ typedef enum {
 	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
 #else
 	objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
+#else
+	objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
@@ -897,6 +907,7 @@ typedef enum {
 	setFrameSize_1CALLBACK_FUNC,
 	setFrame_1CALLBACK_FUNC,
 	setMarkedText_1selectedRange_1CALLBACK_FUNC,
+	shouldChangeTextInRange_1replacementString_1CALLBACK_FUNC,
 	textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK_FUNC,
 	webView_1setFrame_1CALLBACK_FUNC,
 } OS_FUNCS;
