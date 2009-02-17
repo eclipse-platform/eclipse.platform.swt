@@ -5568,8 +5568,8 @@
 <method selector="alphaComponent" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method class_method="true" selector="alternateSelectedControlColor">
-<retval></retval>
+<method class_method="true" selector="alternateSelectedControlColor" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method class_method="true" selector="alternateSelectedControlTextColor" swt_gen="true">
 <retval swt_gen="true"></retval>
@@ -5855,8 +5855,8 @@
 <method class_method="true" selector="secondarySelectedControlColor" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method class_method="true" selector="selectedControlColor">
-<retval></retval>
+<method class_method="true" selector="selectedControlColor" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method class_method="true" selector="selectedControlTextColor" swt_gen="true">
 <retval swt_gen="true"></retval>

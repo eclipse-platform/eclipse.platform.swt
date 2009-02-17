@@ -1505,8 +1505,8 @@ Color getWidgetColor (int id) {
 		case SWT.COLOR_INFO_FOREGROUND: color = NSColor.blackColor (); break;
 		case SWT.COLOR_INFO_BACKGROUND: return Color.cocoa_new (this, new float /*double*/ [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
 		case SWT.COLOR_TITLE_FOREGROUND: color = NSColor.windowFrameTextColor(); break;
-		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.secondarySelectedControlColor(); break;
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: color = NSColor.windowFrameColor(); break;
+		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.alternateSelectedControlColor(); break;
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: color = NSColor.selectedControlColor(); break;
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND: color = NSColor.disabledControlTextColor();  break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: color = NSColor.secondarySelectedControlColor(); break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: color = NSColor.secondarySelectedControlColor(); break;
