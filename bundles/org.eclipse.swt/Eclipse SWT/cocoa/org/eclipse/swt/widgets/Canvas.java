@@ -138,7 +138,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(context);
 		}
-		control.fillBackground (view, gc.handle, rect, imgHeight);
+		control.fillBackground (view, context, rect, imgHeight);
 		if (data.flippedContext != null) {
 			NSGraphicsContext.static_restoreGraphicsState();
 		}
