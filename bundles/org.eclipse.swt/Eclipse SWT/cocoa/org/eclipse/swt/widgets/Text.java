@@ -1405,6 +1405,7 @@ public void setEchoChar (char echo) {
 		setEditText (text);
 		setSelection (selection);
 	}
+	echoCharacter = echo;
 }
 
 /**
