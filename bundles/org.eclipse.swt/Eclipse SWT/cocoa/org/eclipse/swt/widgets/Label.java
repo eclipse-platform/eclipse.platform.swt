@@ -481,6 +481,21 @@ public void setImage (Image image) {
 	}
 	this.image = image;
 	isImage = true;
+
+	/*
+	 * Feature in Cocoa.  If the NSImage object being set into the view is
+	 * the same NSImage object that is already there then the new image is
+	 * not taken.  This results in the view's image not changing even if the
+	 * NSImage object's content has changed since it was last set into the
+	 * view.  The workaround is to temporarily set the view's image to null
+	 * so that the new image will then be taken.
+	 */
+	if (image != null) {
+		NSImage current = imageView.image ();
+		if (current != null && current.id == image.handle.id) {
+			imageView.setImage (null);
+		}
+	}
 	imageView.setImage(image != null ? image.handle : null);
 	((NSBox)view).setContentView(imageView);
 }
