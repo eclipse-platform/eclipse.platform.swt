@@ -25,6 +25,7 @@ static CALLBACK_DATA callbackData[MAX_CALLBACKS];
 static int callbackEnabled = 1;
 static int callbackEntryCount = 0;
 static int initialized = 0;
+static jint JNI_VERSION = 0;
 
 #ifdef DEBUG_CALL_PRINTS
 static int counter = 0;
@@ -460,6 +461,7 @@ JNIEXPORT jintLong JNICALL Java_org_eclipse_swt_internal_Callback_bind
 	jclass javaClass = that;
 	const char *methodString = NULL, *sigString = NULL;
 	if (jvm == NULL) (*env)->GetJavaVM(env, &jvm);
+	if (JNI_VERSION == 0) JNI_VERSION = (*env)->GetVersion(env);
 	if (!initialized) {
 		memset(&callbackData, 0, sizeof(callbackData));
 		initialized = 1;
@@ -654,8 +656,16 @@ jintLong callback(int index, ...)
 #endif
 	
 	if (env == NULL) {
-		(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
-		if (IS_JNI_1_2) detach = 1;
+#ifdef JNI_VERSION_1_4
+		if (JNI_VERSION == JNI_VERSION_1_4) {
+			(*jvm)->AttachCurrentThreadAsDaemon(jvm, (void **)&env, NULL);
+		} else {
+#endif
+			(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+			if (IS_JNI_1_2) detach = 1;
+#ifdef JNI_VERSION_1_4
+		}
+#endif
 	}
 	
 	/* If the current thread is not attached to the VM, it is not possible to call into the VM */
