@@ -1482,7 +1482,7 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 }
 
 boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	return false;
+	return true;
 }
 
 void superKeyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
