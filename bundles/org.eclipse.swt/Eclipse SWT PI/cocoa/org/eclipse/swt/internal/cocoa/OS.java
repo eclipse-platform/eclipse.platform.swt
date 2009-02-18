@@ -875,6 +875,7 @@ public static final int /*long*/ sel_iconForFile_ = sel_registerName("iconForFil
 public static final int /*long*/ sel_iconForFileType_ = sel_registerName("iconForFileType:");
 public static final int /*long*/ sel_ignore = sel_registerName("ignore");
 public static final int /*long*/ sel_ignoreModifierKeysWhileDragging = sel_registerName("ignoreModifierKeysWhileDragging");
+public static final int /*long*/ sel_image = sel_registerName("image");
 public static final int /*long*/ sel_imageInterpolation = sel_registerName("imageInterpolation");
 public static final int /*long*/ sel_imageRectForBounds_ = sel_registerName("imageRectForBounds:");
 public static final int /*long*/ sel_imageRepWithData_ = sel_registerName("imageRepWithData:");

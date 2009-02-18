@@ -24,6 +24,11 @@ public NSImageView(id id) {
 	super(id);
 }
 
+public NSImage image() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_image);
+	return result != 0 ? new NSImage(result) : null;
+}
+
 public void setImage(NSImage newImage) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, newImage != null ? newImage.id : 0);
 }
