@@ -100,7 +100,6 @@ public class Display extends Device {
 	boolean disposing;
 
 	/* Key event management */
-	boolean keyInputHappened;
 	int [] deadKeyState = new int[1];
 	int currentKeyboardUCHRdata;
 	

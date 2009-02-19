@@ -832,7 +832,7 @@ void destroyWidget () {
 
 void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
 	if (view.window ().firstResponder ().id == id) {
-		Display display = this.display;
+		Shell s = this.getShell();
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			/*
@@ -844,8 +844,8 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 			 * is down, because we likely triggered the current key sequence via flagsChanged.
 			 */
 			int /*long*/ modifiers = nsEvent.modifierFlags();
-			if (display.keyInputHappened == false || (modifiers & OS.NSCommandKeyMask) != 0) {
-				display.keyInputHappened = true;
+			if (s.keyInputHappened == false || (modifiers & OS.NSCommandKeyMask) != 0) {
+				s.keyInputHappened = true;
 				boolean [] consume = new boolean [1];
 				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
 				if (isDisposed ()) return;
@@ -1108,7 +1108,8 @@ void fixFocus (Control focusControl) {
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (view.window ().firstResponder ().id == id) {
 		if ((state & SAFARI_EVENTS_FIX) == 0) {
-			display.keyInputHappened = false;
+			Shell s = this.getShell();
+			s.keyInputHappened = false;
 			int mask = 0;
 			NSEvent nsEvent = new NSEvent (theEvent);
 			int /*long*/ modifiers = nsEvent.modifierFlags ();
@@ -1648,9 +1649,9 @@ int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (view.window ().firstResponder ().id == id) {
-		Display display = this.display;
+		Shell s = this.getShell();
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
-		if (!display.keyInputHappened && nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
+		if (!s.keyInputHappened && nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			NSString str = new NSString (string);
 			if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
 				str = new NSAttributedString (string).string ();
@@ -1659,7 +1660,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 			char[] buffer = new char [length];
 			str.getCharacters(buffer);
 			for (int i = 0; i < buffer.length; i++) {
-				display.keyInputHappened = true;
+				s.keyInputHappened = true;
 				Event event = new Event ();
 				if (i == 0) setKeyState (event, SWT.KeyDown, nsEvent);
 				event.character = buffer [i];
@@ -1910,27 +1911,36 @@ public boolean isVisible () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	Display display = this.display;
-	display.keyInputHappened = false;
 	if (view.window ().firstResponder ().id == id) {
+		Shell s = this.getShell();
+		s.keyInputHappened = false;
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;
 		if (!textInput) {
+			// Not a text field, so send a key event here.
 			NSEvent nsEvent = new NSEvent (theEvent);
 			boolean [] consume = new boolean [1];
 			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
 			if (isDisposed ()) return;
 			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
 			if (consume [0]) return;
-			display.keyInputHappened = true;
+		} else {
+			// Control is some kind of text field, so the key event will be sent from insertText: or doCommandBySelector:
+			super.keyDown (id, sel, theEvent);
+			
+			// If none of those methods triggered a key event send one now.
+			if (!s.keyInputHappened) {
+				NSEvent nsEvent = new NSEvent (theEvent);
+				boolean [] consume = new boolean [1];
+				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
+				if (isDisposed ()) return;
+				if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
+				if (consume [0]) return;
+			}
+			
+			return;
 		}
 	}
 	super.keyDown (id, sel, theEvent);
-	
-	if (!display.keyInputHappened) {
-		NSEvent nsEvent = new NSEvent (theEvent);
-		if (isDisposed ()) return;
-		sendKeyEvent (nsEvent, SWT.KeyDown);
-	}
 }
 
 void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
