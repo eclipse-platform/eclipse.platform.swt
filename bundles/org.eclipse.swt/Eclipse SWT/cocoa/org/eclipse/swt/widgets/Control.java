@@ -840,9 +840,11 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 			 * twice, with selectors moveBackward and moveToBeginningOfParagraph
 			 * (Alt+DownArrow behaves similarly).  In order to avoid sending
 			 * multiple events for these keys, do not send a KeyDown if we already sent one
-			 * during this keystroke. 
+			 * during this keystroke. This rule does not apply if the command key
+			 * is down, because we likely triggered the current key sequence via flagsChanged.
 			 */
-			if (display.keyInputHappened == false) {
+			int modifiers = nsEvent.modifierFlags();
+			if (display.keyInputHappened == false || (modifiers & OS.NSCommandKeyMask) != 0) {
 				display.keyInputHappened = true;
 				boolean [] consume = new boolean [1];
 				if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
@@ -1106,6 +1108,7 @@ void fixFocus (Control focusControl) {
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (view.window ().firstResponder ().id == id) {
 		if ((state & SAFARI_EVENTS_FIX) == 0) {
+			display.keyInputHappened = false;
 			int mask = 0;
 			NSEvent nsEvent = new NSEvent (theEvent);
 			int /*long*/ modifiers = nsEvent.modifierFlags ();
