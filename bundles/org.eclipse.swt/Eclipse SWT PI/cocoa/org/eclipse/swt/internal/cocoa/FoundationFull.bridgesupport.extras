@@ -6557,9 +6557,9 @@
 <arg name="keyArray"></arg>
 <retval></retval>
 </method>
-<method selector="setDictionary:">
-<arg name="otherDictionary"></arg>
-<retval></retval>
+<method selector="setDictionary:" swt_gen="true">
+<arg name="otherDictionary" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setObject:forKey:" swt_gen="true">
 <arg name="anObject" swt_gen="true"></arg>

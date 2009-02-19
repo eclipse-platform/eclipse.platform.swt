@@ -32,9 +32,18 @@ public boolean dragSelectionWithEvent(NSEvent event, NSSize mouseOffset, boolean
 	return OS.objc_msgSend_bool(this.id, OS.sel_dragSelectionWithEvent_offset_slideBack_, event != null ? event.id : 0, mouseOffset, slideBack);
 }
 
+public NSDictionary linkTextAttributes() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_linkTextAttributes);
+	return result != 0 ? new NSDictionary(result) : null;
+}
+
 public NSDictionary markedTextAttributes() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_markedTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;
+}
+
+public void setLinkTextAttributes(NSDictionary attributeDictionary) {
+	OS.objc_msgSend(this.id, OS.sel_setLinkTextAttributes_, attributeDictionary != null ? attributeDictionary.id : 0);
 }
 
 public void setRichText(boolean flag) {

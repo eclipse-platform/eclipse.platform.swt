@@ -20492,8 +20492,8 @@
 <method selector="layoutManager">
 <retval></retval>
 </method>
-<method selector="linkTextAttributes">
-<retval></retval>
+<method selector="linkTextAttributes" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="loosenKerning:">
 <arg name="sender"></arg>
@@ -20737,9 +20737,9 @@
 <arg name="color"></arg>
 <retval></retval>
 </method>
-<method selector="setLinkTextAttributes:">
-<arg name="attributeDictionary"></arg>
-<retval></retval>
+<method selector="setLinkTextAttributes:" swt_gen="true">
+<arg name="attributeDictionary" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setMarkedTextAttributes:">
 <arg name="attributeDictionary"></arg>

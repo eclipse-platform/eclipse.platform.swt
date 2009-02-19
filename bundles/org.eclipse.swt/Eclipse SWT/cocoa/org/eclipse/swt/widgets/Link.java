@@ -44,6 +44,7 @@ public class Link extends Control {
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
+	NSColor linkColor;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -167,6 +168,8 @@ void createHandle () {
 void createWidget () {
 	super.createWidget ();
 	text = "";
+	NSDictionary dict = ((NSTextView)view).linkTextAttributes();
+	linkColor = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
 }
 
 NSFont defaultNSFont () {
@@ -192,6 +195,12 @@ void enableWidget (boolean enabled) {
 	}
 	NSTextView widget = (NSTextView)view;
 	widget.setTextColor(nsColor);
+	NSDictionary linkTextAttributes = widget.linkTextAttributes();
+	int count = (int)/*64*/linkTextAttributes.count();
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(count);
+	dict.setDictionary(linkTextAttributes);
+	dict.setValue(enabled ? linkColor : nsColor, OS.NSForegroundColorAttributeName);
+	widget.setLinkTextAttributes(dict);
 }
 
 String getNameText () {
@@ -226,6 +235,7 @@ void releaseWidget () {
 	ids = null;
 	mnemonics = null;
 	text = null;
+	linkColor = null;
 }
 
 /**
