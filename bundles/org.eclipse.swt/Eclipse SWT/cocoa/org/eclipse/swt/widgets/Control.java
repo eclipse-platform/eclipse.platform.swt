@@ -843,7 +843,7 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 			 * during this keystroke. This rule does not apply if the command key
 			 * is down, because we likely triggered the current key sequence via flagsChanged.
 			 */
-			int modifiers = nsEvent.modifierFlags();
+			int /*long*/ modifiers = nsEvent.modifierFlags();
 			if (display.keyInputHappened == false || (modifiers & OS.NSCommandKeyMask) != 0) {
 				display.keyInputHappened = true;
 				boolean [] consume = new boolean [1];
@@ -2795,7 +2795,8 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	NSPoint windowPoint;
 	NSView view = eventView ();
 	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {
-		windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation()); 
+		NSWindow window = view.window();
+		windowPoint = window.convertScreenToBase(NSEvent.mouseLocation()); 
 	} else {
 		windowPoint = nsEvent.locationInWindow();
 	}
