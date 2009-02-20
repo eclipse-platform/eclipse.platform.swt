@@ -105,6 +105,7 @@ public static final int S_setDownloadDelegate = Cocoa.sel_registerName("setDownl
 public static final int S_setFrameLoadDelegate = Cocoa.sel_registerName("setFrameLoadDelegate:"); //$NON-NLS-1$
 public static final int S_setGroupName = Cocoa.sel_registerName("setGroupName:"); //$NON-NLS-1$
 public static final int S_setJavaEnabled = Cocoa.sel_registerName("setJavaEnabled:"); //$NON-NLS-1$
+public static final int S_setJavaScriptEnabled = Cocoa.sel_registerName("setJavaScriptEnabled:"); //$NON-NLS-1$
 public static final int S_setPolicyDelegate = Cocoa.sel_registerName("setPolicyDelegate:"); //$NON-NLS-1$
 public static final int S_setResourceLoadDelegate = Cocoa.sel_registerName("setResourceLoadDelegate:"); //$NON-NLS-1$
 public static final int S_setStatusText = Cocoa.sel_registerName("setStatusText:"); //$NON-NLS-1$
@@ -183,6 +184,7 @@ public static final int S_setValue = Cocoa.sel_registerName("setValue:forKey:");
 public static final int S_webScriptValueAtIndex = Cocoa.sel_registerName("webScriptValueAtIndex:"); //$NON-NLS-1$
 public static final int S_getCharacters_ = Cocoa.sel_registerName("getCharacters:"); //$NON-NLS-1$
 public static final int S_objCType = Cocoa.sel_registerName("objCType"); //$NON-NLS-1$
+public static final int S_setPreferences = Cocoa.sel_registerName("setPreferences:"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;

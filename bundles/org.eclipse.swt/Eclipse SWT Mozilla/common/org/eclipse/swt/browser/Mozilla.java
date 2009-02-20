@@ -2821,10 +2821,6 @@ int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNod
 /* nsIURIContentListener */
 
 int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
-	if (locationListeners.length == 0) {
-		XPCOM.memmove (retval, new int[] {0}, 4); /* PRBool */
-		return XPCOM.NS_OK;
-	}
 	nsIURI location = new nsIURI (aURI);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
 	location.GetSpec (aSpec);
@@ -2838,24 +2834,41 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 	boolean doit = true;
 	if (request == 0) {
 		/* 
-		 * listeners should not be notified of internal transitions like "javascipt:..."
+		 * listeners should not be notified of internal transitions like "javascript:..."
 		 * because this is an implementation side-effect, not a true navigate
 		 */
 		if (!value.startsWith (PREFIX_JAVASCRIPT)) {
-			LocationEvent event = new LocationEvent (browser);
-			event.display = browser.getDisplay();
-			event.widget = browser;
-			event.location = value;
-			/*
-			 * If the URI indicates that the page is being rendered from memory
-			 * (via setText()) then set it to about:blank to be consistent with IE.
-			 */
-			if (event.location.equals (URI_FROMMEMORY)) event.location = ABOUT_BLANK;
-			event.doit = doit;
-			for (int i = 0; i < locationListeners.length; i++) {
-				locationListeners[i].changing (event);
+			if (locationListeners.length > 0) {
+				LocationEvent event = new LocationEvent (browser);
+				event.display = browser.getDisplay();
+				event.widget = browser;
+				event.location = value;
+				/*
+				 * If the URI indicates that the page is being rendered from memory
+				 * (via setText()) then set it to about:blank to be consistent with IE.
+				 */
+				if (event.location.equals (URI_FROMMEMORY)) event.location = ABOUT_BLANK;
+				event.doit = doit;
+				for (int i = 0; i < locationListeners.length; i++) {
+					locationListeners[i].changing (event);
+				}
+				doit = event.doit && !browser.isDisposed();
 			}
-			doit = event.doit && !browser.isDisposed();
+
+			if (doit && jsEnabledChanged) {
+				jsEnabledChanged = false;
+
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = webBrowser.QueryInterface (nsIWebBrowserSetup.NS_IWEBBROWSERSETUP_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIWebBrowserSetup setup = new nsIWebBrowserSetup (result[0]);
+				result[0] = 0;
+				rc = setup.SetProperty (nsIWebBrowserSetup.SETUP_ALLOW_JAVASCRIPT, jsEnabled ? 1 : 0);
+				if (rc != XPCOM.NS_OK) error (rc);
+				setup.Release ();
+			}
 		}
 	}
 	XPCOM.memmove (retval, new int[] {doit ? 0 : 1}, 4); /* PRBool */

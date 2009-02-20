@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.*;
 
 class Safari extends WebBrowser {
 	WebView webView;
+	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
 	boolean changingLocation;
 	String lastHoveredLinkURL;
@@ -196,6 +197,9 @@ public void create (Composite parent, int style) {
 						((BrowserFunction)elements.nextElement ()).dispose (false);
 					}
 					functions = null;
+
+					if (preferences != null) preferences.release ();
+					preferences = null;
 					break;
 				}
 			}
@@ -1099,6 +1103,14 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 		changingLocation = false;
 	}
 	if (newEvent.doit) {
+		if (jsEnabledChanged) {
+			jsEnabledChanged = false;
+			if (preferences == null) {
+				preferences = (WebPreferences)new WebPreferences ().alloc ().init ();
+				webView.setPreferences (preferences);
+			}
+			preferences.setJavaScriptEnabled (jsEnabled);
+		}
 		listener.use();
 	} else {
 		listener.ignore();

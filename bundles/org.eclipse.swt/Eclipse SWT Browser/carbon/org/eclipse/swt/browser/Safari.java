@@ -28,6 +28,7 @@ class Safari extends WebBrowser {
 	/* Carbon HIView handle */
 	int webViewHandle, webView;
 	int windowBoundsHandler;
+	int preferences;
 	
 	boolean changingLocation, hasNewFocusElement;
 	String lastHoveredLinkURL;
@@ -246,6 +247,11 @@ public void create (Composite parent, int style) {
 						((BrowserFunction)elements.nextElement ()).dispose (false);
 					}
 					functions = null;
+
+					if (preferences != 0) {
+						Cocoa.objc_msgSend (preferences, Cocoa.S_release);
+					}
+					preferences = 0;
 					break;
 				}
 				case SWT.FocusIn: {
@@ -1479,6 +1485,15 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 				locationListeners[i].changing(newEvent);
 			}
 			changingLocation = false;
+		}
+		if (newEvent.doit && jsEnabledChanged) {
+			jsEnabledChanged = false;
+			if (preferences == 0) {
+				preferences = Cocoa.objc_msgSend (Cocoa.C_WebPreferences, Cocoa.S_alloc);
+				Cocoa.objc_msgSend (preferences, Cocoa.S_init);
+				Cocoa.objc_msgSend (webView, Cocoa.S_setPreferences, preferences);
+			}
+			Cocoa.objc_msgSend (preferences, Cocoa.S_setJavaScriptEnabled, jsEnabled ? 1 : 0);
 		}
 		Cocoa.objc_msgSend(listener, newEvent.doit ? Cocoa.S_use : Cocoa.S_ignore);
 	}

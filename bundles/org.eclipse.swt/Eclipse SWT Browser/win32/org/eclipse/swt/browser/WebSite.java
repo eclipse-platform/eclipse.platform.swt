@@ -524,6 +524,13 @@ int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, i
 			ignoreNextMessage = true;
 		}
 	}
+	if (dwAction == IE.URLACTION_SCRIPT_RUN) {
+		IE browser = (IE)((Browser)getParent ().getParent ()).webBrowser;
+		if (!browser.jsEnabled) {
+			policy = IE.URLPOLICY_DISALLOW;
+		}
+	}
+
 	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
 	return policy == IE.URLPOLICY_ALLOW ? COM.S_OK : COM.S_FALSE;
 }

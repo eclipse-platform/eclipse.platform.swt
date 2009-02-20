@@ -28,6 +28,10 @@ public void setJavaEnabled(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setJavaEnabled_, flag);
 }
 
+public void setJavaScriptEnabled(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setJavaScriptEnabled_, flag);
+}
+
 public static WebPreferences standardPreferences() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_WebPreferences, OS.sel_standardPreferences);
 	return result != 0 ? new WebPreferences(result) : null;

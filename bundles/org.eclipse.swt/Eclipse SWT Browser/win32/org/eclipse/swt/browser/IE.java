@@ -66,14 +66,15 @@ class IE extends WebBrowser {
 	static final int URLPOLICY_ALLOW = 0x00;
 	static final int URLPOLICY_DISALLOW = 0x03;
 	static final int URLPOLICY_JAVA_PROHIBIT = 0x0;
+	static final int URLPOLICY_JAVA_LOW = 0x00030000;
 	static final int URLZONE_LOCAL_MACHINE = 0;
 	static final int URLZONE_INTRANET = 1;
 	static final int URLACTION_ACTIVEX_MIN = 0x00001200;
 	static final int URLACTION_ACTIVEX_MAX = 0x000013ff;
 	static final int URLACTION_ACTIVEX_RUN = 0x00001200;
 	static final int URLACTION_JAVA_MIN = 0x00001C00;
-	static final int URLPOLICY_JAVA_LOW = 0x00030000;
 	static final int URLACTION_JAVA_MAX = 0x00001Cff;
+	static final int URLACTION_SCRIPT_RUN = 0x00001400;
 	
 	static final int DISPID_AMBIENT_DLCONTROL = -5512;
 	static final int DLCTL_DLIMAGES = 0x00000010;

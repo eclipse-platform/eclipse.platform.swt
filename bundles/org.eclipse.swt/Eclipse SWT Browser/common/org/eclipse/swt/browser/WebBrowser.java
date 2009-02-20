@@ -25,6 +25,8 @@ abstract class WebBrowser {
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
+	boolean jsEnabled = true;
+	boolean jsEnabledChanged;
 	int nextFunctionIndex = 1;
 	Object evaluateResult;
 

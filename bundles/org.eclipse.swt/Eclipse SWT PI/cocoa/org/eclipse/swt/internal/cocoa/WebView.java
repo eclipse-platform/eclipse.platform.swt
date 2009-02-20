@@ -74,6 +74,10 @@ public void setPolicyDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setPolicyDelegate_, delegate != null ? delegate.id : 0);
 }
 
+public void setPreferences(WebPreferences prefs) {
+	OS.objc_msgSend(this.id, OS.sel_setPreferences_, prefs != null ? prefs.id : 0);
+}
+
 public void setResourceLoadDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setResourceLoadDelegate_, delegate != null ? delegate.id : 0);
 }

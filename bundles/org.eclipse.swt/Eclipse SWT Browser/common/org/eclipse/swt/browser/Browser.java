@@ -492,6 +492,26 @@ public String getBrowserType () {
 	return webBrowser.getBrowserType ();
 }
 
+/**
+ * Returns <code>true</code> if javascript will be allowed to run in pages
+ * subsequently viewed in the receiver, and <code>false</code> otherwise.
+ *
+ * @return the receiver's javascript enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setJavascriptEnabled
+ * 
+ * @since 3.5
+ */
+public boolean getJavascriptEnabled () {
+	checkWidget();
+	return webBrowser.jsEnabled;
+}
+
 public int getStyle () {
 	/*
 	* If SWT.BORDER was specified at creation time then getStyle() should answer
@@ -774,6 +794,26 @@ public void removeVisibilityWindowListener (VisibilityWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	webBrowser.removeVisibilityWindowListener (listener);
+}
+
+/**
+ * Sets whether javascript will be allowed to run in pages subsequently
+ * viewed in the receiver.  Note that setting this value does not affect
+ * the running of javascript in the current page.
+ *
+ * @param enabled the receiver's new javascript enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setJavascriptEnabled (boolean enabled) {
+	checkWidget();
+	webBrowser.jsEnabled = enabled;
+	webBrowser.jsEnabledChanged = true;
 }
 
 /**
