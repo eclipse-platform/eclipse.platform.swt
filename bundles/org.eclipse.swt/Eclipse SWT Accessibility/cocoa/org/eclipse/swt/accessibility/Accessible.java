@@ -83,6 +83,9 @@ public class Accessible {
 
 	Map /*<Integer, SWTAccessibleDelegate>*/ children = new HashMap();
 	
+	protected Accessible() {
+	}
+
 	Accessible(Control control) {
 		this.control = control;
 	}

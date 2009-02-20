@@ -46,6 +46,9 @@ public class Accessible {
 	AccessibleObject accessibleObject;
 	Control control;
 	
+	protected Accessible() {
+	}
+
 	Accessible (Control control) {
 		super ();
 		this.control = control;

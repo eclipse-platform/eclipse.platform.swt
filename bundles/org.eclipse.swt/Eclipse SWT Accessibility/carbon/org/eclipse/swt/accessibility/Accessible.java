@@ -75,6 +75,9 @@ public class Accessible {
 	int axuielementref = 0;
 	int[] osChildIDCache = new int[0];
 	
+	protected Accessible() {
+	}
+
 	Accessible(Control control) {
 		this.control = control;
 		axuielementref = OS.AXUIElementCreateWithHIObjectAndIdentifier(control.handle, 0);
