@@ -1713,13 +1713,17 @@ public void setMessage (String message) {
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
 	if ((style & SWT.SEARCH) != 0) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.ES_MULTILINE) == 0) {
-				int length = message.length ();
-				char [] chars = new char [length + 1];
-				message.getChars(0, length, chars, 0);
-				OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, chars);
+		if (!OS.IsWinCE) {
+			if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.ES_MULTILINE) == 0) {
+					int length = message.length ();
+					char [] chars = new char [length + 1];
+					message.getChars(0, length, chars, 0);
+					OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, chars);
+				}
+			} else {
+				OS.InvalidateRect (handle, null, true);
 			}
 		}
 	}
