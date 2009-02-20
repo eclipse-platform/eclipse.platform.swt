@@ -924,7 +924,15 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	view.setToolTip(string != null ? NSString.stringWith(string) : null);
+	if (string != null) {
+		char[] chars = new char [string.length ()];
+		string.getChars (0, chars.length, chars, 0);
+		int length = fixMnemonic (chars);
+		NSString str = NSString.stringWithCharacters (chars, length);
+		view.setToolTip (str);
+	} else {
+		view.setToolTip (null);
+	}
 }
 
 void setVisible (boolean visible) {

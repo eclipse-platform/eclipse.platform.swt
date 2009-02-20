@@ -400,9 +400,15 @@ public void setToolTipText (String string) {
 }
 
 void _setToolTipText (String string) {
-	NSString str = null;
-	if (string != null) str = NSString.stringWith(string);
-	view.setToolTip(str);
+	if (string != null) {
+		char[] chars = new char [string.length ()];
+		string.getChars (0, chars.length, chars, 0);
+		int length = fixMnemonic (chars);
+		NSString str = NSString.stringWithCharacters (chars, length);
+		view.setToolTip (str);
+	} else {
+		view.setToolTip (null);
+	}
 }
 
 /**
