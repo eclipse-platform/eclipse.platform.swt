@@ -1306,6 +1306,7 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
+	redrawHandle (0, 0, 0, 0, true, handle);
 }
 /**
  * Sets the orientation of the receiver, which must be one
