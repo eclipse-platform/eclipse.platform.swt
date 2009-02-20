@@ -252,16 +252,6 @@ Control [] computeTabList () {
 	return result;
 }
 
-void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	super.setBounds(x, y, width, height, move, resize);
-	if ((state & CANVAS) != 0) { 
-		if (scrollView != null) {
-			NSSize size = scrollView.contentSize();
-			view.setFrameSize(size);
-		}
-	}
-}
-
 void createHandle () {
 	state |= CANVAS;
 	boolean scrolled = (style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0;
@@ -280,6 +270,11 @@ void createHandle () {
 	widget.initWithFrame (rect);
 //	widget.setFocusRingType(OS.NSFocusRingTypeExterior);
 	view = widget;
+	if (scrollView != null) {
+		NSClipView contentView = scrollView.contentView();
+		contentView.setAutoresizesSubviews(true);
+		view.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+	}
 }
 
 void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
