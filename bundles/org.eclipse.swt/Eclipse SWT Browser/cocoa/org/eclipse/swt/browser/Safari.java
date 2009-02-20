@@ -112,7 +112,6 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_identifierForInitialRequest_fromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(delegateClass, OS.sel_handleNotification_, proc3, "@:@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_createWebViewWithRequest_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webViewShow_, proc3, "@:@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webViewClose_, proc3, "@:@"); //$NON-NLS-1$
@@ -161,8 +160,6 @@ public void create (Composite parent, int style) {
 	this.webView = webView;
 	browser.view.addSubview(webView);
 
-	final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
-
 	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
@@ -186,7 +183,6 @@ public void create (Composite parent, int style) {
 					Safari.this.webView.setUIDelegate(null);
 					Safari.this.webView.setPolicyDelegate(null);
 					Safari.this.webView.setDownloadDelegate(null);
-					notificationCenter.removeObserver(delegate);
 
 					Safari.this.webView.release();
 					Safari.this.webView = null;
@@ -213,7 +209,6 @@ public void create (Composite parent, int style) {
 	webView.setFrameLoadDelegate(delegate);
 	webView.setResourceLoadDelegate(delegate);
 	webView.setUIDelegate(delegate);	
-	notificationCenter.addObserver(delegate, OS.sel_handleNotification_, null, webView);
 	webView.setPolicyDelegate(delegate);
 	webView.setDownloadDelegate(delegate);
 	webView.setApplicationNameForUserAgent(NSString.stringWith(AGENT_STRING));
@@ -242,9 +237,7 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
-	if (sel == OS.sel_handleNotification_) {
-		safari.handleNotification(arg0);
-	} else if (sel == OS.sel_webViewShow_) {
+	if (sel == OS.sel_webViewShow_) {
 		safari.webViewShow(arg0);
 	} else if (sel == OS.sel_webViewClose_) {
 		safari.webViewClose(arg0);
@@ -828,11 +821,6 @@ int /*long*/ webView_identifierForInitialRequest_fromDataSource(int /*long*/ sen
 
 int /*long*/ webView_resource_willSendRequest_redirectResponse_fromDataSource(int /*long*/ sender, int /*long*/ identifier, int /*long*/ request, int /*long*/ redirectResponse, int /*long*/ dataSource) {
 	return request;
-}
-
-/* handleNotification */
-
-void handleNotification(int /*long*/ notification) {	
 }
 
 /* UIDelegate */
