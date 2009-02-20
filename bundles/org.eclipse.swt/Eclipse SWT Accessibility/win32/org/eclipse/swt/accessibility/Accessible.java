@@ -11,6 +11,7 @@
 package org.eclipse.swt.accessibility;
 
 
+import java.lang.reflect.Method;
 import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -50,6 +51,9 @@ public class Accessible {
 	Vector textListeners = new Vector ();
 	Object[] variants;
 	Control control;
+
+	protected Accessible() {
+	}
 
 	Accessible(Control control) {
 		this.control = control;
@@ -148,7 +152,18 @@ public class Accessible {
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
 	 */
+	static String ALTERNATE_ACCESSIBLE_CLASS_NAME = "org.eclipse.swt.accessibility2.Accessible2";
 	public static Accessible internal_new_Accessible(Control control) {
+		if (ALTERNATE_ACCESSIBLE_CLASS_NAME != null) {
+			try {
+				Class clazz = Class.forName(ALTERNATE_ACCESSIBLE_CLASS_NAME);
+				Method method = clazz.getDeclaredMethod ("internal_new_Accessible", new Class [] {Control.class});
+				Object value = method.invoke(clazz, new Object [] {control});
+				return (Accessible)value;
+			} catch (Throwable e) {
+				ALTERNATE_ACCESSIBLE_CLASS_NAME = null;
+			}
+		}
 		return new Accessible(control);
 	}
 
