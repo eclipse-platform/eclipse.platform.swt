@@ -2571,10 +2571,17 @@ public void showSelection () {
 }
 
 void sendDoubleSelection() {
-	int index = (int)/*64*/((NSTableView)view).clickedRow (); 
-	if (index != -1) {
+	NSTableView tableView = (NSTableView)view;
+	int rowIndex = (int)/*64*/tableView.clickedRow (); 
+	if (rowIndex != -1) {
+		if ((style & SWT.CHECK) != 0) {
+			NSArray columns = tableView.tableColumns ();
+			int columnIndex = (int)/*64*/tableView.clickedColumn ();
+			id column = columns.objectAtIndex (columnIndex);
+			if (column.id == checkColumn.id) return;
+		}
 		Event event = new Event ();
-		event.item = _getItem (index);
+		event.item = _getItem (rowIndex);
 		postEvent (SWT.DefaultSelection, event);
 	}
 }

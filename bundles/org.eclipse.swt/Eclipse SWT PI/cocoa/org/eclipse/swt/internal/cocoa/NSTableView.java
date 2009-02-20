@@ -32,6 +32,10 @@ public boolean allowsColumnReordering() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_allowsColumnReordering);
 }
 
+public int /*long*/ clickedColumn() {
+	return OS.objc_msgSend(this.id, OS.sel_clickedColumn);
+}
+
 public int /*long*/ clickedRow() {
 	return OS.objc_msgSend(this.id, OS.sel_clickedRow);
 }

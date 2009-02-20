@@ -1982,9 +1982,15 @@ public void select (TreeItem item) {
 
 void sendDoubleSelection() {
 	NSOutlineView outlineView = (NSOutlineView)view;
-	int index = (int)/*64*/outlineView.clickedRow (); 
-	if (index != -1) {
-		TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (index).id);
+	int rowIndex = (int)/*64*/outlineView.clickedRow (); 
+	if (rowIndex != -1) {
+		if ((style & SWT.CHECK) != 0) {
+			NSArray columns = outlineView.tableColumns ();
+			int columnIndex = (int)/*64*/outlineView.clickedColumn ();
+			id column = columns.objectAtIndex (columnIndex);
+			if (column.id == checkColumn.id) return;
+		}
+		TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
 		Event event = new Event ();
 		event.item = item;
 		postEvent (SWT.DefaultSelection, event);
