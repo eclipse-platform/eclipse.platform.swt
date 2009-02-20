@@ -283,6 +283,7 @@ void createHandle () {
 }
 
 void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (id != view.id) return;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			fillBackground (view, context, rect, -1);

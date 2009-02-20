@@ -577,6 +577,7 @@ void destroyWidget () {
 }
 
 void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (id != view.id) return;
 	if (regionPath != null && background == null) {
 		context.saveGraphicsState();
 		NSColor.windowBackgroundColor().setFill();

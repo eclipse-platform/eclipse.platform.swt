@@ -271,6 +271,7 @@ void createHandle () {
 }
 
 void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
 
