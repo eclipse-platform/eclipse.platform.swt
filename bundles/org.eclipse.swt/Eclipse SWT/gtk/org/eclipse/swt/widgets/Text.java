@@ -1777,6 +1777,7 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
+	redraw (false);
 }
 
 /**
