@@ -3172,10 +3172,10 @@ boolean runPopups () {
 	while (popups != null) {
 		Menu menu = popups [0];
 		if (menu == null) break;
+		runDeferredEvents ();
 		int length = popups.length;
 		System.arraycopy (popups, 1, popups, 0, --length);
 		popups [length] = null;
-		runDeferredEvents ();
 		if (!menu.isDisposed ()) menu._setVisible (true);
 		result = true;
 	}
