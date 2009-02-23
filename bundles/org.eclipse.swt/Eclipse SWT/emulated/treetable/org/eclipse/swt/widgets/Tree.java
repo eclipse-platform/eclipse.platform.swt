@@ -200,6 +200,7 @@ public Tree (Composite parent, int style) {
 	header.addListener (SWT.MouseDoubleClick, listener);
 	header.addListener (SWT.MouseMove, listener);
 	header.addListener (SWT.MouseExit, listener);
+	header.addListener (SWT.MenuDetect, listener);
 
 	toolTipListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -1339,6 +1340,10 @@ void handleEvents (Event event) {
 				onPaint (event);
 			}
 			break;
+		case SWT.MenuDetect: {
+			notifyListeners (SWT.MenuDetect, event);
+			break;
+			}
 		case SWT.MouseDown:
 			if (event.widget == header) {
 				headerOnMouseDown (event);
@@ -3772,6 +3777,10 @@ public void setLinesVisible (boolean value) {
 	if (linesVisible == value) return;		/* no change */
 	linesVisible = value;
 	redraw ();
+}
+public void setMenu (Menu menu) {
+	super.setMenu (menu);
+	header.setMenu (menu);
 }
 public void setRedraw (boolean value) {
 	checkWidget();
