@@ -1417,7 +1417,7 @@ String headerGetToolTip (int x) {
 		int columnRightX = columnX + column.width;
 		if (columnRightX - x <= TOLLERANCE_COLUMNRESIZE) return null;
 	}
-	return column.toolTipText;
+	return removeMnemonics (column.toolTipText);
 }
 void headerHideToolTip() {
 	if (toolTipShell == null) return;
@@ -3310,6 +3310,23 @@ public void removeAll () {
 	}
 
 	setRedraw (true);
+}
+String removeMnemonics (String string) {
+	/* removes single ampersands and preserves double-ampersands */
+	char [] chars = new char [string.length ()];
+	string.getChars (0, chars.length, chars, 0);
+	int i = 0, j = 0;
+	for ( ; i < chars.length; i++, j++) {
+		if (chars[i] == '&') {
+			if (++i == chars.length) break;
+			if (chars[i] == '&') {
+				chars[j++] = chars[i - 1];
+			}
+		}
+		chars[j] = chars[i];
+	}
+	if (i == j) return string;
+	return new String (chars, 0, j);
 }
 void removeSelectedItem (int index) {
 	TreeItem[] newSelectedItems = new TreeItem [selectedItems.length - 1];
