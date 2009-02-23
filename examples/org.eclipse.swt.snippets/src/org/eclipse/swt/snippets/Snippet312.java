@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Table example snippet: show a menu in a table header
+ * Tree example snippet: show a menu in a tree header
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet311 {
+public class Snippet312 {
 	
 	static String[][] files = {
 		{"ver.txt", "1 KB", "Text Document", "28/09/2005 9:57 AM", "admin",},
@@ -36,7 +36,7 @@ public class Snippet311 {
 		{"arial.ttf", "94 KB", "True Type Font", "25/08/2008 1:25 PM", "john",},
 	}; 
 	
-static void createMenuItem(Menu parent, final TableColumn column) {
+static void createMenuItem(Menu parent, final TreeColumn column) {
 	final MenuItem itemName = new MenuItem(parent, SWT.CHECK);
 	itemName.setText(column.getText());
 	itemName.setSelection(column.getResizable());
@@ -58,66 +58,68 @@ public static void main (String[] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 
-	final Table table = new Table(shell, SWT.V_SCROLL|SWT.H_SCROLL| SWT.BORDER);
-	table.setHeaderVisible(true);
+	final Tree tree = new Tree(shell, SWT.V_SCROLL|SWT.H_SCROLL| SWT.BORDER);
+	tree.setHeaderVisible(true);
 	final Menu headerMenu = new Menu(shell, SWT.POP_UP);
-	final TableColumn columnName = new TableColumn(table, SWT.NONE);
+	final TreeColumn columnName = new TreeColumn(tree, SWT.NONE);
 	columnName.setText("Name");
 	columnName.setWidth(150);
 	createMenuItem(headerMenu, columnName);
-	final TableColumn columnSize = new TableColumn(table, SWT.NONE);
+	final TreeColumn columnSize = new TreeColumn(tree, SWT.NONE);
 	columnSize.setText("Size");
 	columnSize.setWidth(150);
 	createMenuItem(headerMenu, columnSize);
-	final TableColumn columnType = new TableColumn(table, SWT.NONE);
+	final TreeColumn columnType = new TreeColumn(tree, SWT.NONE);
 	columnType.setText("Type");
 	columnType.setWidth(150);
 	createMenuItem(headerMenu, columnType);
-	final TableColumn columnDate = new TableColumn(table, SWT.NONE);
+	final TreeColumn columnDate = new TreeColumn(tree, SWT.NONE);
 	columnDate.setText("Date");
 	columnDate.setWidth(150);
 	createMenuItem(headerMenu, columnDate);
-	final TableColumn columnOwner = new TableColumn(table, SWT.NONE);
+	final TreeColumn columnOwner = new TreeColumn(tree, SWT.NONE);
 	columnOwner.setText("Owner");
 	columnOwner.setWidth(0);
 	columnOwner.setResizable(false);
 	createMenuItem(headerMenu, columnOwner);
 	
 	for (int i = 0; i < files.length; i++) {
-		TableItem item = new TableItem(table, SWT.NONE);
+		TreeItem item = new TreeItem(tree, SWT.NONE);
 		item.setText(files[i]);
+		TreeItem subItem = new TreeItem(item, SWT.NONE);
+		subItem.setText("node");
 	}
 	
-	final Menu tableMenu = new Menu(shell, SWT.POP_UP);
-	MenuItem item = new MenuItem(tableMenu, SWT.PUSH);
+	final Menu treeMenu = new Menu(shell, SWT.POP_UP);
+	MenuItem item = new MenuItem(treeMenu, SWT.PUSH);
 	item.setText("Open");
-	item = new MenuItem(tableMenu, SWT.PUSH);
+	item = new MenuItem(treeMenu, SWT.PUSH);
 	item.setText("Open With");
-	new MenuItem(tableMenu, SWT.SEPARATOR);
-	item = new MenuItem(tableMenu, SWT.PUSH);
+	new MenuItem(treeMenu, SWT.SEPARATOR);
+	item = new MenuItem(treeMenu, SWT.PUSH);
 	item.setText("Cut");
-	item = new MenuItem(tableMenu, SWT.PUSH);
+	item = new MenuItem(treeMenu, SWT.PUSH);
 	item.setText("Copy");
-	item = new MenuItem(tableMenu, SWT.PUSH);
+	item = new MenuItem(treeMenu, SWT.PUSH);
 	item.setText("Paste");
-	new MenuItem(tableMenu, SWT.SEPARATOR);
-	item = new MenuItem(tableMenu, SWT.PUSH);
+	new MenuItem(treeMenu, SWT.SEPARATOR);
+	item = new MenuItem(treeMenu, SWT.PUSH);
 	item.setText("Delete");
 	
-	table.addListener(SWT.MenuDetect, new Listener() {
+	tree.addListener(SWT.MenuDetect, new Listener() {
 		public void handleEvent(Event event) {
-			Point pt = display.map(null, table, new Point(event.x, event.y));
-			Rectangle clientArea = table.getClientArea();
-			boolean header = clientArea.y <= pt.y && pt.y < (clientArea.y + table.getHeaderHeight());
-			table.setMenu(header ? headerMenu : tableMenu);
+			Point pt = display.map(null, tree, new Point(event.x, event.y));
+			Rectangle clientArea = tree.getClientArea();
+			boolean header = clientArea.y <= pt.y && pt.y < (clientArea.y + tree.getHeaderHeight());
+			tree.setMenu(header ? headerMenu : treeMenu);
 		}
 	});
 	
 	/* IMPORTANT: Dispose the menus (only the current menu, set with setMenu(), will be automatically disposed) */
-	table.addListener(SWT.Dispose, new Listener() {
+	tree.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event event) {
 			headerMenu.dispose();
-			tableMenu.dispose();
+			treeMenu.dispose();
 		}
 	});
 	
