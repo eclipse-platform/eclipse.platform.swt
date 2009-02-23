@@ -1986,7 +1986,13 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	boolean quit = false, dragging = false;
 	while (!quit) {
 		int /*long*/ eventPtr = 0;
-		while (true) {
+		/*
+		* There should be an event on the queue already, but
+		* in cases where there isn't one, stop trying after
+		* half a second. 
+		*/
+		long timeout = System.currentTimeMillis() + 500;
+		while (System.currentTimeMillis() < timeout) {
 			eventPtr = OS.gdk_event_get ();
 			if (eventPtr != 0) {
 				break;
@@ -1994,6 +2000,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 				try {Thread.sleep(50);} catch (Exception ex) {}
 			}
 		}
+		if (eventPtr == 0) return false;
 		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
 			case OS.GDK_MOTION_NOTIFY: {
 				GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
