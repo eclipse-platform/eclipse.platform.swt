@@ -251,6 +251,15 @@ void enableWidget(boolean enabled) {
 	}
 }
 
+Widget findTooltip (NSPoint pt) {
+	pt = view.convertPoint_fromView_ (pt, null);
+	for (int i = 0; i < itemCount; i++) {
+		ToolItem item = items [i];
+		if (OS.NSPointInRect(pt, item.view.frame())) return item;
+	}
+	return super.findTooltip (pt);
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.

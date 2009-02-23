@@ -117,8 +117,8 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
+	NSTrackingArea tooltipTrackingArea;
 	boolean opened, moved, resized, fullScreen;
-//	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
 	Control lastActive;
 	Rectangle normalBounds;
 	boolean keyInputHappened;
@@ -1065,6 +1065,21 @@ public void removeShellListener(ShellListener listener) {
 	eventTable.unhook(SWT.Deiconify,listener);
 }
 
+void sendToolTipEvent (boolean enter) {
+	if (tooltipTrackingArea == null && isVisible()) {
+		NSView contentView = window.contentView();
+		int /*long*/ tag = contentView.addToolTipRect(new NSRect(), window, 0);
+		if (tag != 0) tooltipTrackingArea = new NSTrackingArea(tag);
+	}
+	if (tooltipTrackingArea == null) return;
+	NSDictionary userInfo = tooltipTrackingArea.userInfo();
+	NSPoint pt = window.convertScreenToBase(NSEvent.mouseLocation());
+	NSEvent event = NSEvent.enterExitEventWithType(enter ? OS.NSMouseEntered : OS.NSMouseExited, pt, 0, 0, window.windowNumber(), null, 0, 0, userInfo.id);
+	if (OS.class_NSToolTipManager != 0) {
+		OS.objc_msgSend(OS.objc_msgSend(OS.class_NSToolTipManager, OS.sel_sharedToolTipManager), enter ? OS.sel_mouseEntered_ : OS.sel_mouseExited_, event.id);
+	}
+}
+
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
@@ -1558,6 +1573,20 @@ void updateSystemUIMode () {
 //	}
 }
 
+int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {
+	NSPoint pt = new NSPoint();
+	OS.memmove (pt, point, NSPoint.sizeof);
+	Control control = display.findControl (false);
+	if (control == null) return 0;
+	Widget target = control.findTooltip (new NSView (view).convertPoint_toView_ (pt, null));
+	String string = target.tooltipText ();
+	if (string == null) return 0;
+	char[] chars = new char [string.length ()];
+	string.getChars (0, chars.length, chars, 0);
+	int length = fixMnemonic (chars);
+	return NSString.stringWithCharacters (chars, length).id;
+}
+
 void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	super.windowDidBecomeKey(id, sel, notification);
 	Display display = this.display;
@@ -1616,6 +1645,30 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 //		display.ignoreFocus = false;
 //		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, false);
 //	}
+}
+
+void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	NSEvent nsEvent = new NSEvent (event);
+	switch ((int)/*64*/nsEvent.type ()) {
+		case OS.NSLeftMouseUp:	
+		case OS.NSRightMouseUp:	
+		case OS.NSOtherMouseUp:	
+		case OS.NSMouseMoved:
+			Widget target = null;
+			Control control = display.findControl (false);
+			if (control != null) target = control.findTooltip (nsEvent.locationInWindow());
+			if (display.tooltipControl != control || display.tooltipTarget != target) {
+				Control oldControl = display.tooltipControl;
+				Shell oldShell = oldControl != null && !oldControl.isDisposed() ? oldControl.getShell() : null;
+				Shell shell = control != null && !control.isDisposed() ? control.getShell() : null;
+				if (oldShell != null) oldShell.sendToolTipEvent (false);
+				if (shell != null) shell.sendToolTipEvent (true);
+			}
+			display.tooltipControl = control;
+			display.tooltipTarget = target;
+			break;
+	}
+	super.windowSendEvent (id, sel, event);
 }
 
 boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window) {

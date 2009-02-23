@@ -1534,6 +1534,10 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*lo
 	return new NSRange();
 }
 
+String tooltipText () {
+	return null;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -1565,6 +1569,10 @@ void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*
 }
 
 void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+}
+
+int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {
+	return 0;
 }
 
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {

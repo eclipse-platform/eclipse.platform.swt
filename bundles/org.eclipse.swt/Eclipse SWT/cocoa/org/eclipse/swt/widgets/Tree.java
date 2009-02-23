@@ -1010,6 +1010,26 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	}
 }
 
+Widget findTooltip (NSPoint pt) {
+	NSTableView widget = (NSTableView)view;
+	NSTableHeaderView headerView = widget.headerView();
+	if (headerView != null) {
+		pt = headerView.convertPoint_fromView_ (pt, null);
+		int /*long*/ index = headerView.columnAtPoint (pt);
+		if (index != -1) {
+			NSArray nsColumns = widget.tableColumns ();
+			id nsColumn = nsColumns.objectAtIndex (index);
+			for (int i = 0; i < columnCount; i++) {
+				TreeColumn column = columns [i];
+				if (column.nsColumn.id == nsColumn.id) {
+					return column;
+				}
+			}
+		}
+	}
+	return super.findTooltip (pt);
+}
+
 int getCheckColumnWidth () {
 	return (int)checkColumn.dataCell().cellSize().width;
 }

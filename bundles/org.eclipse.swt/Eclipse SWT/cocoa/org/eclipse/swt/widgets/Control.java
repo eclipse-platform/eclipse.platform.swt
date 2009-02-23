@@ -681,6 +681,14 @@ void checkBuffered () {
 	style |= SWT.DOUBLE_BUFFERED;
 }
 
+void checkToolTip (Widget target) {
+	if (isVisible () && display.tooltipControl == this && (target == null || display.tooltipTarget == target)) {
+		Shell shell = getShell ();
+		shell.sendToolTipEvent (false);
+		shell.sendToolTipEvent (true);
+	}
+}
+
 /**
  * Returns the preferred size of the receiver.
  * <p>
@@ -1087,6 +1095,10 @@ Control findBackgroundControl () {
 Menu [] findMenus (Control control) {
 	if (menu != null && this != control) return new Menu [] {menu};
 	return new Menu [0];
+}
+
+Widget findTooltip (NSPoint pt) {
+	return this;
 }
 
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
@@ -3484,15 +3496,7 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	if (string != null) {
-		char[] chars = new char [string.length ()];
-		string.getChars (0, chars.length, chars, 0);
-		int length = fixMnemonic (chars);
-		NSString str = NSString.stringWithCharacters (chars, length);
-		view.setToolTip (str);
-	} else {
-		view.setToolTip (null);
-	}
+	checkToolTip (null);
 }
 
 /**
@@ -3653,6 +3657,10 @@ void sort (int [] items) {
 	    	}
 	    }
 	}
+}
+
+String tooltipText () {
+	return toolTipText;
 }
 
 /**

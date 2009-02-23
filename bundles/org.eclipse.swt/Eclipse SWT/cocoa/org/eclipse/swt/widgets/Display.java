@@ -113,7 +113,8 @@ public class Display extends Device {
 	Caret currentCaret;
 	
 	boolean sendEvent;
-	Control currentControl, trackingControl;
+	Control currentControl, trackingControl, tooltipControl;
+	Widget tooltipTarget;
 	
 	boolean inPaint;
 
@@ -1878,6 +1879,7 @@ void initClasses () {
 	int /*long*/ accessibilityHitTestProc = OS.accessibilityHitTest_CALLBACK(proc3);
 	int /*long*/ shouldChangeTextInRange_replacementString_Proc = OS.shouldChangeTextInRange_replacementString_CALLBACK(fieldEditorProc4);
 	int /*long*/ shouldChangeTextInRange_replacementString_fieldEditorProc = shouldChangeTextInRange_replacementString_Proc;
+	int /*long*/ view_stringForToolTip_point_userDataProc = OS.view_stringForToolTip_point_userData_CALLBACK(proc6);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -2246,6 +2248,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 }
@@ -4284,6 +4287,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.outlineView_setObjectValue_forTableColumn_byItem(id, sel, arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_tableView_setObjectValue_forTableColumn_row_) {
 		widget.tableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
+	} else if (sel == OS.sel_view_stringForToolTip_point_userData_) {
+		return widget.view_stringForToolTip_point_userData(id, sel, arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }

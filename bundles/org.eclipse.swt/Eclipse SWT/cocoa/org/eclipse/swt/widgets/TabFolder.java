@@ -203,6 +203,18 @@ void destroyItem (TabItem item) {
 	((NSTabView)view).removeTabViewItem(item.nsItem);
 }
 
+Widget findTooltip (NSPoint pt) {
+	pt = view.convertPoint_fromView_ (pt, null);
+	NSTabViewItem nsItem = ((NSTabView)view).tabViewItemAtPoint (pt);
+	if (nsItem != null) {
+		for (int i = 0; i < itemCount; i++) {
+			TabItem item = items [i];
+			if (item.nsItem.id == nsItem.id) return item;
+		}
+	}
+	return super.findTooltip (pt);
+}
+
 public Rectangle getClientArea () {
 	checkWidget ();
 	NSRect rect = ((NSTabView)view).contentRect();

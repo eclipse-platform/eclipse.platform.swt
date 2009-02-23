@@ -653,6 +653,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+	parent.checkToolTip (this);
 }
 
 /**
@@ -669,6 +670,10 @@ public void setWidth (int width) {
 	checkWidget ();
 	if (width < 0) return;
 	nsColumn.setWidth (width);
+}
+
+String tooltipText () {
+	return toolTipText;
 }
 
 }

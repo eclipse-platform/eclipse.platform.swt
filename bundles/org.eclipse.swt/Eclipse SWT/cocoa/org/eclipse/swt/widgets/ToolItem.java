@@ -924,15 +924,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	if (string != null) {
-		char[] chars = new char [string.length ()];
-		string.getChars (0, chars.length, chars, 0);
-		int length = fixMnemonic (chars);
-		NSString str = NSString.stringWithCharacters (chars, length);
-		view.setToolTip (str);
-	} else {
-		view.setToolTip (null);
-	}
+	parent.checkToolTip (this);
 }
 
 void setVisible (boolean visible) {
@@ -962,6 +954,10 @@ public void setWidth (int width) {
 	if (width < 0 || this.width == width) return;
 	this.width = width;
 	parent.relayout();
+}
+
+String tooltipText () {
+	return toolTipText;
 }
 
 void updateImage (boolean layout) {
