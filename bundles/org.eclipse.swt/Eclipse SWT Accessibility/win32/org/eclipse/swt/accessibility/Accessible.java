@@ -52,6 +52,9 @@ public class Accessible {
 	Object[] variants;
 	Control control;
 
+	/**
+	 * @since 3.5
+	 */
 	protected Accessible() {
 	}
 
