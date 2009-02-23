@@ -1014,6 +1014,18 @@ int getCheckColumnWidth () {
 	return (int)checkColumn.dataCell().cellSize().width;
 }
 
+public Rectangle getClientArea () {
+	checkWidget ();
+	Rectangle rect = super.getClientArea ();
+	NSTableHeaderView headerView = ((NSTableView) view).headerView ();
+	if (headerView != null) {
+		int height =  (int) headerView.bounds ().height;
+		rect.y -= height;
+		rect.height += height;
+	}
+	return rect;
+}
+
 TreeColumn getColumn (id id) {
 	for (int i = 0; i < columnCount; i++) {
 		if (columns[i].nsColumn.id == id.id) {
@@ -1580,28 +1592,30 @@ boolean isTrim (NSView view) {
 	return view.id == headerView.id;
 }
 
-/*
- * Feature in Cocoa: Table views do not change the selection when the user
- * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
- * clicked-on row ourselves.
- */
 int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	NSEvent event = new NSEvent(theEvent);
-	NSOutlineView tree = (NSOutlineView)view;
-	
-	// get the current selections for the outline view. 
-	NSIndexSet selectedRowIndexes = tree.selectedRowIndexes();
-	
-	// select the row that was clicked before showing the menu for the event
-	NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
-	int /*long*/ row = tree.rowAtPoint(mousePoint);
-	
-	// figure out if the row that was just clicked on is currently selected
-	if (selectedRowIndexes.containsIndex(row) == false) {
-		NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
-		tree.selectRowIndexes (indexes, false);
+	if (id != headerView.id) {
+		/*
+		 * Feature in Cocoa: Table views do not change the selection when the user
+		 * right-clicks or control-clicks on an NSTableView or its subclasses. Fix is to select the 
+		 * clicked-on row ourselves.
+		 */
+		NSEvent event = new NSEvent(theEvent);
+		NSOutlineView tree = (NSOutlineView)view;
+		
+		// get the current selections for the outline view. 
+		NSIndexSet selectedRowIndexes = tree.selectedRowIndexes();
+		
+		// select the row that was clicked before showing the menu for the event
+		NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
+		int /*long*/ row = tree.rowAtPoint(mousePoint);
+		
+		// figure out if the row that was just clicked on is currently selected
+		if (selectedRowIndexes.containsIndex(row) == false) {
+			NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
+			tree.selectRowIndexes (indexes, false);
+		}
+		// else that row is currently selected, so don't change anything.
 	}
-	// else that row is currently selected, so don't change anything.
 	
 	return super.menuForEvent(id, sel, theEvent);
 }

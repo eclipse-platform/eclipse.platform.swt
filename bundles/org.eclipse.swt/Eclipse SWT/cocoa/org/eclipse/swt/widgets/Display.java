@@ -2018,6 +2018,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
 	//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
 	OS.objc_registerClassPair(cls);
 
