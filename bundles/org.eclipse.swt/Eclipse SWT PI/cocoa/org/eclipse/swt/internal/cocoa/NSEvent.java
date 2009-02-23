@@ -54,6 +54,11 @@ public float /*double*/ deltaY() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_deltaY);
 }
 
+public static NSEvent enterExitEventWithType(int /*long*/ type, NSPoint location, int /*long*/ flags, double time, int /*long*/ wNum, NSGraphicsContext context, int /*long*/ eNum, int /*long*/ tNum, int /*long*/ data) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_, type, location, flags, time, wNum, context != null ? context.id : 0, eNum, tNum, data);
+	return result != 0 ? new NSEvent(result) : null;
+}
+
 public short keyCode() {
 	return (short)OS.objc_msgSend(this.id, OS.sel_keyCode);
 }

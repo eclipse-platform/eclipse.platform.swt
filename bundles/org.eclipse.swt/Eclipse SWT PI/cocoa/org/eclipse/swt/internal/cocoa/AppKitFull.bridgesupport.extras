@@ -7983,17 +7983,17 @@
 <method selector="deviceID">
 <retval></retval>
 </method>
-<method class_method="true" selector="enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:">
-<arg name="type"></arg>
-<arg name="location"></arg>
-<arg name="flags"></arg>
-<arg name="time"></arg>
-<arg name="wNum"></arg>
-<arg name="context"></arg>
-<arg name="eNum"></arg>
-<arg name="tNum"></arg>
-<arg name="data"></arg>
-<retval></retval>
+<method class_method="true" selector="enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:" swt_gen="true">
+<arg name="type" swt_gen="true"></arg>
+<arg name="location" swt_gen="true"></arg>
+<arg name="flags" swt_gen="true"></arg>
+<arg name="time" swt_gen="true"></arg>
+<arg name="wNum" swt_gen="true"></arg>
+<arg name="context" swt_gen="true"></arg>
+<arg name="eNum" swt_gen="true"></arg>
+<arg name="tNum" swt_gen="true"></arg>
+<arg name="data" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="eventNumber">
 <retval></retval>
@@ -21287,8 +21287,8 @@
 <method selector="rect">
 <retval></retval>
 </method>
-<method selector="userInfo">
-<retval></retval>
+<method selector="userInfo" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 </class>
 <class name="NSTreeController" swt_superclass="NSObjectController">
@@ -21850,11 +21850,11 @@
 <arg name="otherView" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="addToolTipRect:owner:userData:">
-<arg name="aRect"></arg>
-<arg name="anObject"></arg>
-<arg name="data"></arg>
-<retval></retval>
+<method selector="addToolTipRect:owner:userData:" swt_gen="true">
+<arg name="aRect" swt_gen="true"></arg>
+<arg name="anObject" swt_gen="true"></arg>
+<arg name="data" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="addTrackingArea:">
 <arg name="trackingArea"></arg>
@@ -25280,12 +25280,12 @@
 <arg name="pboard"></arg>
 </method>
 </informal_protocol>
-<informal_protocol name="NSToolTipOwner">
-<method selector="view:stringForToolTip:point:userData:">
-<arg name="view"></arg>
-<arg name="tag"></arg>
-<arg name="point"></arg>
-<arg name="data"></arg>
+<informal_protocol name="NSToolTipOwner" swt_gen="true">
+<method selector="view:stringForToolTip:point:userData:" swt_gen="true">
+<arg name="view" swt_gen="true"></arg>
+<arg name="tag" swt_gen="true"></arg>
+<arg name="point" swt_gen="true"></arg>
+<arg name="data" swt_gen="true"></arg>
 </method>
 </informal_protocol>
 <informal_protocol name="NSToolbarDelegate">

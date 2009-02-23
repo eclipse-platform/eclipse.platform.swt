@@ -3951,6 +3951,33 @@ fail:
 }
 #endif
 
+#if (!defined(NO_objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIIIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jobject arg3, jintLong arg4, jdouble arg5, jintLong arg6, jintLong arg7, jintLong arg8, jintLong arg9, jintLong arg10)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jobject arg3, jintLong arg4, jdouble arg5, jintLong arg6, jintLong arg7, jintLong arg8, jintLong arg9, jintLong arg10)
+#endif
+{
+	NSPoint _arg3, *lparg3=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJJJJ_FUNC);
+#endif
+	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, NSPoint, jintLong, jdouble, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, *lparg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+fail:
+	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJSJJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jobject arg3, jintLong arg4, jdouble arg5, jintLong arg6, jintLong arg7, jshort arg8, jintLong arg9, jintLong arg10)

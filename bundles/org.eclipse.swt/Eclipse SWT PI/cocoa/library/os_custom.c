@@ -380,3 +380,17 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(shouldChangeTextInRange_1replacementString_
 	return (jintLong)shouldChangeTextInRange_1replacementString;
 }
 #endif
+
+#ifndef NO_view_1stringForToolTip_1point_1userData_1CALLBACK
+static jintLong view_1stringForToolTip_1point_1userData_1CALLBACK;
+static NSString * view_1stringForToolTip_1point_1userDataProc(id obj, SEL sel, NSView* view, NSToolTipTag tag, NSPoint point, void *userData)
+{
+	return ((NSString* (*)(id, SEL, NSView*, NSToolTipTag, NSPoint*, void *))view_1stringForToolTip_1point_1userData_1CALLBACK)(obj, sel, view, tag, &point, userData);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(view_1stringForToolTip_1point_1userData_1CALLBACK)
+(JNIEnv *env, jclass that, jintLong func)
+{
+	view_1stringForToolTip_1point_1userData_1CALLBACK = func;
+	return (jintLong)view_1stringForToolTip_1point_1userDataProc;
+}
+#endif

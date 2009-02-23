@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 397;
-int OS_nativeFunctionCallCount[397];
+int OS_nativeFunctionCount = 399;
+int OS_nativeFunctionCallCount[399];
 char * OS_nativeFunctionNames[] = {
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
@@ -446,6 +446,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 #else
 	"objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIIIII",
+#else
+	"objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJJJJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII",
@@ -901,6 +906,7 @@ char * OS_nativeFunctionNames[] = {
 	"setMarkedText_1selectedRange_1CALLBACK",
 	"shouldChangeTextInRange_1replacementString_1CALLBACK",
 	"textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK",
+	"view_1stringForToolTip_1point_1userData_1CALLBACK",
 	"webView_1setFrame_1CALLBACK",
 };
 

@@ -42,6 +42,9 @@ public class OS extends C {
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
 	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
 	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
+	
+	public static final int /*long*/ class_NSToolTipManager = OS.objc_getClass("NSToolTipManager");
+	public static final int /*long*/ sel_sharedToolTipManager = OS.sel_registerName("sharedToolTipManager");
 
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
@@ -204,6 +207,8 @@ public static final native int /*long*/ accessibilityHitTest_CALLBACK(int /*long
 public static final native int /*long*/ dragSelectionWithEvent_offset_slideBack_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ shouldChangeTextInRange_replacementString_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ view_stringForToolTip_point_userData_CALLBACK(int /*long*/ func);
 
 /** Custom structure return */
 
@@ -483,6 +488,7 @@ public static final int /*long*/ protocol_NSTableViewNotifications = objc_getPro
 public static final int /*long*/ protocol_NSTextDelegate = objc_getProtocol("NSTextDelegate");
 public static final int /*long*/ protocol_NSTextInput = objc_getProtocol("NSTextInput");
 public static final int /*long*/ protocol_NSTextViewDelegate = objc_getProtocol("NSTextViewDelegate");
+public static final int /*long*/ protocol_NSToolTipOwner = objc_getProtocol("NSToolTipOwner");
 public static final int /*long*/ protocol_NSURLDownloadDelegate = objc_getProtocol("NSURLDownloadDelegate");
 public static final int /*long*/ protocol_NSWindowDelegate = objc_getProtocol("NSWindowDelegate");
 public static final int /*long*/ protocol_NSWindowNotifications = objc_getProtocol("NSWindowNotifications");
@@ -542,6 +548,7 @@ public static final int /*long*/ sel_addTableColumn_ = sel_registerName("addTabl
 public static final int /*long*/ sel_addTemporaryAttribute_value_forCharacterRange_ = sel_registerName("addTemporaryAttribute:value:forCharacterRange:");
 public static final int /*long*/ sel_addTextContainer_ = sel_registerName("addTextContainer:");
 public static final int /*long*/ sel_addTimer_forMode_ = sel_registerName("addTimer:forMode:");
+public static final int /*long*/ sel_addToolTipRect_owner_userData_ = sel_registerName("addToolTipRect:owner:userData:");
 public static final int /*long*/ sel_addTypes_owner_ = sel_registerName("addTypes:owner:");
 public static final int /*long*/ sel_alignment = sel_registerName("alignment");
 public static final int /*long*/ sel_allKeys = sel_registerName("allKeys");
@@ -807,6 +814,7 @@ public static final int /*long*/ sel_enableFreedObjectCheck_ = sel_registerName(
 public static final int /*long*/ sel_endDocument = sel_registerName("endDocument");
 public static final int /*long*/ sel_endEditing = sel_registerName("endEditing");
 public static final int /*long*/ sel_endPage = sel_registerName("endPage");
+public static final int /*long*/ sel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_ = sel_registerName("enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:");
 public static final int /*long*/ sel_enumeratorAtPath_ = sel_registerName("enumeratorAtPath:");
 public static final int /*long*/ sel_expandItem_ = sel_registerName("expandItem:");
 public static final int /*long*/ sel_familyName = sel_registerName("familyName");
@@ -1518,6 +1526,7 @@ public static final int /*long*/ sel_valueWithPoint_ = sel_registerName("valueWi
 public static final int /*long*/ sel_valueWithRange_ = sel_registerName("valueWithRange:");
 public static final int /*long*/ sel_valueWithRect_ = sel_registerName("valueWithRect:");
 public static final int /*long*/ sel_valueWithSize_ = sel_registerName("valueWithSize:");
+public static final int /*long*/ sel_view_stringForToolTip_point_userData_ = sel_registerName("view:stringForToolTip:point:userData:");
 public static final int /*long*/ sel_visibleFrame = sel_registerName("visibleFrame");
 public static final int /*long*/ sel_visibleRect = sel_registerName("visibleRect");
 public static final int /*long*/ sel_wantsPeriodicDraggingUpdates = sel_registerName("wantsPeriodicDraggingUpdates");
@@ -4196,6 +4205,11 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
  * @param arg2 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, NSSize arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, boolean arg6);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2, double arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6, int /*long*/ arg7, int /*long*/ arg8);
 /**
  * @method flags=cast
  * @param arg1 flags=struct

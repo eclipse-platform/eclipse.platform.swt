@@ -456,6 +456,11 @@ typedef enum {
 	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
 #endif
 #ifndef JNI64
+	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIIIII_FUNC,
+#else
+	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII_FUNC,
 #else
 	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJSJJ_FUNC,
@@ -909,5 +914,6 @@ typedef enum {
 	setMarkedText_1selectedRange_1CALLBACK_FUNC,
 	shouldChangeTextInRange_1replacementString_1CALLBACK_FUNC,
 	textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK_FUNC,
+	view_1stringForToolTip_1point_1userData_1CALLBACK_FUNC,
 	webView_1setFrame_1CALLBACK_FUNC,
 } OS_FUNCS;

@@ -32,6 +32,10 @@ public void addSubview(NSView aView, int /*long*/ place, NSView otherView) {
 	OS.objc_msgSend(this.id, OS.sel_addSubview_positioned_relativeTo_, aView != null ? aView.id : 0, place, otherView != null ? otherView.id : 0);
 }
 
+public int /*long*/ addToolTipRect(NSRect aRect, id anObject, int /*long*/ data) {
+	return OS.objc_msgSend(this.id, OS.sel_addToolTipRect_owner_userData_, aRect, anObject != null ? anObject.id : 0, data);
+}
+
 public void beginDocument() {
 	OS.objc_msgSend(this.id, OS.sel_beginDocument);
 }
