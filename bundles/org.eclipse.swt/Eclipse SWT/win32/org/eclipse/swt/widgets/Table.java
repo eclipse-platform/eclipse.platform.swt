@@ -5353,12 +5353,11 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 	if (handle == 0) return 0;
 	if (hwnd != handle) {
 		switch (msg) {
-			/* This code is intentionally commented */
-//			case OS.WM_CONTEXTMENU: {
-//				LRESULT result = wmContextMenu (hwnd, wParam, lParam);
-//				if (result != null) return result.value;
-//				break;
-//			}
+			case OS.WM_CONTEXTMENU: {
+				LRESULT result = wmContextMenu (hwnd, wParam, lParam);
+				if (result != null) return result.value;
+				break;
+			}
 			case OS.WM_CAPTURECHANGED: {
 				/*
 				* Bug in Windows.  When the capture changes during a
