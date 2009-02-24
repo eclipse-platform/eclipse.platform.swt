@@ -1753,29 +1753,33 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
 	boolean result = callSuperBoolean(id, sel, range, replacementString);
-	if (hooks (SWT.Verify)) {
-		String text = new NSString(replacementString).getString();
-		NSEvent currentEvent = display.application.currentEvent();
-		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
-		if (newText == null) return false;
-		if ((style & SWT.SINGLE) != 0) {
-			if (text != newText || echoCharacter != '\0') {
-				insertEditText(newText);
-				result = false;
+	if (!hooks(SWT.Verify) && echoCharacter =='\0') return result;
+	String text = new NSString(replacementString).getString();
+	String newText = text;
+	if (hooks (SWT.Verify)) newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length),  display.application.currentEvent());
+	if (newText == null) return false;
+	if ((style & SWT.SINGLE) != 0) {
+		if (text != newText || echoCharacter != '\0') {
+			 //handle backspace and delete
+			if (range.length == 1) {
+				NSText editor = new NSText(id);
+				editor.setSelectedRange (range);
 			}
-		} else {
-			if (text != newText) {
-				NSTextView widget = (NSTextView) view;
-				Point selection = getSelection();
-				NSRange selRange = new NSRange();
-				selRange.location = selection.x;
-				selRange.length = selection.x + selection.y;
-				widget.textStorage ().replaceCharactersInRange (selRange, NSString.stringWith(newText));
-				result = false;
-			}
+			insertEditText(newText);
+			result = false;
 		}
-		if (!result) sendEvent (SWT.Modify);
+	} else {
+		if (text != newText) {
+			NSTextView widget = (NSTextView) view;
+			Point selection = getSelection();
+			NSRange selRange = new NSRange();
+			selRange.location = selection.x;
+			selRange.length = selection.x + selection.y;
+			widget.textStorage ().replaceCharactersInRange (selRange, NSString.stringWith(newText));
+			result = false;
+		}
 	}
+	if (!result) sendEvent (SWT.Modify);
 	return result;
 }
 
