@@ -650,6 +650,7 @@ public void setOutputDir(String dir) {
 
 public void setXmls(String[] xmls) {
 	this.xmls = xmls;
+	this.documents = null;
 }
 
 public void setMainClass(String mainClassName) {

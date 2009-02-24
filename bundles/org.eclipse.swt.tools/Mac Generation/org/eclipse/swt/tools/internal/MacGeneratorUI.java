@@ -41,7 +41,7 @@ public class MacGeneratorUI {
 		if (node.getNodeType() == Node.TEXT_NODE) return null;
 		String name = node.getNodeName();
 		TreeItem parentItem = null;
-		if (lastParent != null && lastParent.getParentItem() == superItem && name.equals(lastParent.getData())) {
+		if (lastParent != null && !lastParent.isDisposed() && lastParent.getParentItem() == superItem && name.equals(lastParent.getData())) {
 			parentItem = lastParent;
 		} else {
 			TreeItem[] items = superItem.getItems();
@@ -568,6 +568,14 @@ public class MacGeneratorUI {
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].pack();
 		}
+	}
+	
+	public void refresh () {
+		if (nodesTree == null) return;
+		gen.setXmls(null);
+		nodesTree.removeAll();
+		attribTable.removeAll();
+		updateNodes();
 	}
 	
 	public void setActionsVisible(boolean visible) {

@@ -1,21 +1,15 @@
 package org.eclipse.swt.tools.views;
 
-import org.eclipse.swt.tools.internal.MacGenerator;
-import org.eclipse.swt.tools.internal.MacGeneratorUI;
-import org.eclipse.swt.tools.internal.ProgressMonitor;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import java.util.*;
+
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.jobs.*;
 import org.eclipse.jface.action.*;
+import org.eclipse.swt.tools.internal.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
+import org.eclipse.ui.part.*;
 
 
 /**
@@ -40,6 +34,7 @@ public class MacGeneratorView extends ViewPart {
 	private Action generateAction;
 	private MacGeneratorUI ui;
 	private IResource root;
+	IResourceChangeListener listener;
 	private Job job;
 	private String mainClassName = "org.eclipse.swt.internal.cocoa.OS";
 	
@@ -74,8 +69,37 @@ public class MacGeneratorView extends ViewPart {
 	 */
 	public MacGeneratorView() {
 		MacGenerator.BUILD_C_SOURCE = false;
-		IWorkspaceRoot workspace = ResourcesPlugin.getWorkspace().getRoot();
-		root = workspace.findMember(new Path("org.eclipse.swt/Eclipse SWT PI/cocoa"));
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+		root = workspaceRoot.findMember(new Path("org.eclipse.swt/Eclipse SWT PI/cocoa"));		
+		listener = new IResourceChangeListener() {
+			public void resourceChanged(IResourceChangeEvent event) {
+				if (job != null) return;
+				if (event.getType() != IResourceChangeEvent.POST_CHANGE) return;
+				IResourceDelta rootDelta = event.getDelta();
+				IResourceDelta piDelta = rootDelta.findMember(root.getFullPath());
+				if (piDelta == null) return;
+				final ArrayList changed = new ArrayList();
+				IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
+					public boolean visit(IResourceDelta delta) {
+						if (delta.getKind() != IResourceDelta.CHANGED) return true;
+						if ((delta.getFlags() & IResourceDelta.CONTENT) == 0) return true;
+						IResource resource = delta.getResource();
+						if (resource.getType() == IResource.FILE && "extras".equalsIgnoreCase(resource.getFileExtension())) {
+							changed.add(resource);
+						}
+						return true;
+					}
+				};
+				try {
+					piDelta.accept(visitor);
+				} catch (CoreException e) {}
+				if (changed.size() > 0) {
+					ui.refresh();
+				}
+			}
+		};
+		workspace.addResourceChangeListener(listener);
 	}
 
 	/**
@@ -83,14 +107,7 @@ public class MacGeneratorView extends ViewPart {
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		String[] xmls = null;
-//		xmls = new String[]{
-//			"AppKitFull.bridgesupport",
-//			"FoundationFull.bridgesupport",
-//			"WebKitFull.bridgesupport",
-//		};
 		MacGenerator gen = new MacGenerator();
-		gen.setXmls(xmls);
 		gen.setOutputDir(root.getLocation().toPortableString());
 		gen.setMainClass(mainClassName);
 		ui = new MacGeneratorUI(gen);
@@ -105,6 +122,12 @@ public class MacGeneratorView extends ViewPart {
 		IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
+	}
+	
+	public void dispose() {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		workspace.removeResourceChangeListener(listener);
+		super.dispose();
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
