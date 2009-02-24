@@ -3359,6 +3359,7 @@ public Pattern getForegroundPattern() {
  * @see GCData
  * 
  * @since 3.2
+ * @noreference This method is not intended to be referenced by clients.
  */
 public GCData getGCData() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
