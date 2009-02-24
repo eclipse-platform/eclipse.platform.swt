@@ -480,7 +480,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
 									OS.memmove(rect, pArray, NSRect.sizeof);
 									float /*double*/ underlineX = pt.x + rect.x;
-									float /*double*/ underlineY = pt.y + rect.y + rect.height - baseline;
+									float /*double*/ underlineY = pt.y + rect.y + rect.height - baseline + 1;
 									NSBezierPath path = NSBezierPath.bezierPath();
 									switch (style.underlineStyle) {
 										case SWT.UNDERLINE_ERROR: {
