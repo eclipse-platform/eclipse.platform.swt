@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.*;
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#tree">Tree, TreeItem, TreeColumn snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class TreeItem extends Item {

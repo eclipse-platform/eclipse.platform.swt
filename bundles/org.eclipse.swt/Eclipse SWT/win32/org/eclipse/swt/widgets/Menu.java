@@ -37,6 +37,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#menu">Menu snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class Menu extends Widget {

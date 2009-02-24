@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.4
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class IME extends Widget {
 	Canvas parent;
