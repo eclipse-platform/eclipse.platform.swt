@@ -3902,12 +3902,14 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 			display.focusControl = control;
 			control.sendFocusEvent(SWT.FocusIn, false);
 		}
+		display.checkEnterExit(display.findControl(true), null, false);
 	} else if (sel == OS.sel_applicationDidResignActive_) {
 		Control control = display.focusControl;
 		if (control != null && !control.isDisposed()) {
 			display.focusControl = null;
 			control.sendFocusEvent(SWT.FocusOut, false);
 		}
+		display.checkEnterExit(null, null, false);
 	}
  	return 0;
 }
