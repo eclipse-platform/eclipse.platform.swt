@@ -318,9 +318,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget = (NSTextField) view;
-		NSSize size = widget.cell ().cellSize ();
+		NSCell cell = widget.cell ();
+		NSSize size = cell.cellSize ();
 		width = (int)Math.ceil (size.width);
 		height = (int)Math.ceil (size.height);
+		cell.setWraps(false);
 	} else {
 		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager ().alloc ().init ();
 		NSTextContainer textContainer = (NSTextContainer)new NSTextContainer ().alloc ();
