@@ -23258,9 +23258,9 @@
 <arg name="sender"></arg>
 <retval></retval>
 </method>
-<method selector="sendEvent:">
-<arg name="theEvent"></arg>
-<retval></retval>
+<method selector="sendEvent:" swt_gen="true">
+<arg name="theEvent" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setAcceptsMouseMovedEvents:" swt_gen="true">
 <arg name="flag" swt_gen="true"></arg>

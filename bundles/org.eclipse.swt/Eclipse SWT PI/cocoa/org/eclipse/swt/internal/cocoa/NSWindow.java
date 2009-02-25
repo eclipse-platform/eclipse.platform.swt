@@ -194,6 +194,10 @@ public NSScreen screen() {
 	return result != 0 ? new NSScreen(result) : null;
 }
 
+public void sendEvent(NSEvent theEvent) {
+	OS.objc_msgSend(this.id, OS.sel_sendEvent_, theEvent != null ? theEvent.id : 0);
+}
+
 public void setAcceptsMouseMovedEvents(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAcceptsMouseMovedEvents_, flag);
 }
