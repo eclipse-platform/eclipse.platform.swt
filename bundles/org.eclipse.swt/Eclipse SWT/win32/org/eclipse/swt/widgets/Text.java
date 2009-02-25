@@ -166,7 +166,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		case OS.WM_PAINT: {
 			boolean doubleBuffer = findImageControl () != null;
 			boolean drawMessage = false;
-			if ((style & SWT.SEARCH) != 0) {
+			if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
 					drawMessage = hwnd != OS.GetFocus () && OS.GetWindowTextLength (handle) == 0;
 				}
@@ -476,7 +476,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int newHeight = rect.bottom - rect.top;
 			if (newHeight != 0) height = newHeight;
 		}
-		if ((style & SWT.SEARCH) != 0) {
+		if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 			OS.SetRect (rect, 0, 0, 0, 0);
 			TCHAR buffer = new TCHAR (getCodePage (), message, false);
 			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
@@ -1713,19 +1713,17 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
-	if ((style & SWT.SEARCH) != 0) {
-		if (!OS.IsWinCE) {
-			if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-				if ((bits & OS.ES_MULTILINE) == 0) {
-					int length = message.length ();
-					char [] chars = new char [length + 1];
-					message.getChars(0, length, chars, 0);
-					OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, chars);
-				}
-			} else {
-				OS.InvalidateRect (handle, null, true);
+	if (!OS.IsWinCE) {
+		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.ES_MULTILINE) == 0) {
+				int length = message.length ();
+				char [] chars = new char [length + 1];
+				message.getChars(0, length, chars, 0);
+				OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, chars);
 			}
+		} else {
+			OS.InvalidateRect (handle, null, true);
 		}
 	}
 }
