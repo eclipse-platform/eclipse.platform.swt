@@ -520,16 +520,17 @@ protected void checkDevice () {
 
 void checkEnterExit (Control control, NSEvent nsEvent, boolean send) {
 	if (control != currentControl) {
-		if (currentControl != null) {
+		if (currentControl != null && !currentControl.isDisposed()) {
 			currentControl.sendMouseEvent (nsEvent, SWT.MouseExit, send);
 		}
+		if (control != null && control.isDisposed()) control = null;
 		currentControl = control;
 		if (control != null) {
 			control.sendMouseEvent (nsEvent, SWT.MouseEnter, send);
 		}
 		setCursor (control);
 	}
-	timerExec (control != null ? getToolTipTime () : -1, hoverTimer);
+	timerExec (control != null && !control.isDisposed() ? getToolTipTime () : -1, hoverTimer);
 }
 
 /**
@@ -3233,7 +3234,7 @@ public static void setAppName (String name) {
 Runnable hoverTimer = new Runnable () {
 	public void run () {
 		if (currentControl != null && !currentControl.isDisposed()) {
-			currentControl.sendMouseEvent (null, SWT.MouseHover, trackingControl != null);
+			currentControl.sendMouseEvent (null, SWT.MouseHover, trackingControl != null && !trackingControl.isDisposed());
 		}
 	}
 };
@@ -3261,7 +3262,7 @@ void setCurrentCaret (Caret caret) {
 
 void setCursor (Control control) {
 	Cursor cursor = null;
-	if (control != null) cursor = control.findCursor ();
+	if (control != null && !control.isDisposed()) cursor = control.findCursor ();
 	if (cursor == null) {
 		NSWindow window = application.keyWindow();
 		if (window != null) {
@@ -3737,19 +3738,20 @@ Control findControl (boolean checkTrim) {
 }
 
 int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel, int /*long*/ mask, int /*long*/ expiration, int /*long*/ mode, int /*long*/ dequeue) {
-	boolean run = trackingControl != null && dequeue != 0;
-	if (run) runDeferredEvents();
+	if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) runDeferredEvents();
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	int /*long*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
 	if (result != 0) {
-		if (run) applicationSendTrackingEvent(new NSEvent(result));
+		if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) {
+			applicationSendTrackingEvent(new NSEvent(result), trackingControl);
+		}
 	}
 	return result;
 }
 
-boolean applicationSendTrackingEvent (NSEvent nsEvent) {
+void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 	int type = (int)/*64*/nsEvent.type();
 	switch (type) {
 		case OS.NSLeftMouseDown:
@@ -3761,18 +3763,19 @@ boolean applicationSendTrackingEvent (NSEvent nsEvent) {
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
 			checkEnterExit (findControl (true), nsEvent, true);
+			if (trackingControl.isDisposed()) return;
 			trackingControl.sendMouseEvent (nsEvent, SWT.MouseUp, true);
 			break;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
 			checkEnterExit (trackingControl, nsEvent, true);
+			if (trackingControl.isDisposed()) return;
 			//FALL THROUGH
 		case OS.NSMouseMoved:
 			trackingControl.sendMouseEvent (nsEvent, SWT.MouseMove, true);
 			break;
 	}
-	return false;
 }
 
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {

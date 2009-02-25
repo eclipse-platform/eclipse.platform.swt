@@ -2061,11 +2061,11 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseDown)) return;
-	boolean set = isEventView (id);
+	boolean tracking = isEventView (id);
 	Display display = this.display;
-	if (set) display.trackingControl = this;
+	if (tracking) display.trackingControl = this;
 	super.mouseDown(id, sel, theEvent);
-	if (set) display.trackingControl = null;
+	if (tracking) display.trackingControl = null;
 }
 
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -2390,6 +2390,8 @@ void releaseWidget () {
 		display.currentControl = null;
 		display.timerExec(-1, display.hoverTimer);
 	}
+	if (display.trackingControl == this) display.trackingControl = null;
+	if (display.tooltipControl == this) display.tooltipControl = null;
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}

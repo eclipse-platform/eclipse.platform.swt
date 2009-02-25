@@ -1059,6 +1059,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	deregister ();
+	if (display.tooltipTarget == this) display.tooltipTarget = null;
 	eventTable = null;
 	data = null;
 }

@@ -835,7 +835,9 @@ public boolean open () {
 		}
 		pool.release();
 	}
-	display.trackingControl = oldTrackingControl;
+	if (oldTrackingControl != null && !oldTrackingControl.isDisposed()) {
+		display.trackingControl = oldTrackingControl;
+	}
 	display.setCursor(display.findControl(true));
 	if (!isDisposed()) {
 		drawRectangles (window, rectangles, true);
