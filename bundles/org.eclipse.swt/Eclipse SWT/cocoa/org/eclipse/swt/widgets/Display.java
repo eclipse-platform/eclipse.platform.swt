@@ -3780,6 +3780,7 @@ void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
+	NSWindow window = nsEvent.window ();
 	int type = (int)/*64*/nsEvent.type ();
 	boolean beep = false;
 	switch (type) {
@@ -3799,7 +3800,6 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 		case OS.NSKeyDown:
 		case OS.NSKeyUp:
 		case OS.NSScrollWheel:
-			NSWindow window = nsEvent.window ();
 			if (window != null) {
 				Shell shell = (Shell) getWidget (window.id);
 				if (shell != null && shell.getModalShell () != null) {
@@ -3810,10 +3810,18 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 			break;
 	}
 	sendEvent = true;
-	objc_super super_struct = new objc_super ();
-	super_struct.receiver = id;
-	super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
-	OS.objc_msgSendSuper (super_struct, sel, event);
+	/*
+	 * Feature in Cocoa. NSKeyUp events are not delivered to the window if the command key is down.
+	 * If the event is destined for the key window, and it's a key up and the command key is down, send it directly to the window.
+	 */
+	if (window != null && window.isKeyWindow() && nsEvent.type() == OS.NSKeyUp && (nsEvent.modifierFlags() & OS.NSCommandKeyMask) != 0)	{
+		window.sendEvent(nsEvent);
+	} else {
+		objc_super super_struct = new objc_super ();
+		super_struct.receiver = id;
+		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
+		OS.objc_msgSendSuper (super_struct, sel, event);
+	}
 	sendEvent = false;
 }
 
