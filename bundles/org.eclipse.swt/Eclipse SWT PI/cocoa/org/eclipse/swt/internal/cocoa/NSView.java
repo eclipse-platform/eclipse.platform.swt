@@ -282,6 +282,10 @@ public void updateTrackingAreas() {
 	OS.objc_msgSend(this.id, OS.sel_updateTrackingAreas);
 }
 
+public void viewDidMoveToWindow() {
+	OS.objc_msgSend(this.id, OS.sel_viewDidMoveToWindow);
+}
+
 public NSRect visibleRect() {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_visibleRect);

@@ -1527,6 +1527,7 @@ public static final int /*long*/ sel_valueWithRange_ = sel_registerName("valueWi
 public static final int /*long*/ sel_valueWithRect_ = sel_registerName("valueWithRect:");
 public static final int /*long*/ sel_valueWithSize_ = sel_registerName("valueWithSize:");
 public static final int /*long*/ sel_view_stringForToolTip_point_userData_ = sel_registerName("view:stringForToolTip:point:userData:");
+public static final int /*long*/ sel_viewDidMoveToWindow = sel_registerName("viewDidMoveToWindow");
 public static final int /*long*/ sel_visibleFrame = sel_registerName("visibleFrame");
 public static final int /*long*/ sel_visibleRect = sel_registerName("visibleRect");
 public static final int /*long*/ sel_wantsPeriodicDraggingUpdates = sel_registerName("wantsPeriodicDraggingUpdates");

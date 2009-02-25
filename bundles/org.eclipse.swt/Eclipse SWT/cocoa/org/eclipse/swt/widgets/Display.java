@@ -2074,6 +2074,7 @@ void initClasses () {
 	className = "SWTProgressIndicator";
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_viewDidMoveToWindow, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -4061,6 +4062,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		widget.resetCursorRects(id, sel);
 	} else if (sel == OS.sel_updateTrackingAreas) {
 		widget.updateTrackingAreas(id, sel);
+	} else if (sel == OS.sel_viewDidMoveToWindow) {
+		widget.viewDidMoveToWindow(id, sel);
 	}
 	return 0;
 }

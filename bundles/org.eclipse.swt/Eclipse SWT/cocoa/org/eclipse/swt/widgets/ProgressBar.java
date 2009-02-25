@@ -106,7 +106,6 @@ void createHandle () {
 	*/
 //	widget.setUsesThreadedAnimation(false);
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
-	if ((style & SWT.INDETERMINATE) != 0) widget.startAnimation(null);
 	view = widget;
 }
 
@@ -268,5 +267,18 @@ public void setSelection (int value) {
 public void setState (int state) {
 	checkWidget ();
 	//NOT IMPLEMENTED
+}
+
+void viewDidMoveToWindow(int /*long*/ id, int /*long*/ sel) {
+	/*
+	 * Bug in Cocoa. An indeterminate progress indicator doesn't start animating until it is in
+	 * a visible window.  Workaround is to catch when the bar has been added to a window and start
+	 * the animation there.
+	 */
+	if (view.window() != null) {
+		if ((style & SWT.INDETERMINATE) != 0) {
+			((NSProgressIndicator)view).startAnimation(null);
+		}
+	}
 }
 }

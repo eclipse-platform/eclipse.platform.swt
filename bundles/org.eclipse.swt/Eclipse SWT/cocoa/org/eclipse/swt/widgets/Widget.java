@@ -1575,6 +1575,9 @@ int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/
 	return 0;
 }
 
+void viewDidMoveToWindow(int /*long*/ id, int /*long*/ sel) {	
+}
+
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
