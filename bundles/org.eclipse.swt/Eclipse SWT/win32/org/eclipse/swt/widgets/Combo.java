@@ -58,7 +58,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Combo extends Composite {
-	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify, ignoreResize;
+	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify, ignoreResize, lockText;
 	int scrollWidth, visibleCount = 5;
 	int /*long*/ cbtHook;
 	/**
@@ -295,6 +295,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 	}
 	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwnd == hwndText) {
+		if (lockText && msg == OS.WM_SETTEXT) return 0;
 		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
 	}
 	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
@@ -1680,6 +1681,16 @@ void setScrollWidth (int scrollWidth) {
 		}
 		scroll = scrollWidth > maxWidth;
 	}
+	/*
+	* Feature in Windows.  For some reason, in a editable combo box,
+	* when CB_SETDROPPEDWIDTH is used to set the width of the drop
+	* down list and the current text does not match an item in the
+	* list, Windows selects the item that most closely matches the
+	* contents of the combo.  The fix is to lock the current text
+	* by ignoring all WM_SETTEXT messages during processing of
+	* CB_SETDROPPEDWIDTH.
+	*/
+	if ((style & SWT.READ_ONLY) == 0) lockText = true;
 	if (scroll) {
 		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, 0, 0);
 		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, scrollWidth, 0);
@@ -1688,6 +1699,7 @@ void setScrollWidth (int scrollWidth) {
 		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, scrollWidth, 0);
 		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
 	}
+	if ((style & SWT.READ_ONLY) == 0) lockText = false;
 }
 
 void setScrollWidth (TCHAR buffer, boolean grow) {
@@ -2156,44 +2168,13 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	* Feature in Windows.  When an editable drop down combo box
 	* contains text that does not correspond to an item in the
 	* list, when the widget is resized, it selects the closest
-	* match from the list.  The fix is to remember the original
-	* text and reset it after the widget is resized.
+	* match from the list.  The fix is to lock the current text
+	* by ignoring all WM_SETTEXT messages during processing of
+	* WM_SIZE.
 	*/
-	LRESULT result = null;
-	if ((style & SWT.READ_ONLY) != 0) {
-		result = super.WM_SIZE (wParam, lParam);
-	} else {
-		int index = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-		boolean redraw = false;
-		TCHAR buffer = null;
-		int [] start = null, end = null;
-		if (index == OS.CB_ERR) {
-			int length = OS.GetWindowTextLength (handle);
-			if (length != 0) {
-				buffer = new TCHAR (getCodePage (), length + 1);
-				OS.GetWindowText (handle, buffer, length + 1);
-				start = new int [1];  end = new int [1];
-				OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
-				redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-				if (redraw) setRedraw (false);
-			}
-		}
-		result = super.WM_SIZE (wParam, lParam);
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the resize
-		* event.  If this happens, end the processing of the
-		* Windows message by returning the result of the
-		* WM_SIZE message.
-		*/
-		if (isDisposed ()) return result;
-		if (buffer != null) {
-			OS.SetWindowText (handle, buffer);
-			int /*long*/ bits = OS.MAKELPARAM (start [0], end [0]);
-			OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
-			if (redraw) setRedraw (true);
-		}
-	}
+	if ((style & SWT.READ_ONLY) == 0) lockText = true;
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if ((style & SWT.READ_ONLY) == 0) lockText = false;
 	/*
 	* Feature in Windows.  When CB_SETDROPPEDWIDTH is called with
 	* a width that is smaller than the current size of the combo
