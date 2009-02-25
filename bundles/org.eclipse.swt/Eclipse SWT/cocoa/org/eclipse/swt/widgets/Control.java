@@ -2015,7 +2015,6 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 	if (!display.sendEvent) return true;
 	display.sendEvent = false;
 	if (!isEventView (id)) return true;
-	Control control = this;
 	boolean dragging = false;
 	boolean[] consume = null;
 	NSEvent nsEvent = new NSEvent(theEvent);
@@ -2034,10 +2033,6 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 				dragging = dragDetect((int)location.x, (int)location.y, false, consume);
 			}
 			break;
-		case OS.NSMouseMoved:
-			control = display.findControl(true);
-			display.checkEnterExit (control, nsEvent, false);
-			break;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
@@ -2049,12 +2044,11 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 			display.checkEnterExit (display.findControl(true), nsEvent, false);
 			break;
 	}
-	if (control == null) return true;
-	control.sendMouseEvent (nsEvent, type, false);	
+	sendMouseEvent (nsEvent, type, false);	
 	if (type == SWT.MouseDown && nsEvent.clickCount() == 2) {
-		control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
+		sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
 	}
-	if (dragging) control.sendMouseEvent(nsEvent, SWT.DragDetect, false);
+	if (dragging) sendMouseEvent(nsEvent, SWT.DragDetect, false);
 	if (consume != null && consume[0]) return false;
 	return true;
 }
@@ -2071,11 +2065,6 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!mouseEvent(id, sel, theEvent, SWT.MouseUp)) return;
 	super.mouseUp(id, sel, theEvent);
-}
-
-void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (!mouseEvent(id, sel, theEvent, SWT.MouseMove)) return;
-	super.mouseMoved(id, sel, theEvent);
 }
 
 void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -2791,6 +2780,7 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	System.out.println("mouse=" + type + " " + this);
 	Shell shell = null;
 	Event event = new Event ();
 	switch (type) {

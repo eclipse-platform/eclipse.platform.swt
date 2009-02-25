@@ -583,11 +583,6 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.mouseUp(id, sel, theEvent);
 }
 
-void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
-	super.mouseMoved(id, sel, theEvent);
-}
-
 void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseMove)) return;
 	super.mouseDragged(id, sel, theEvent);

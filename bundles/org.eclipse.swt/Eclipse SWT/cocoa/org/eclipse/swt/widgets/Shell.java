@@ -1649,13 +1649,20 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 
 void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent (event);
-	switch ((int)/*64*/nsEvent.type ()) {
-		case OS.NSLeftMouseUp:	
-		case OS.NSRightMouseUp:	
-		case OS.NSOtherMouseUp:	
+	int type = (int)/*64*/nsEvent.type ();
+	switch (type) {
+		case OS.NSLeftMouseUp:
+		case OS.NSRightMouseUp:
+		case OS.NSOtherMouseUp:
 		case OS.NSMouseMoved:
-			Widget target = null;
 			Control control = display.findControl (false);
+			if (type == OS.NSMouseMoved) {
+				Control trimControl = control;
+				if (control != null && control.isTrim (view)) trimControl = null;
+				display.checkEnterExit (trimControl, nsEvent, false);
+				if (trimControl != null) trimControl.sendMouseEvent (nsEvent, type, false);
+			}
+			Widget target = null;
 			if (control != null) target = control.findTooltip (nsEvent.locationInWindow());
 			if (display.tooltipControl != control || display.tooltipTarget != target) {
 				Control oldControl = display.tooltipControl;
