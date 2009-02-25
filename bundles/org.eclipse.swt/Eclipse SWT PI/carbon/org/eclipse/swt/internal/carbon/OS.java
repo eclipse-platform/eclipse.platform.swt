@@ -926,6 +926,7 @@ public class OS extends C {
 	public static final int kThemeStateUnavailableInactive = 8;
 	public static final int kThemeSystemFont = 0;
 	public static final int kThemeTextColorDialogActive = 1;
+	public static final int kThemeTextColorPushButtonInactive = 13;
 	public static final int kThemeTextColorDocumentWindowTitleActive = 23;
 	public static final int kThemeTextColorDocumentWindowTitleInactive = 24;
 	public static final int kThemeTextColorListView = 22;

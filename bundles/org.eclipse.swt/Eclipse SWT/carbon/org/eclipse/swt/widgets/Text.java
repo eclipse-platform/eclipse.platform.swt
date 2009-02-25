@@ -283,6 +283,8 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
+	} else {
+		style &= ~(SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
@@ -402,11 +404,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += metric [0] * 2;
 			OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, metric);
 			height += metric [0] * 2;
-			int [] ptr2 = new int [1];
-			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
-			Point size2 = textExtent (ptr2 [0], 0);
-			width = Math.max (width, size2.x);
-			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
 		} else {
 			if ((style & SWT.RIGHT) != 0) {
 				OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
@@ -437,6 +434,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = size.x;
 			height = size.y;
 		}
+	}
+	int length = message.length ();
+	if ((style & SWT.SINGLE) != 0 && length > 0) {
+		char [] buffer = new char [length];
+		message.getChars (0, length, buffer, 0);
+		Point size = textExtent (buffer, 0);
+		width = Math.max (width, size.x);
 	}
 	if (width <= 0) width = DEFAULT_WIDTH;
 	if (height <= 0) height = DEFAULT_HEIGHT;
@@ -709,6 +713,30 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 		return false;
 	}
 	return super.dragDetect (x, y, filter, consume);
+}
+
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
+	if ((style & SWT.SEARCH) == 0 && (style & SWT.SINGLE) != 0 && message.length () > 0) {
+		if (!hasFocus () && getCharCount () == 0) {
+			GCData data = new GCData ();
+			data.paintEvent = theEvent;
+			data.visibleRgn = visibleRgn;
+			GC gc = GC.carbon_new (this, data);
+			Display display = getDisplay ();
+			short depth = (short)display.getDepth ();
+			RGBColor rgb = new RGBColor ();
+			OS.GetThemeTextColor ((short)OS.kThemeTextColorPushButtonInactive, depth, true, rgb);
+			float red = ((rgb.red >> 8) & 0xFF) / 255f;
+			float green = ((rgb.green >> 8) & 0xFF) / 255f;
+			float blue = ((rgb.blue >> 8) & 0xFF) / 255f;
+			Color color = Color.carbon_new (display, new float[]{red, green, blue, 1});
+			gc.setForeground (color);
+			Rect rect = inset ();
+			gc.drawText (message, rect.left, rect.top);
+			gc.dispose ();
+		}
+	}
+	super.drawWidget(control, context, damageRgn, visibleRgn, theEvent);
 }
 
 int focusPart () {
