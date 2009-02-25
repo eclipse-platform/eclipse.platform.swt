@@ -121,7 +121,6 @@ static int checkStyle (int style) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
 	}
-//	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -353,7 +352,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	int width = OS.PANGO_PIXELS (w [0]);
 	int height = OS.PANGO_PIXELS (h [0]);
-	if ((style & SWT.SEARCH) != 0 && message.length () != 0) {
+	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
 		OS.pango_layout_get_size (layout, w, h);
@@ -1265,9 +1264,9 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 	if ((state & OBSCURED) != 0) return 0;
 	int /*long*/ result = super.gtk_expose_event (widget, event);
-	if ((style & SWT.SEARCH) != 0 && !OS.GTK_WIDGET_HAS_FOCUS (handle)) {
+	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		int /*long*/ str = OS.gtk_entry_get_text (handle);
-		if (OS.strlen (str) == 0) {
+		if (!OS.GTK_WIDGET_HAS_FOCUS (handle) && OS.strlen (str) == 0) {
 			GdkEventExpose gdkEvent = new GdkEventExpose ();
 			OS.memmove (gdkEvent, event, GdkEventExpose.sizeof);
 			int /*long*/ window = paintWindow ();
