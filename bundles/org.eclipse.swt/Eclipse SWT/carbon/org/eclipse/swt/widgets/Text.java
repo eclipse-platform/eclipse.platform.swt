@@ -283,6 +283,11 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
+		/* 
+		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
+		* ICON_SEARCH has the same value as V_SCROLL so they are
+		* cleared because SWT.SINGLE is set. 
+		*/
 	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;

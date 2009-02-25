@@ -404,6 +404,11 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		style |= SWT.SINGLE | SWT.BORDER;
 		style &= ~SWT.PASSWORD;
+		/* 
+		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
+		* ICON_SEARCH has the same value as V_SCROLL so they are
+		* cleared because SWT.SINGLE is set. 
+		*/
 	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
@@ -940,10 +945,11 @@ public int getOrientation () {
 }
 
 /**
- * Returns the widget message. When the widget is created
- * with the style <code>SWT.SEARCH</code>, the message text
- * is displayed as a hint for the user, indicating the
- * purpose of the field.
+ * Returns the widget message.  The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
  * 
  * @return the widget message
  *
@@ -1692,10 +1698,11 @@ void setMargins () {
 }
 
 /**
- * Sets the widget message. When the widget is created
- * with the style <code>SWT.SEARCH</code>, the message text
- * is displayed as a hint for the user, indicating the
- * purpose of the field.
+ * Sets the widget message. The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
  * 
  * @param message the new message
  *
