@@ -241,20 +241,6 @@ NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
 	return super.markedRange (id, sel);
 }
 
-//void redrawWidget (int control, boolean children) {
-//	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
-//	if (isFocus) caret.killFocus ();
-//	super.redrawWidget (control, children);
-//	if (isFocus) caret.setFocus ();
-//}
-//
-//void redrawWidget (int control, int x, int y, int width, int height, boolean all) {
-//	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
-//	if (isFocus) caret.killFocus ();
-//	super.redrawWidget (control, x, y, width, height, all);
-//	if (isFocus) caret.setFocus ();
-//}
-
 void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);
