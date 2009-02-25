@@ -1523,9 +1523,9 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
-	if ((style & SWT.SEARCH) != 0) {
+	if ((style & SWT.SINGLE) != 0) {
 		NSString str = NSString.stringWith (message);
-		NSTextFieldCell cell = new NSTextFieldCell (((NSSearchField) view).cell ());
+		NSTextFieldCell cell = new NSTextFieldCell (((NSTextField) view).cell ());
 		cell.setPlaceholderString (str);
 	}
 }
