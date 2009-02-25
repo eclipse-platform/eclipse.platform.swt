@@ -655,17 +655,17 @@ jintLong callback(int index, ...)
 	}
 #endif
 	
-	if (env == NULL) {
 #ifdef JNI_VERSION_1_4
+	if (env == NULL) {
 		if (JNI_VERSION == JNI_VERSION_1_4) {
 			(*jvm)->AttachCurrentThreadAsDaemon(jvm, (void **)&env, NULL);
-		} else {
-#endif
-			(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
-			if (IS_JNI_1_2) detach = 1;
-#ifdef JNI_VERSION_1_4
 		}
+	}
 #endif
+	
+	if (env == NULL) {
+		(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+		if (IS_JNI_1_2) detach = 1;
 	}
 	
 	/* If the current thread is not attached to the VM, it is not possible to call into the VM */
