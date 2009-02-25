@@ -318,11 +318,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget = (NSTextField) view;
-		NSCell cell = widget.cell ();
-		NSSize size = cell.cellSize ();
+		NSSize size = widget.cell ().cellSize ();
 		width = (int)Math.ceil (size.width);
 		height = (int)Math.ceil (size.height);
-		cell.setWraps(false);
 	} else {
 		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager ().alloc ().init ();
 		NSTextContainer textContainer = (NSTextContainer)new NSTextContainer ().alloc ();
@@ -407,6 +405,7 @@ void createHandle () {
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
 		widget.setAlignment (align);
+		widget.cell().setWraps(false);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		view = widget;
