@@ -2125,6 +2125,8 @@ public void setMessage (String message) {
 		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 		OS.HISearchFieldSetDescriptiveText (handle, ptr);
 		OS.CFRelease (ptr);
+	} else {
+		redraw (false);
 	}
 }
 
