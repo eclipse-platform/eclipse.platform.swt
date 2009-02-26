@@ -600,7 +600,7 @@ void _setAlignment (int alignment) {
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 //		int orientation = OS.kThemeDisclosureRight;
-//		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
+//		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureUp;
 //		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
 //		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
 //		OS.SetControl32BitValue (handle, orientation);
