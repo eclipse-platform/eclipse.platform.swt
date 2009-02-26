@@ -1637,13 +1637,15 @@ boolean hasBorder () {
 
 boolean hasFocus () {
 	NSWindow window = view.window();
-	NSResponder nsResponder = window.firstResponder();
-	if (nsResponder.id == focusView().id) return true;
-	NSText fieldEditor = window.fieldEditor(false, null);
-	if (nsResponder.isKindOfClass(OS.class_NSTextView) && fieldEditor != null) {
-		id delegate = fieldEditor.delegate();
-		if (delegate != null) {
-			return delegate.id == focusView().id;
+	if (window.isKeyWindow()) {
+		NSResponder nsResponder = window.firstResponder();
+		if (nsResponder.id == focusView().id) return true;
+		NSText fieldEditor = window.fieldEditor(false, null);
+		if (nsResponder.isKindOfClass(OS.class_NSTextView) && fieldEditor != null) {
+			id delegate = fieldEditor.delegate();
+			if (delegate != null) {
+				return delegate.id == focusView().id;
+			}
 		}
 	}
 	return false;
