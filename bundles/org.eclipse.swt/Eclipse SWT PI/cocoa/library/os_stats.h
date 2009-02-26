@@ -912,6 +912,7 @@ typedef enum {
 	setFrameSize_1CALLBACK_FUNC,
 	setFrame_1CALLBACK_FUNC,
 	setMarkedText_1selectedRange_1CALLBACK_FUNC,
+	setNeedsDisplayInRect_1CALLBACK_FUNC,
 	shouldChangeTextInRange_1replacementString_1CALLBACK_FUNC,
 	textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK_FUNC,
 	view_1stringForToolTip_1point_1userData_1CALLBACK_FUNC,

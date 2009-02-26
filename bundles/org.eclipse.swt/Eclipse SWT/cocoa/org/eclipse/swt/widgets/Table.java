@@ -209,7 +209,8 @@ boolean checkData (TableItem item, int index) {
 		//widget could be disposed at this point
 		currentItem = null;
 		if (isDisposed () || item.isDisposed ()) return false;
-		if (!setScrollWidth (item)) item.redraw (-1);
+		setScrollWidth (item);
+		item.redraw (-1);
 	}
 	return true;
 }

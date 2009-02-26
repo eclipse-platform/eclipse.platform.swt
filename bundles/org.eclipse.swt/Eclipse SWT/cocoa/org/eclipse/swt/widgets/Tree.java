@@ -258,7 +258,8 @@ boolean checkData (TreeItem item) {
 		//widget could be disposed at this point
 		ignoreRedraw = false;
 		if (isDisposed () || item.isDisposed ()) return false;
-		if (!setScrollWidth (item)) item.redraw (-1);
+		setScrollWidth (item);
+		item.redraw (-1);
 	}
 	return true;
 }

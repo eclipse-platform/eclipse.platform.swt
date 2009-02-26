@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 399;
-int OS_nativeFunctionCallCount[399];
+int OS_nativeFunctionCount = 400;
+int OS_nativeFunctionCallCount[400];
 char * OS_nativeFunctionNames[] = {
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
@@ -904,6 +904,7 @@ char * OS_nativeFunctionNames[] = {
 	"setFrameSize_1CALLBACK",
 	"setFrame_1CALLBACK",
 	"setMarkedText_1selectedRange_1CALLBACK",
+	"setNeedsDisplayInRect_1CALLBACK",
 	"shouldChangeTextInRange_1replacementString_1CALLBACK",
 	"textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK",
 	"view_1stringForToolTip_1point_1userData_1CALLBACK",

@@ -3950,7 +3950,7 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget();
-	if (display.inPaint) return;
+	if (display.isPainting.containsObject(view)) return;
 	//TODO - not all
 	view.displayIfNeeded ();
 }

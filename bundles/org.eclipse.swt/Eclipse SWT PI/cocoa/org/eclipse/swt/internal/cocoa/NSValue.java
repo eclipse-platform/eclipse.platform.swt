@@ -40,6 +40,12 @@ public NSRange rangeValue() {
 	return result;
 }
 
+public NSRect rectValue() {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_rectValue);
+	return result;
+}
+
 public NSSize sizeValue() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_sizeValue);

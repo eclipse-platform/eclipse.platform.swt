@@ -209,6 +209,8 @@ public static final native int /*long*/ dragSelectionWithEvent_offset_slideBack_
 public static final native int /*long*/ shouldChangeTextInRange_replacementString_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ view_stringForToolTip_point_userData_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ setNeedsDisplayInRect_CALLBACK(int /*long*/ func);
 
 /** Custom structure return */
 
@@ -1124,6 +1126,7 @@ public static final int /*long*/ sel_recentSearches = sel_registerName("recentSe
 public static final int /*long*/ sel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_ = sel_registerName("rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:");
 public static final int /*long*/ sel_rectOfColumn_ = sel_registerName("rectOfColumn:");
 public static final int /*long*/ sel_rectOfRow_ = sel_registerName("rectOfRow:");
+public static final int /*long*/ sel_rectValue = sel_registerName("rectValue");
 public static final int /*long*/ sel_redComponent = sel_registerName("redComponent");
 public static final int /*long*/ sel_reflectScrolledClipView_ = sel_registerName("reflectScrolledClipView:");
 public static final int /*long*/ sel_registerForDraggedTypes_ = sel_registerName("registerForDraggedTypes:");

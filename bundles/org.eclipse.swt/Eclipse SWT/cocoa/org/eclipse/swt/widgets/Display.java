@@ -116,7 +116,7 @@ public class Display extends Device {
 	Control currentControl, trackingControl, tooltipControl;
 	Widget tooltipTarget;
 	
-	boolean inPaint;
+	NSMutableArray isPainting, needsDisplay, needsDisplayInRect;
 
 	NSDictionary markedAttributes;
 	
@@ -1746,6 +1746,9 @@ protected void init () {
 	markedAttributes = textView.markedTextAttributes ();
 	markedAttributes.retain ();
 	textView.release ();
+	
+	isPainting = NSMutableArray.arrayWithCapacity(12);
+	isPainting.retain();
 }
 
 void initApplicationDelegate() {
@@ -1771,7 +1774,7 @@ void initApplicationDelegate() {
 	application.setDelegate(applicationDelegate);
 }
 
-void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, int /*long*/ drawRectProc, int /*long*/ hitTestProc) {
+void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, int /*long*/ drawRectProc, int /*long*/ hitTestProc, int /*long*/ needsDisplayInRectProc) {
 	if (proc3 != 0) {
 		OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_mouseUp_, proc3, "@:@");
@@ -1791,12 +1794,16 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_cursorUpdate_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_setNeedsDisplay_, proc3, "@:B");
 	}
 	if (proc2 != 0) {
 		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
+	}
+	if (needsDisplayInRectProc != 0) {
+		OS.class_addMethod(cls, OS.sel_setNeedsDisplayInRect_, needsDisplayInRectProc, "@:{NSRect}");
 	}
 	if (drawRectProc != 0) {
 		OS.class_addMethod(cls, OS.sel_drawRect_, drawRectProc, "@:{NSRect}");
@@ -1881,6 +1888,7 @@ void initClasses () {
 	int /*long*/ shouldChangeTextInRange_replacementString_Proc = OS.shouldChangeTextInRange_replacementString_CALLBACK(fieldEditorProc4);
 	int /*long*/ shouldChangeTextInRange_replacementString_fieldEditorProc = shouldChangeTextInRange_replacementString_Proc;
 	int /*long*/ view_stringForToolTip_point_userDataProc = OS.view_stringForToolTip_point_userData_CALLBACK(proc6);
+	int /*long*/ setNeedsDisplayInRectProc = OS.setNeedsDisplayInRect_CALLBACK(proc3);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -1920,7 +1928,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1946,7 +1954,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1959,7 +1967,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_pageDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_pageUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_reflectScrolledClipView_, proc3, "@:@");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -1968,7 +1976,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
 	
@@ -1992,7 +2000,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2044,7 +2052,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2059,7 +2067,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_tabView_willSelectTabViewItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tabView_didSelectTabViewItem_, proc4, "@:@@");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2067,7 +2075,7 @@ void initClasses () {
 	className = "SWTBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSBox, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2076,7 +2084,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_viewDidMoveToWindow, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls); 
@@ -2084,7 +2092,7 @@ void initClasses () {
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls); 
@@ -2097,7 +2105,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2114,7 +2122,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2128,7 +2136,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2137,7 +2145,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2150,7 +2158,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2163,7 +2171,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2177,7 +2185,7 @@ void initClasses () {
 	className = "SWTTextView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
@@ -2191,7 +2199,7 @@ void initClasses () {
 	className = "SWTEditorView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
 	//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
-	addEventMethods(cls, 0, fieldEditorProc3, 0, 0);
+	addEventMethods(cls, 0, fieldEditorProc3, 0, 0, 0);
 	OS.class_addMethod(cls, OS.sel_insertText_, fieldEditorProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, fieldEditorProc3, "@::");
 	OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_fieldEditorProc, "@:{NSRange}@");
@@ -2200,7 +2208,7 @@ void initClasses () {
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -2216,7 +2224,7 @@ void initClasses () {
 	className = "SWTSearchField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSearchField, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -2233,7 +2241,7 @@ void initClasses () {
 	className = "SWTSecureTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSecureTextField, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -2834,6 +2842,7 @@ public boolean readAndDispatch () {
 			events = true;
 			application.sendEvent(event);
 		}
+		events = runPaint ();
 		if (events || runDeferredEvents ()) {
 			return true;
 		}
@@ -2965,6 +2974,11 @@ void releaseDisplay () {
 
 	if (screenWindow != null) screenWindow.release();
 	screenWindow = null;
+	
+	if (needsDisplay != null) needsDisplay.release();
+	if (needsDisplayInRect != null) needsDisplayInRect.release();
+	if (isPainting != null) isPainting.release();
+	needsDisplay = needsDisplayInRect = isPainting = null;
 	
 	modalShells = null;
 	menuBar = null;
@@ -3170,6 +3184,28 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return run;
+}
+
+boolean runPaint () {
+	if (needsDisplay == null && needsDisplayInRect == null) return false;
+	if (needsDisplay != null) {
+		int /*long*/ count = needsDisplay.count();
+		for (int i = 0; i < count; i++) {
+			OS.objc_msgSend(needsDisplay.objectAtIndex(i).id, OS.sel_setNeedsDisplay_, true);
+		}
+		needsDisplay.release();
+		needsDisplay = null;
+	}
+	if (needsDisplayInRect != null) {
+		int /*long*/ count = needsDisplayInRect.count();
+		for (int i = 0; i < count; i+=2) {
+			NSValue value = new NSValue(needsDisplayInRect.objectAtIndex(i+1));
+			OS.objc_msgSend(needsDisplayInRect.objectAtIndex(i).id, OS.sel_setNeedsDisplayInRect_, value.rectValue());
+		}
+		needsDisplayInRect.release();
+		needsDisplayInRect = null;
+	}
+	return true;
 }
 
 boolean runPopups () {
@@ -4224,6 +4260,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.outlineViewColumnDidMove(id, sel, arg0);
 	} else if (sel == OS.sel_outlineViewColumnDidResize_) {
 		widget.outlineViewColumnDidResize(id, sel, arg0);
+	} else if (sel == OS.sel_setNeedsDisplay_) {
+		widget.setNeedsDisplay(id, sel, arg0 != 0);
+	} else if (sel == OS.sel_setNeedsDisplayInRect_) {
+		widget.setNeedsDisplayInRect(id, sel, arg0);
 	}
 	return 0;
 }

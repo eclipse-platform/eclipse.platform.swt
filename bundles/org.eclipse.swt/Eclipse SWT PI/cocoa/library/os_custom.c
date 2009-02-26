@@ -394,3 +394,17 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(view_1stringForToolTip_1point_1userData_1CA
 	return (jintLong)view_1stringForToolTip_1point_1userDataProc;
 }
 #endif
+
+#ifndef NO_setNeedsDisplayInRect_1CALLBACK
+static jintLong setNeedsDisplayInRect_1CALLBACK;
+static void setNeedsDisplayInRectProc(id obj, SEL sel, NSRect rect)
+{
+	return ((void (*)(id, SEL, NSRect*))setNeedsDisplayInRect_1CALLBACK)(obj, sel, &rect);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(setNeedsDisplayInRect_1CALLBACK)
+(JNIEnv *env, jclass that, jintLong func)
+{
+	setNeedsDisplayInRect_1CALLBACK = func;
+	return (jintLong)setNeedsDisplayInRectProc;
+}
+#endif
