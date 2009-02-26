@@ -145,6 +145,7 @@ public class StyledText extends Canvas {
 	int lastTextChangeNewCharCount;		// event for use in the 
 	int lastTextChangeReplaceLineCount;	// text changed handler
 	int lastTextChangeReplaceCharCount;
+	int lastCharCount = 0;
 	int lastLineBottom;					// the bottom pixel of the last line been replaced
 	boolean isMirrored;
 	boolean bidiColoring = false;		// apply the BIDI algorithm on text segments of the same color
@@ -5950,6 +5951,10 @@ void handleTextChanged(TextChangedEvent event) {
 	if (lastTextChangeReplaceCharCount > 0) {
 		claimRightFreeSpace();
 	}
+	
+	sendAccessibleTextChanged(lastTextChangeStart, lastTextChangeNewCharCount, lastTextChangeReplaceCharCount);
+	lastCharCount += lastTextChangeNewCharCount;
+	lastCharCount -= lastTextChangeReplaceCharCount;
 }
 /**
  * Updates the screen to reflect a pending content change.
@@ -6003,6 +6008,9 @@ void handleTextChanging(TextChangingEvent event) {
  */
 void handleTextSet(TextChangedEvent event) {
 	reset();
+	int newCharCount = getCharCount();
+	sendAccessibleTextChanged(0, newCharCount, lastCharCount);
+	lastCharCount = newCharCount;
 }
 /**
  * Called when a traversal key is pressed.
@@ -6482,7 +6490,7 @@ void modifyContent(Event event, boolean updateCaret) {
 			setSelection(event.start + event.text.length(), 0, true, false);
 			showCaret();
 		}
-		sendModifyEvent(event);
+		notifyListeners(SWT.Modify, event);
 		if (isListening(ExtendedModify)) {
 			notifyListeners(ExtendedModify, styledTextEvent);
 		}
@@ -7237,6 +7245,15 @@ void scrollText(int srcY, int destY) {
 		super.redraw(leftMargin, clientAreaHeight - bottomMargin, scrollWidth, bottomMargin, false);
 	}
 }
+void sendAccessibleTextChanged(int start, int newCharCount, int replaceCharCount) {
+	Accessible accessible = getAccessible();
+	if (replaceCharCount != 0) {
+		accessible.textChanged(ACC.TEXT_DELETE, start, replaceCharCount);
+	}
+	if (newCharCount != 0) {
+		accessible.textChanged(ACC.TEXT_INSERT, start, newCharCount);
+	}
+}
 /** 
  * Selects all the text.
  *
@@ -7292,20 +7309,6 @@ StyledTextEvent sendLineEvent(int eventType, int lineOffset, String line) {
 		notifyListeners(eventType, event);
 	}
 	return event;
-}
-void sendModifyEvent(Event event) {
-	Accessible accessible = getAccessible();
-	if (event.text.length() == 0) {
-		accessible.textChanged(ACC.TEXT_DELETE, event.start, event.end - event.start);
-	} else {
-		if (event.start == event.end) {
-			accessible.textChanged(ACC.TEXT_INSERT, event.start, event.text.length());
-		} else {
-			accessible.textChanged(ACC.TEXT_DELETE, event.start, event.end - event.start);
-			accessible.textChanged(ACC.TEXT_INSERT, event.start, event.text.length());	
-		}
-	}
-	notifyListeners(SWT.Modify, event);
 }
 /**
  * Sends the specified selection event.
@@ -8840,7 +8843,7 @@ public void setText(String text) {
 			styledTextEvent.text = content.getTextRange(event.start, event.end - event.start);
 		}
 		content.setText(event.text);
-		sendModifyEvent(event);	
+		notifyListeners(SWT.Modify, event);	
 		if (styledTextEvent != null) {
 			notifyListeners(ExtendedModify, styledTextEvent);
 		}
