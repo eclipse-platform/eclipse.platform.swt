@@ -572,10 +572,15 @@ public class MacGeneratorUI {
 	
 	public void refresh () {
 		if (nodesTree == null) return;
-		gen.setXmls(null);
-		nodesTree.removeAll();
-		attribTable.removeAll();
-		updateNodes();
+		nodesTree.getDisplay().asyncExec(new Runnable() {
+			 public void run() {
+				 if (nodesTree == null || nodesTree.isDisposed()) return;
+				 gen.setXmls(null);
+				 nodesTree.removeAll();
+				 attribTable.removeAll();
+				 updateNodes();
+			}
+		});
 	}
 	
 	public void setActionsVisible(boolean visible) {
