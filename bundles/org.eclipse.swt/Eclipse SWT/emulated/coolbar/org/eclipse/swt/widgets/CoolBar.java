@@ -621,8 +621,13 @@ void onMouseMove(Event event) {
 	fixEvent(event);
 }
 void onMouseUp(Event event) {
-	_setCursor(null);
 	dragging = null;
+	CoolItem grabbed = getGrabbedItem(event.x, event.y);
+	if (grabbed != null) {
+		_setCursor(hoverCursor);
+	} else {
+		_setCursor(null);	
+	}
 }
 void onMouseDoubleClick(Event event) {
 	if (isLocked) return;	
