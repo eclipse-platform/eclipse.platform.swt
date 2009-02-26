@@ -1655,10 +1655,11 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
 		case OS.NSMouseMoved:
-			Control control = display.findControl (false);
+			NSView[] hitView = new NSView[1];
+			Control control = display.findControl (false, hitView);
 			if (type == OS.NSMouseMoved) {
 				Control trimControl = control;
-				if (control != null && control.isTrim (view)) trimControl = null;
+				if (control != null && control.isTrim (hitView[0])) trimControl = null;
 				display.checkEnterExit (trimControl, nsEvent, false);
 				if (trimControl != null) trimControl.sendMouseEvent (nsEvent, type, false);
 			}

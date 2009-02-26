@@ -3741,6 +3741,10 @@ void wakeThread () {
 }
 
 Control findControl (boolean checkTrim) {
+	return findControl(checkTrim, null);
+}
+
+Control findControl (boolean checkTrim, NSView[] hitView) {
 	NSView view = null;
 	NSPoint screenLocation = NSEvent.mouseLocation();
 	NSArray windows = application.orderedWindows();
@@ -3770,6 +3774,7 @@ Control findControl (boolean checkTrim) {
 	if (checkTrim) {
 		if (control != null && control.isTrim (view)) control = null;
 	}
+	if (control != null && hitView != null) hitView[0] = view;
 	return control;
 }
 
