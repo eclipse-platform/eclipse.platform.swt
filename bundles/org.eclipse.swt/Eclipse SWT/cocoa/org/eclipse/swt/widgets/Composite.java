@@ -524,6 +524,7 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
 			s.keyInputHappened = false;
 			view.interpretKeyEvents (array);
+			if (imeInComposition ()) return;
 			if (!s.keyInputHappened) {
 				NSEvent nsEvent = new NSEvent (theEvent);
 				boolean [] consume = new boolean [1];
@@ -911,13 +912,6 @@ public void setLayoutDeferred (boolean defer) {
 	} else {
 		layoutCount++;
 	}
-}
-
-boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
-	Shell s = this.getShell();
-	boolean returnValue = super.setMarkedText_selectedRange (id, sel, string, range);
-	if (returnValue) s.keyInputHappened = true;
-	return returnValue;
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {

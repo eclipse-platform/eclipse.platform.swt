@@ -840,6 +840,7 @@ void destroyWidget () {
 
 void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
 	if (view.window ().firstResponder ().id == id) {
+		if (imeInComposition ()) return;
 		Shell s = this.getShell();
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
@@ -1661,6 +1662,10 @@ int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	return super.hitTest(id, sel, point);
 }
 
+boolean imeInComposition () {
+	return false;
+}
+
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (view.window ().firstResponder ().id == id) {
 		Shell s = this.getShell();
@@ -1940,7 +1945,8 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		} else {
 			// Control is some kind of text field, so the key event will be sent from insertText: or doCommandBySelector:
 			super.keyDown (id, sel, theEvent);
-			
+
+			if (imeInComposition ()) return;
 			// If none of those methods triggered a key event send one now.
 			if (!s.keyInputHappened) {
 				NSEvent nsEvent = new NSEvent (theEvent);

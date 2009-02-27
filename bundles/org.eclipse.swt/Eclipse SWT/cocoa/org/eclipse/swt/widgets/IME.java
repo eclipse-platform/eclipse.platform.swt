@@ -362,15 +362,13 @@ boolean isInlineEnabled () {
 }
 
 NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
-	if (startOffset == -1) {
-		Event event = new Event ();
-		event.detail = SWT.COMPOSITION_SELECTION;
-		sendEvent (SWT.ImeComposition, event);
-		startOffset = event.start;
-	}
 	NSRange range = new NSRange ();
-	range.location = startOffset;
-	range.length = text.length ();
+	if (startOffset != -1) {
+		range.location = startOffset;
+		range.length = text.length ();
+	} else {
+		range.location = OS.NSNotFound;
+	}
 	return range;
 }
 

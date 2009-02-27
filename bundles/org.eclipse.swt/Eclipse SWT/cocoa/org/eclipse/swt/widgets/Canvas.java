@@ -229,6 +229,10 @@ boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
 	return super.hasMarkedText (id, sel);
 }
 
+boolean imeInComposition () {
+	return ime != null && ime.isInlineEnabled () && ime.startOffset != -1;
+}
+
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (ime != null) {
 		if (!ime.insertText (id, sel, string)) return false;
