@@ -551,7 +551,7 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 		drawWidget (id, context, rect, Thread.currentThread () == display.thread);
 	}
 	context.restoreGraphicsState();
-	display.isPainting.removeObject(view);
+	display.isPainting.removeObjectIdenticalTo(view);
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
