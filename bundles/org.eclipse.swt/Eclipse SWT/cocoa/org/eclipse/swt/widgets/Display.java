@@ -2842,7 +2842,7 @@ public boolean readAndDispatch () {
 			events = true;
 			application.sendEvent(event);
 		}
-		events = runPaint ();
+		events |= runPaint ();
 		if (events || runDeferredEvents ()) {
 			return true;
 		}
