@@ -1748,8 +1748,8 @@ protected void init () {
 	markedAttributes.retain ();
 	textView.release ();
 	
-	isPainting = NSMutableArray.arrayWithCapacity(12);
-	isPainting.retain();
+	isPainting = (NSMutableArray)new NSMutableArray().alloc();
+	isPainting.initWithCapacity(12);
 }
 
 void initApplicationDelegate() {
