@@ -32,8 +32,11 @@ abstract class WebBrowser {
 
 	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
 	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
-	static Runnable MozillaClearSessions;
-	static Runnable NativeClearSessions;
+	static String CookieName, CookieValue, CookieUrl;
+	static boolean CookieResult;
+	static Runnable MozillaClearSessions, NativeClearSessions;
+	static Runnable MozillaGetCookie, NativeGetCookie;
+	static Runnable MozillaSetCookie, NativeSetCookie;
 
 	/* Key Mappings */
 	static final int [][] KeyTable = {
@@ -247,6 +250,31 @@ public abstract boolean back ();
 public static void clearSessions () {
 	if (NativeClearSessions != null) NativeClearSessions.run ();
 	if (MozillaClearSessions != null) MozillaClearSessions.run ();
+}
+
+public static void DeleteCookie (String name, String url) {
+	CookieUrl = url; CookieValue = name + "=; expires=Thu, 01-Jan-1970 00:00:01 GMT"; //$NON-NLS-1$
+	if (NativeSetCookie != null) NativeSetCookie.run ();
+	if (MozillaSetCookie != null) MozillaSetCookie.run ();
+	CookieValue = CookieUrl = null;
+}
+
+public static String GetCookie (String name, String url) {
+	CookieName = name; CookieUrl = url;
+	if (NativeGetCookie != null) NativeGetCookie.run ();
+	if (MozillaGetCookie != null) MozillaGetCookie.run ();
+	String result = CookieValue;
+	CookieName = CookieValue = CookieUrl = null;
+	return result;
+}
+
+public static boolean SetCookie (String value, String url) {
+	CookieValue = value; CookieUrl = url;
+	CookieResult = false;
+	if (NativeSetCookie != null) NativeSetCookie.run ();
+	if (MozillaSetCookie != null) MozillaSetCookie.run ();
+	CookieValue = CookieUrl = null;
+	return CookieResult;
 }
 
 public abstract void create (Composite parent, int style);

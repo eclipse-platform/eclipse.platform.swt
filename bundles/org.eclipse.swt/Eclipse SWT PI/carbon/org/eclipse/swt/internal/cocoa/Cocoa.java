@@ -20,6 +20,7 @@ static {
 }
 	
 /* Objective-C class ids */
+public static final int C_NSHTTPCookie = Cocoa.objc_getClass("NSHTTPCookie"); //$NON-NLS-1$
 public static final int C_NSHTTPCookieStorage = Cocoa.objc_getClass("NSHTTPCookieStorage"); //$NON-NLS-1$
 public static final int C_NSNotificationCenter = Cocoa.objc_getClass("NSNotificationCenter"); //$NON-NLS-1$
 public static final int C_NSNumber = Cocoa.objc_getClass("NSNumber"); //$NON-NLS-1$
@@ -42,6 +43,7 @@ public static final int C_NSButton = Cocoa.objc_getClass("NSButton"); //$NON-NLS
 public static final int C_NSObject = Cocoa.objc_getClass("NSObject"); //$NON-NLS-1$
 public static final int C_NSString = Cocoa.objc_getClass("NSString"); //$NON-NLS-1$
 public static final int C_NSMutableArray = Cocoa.objc_getClass("NSMutableArray"); //$NON-NLS-1$
+public static final int C_NSMutableDictionary = Cocoa.objc_getClass("NSMutableDictionary"); //$NON-NLS-1$
 public static final int C_WebScriptObject = Cocoa.objc_getClass("WebScriptObject"); //$NON-NLS-1$
 public static final int C_WebUndefined = Cocoa.objc_getClass("WebUndefined"); //$NON-NLS-1$
 
@@ -58,13 +60,17 @@ public static final int S_canGoBack = Cocoa.sel_registerName("canGoBack"); //$NO
 public static final int S_canGoForward = Cocoa.sel_registerName("canGoForward"); //$NON-NLS-1$
 public static final int S_canShowMIMEType = Cocoa.sel_registerName("canShowMIMEType:"); //$NON-NLS-1$
 public static final int S_chooseFilename = Cocoa.sel_registerName("chooseFilename:"); //$NON-NLS-1$
+public static final int S_compare = Cocoa.sel_registerName("compare:"); //$NON-NLS-1$
 public static final int S_cookies = Cocoa.sel_registerName("cookies"); //$NON-NLS-1$
+public static final int S_cookiesWithResponseHeaderFields = Cocoa.sel_registerName("cookiesWithResponseHeaderFields:forURL:"); //$NON-NLS-1$
+public static final int S_cookiesForURL = Cocoa.sel_registerName("cookiesForURL:"); //$NON-NLS-1$
 public static final int S_copy = Cocoa.sel_registerName("copy:"); //$NON-NLS-1$
 public static final int S_count = Cocoa.sel_registerName("count"); //$NON-NLS-1$
 public static final int S_cut = Cocoa.sel_registerName("cut:"); //$NON-NLS-1$
 public static final int S_dataSource = Cocoa.sel_registerName("dataSource"); //$NON-NLS-1$
 public static final int S_defaultCenter = Cocoa.sel_registerName("defaultCenter"); //$NON-NLS-1$
 public static final int S_deleteCookie = Cocoa.sel_registerName("deleteCookie:"); //$NON-NLS-1$
+public static final int S_dictionaryWithCapacity = Cocoa.sel_registerName("dictionaryWithCapacity:"); //$NON-NLS-1$
 public static final int S_documentSource = Cocoa.sel_registerName("documentSource"); //$NON-NLS-1$
 public static final int S_doubleValue = Cocoa.sel_registerName("doubleValue"); //$NON-NLS-1$
 public static final int S_download = Cocoa.sel_registerName("download"); //$NON-NLS-1$
@@ -100,6 +106,7 @@ public static final int S_requestWithURL = Cocoa.sel_registerName("requestWithUR
 public static final int S_request = Cocoa.sel_registerName("request"); //$NON-NLS-1$
 public static final int S_retainCount = Cocoa.sel_registerName("retainCount"); //$NON-NLS-1$
 public static final int S_setApplicationNameForUserAgent = Cocoa.sel_registerName("setApplicationNameForUserAgent:"); //$NON-NLS-1$
+public static final int S_setCookie = Cocoa.sel_registerName("setCookie:"); //$NON-NLS-1$
 public static final int S_setDestinationAllowOverwrite = Cocoa.sel_registerName("setDestination:allowOverwrite:"); //$NON-NLS-1$
 public static final int S_setDownloadDelegate = Cocoa.sel_registerName("setDownloadDelegate:"); //$NON-NLS-1$
 public static final int S_setFrameLoadDelegate = Cocoa.sel_registerName("setFrameLoadDelegate:"); //$NON-NLS-1$
@@ -185,6 +192,7 @@ public static final int S_webScriptValueAtIndex = Cocoa.sel_registerName("webScr
 public static final int S_getCharacters_ = Cocoa.sel_registerName("getCharacters:"); //$NON-NLS-1$
 public static final int S_objCType = Cocoa.sel_registerName("objCType"); //$NON-NLS-1$
 public static final int S_setPreferences = Cocoa.sel_registerName("setPreferences:"); //$NON-NLS-1$
+public static final int S_value = Cocoa.sel_registerName("value"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
@@ -195,6 +203,8 @@ public static final int NSMoveToBezierPathElement = 0;
 public static final int NSLineToBezierPathElement = 1;
 public static final int NSCurveToBezierPathElement = 2;
 public static final int NSClosePathBezierPathElement = 3;
+
+public static final int NSOrderedSame = 0;
 
 /* WebKit */
 /** @param outView cast=(HIViewRef *) */

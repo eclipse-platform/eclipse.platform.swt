@@ -63,6 +63,7 @@ public class XPCOM extends C {
 	public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$
 	public static final String NS_CONTEXTSTACK_CONTRACTID = "@mozilla.org/js/xpc/ContextStack;1"; //$NON-NLS-1$
 	public static final String NS_COOKIEMANAGER_CONTRACTID = "@mozilla.org/cookiemanager;1"; //$NON-NLS-1$
+	public static final String NS_COOKIESERVICE_CONTRACTID = "@mozilla.org/cookieService;1"; //$NON-NLS-1$
 	public static final String NS_DIRECTORYSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1"; //$NON-NLS-1$
 	public static final String NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1"; //$NON-NLS-1$
 	public static final String NS_DOWNLOAD_CONTRACTID = "@mozilla.org/download;1"; //$NON-NLS-1$
@@ -957,6 +958,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1,
 		lock.unlock();
 	}
 }
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long[] arg2);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long[] arg2) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2);
+	} finally {
+		lock.unlock();
+	}
+}
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long [] arg2);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long [] arg2) {
 	lock.lock();
@@ -1266,6 +1276,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg
 }
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int[] arg3);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int[] arg3) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long arg2, long[] arg3);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long arg2, long[] arg3) {
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3);
@@ -1833,4 +1852,41 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, short[] type, long 
 		lock.unlock();
 	}
 }
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, byte[] arg2, int arg3);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, byte[] arg2, int arg3) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, byte[] arg2, long arg3);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, byte[] arg2, long arg3) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, byte[] arg3, byte[] arg4, int arg5);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, byte[] arg3, byte[] arg4, int arg5) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long arg2, byte[] arg3, byte[] arg4, long arg5);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long arg2, byte[] arg3, byte[] arg4, long arg5) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5);
+	} finally {
+		lock.unlock();
+	}
+}
+
 }

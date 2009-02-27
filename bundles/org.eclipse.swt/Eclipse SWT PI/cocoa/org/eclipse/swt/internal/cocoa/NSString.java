@@ -44,6 +44,10 @@ public int /*long*/ characterAtIndex(int /*long*/ index) {
 	return OS.objc_msgSend(this.id, OS.sel_characterAtIndex_, index);
 }
 
+public int /*long*/ compare(NSString string) {
+	return OS.objc_msgSend(this.id, OS.sel_compare_, string != null ? string.id : 0);
+}
+
 public void getCharacters(char[] buffer) {
 	OS.objc_msgSend(this.id, OS.sel_getCharacters_, buffer);
 }

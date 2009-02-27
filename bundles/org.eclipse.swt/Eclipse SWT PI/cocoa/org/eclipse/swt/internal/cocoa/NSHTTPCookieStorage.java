@@ -29,8 +29,17 @@ public NSArray cookies() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
+public NSArray cookiesForURL(NSURL URL) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_cookiesForURL_, URL != null ? URL.id : 0);
+	return result != 0 ? new NSArray(result) : null;
+}
+
 public void deleteCookie(NSHTTPCookie cookie) {
 	OS.objc_msgSend(this.id, OS.sel_deleteCookie_, cookie != null ? cookie.id : 0);
+}
+
+public void setCookie(NSHTTPCookie cookie) {
+	OS.objc_msgSend(this.id, OS.sel_setCookie_, cookie != null ? cookie.id : 0);
 }
 
 public static NSHTTPCookieStorage sharedHTTPCookieStorage() {

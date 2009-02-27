@@ -2762,6 +2762,32 @@ public static final int ImmGetCompositionString (int /*long*/ hIMC, int dwIndex,
 	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf1, dwBufLen);
 }
 
+public static final boolean InternetGetCookie (TCHAR lpszUrl, TCHAR lpszCookieName, TCHAR lpszCookieData, int[] lpdwSize) {
+	if (IsUnicode) {
+		char [] url = lpszUrl == null ? null : lpszUrl.chars;
+		char [] cookieName = lpszCookieName == null ? null : lpszCookieName.chars;
+		char [] cookieData = lpszCookieData == null ? null : lpszCookieData.chars;
+		return InternetGetCookieW (url, cookieName, cookieData, lpdwSize);
+	}
+	byte [] url = lpszUrl == null ? null : lpszUrl.bytes;
+	byte [] cookieName = lpszCookieName == null ? null : lpszCookieName.bytes;
+	byte [] cookieData = lpszCookieData == null ? null : lpszCookieData.bytes;
+	return InternetGetCookieA (url, cookieName, cookieData, lpdwSize);
+}
+
+public static final boolean InternetSetCookie (TCHAR lpszUrl, TCHAR lpszCookieName, TCHAR lpszCookieData) {
+	if (IsUnicode) {
+		char [] url = lpszUrl == null ? null : lpszUrl.chars;
+		char [] cookieName = lpszCookieName == null ? null : lpszCookieName.chars;
+		char [] cookieData = lpszCookieData == null ? null : lpszCookieData.chars;
+		return InternetSetCookieW (url, cookieName, cookieData);
+	}
+	byte [] url = lpszUrl == null ? null : lpszUrl.bytes;
+	byte [] cookieName = lpszCookieName == null ? null : lpszCookieName.bytes;
+	byte [] cookieData = lpszCookieData == null ? null : lpszCookieData.bytes;
+	return InternetSetCookieA (url, cookieName, cookieData);
+}
+
 public static final boolean InsertMenu (int /*long*/ hMenu, int uPosition, int uFlags, int /*long*/ uIDNewItem, TCHAR lpNewItem) {
 	if (IsUnicode) {
 		char [] lpNewItem1 = lpNewItem == null ? null : lpNewItem.chars;
@@ -4619,6 +4645,30 @@ public static final native boolean InsertMenuA (int /*long*/ hMenu, int uPositio
 public static final native boolean InsertMenuItemW (int /*long*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 /** @param hMenu cast=(HMENU) */
 public static final native boolean InsertMenuItemA (int /*long*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+/**
+ * @param lpszUrl cast=(LPCTSTR)
+ * @param lpszCookieName cast=(LPCTSTR)
+ * @param lpszCookieData cast=(LPSTR)
+ */
+public static final native boolean InternetGetCookieA (byte[] lpszUrl, byte[] lpszCookieName, byte[] lpszCookieData, int[] lpdwSize);
+/**
+ * @param lpszUrl cast=(LPCWSTR)
+ * @param lpszCookieName cast=(LPCWSTR)
+ * @param lpszCookieData cast=(LPWSTR)
+ */
+public static final native boolean InternetGetCookieW (char[] lpszUrl, char[] lpszCookieName, char[] lpszCookieData, int[] lpdwSize);
+/**
+ * @param lpszUrl cast=(LPCTSTR)
+ * @param lpszCookieName cast=(LPCTSTR)
+ * @param lpszCookieData cast=(LPCTSTR)
+ */
+public static final native boolean InternetSetCookieA (byte[] lpszUrl, byte[] lpszCookieName, byte[] lpszCookieData);
+/**
+ * @param lpszUrl cast=(LPCWSTR)
+ * @param lpszCookieName cast=(LPCWSTR)
+ * @param lpszCookieData cast=(LPCWSTR)
+ */
+public static final native boolean InternetSetCookieW (char[] lpszUrl, char[] lpszCookieName, char[] lpszCookieData);
 /**
  * @param hInternet cast=(HINTERNET)
  * @param lpBuffer cast=(LPVOID)

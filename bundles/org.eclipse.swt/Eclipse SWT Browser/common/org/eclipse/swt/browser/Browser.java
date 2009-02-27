@@ -173,6 +173,61 @@ public static void clearSessions () {
 	WebBrowser.clearSessions ();
 }
 
+/**
+ * TODO keep this method?  if so doc it!
+ * 
+ * @return <code>true</code> if the cookie was successfully deleted and <code>false</code> otherwise
+ *  
+ * @since 3.5
+ */
+public static void DeleteCookie (String name, String url) {
+	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	WebBrowser.DeleteCookie (name, url);
+}
+/**
+ * Returns the value of a cookie that is associated with a URL.
+ * Note that cookies are shared amongst all Browser instances.
+ * 
+ * @param name the cookie name
+ * @param url the URL that the cookie is associated with
+ * @return the cookie value, or <code>null</code> if no such cookie exists
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the name is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public static String GetCookie (String name, String url) {
+	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return WebBrowser.GetCookie (name, url);
+}
+
+/**
+ * Sets a cookie on a URL.  Note that cookies are shared amongst all Browser instances.
+ * 
+ * TODO explain the value arg 
+ * 
+ * @param value the cookie value
+ * @param url the URL to associate the cookie with
+ * @return <code>true</code> if the cookie was successfully set and <code>false</code> otherwise
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the value is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public static boolean SetCookie (String value, String url) {
+	if (value == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return WebBrowser.SetCookie (value, url);
+}
+
 /**	 
  * Adds the listener to the collection of listeners who will be
  * notified when the window hosting the receiver should be closed.

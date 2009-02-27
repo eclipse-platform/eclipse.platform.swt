@@ -84,6 +84,74 @@ class Safari extends WebBrowser {
 				}
 			}
 		};
+
+		NativeGetCookie = new Runnable () {
+			public void run () {
+				int storage = Cocoa.objc_msgSend (Cocoa.C_NSHTTPCookieStorage, Cocoa.S_sharedHTTPCookieStorage);
+				int length = CookieUrl.length ();
+				char[] buffer = new char[length];
+				CookieUrl.getChars (0, length, buffer, 0);
+				int urlString = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int url = Cocoa.objc_msgSend (Cocoa.C_NSURL, Cocoa.S_URLWithString, urlString);
+				OS.CFRelease (urlString);
+				int cookies = Cocoa.objc_msgSend (storage, Cocoa.S_cookiesForURL, url);
+				int count = Cocoa.objc_msgSend (cookies, Cocoa.S_count);
+				if (count == 0) return;
+
+				length = CookieName.length ();
+				buffer = new char[length];
+				CookieName.getChars (0, length, buffer, 0);
+				int name = OS.CFStringCreateWithCharacters (0, buffer, length);
+				for (int i = 0; i < count; i++) {
+					int current = Cocoa.objc_msgSend (cookies, Cocoa.S_objectAtIndex, i);
+					int currentName = Cocoa.objc_msgSend (current, Cocoa.S_name);
+					if (Cocoa.objc_msgSend (currentName, Cocoa.S_compare, name) == Cocoa.NSOrderedSame) {
+						int value = Cocoa.objc_msgSend (current, Cocoa.S_value);
+						length = OS.CFStringGetLength (value);
+						buffer = new char[length];
+						CFRange range = new CFRange ();
+						range.length = length;
+						OS.CFStringGetCharacters (value, range, buffer);
+						CookieValue = new String (buffer);
+						OS.CFRelease (name);
+						return;
+					}
+				}
+				OS.CFRelease (name);
+			}
+		};
+
+		NativeSetCookie = new Runnable () {
+			public void run () {
+				int length = CookieUrl.length ();
+				char[] buffer = new char[length];
+				CookieUrl.getChars (0, length, buffer, 0);
+				int urlString = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int url = Cocoa.objc_msgSend (Cocoa.C_NSURL, Cocoa.S_URLWithString, urlString);
+				OS.CFRelease (urlString);
+
+				length = CookieValue.length ();
+				buffer = new char[length];
+				CookieValue.getChars (0, length, buffer, 0);
+				int value = OS.CFStringCreateWithCharacters (0, buffer, length);
+				String keyString = "Set-Cookie"; //$NON-NLS-1$
+				length = keyString.length ();
+				buffer = new char[length];
+				keyString.getChars (0, length, buffer, 0);
+				int key = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int headers = Cocoa.objc_msgSend (Cocoa.C_NSMutableDictionary, Cocoa.S_dictionaryWithCapacity, 1);
+				Cocoa.objc_msgSend (headers, Cocoa.S_setValue, value, key);
+				OS.CFRelease (key);
+				OS.CFRelease (value);
+
+				int cookies = Cocoa.objc_msgSend (Cocoa.C_NSHTTPCookie, Cocoa.S_cookiesWithResponseHeaderFields, headers, url);
+				if (Cocoa.objc_msgSend (cookies, Cocoa.S_count) == 0) return;
+				int cookie = Cocoa.objc_msgSend (cookies, Cocoa.S_objectAtIndex, 0);
+				int storage = Cocoa.objc_msgSend (Cocoa.C_NSHTTPCookieStorage, Cocoa.S_sharedHTTPCookieStorage);
+				Cocoa.objc_msgSend (storage, Cocoa.S_setCookie, cookie);
+				CookieResult = true;
+			}
+		};
 	}
 
 public void create (Composite parent, int style) {

@@ -131,6 +131,41 @@ class IE extends WebBrowser {
 			}
 		};
 
+		NativeGetCookie = new Runnable () {
+			public void run () {
+				TCHAR url = new TCHAR (0, CookieUrl, true);
+				TCHAR cookieData = new TCHAR (0, 8192);
+				int[] size = new int[] {cookieData.length ()};
+				if (!OS.InternetGetCookie (url, null, cookieData, size)) {
+					/* original cookieData size was not large enough */
+					size[0] /= TCHAR.sizeof;
+					cookieData = new TCHAR (0, size[0]);
+					if (!OS.InternetGetCookie (url, null, cookieData, size)) return;
+				}
+				String allCookies = cookieData.toString (0, size[0]);
+				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
+				while (tokenizer.hasMoreTokens ()) {
+					String cookie = tokenizer.nextToken ();
+					int index = cookie.indexOf ('=');
+					if (index != -1) {
+						String name = cookie.substring (0, index).trim ();
+						if (name.equals (CookieName)) {
+							CookieValue = cookie.substring (index + 1).trim ();
+							return;
+						}
+					}
+				}
+			}
+		};
+
+		NativeSetCookie = new Runnable () {
+			public void run () {
+				TCHAR url = new TCHAR (0, CookieUrl, true);
+				TCHAR value = new TCHAR (0, CookieValue, true);
+				CookieResult = OS.InternetSetCookie (url, null, value);
+			}
+		};
+
 		/*
 		* Registry entry HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Version indicates
 		* which version of IE is installed.  Check this value in order to determine version-specific

@@ -150,6 +150,143 @@ class Mozilla extends WebBrowser {
 				enumerator.Release ();
 			}
 		};
+
+		MozillaGetCookie = new Runnable() {
+			public void run() {
+				if (!Initialized) return;
+
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;
+				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIIOService ioService = new nsIIOService (result[0]);
+				result[0] = 0;
+				byte[] bytes = MozillaDelegate.wcsToMbcs (null, CookieUrl, false);
+				int /*long*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
+				rc = ioService.NewURI (aSpec, null, 0, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+				XPCOM.nsEmbedCString_delete (aSpec);
+				ioService.Release ();
+
+				nsIURI aURI = new nsIURI (result[0]);
+				result[0] = 0;
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService.NS_ICOOKIESERVICE_IID, result);
+				int /*long*/ cookieString;
+				if (rc == XPCOM.NS_OK && result[0] != 0) {
+					nsICookieService cookieService = new nsICookieService (result[0]);
+					result[0] = 0;
+					rc = cookieService.GetCookieString (aURI.getAddress(), 0, result);
+					cookieService.Release ();
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) {
+						aURI.Release ();
+						serviceManager.Release ();
+						return;
+					}
+					cookieString = result[0];
+				} else {
+					result[0] = 0;
+					rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService_1_9.NS_ICOOKIESERVICE_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+					nsICookieService_1_9 cookieService = new nsICookieService_1_9 (result[0]);
+					result[0] = 0;
+					rc = cookieService.GetCookieString(aURI.getAddress(), 0, result);
+					cookieService.Release ();
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) {
+						aURI.Release ();
+						serviceManager.Release ();
+						return;
+					}
+					cookieString = result[0];
+				}
+				aURI.Release ();
+				serviceManager.Release ();
+				result[0] = 0;
+
+				int length = C.strlen (cookieString);
+				bytes = new byte[length];
+				XPCOM.memmove (bytes, cookieString, length);
+				C.free (cookieString);
+				String allCookies = new String (MozillaDelegate.mbcsToWcs (null, bytes));
+				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
+				while (tokenizer.hasMoreTokens ()) {
+					String cookie = tokenizer.nextToken ();
+					int index = cookie.indexOf ('=');
+					if (index != -1) {
+						String name = cookie.substring (0, index).trim ();
+						if (name.equals (CookieName)) {
+							CookieValue = cookie.substring (index + 1).trim ();
+							return;
+						}
+					}
+				}
+			}
+		};
+
+		MozillaSetCookie = new Runnable() {
+			public void run() {
+				if (!Initialized) return;
+
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;
+				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIIOService ioService = new nsIIOService (result[0]);
+				result[0] = 0;
+				byte[] bytes = MozillaDelegate.wcsToMbcs (null, CookieUrl, false);
+				int /*long*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
+				rc = ioService.NewURI (aSpec, null, 0, result);
+				XPCOM.nsEmbedCString_delete (aSpec);
+				if (rc != XPCOM.NS_OK) {
+					ioService.Release ();
+					serviceManager.Release ();
+					return;
+				}
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+				ioService.Release ();
+
+				nsIURI aURI = new nsIURI(result[0]);
+				result[0] = 0;
+				byte[] aCookie = MozillaDelegate.wcsToMbcs (null, CookieValue, true);
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_COOKIESERVICE_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService.NS_ICOOKIESERVICE_IID, result);
+				if (rc == XPCOM.NS_OK && result[0] != 0) {
+					nsICookieService cookieService = new nsICookieService (result[0]);
+					rc = cookieService.SetCookieString (aURI.getAddress(), 0, aCookie, 0);
+					cookieService.Release ();
+				} else {
+					result[0] = 0;
+					rc = serviceManager.GetServiceByContractID (aContractID, nsICookieService_1_9.NS_ICOOKIESERVICE_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+					nsICookieService_1_9 cookieService = new nsICookieService_1_9 (result[0]);
+					rc = cookieService.SetCookieString(aURI.getAddress(), 0, aCookie, 0);
+					cookieService.Release ();
+				}
+				result[0] = 0;
+				aURI.Release ();
+				serviceManager.Release ();
+				CookieResult = rc == 0;
+			}
+		};
 	}
 
 public void create (Composite parent, int style) {

@@ -7219,6 +7219,100 @@ fail:
 }
 #endif
 
+#ifndef NO_InternetGetCookieA
+JNIEXPORT jboolean JNICALL OS_NATIVE(InternetGetCookieA)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jbyteArray arg2, jintArray arg3)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, InternetGetCookieA_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)InternetGetCookieA((LPCTSTR)lparg0, (LPCTSTR)lparg1, (LPSTR)lparg2, lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, InternetGetCookieA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_InternetGetCookieW
+JNIEXPORT jboolean JNICALL OS_NATIVE(InternetGetCookieW)
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jcharArray arg2, jintArray arg3)
+{
+	jchar *lparg0=NULL;
+	jchar *lparg1=NULL;
+	jchar *lparg2=NULL;
+	jint *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, InternetGetCookieW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)InternetGetCookieW((LPCWSTR)lparg0, (LPCWSTR)lparg1, (LPWSTR)lparg2, lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, InternetGetCookieW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_InternetSetCookieA
+JNIEXPORT jboolean JNICALL OS_NATIVE(InternetSetCookieA)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, InternetSetCookieA_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jboolean)InternetSetCookieA((LPCTSTR)lparg0, (LPCTSTR)lparg1, (LPCTSTR)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, InternetSetCookieA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_InternetSetCookieW
+JNIEXPORT jboolean JNICALL OS_NATIVE(InternetSetCookieW)
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jcharArray arg2)
+{
+	jchar *lparg0=NULL;
+	jchar *lparg1=NULL;
+	jchar *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, InternetSetCookieW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jboolean)InternetSetCookieW((LPCWSTR)lparg0, (LPCWSTR)lparg1, (LPCWSTR)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, InternetSetCookieW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_InternetSetOption
 JNIEXPORT jboolean JNICALL OS_NATIVE(InternetSetOption)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3)

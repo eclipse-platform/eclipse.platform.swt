@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 180;
-int XPCOM_nativeFunctionCallCount[180];
+int XPCOM_nativeFunctionCount = 186;
+int XPCOM_nativeFunctionCallCount[186];
 char * XPCOM_nativeFunctionNames[] = {
 	"_1Call",
 	"_1NS_1GetComponentManager",
@@ -108,6 +108,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJIIII_3I_3I",
 #endif
 #ifndef JNI64
+	"_1VtblCall__IIIII_3B_3BI",
+#else
+	"_1VtblCall__IJIII_3B_3BI",
+#endif
+#ifndef JNI64
 	"_1VtblCall__IIIII_3C",
 #else
 	"_1VtblCall__IJIII_3C",
@@ -126,6 +131,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIII_3B",
 #else
 	"_1VtblCall__IJII_3B",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIII_3BI",
+#else
+	"_1VtblCall__IJII_3BI",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIII_3C",
@@ -373,9 +383,24 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJJJJJJJJ",
 #endif
 #ifndef JNI64
+	"_1VtblCall__IIJJJ_3B_3BJ",
+#else
+	"_1VtblCall__IJJJJ_3B_3BJ",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJJJ_3J",
+#else
+	"_1VtblCall__IJJJJ_3J",
+#endif
+#ifndef JNI64
 	"_1VtblCall__IIJJ_3B",
 #else
 	"_1VtblCall__IJJJ_3B",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJJ_3BJ",
+#else
+	"_1VtblCall__IJJJ_3BJ",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJJ_3CIJI",
@@ -396,6 +421,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIJJ_3I",
 #else
 	"_1VtblCall__IJJJ_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJJ_3J",
+#else
+	"_1VtblCall__IJJJ_3J",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2",

@@ -5235,10 +5235,10 @@
 <arg name="properties"></arg>
 <retval></retval>
 </method>
-<method class_method="true" selector="cookiesWithResponseHeaderFields:forURL:">
-<arg name="headerFields"></arg>
-<arg name="URL"></arg>
-<retval></retval>
+<method class_method="true" selector="cookiesWithResponseHeaderFields:forURL:" swt_gen="true">
+<arg name="headerFields" swt_gen="true"></arg>
+<arg name="URL" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="domain">
 <retval></retval>
@@ -5256,8 +5256,8 @@
 <method selector="isSessionOnly" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method selector="name">
-<retval></retval>
+<method selector="name" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="path">
 <retval></retval>
@@ -5272,8 +5272,8 @@
 <arg name="cookies"></arg>
 <retval></retval>
 </method>
-<method selector="value">
-<retval></retval>
+<method selector="value" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="version">
 <retval></retval>
@@ -5286,17 +5286,17 @@
 <method selector="cookies" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method selector="cookiesForURL:">
-<arg name="URL"></arg>
-<retval></retval>
+<method selector="cookiesForURL:" swt_gen="true">
+<arg name="URL" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="deleteCookie:" swt_gen="true">
 <arg name="cookie" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="setCookie:">
-<arg name="cookie"></arg>
-<retval></retval>
+<method selector="setCookie:" swt_gen="true">
+<arg name="cookie" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setCookieAcceptPolicy:">
 <arg name="cookieAcceptPolicy"></arg>
@@ -10487,9 +10487,9 @@
 <arg name="mask"></arg>
 <retval></retval>
 </method>
-<method selector="compare:">
-<arg name="string"></arg>
-<retval></retval>
+<method selector="compare:" swt_gen="true">
+<arg name="string" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="compare:options:">
 <arg name="string"></arg>

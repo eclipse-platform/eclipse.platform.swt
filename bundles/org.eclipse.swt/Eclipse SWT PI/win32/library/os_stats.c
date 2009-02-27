@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 960;
-int OS_nativeFunctionCallCount[960];
+int OS_nativeFunctionCount = 964;
+int OS_nativeFunctionCallCount[964];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -538,6 +538,10 @@ char * OS_nativeFunctionNames[] = {
 	"InsertMenuItemA",
 	"InsertMenuItemW",
 	"InsertMenuW",
+	"InternetGetCookieA",
+	"InternetGetCookieW",
+	"InternetSetCookieA",
+	"InternetSetCookieW",
 	"InternetSetOption",
 	"IntersectClipRect",
 	"IntersectRect",

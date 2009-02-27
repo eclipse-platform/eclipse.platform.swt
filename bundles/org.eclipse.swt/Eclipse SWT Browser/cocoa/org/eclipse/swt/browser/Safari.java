@@ -74,6 +74,39 @@ class Safari extends WebBrowser {
 				}
 			}
 		};
+
+		NativeGetCookie = new Runnable () {
+			public void run () {
+				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
+				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
+				NSArray cookies = storage.cookiesForURL (url);
+				int count = cookies.count ();
+				if (count == 0) return;
+
+				NSString name = NSString.stringWith (CookieName);
+				for (int i = 0; i < count; i++) {
+					NSHTTPCookie current = new NSHTTPCookie (cookies.objectAtIndex (i));
+					if (current.name ().compare (name) == OS.NSOrderedSame) {
+						CookieValue = current.value ().getString ();
+						return;
+					}
+				}
+			}
+		};
+
+		NativeSetCookie = new Runnable () {
+			public void run () {
+				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
+				NSMutableDictionary headers = NSMutableDictionary.dictionaryWithCapacity (1);
+				headers.setValue (NSString.stringWith (CookieValue), NSString.stringWith ("Set-Cookie")); //$NON-NLS-1$
+				NSArray cookies = NSHTTPCookie.cookiesWithResponseHeaderFields (headers, url);
+				if (cookies.count () == 0) return;
+				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
+				NSHTTPCookie cookie = new NSHTTPCookie (cookies.objectAtIndex (0));
+				storage.setCookie (cookie);
+				CookieResult = true;
+			}
+		};	
 	}
 
 public void create (Composite parent, int style) {
