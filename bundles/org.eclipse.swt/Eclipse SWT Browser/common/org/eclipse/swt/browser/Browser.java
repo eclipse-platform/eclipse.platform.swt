@@ -174,15 +174,6 @@ public static void clearSessions () {
 }
 
 /**
- * 
- * @since 3.5
- */
-/*public*/ static void DeleteCookie (String name, String url) {
-	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	WebBrowser.DeleteCookie (name, url);
-}
-/**
  * Returns the value of a cookie that is associated with a URL.
  * Note that cookies are shared amongst all Browser instances.
  * 
@@ -206,7 +197,15 @@ public static String GetCookie (String name, String url) {
 /**
  * Sets a cookie on a URL.  Note that cookies are shared amongst all Browser instances.
  * 
- * TODO explain the value arg 
+ * The <code>value</code> parameter must be a cookie header string that
+ * complies with <a href="http://www.ietf.org/rfc/rfc2109.txt">RFC 2109</code>.
+ * The value is passed through to the native browser unchanged.
+ * <p>
+ * Example value strings:
+ * <code>foo=bar</code> (basic session cookie)
+ * <code>foo=bar; path=/; domain=.eclipse.org</code> (session cookie)
+ * <code>foo=bar; expires=Thu, 01-Jan-2030 00:00:01 GMT</code> (persistent cookie)
+ * <code>foo=; expires=Thu, 01-Jan-1970 00:00:01 GMT</code> (deletes cookie <code>foo</code>)
  * 
  * @param value the cookie value
  * @param url the URL to associate the cookie with

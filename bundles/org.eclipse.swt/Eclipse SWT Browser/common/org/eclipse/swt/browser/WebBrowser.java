@@ -252,13 +252,6 @@ public static void clearSessions () {
 	if (MozillaClearSessions != null) MozillaClearSessions.run ();
 }
 
-public static void DeleteCookie (String name, String url) {
-	CookieUrl = url; CookieValue = name + "=; expires=Thu, 01-Jan-1970 00:00:01 GMT"; //$NON-NLS-1$
-	if (NativeSetCookie != null) NativeSetCookie.run ();
-	if (MozillaSetCookie != null) MozillaSetCookie.run ();
-	CookieValue = CookieUrl = null;
-}
-
 public static String GetCookie (String name, String url) {
 	CookieName = name; CookieUrl = url;
 	if (NativeGetCookie != null) NativeGetCookie.run ();
