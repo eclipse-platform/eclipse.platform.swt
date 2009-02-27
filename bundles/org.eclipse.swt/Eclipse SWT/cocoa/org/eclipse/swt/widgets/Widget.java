@@ -1490,8 +1490,8 @@ void setNeedsDisplay (int /*long*/ id, int /*long*/ sel, boolean flag) {
 	if (flag && display.isPainting.containsObject(view)) {
 		NSMutableArray needsDisplay = display.needsDisplay;
 		if (needsDisplay == null) {
-			needsDisplay = display.needsDisplay = NSMutableArray.arrayWithCapacity(12);
-			needsDisplay.retain();
+			needsDisplay = display.needsDisplay = (NSMutableArray)new NSMutableArray().alloc();
+			needsDisplay.initWithCapacity(12);
 		}
 		needsDisplay.addObject(view);
 		return;
@@ -1510,8 +1510,8 @@ void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0
 	if (display.isPainting.containsObject(view)) {
 		NSMutableArray needsDisplayInRect = display.needsDisplayInRect;
 		if (needsDisplayInRect == null) {
-			needsDisplayInRect = display.needsDisplayInRect = NSMutableArray.arrayWithCapacity(12);
-			needsDisplayInRect.retain();
+			needsDisplayInRect = display.needsDisplayInRect = (NSMutableArray)new NSMutableArray().alloc();
+			needsDisplayInRect.initWithCapacity(12);
 		}
 		needsDisplayInRect.addObject(view);
 		needsDisplayInRect.addObject(NSValue.valueWithRect(rect));
