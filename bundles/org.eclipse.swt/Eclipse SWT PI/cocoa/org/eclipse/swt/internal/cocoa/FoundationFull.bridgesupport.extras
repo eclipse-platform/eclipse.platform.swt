@@ -6285,9 +6285,9 @@
 <arg name="predicate"></arg>
 <retval></retval>
 </method>
-<method selector="initWithCapacity:">
-<arg name="numItems"></arg>
-<retval></retval>
+<method selector="initWithCapacity:" swt_gen="true">
+<arg name="numItems" swt_gen="true"></arg>
+<retval swt_gen="true" swt_java_type="NSMutableArray"></retval>
 </method>
 <method selector="insertObject:atIndex:">
 <arg name="anObject"></arg>
