@@ -117,6 +117,7 @@ public class Display extends Device {
 	Widget tooltipTarget;
 	
 	NSMutableArray isPainting, needsDisplay, needsDisplayInRect;
+	static final Object PAINT_LOCK = new Object();
 
 	NSDictionary markedAttributes;
 	
@@ -4132,9 +4133,11 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	if (sel == OS.sel_windowWillClose_) {
 		widget.windowWillClose(id, sel, arg0);
 	} else if (sel == OS.sel_drawRect_) {
-		NSRect rect = new NSRect();
-		OS.memmove(rect, arg0, NSRect.sizeof);
-		widget.drawRect(id, sel, rect);
+		synchronized (PAINT_LOCK) {
+			NSRect rect = new NSRect();
+			OS.memmove(rect, arg0, NSRect.sizeof);
+			widget.drawRect(id, sel, rect);
+		}
 	} else if (sel == OS.sel_setFrameOrigin_) {
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg0, NSPoint.sizeof);
