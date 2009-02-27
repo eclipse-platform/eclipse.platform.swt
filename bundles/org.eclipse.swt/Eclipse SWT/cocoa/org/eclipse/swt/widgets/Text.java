@@ -410,7 +410,9 @@ void createHandle () {
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
 		widget.setAlignment (align);
-		widget.cell().setWraps(false);
+		NSCell cell = widget.cell();
+		cell.setWraps(false);
+		cell.setScrollable(true);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		view = widget;
