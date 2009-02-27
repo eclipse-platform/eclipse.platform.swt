@@ -174,13 +174,10 @@ public static void clearSessions () {
 }
 
 /**
- * TODO keep this method?  if so doc it!
  * 
- * @return <code>true</code> if the cookie was successfully deleted and <code>false</code> otherwise
- *  
  * @since 3.5
  */
-public static void DeleteCookie (String name, String url) {
+/*public*/ static void DeleteCookie (String name, String url) {
 	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	WebBrowser.DeleteCookie (name, url);
