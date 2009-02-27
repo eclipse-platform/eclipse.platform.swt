@@ -1379,6 +1379,7 @@ public static final int /*long*/ sel_setResizingMask_ = sel_registerName("setRes
 public static final int /*long*/ sel_setResourceLoadDelegate_ = sel_registerName("setResourceLoadDelegate:");
 public static final int /*long*/ sel_setRichText_ = sel_registerName("setRichText:");
 public static final int /*long*/ sel_setRowHeight_ = sel_registerName("setRowHeight:");
+public static final int /*long*/ sel_setScrollable_ = sel_registerName("setScrollable:");
 public static final int /*long*/ sel_setSearchButtonCell_ = sel_registerName("setSearchButtonCell:");
 public static final int /*long*/ sel_setSelectable_ = sel_registerName("setSelectable:");
 public static final int /*long*/ sel_setSelectedRange_ = sel_registerName("setSelectedRange:");

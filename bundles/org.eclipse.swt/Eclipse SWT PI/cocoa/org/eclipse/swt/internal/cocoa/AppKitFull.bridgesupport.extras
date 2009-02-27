@@ -5257,9 +5257,9 @@
 <arg name="anObject"></arg>
 <retval></retval>
 </method>
-<method selector="setScrollable:">
-<arg name="flag"></arg>
-<retval></retval>
+<method selector="setScrollable:" swt_gen="true">
+<arg name="flag" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setSelectable:">
 <arg name="flag"></arg>

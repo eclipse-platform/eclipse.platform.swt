@@ -93,6 +93,10 @@ public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
+public void setScrollable(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setScrollable_, flag);
+}
+
 public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
