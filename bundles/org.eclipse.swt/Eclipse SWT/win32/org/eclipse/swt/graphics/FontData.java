@@ -608,9 +608,10 @@ public void setStyle(int style) {
  * @see FontData
  */
 public String toString() {
-	StringBuffer buffer = new StringBuffer();
+	StringBuffer buffer = new StringBuffer(128);
 	buffer.append("1|"); //$NON-NLS-1$
-	buffer.append(getName());
+	String name = getName();
+	buffer.append(name);
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getHeightF());
 	buffer.append("|"); //$NON-NLS-1$
@@ -643,7 +644,7 @@ public String toString() {
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfPitchAndFamily);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(getName());
+	buffer.append(name);
 	return buffer.toString();
 }
 
