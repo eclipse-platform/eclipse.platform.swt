@@ -48,6 +48,7 @@ class Safari extends WebBrowser {
 	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
 	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String HEADER_SETCOOKIE = "Set-Cookie"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
@@ -65,7 +66,7 @@ class Safari extends WebBrowser {
 			public void run() {
 				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage();
 				NSArray cookies = storage.cookies();
-				int /*long*/ count = cookies.count();
+				int count = (int)/*64*/cookies.count ();
 				for (int i = 0; i < count; i++) {
 					NSHTTPCookie cookie = new NSHTTPCookie(cookies.objectAtIndex(i));
 					if (cookie.isSessionOnly()) {
@@ -98,7 +99,7 @@ class Safari extends WebBrowser {
 			public void run () {
 				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
 				NSMutableDictionary headers = NSMutableDictionary.dictionaryWithCapacity (1);
-				headers.setValue (NSString.stringWith (CookieValue), NSString.stringWith ("Set-Cookie")); //$NON-NLS-1$
+				headers.setValue (NSString.stringWith (CookieValue), NSString.stringWith (HEADER_SETCOOKIE));
 				NSArray cookies = NSHTTPCookie.cookiesWithResponseHeaderFields (headers, url);
 				if (cookies.count () == 0) return;
 				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();

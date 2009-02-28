@@ -55,6 +55,7 @@ class Safari extends WebBrowser {
 	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String URI_APPLEWEBDATA = "applewebdata://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String HEADER_SETCOOKIE = "Set-Cookie"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
@@ -134,10 +135,9 @@ class Safari extends WebBrowser {
 				buffer = new char[length];
 				CookieValue.getChars (0, length, buffer, 0);
 				int value = OS.CFStringCreateWithCharacters (0, buffer, length);
-				String keyString = "Set-Cookie"; //$NON-NLS-1$
-				length = keyString.length ();
+				length = HEADER_SETCOOKIE.length ();
 				buffer = new char[length];
-				keyString.getChars (0, length, buffer, 0);
+				HEADER_SETCOOKIE.getChars (0, length, buffer, 0);
 				int key = OS.CFStringCreateWithCharacters (0, buffer, length);
 				int headers = Cocoa.objc_msgSend (Cocoa.C_NSMutableDictionary, Cocoa.S_dictionaryWithCapacity, 1);
 				Cocoa.objc_msgSend (headers, Cocoa.S_setValue, value, key);
