@@ -80,7 +80,7 @@ class Safari extends WebBrowser {
 				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage ();
 				NSURL url = NSURL.URLWithString (NSString.stringWith (CookieUrl));
 				NSArray cookies = storage.cookiesForURL (url);
-				int count = cookies.count ();
+				int count = (int)/*64*/cookies.count ();
 				if (count == 0) return;
 
 				NSString name = NSString.stringWith (CookieName);
