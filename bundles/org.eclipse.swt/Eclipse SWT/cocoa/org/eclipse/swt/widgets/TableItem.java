@@ -185,12 +185,15 @@ void clear () {
 
 NSObject createString (int index) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
-	Color foreground = cellForeground != null ? cellForeground [index] : null;
-	if (foreground == null) foreground = this.foreground;
-	if (foreground == null) foreground = parent.foreground;
-	if (foreground != null) {
-		NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
-		dict.setObject (color, OS.NSForegroundColorAttributeName);
+	boolean isSelected = ((NSTableView)parent.view).isRowSelected (parent.indexOf (this));
+	if (!isSelected) {
+		Color foreground = cellForeground != null ? cellForeground [index] : null;
+		if (foreground == null) foreground = this.foreground;
+		if (foreground == null) foreground = parent.foreground;
+		if (foreground != null) {
+			NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+			dict.setObject (color, OS.NSForegroundColorAttributeName);
+		}
 	}
 	Font font = cellFont != null ? cellFont [index] : null;
 	if (font == null) font = this.font;
