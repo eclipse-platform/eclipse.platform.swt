@@ -75,6 +75,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Tree extends Composite {
 	NSTableColumn firstColumn, checkColumn;
 	NSBrowserCell dataCell;
+	NSButtonCell buttonCell;
 	NSTableHeaderView headerView;
 	TreeItem [] items;
 	int itemCount;
@@ -494,15 +495,16 @@ void createHandle () {
 		checkColumn.headerCell ().setTitle (str);
 		widget.addTableColumn (checkColumn);
 		widget.setOutlineTableColumn (checkColumn);
-		NSButtonCell cell = (NSButtonCell) new NSButtonCell ().alloc ().init ();
-		checkColumn.setDataCell (cell);
-		cell.setButtonType (OS.NSSwitchButton);
-		cell.setImagePosition (OS.NSImageOnly);
-		cell.setAllowsMixedState (true);
 		checkColumn.setWidth (getCheckColumnWidth ());
 		checkColumn.setResizingMask (OS.NSTableColumnNoResizing);
 		checkColumn.setEditable (false);
-		cell.release ();
+		int /*long*/ cls = NSButton.cellClass (); /* use our custom cell class */
+		buttonCell = new NSButtonCell (OS.class_createInstance (cls, 0));
+		buttonCell.init ();
+		checkColumn.setDataCell (buttonCell);
+		buttonCell.setButtonType (OS.NSSwitchButton);
+		buttonCell.setImagePosition (OS.NSImageOnly);
+		buttonCell.setAllowsMixedState (true);
 	}
 	
 	firstColumn = (NSTableColumn) new NSTableColumn ().alloc ();
@@ -655,6 +657,7 @@ void deregister () {
 	super.deregister ();
 	display.removeWidget (headerView);
 	display.removeWidget (dataCell);
+	if (buttonCell != null) display.removeWidget (buttonCell);
 }
 
 /**
@@ -1640,6 +1643,22 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 	return super.menuForEvent(id, sel, theEvent);
 }
 
+/*
+ * Feature in Cocoa.  If a checkbox is in multi-state mode, nextState cycles
+ * from off to mixed to on and back to off again.  This will cause the on state
+ * to momentarily appear while clicking on the checkbox.  To avoid this, 
+ * override [NSCell nextState] to go directly to the desired state.
+ */
+int /*long*/ nextState (int /*long*/ id, int /*long*/ sel) {
+	NSOutlineView outlineView = (NSOutlineView)view;
+	int index = (int)/*64*/outlineView.selectedRow ();
+	TreeItem item = (TreeItem)display.getWidget (outlineView.itemAtRow (index).id);
+	if (item.grayed) {
+		return item.checked ? OS.NSOffState : OS.NSMixedState;
+	}
+	return item.checked ? OS.NSOffState : OS.NSOnState;
+}
+
 int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ index, int /*long*/ itemID) {
 	TreeItem parent = (TreeItem) display.getWidget (itemID);
 	TreeItem item = _getItem (parent, (int)/*64*/index, true);
@@ -1816,6 +1835,7 @@ void register () {
 	super.register ();
 	display.addWidget (headerView, this);
 	display.addWidget (dataCell, this);
+	if (buttonCell != null) display.addWidget (buttonCell, this);
 }
 
 void releaseChildren (boolean destroy) {
@@ -1848,6 +1868,8 @@ void releaseHandle () {
 	checkColumn = null;
 	if (dataCell != null) dataCell.release ();
 	dataCell = null;
+	if (buttonCell != null) buttonCell.release();
+	buttonCell = null;
 }
 
 void releaseWidget () {

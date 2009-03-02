@@ -251,6 +251,11 @@ public static final native int /*long*/ class_getInstanceMethod(int /*long*/ cls
  * @param imp cast=(IMP)
  */
 public static final native int /*long*/ method_setImplementation(int /*long*/ method, int /*long*/ imp);
+/**
+ * @param cls cast=(Class)
+ * @param extraBytes cast=(size_t)
+ */
+public static final native int /*long*/ class_createInstance(int /*long*/ cls, int /*long*/ extraBytes);
 
 /** @method flags=no_gen */
 public static final native String class_getName(int /*long*/ cls);

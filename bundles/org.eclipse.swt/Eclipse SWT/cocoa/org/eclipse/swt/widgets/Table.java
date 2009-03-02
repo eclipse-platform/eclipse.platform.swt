@@ -73,6 +73,7 @@ public class Table extends Composite {
 	NSTableHeaderView headerView;
 	NSTableColumn firstColumn, checkColumn;
 	NSBrowserCell dataCell;
+	NSButtonCell buttonCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
 	boolean ignoreSelect, fixScrollWidth;
 	Rectangle imageBounds;
@@ -476,15 +477,16 @@ void createHandle () {
 		checkColumn.initWithIdentifier(checkColumn);
 		checkColumn.headerCell().setTitle(str);
 		widget.addTableColumn (checkColumn);
-		NSButtonCell cell = (NSButtonCell)new NSButtonCell().alloc().init();
-		checkColumn.setDataCell(cell);
-		cell.setButtonType(OS.NSSwitchButton);
-		cell.setImagePosition(OS.NSImageOnly);
-		cell.setAllowsMixedState(true);
-		cell.release();
 		checkColumn.setWidth(getCheckColumnWidth());
 		checkColumn.setResizingMask(OS.NSTableColumnNoResizing);
 		checkColumn.setEditable(false);
+		int /*long*/ cls = NSButton.cellClass (); /* use our custom cell class */
+		buttonCell = new NSButtonCell (OS.class_createInstance (cls, 0));
+		buttonCell.init ();
+		checkColumn.setDataCell (buttonCell);
+		buttonCell.setButtonType (OS.NSSwitchButton);
+		buttonCell.setImagePosition (OS.NSImageOnly);
+		buttonCell.setAllowsMixedState (true);
 	}
 
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
@@ -585,6 +587,7 @@ void deregister () {
 	super.deregister ();
 	display.removeWidget (headerView);
 	display.removeWidget (dataCell);
+	if (buttonCell != null) display.removeWidget (buttonCell);
 }
 
 /**
@@ -1678,6 +1681,22 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 	return super.menuForEvent(id, sel, theEvent);
 }
 
+/*
+ * Feature in Cocoa.  If a checkbox is in multi-state mode, nextState cycles
+ * from off to mixed to on and back to off again.  This will cause the on state
+ * to momentarily appear while clicking on the checkbox.  To avoid this, 
+ * override [NSCell nextState] to go directly to the desired state.
+ */
+int /*long*/ nextState (int /*long*/ id, int /*long*/ sel) {
+	NSTableView tableView = (NSTableView)view;
+	int index = (int)/*64*/tableView.selectedRow ();
+	TableItem item = items[index];
+	if (item.grayed) {
+		return item.checked ? OS.NSOffState : OS.NSMixedState;
+	}
+	return item.checked ? OS.NSOffState : OS.NSOnState;
+}
+
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return itemCount;
 }
@@ -1686,6 +1705,7 @@ void register () {
 	super.register ();
 	display.addWidget (headerView, this);
 	display.addWidget (dataCell, this);
+	if (buttonCell != null) display.addWidget (buttonCell, this);
 }
 
 void releaseChildren (boolean destroy) {
@@ -1720,6 +1740,8 @@ void releaseHandle () {
 	checkColumn = null;
 	if (dataCell != null) dataCell.release();
 	dataCell = null;
+	if (buttonCell != null) buttonCell.release();
+	buttonCell = null;
 }
 
 void releaseWidget () {	

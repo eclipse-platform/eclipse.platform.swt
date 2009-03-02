@@ -2932,6 +2932,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addProtocol)
 }
 #endif
 
+#ifndef NO_class_1createInstance
+JNIEXPORT jintLong JNICALL OS_NATIVE(class_1createInstance)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, class_1createInstance_FUNC);
+	rc = (jintLong)class_createInstance((Class)arg0, (size_t)arg1);
+	OS_NATIVE_EXIT(env, that, class_1createInstance_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_class_1getInstanceMethod
 JNIEXPORT jintLong JNICALL OS_NATIVE(class_1getInstanceMethod)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

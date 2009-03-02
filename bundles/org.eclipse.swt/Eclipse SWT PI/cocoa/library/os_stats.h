@@ -254,6 +254,7 @@ typedef enum {
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,
 	class_1addProtocol_FUNC,
+	class_1createInstance_FUNC,
 	class_1getInstanceMethod_FUNC,
 	class_1getMethodImplementation_FUNC,
 	class_1getName_FUNC,

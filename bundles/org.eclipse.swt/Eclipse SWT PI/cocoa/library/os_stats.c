@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 400;
-int OS_nativeFunctionCallCount[400];
+int OS_nativeFunctionCount = 401;
+int OS_nativeFunctionCallCount[401];
 char * OS_nativeFunctionNames[] = {
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
@@ -246,6 +246,7 @@ char * OS_nativeFunctionNames[] = {
 	"class_1addIvar",
 	"class_1addMethod",
 	"class_1addProtocol",
+	"class_1createInstance",
 	"class_1getInstanceMethod",
 	"class_1getMethodImplementation",
 	"class_1getName",
