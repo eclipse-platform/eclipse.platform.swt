@@ -1061,14 +1061,14 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void setBackground (float /*double*/ [] color) {
-	super.setBackground (color);
-	NSColor nsColor;
-	if (color == null) {
-		nsColor = null;
-	} else {
-		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
-	}
+void updateBackground () {
+	NSColor nsColor = null;
+	if (backgroundImage != null) {
+		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
+	} else if (background != null) {
+		float /*double*/ [] color = background.handle;
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	} 
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 

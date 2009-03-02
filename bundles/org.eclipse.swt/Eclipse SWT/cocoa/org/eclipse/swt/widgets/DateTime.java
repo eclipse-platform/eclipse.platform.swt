@@ -326,16 +326,20 @@ void sendSelection () {
 	postEvent (SWT.Selection);
 }
 
-void setBackground (float /*double*/ [] color) {
-	NSColor nsColor;
-	if (color == null) {
+void updateBackground () {
+	NSColor nsColor = null;
+	if (backgroundImage != null) {
+		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
+	} else if (background != null) {
+		float /*double*/ [] color = background.handle;
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	} else {
 		if ((style & SWT.CALENDAR) != 0) {
 			nsColor = NSColor.controlBackgroundColor ();
 		} else {
 			nsColor = NSColor.textBackgroundColor ();
 		}
-	} else {
-		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+
 	}
 	((NSDatePicker)view).setBackgroundColor(nsColor);
 }

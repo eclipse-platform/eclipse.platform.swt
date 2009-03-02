@@ -2089,13 +2089,15 @@ void selectItems (TreeItem[] items, boolean ignoreDisposed) {
 	ignoreSelect = false;
 }
 
-void setBackground (float /*double*/ [] color) {
-	super.setBackground (color);
-	NSColor nsColor;
-	if (color == null) {
-		nsColor = null;
+void updateBackground () {
+	NSColor nsColor = null;
+	if (backgroundImage != null) {
+		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
+	} else if (background != null) {
+		float /*double*/ [] color = background.handle;
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	} else {
-		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+		nsColor = null;
 	}
 	((NSOutlineView) view).setBackgroundColor (nsColor);
 }

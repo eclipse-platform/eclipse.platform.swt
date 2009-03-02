@@ -2864,7 +2864,7 @@ public void setBackground (Color color) {
 	}
 //	if (equals (background, this.background)) return;
 	this.background = color;
-	setBackground (color != null ? color.handle : null);
+	updateBackground ();
 	view.setNeedsDisplay(true);
 }
 
@@ -2895,10 +2895,14 @@ public void setBackgroundImage (Image image) {
 	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (image == backgroundImage) return;
 	backgroundImage = image;
+	updateBackground();
 	redrawWidget(view, false);
 }
 
-void setBackground (float /*double*/ [] color) {
+void updateBackground () {
+}
+
+void setBackground (NSColor nsColor) {
 }
 
 /**

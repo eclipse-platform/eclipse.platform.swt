@@ -1357,12 +1357,15 @@ void sendCancelSelection () {
 	postEvent (SWT.DefaultSelection, event);
 }
 
-void setBackground (float /*double*/ [] color) {
-	NSColor nsColor;
-	if (color == null) {
-		nsColor = NSColor.textBackgroundColor ();
+void updateBackground () {
+	NSColor nsColor = null;
+	if (backgroundImage != null) {
+		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
+	} else if (background != null) {
+		float /*double*/ [] color = background.handle;
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	} else {
-		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+		nsColor = NSColor.textBackgroundColor ();
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		((NSTextField) view).setBackgroundColor (nsColor);

@@ -412,14 +412,25 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
-void setBackground (float /*double*/ [] color) {
-	NSColor nsColor;
-	NSTextView widget = (NSTextView)view; 
-	if (color == null) {
-		widget.setDrawsBackground (false);
+void updateBackground () {
+	NSColor nsColor = null;
+	if (backgroundImage != null) {
+		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
+	} else if (background != null) {
+		float /*double*/ [] color = background.handle;
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	} else {
-		widget.setDrawsBackground (true);
-		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+		nsColor = NSColor.clearColor();
+	}
+	setBackground(nsColor);
+}
+
+void setBackground(NSColor nsColor) {
+	NSTextView widget = (NSTextView)view;
+	if (nsColor == null) {
+		widget.setDrawsBackground(false);
+	} else {
+		widget.setDrawsBackground(true);
 		widget.setBackgroundColor (nsColor);
 	}
 }

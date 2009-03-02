@@ -416,16 +416,17 @@ public void setAlignment (int alignment) {
 	_setAlignment();
 }
 
-void setBackground (float /*double*/ [] color) {
+void updateBackground () {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	NSColor nsColor = null;
-	
-	if (color != null) {
+	if (backgroundImage != null) {
+		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
+	} else if (background != null) {
+		float /*double*/ [] color = background.handle;
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	} else {
 		nsColor = NSColor.clearColor();
 	}
-	
 	((NSBox)view).setFillColor(nsColor);
 }
 
