@@ -663,7 +663,7 @@ public Rectangle getBounds() {
 			rect.height = layoutManager.defaultLineHeightForFont(nsFont);
 		}
 		rect.height = Math.max(rect.height, ascent + descent) + spacing;
-		return new Rectangle(0, 0, (int)rect.width, (int)rect.height);
+		return new Rectangle(0, 0, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height));
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -908,7 +908,7 @@ public Rectangle getLineBounds(int lineIndex) {
 		computeRuns();
 		if (!(0 <= lineIndex && lineIndex < lineBounds.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 		NSRect rect = lineBounds[lineIndex];
-		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+		return new Rectangle((int)rect.x, (int)rect.y, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height));
 	} finally {
 		if (pool != null) pool.release();
 	}
