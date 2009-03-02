@@ -431,7 +431,7 @@ public void setStyle(int style) {
  * @see FontData
  */
 public String toString() {
-	StringBuffer buffer = new StringBuffer();
+	StringBuffer buffer = new StringBuffer(128);
 	buffer.append("1|");
 	buffer.append(getName());
 	buffer.append("|");
