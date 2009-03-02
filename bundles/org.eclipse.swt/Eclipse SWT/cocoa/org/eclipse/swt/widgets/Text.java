@@ -360,6 +360,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	Rectangle result = super.computeTrim (x, y, width, height);
+	if ((style & SWT.SINGLE) != 0) {
+		NSRect insets = ((NSTextField)view).cell ().titleRectForBounds (new NSRect ());
+		result.x -= insets.x;
+		result.y -= insets.y;
+		result.width += 2 * insets.x;
+		result.height += 2 * insets.y;
+	}
+	return result;
+}
+
 /**
  * Copies the selected text.
  * <p>
