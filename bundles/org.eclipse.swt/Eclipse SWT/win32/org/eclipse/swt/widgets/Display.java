@@ -3063,7 +3063,6 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			break;
 		}
 		case OS.WM_ENDSESSION: {
-			System.out.println("WM_ENDSESSION");
 			if (wParam != 0) {
 				dispose ();
 				/*
@@ -3077,7 +3076,6 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			break;
 		}
 		case OS.WM_QUERYENDSESSION: {
-			System.out.println("WM_QUERYENDSESSION");
 			Event event = new Event ();
 			sendEvent (SWT.Close, event);
 			if (!event.doit) return 0;
