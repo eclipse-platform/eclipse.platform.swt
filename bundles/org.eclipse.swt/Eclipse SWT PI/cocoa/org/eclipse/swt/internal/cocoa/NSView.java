@@ -126,6 +126,10 @@ public void discardCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_discardCursorRects);
 }
 
+public void display() {
+	OS.objc_msgSend(this.id, OS.sel_display);
+}
+
 public void displayIfNeeded() {
 	OS.objc_msgSend(this.id, OS.sel_displayIfNeeded);
 }

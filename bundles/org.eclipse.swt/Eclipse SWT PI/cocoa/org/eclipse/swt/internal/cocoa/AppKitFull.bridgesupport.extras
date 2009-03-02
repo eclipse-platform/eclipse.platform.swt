@@ -22022,8 +22022,8 @@
 <method selector="discardCursorRects" swt_gen="true">
 <retval swt_gen="true"></retval>
 </method>
-<method selector="display">
-<retval></retval>
+<method selector="display" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="displayIfNeeded" swt_gen="true">
 <retval swt_gen="true"></retval>
@@ -22845,8 +22845,8 @@
 <method selector="deepestScreen">
 <retval></retval>
 </method>
-<method selector="defaultButtonCell">
-<retval></retval>
+<method selector="defaultButtonCell" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method class_method="true" selector="defaultDepthLimit">
 <retval></retval>

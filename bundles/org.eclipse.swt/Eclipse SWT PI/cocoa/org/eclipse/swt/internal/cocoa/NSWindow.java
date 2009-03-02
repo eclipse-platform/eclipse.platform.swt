@@ -73,6 +73,11 @@ public NSPoint convertScreenToBase(NSPoint aPoint) {
 	return result;
 }
 
+public NSButtonCell defaultButtonCell() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_defaultButtonCell);
+	return result != 0 ? new NSButtonCell(result) : null;
+}
+
 public void deminiaturize(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_deminiaturize_, sender != null ? sender.id : 0);
 }
