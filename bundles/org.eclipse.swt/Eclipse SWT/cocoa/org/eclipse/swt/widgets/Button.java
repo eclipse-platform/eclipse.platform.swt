@@ -324,7 +324,7 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	callSuper (id, sel, image, rect, view);
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
 		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
@@ -362,7 +362,7 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolea
 		path.fill();
 		context.restoreGraphicsState();
 	}
-	super.drawWidget (id, context, rect, sendPaint);
+	super.drawWidget (id, context, rect);
 }
 
 /**
@@ -652,16 +652,6 @@ void updateBackground () {
 	}
 	NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
 	cell.setBackgroundColor(nsColor);
-}
-
-void setDefault (boolean value) {
-	if ((style & SWT.PUSH) == 0) return;
-	NSWindow window = view.window ();
-	NSButtonCell cell = null;
-	if (value) {
-		cell = new NSButtonCell (((NSButton)view).cell ());
-	}
-	window.setDefaultButtonCell (cell);
 }
 
 void setFont (NSFont font) {

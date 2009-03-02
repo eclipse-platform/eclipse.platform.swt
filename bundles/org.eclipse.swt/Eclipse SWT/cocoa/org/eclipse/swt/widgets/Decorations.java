@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class provide the appearance and
@@ -452,13 +453,13 @@ public void setDefaultButton (Button button) {
 		if ((button.style & SWT.PUSH) == 0) return;
 	}
 	if (button == defaultButton) return;
-	if (defaultButton != null) {
-		if (!defaultButton.isDisposed ()) defaultButton.setDefault (false);
-	}
 	defaultButton = button;
-	if (defaultButton != null) {
-		if (!defaultButton.isDisposed ()) defaultButton.setDefault (true);
+	NSButtonCell cell = null;
+	if (defaultButton != null && (defaultButton.style & SWT.PUSH) != 0) {
+		cell = new NSButtonCell (((NSButton)defaultButton.view).cell ());
 	}
+	view.window().setDefaultButtonCell (cell);
+	display.updateDefaultButton();
 }
 
 /**

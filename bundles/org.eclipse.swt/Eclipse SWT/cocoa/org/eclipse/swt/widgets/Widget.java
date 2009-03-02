@@ -548,13 +548,13 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 		* such as the progress bar and default button.  The fix is to draw the
 		* widget but not send paint events.
 		*/
-		drawWidget (id, context, rect, Thread.currentThread () == display.thread);
+		drawWidget (id, context, rect);
 	}
 	context.restoreGraphicsState();
 	display.isPainting.removeObjectIdenticalTo(view);
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 }
 
 void redrawWidget (NSView view, boolean children) {

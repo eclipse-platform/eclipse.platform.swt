@@ -117,7 +117,6 @@ public class Display extends Device {
 	Widget tooltipTarget;
 	
 	NSMutableArray isPainting, needsDisplay, needsDisplayInRect;
-	static final Object PAINT_LOCK = new Object();
 
 	NSDictionary markedAttributes;
 	
@@ -273,6 +272,7 @@ public class Display extends Device {
 	NSTimer nsTimers [];
 	SWTWindowDelegate timerDelegate;
 	SWTApplicationDelegate applicationDelegate;
+	static final int DEFAULT_BUTTON_INTERVAL = 30;
 	
 	/* Display Data */
 	Object data;
@@ -1695,6 +1695,18 @@ static Widget GetWidget (int /*long*/ id) {
 Widget getWidget (NSView view) {
 	if (view == null) return null;
 	return getWidget(view.id);
+}
+
+boolean hasDefaultButton () {
+	NSArray windows = application.windows();
+	int /*long*/ count = windows.count();
+	for (int i = 0; i < count; i++) {
+		NSWindow window  = new NSWindow(windows.objectAtIndex(i));
+		if (window.defaultButtonCell() != null) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -3291,6 +3303,23 @@ Runnable caretTimer = new Runnable () {
 	}
 };
 
+//TODO - use custom timer instead of timerExec
+Runnable defaultButtonTimer = new Runnable() {
+	public void run() {
+		if (isDisposed ()) return;
+		Shell shell = getActiveShell();
+		if (shell != null && !shell.isDisposed()) {
+			Button defaultButton = shell.defaultButton;
+			if (defaultButton != null && !defaultButton.isDisposed()) {
+				NSView view = defaultButton.view;
+				view.display();
+			}
+		}
+		if (isDisposed ()) return;
+		if (hasDefaultButton()) timerExec(DEFAULT_BUTTON_INTERVAL, this);
+	}
+};
+
 void setCurrentCaret (Caret caret) {
 	currentCaret = caret;
 	int blinkRate = currentCaret != null ? currentCaret.blinkRate : -1;
@@ -3717,6 +3746,10 @@ public void update () {
 	}
 }
 
+void updateDefaultButton () {
+	timerExec(hasDefaultButton() ? DEFAULT_BUTTON_INTERVAL : -1, defaultButtonTimer);
+}
+
 /**
  * If the receiver's user-interface thread was <code>sleep</code>ing, 
  * causes it to be awakened and start running again. Note that this
@@ -4057,6 +4090,20 @@ static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*lon
 }
 
 static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
+	/*
+	* Feature in Cocoa.  In Cocoa, the default button animation is done
+	* in a separate thread that calls drawRect() and isOpaque() from
+	* outside the UI thread.  This that those methods and application
+	* code runs as a result of those methods must be thread safe.  In
+	* SWT, paint events must happen in the UI thread.  The fix is
+	* to detect a non-UI thread and avoid the drawing. Instead, the
+	* default button is animated by a timer.
+	*/
+	if (!NSThread.isMainThread()) {
+		if (sel == OS.sel_isOpaque) {
+			return 1;
+		}
+	}
 	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_sendSelection) {
@@ -4122,6 +4169,20 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 }
 
 static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	/*
+	* Feature in Cocoa.  In Cocoa, the default button animation is done
+	* in a separate thread that calls drawRect() and isOpaque() from
+	* outside the UI thread.  This that those methods and application
+	* code runs as a result of those methods must be thread safe.  In
+	* SWT, paint events must happen in the UI thread.  The fix is
+	* to detect a non-UI thread and avoid the drawing. Instead, the
+	* default button is animated by a timer.
+	*/
+	if (!NSThread.isMainThread()) {
+		if (sel == OS.sel_drawRect_) {
+			return 0;
+		}
+	}
 	if (sel == OS.sel_timerProc_) {
 		//TODO optimize getting the display
 		Display display = getCurrent ();
@@ -4133,11 +4194,9 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	if (sel == OS.sel_windowWillClose_) {
 		widget.windowWillClose(id, sel, arg0);
 	} else if (sel == OS.sel_drawRect_) {
-		synchronized (PAINT_LOCK) {
-			NSRect rect = new NSRect();
-			OS.memmove(rect, arg0, NSRect.sizeof);
-			widget.drawRect(id, sel, rect);
-		}
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		widget.drawRect(id, sel, rect);
 	} else if (sel == OS.sel_setFrameOrigin_) {
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg0, NSPoint.sizeof);

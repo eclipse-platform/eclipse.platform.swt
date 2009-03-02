@@ -327,7 +327,7 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	callSuper (id, sel, image, rect, view);
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id == view.id) {
 		if (getSelection ()) {
 			NSRect bounds = view.bounds();

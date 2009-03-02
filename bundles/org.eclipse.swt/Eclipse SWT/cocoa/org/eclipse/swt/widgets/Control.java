@@ -1014,9 +1014,8 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect, boolean sendPaint) {
+void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
-	if (!sendPaint) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
 	/* Send paint event */
