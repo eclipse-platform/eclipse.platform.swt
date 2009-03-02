@@ -127,12 +127,14 @@ class IE extends WebBrowser {
 	static {
 		NativeClearSessions = new Runnable() {
 			public void run() {
+				if (OS.IsPPC) return;
 				OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);
 			}
 		};
 
 		NativeGetCookie = new Runnable () {
 			public void run () {
+				if (OS.IsPPC) return;
 				TCHAR url = new TCHAR (0, CookieUrl, true);
 				TCHAR cookieData = new TCHAR (0, 8192);
 				int[] size = new int[] {cookieData.length ()};
@@ -160,6 +162,7 @@ class IE extends WebBrowser {
 
 		NativeSetCookie = new Runnable () {
 			public void run () {
+				if (OS.IsPPC) return;
 				TCHAR url = new TCHAR (0, CookieUrl, true);
 				TCHAR value = new TCHAR (0, CookieValue, true);
 				CookieResult = OS.InternetSetCookie (url, null, value);

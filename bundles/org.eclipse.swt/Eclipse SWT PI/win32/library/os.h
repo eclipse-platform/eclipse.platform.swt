@@ -343,6 +343,10 @@
 #define NO_InsertMenuA
 #define NO_InsertMenuItemA
 #define NO_InsertMenuItemW
+#define NO_InternetGetCookieA
+#define NO_InternetGetCookieW
+#define NO_InternetSetCookieA
+#define NO_InternetSetCookieW
 #define NO_InternetSetOption
 #define NO_InvalidateRgn
 #define NO_IsAppThemed
