@@ -8230,10 +8230,10 @@ public void setLineSpacing(int lineSpacing) {
 }
 void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
 	checkWidget();
-	this.leftMargin = leftMargin;
-	this.topMargin = topMargin;
-	this.rightMargin = rightMargin;
-	this.bottomMargin = bottomMargin;
+	this.leftMargin = Math.max(0, leftMargin);
+	this.topMargin = Math.max(0, topMargin);
+	this.rightMargin = Math.max(0, rightMargin);
+	this.bottomMargin = Math.max(0, bottomMargin);
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
 	super.redraw();
@@ -8324,7 +8324,7 @@ void setScrollBars(boolean vertical) {
 		// (ie. because the thumb size is less than the scroll maximum)
 		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
 		if (clientAreaWidth < maximum) {
-			horizontalBar.setMaximum(maximum);
+			horizontalBar.setMaximum(maximum - leftMargin - rightMargin);
 			horizontalBar.setThumb(clientAreaWidth - leftMargin - rightMargin);
 			horizontalBar.setPageIncrement(clientAreaWidth - leftMargin - rightMargin);
 		} else if (horizontalBar.getThumb() != inactive || horizontalBar.getMaximum() != inactive) {
