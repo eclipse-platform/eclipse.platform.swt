@@ -1808,6 +1808,8 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_cursorUpdate_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_setNeedsDisplay_, proc3, "@:B");
+		OS.class_addMethod(cls, OS.sel_shouldDelayWindowOrderingForEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_acceptsFirstMouse_, proc3, "@:@");
 	}
 	if (proc2 != 0) {
 		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
@@ -2003,7 +2005,6 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_highlightSelectionInClipRect_, highlightSelectionInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_shouldDelayWindowOrderingForEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@:@:@");
@@ -2051,7 +2052,6 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_highlightSelectionInClipRect_, highlightSelectionInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_shouldDelayWindowOrderingForEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewItemDidExpand_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldCollapseItem_, proc4, "@:@@");
@@ -4255,7 +4255,9 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	} else if (sel == OS.sel_menuForEvent_) {
 		return widget.menuForEvent(id, sel, arg0);
 	} else if (sel == OS.sel_shouldDelayWindowOrderingForEvent_) {
-		return widget.shouldDelayWindowOrderingForEvent_(id, sel, arg0) ? 1 : 0;
+		return widget.shouldDelayWindowOrderingForEvent(id, sel, arg0) ? 1 : 0;
+	} else if (sel == OS.sel_acceptsFirstMouse_) {
+		return widget.acceptsFirstMouse(id, sel, arg0) ? 1 : 0;
 	} else if (sel == OS.sel_numberOfRowsInTableView_) {
 		return widget.numberOfRowsInTableView(id, sel, arg0);
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {

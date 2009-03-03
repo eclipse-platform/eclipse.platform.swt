@@ -269,6 +269,13 @@ int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*lo
 	return OS.NSNotFound;
 }
 
+boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, theEvent) != 0;
+}
+
 boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean(id, sel);
 }
@@ -888,7 +895,7 @@ void otherMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent)
 	callSuper(id, sel, theEvent);
 }
 
-boolean shouldDelayWindowOrderingForEvent_(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+boolean shouldDelayWindowOrderingForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
