@@ -1665,8 +1665,8 @@ void claimBottomFreeSpace() {
  * Scrolls text to the right to use new space made available by a resize.
  */
 void claimRightFreeSpace() {
-	int newHorizontalOffset = Math.max(0, renderer.getWidth() - (clientAreaWidth - leftMargin - rightMargin));
-	if (newHorizontalOffset < horizontalScrollOffset) {			
+	int newHorizontalOffset = Math.max(0, renderer.getWidth() - clientAreaWidth);
+	if (newHorizontalOffset < horizontalScrollOffset) {
 		// item is no longer drawn past the right border of the client area
 		// align the right end of the item with the right border of the 
 		// client area (window is scrolled right).
