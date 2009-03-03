@@ -465,6 +465,7 @@ public class MacGeneratorUI {
 		path.remove(0);
 		while (true) {
 			TreeItem item = findItem(items, (Node)path.remove(0));
+			if (item == null) return;
 			if (path.isEmpty()) {
 				nodesTree.setSelection(item);
 				selectChild(item);
@@ -572,10 +573,11 @@ public class MacGeneratorUI {
 	
 	public void refresh () {
 		if (nodesTree == null) return;
+		gen.setXmls(null);
+		flatNodes = null;
 		nodesTree.getDisplay().asyncExec(new Runnable() {
 			 public void run() {
 				 if (nodesTree == null || nodesTree.isDisposed()) return;
-				 gen.setXmls(null);
 				 nodesTree.removeAll();
 				 attribTable.removeAll();
 				 updateNodes();
