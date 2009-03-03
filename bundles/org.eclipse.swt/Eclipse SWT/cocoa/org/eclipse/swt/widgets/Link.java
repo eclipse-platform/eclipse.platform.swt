@@ -419,8 +419,6 @@ void updateBackground () {
 	} else if (background != null) {
 		float /*double*/ [] color = background.handle;
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
-	} else {
-		nsColor = NSColor.clearColor();
 	}
 	setBackground(nsColor);
 }
