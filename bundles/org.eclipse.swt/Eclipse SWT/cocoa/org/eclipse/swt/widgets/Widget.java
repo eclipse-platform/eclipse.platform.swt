@@ -1491,7 +1491,7 @@ void setNeedsDisplay (int /*long*/ id, int /*long*/ sel, boolean flag) {
 		NSMutableArray needsDisplay = display.needsDisplay;
 		if (needsDisplay == null) {
 			needsDisplay = display.needsDisplay = (NSMutableArray)new NSMutableArray().alloc();
-			needsDisplay.initWithCapacity(12);
+			needsDisplay = needsDisplay.initWithCapacity(12);
 		}
 		needsDisplay.addObject(view);
 		return;
@@ -1511,7 +1511,7 @@ void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0
 		NSMutableArray needsDisplayInRect = display.needsDisplayInRect;
 		if (needsDisplayInRect == null) {
 			needsDisplayInRect = display.needsDisplayInRect = (NSMutableArray)new NSMutableArray().alloc();
-			needsDisplayInRect.initWithCapacity(12);
+			needsDisplayInRect = needsDisplayInRect.initWithCapacity(12);
 		}
 		needsDisplayInRect.addObject(view);
 		needsDisplayInRect.addObject(NSValue.valueWithRect(rect));

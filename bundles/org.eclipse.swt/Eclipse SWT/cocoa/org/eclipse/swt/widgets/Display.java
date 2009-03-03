@@ -1761,7 +1761,7 @@ protected void init () {
 	textView.release ();
 	
 	isPainting = (NSMutableArray)new NSMutableArray().alloc();
-	isPainting.initWithCapacity(12);
+	isPainting = isPainting.initWithCapacity(12);
 }
 
 void initApplicationDelegate() {
