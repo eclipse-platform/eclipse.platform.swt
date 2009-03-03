@@ -2091,14 +2091,14 @@ public void cut() {
  * Otherwise, we've moved back into the widget so end autoscrolling.
  */
 void doAutoScroll(Event event) {
-	if (event.y > clientAreaHeight) {
-		doAutoScroll(SWT.DOWN, event.y - clientAreaHeight);
-	} else if (event.y < 0) {
-		doAutoScroll(SWT.UP, -event.y);
+	if (event.y > clientAreaHeight - bottomMargin) {
+		doAutoScroll(SWT.DOWN, event.y - (clientAreaHeight - bottomMargin));
+	} else if (event.y < topMargin) {
+		doAutoScroll(SWT.UP, topMargin - event.y);
 	} else if (event.x < leftMargin && !wordWrap) {
 		doAutoScroll(ST.COLUMN_PREVIOUS, leftMargin - event.x);
-	} else if (event.x > clientAreaWidth - leftMargin - rightMargin && !wordWrap) {
-		doAutoScroll(ST.COLUMN_NEXT, event.x - (clientAreaWidth - leftMargin - rightMargin));
+	} else if (event.x > clientAreaWidth - rightMargin && !wordWrap) {
+		doAutoScroll(ST.COLUMN_NEXT, event.x - (clientAreaWidth - rightMargin));
 	} else {
 		endAutoScroll();
 	}
