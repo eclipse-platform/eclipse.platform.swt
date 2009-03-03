@@ -131,15 +131,6 @@ public void test_layout() {
 	PerformanceMeter meter = createMeter("Layout Composites");
 	int samples;
 
-	if (isWindows) {
-		Performance performance = Performance.getDefault();
-		performance.setComment(
-			meter,
-			Performance.EXPLAINS_DEGRADATION_COMMENT,
-			"Degradation is a result of fixing bug 18607, which enables correct XP-themed border drawing. " +
-			"The report for this performance degradation is bug 144314.");
-	}
-
 	for(samples = 0; samples < 10; samples++) {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
