@@ -27,7 +27,10 @@ public class Snippet292 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
-		final Tree tree = new Tree(shell, SWT.BORDER);
+		final Group group = new Group(shell, SWT.NONE);
+		group.setText("Group");
+		group.setLayout(new GridLayout());
+		final Tree tree = new Tree(group, SWT.BORDER);
 		for (int i = 0; i < 5; i++) {
 			TreeItem treeItem = new TreeItem (tree, SWT.NONE);
 			treeItem.setText ("TreeItem " + i);
@@ -37,6 +40,7 @@ public class Snippet292 {
 			}
 			if (i % 3 == 0) treeItem.setExpanded (true);
 		}
+		new Button(group, SWT.PUSH).setText("Button");
 		final Label label = new Label (shell, SWT.NONE);
 		label.addListener (SWT.Dispose, new Listener () {
 			public void handleEvent (Event e) {
@@ -50,9 +54,9 @@ public class Snippet292 {
 			public void handleEvent (Event e) {
 				Image image = label.getImage ();
 				if (image != null) image.dispose ();
-				image = new Image (display, tree.getBounds ());
+				image = new Image (display, group.getBounds ());
 				GC gc = new GC (image);
-				boolean success = tree.print (gc);
+				boolean success = group.print (gc);
 				gc.dispose ();
 				label.setImage (image);
 				if (!success) {
@@ -64,7 +68,7 @@ public class Snippet292 {
 		});
 		GridLayout layout = new GridLayout (2, true);
 		shell.setLayout(layout);
-		tree.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
+		group.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		label.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		button.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true, 2, 1));
 		shell.pack();
