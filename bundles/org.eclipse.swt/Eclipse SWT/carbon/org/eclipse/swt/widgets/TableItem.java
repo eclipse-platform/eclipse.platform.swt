@@ -631,7 +631,7 @@ public Rectangle getTextBounds (int index) {
 
 void redraw (int propertyID) {
 	if (parent.currentItem == this) return;
-	if (parent.drawCount != 0 && propertyID != Table.CHECK_COLUMN_ID) return;
+	if (!getDrawing () && propertyID != Table.CHECK_COLUMN_ID) return;
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
 	int [] id = new int [] {parent.getId (itemIndex)};

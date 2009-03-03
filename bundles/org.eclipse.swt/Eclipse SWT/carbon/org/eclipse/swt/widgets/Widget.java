@@ -836,8 +836,8 @@ public Display getDisplay () {
 	return display;
 }
 
-int getDrawCount (int control) {
-	return 0;
+boolean getDrawing () {
+	return true;
 }
 
 Rect getInset () {
@@ -952,8 +952,8 @@ public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
 }
 
-boolean isDrawing (int control) {
-	return OS.IsControlVisible (control) && getDrawCount (control) == 0;
+boolean isDrawing () {
+	return true;
 }
 
 boolean isEnabled () {

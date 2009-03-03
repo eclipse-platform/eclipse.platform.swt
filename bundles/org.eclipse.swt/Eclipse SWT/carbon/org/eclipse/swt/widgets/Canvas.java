@@ -307,7 +307,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
-	if (!isDrawing (handle)) return;
+	if (!isDrawing ()) return;
+	if (!OS.IsControlVisible (handle)) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	Rectangle clientRect = getClientArea ();

@@ -182,7 +182,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	OS.GetTabContentRect (handle, client);
 	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
 		OS.HIViewSetFrame (handle, oldBounds);
-		OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
+		OS.HIViewSetDrawingEnabled (handle, getDrawing ());
 	}
 	x -= client.left;
 	y -= client.top;

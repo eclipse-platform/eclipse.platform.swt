@@ -225,8 +225,8 @@ void deregister () {
 	display.removeWidget (handle);
 }
 
-int getDrawCount (int control) {
-	return parent.getDrawCount (control);
+boolean getDrawing () {
+	return parent.getDrawing ();
 }
 
 /**
@@ -437,17 +437,8 @@ void invalWindowRgn (int window, int rgn) {
 	parent.invalWindowRgn (window, rgn);
 }
 
-boolean isDrawing (int control) {
-	/*
-	* Feature in the Macintosh.  The scroll bars in a DataBrowser are
-	* always invisible according to IsControlVisible(), despite the fact
-	* that they are drawn.  The fix is to check our visibility flag
-	* instead of calling IsControlVisible().
-	* 
-	* Note: During resize IsControlVisible() returns true allowing the
-	* clipping to be properly calculated.
-	*/
-	return isVisible () && getDrawCount (control) == 0;
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing();
 }
 
 /**

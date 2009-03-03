@@ -115,7 +115,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	height += (int) bounds.height - (client.bottom - client.top);
 	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
 		OS.HIViewSetFrame (handle, oldBounds);
-		OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
+		OS.HIViewSetDrawingEnabled (handle, getDrawing ());
 	}
 	return new Rectangle (-client.left, -client.top, width, height);
 }

@@ -101,7 +101,8 @@ boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
 	int parentHandle = parent.handle;
-	if (!parent.isDrawing (parentHandle)) return false;
+	if (!parent.isDrawing ()) return false;
+	if (!OS.IsControlVisible (parentHandle)) return false;
 	int nWidth = width, nHeight = height;
 	if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
 	if (OS.VERSION >= 0x1040) {

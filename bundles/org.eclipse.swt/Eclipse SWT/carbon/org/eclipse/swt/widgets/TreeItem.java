@@ -887,7 +887,7 @@ public int indexOf (TreeItem item) {
 
 void redraw (int propertyID) {
 	if (parent.ignoreRedraw) return;
-	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
+	if (!getDrawing () && propertyID != Tree.CHECK_COLUMN_ID) return;
 	int parentHandle = parent.handle;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 	/*

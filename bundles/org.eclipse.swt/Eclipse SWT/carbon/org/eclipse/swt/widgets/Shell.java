@@ -722,11 +722,6 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
-int getDrawCount (int control) {
-	if (!isTrimHandle (control)) return drawCount;
-	return 0;
-}
-
 /**
  * Returns <code>true</code> if the receiver is currently
  * in fullscreen state, and false otherwise. 
@@ -964,6 +959,10 @@ void invalWindowRgn (int window, int rgn) {
 	display.needsPaint = true;
 	if (invalRgn == 0) invalRgn = OS.NewRgn();
 	OS.UnionRgn (rgn, invalRgn, invalRgn);
+}
+
+boolean isDrawing () {
+	return getDrawing ();
 }
 
 public boolean isEnabled () {

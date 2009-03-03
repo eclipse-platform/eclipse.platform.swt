@@ -553,8 +553,8 @@ public boolean getEnabled () {
 	return (state & DISABLED) == 0;
 }
 
-int getDrawCount (int control) {
-	return parent.getDrawCount (control);
+boolean getDrawing () {
+	return parent.getDrawing ();
 }
 
 /**
@@ -747,6 +747,10 @@ void invalidateVisibleRegion (int control) {
 
 void invalWindowRgn (int window, int rgn) {
 	parent.invalWindowRgn (window, rgn);
+}
+
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing();
 }
 
 /**

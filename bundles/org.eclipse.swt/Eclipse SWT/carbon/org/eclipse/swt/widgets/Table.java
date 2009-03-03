@@ -329,7 +329,7 @@ public void clear (int index) {
 	TableItem item = items [index];
 	if (item != null) {
 		if (currentItem != item) item.clear ();
-		if (currentItem == null && drawCount == 0) {
+		if (currentItem == null && getDrawing ()) {
 			int [] id = new int [] {getId (index)};
 			OS.UpdateDataBrowserItems (handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 		}
@@ -433,7 +433,7 @@ public void clearAll () {
 		TableItem item = items [i];
 		if (item != null) item.clear ();
 	}
-	if (currentItem == null && drawCount == 0) {
+	if (currentItem == null && getDrawing ()) {
 		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 	}
 	setScrollWidth (items, true);
@@ -660,7 +660,7 @@ void createItem (TableItem item, int index) {
 			savedAnchor = getId (Math.min (itemCount - 1, savedIndex + 1));
 		}
 	}
-	boolean add = drawCount == 0 || index != itemCount;
+	boolean add = getDrawing () || index != itemCount;
 	if (add) {
 		checkItems (false);
 		int [] id = new int [] {itemCount + 1};
@@ -671,7 +671,7 @@ void createItem (TableItem item, int index) {
 	}
 	if (itemCount == items.length) {
 		/* Grow the array faster when redraw is off */
-		int length = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
+		int length = getDrawing () ? items.length + 4 : Math.max (4, items.length * 3 / 2);
 		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -3080,7 +3080,7 @@ boolean setScrollWidth (TableItem item) {
 		if (currentItem != item) fixScrollWidth = true;
 		return false;
 	}
-	if (drawCount != 0) return false;
+	if (!getDrawing ()) return false;
 	GC gc = new GC (this);
 	int newWidth = item.calculateWidth (0, gc);
 	gc.dispose ();
@@ -3100,7 +3100,7 @@ boolean setScrollWidth (TableItem [] items, boolean set) {
 		fixScrollWidth = true;
 		return false;
 	}
-	if (drawCount != 0) return false;
+	if (!getDrawing ()) return false;
 	GC gc = new GC (this);
 	int newWidth = 0;
 	for (int i = 0; i < items.length; i++) {

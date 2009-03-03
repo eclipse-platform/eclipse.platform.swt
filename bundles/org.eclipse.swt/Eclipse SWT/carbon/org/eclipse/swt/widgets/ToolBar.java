@@ -441,7 +441,7 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 }
 
 void relayout () {
-	if (drawCount > 0) return;
+	if (!getDrawing ()) return;
 	Rectangle rect = getClientArea ();
 	layout (rect.width, rect.height, true);
 }

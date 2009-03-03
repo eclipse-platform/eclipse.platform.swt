@@ -1128,9 +1128,8 @@ public boolean getDragDetect () {
 	return (state & DRAG_DETECT) != 0;
 }
 
-int getDrawCount (int control) {
-	if (!isTrimHandle (control) && drawCount > 0) return drawCount;
-	return parent.getDrawCount (control);
+boolean getDrawing () {
+	return drawCount <= 0;
 }
 
 /**
@@ -1599,10 +1598,10 @@ public int internal_new_GC (GCData data) {
 	if (data != null && data.paintEvent != 0) {
 		visibleRgn = data.visibleRgn;
 	} else {
-		if (getDrawCount (handle) > 0) {
-			visibleRgn = OS.NewRgn ();
-		} else {
+		if (isDrawing()) {
 			visibleRgn = getVisibleRegion (handle, true);
+		} else {
+			visibleRgn = OS.NewRgn ();
 		}
 	}
 	Rect rect = new Rect ();
@@ -1729,6 +1728,10 @@ void invalWindowRgn (int window, int rgn) {
  */
 boolean isDescribedByLabel () {
 	return true;
+}
+
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing();
 }
 
 /**

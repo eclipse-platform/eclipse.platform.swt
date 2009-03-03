@@ -3267,7 +3267,7 @@ public void setRedraw (boolean redraw) {
 }
 
 boolean setScrollWidth (TreeItem item) {
-	if (ignoreRedraw || drawCount != 0) return false;
+	if (ignoreRedraw || !getDrawing ()) return false;
 	if (columnCount != 0) return false;
 	TreeItem parentItem = item.parentItem;
 	if (parentItem != null && !parentItem._getExpanded ()) return false;
@@ -3316,7 +3316,7 @@ boolean setScrollWidth (boolean set) {
 }
 
 boolean setScrollWidth (boolean set, int[] childIds, boolean recurse) {
-	if (ignoreRedraw || drawCount != 0) return false;
+	if (ignoreRedraw || !getDrawing ()) return false;
 	if (columnCount != 0 || childIds == null) return false;
 	GC gc = new GC (this);
 	int newWidth = calculateWidth (childIds, gc, recurse, 0, 0);
