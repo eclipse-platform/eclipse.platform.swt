@@ -3367,7 +3367,7 @@ public void setRedraw (boolean redraw) {
 	if (redraw) {
 		if (--drawCount == 0) {
 			invalidateVisibleRegion ();
-			redrawWidget(view, true);
+			redrawWidget(topView (), true);
 		}
 	} else {
 		if (drawCount == 0) {
