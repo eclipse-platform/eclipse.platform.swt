@@ -11,38 +11,42 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Override the text that is spoken for a native Button.
+ * Provide text that will be spoken for an image Button.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet164 {
 
-public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setBounds(10, 10, 200, 200);
+public static void main (String[] args) {
+	Display display = new Display( );
+	Shell shell = new Shell (display);
+	shell.setLayout (new GridLayout ());
+	Image image = new Image (display, Snippet164.class.getResourceAsStream ("eclipse.png"));
 
 	Button button1 = new Button (shell, SWT.PUSH);
-	button1.setText("&Typical button");
-	button1.setBounds(10,10,180,30);
+	button1.setText ("&Typical button");
+	
 	Button button2 = new Button (shell, SWT.PUSH);
-	button2.setText("&Overidden button");
-	button2.setBounds(10,50,180,30);
-	button2.getAccessible().addAccessibleListener(new AccessibleAdapter() {
-		public void getName(AccessibleEvent e) {
-			e.result = "Speak this instead of the button text";
+	button2.setImage (image);
+	button2.getAccessible ().addAccessibleListener (new AccessibleAdapter() {
+		public void getName (AccessibleEvent e) {
+			e.result = "Eclipse logo";
 		}
 	});
 	
-	shell.open();
-	while (!shell.isDisposed()) {
-		if (!display.readAndDispatch()) display.sleep();
+	shell.pack ();
+	shell.open ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
 	}
-	display.dispose();
+	image.dispose ();
+	display.dispose ();
 }
 }
