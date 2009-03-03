@@ -1276,7 +1276,12 @@ void updateBackground () {
 	} else {
 		nsColor = NSColor.textBackgroundColor ();
 	}
-	((NSTextField)view).setBackgroundColor(nsColor);
+
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO
+	} else {
+		((NSTextField)view).setBackgroundColor(nsColor);
+	}
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
