@@ -427,8 +427,8 @@ public Image getDisabledImage () {
 	return disabledImage;
 }
 
-int getDrawCount () {
-	return parent.getDrawCount ();
+boolean getDrawing () {
+	return parent.getDrawing ();
 }
 
 /**
@@ -556,6 +556,10 @@ public int getWidth () {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
+}
+
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing ();
 }
 
 int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

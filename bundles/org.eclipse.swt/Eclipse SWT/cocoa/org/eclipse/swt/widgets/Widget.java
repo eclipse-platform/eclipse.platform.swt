@@ -530,7 +530,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 }
 
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
-	if (getDrawCount() > 0) return;
+	if (!isDrawing()) return;
 	Display display = this.display;
 	NSView view = new NSView(id);
 	display.isPainting.addObject(view);
@@ -678,8 +678,8 @@ public Display getDisplay () {
 	return display;
 }
 
-int getDrawCount () {
-	return 0;
+boolean getDrawing () {
+	return true;
 }
 
 /**
@@ -787,9 +787,8 @@ public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
 }
 
-boolean isDrawing (NSView control) {
-	NSRect visibleRect = control.visibleRect();
-	return visibleRect.width != 0 && visibleRect.height != 0 && getDrawCount () == 0;
+boolean isDrawing () {
+	return true;
 }
 
 /**
@@ -1485,7 +1484,7 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 }
 
 void setNeedsDisplay (int /*long*/ id, int /*long*/ sel, boolean flag) {
-	if (flag && getDrawCount() != 0) return;
+	if (flag && !isDrawing()) return;
 	NSView view = new NSView(id);
 	if (flag && display.isPainting.containsObject(view)) {
 		NSMutableArray needsDisplay = display.needsDisplay;
@@ -1503,7 +1502,7 @@ void setNeedsDisplay (int /*long*/ id, int /*long*/ sel, boolean flag) {
 }
 
 void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	if (getDrawCount() != 0) return;
+	if (!isDrawing()) return;
 	NSRect rect = new NSRect();
 	OS.memmove(rect, arg0, NSRect.sizeof);
 	NSView view = new NSView(id);

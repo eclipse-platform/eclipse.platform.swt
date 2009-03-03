@@ -610,7 +610,7 @@ public Rectangle getTextBounds (int index) {
 }
 
 void redraw (int columnIndex) {
-	if (parent.currentItem == this || parent.drawCount != 0) return;
+	if (parent.currentItem == this || !isDrawing()) return;
 	/* redraw the full item if columnIndex == -1 */
 	NSTableView tableView = (NSTableView) parent.view;
 	NSRect rect = null;

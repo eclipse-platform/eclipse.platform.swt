@@ -699,10 +699,6 @@ public Rectangle getClientArea () {
 	return new Rectangle (0, 0, width, height);
 }
 
-int getDrawCount () {
-	return drawCount;
-}
-
 /**
  * Returns <code>true</code> if the receiver is currently
  * in fullscreen state, and false otherwise. 
@@ -913,6 +909,10 @@ void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 void invalidateVisibleRegion () {
 	resetVisibleRegion ();
 	invalidateChildrenVisibleRegion ();
+}
+
+boolean isDrawing () {
+	return getDrawing ();
 }
 
 public boolean isEnabled () {

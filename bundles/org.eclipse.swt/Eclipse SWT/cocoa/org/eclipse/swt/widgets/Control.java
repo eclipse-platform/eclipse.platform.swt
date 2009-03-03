@@ -609,7 +609,7 @@ boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 
 void calculateVisibleRegion (NSView view, int /*long*/ visibleRgn, boolean clipChildren) {
 	int /*long*/ tempRgn = OS.NewRgn ();
-	if (!view.isHiddenOrHasHiddenAncestor() && getDrawCount() == 0) {
+	if (!view.isHiddenOrHasHiddenAncestor() && isDrawing()) {
 		int /*long*/ childRgn = OS.NewRgn ();
 		NSWindow window = view.window ();
 		NSView contentView = window.contentView();
@@ -1299,9 +1299,8 @@ public boolean getDragDetect () {
 	return (state & DRAG_DETECT) != 0;
 }
 
-int getDrawCount () {
-	if (drawCount != 0) return drawCount;
-	return parent.getDrawCount ();
+boolean getDrawing () {
+	return drawCount <= 0;
 }
 
 /**
@@ -1786,6 +1785,10 @@ boolean isActive () {
  */
 boolean isDescribedByLabel () {
 	return true;
+}
+
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing();
 }
 
 /**

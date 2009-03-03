@@ -284,7 +284,9 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
-	if (!isDrawing (view)) return;
+	if (!isDrawing ()) return;
+	NSRect visibleRect = view.visibleRect();
+	if (visibleRect.width <= 0 || visibleRect.height <= 0) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	Rectangle clientRect = getClientArea ();
@@ -334,7 +336,6 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 			}
 		}
 
-		NSRect visibleRect = view.visibleRect();
 		NSRect srcRect = new NSRect();
 		srcRect.x = sourceRect.x;
 		srcRect.y = sourceRect.y;

@@ -366,7 +366,7 @@ public void clearAll () {
 			item.clear ();
 		}
 	}
-	if (currentItem == null && drawCount == 0) view.setNeedsDisplay(true);
+	if (currentItem == null && isDrawing ()) view.setNeedsDisplay(true);
 	setScrollWidth (items, true);
 }
 
@@ -555,7 +555,7 @@ void createItem (TableItem item, int index) {
 	if (index != itemCount) fixSelection (index, true);
 	if (itemCount == items.length) {
 		/* Grow the array faster when redraw is off */
-		int length = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
+		int length = getDrawing () ? items.length + 4 : Math.max (4, items.length * 3 / 2);
 		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -2253,7 +2253,7 @@ boolean setScrollWidth () {
 
 boolean setScrollWidth (TableItem item) {
 	if (columnCount != 0) return false;
-	if (drawCount != 0) return false;
+	if (!getDrawing()) return false;
 	if (currentItem != null) {
 		if (currentItem != item) fixScrollWidth = true;
 		return false;
@@ -2273,7 +2273,7 @@ boolean setScrollWidth (TableItem item) {
 boolean setScrollWidth (TableItem [] items, boolean set) {
 	if (items == null) return false;
 	if (columnCount != 0) return false;
-	if (drawCount != 0) return false;
+	if (!getDrawing()) return false;
 	if (currentItem != null) {
 		fixScrollWidth = true;
 		return false;

@@ -922,7 +922,7 @@ public int indexOf (TreeItem item) {
 }
 
 void redraw (int columnIndex) {
-	if (parent.ignoreRedraw || parent.drawCount != 0) return;
+	if (parent.ignoreRedraw || !isDrawing()) return;
 	/* redraw the full item if columnIndex == -1 */
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	NSRect rect;

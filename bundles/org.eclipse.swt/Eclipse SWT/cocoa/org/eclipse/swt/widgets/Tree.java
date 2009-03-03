@@ -1879,7 +1879,7 @@ void releaseWidget () {
 }
 
 void reloadItem (TreeItem item, boolean recurse) {
-	if (drawCount == 0) {
+	if (getDrawing()) {
 		NSOutlineView widget = (NSOutlineView)view;
 		TreeItem[] selectedItems = getSelection ();
 		if (item != null) {
@@ -2357,7 +2357,7 @@ boolean setScrollWidth () {
 
 boolean setScrollWidth (boolean set, TreeItem[] items, boolean recurse) {
 	if (items == null) return false;
-	if (ignoreRedraw || drawCount != 0) return false;
+	if (ignoreRedraw || !getDrawing()) return false;
 	if (columnCount != 0) return false;
 	GC gc = new GC (this);
 	int newWidth = calculateWidth (items, 0, gc, recurse);
@@ -2372,7 +2372,7 @@ boolean setScrollWidth (boolean set, TreeItem[] items, boolean recurse) {
 }
 
 boolean setScrollWidth (TreeItem item) {
-	if (ignoreRedraw || drawCount != 0) return false;
+	if (ignoreRedraw || !getDrawing()) return false;
 	if (columnCount != 0) return false;
 	TreeItem parentItem = item.parentItem;
 	if (parentItem != null && !parentItem.getExpanded ()) return false;

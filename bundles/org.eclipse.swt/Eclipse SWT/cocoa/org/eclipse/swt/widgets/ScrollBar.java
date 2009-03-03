@@ -144,8 +144,8 @@ void deregister () {
 	display.removeWidget (view);
 }
 
-int getDrawCount () {
-	return parent.getDrawCount ();
+boolean getDrawing () {
+	return parent.getDrawing ();
 }
 
 /**
@@ -341,6 +341,10 @@ public boolean getVisible () {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
+}
+
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing ();
 }
 
 /**
