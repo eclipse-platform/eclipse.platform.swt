@@ -1495,7 +1495,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 			
 		/* Resize messages */
 		case OS.WM_SIZE:
-			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			redraw = findImageControl () != null && getDrawing () && OS.IsWindowVisible (handle);
 			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			//FALL THROUGH
 			
@@ -1660,7 +1660,7 @@ boolean checkScroll (int /*long*/ hItem) {
 	* NOTE:  The code that actually works around the problem is in the
 	* callers of this method.
 	*/
-	if (drawCount == 0) return false;
+	if (getDrawing ()) return false;
 	int /*long*/ hRoot = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	int /*long*/ hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
 	while (hParent != hRoot && hParent != 0) {
@@ -2065,7 +2065,7 @@ void createItem (TreeItem item, int /*long*/ hParent, int /*long*/ hInsertAfter,
 			* memory usage.
 			*/
 			int length = 0;
-			if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+			if (getDrawing () && OS.IsWindowVisible (handle)) {
 				length = items.length + 4;
 			} else {
 				shrink = true;
@@ -2132,7 +2132,7 @@ void createItem (TreeItem item, int /*long*/ hParent, int /*long*/ hInsertAfter,
 		* child is added to a visible parent item and redraw the parent.
 		*/
 		if (fixParent) {
-			if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+			if (getDrawing () && OS.IsWindowVisible (handle)) {
 				RECT rect = new RECT ();
 				if (OS.TreeView_GetItemRect (handle, hParent, rect, false)) {
 					OS.InvalidateRect (handle, rect, true);
@@ -2551,7 +2551,7 @@ void destroyItem (TreeItem item, int /*long*/ hItem) {
 	int /*long*/ hParent = 0;
 	boolean fixRedraw = false;
 	if ((style & SWT.DOUBLE_BUFFERED) == 0) {
-		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+		if (getDrawing () && OS.IsWindowVisible (handle)) {
 			RECT rect = new RECT ();
 			fixRedraw = !OS.TreeView_GetItemRect (handle, hItem, rect, false);
 		}
@@ -3936,7 +3936,7 @@ public void removeAll () {
 		}
 	}
 	ignoreDeselect = ignoreSelect = true;
-	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+	boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 	if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	shrink = ignoreShrink = true;
 	int /*long*/ result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
@@ -4065,7 +4065,7 @@ public void setItemCount (int count) {
 void setItemCount (int count, int /*long*/ hParent, int /*long*/ hItem) {
 	boolean redraw = false;
 	if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
-		redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	int itemCount = 0;
@@ -4244,7 +4244,7 @@ public void select (TreeItem item) {
 		vInfo.cbSize = SCROLLINFO.sizeof;
 		vInfo.fMask = OS.SIF_ALL;
 		OS.GetScrollInfo (handle, OS.SB_VERT, vInfo);
-		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) {
 			OS.UpdateWindow (handle);
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
@@ -5080,7 +5080,7 @@ public void setTopItem (TreeItem item) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	} else {
-		redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
@@ -6080,7 +6080,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 						tvItem.hItem = hNewItem;
 						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 						boolean newSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
-						boolean redraw = !newSelected && drawCount == 0 && OS.IsWindowVisible (handle);
+						boolean redraw = !newSelected && getDrawing () && OS.IsWindowVisible (handle);
 						if (redraw) {
 							OS.UpdateWindow (handle);
 							OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
@@ -7068,7 +7068,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					}
 				}
 				if (checkVisible) {
-					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
+					if (!getDrawing () || !OS.IsWindowVisible (handle)) break;
 					RECT itemRect = new RECT ();
 					if (!OS.TreeView_GetItemRect (handle, lptvdi.hItem, itemRect, false)) {
 						break;
@@ -7306,7 +7306,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			boolean runExpanded = false;
 			if ((style & SWT.VIRTUAL) != 0) style &= ~SWT.DOUBLE_BUFFERED;
 			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) style &= ~SWT.DOUBLE_BUFFERED;
-			if (findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+			if (findImageControl () != null && getDrawing () && OS.IsWindowVisible (handle)) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			}
 			/*
@@ -7371,7 +7371,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 		case OS.TVN_ITEMEXPANDEDW: {
 			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
 			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) style |= SWT.DOUBLE_BUFFERED;
-			if (findImageControl () != null && drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
+			if (findImageControl () != null && getDrawing () /*&& OS.IsWindowVisible (handle)*/) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 			}

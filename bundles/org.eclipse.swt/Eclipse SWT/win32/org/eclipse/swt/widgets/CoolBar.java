@@ -152,7 +152,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				OS.UpdateWindow (handle);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			} else {
-				redraw = drawCount == 0;
+				redraw = getDrawing();
 				if (redraw) {
 					OS.UpdateWindow (handle);
 					OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);

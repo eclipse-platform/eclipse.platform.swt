@@ -184,7 +184,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 	switch (msg) {
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL: {
-			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			redraw = findImageControl () != null && getDrawing() && OS.IsWindowVisible (handle);
 			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			break;
 		}
@@ -1039,7 +1039,7 @@ void select (int index, boolean scroll) {
 	int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT itemRect = new RECT (), selectedRect = null;
 	OS.SendMessage (handle, OS.LB_GETITEMRECT, index, itemRect);
-	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+	boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 	if (redraw) {
 		OS.UpdateWindow (handle);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
@@ -1199,7 +1199,7 @@ public void setItems (String [] items) {
 	}
 	int /*long*/ oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, ListProc);
-	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+	boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 	if (redraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}

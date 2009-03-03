@@ -234,7 +234,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 						
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
-			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			redraw = findImageControl () != null && getDrawing () && OS.IsWindowVisible (handle);
 			if (redraw) {
 				/*
 				* Feature in Windows.  When LVM_SETBKCOLOR is used with CLR_NONE
@@ -1000,7 +1000,7 @@ public void clear (int index) {
 			OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 			item.cached = false;
 		}
-		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+		if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
 			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
 		}
 		setScrollWidth (item, false);
@@ -1073,7 +1073,7 @@ public void clear (int start, int end) {
 			}
 		}
 		if (cleared) {
-			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+			if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
 				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
 			}
 			TableItem item = start == end ? items [start] : null; 
@@ -1145,7 +1145,7 @@ public void clear (int [] indices) {
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 				item.cached = false;
 			}
-			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+			if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
 				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
 			}
 		}
@@ -1205,7 +1205,7 @@ public void clearAll () {
 		}
 	}
 	if (cleared) {
-		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+		if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
 			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, 0, count - 1);
 		}
 		setScrollWidth (null, false);
@@ -1584,7 +1584,7 @@ void createItem (TableItem item, int index) {
 		* the items array is resized to be smaller to reduce
 		* memory usage.
 		*/
-		boolean small = drawCount == 0 && OS.IsWindowVisible (handle);
+		boolean small = getDrawing () && OS.IsWindowVisible (handle);
 		int length = small ? items.length + 4 : Math.max (4, items.length * 3 / 2);
 		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
@@ -3047,7 +3047,7 @@ public void removeAll () {
 	*/	
 	setDeferResize (true);
 	if (OS.IsWin95 && columnCount > 1) {
-		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		int index = itemCount - 1;
 		while (index >= 0) {
@@ -4568,7 +4568,7 @@ void setScrollWidth (int width) {
 		*/
 		boolean redraw = false;
 		if (hooks (SWT.MeasureItem)) {
-			redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+			redraw = getDrawing () && OS.IsWindowVisible (handle);
 		}
 		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, width);
@@ -4591,7 +4591,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		if (currentItem != item) fixScrollWidth = true;
 		return false;
 	}
-	if (!force && (drawCount != 0 || !OS.IsWindowVisible (handle))) {
+	if (!force && (!getDrawing () || !OS.IsWindowVisible (handle))) {
 		fixScrollWidth = true;
 		return false;
 	}
@@ -6063,7 +6063,7 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 		if (OS.COMCTL32_MAJOR >= 6) {
 			if (columnCount > H_SCROLL_LIMIT) {
 				int rowCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
-				if (rowCount > V_SCROLL_LIMIT) fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+				if (rowCount > V_SCROLL_LIMIT) fixScroll = getDrawing () && OS.IsWindowVisible (handle);
 			}
 		}
 	}
@@ -6162,7 +6162,7 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 		if (OS.COMCTL32_MAJOR >= 6) {
 			if (columnCount > H_SCROLL_LIMIT) {
 				int rowCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
-				if (rowCount > V_SCROLL_LIMIT) fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+				if (rowCount > V_SCROLL_LIMIT) fixScroll = getDrawing () && OS.IsWindowVisible (handle);
 			}
 		}
 	}

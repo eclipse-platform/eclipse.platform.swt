@@ -213,7 +213,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int border = getBorderWidth ();
 		int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + border * 2;
 		int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + border * 2;
-		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 		ignoreResize = true;
 		if (redraw) OS.UpdateWindow (handle);
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
@@ -792,7 +792,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* any given time.
 	*/
 	if (parent.lpwp != null) {
-		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+		if (getDrawing () && OS.IsWindowVisible (handle)) {
 			parent.setResizeChildren (false);
 			parent.setResizeChildren (true);
 		}
@@ -1290,7 +1290,7 @@ LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	* garbage on the screen.  The fix is to damage the
 	* pixels.
 	*/
-	if (drawCount != 0) return result;
+	if (!getDrawing ()) return result;
 	if ((style & SWT.WRAP) == 0) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
 	if (OS.SendMessage (handle, OS.TB_GETROWS, 0, 0) == 1) {

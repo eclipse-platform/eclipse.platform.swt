@@ -159,7 +159,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		}
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL: {
-			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			redraw = findImageControl () != null && getDrawing () && OS.IsWindowVisible (handle);
 			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			break;
 		}
@@ -1845,7 +1845,7 @@ public void setRedraw (boolean redraw) {
 	* while redraw is turned off and force it to be visible
 	* when redraw is restored.
 	*/
-	if (drawCount != 0) return;
+	if (!getDrawing ()) return;
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	if (!redraw) {

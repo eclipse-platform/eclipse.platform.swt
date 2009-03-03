@@ -2200,7 +2200,7 @@ LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	* combo box used to be.
 	*/
 	if (OS.IsWinCE) return result;
-	if (drawCount != 0) return result;
+	if (!getDrawing ()) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
 	if (ignoreResize) {
 		WINDOWPOS lpwp = new WINDOWPOS ();

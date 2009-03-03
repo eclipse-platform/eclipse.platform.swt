@@ -681,7 +681,7 @@ public Rectangle getTextBounds (int index) {
 }
 
 void redraw () {
-	if (parent.currentItem == this || parent.drawCount != 0) return;
+	if (parent.currentItem == this || !parent.getDrawing ()) return;
 	int /*long*/ hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
@@ -690,7 +690,7 @@ void redraw () {
 }
 
 void redraw (int column, boolean drawText, boolean drawImage) {
-	if (parent.currentItem == this || parent.drawCount != 0) return;
+	if (parent.currentItem == this || !parent.getDrawing ()) return;
 	int /*long*/ hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);

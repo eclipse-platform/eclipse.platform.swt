@@ -504,7 +504,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 	}
 	if (fixPaint) {
-		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		ignoreResize = true;
 		OS.SendMessage (handle, OS.WM_SIZE, 0, 0);

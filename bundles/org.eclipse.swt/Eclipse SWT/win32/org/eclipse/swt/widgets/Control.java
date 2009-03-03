@@ -1185,6 +1185,10 @@ public boolean getDragDetect () {
 	return (state & DRAG_DETECT) != 0;
 }
 
+boolean getDrawing () {
+	return drawCount <= 0;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -1459,7 +1463,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	if (drawCount != 0) return (state & HIDDEN) == 0;
+	if (!getDrawing()) return (state & HIDDEN) == 0;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return (bits & OS.WS_VISIBLE) != 0;
 }
@@ -3300,7 +3304,7 @@ void setToolTipText (Shell shell, String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		if (((state & HIDDEN) == 0) == visible) return;
 	} else {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -3326,7 +3330,7 @@ public void setVisible (boolean visible) {
 			fixFocus = isFocusAncestor (control);
 		}
 	}
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		state = visible ? state & ~HIDDEN : state | HIDDEN;
 	} else {
 		showWidget (visible);
@@ -4729,7 +4733,7 @@ LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	* not redraw the area where the control once was in the parent.
 	* The fix is to detect this case and redraw the area.
 	*/
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		Shell shell = getShell ();
 		if (shell != this) {
 			WINDOWPOS lpwp = new WINDOWPOS ();

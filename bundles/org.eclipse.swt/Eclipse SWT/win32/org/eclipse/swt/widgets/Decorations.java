@@ -1327,7 +1327,7 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		if (((state & HIDDEN) == 0) == visible) return;
 	} else {
 		if (visible == OS.IsWindowVisible (handle)) return;
@@ -1346,7 +1346,7 @@ public void setVisible (boolean visible) {
 				OS.CommandBar_DrawMenuBar (hwndCB, 0);
 			}
 		}
-		if (drawCount != 0) {
+		if (!getDrawing()) {
 			state &= ~HIDDEN;
 		} else {
 			if (OS.IsWinCE) {
@@ -1402,7 +1402,7 @@ public void setVisible (boolean visible) {
 				}
 			}
 		}
-		if (drawCount != 0) {
+		if (!getDrawing()) {
 			state |= HIDDEN;
 		} else {
 			OS.ShowWindow (handle, OS.SW_HIDE);
