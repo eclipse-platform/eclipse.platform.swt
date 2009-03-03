@@ -21831,9 +21831,9 @@
 </method>
 </class>
 <class name="NSView" swt_gen="mixed" swt_superclass="NSResponder">
-<method selector="acceptsFirstMouse:">
-<arg name="theEvent"></arg>
-<retval></retval>
+<method selector="acceptsFirstMouse:" swt_gen="true">
+<arg name="theEvent" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="addCursorRect:cursor:">
 <arg name="aRect"></arg>

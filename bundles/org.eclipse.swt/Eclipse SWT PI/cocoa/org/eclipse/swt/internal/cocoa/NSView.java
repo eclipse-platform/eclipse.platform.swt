@@ -24,6 +24,10 @@ public NSView(id id) {
 	super(id);
 }
 
+public boolean acceptsFirstMouse(NSEvent theEvent) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_acceptsFirstMouse_, theEvent != null ? theEvent.id : 0);
+}
+
 public void addSubview(NSView aView) {
 	OS.objc_msgSend(this.id, OS.sel_addSubview_, aView != null ? aView.id : 0);
 }

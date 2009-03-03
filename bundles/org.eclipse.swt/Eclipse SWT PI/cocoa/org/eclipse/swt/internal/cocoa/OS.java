@@ -518,6 +518,7 @@ public static final int /*long*/ sel_URLWithString_ = sel_registerName("URLWithS
 public static final int /*long*/ sel_UTF8String = sel_registerName("UTF8String");
 public static final int /*long*/ sel_abortEditing = sel_registerName("abortEditing");
 public static final int /*long*/ sel_absoluteString = sel_registerName("absoluteString");
+public static final int /*long*/ sel_acceptsFirstMouse_ = sel_registerName("acceptsFirstMouse:");
 public static final int /*long*/ sel_acceptsFirstResponder = sel_registerName("acceptsFirstResponder");
 public static final int /*long*/ sel_accessibilityActionDescription_ = sel_registerName("accessibilityActionDescription:");
 public static final int /*long*/ sel_accessibilityActionNames = sel_registerName("accessibilityActionNames");
