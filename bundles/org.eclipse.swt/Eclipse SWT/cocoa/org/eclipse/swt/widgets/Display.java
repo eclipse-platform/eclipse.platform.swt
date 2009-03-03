@@ -3877,9 +3877,18 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 		case OS.NSScrollWheel:
 			if (window != null) {
 				Shell shell = (Shell) getWidget (window.id);
-				if (shell != null && shell.getModalShell () != null) {
-					if (beep) beep ();	
-					return;
+				if (shell != null) {
+					Shell modalShell = shell.getModalShell ();
+					if (modalShell != null) {
+						if (beep) {
+							if (!application.isActive()) {
+								application.activateIgnoringOtherApps(true);
+							} else {
+								beep ();
+							}
+						}
+						return;
+					}
 				}
 			}
 			break;

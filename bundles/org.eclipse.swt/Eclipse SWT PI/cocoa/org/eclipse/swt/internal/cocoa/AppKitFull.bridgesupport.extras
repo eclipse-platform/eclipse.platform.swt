@@ -2793,8 +2793,8 @@
 <arg name="sender" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="isActive">
-<retval></retval>
+<method selector="isActive" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="isHidden">
 <retval></retval>

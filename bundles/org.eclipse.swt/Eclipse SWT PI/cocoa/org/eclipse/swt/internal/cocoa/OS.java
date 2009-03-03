@@ -951,6 +951,7 @@ public static final int /*long*/ sel_interpretKeyEvents_ = sel_registerName("int
 public static final int /*long*/ sel_invalidate = sel_registerName("invalidate");
 public static final int /*long*/ sel_invalidateShadow = sel_registerName("invalidateShadow");
 public static final int /*long*/ sel_invert = sel_registerName("invert");
+public static final int /*long*/ sel_isActive = sel_registerName("isActive");
 public static final int /*long*/ sel_isDrawingToScreen = sel_registerName("isDrawingToScreen");
 public static final int /*long*/ sel_isEmpty = sel_registerName("isEmpty");
 public static final int /*long*/ sel_isEqual_ = sel_registerName("isEqual:");

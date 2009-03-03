@@ -45,6 +45,10 @@ public void hideOtherApplications(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_hideOtherApplications_, sender != null ? sender.id : 0);
 }
 
+public boolean isActive() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isActive);
+}
+
 public boolean isRunning() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isRunning);
 }
