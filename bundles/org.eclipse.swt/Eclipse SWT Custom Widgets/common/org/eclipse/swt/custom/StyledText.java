@@ -8234,7 +8234,9 @@ void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargi
 	this.topMargin = topMargin;
 	this.rightMargin = rightMargin;
 	this.bottomMargin = bottomMargin;
+	resetCache(0, content.getLineCount());
 	setCaretLocation();
+	super.redraw();
 }
 /**
  * Flips selection anchor based on word selection direction.
