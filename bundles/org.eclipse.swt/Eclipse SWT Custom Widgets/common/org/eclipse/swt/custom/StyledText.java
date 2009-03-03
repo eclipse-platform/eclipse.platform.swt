@@ -8981,27 +8981,26 @@ public void setWordWrap(boolean wrap) {
 	super.redraw();
 }
 boolean showLocation(Rectangle rect, boolean scrollPage) {
-	int clientAreaWidth = this.clientAreaWidth - leftMargin - rightMargin;
-	int clientAreaHeight = this.clientAreaHeight - topMargin - bottomMargin;
 	boolean scrolled = false;
-	if (rect.y <= topMargin) {
+	if (rect.y < topMargin) {
 		scrolled = scrollVertical(rect.y - topMargin, true);
-	} else if (rect.y + rect.height > clientAreaHeight) {
-		if (clientAreaHeight == 0) {
-			scrolled = scrollVertical(rect.y, true);
+	} else if (rect.y + rect.height > clientAreaHeight - bottomMargin) {
+		if (clientAreaHeight - topMargin - bottomMargin <= 0) {
+			scrolled = scrollVertical(rect.y - topMargin, true);
 		} else {
-			scrolled = scrollVertical(rect.y + rect.height - clientAreaHeight, true);
+			scrolled = scrollVertical(rect.y + rect.height - (clientAreaHeight - bottomMargin), true);
 		}
 	}
-	if (clientAreaWidth > 0) {
-		int minScroll = scrollPage ? clientAreaWidth / 4 : 0;
+	int width = clientAreaWidth - rightMargin - leftMargin; 
+	if (width > 0) {
+		int minScroll = scrollPage ? width / 4 : 0;
 		if (rect.x < leftMargin) {
 			int scrollWidth = Math.max(leftMargin - rect.x, minScroll);
 			int maxScroll = horizontalScrollOffset;
 			scrolled = scrollHorizontal(-Math.min(maxScroll, scrollWidth), true);
-		} else if (rect.x + rect.width > clientAreaWidth) {
-			int scrollWidth =  Math.max(rect.x + rect.width - clientAreaWidth, minScroll);
-			int maxScroll = renderer.getWidth() - horizontalScrollOffset - this.clientAreaWidth;
+		} else if (rect.x + rect.width > (clientAreaWidth - rightMargin)) {
+			int scrollWidth =  Math.max(rect.x + rect.width - (clientAreaWidth - rightMargin), minScroll);
+			int maxScroll = renderer.getWidth() - horizontalScrollOffset - clientAreaWidth;
 			scrolled = scrollHorizontal(Math.min(maxScroll, scrollWidth), true);
 		}
 	}
