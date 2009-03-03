@@ -1185,7 +1185,7 @@ public void setFont (int index, Font font) {
 		if (font == null) return;
 		cellFont = new Font [count];
 	}
-	Font oldFont = this.font;
+	Font oldFont = cellFont [index];
 	if (oldFont == font) return;
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
