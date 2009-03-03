@@ -3679,14 +3679,16 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
-			OS.HIViewSetDrawingEnabled (handle, true);
-			invalidateVisibleRegion (handle);
-			redrawWidget (handle, true);
+			int topHandle = topHandle ();
+			OS.HIViewSetDrawingEnabled (topHandle, true);
+			invalidateVisibleRegion (topHandle);
+			redrawWidget (topHandle, true);
 		}
 	} else {
 		if (drawCount == 0) {
-			OS.HIViewSetDrawingEnabled (handle, false);
-			invalidateVisibleRegion (handle);
+			int topHandle = topHandle ();
+			OS.HIViewSetDrawingEnabled (topHandle, false);
+			invalidateVisibleRegion (topHandle);
 		}
 		drawCount++;
 	}
