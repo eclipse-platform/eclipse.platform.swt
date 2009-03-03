@@ -545,6 +545,7 @@ int getCharCount() {
 	} else {
 		str = new NSCell(((NSComboBox)view).cell()).title();
 	}
+	if (str == null) return 0;
 	return (int)/*64*/str.length();
 }
 
