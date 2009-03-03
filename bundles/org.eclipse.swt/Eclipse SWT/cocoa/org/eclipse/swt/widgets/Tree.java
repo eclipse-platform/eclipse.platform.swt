@@ -2367,6 +2367,7 @@ boolean setScrollWidth (boolean set, TreeItem[] items, boolean recurse) {
 		if (oldWidth >= newWidth) return false;
 	}
 	firstColumn.setWidth (newWidth);
+	if (horizontalBar != null && horizontalBar.view != null) redrawWidget (horizontalBar.view, false);
 	return true;
 }
 
@@ -2381,6 +2382,7 @@ boolean setScrollWidth (TreeItem item) {
 	int oldWidth = (int)firstColumn.width ();
 	if (oldWidth < newWidth) {
 		firstColumn.setWidth (newWidth);
+		if (horizontalBar != null && horizontalBar.view != null) redrawWidget (horizontalBar.view, false);
 		return true;
 	}
 	return false;

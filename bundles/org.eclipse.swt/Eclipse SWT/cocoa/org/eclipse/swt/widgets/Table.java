@@ -2264,6 +2264,7 @@ boolean setScrollWidth (TableItem item) {
 	int oldWidth = (int)firstColumn.width ();
 	if (oldWidth < newWidth) {
 		firstColumn.setWidth (newWidth);
+		if (horizontalBar != null && horizontalBar.view != null) redrawWidget (horizontalBar.view, false);
 		return true;
 	}
 	return false;
@@ -2291,6 +2292,7 @@ boolean setScrollWidth (TableItem [] items, boolean set) {
 		if (oldWidth >= newWidth) return false;
 	}
 	firstColumn.setWidth (newWidth);
+	if (horizontalBar != null && horizontalBar.view != null) redrawWidget (horizontalBar.view, false);
 	return true;
 }
 
