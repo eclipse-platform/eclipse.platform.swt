@@ -1646,10 +1646,8 @@ static int checkStyle(int style) {
  * deleted lines.
  */
 void claimBottomFreeSpace() {
-	int clientAreaHeight = this.clientAreaHeight - topMargin - bottomMargin;
 	if (isFixedLineHeight()) {
-		int lineHeight = renderer.getLineHeight();
-		int newVerticalOffset = Math.max(0, content.getLineCount() * lineHeight - clientAreaHeight);
+		int newVerticalOffset = Math.max(0, renderer.getHeight() - clientAreaHeight);
 		if (newVerticalOffset < getVerticalScrollOffset()) {
 			scrollVertical(newVerticalOffset - getVerticalScrollOffset(), true);
 		}
@@ -2147,7 +2145,7 @@ void doAutoScroll(int direction, int distance) {
 					if (blockSelection) {
 						int verticalScrollOffset = getVerticalScrollOffset();
 						int y = blockYLocation - verticalScrollOffset;
-						int max = renderer.getHeight() - verticalScrollOffset - clientAreaHeight;
+						int max = renderer.getHeight() - verticalScrollOffset - (clientAreaHeight - topMargin - bottomMargin);
 						int pixels = Math.min(autoScrollDistance, Math.max(0,max));
 						if (pixels != 0) {
 							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels, true);
@@ -8303,9 +8301,9 @@ void setScrollBars(boolean vertical) {
 			// (ie. because the thumb size is less than the scroll maximum)
 			// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
 			if (clientAreaHeight < maximum) {
-				verticalBar.setMaximum(maximum);
-				verticalBar.setThumb(clientAreaHeight);
-				verticalBar.setPageIncrement(clientAreaHeight);
+				verticalBar.setMaximum(maximum - topMargin - bottomMargin);
+				verticalBar.setThumb(clientAreaHeight - topMargin - bottomMargin);
+				verticalBar.setPageIncrement(clientAreaHeight - topMargin - bottomMargin);
 			} else if (verticalBar.getThumb() != inactive || verticalBar.getMaximum() != inactive) {
 				verticalBar.setValues(
 					verticalBar.getSelection(),

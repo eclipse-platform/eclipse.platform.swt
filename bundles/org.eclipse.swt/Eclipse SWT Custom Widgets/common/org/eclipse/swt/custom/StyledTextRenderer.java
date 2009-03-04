@@ -469,7 +469,7 @@ FontData[] getFontData(int style) {
 int getHeight () {
 	int defaultLineHeight = getLineHeight();
 	if (styledText.isFixedLineHeight()) {
-		return lineCount * defaultLineHeight;
+		return lineCount * defaultLineHeight + styledText.topMargin + styledText.bottomMargin;
 	}
 	int totalHeight = 0;
 	int width = styledText.getWrapWidth();
