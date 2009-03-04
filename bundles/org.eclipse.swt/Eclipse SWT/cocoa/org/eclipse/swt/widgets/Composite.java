@@ -829,6 +829,43 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.scrollWheel (id, sel, theEvent);
 }
 
+/*
+ * Feature in Cocoa. Some combinations of tab + modifier key do not trigger key events but instead
+ * attempt to move the focus elsewhere. next- and previousValidKeyView get called when this happens,
+ * so intercept those messages in the Canvas case.  Otherwise let Cocoa handle it. 
+ */
+int /*long*/ nextValidKeyView(int /*long*/ id, int /*long*/ sel) {
+	if (view.window ().firstResponder ().id == id) {
+		// Forward the current event to keyDown...
+		if ((state & CANVAS) != 0) {
+			NSEvent event = NSApplication.sharedApplication().currentEvent();
+			
+			if (event.type() == OS.NSKeyDown) {
+				this.keyDown(id, sel, event.id);
+				return 0;
+			}			
+		}
+	}
+	
+	return super.nextValidKeyView(id, sel);
+}
+
+int /*long*/ previousValidKeyView(int /*long*/ id, int /*long*/ sel) {
+	if (view.window ().firstResponder ().id == id) {
+		// Forward the current event to keyDown...
+		if ((state & CANVAS) != 0) {
+			NSEvent event = NSApplication.sharedApplication().currentEvent();
+			
+			if (event.type() == OS.NSKeyDown) {
+				this.keyDown(id, sel, event.id);
+				return 0;
+			}
+		}
+	}
+	
+	return super.previousValidKeyView(id, sel);
+}
+
 /**
  * Sets the background drawing mode to the argument which should
  * be one of the following constants defined in class <code>SWT</code>:

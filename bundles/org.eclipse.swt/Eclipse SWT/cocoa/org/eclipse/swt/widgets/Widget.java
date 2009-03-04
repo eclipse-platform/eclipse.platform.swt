@@ -1164,6 +1164,14 @@ NSRange selectedRange (int /*long*/ id, int /*long*/ sel) {
 	return new NSRange ();
 }
 
+int /*long*/ nextValidKeyView (int /*long*/ id, int /*long*/ sel) {
+	return callSuperObject(id, sel);
+}
+
+int /*long*/ previousValidKeyView (int /*long*/ id, int /*long*/ sel) {
+	return callSuperObject(id, sel);
+}
+
 void sendDoubleSelection() {
 }
 

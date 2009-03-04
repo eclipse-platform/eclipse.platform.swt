@@ -22223,8 +22223,8 @@
 <method selector="nextKeyView">
 <retval></retval>
 </method>
-<method selector="nextValidKeyView">
-<retval></retval>
+<method selector="nextValidKeyView" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="opaqueAncestor">
 <retval></retval>
@@ -22255,8 +22255,8 @@
 <method selector="previousKeyView">
 <retval></retval>
 </method>
-<method selector="previousValidKeyView">
-<retval></retval>
+<method selector="previousValidKeyView" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="print:">
 <arg name="sender"></arg>
