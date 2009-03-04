@@ -1967,9 +1967,9 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 				if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
 				if (consume [0]) return;
 			}
-			
-			return;
 		}
+		
+		return;
 	}
 	super.keyDown (id, sel, theEvent);
 }
