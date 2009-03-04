@@ -21,7 +21,7 @@ class DateTimeTab extends Tab {
 	Group dateTimeGroup;
 	
 	/* Style widgets added to the "Style" group */
-	Button dateButton, timeButton, calendarButton, shortButton, mediumButton, longButton;
+	Button dateButton, timeButton, calendarButton, shortButton, mediumButton, longButton, dropDownButton;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -56,6 +56,7 @@ class DateTimeTab extends Tab {
 		if (shortButton.getSelection ()) style |= SWT.SHORT;
 		if (mediumButton.getSelection ()) style |= SWT.MEDIUM;
 		if (longButton.getSelection ()) style |= SWT.LONG;
+		if (dropDownButton.getSelection ()) style |= SWT.DROP_DOWN;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 	
 		/* Create the example widgets */		
@@ -83,6 +84,8 @@ class DateTimeTab extends Tab {
 		mediumButton.setText("SWT.MEDIUM");
 		longButton = new Button(formatGroup, SWT.RADIO);
 		longButton.setText("SWT.LONG");
+		dropDownButton = new Button(styleGroup, SWT.CHECK);
+		dropDownButton.setText("SWT.DROP_DOWN");
 		borderButton = new Button(styleGroup, SWT.CHECK);
 		borderButton.setText("SWT.BORDER");
 	}
@@ -120,6 +123,7 @@ class DateTimeTab extends Tab {
 		shortButton.setSelection ((dateTime1.getStyle () & SWT.SHORT) != 0);
 		mediumButton.setSelection ((dateTime1.getStyle () & SWT.MEDIUM) != 0);
 		longButton.setSelection ((dateTime1.getStyle () & SWT.LONG) != 0);
+		dropDownButton.setSelection ((dateTime1.getStyle () & SWT.DROP_DOWN) != 0);
 		borderButton.setSelection ((dateTime1.getStyle () & SWT.BORDER) != 0);
 	}
 }
