@@ -1684,7 +1684,10 @@ static boolean isValidClass (Class clazz) {
  */
 public int getDismissalAlignment () {
 	checkDevice ();
-	return SWT.RIGHT;
+	int [] buffer = new int [1];
+	int /*long*/ settings = OS.gtk_settings_get_default ();
+	OS.g_object_get (settings, OS.gtk_alternative_button_order, buffer, 0);
+	return buffer [0] == 1 ? SWT.LEFT : SWT.RIGHT;
 }
 
 /**

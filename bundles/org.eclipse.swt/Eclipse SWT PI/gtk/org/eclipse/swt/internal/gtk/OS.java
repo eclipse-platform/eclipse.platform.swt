@@ -487,7 +487,8 @@ public class OS extends C {
 	public static final byte[] focus_line_width = ascii("focus-line-width");
 	public static final byte[] font_desc = ascii("font-desc");
 	public static final byte[] foreground_gdk = ascii("foreground-gdk");
-	public static final byte[] grid_line_width = ascii("grid-line-width"); 
+	public static final byte[] grid_line_width = ascii("grid-line-width");
+	public static final byte[] gtk_alternative_button_order = ascii("gtk-alternative-button-order");
 	public static final byte[] gtk_cursor_blink = ascii("gtk-cursor-blink");
 	public static final byte[] gtk_cursor_blink_time = ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");

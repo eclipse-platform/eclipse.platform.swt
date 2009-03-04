@@ -371,20 +371,18 @@ String openChooserDialog () {
 		OS.GTK_FILE_CHOOSER_ACTION_SAVE :
 		OS.GTK_FILE_CHOOSER_ACTION_OPEN;
 	int /*long*/ shellHandle = parent.topHandle ();
-	handle = OS.gtk_file_chooser_dialog_new (
-		titleBytes,
-		shellHandle,
-		action,
-		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
-		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
-		0);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if (display.getDismissalAlignment() == SWT.RIGHT) {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+	} else {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+	}
 	int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
 		OS.g_list_free (pixbufs);
 	}
 	presetChooserDialog ();
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
 	String answer = null;
 	Dialog oldModal = null;

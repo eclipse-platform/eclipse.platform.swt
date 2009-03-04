@@ -36,6 +36,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
 	static final String SEPARATOR = System.getProperty ("file.separator");
+	int /*long*/ handle;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -125,13 +126,12 @@ public String open () {
 String openChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ shellHandle = parent.topHandle ();
-	int /*long*/ handle = OS.gtk_file_chooser_dialog_new (
-		titleBytes,
-		shellHandle,
-		OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
-		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
-		0);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if (display.getDismissalAlignment() == SWT.RIGHT) {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+	} else {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+	}
 	int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
@@ -169,7 +169,6 @@ String openChooserDialog () {
 		OS.gtk_file_chooser_set_extra_widget (handle, box);
 	}
 	String answer = null;
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
