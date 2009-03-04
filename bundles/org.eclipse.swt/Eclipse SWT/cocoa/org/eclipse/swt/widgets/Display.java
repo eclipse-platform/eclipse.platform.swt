@@ -4102,9 +4102,9 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	/*
 	* Feature in Cocoa.  In Cocoa, the default button animation is done
 	* in a separate thread that calls drawRect() and isOpaque() from
-	* outside the UI thread.  This that those methods and application
-	* code runs as a result of those methods must be thread safe.  In
-	* SWT, paint events must happen in the UI thread.  The fix is
+	* outside the UI thread.  Those methods, and application code
+	* that runs as a result of those methods, must be thread safe.
+	* In SWT, paint events must happen in the UI thread.  The fix is
 	* to detect a non-UI thread and avoid the drawing. Instead, the
 	* default button is animated by a timer.
 	*/
@@ -4181,9 +4181,9 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	/*
 	* Feature in Cocoa.  In Cocoa, the default button animation is done
 	* in a separate thread that calls drawRect() and isOpaque() from
-	* outside the UI thread.  This that those methods and application
-	* code runs as a result of those methods must be thread safe.  In
-	* SWT, paint events must happen in the UI thread.  The fix is
+	* outside the UI thread.  Those methods, and application code
+	* that runs as a result of those methods, must be thread safe.
+	* In SWT, paint events must happen in the UI thread.  The fix is
 	* to detect a non-UI thread and avoid the drawing. Instead, the
 	* default button is animated by a timer.
 	*/

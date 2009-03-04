@@ -17,7 +17,7 @@ package org.eclipse.swt.graphics;
  * their associated GC. SWT images, and device objects such as the Display
  * device and the Printer device, are drawables.
  * <p>
- * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT
+ * <b>IMPORTANT:</b> This interface is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
  * within the packages provided by SWT. It should never be
  * referenced from application code.
