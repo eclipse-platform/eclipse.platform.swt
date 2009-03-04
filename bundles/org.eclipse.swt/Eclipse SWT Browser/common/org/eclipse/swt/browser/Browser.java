@@ -188,7 +188,7 @@ public static void clearSessions () {
  * 
  * @since 3.5
  */
-public static String GetCookie (String name, String url) {
+public static String getCookie (String name, String url) {
 	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return WebBrowser.GetCookie (name, url);
@@ -218,7 +218,7 @@ public static String GetCookie (String name, String url) {
  * 
  * @since 3.5
  */
-public static boolean SetCookie (String value, String url) {
+public static boolean setCookie (String value, String url) {
 	if (value == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return WebBrowser.SetCookie (value, url);
