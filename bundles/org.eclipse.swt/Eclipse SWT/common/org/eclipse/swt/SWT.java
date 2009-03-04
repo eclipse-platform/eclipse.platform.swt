@@ -876,11 +876,13 @@ public class SWT {
 
 	/**
 	 * Style constant for drop down menu/list behavior (value is 1&lt;&lt;2).
+	 * <br>Note that for <code>DateTime</code> this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Menu</code></li>
 	 * <li><code>ToolItem</code></li>
 	 * <li><code>CoolItem</code></li>
 	 * <li><code>Combo</code></li>
+	 * <li><code>DateTime</code></li>
 	 * </ul></p>
 	 */
 	public static final int DROP_DOWN = 1 << 2;
