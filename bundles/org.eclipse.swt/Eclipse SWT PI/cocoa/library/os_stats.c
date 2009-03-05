@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 402;
-int OS_nativeFunctionCallCount[402];
+int OS_nativeFunctionCount = 408;
+int OS_nativeFunctionCallCount[408];
 char * OS_nativeFunctionNames[] = {
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
@@ -242,6 +242,7 @@ char * OS_nativeFunctionNames[] = {
 	"accessibilityHitTest_1CALLBACK",
 	"attributedSubstringFromRange_1CALLBACK",
 	"call",
+	"cellSize_1CALLBACK",
 	"characterIndexForPoint_1CALLBACK",
 	"class_1addIvar",
 	"class_1addMethod",
@@ -257,10 +258,13 @@ char * OS_nativeFunctionNames[] = {
 	"drawImage_1withFrame_1inView_1CALLBACK",
 	"drawInteriorWithFrame_1inView_1CALLBACK",
 	"drawRect_1CALLBACK",
+	"drawWithFrame_1inView_1CALLBACK",
 	"firstRectForCharacterRange_1CALLBACK",
 	"getpid",
 	"highlightSelectionInClipRect_1CALLBACK",
+	"hitTestForEvent_1inRect_1ofView_1CALLBACK",
 	"hitTest_1CALLBACK",
+	"imageRectForBounds_1CALLBACK",
 	"instrumentObjcMessageSends",
 	"isFlipped_1CALLBACK",
 	"kCFRunLoopCommonModes",
@@ -727,6 +731,7 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSSize_2",
 #endif
+	"objc_1msgSendSuper_1stret",
 #ifndef JNI64
 	"objc_1msgSend_1bool__II",
 #else
@@ -913,6 +918,7 @@ char * OS_nativeFunctionNames[] = {
 	"setNeedsDisplayInRect_1CALLBACK",
 	"shouldChangeTextInRange_1replacementString_1CALLBACK",
 	"textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK",
+	"titleRectForBounds_1CALLBACK",
 	"view_1stringForToolTip_1point_1userData_1CALLBACK",
 	"webView_1setFrame_1CALLBACK",
 };

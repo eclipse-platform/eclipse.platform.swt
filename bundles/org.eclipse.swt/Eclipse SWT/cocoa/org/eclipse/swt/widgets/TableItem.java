@@ -42,8 +42,6 @@ public class TableItem extends Item {
 	Font font;
 	Font[] cellFont;
 	int width = -1;
-
-	static final int IMAGETEXT_MARGIN = 2;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -135,11 +133,20 @@ int calculateWidth (int index, GC gc) {
 	if (font == null) font = parent.defaultFont();
 	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
 	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
-	NSBrowserCell cell = parent.dataCell;
+	NSCell cell = parent.dataCell;
 	cell.setFont (font.handle);
 	cell.setTitle (NSString.stringWith(text != null ? text : ""));
-	cell.setImage (image != null ? image.handle : null);
-	NSSize size = cell.cellSize ();
+
+	/* This code is inlined for performance */
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = cell.id;
+	super_struct.super_class = OS.objc_msgSend(cell.id, OS.sel_superclass);
+	NSSize size = new NSSize();
+	OS.objc_msgSendSuper_stret(size, super_struct, OS.sel_cellSize);
+	if (image != null) size.width += parent.imageBounds.width + Table.IMAGE_GAP;
+//	cell.setImage (image != null ? image.handle : null);
+//	NSSize size = cell.cellSize ();
+
 	int width = (int)Math.ceil (size.width);
 	boolean sendMeasure = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
@@ -184,46 +191,8 @@ void clear () {
 }
 
 NSObject createString (int index) {
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
-	boolean isSelected = ((NSTableView)parent.view).isRowSelected (parent.indexOf (this));
-	if (!isSelected) {
-		Color foreground = cellForeground != null ? cellForeground [index] : null;
-		if (foreground == null) foreground = this.foreground;
-		if (foreground == null) foreground = parent.foreground;
-		if (foreground != null) {
-			NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
-			dict.setObject (color, OS.NSForegroundColorAttributeName);
-		}
-	}
-	Font font = cellFont != null ? cellFont [index] : null;
-	if (font == null) font = this.font;
-	if (font == null) font = parent.font;
-	if (font == null) font = parent.defaultFont ();
-	if (font != null) {
-		dict.setObject (font.handle, OS.NSFontAttributeName);
-	}
-	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-	paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
-	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
-	if (image != null) {
-		/* margin between item image and text */
-		paragraphStyle.setFirstLineHeadIndent (IMAGETEXT_MARGIN);
-	}
-	if (parent.columnCount > 0) {
-		int style = parent.getColumn (index).getStyle ();
-		if ((style & SWT.CENTER) != 0) {
-			paragraphStyle.setAlignment (OS.NSCenterTextAlignment);
-		} else if ((style & SWT.RIGHT) != 0) {
-			paragraphStyle.setAlignment (OS.NSRightTextAlignment);
-		}
-	}
-	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
-	paragraphStyle.release ();
 	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
-	NSString str = NSString.stringWith(text != null ? text : "");
-	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (str, dict);
-	attribStr.autorelease ();
-	return attribStr;
+	return NSString.stringWith(text != null ? text : "");
 }
 
 void destroyWidget () {
@@ -496,8 +465,12 @@ public Rectangle getImageBounds (int index) {
 		index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
 	}
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	//TODO is this right?
-	rect.width = image != null ? image.getBounds().width : 0; 
+	rect.x += Tree.IMAGE_GAP;
+	if (image != null) {
+		rect.width = parent.imageBounds.width;
+	} else {
+		rect.width = 0;
+	}
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
@@ -600,9 +573,10 @@ public Rectangle getTextBounds (int index) {
 		index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
 	}
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	//TODO is this right?
+	rect.x += Tree.TEXT_GAP;
+	rect.width -= Tree.TEXT_GAP;
 	if (image != null) {
-		int offset = image.getBounds ().width + IMAGETEXT_MARGIN;
+		int offset = parent.imageBounds.width + Tree.IMAGE_GAP;
 		rect.x += offset;
 		rect.width -= offset;
 	}

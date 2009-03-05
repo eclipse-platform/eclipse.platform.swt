@@ -170,6 +170,16 @@ public static final native int /*long*/ drawImage_withFrame_inView_CALLBACK(int 
 /** @method flags=no_gen */
 public static final native int /*long*/ drawInteriorWithFrame_inView_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
+public static final native int /*long*/ drawWithFrame_inView_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ imageRectForBounds_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ titleRectForBounds_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ hitTestForEvent_inRect_ofView_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ cellSize_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ setFrame_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ setFrameOrigin_CALLBACK(int /*long*/ func);
@@ -305,6 +315,8 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
+/** @method flags=cast */
+public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
 /** @param cls cast=(Class) */
 public static final native void objc_registerClassPair(int /*long*/ cls);
 /** @param obj cast=(id) */
@@ -590,6 +602,7 @@ public static final int /*long*/ sel_arrayWithCapacity_ = sel_registerName("arra
 public static final int /*long*/ sel_arrayWithObject_ = sel_registerName("arrayWithObject:");
 public static final int /*long*/ sel_arrowCursor = sel_registerName("arrowCursor");
 public static final int /*long*/ sel_ascender = sel_registerName("ascender");
+public static final int /*long*/ sel_attributedStringValue = sel_registerName("attributedStringValue");
 public static final int /*long*/ sel_attributedStringWithAttachment_ = sel_registerName("attributedStringWithAttachment:");
 public static final int /*long*/ sel_attributedSubstringFromRange_ = sel_registerName("attributedSubstringFromRange:");
 public static final int /*long*/ sel_attributesAtIndex_longestEffectiveRange_inRange_ = sel_registerName("attributesAtIndex:longestEffectiveRange:inRange:");
@@ -819,6 +832,7 @@ public static final int /*long*/ sel_drawInteriorWithFrame_inView_ = sel_registe
 public static final int /*long*/ sel_drawRect_ = sel_registerName("drawRect:");
 public static final int /*long*/ sel_drawSortIndicatorWithFrame_inView_ascending_priority_ = sel_registerName("drawSortIndicatorWithFrame:inView:ascending:priority:");
 public static final int /*long*/ sel_drawStatusBarBackgroundInRect_withHighlight_ = sel_registerName("drawStatusBarBackgroundInRect:withHighlight:");
+public static final int /*long*/ sel_drawWithFrame_inView_ = sel_registerName("drawWithFrame:inView:");
 public static final int /*long*/ sel_drawingRectForBounds_ = sel_registerName("drawingRectForBounds:");
 public static final int /*long*/ sel_elementAtIndex_associatedPoints_ = sel_registerName("elementAtIndex:associatedPoints:");
 public static final int /*long*/ sel_elementCount = sel_registerName("elementCount");
@@ -890,9 +904,11 @@ public static final int /*long*/ sel_helpRequested_ = sel_registerName("helpRequ
 public static final int /*long*/ sel_hide_ = sel_registerName("hide:");
 public static final int /*long*/ sel_hideOtherApplications_ = sel_registerName("hideOtherApplications:");
 public static final int /*long*/ sel_highlightColorInView_ = sel_registerName("highlightColorInView:");
+public static final int /*long*/ sel_highlightColorWithFrame_inView_ = sel_registerName("highlightColorWithFrame:inView:");
 public static final int /*long*/ sel_highlightSelectionInClipRect_ = sel_registerName("highlightSelectionInClipRect:");
 public static final int /*long*/ sel_hitPart = sel_registerName("hitPart");
 public static final int /*long*/ sel_hitTest_ = sel_registerName("hitTest:");
+public static final int /*long*/ sel_hitTestForEvent_inRect_ofView_ = sel_registerName("hitTestForEvent:inRect:ofView:");
 public static final int /*long*/ sel_hourOfDay = sel_registerName("hourOfDay");
 public static final int /*long*/ sel_iconForFile_ = sel_registerName("iconForFile:");
 public static final int /*long*/ sel_iconForFileType_ = sel_registerName("iconForFileType:");

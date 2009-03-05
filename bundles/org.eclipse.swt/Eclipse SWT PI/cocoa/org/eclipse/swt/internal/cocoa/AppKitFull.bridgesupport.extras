@@ -4861,8 +4861,8 @@
 <method selector="allowsUndo">
 <retval></retval>
 </method>
-<method selector="attributedStringValue">
-<retval></retval>
+<method selector="attributedStringValue" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="backgroundStyle">
 <retval></retval>
@@ -4923,10 +4923,10 @@
 <arg name="view"></arg>
 <retval></retval>
 </method>
-<method selector="drawWithFrame:inView:">
-<arg name="cellFrame"></arg>
-<arg name="controlView"></arg>
-<retval></retval>
+<method selector="drawWithFrame:inView:" swt_gen="true">
+<arg name="cellFrame" swt_gen="true"></arg>
+<arg name="controlView" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="drawingRectForBounds:" swt_gen="true">
 <arg name="theRect" swt_gen="true"></arg>
@@ -4978,19 +4978,19 @@
 <arg name="controlView"></arg>
 <retval></retval>
 </method>
-<method selector="highlightColorWithFrame:inView:">
-<arg name="cellFrame"></arg>
-<arg name="controlView"></arg>
-<retval></retval>
+<method selector="highlightColorWithFrame:inView:" swt_gen="true">
+<arg name="cellFrame" swt_gen="true"></arg>
+<arg name="controlView" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
-<method selector="hitTestForEvent:inRect:ofView:">
-<arg name="event"></arg>
-<arg name="cellFrame"></arg>
-<arg name="controlView"></arg>
-<retval></retval>
+<method selector="hitTestForEvent:inRect:ofView:" swt_gen="true">
+<arg name="event" swt_gen="true"></arg>
+<arg name="cellFrame" swt_gen="true"></arg>
+<arg name="controlView" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
-<method selector="image">
-<retval></retval>
+<method selector="image" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="imageRectForBounds:" swt_gen="true">
 <arg name="theRect" swt_gen="true"></arg>
@@ -5230,9 +5230,9 @@
 <arg name="anInteger"></arg>
 <retval></retval>
 </method>
-<method selector="setLineBreakMode:">
-<arg name="mode"></arg>
-<retval></retval>
+<method selector="setLineBreakMode:" swt_gen="true">
+<arg name="mode" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setMenu:">
 <arg name="aMenu"></arg>

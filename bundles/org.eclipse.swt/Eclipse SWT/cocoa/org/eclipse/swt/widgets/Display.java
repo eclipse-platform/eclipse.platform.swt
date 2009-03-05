@@ -259,6 +259,7 @@ public class Display extends Device {
 	static String APP_NAME = "SWT";
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
+	static final byte[] SWT_IMAGE = {'S', 'W', 'T', '_', 'I', 'M', 'A', 'G', 'E', '\0'};
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -1887,6 +1888,11 @@ void initClasses () {
 	int /*long*/ isFlippedProc = OS.isFlipped_CALLBACK();
 	int /*long*/ drawRectProc = OS.drawRect_CALLBACK(proc3);
 	int /*long*/ drawInteriorWithFrameInViewProc = OS.drawInteriorWithFrame_inView_CALLBACK (proc4);
+	int /*long*/ drawWithFrameInViewProc = OS.drawWithFrame_inView_CALLBACK (proc4);
+	int /*long*/ imageRectForBoundsProc = OS.imageRectForBounds_CALLBACK (proc3);
+	int /*long*/ titleRectForBoundsProc = OS.titleRectForBounds_CALLBACK (proc3);
+	int /*long*/ hitTestForEvent_inRect_ofViewProc = OS.hitTestForEvent_inRect_ofView_CALLBACK (proc5);
+	int /*long*/ cellSizeProc = OS.cellSize_CALLBACK (proc2);
 	int /*long*/ drawImageWithFrameInViewProc = OS.drawImage_withFrame_inView_CALLBACK (proc5);
 	int /*long*/ setFrameOriginProc = OS.setFrameOrigin_CALLBACK(proc3);
 	int /*long*/ setFrameSizeProc = OS.setFrameSize_CALLBACK(proc3);
@@ -2033,10 +2039,18 @@ void initClasses () {
 	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSFrame}@");
 	OS.objc_registerClassPair (cls);
 
-	className = "SWTBrowserCell";
-	cls = OS.objc_allocateClassPair (OS.class_NSBrowserCell, className, 0);
+	className = "SWTImageTextCell";
+	cls = OS.objc_allocateClassPair (OS.class_NSTextFieldCell, className, 0);
 	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addIvar (cls, SWT_IMAGE, size, (byte)align, types);
 	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
+	OS.class_addMethod (cls, OS.sel_drawWithFrame_inView_, drawWithFrameInViewProc, "@:{NSRect}@");
+	OS.class_addMethod (cls, OS.sel_imageRectForBounds_, imageRectForBoundsProc, "@:{NSRect}");
+	OS.class_addMethod (cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
+	OS.class_addMethod (cls, OS.sel_hitTestForEvent_inRect_ofView_, hitTestForEvent_inRect_ofViewProc, "@:@{NSRect}@");
+	OS.class_addMethod (cls, OS.sel_cellSize, cellSizeProc, "@:");
+	OS.class_addMethod (cls, OS.sel_image, proc2, "@:");
+	OS.class_addMethod (cls, OS.sel_setImage_, proc3, "@:@");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTTableHeaderView";
@@ -4153,6 +4167,12 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		int /*long*/ result = OS.malloc (NSRange.sizeof);
 		OS.memmove (result, range, NSRange.sizeof);
 		return result;
+	} else if (sel == OS.sel_cellSize) {
+		NSSize size = widget.cellSize (id, sel);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSSize.sizeof);
+		OS.memmove (result, size, NSSize.sizeof);
+		return result;
 	} else if (sel == OS.sel_hasMarkedText) {
 		return widget.hasMarkedText (id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_canBecomeKeyWindow) {
@@ -4179,6 +4199,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		widget.updateTrackingAreas(id, sel);
 	} else if (sel == OS.sel_viewDidMoveToWindow) {
 		widget.viewDidMoveToWindow(id, sel);
+	} else if (sel == OS.sel_image) {
+		return widget.image(id, sel);
 	}
 	return 0;
 }
@@ -4348,6 +4370,24 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.setNeedsDisplay(id, sel, arg0 != 0);
 	} else if (sel == OS.sel_setNeedsDisplayInRect_) {
 		widget.setNeedsDisplayInRect(id, sel, arg0);
+	} else if (sel == OS.sel_setImage_) {
+		widget.setImage(id, sel, arg0);
+	} else if (sel == OS.sel_imageRectForBounds_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		rect = widget.imageRectForBounds(id, sel, rect);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRect.sizeof);
+		OS.memmove (result, rect, NSRect.sizeof);
+		return result;
+	} else if (sel == OS.sel_titleRectForBounds_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		rect = widget.titleRectForBounds(id, sel, rect);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRect.sizeof);
+		OS.memmove (result, rect, NSRect.sizeof);
+		return result;
 	}
 	return 0;
 }
@@ -4373,6 +4413,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
 		widget.drawInteriorWithFrame_inView (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_drawWithFrame_inView_) {
+		widget.drawWithFrame_inView (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_accessibilityAttributeValue_forParameter_) {
 		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_tableView_didClickTableColumn_) {
@@ -4412,6 +4454,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		NSRect rect = new NSRect ();
 		OS.memmove (rect, arg1, NSRect.sizeof);
 		widget.drawImageWithFrameInView (id, sel, arg0, rect, arg2);
+	} else if (sel == OS.sel_hitTestForEvent_inRect_ofView_) {
+		NSRect rect = new NSRect ();
+		OS.memmove (rect, arg1, NSRect.sizeof);
+		return widget.hitTestForEvent (id, sel, arg0, rect, arg2);
 	}
 	return 0;
 }

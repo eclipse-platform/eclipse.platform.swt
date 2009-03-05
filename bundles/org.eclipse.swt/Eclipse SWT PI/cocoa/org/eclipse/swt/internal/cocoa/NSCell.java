@@ -24,6 +24,11 @@ public NSCell(id id) {
 	super(id);
 }
 
+public NSAttributedString attributedStringValue() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributedStringValue);
+	return result != 0 ? new NSAttributedString(result) : null;
+}
+
 public NSSize cellSize() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_cellSize);
@@ -40,6 +45,10 @@ public void drawInteriorWithFrame(NSRect cellFrame, NSView controlView) {
 	OS.objc_msgSend(this.id, OS.sel_drawInteriorWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
 }
 
+public void drawWithFrame(NSRect cellFrame, NSView controlView) {
+	OS.objc_msgSend(this.id, OS.sel_drawWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
+}
+
 public NSRect drawingRectForBounds(NSRect theRect) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_drawingRectForBounds_, theRect);
@@ -49,6 +58,20 @@ public NSRect drawingRectForBounds(NSRect theRect) {
 public NSFont font() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;
+}
+
+public NSColor highlightColorWithFrame(NSRect cellFrame, NSView controlView) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_highlightColorWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
+	return result != 0 ? new NSColor(result) : null;
+}
+
+public int /*long*/ hitTestForEvent(NSEvent event, NSRect cellFrame, NSView controlView) {
+	return OS.objc_msgSend(this.id, OS.sel_hitTestForEvent_inRect_ofView_, event != null ? event.id : 0, cellFrame, controlView != null ? controlView.id : 0);
+}
+
+public NSImage image() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_image);
+	return result != 0 ? new NSImage(result) : null;
 }
 
 public NSRect imageRectForBounds(NSRect theRect) {
@@ -91,6 +114,10 @@ public void setHighlighted(boolean flag) {
 
 public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
+}
+
+public void setLineBreakMode(int /*long*/ mode) {
+	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, mode);
 }
 
 public void setScrollable(boolean flag) {

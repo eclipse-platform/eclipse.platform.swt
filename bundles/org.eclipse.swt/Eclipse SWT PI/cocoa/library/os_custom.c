@@ -408,3 +408,82 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(setNeedsDisplayInRect_1CALLBACK)
 	return (jintLong)setNeedsDisplayInRectProc;
 }
 #endif
+
+#ifndef NO_drawWithFrame_1inView_1CALLBACK
+static jintLong drawWithFrame_1inView_1CALLBACK;
+static void drawWithFrame_1inView(id obj, SEL sel, NSRect rect, NSView* view)
+{
+	return ((void (*)(id, SEL, NSRect*, NSView*))drawWithFrame_1inView_1CALLBACK)(obj, sel, &rect, view);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(drawWithFrame_1inView_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	drawWithFrame_1inView_1CALLBACK = func;
+	return (jintLong)drawWithFrame_1inView;
+}
+#endif
+
+#ifndef NO_imageRectForBounds_1CALLBACK
+static jintLong imageRectForBounds_1CALLBACK;
+static NSRect imageRectForBoundsProc(id obj, SEL sel, NSRect cellFrame)
+{
+	NSRect* ptr = ((NSRect* (*)(id, SEL, NSRect*))imageRectForBounds_1CALLBACK)(obj, sel, &cellFrame);
+	NSRect result = *ptr;
+	free(ptr);
+	return result;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(imageRectForBounds_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	imageRectForBounds_1CALLBACK = func;
+	return (jintLong)imageRectForBoundsProc;
+}
+#endif
+
+#ifndef NO_titleRectForBounds_1CALLBACK
+static jintLong titleRectForBounds_1CALLBACK;
+static NSRect titleRectForBoundsProc(id obj, SEL sel, NSRect cellFrame)
+{
+	NSRect* ptr = ((NSRect* (*)(id, SEL, NSRect*))titleRectForBounds_1CALLBACK)(obj, sel, &cellFrame);
+	NSRect result = *ptr;
+	free(ptr);
+	return result;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(titleRectForBounds_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	titleRectForBounds_1CALLBACK = func;
+	return (jintLong)titleRectForBoundsProc;
+}
+#endif
+
+#ifndef NO_cellSize_1CALLBACK
+static jintLong cellSize_1CALLBACK;
+static NSSize cellSizeProc(id obj, SEL sel)
+{
+	NSSize* ptr = ((NSSize* (*)(id, SEL))cellSize_1CALLBACK)(obj, sel);
+	NSSize range = *ptr;
+	free(ptr);
+	return range;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(cellSize_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	cellSize_1CALLBACK = func;
+	return (jintLong)cellSizeProc;
+}
+#endif
+
+#ifndef NO_hitTestForEvent_1inRect_1ofView_1CALLBACK
+static jintLong hitTestForEvent_1inRect_1ofView_1CALLBACK;
+static NSUInteger hitTestForEvent_1inRect_1ofViewProc(id obj, SEL sel, NSEvent* event, NSRect frame, NSView* view)
+{
+	return ((NSUInteger (*)(id, SEL, NSEvent*, NSRect*, NSView*))hitTestForEvent_1inRect_1ofView_1CALLBACK)(obj, sel, event, &frame, view);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(hitTestForEvent_1inRect_1ofView_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	hitTestForEvent_1inRect_1ofView_1CALLBACK = func;
+	return (jintLong)hitTestForEvent_1inRect_1ofViewProc;
+}
+#endif

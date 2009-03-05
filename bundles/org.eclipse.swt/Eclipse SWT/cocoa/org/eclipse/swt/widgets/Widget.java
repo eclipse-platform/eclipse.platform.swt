@@ -219,11 +219,11 @@ void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1
 	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2) {
+int /*long*/ callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2);
+	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2);
 }
 
 boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
@@ -235,6 +235,10 @@ boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
 
 boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean (id, sel);
+}
+
+NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
+	return new NSSize();
 }
 
 boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
@@ -536,6 +540,9 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
 }
 
+void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
+}
+
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	if (!isDrawing()) return;
 	Display display = this.display;
@@ -769,9 +776,21 @@ int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
+int /*long*/ hitTestForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event, NSRect rect, int /*long*/ controlView) {
+	return 0;
+}
+
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
+}
+
+int /*long*/ image (int /*long*/ id, int /*long*/ sel) {
+	return 0;
+}
+
+NSRect imageRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+	return new NSRect();
 }
 
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
@@ -1362,6 +1381,9 @@ void setFrameSize (int /*long*/ id, int /*long*/ sel, NSSize size) {
 	OS.objc_msgSendSuper(super_struct, sel, size);
 }
 
+void setImage (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+}
+
 boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	if (nsEvent == null) return true;
 	int /*long*/ modifierFlags = nsEvent.modifierFlags();
@@ -1588,6 +1610,10 @@ void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotifica
 
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
 	return new NSRange();
+}
+
+NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+	return cellFrame;
 }
 
 String tooltipText () {

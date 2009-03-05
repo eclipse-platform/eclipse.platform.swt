@@ -250,6 +250,7 @@ typedef enum {
 	accessibilityHitTest_1CALLBACK_FUNC,
 	attributedSubstringFromRange_1CALLBACK_FUNC,
 	call_FUNC,
+	cellSize_1CALLBACK_FUNC,
 	characterIndexForPoint_1CALLBACK_FUNC,
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,
@@ -265,10 +266,13 @@ typedef enum {
 	drawImage_1withFrame_1inView_1CALLBACK_FUNC,
 	drawInteriorWithFrame_1inView_1CALLBACK_FUNC,
 	drawRect_1CALLBACK_FUNC,
+	drawWithFrame_1inView_1CALLBACK_FUNC,
 	firstRectForCharacterRange_1CALLBACK_FUNC,
 	getpid_FUNC,
 	highlightSelectionInClipRect_1CALLBACK_FUNC,
+	hitTestForEvent_1inRect_1ofView_1CALLBACK_FUNC,
 	hitTest_1CALLBACK_FUNC,
+	imageRectForBounds_1CALLBACK_FUNC,
 	instrumentObjcMessageSends_FUNC,
 	isFlipped_1CALLBACK_FUNC,
 	kCFRunLoopCommonModes_FUNC,
@@ -735,6 +739,7 @@ typedef enum {
 #else
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
 #endif
+	objc_1msgSendSuper_1stret_FUNC,
 #ifndef JNI64
 	objc_1msgSend_1bool__II_FUNC,
 #else
@@ -921,6 +926,7 @@ typedef enum {
 	setNeedsDisplayInRect_1CALLBACK_FUNC,
 	shouldChangeTextInRange_1replacementString_1CALLBACK_FUNC,
 	textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK_FUNC,
+	titleRectForBounds_1CALLBACK_FUNC,
 	view_1stringForToolTip_1point_1userData_1CALLBACK_FUNC,
 	webView_1setFrame_1CALLBACK_FUNC,
 } OS_FUNCS;
