@@ -121,6 +121,7 @@ public class Shell extends Decorations {
 	Menu activeMenu;
 	int blockedList;
 	Control lastActive;
+	boolean modified;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -688,6 +689,22 @@ public Point getMinimumSize () {
 	return new Point (args [1] + left [0] + right [0], args [4] + top [0] + bottom [0]);
 }
 
+/**
+ * Gets the receiver's modified state.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return modified;
+}
+
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -1207,6 +1224,24 @@ public void setMinimized (boolean minimized) {
 		event.event_state = (short) (minimized ? OS.Ph_WM_EVSTATE_HIDE : OS.Ph_WM_EVSTATE_UNHIDE);
 		OS.PtForwardWindowEvent (event);
 	}
+}
+
+/**
+ * Sets the receiver's modified state as specified by the argument.
+ *
+ * @param modified the new modified state for the receiver
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setModified (boolean modified) {
+	checkWidget ();
+	this.modified = modified;
 }
 
 /**
