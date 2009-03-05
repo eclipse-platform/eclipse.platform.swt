@@ -118,7 +118,7 @@ import org.eclipse.swt.events.*;
 public class Shell extends Decorations {
 	Control lastActive;
 	boolean closing;
-	boolean moved, resized, opened, fullScreen;
+	boolean moved, resized, opened, fullScreen, modified;
 	int oldX, oldY, oldWidth, oldHeight;
 	int oldWindowStyle, oldWindowState;
 	
@@ -760,6 +760,22 @@ public Point getMinimumSize () {
 	return new Point (width,  height);
 }
 
+/**
+ * Gets the receiver's modified state.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return modified;
+}
+
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -1334,6 +1350,27 @@ public void setMinimumSize (Point size) {
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setMinimumSize (size.x, size.y);
 }
+
+/*
+* Sets the receiver's modified state as specified by the argument.
+*
+* @param modified the new modified state for the receiver
+*
+* </ul>
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+* 
+* @since 3.5
+*/
+public void setModified (boolean modified) {
+	checkWidget ();
+	this.modified = modified;
+}
+
+/**
+
 
 void setParent () {
 	/* Do nothing.  Not necessary for Shells */
