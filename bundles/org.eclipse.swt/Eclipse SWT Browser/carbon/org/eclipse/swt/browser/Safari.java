@@ -32,7 +32,7 @@ class Safari extends WebBrowser {
 	int preferences;
 	
 	boolean changingLocation, hasNewFocusElement;
-	String lastHoveredLinkURL;
+	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int identifier;
 	int resourceCount;
@@ -309,7 +309,7 @@ public void create (Composite parent, int style) {
 					OS.DisposeControl(webViewHandle);
 					webView = webViewHandle = 0;
 					html = null;
-					lastHoveredLinkURL = null;
+					lastHoveredLinkURL = lastNavigateURL = null;
 
 					Enumeration elements = functions.elements ();
 					while (elements.hasMoreElements ()) {
@@ -1229,7 +1229,7 @@ void didReceiveAuthenticationChallengefromDataSource (int identifier, int challe
 	if (count < 3) {
 		for (int i = 0; i < authenticationListeners.length; i++) {
 			AuthenticationEvent event = new AuthenticationEvent (browser);
-			event.location = url;
+			event.location = lastNavigateURL;
 			authenticationListeners[i].authenticate (event);
 			if (!event.doit) {
 				int challengeSender = Cocoa.objc_msgSend (challenge, Cocoa.S_sender);
@@ -1729,14 +1729,17 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 			}
 			changingLocation = false;
 		}
-		if (newEvent.doit && jsEnabledChanged) {
-			jsEnabledChanged = false;
-			if (preferences == 0) {
-				preferences = Cocoa.objc_msgSend (Cocoa.C_WebPreferences, Cocoa.S_alloc);
-				Cocoa.objc_msgSend (preferences, Cocoa.S_init);
-				Cocoa.objc_msgSend (webView, Cocoa.S_setPreferences, preferences);
+		if (newEvent.doit) {
+			if (jsEnabledChanged) {
+				jsEnabledChanged = false;
+				if (preferences == 0) {
+					preferences = Cocoa.objc_msgSend (Cocoa.C_WebPreferences, Cocoa.S_alloc);
+					Cocoa.objc_msgSend (preferences, Cocoa.S_init);
+					Cocoa.objc_msgSend (webView, Cocoa.S_setPreferences, preferences);
+				}
+				Cocoa.objc_msgSend (preferences, Cocoa.S_setJavaScriptEnabled, jsEnabled ? 1 : 0);
 			}
-			Cocoa.objc_msgSend (preferences, Cocoa.S_setJavaScriptEnabled, jsEnabled ? 1 : 0);
+			lastNavigateURL = url2;
 		}
 		Cocoa.objc_msgSend(listener, newEvent.doit ? Cocoa.S_use : Cocoa.S_ignore);
 	}

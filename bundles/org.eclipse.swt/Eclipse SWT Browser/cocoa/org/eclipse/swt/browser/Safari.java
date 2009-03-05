@@ -24,7 +24,7 @@ class Safari extends WebBrowser {
 	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
 	boolean changingLocation;
-	String lastHoveredLinkURL;
+	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int /*long*/ identifier;
 	int resourceCount;
@@ -226,7 +226,7 @@ public void create (Composite parent, int style) {
 					Safari.this.delegate.release();
 					Safari.this.delegate = null;
 					html = null;
-					lastHoveredLinkURL = null;
+					lastHoveredLinkURL = lastNavigateURL = null;
 
 					Enumeration elements = functions.elements ();
 					while (elements.hasMoreElements ()) {
@@ -834,7 +834,7 @@ void webView_resource_didReceiveAuthenticationChallenge_fromDataSource (int /*lo
 	if (nsChallenge.previousFailureCount () < 3) {
 		for (int i = 0; i < authenticationListeners.length; i++) {
 			AuthenticationEvent event = new AuthenticationEvent (browser);
-			event.location = url;
+			event.location = lastNavigateURL;
 			authenticationListeners[i].authenticate (event);
 			if (!event.doit) {
 				id challengeSender = nsChallenge.sender ();
@@ -1290,6 +1290,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 			preferences.setJavaScriptEnabled (jsEnabled);
 		}
 		listener.use();
+		lastNavigateURL = url2;
 	} else {
 		listener.ignore();
 	}
