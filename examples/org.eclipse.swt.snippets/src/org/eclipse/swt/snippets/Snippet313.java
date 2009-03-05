@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Tree example snippet: use a form layout to hide/show a composite
+ * FormLayout example snippet: use a form layout to hide/show a composite
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
