@@ -32,7 +32,7 @@ public static void main (String [] args) {
 	Image uncheckedImage = getUncheckedImage (display);
 	Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());
-	final Table table = new Table (shell, SWT.BORDER);
+	final Table table = new Table (shell, SWT.FULL_SELECTION | SWT.BORDER);
 	TableColumn column1 = new TableColumn (table, SWT.NONE);
 	TableColumn column2 = new TableColumn (table, SWT.NONE);
 	TableColumn column3 = new TableColumn (table, SWT.NONE);
@@ -57,49 +57,37 @@ public static void main (String [] args) {
 	Accessible accessible = table.getAccessible ();
 	accessible.addAccessibleListener (new AccessibleAdapter () {
 		public void getName (AccessibleEvent e) {
-			super.getName (e);
+			/* The first column of a table item is returned in the "name" property. */
 			if (e.childID >= 0 && e.childID < table.getItemCount ()) {
 				TableItem item = table.getItem (e.childID);
-				Point pt = display.getCursorLocation ();
-				pt = display.map (null, table, pt);
-				for (int i = 0; i < table.getColumnCount (); i++) {
-					if (item.getBounds (i).contains (pt)) {
-						int [] data = (int []) item.getData (STATE);
-						boolean checked = false;
-						if (data != null) {
-							for (int j = 0; j < data.length; j++) {
-								if (data [j] == i) {
-									checked = true;
-									break;
-								}
-							}
-						}
-						e.result = item.getText (i) + " " + (checked ? "checked" : "unchecked");
-						break;
-					}
+				e.result = item.getText (0);
+			}
+		}
+		public void getDescription (AccessibleEvent e) {
+			/* The names of all columns of a table item except the first are returned in the "description" property. */
+			if (e.childID >= 0 && e.childID < table.getItemCount ()) {
+				TableItem item = table.getItem (e.childID);
+				e.result = "";
+				for (int i = 1; i < table.getColumnCount (); i++) {
+					e.result += item.getText (i) + " " + (isChecked(item, i) ? "checked" : "unchecked");
+					if (i + 1 < table.getColumnCount()) e.result += ", ";
 				}
 			}
 		}
 	});
 	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
 		public void getState (AccessibleControlEvent e) {
-			super.getState (e);
 			if (e.childID >= 0 && e.childID < table.getItemCount ()) {
 				TableItem item = table.getItem (e.childID);
-				int [] data = (int []) item.getData (STATE);
-				if (data != null) {
-					Point pt = display.getCursorLocation ();
-					pt = display.map (null, table, pt);
-					for (int i = 0; i < data.length; i++) {
-						if (item.getBounds (data [i]).contains (pt)) {
-							e.detail |= ACC.STATE_CHECKED;
-							break;
-						}
+				for (int i = 1; i < table.getColumnCount (); i++) {
+					if (isChecked(item, i)) {
+						e.detail |= ACC.STATE_CHECKED;
 					}
 				}
 			}
 		}
 	});
+	shell.pack();
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
@@ -128,5 +116,17 @@ static Image getUncheckedImage (Display display) {
 	gc.fillOval (0, 0, 16, 16);
 	gc.dispose ();
 	return image;
+}
+
+static boolean isChecked(TableItem item, int columnIndex) {
+	int [] data = (int []) item.getData (STATE);
+	if (data != null) {
+		for (int i = 0; i < data.length; i++) {
+			if (data [i] == columnIndex) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 }
