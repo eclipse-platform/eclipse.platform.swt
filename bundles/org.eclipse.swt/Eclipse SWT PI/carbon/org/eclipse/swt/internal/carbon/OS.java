@@ -3849,6 +3849,8 @@ public static final native boolean IsWindowActive(int window);
 /** @param window cast=(WindowRef) */
 public static final native boolean IsWindowCollapsed(int window);
 /** @param window cast=(WindowRef) */
+public static final native boolean IsWindowModified(int window);
+/** @param window cast=(WindowRef) */
 public static final native boolean IsWindowVisible(int window);
 /**
  * @param transData cast=(const void *)
@@ -5041,6 +5043,10 @@ public static final native int SetWindowGroupParent(int inGroup, int inNewGroup)
  * @param inUnavailableWindow cast=(WindowRef)
  */
 public static final native int SetWindowModality(int inWindow, int inModalKind, int inUnavailableWindow);
+/**
+ * @param inWindow cast=(WindowRef)
+ */
+public static final native int SetWindowModified(int inWindow, boolean modified);
 /**
  * @param inWindow cast=(WindowRef)
  * @param inMinLimits cast=(HISize *)

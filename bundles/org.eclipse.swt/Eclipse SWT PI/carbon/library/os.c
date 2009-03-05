@@ -9378,6 +9378,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsWindowCollapsed)
 }
 #endif
 
+#ifndef NO_IsWindowModified
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsWindowModified)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsWindowModified_FUNC);
+	rc = (jboolean)IsWindowModified((WindowRef)arg0);
+	OS_NATIVE_EXIT(env, that, IsWindowModified_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IsWindowVisible
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsWindowVisible)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -12759,6 +12771,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetWindowModality)
 	OS_NATIVE_ENTER(env, that, SetWindowModality_FUNC);
 	rc = (jint)SetWindowModality((WindowRef)arg0, (WindowModality)arg1, (WindowRef)arg2);
 	OS_NATIVE_EXIT(env, that, SetWindowModality_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetWindowModified
+JNIEXPORT jint JNICALL OS_NATIVE(SetWindowModified)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetWindowModified_FUNC);
+	rc = (jint)SetWindowModified((WindowRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetWindowModified_FUNC);
 	return rc;
 }
 #endif

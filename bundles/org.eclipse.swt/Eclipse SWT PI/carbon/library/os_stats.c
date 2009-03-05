@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 980;
-int OS_nativeFunctionCallCount[980];
+int OS_nativeFunctionCount = 982;
+int OS_nativeFunctionCallCount[982];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -665,6 +665,7 @@ char * OS_nativeFunctionNames[] = {
 	"IsValidWindowPtr",
 	"IsWindowActive",
 	"IsWindowCollapsed",
+	"IsWindowModified",
 	"IsWindowVisible",
 	"JNIGetObject",
 	"KLGetCurrentKeyboardLayout",
@@ -915,6 +916,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetWindowGroupOwner",
 	"SetWindowGroupParent",
 	"SetWindowModality",
+	"SetWindowModified",
 	"SetWindowResizeLimits",
 	"SetWindowTitleWithCFString",
 	"ShowWindow",

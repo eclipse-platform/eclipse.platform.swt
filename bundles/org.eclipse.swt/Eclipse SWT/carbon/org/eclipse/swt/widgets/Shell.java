@@ -836,6 +836,23 @@ Shell getModalShell () {
 	return null;
 }
 
+/**
+ * Gets the receiver's modified state.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return OS.IsWindowModified (shellHandle);
+}
+
+
 float [] getParentBackground () {
 	return null;
 }
@@ -1684,6 +1701,24 @@ public void setMinimumSize (Point size) {
 	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setMinimumSize (size.x, size.y);
+}
+
+/*
+* Sets the receiver's modified state as specified by the argument.
+*
+* @param modified the new modified state for the receiver
+*
+* </ul>
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+* 
+* @since 3.5
+*/
+public void setModified (boolean modified) {
+	checkWidget ();
+	OS.SetWindowModified (shellHandle, modified);
 }
 
 /**
