@@ -121,6 +121,7 @@ public class StyledText extends Canvas {
 	int topMargin;
 	int rightMargin;
 	int bottomMargin;
+	Color marginColor;
 	int columnX;						// keep track of the horizontal caret position when changing lines/pages. Fixes bug 5935
 	int caretOffset;
 	int caretAlignment;
@@ -1857,6 +1858,21 @@ int getAvailableHeightBellow(int height) {
 		availableHeight += renderer.getLineHeight(lineIndex++);
 	}
 	return Math.min(height, availableHeight);
+}
+/** 
+ * Returns the color of the margins.
+ * 
+ * @return the color of the margins.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public Color getMarginColor() {
+	checkWidget();
+	return marginColor != null ? marginColor : getBackground();
 }
 /**
  * Returns a string that uses only the line delimiter specified by the 
@@ -5655,6 +5671,7 @@ void handleDispose(Event event) {
 	}
 	selectionBackground = null;
 	selectionForeground = null;
+	marginColor = null;
 	textChangeListener = null;
 	selection = null;
 	doubleClickSelection = null;
@@ -5893,7 +5910,7 @@ void handlePaint(Event event) {
 	}
 	
 	// fill the margin background
-	gc.setBackground(background);
+	gc.setBackground(marginColor != null ? marginColor : background);
 	if (topMargin > 0) {
 		drawBackground(gc, 0, 0, clientAreaWidth, topMargin);
 	}
@@ -8316,6 +8333,26 @@ public void setLineSpacing(int lineSpacing) {
 	setVariableLineHeight();
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
+	super.redraw();
+}
+/** 
+ * Sets the color of the margins.
+ * 
+ * @param color the new color (or null)
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setMarginColor(Color color) {
+	checkWidget();
+	if (color != null && color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	marginColor = color;
 	super.redraw();
 }
 /** 
