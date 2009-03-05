@@ -1676,7 +1676,7 @@ void clearBlockSelection(boolean reset, boolean sendEvent) {
 	blockXAnchor = blockYAnchor = -1;
 	blockXLocation = blockYLocation = -1;
 	caretDirection = SWT.NULL;
-	getCaret().setVisible(true);
+	updateCaretVisibility();
 	super.redraw();
 	if (sendEvent) sendSelectionEvent();
 }
@@ -2370,7 +2370,7 @@ void doBlockSelection(boolean sendEvent) {
 		selection.x = caretOffset;
 		selection.y = selectionAnchor;
 	}
-	getCaret().setVisible(false);
+	updateCaretVisibility();
 	setCaretLocation();
 	super.redraw();
 	if (sendEvent) {
@@ -5900,6 +5900,7 @@ void handleResize(Event event) {
 			}
 		}
 	}
+	updateCaretVisibility();
 	claimBottomFreeSpace();
 	//TODO FIX TOP INDEX DURING RESIZE
 //	if (oldHeight != clientAreaHeight || wordWrap) {
@@ -7582,6 +7583,7 @@ void setCaretLocation(Point location, int direction) {
 				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
 			}
 		}
+		updateCaretVisibility();
 	}
 	columnX = location.x;
 }
@@ -8233,6 +8235,7 @@ void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargi
 	this.rightMargin = Math.max(0, rightMargin);
 	this.bottomMargin = Math.max(0, bottomMargin);
 	resetCache(0, content.getLineCount());
+	setScrollBars(true);
 	setCaretLocation();
 	super.redraw();
 }
@@ -9061,6 +9064,21 @@ public void showSelection() {
 		// just show the end of the selection since the selection start 
 		// will not be visible
 		showLocation(endBounds, true);
+	}
+}
+void updateCaretVisibility() {
+	Caret caret = getCaret();
+	if (caret != null) {
+		if (blockSelection && blockXLocation != -1) {
+			caret.setVisible(false);
+		} else {
+			Point location = caret.getLocation();
+			Point size = caret.getSize();
+			boolean visible = 
+				topMargin <= location.y + size.y && location.y <= clientAreaHeight - bottomMargin &&
+				leftMargin <= location.x + size.x && location.x <= clientAreaWidth - rightMargin;
+			caret.setVisible(visible);
+		}
 	}
 }
 /**
