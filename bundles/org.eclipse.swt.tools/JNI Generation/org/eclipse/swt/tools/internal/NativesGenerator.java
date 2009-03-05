@@ -551,12 +551,6 @@ void generateFunctionCallRightSide(JNIMethod method, JNIParameter[] params, int 
 
 void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType returnType, JNIType returnType64, boolean needsReturn) {
 	String name = method.getName();
-	boolean objc_struct = false;
-	if (name.equals("objc_msgSend_stret")) {
-		objc_struct = true;
-		outputln("\tif (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {");
-		output("\t");
-	}
 	String copy = (String)method.getParam("copy");
 	boolean makeCopy = copy.length() != 0 && isCPP && !returnType.isType("void");
 	if (makeCopy) {
@@ -568,7 +562,14 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 	}
 	int paramStart = 0;
 	if (name.startsWith("_")) name = name.substring(1);
-	if (name.equalsIgnoreCase("call")) {
+
+	boolean objc_struct = false;
+	if (name.equals("objc_msgSend_stret") || name.equals("objc_msgSendSuper_stret")) objc_struct = true;
+	if (objc_struct) {
+		outputln("if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {");
+		generate_objc_msgSend_stret (method, params, name);
+		paramStart = 1;
+	} else if (name.equalsIgnoreCase("call")) {
 		output("(");
 		String cast = params[0].getCast(); 
 		if (cast.length() != 0 && !cast.equals("()")) {
@@ -738,28 +739,39 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 	}
 	if (objc_struct) {
 		outputln("\t} else {");
-		output("\t\t*lparg0 = (*(");
-		JNIType paramType = params[0].getType(), paramType64 = params[0].getType64();
-		output(paramType.getTypeSignature4(!paramType.equals(paramType64), true));
-		output(" (*)(");
-		for (int i = 1; i < params.length; i++) {
-			if (i != 1) output(", ");
-			JNIParameter param = params[i];
-			String cast = param.getCast();
-			if (cast != null && cast.length() != 0) {
-				if (cast.startsWith("(")) cast = cast.substring(1);
-				if (cast.endsWith(")")) cast = cast.substring(0, cast.length() - 1);
-				output(cast);
-			} else {
-				paramType = param.getType(); paramType64 = param.getType64();
-				output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
-			}
-		}
-		output("))objc_msgSend)");
+		generate_objc_msgSend_stret (method, params, name.substring(0, name.length() - "_stret".length()));
 		generateFunctionCallRightSide(method, params, 1);
 		outputln(";");
 		outputln("\t}");
 	}
+}
+
+void generate_objc_msgSend_stret (JNIMethod method, JNIParameter[] params, String func) {
+	output("\t\t*lparg0 = (*(");
+	JNIType paramType = params[0].getType(), paramType64 = params[0].getType64();
+	output(paramType.getTypeSignature4(!paramType.equals(paramType64), true));
+	output(" (*)(");
+	for (int i = 1; i < params.length; i++) {
+		if (i != 1) output(", ");
+		JNIParameter param = params[i];
+		String cast = param.getCast();
+		if (cast != null && cast.length() != 0) {
+			if (cast.startsWith("(")) cast = cast.substring(1);
+			if (cast.endsWith(")")) cast = cast.substring(0, cast.length() - 1);
+			output(cast);
+		} else {
+			paramType = param.getType(); paramType64 = param.getType64();
+			if (!(paramType.isPrimitive() || paramType.isArray())) {
+				if (param.getTypeClass().getFlag(FLAG_STRUCT)) {
+					output("struct ");
+				}
+			}
+			output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
+		}
+	}
+	output("))");
+	output(func);
+	output(")");
 }
 
 void generateReturn(JNIMethod method, JNIType returnType, boolean needsReturn) {
