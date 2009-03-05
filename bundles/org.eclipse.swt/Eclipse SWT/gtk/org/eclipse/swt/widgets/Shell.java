@@ -118,7 +118,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
-	boolean mapped, moved, resized, opened, fullScreen, showWithParent;
+	boolean mapped, moved, resized, opened, fullScreen, showWithParent, modified;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
@@ -907,6 +907,22 @@ Shell getModalShell () {
 	return null;
 }
 
+/**
+ * Gets the receiver's modified state.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return modified;
+}
+
 public Point getSize () {
 	checkWidget ();
 	int width = OS.GTK_WIDGET_WIDTH (vboxHandle);
@@ -1579,6 +1595,24 @@ public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setMinimumSize (size.x, size.y);
+}
+
+/**
+ * Sets the receiver's modified state as specified by the argument.
+ *
+ * @param modified the new modified state for the receiver
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setModified (boolean modified) {
+	checkWidget ();
+	this.modified = modified;
 }
 
 /**
