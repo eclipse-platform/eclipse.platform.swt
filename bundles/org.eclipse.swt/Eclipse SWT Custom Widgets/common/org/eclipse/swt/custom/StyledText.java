@@ -3535,6 +3535,21 @@ int getBottomIndex() {
 	}
 	return bottomIndex;
 }
+/** 
+ * Returns the bottom margin.
+ *
+ * @return the bottom margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public int getBottomMargin() {
+	checkWidget();
+	return bottomMargin;
+}
 Rectangle getBoundsAtOffset(int offset) {
 	int lineIndex = content.getLineAtOffset(offset);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
@@ -4146,6 +4161,21 @@ public int getLineIndex(int y) {
 	}
 	return line;
 }
+/** 
+ * Returns the left margin.
+ *
+ * @return the left margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public int getLeftMargin() {
+	checkWidget();
+	return leftMargin;
+}
 /**
  * Returns the x, y location of the upper left corner of the character 
  * bounding box at the specified offset in the text. The point is 
@@ -4438,6 +4468,21 @@ public int[] getRanges(int start, int length) {
 		if (ranges != null) return ranges;
 	}
 	return new int[0];
+}
+/** 
+ * Returns the right margin.
+ *
+ * @return the right margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public int getRightMargin() {
+	checkWidget();
+	return rightMargin;
 }
 /**
  * Returns the selection.
@@ -5043,6 +5088,21 @@ public int getTextLimit() {
 public int getTopIndex() {
 	checkWidget();
 	return topIndex;
+}
+/** 
+ * Returns the top margin.
+ *
+ * @return the top margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public int getTopMargin() {
+	checkWidget();
+	return topMargin;
 }
 /**
  * Gets the top pixel.
@@ -7530,6 +7590,21 @@ public void setBidiColoring(boolean mode) {
 	checkWidget();
 	bidiColoring = mode;
 }
+/** 
+ * Sets the bottom margin.
+ * 
+ * @param bottomMargin the bottom margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setBottomMargin (int bottomMargin) {
+	checkWidget();
+	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+}
 /**
  * Moves the Caret to the current caret offset.
  */
@@ -7962,6 +8037,21 @@ public void setKeyBinding(int key, int action) {
 		}
 	}		
 }
+/** 
+ * Sets the left margin.
+ * 
+ * @param leftMargin the left margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setLeftMargin (int leftMargin) {
+	checkWidget();
+	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+}
 /**
  * Sets the alignment of the specified lines. The argument should be one of <code>SWT.LEFT</code>, 
  * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>.
@@ -8228,7 +8318,21 @@ public void setLineSpacing(int lineSpacing) {
 	setCaretLocation();
 	super.redraw();
 }
-void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
+/** 
+ * Sets the margins.
+ * 
+ * @param leftMargin the left margin.
+ * @param topMargin the top margin.
+ * @param rightMargin the right margin.
+ * @param bottomMargin the bottom margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
 	checkWidget();
 	this.leftMargin = Math.max(0, leftMargin);
 	this.topMargin = Math.max(0, topMargin);
@@ -8287,6 +8391,21 @@ public void setOrientation(int orientation) {
 	keyActionMap.clear();
 	createKeyBindings();
 	super.redraw();
+}
+/** 
+ * Sets the right margin.
+ * 
+ * @param rightMargin the right margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setRightMargin (int rightMargin) {
+	checkWidget();
+	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
 }
 /**
  * Adjusts the maximum and the page size of the scroll bars to 
@@ -8917,6 +9036,21 @@ public void setTopIndex(int topIndex) {
 		}
 	} 
 	scrollVertical(pixel, true);
+}
+/** 
+ * Sets the top margin.
+ * 
+ * @param topMargin the top margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setTopMargin (int topMargin) {
+	checkWidget();
+	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
 }
 /**
  * Sets the top pixel offset. Do nothing if there is no text set.
