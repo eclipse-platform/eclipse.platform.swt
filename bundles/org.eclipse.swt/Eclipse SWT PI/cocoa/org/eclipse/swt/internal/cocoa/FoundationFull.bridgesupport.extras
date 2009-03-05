@@ -7806,9 +7806,9 @@
 <arg name="aDecoder"></arg>
 <retval></retval>
 </method>
-<method selector="cancelAuthenticationChallenge:">
-<arg name="challenge"></arg>
-<retval></retval>
+<method selector="cancelAuthenticationChallenge:" swt_gen="true">
+<arg name="challenge" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:">
 <arg name="aTarget"></arg>
@@ -8826,10 +8826,10 @@
 <method selector="unlock">
 <retval></retval>
 </method>
-<method selector="useCredential:forAuthenticationChallenge:">
-<arg name="credential"></arg>
-<arg name="challenge"></arg>
-<retval></retval>
+<method selector="useCredential:forAuthenticationChallenge:" swt_gen="true">
+<arg name="credential" swt_gen="true"></arg>
+<arg name="challenge" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method class_method="true" selector="useStoredAccessor">
 <retval></retval>
@@ -11513,7 +11513,7 @@
 <retval></retval>
 </method>
 </class>
-<class name="NSURLAuthenticationChallenge">
+<class name="NSURLAuthenticationChallenge" swt_gen="mixed">
 <method selector="error">
 <retval></retval>
 </method>
@@ -11534,17 +11534,17 @@
 <arg name="sender"></arg>
 <retval></retval>
 </method>
-<method selector="previousFailureCount">
-<retval></retval>
+<method selector="previousFailureCount" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
-<method selector="proposedCredential">
-<retval></retval>
+<method selector="proposedCredential" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
-<method selector="protectionSpace">
-<retval></retval>
+<method selector="protectionSpace" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
-<method selector="sender">
-<retval></retval>
+<method selector="sender" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 </class>
 <class name="NSURLCache">
@@ -11642,15 +11642,15 @@
 <retval></retval>
 </method>
 </class>
-<class name="NSURLCredential">
-<method class_method="true" selector="credentialWithUser:password:persistence:">
-<arg name="user"></arg>
-<arg name="password"></arg>
-<arg name="persistence"></arg>
-<retval></retval>
+<class name="NSURLCredential" swt_gen="mixed">
+<method class_method="true" selector="credentialWithUser:password:persistence:" swt_gen="true">
+<arg name="user" swt_gen="true"></arg>
+<arg name="password" swt_gen="true"></arg>
+<arg name="persistence" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
-<method selector="hasPassword">
-<retval></retval>
+<method selector="hasPassword" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="initWithUser:password:persistence:">
 <arg name="user"></arg>
@@ -11658,14 +11658,14 @@
 <arg name="persistence"></arg>
 <retval></retval>
 </method>
-<method selector="password">
-<retval></retval>
+<method selector="password" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="persistence">
 <retval></retval>
 </method>
-<method selector="user">
-<retval></retval>
+<method selector="user" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 </class>
 <class name="NSURLCredentialStorage">
@@ -11827,12 +11827,12 @@
 <retval></retval>
 </method>
 </class>
-<class name="NSURLProtectionSpace">
+<class name="NSURLProtectionSpace" swt_gen="mixed">
 <method selector="authenticationMethod">
 <retval></retval>
 </method>
-<method selector="host">
-<retval></retval>
+<method selector="host" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="initWithHost:port:protocol:realm:authenticationMethod:">
 <arg name="host"></arg>
@@ -11853,8 +11853,8 @@
 <method selector="isProxy">
 <retval></retval>
 </method>
-<method selector="port">
-<retval></retval>
+<method selector="port" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="protocol">
 <retval></retval>
@@ -11862,8 +11862,8 @@
 <method selector="proxyType">
 <retval></retval>
 </method>
-<method selector="realm">
-<retval></retval>
+<method selector="realm" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="receivesCredentialSecurely">
 <retval></retval>

@@ -26,6 +26,7 @@ public static final int C_NSNotificationCenter = Cocoa.objc_getClass("NSNotifica
 public static final int C_NSNumber = Cocoa.objc_getClass("NSNumber"); //$NON-NLS-1$
 public static final int C_NSURL = Cocoa.objc_getClass("NSURL"); //$NON-NLS-1$
 public static final int C_NSURLRequest = Cocoa.objc_getClass("NSURLRequest"); //$NON-NLS-1$
+public static final int C_NSURLCredential = Cocoa.objc_getClass("NSURLCredential"); //$NON-NLS-1$
 public static final int C_WebKitDelegate = Cocoa.objc_getClass("WebKitDelegate"); //$NON-NLS-1$
 public static final int C_WebDownload = Cocoa.objc_getClass("WebDownload"); //$NON-NLS-1$
 public static final int C_WebView = Cocoa.objc_getClass("WebView"); //$NON-NLS-1$
@@ -44,6 +45,7 @@ public static final int C_NSObject = Cocoa.objc_getClass("NSObject"); //$NON-NLS
 public static final int C_NSString = Cocoa.objc_getClass("NSString"); //$NON-NLS-1$
 public static final int C_NSMutableArray = Cocoa.objc_getClass("NSMutableArray"); //$NON-NLS-1$
 public static final int C_NSMutableDictionary = Cocoa.objc_getClass("NSMutableDictionary"); //$NON-NLS-1$
+public static final int C_WebPanelAuthenticationHandler = Cocoa.objc_getClass("WebPanelAuthenticationHandler"); //$NON-NLS-1$
 public static final int C_WebScriptObject = Cocoa.objc_getClass("WebScriptObject"); //$NON-NLS-1$
 public static final int C_WebUndefined = Cocoa.objc_getClass("WebUndefined"); //$NON-NLS-1$
 
@@ -56,6 +58,7 @@ public static final int S_arrayWithCapacity = Cocoa.sel_registerName("arrayWithC
 public static final int S_autorelease = Cocoa.sel_registerName("autorelease"); //$NON-NLS-1$
 public static final int S_boolValue = Cocoa.sel_registerName("boolValue"); //$NON-NLS-1$
 public static final int S_cancel = Cocoa.sel_registerName("cancel"); //$NON-NLS-1$
+public static final int S_cancelAuthenticationChallenge = Cocoa.sel_registerName("cancelAuthenticationChallenge:"); //$NON-NLS-1$
 public static final int S_canGoBack = Cocoa.sel_registerName("canGoBack"); //$NON-NLS-1$
 public static final int S_canGoForward = Cocoa.sel_registerName("canGoForward"); //$NON-NLS-1$
 public static final int S_canShowMIMEType = Cocoa.sel_registerName("canShowMIMEType:"); //$NON-NLS-1$
@@ -66,6 +69,7 @@ public static final int S_cookiesWithResponseHeaderFields = Cocoa.sel_registerNa
 public static final int S_cookiesForURL = Cocoa.sel_registerName("cookiesForURL:"); //$NON-NLS-1$
 public static final int S_copy = Cocoa.sel_registerName("copy:"); //$NON-NLS-1$
 public static final int S_count = Cocoa.sel_registerName("count"); //$NON-NLS-1$
+public static final int S_credentialWithUser = Cocoa.sel_registerName("credentialWithUser:password:persistence:"); //$NON-NLS-1$
 public static final int S_cut = Cocoa.sel_registerName("cut:"); //$NON-NLS-1$
 public static final int S_dataSource = Cocoa.sel_registerName("dataSource"); //$NON-NLS-1$
 public static final int S_defaultCenter = Cocoa.sel_registerName("defaultCenter"); //$NON-NLS-1$
@@ -77,6 +81,8 @@ public static final int S_download = Cocoa.sel_registerName("download"); //$NON-
 public static final int S_goBack = Cocoa.sel_registerName("goBack:"); //$NON-NLS-1$
 public static final int S_goForward = Cocoa.sel_registerName("goForward:"); //$NON-NLS-1$
 public static final int S_handleNotification = Cocoa.sel_registerName("handleNotification:"); //$NON-NLS-1$
+public static final int S_hasPassword = Cocoa.sel_registerName("hasPassword"); //$NON-NLS-1$
+public static final int S_host = Cocoa.sel_registerName("host"); //$NON-NLS-1$
 public static final int S_ignore = Cocoa.sel_registerName("ignore"); //$NON-NLS-1$
 public static final int S_initialRequest = Cocoa.sel_registerName("initialRequest"); //$NON-NLS-1$
 public static final int S_initWithFrame_frameName_groupName = Cocoa.sel_registerName("initWithFrame:frameName:groupName:"); //$NON-NLS-1$
@@ -94,8 +100,14 @@ public static final int S_numberWithDouble = Cocoa.sel_registerName("numberWithD
 public static final int S_numberWithInt = Cocoa.sel_registerName("numberWithInt:"); //$NON-NLS-1$
 public static final int S_objectAtIndex = Cocoa.sel_registerName("objectAtIndex:"); //$NON-NLS-1$
 public static final int S_pageTitle = Cocoa.sel_registerName("pageTitle"); //$NON-NLS-1$
+public static final int S_password = Cocoa.sel_registerName("password"); //$NON-NLS-1$
 public static final int S_paste = Cocoa.sel_registerName("paste:"); //$NON-NLS-1$
+public static final int S_port = Cocoa.sel_registerName("port"); //$NON-NLS-1$
+public static final int S_previousFailureCount = Cocoa.sel_registerName("previousFailureCount"); //$NON-NLS-1$
+public static final int S_proposedCredential = Cocoa.sel_registerName("proposedCredential"); //$NON-NLS-1$
+public static final int S_protectionSpace = Cocoa.sel_registerName("protectionSpace"); //$NON-NLS-1$
 public static final int S_provisionalDataSource = Cocoa.sel_registerName("provisionalDataSource"); //$NON-NLS-1$
+public static final int S_realm = Cocoa.sel_registerName("realm"); //$NON-NLS-1$
 public static final int S_release = Cocoa.sel_registerName("release"); //$NON-NLS-1$
 public static final int S_reload = Cocoa.sel_registerName("reload:"); //$NON-NLS-1$
 public static final int S_retain = Cocoa.sel_registerName("retain"); //$NON-NLS-1$
@@ -105,6 +117,7 @@ public static final int S_representation = Cocoa.sel_registerName("representatio
 public static final int S_requestWithURL = Cocoa.sel_registerName("requestWithURL:"); //$NON-NLS-1$
 public static final int S_request = Cocoa.sel_registerName("request"); //$NON-NLS-1$
 public static final int S_retainCount = Cocoa.sel_registerName("retainCount"); //$NON-NLS-1$
+public static final int S_sender = Cocoa.sel_registerName("sender"); //$NON-NLS-1$
 public static final int S_setApplicationNameForUserAgent = Cocoa.sel_registerName("setApplicationNameForUserAgent:"); //$NON-NLS-1$
 public static final int S_setCookie = Cocoa.sel_registerName("setCookie:"); //$NON-NLS-1$
 public static final int S_setDestinationAllowOverwrite = Cocoa.sel_registerName("setDestination:allowOverwrite:"); //$NON-NLS-1$
@@ -118,12 +131,16 @@ public static final int S_setResourceLoadDelegate = Cocoa.sel_registerName("setR
 public static final int S_setStatusText = Cocoa.sel_registerName("setStatusText:"); //$NON-NLS-1$
 public static final int S_setUIDelegate = Cocoa.sel_registerName("setUIDelegate:"); //$NON-NLS-1$
 public static final int S_sharedHTTPCookieStorage = Cocoa.sel_registerName("sharedHTTPCookieStorage"); //$NON-NLS-1$
+public static final int S_sharedHandler = Cocoa.sel_registerName("sharedHandler"); //$NON-NLS-1$
 public static final int S_standardPreferences = Cocoa.sel_registerName("standardPreferences"); //$NON-NLS-1$
+public static final int S_startAuthentication = sel_registerName("startAuthentication:window:"); //$NON-NLS-1$
 public static final int S_stopLoading = Cocoa.sel_registerName("stopLoading:"); //$NON-NLS-1$
 public static final int S_stringByEvaluatingJavaScriptFromString = Cocoa.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$
 public static final int S_takeStringURLFrom = Cocoa.sel_registerName("takeStringURLFrom:"); //$NON-NLS-1$
 public static final int S_undefined = Cocoa.sel_registerName("undefined"); //$NON-NLS-1$
 public static final int S_use = Cocoa.sel_registerName("use"); //$NON-NLS-1$
+public static final int S_user = Cocoa.sel_registerName("user"); //$NON-NLS-1$
+public static final int S_useCredential = Cocoa.sel_registerName("useCredential:forAuthenticationChallenge:"); //$NON-NLS-1$
 public static final int S_valueForKey = Cocoa.sel_registerName("valueForKey:"); //$NON-NLS-1$
 public static final int S_webFrame = Cocoa.sel_registerName("webFrame"); //$NON-NLS-1$
 public static final int S_URL = Cocoa.sel_registerName("URL"); //$NON-NLS-1$
@@ -206,6 +223,8 @@ public static final int NSClosePathBezierPathElement = 3;
 
 public static final int NSOrderedSame = 0;
 
+public static final int NSURLCredentialPersistenceForSession = 1;
+
 /* WebKit */
 /** @param outView cast=(HIViewRef *) */
 public static final native int HIWebViewCreate(int[] outView);
@@ -220,6 +239,12 @@ public static final native int HIJavaViewCreateWithCocoaView(int[] hiview, int n
 public static final native int HICocoaViewCreate(int nsview, int options, int[] hiview);
 
 /* OBJ-C runtime primitives */
+/**
+ * @param method cast=(Method)
+ * @param aClass cast=(Class)
+ * @param aSelector cast=(SEL)
+ */
+public static final native int /*long*/ class_getClassMethod(int /*long*/ aClass, int /*long*/ aSelector);
 /** @param className cast=(const char *) */
 public static final native int objc_getClass(byte[] className);
 /** @param className cast=(const char *) */

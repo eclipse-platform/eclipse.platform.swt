@@ -164,6 +164,11 @@ fail:
 	return (NSURLRequest *) proc((int)sender, user_data, 8, (int)identifier, (int)request, (int)redirectResponse, (int)dataSource);
 }
 
+- (void)webView:(WebView *)sender resource:(id)identifier didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge fromDataSource:(WebDataSource *)dataSource
+{
+	proc((int)sender, user_data, 35, (int)identifier, (int)challenge, (int)dataSource, 0);
+}
+
 /* handleNotification */
 
 - (void)handleNotification:(NSNotification *)notification

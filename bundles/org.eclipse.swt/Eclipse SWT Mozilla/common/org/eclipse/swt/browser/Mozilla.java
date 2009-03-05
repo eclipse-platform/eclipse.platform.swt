@@ -42,13 +42,14 @@ class Mozilla extends WebBrowser {
 	XPCOMObject tooltipListener;
 	XPCOMObject domEventListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
-	int refCount, lastKeyCode, lastCharCode;
+	int refCount, lastKeyCode, lastCharCode, authCount;
 	int /*long*/ request;
 	Point location, size;
 	boolean visible, isChild, ignoreDispose;
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
+	String lastNavigateURL;
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
@@ -1908,6 +1909,7 @@ void onDispose (Display display) {
 	webBrowser.Release ();
 	webBrowser = null;
 	webBrowserObject = null;
+	lastNavigateURL = null;
 
 	if (tip != null && !tip.isDisposed ()) tip.dispose ();
 	tip = null;
@@ -2958,6 +2960,8 @@ int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNod
 /* nsIURIContentListener */
 
 int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
+	authCount = 0;
+
 	nsIURI location = new nsIURI (aURI);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
 	location.GetSpec (aSpec);
@@ -2992,19 +2996,22 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 				doit = event.doit && !browser.isDisposed();
 			}
 
-			if (doit && jsEnabledChanged) {
-				jsEnabledChanged = false;
-
-				int /*long*/[] result = new int /*long*/[1];
-				int rc = webBrowser.QueryInterface (nsIWebBrowserSetup.NS_IWEBBROWSERSETUP_IID, result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-				nsIWebBrowserSetup setup = new nsIWebBrowserSetup (result[0]);
-				result[0] = 0;
-				rc = setup.SetProperty (nsIWebBrowserSetup.SETUP_ALLOW_JAVASCRIPT, jsEnabled ? 1 : 0);
-				if (rc != XPCOM.NS_OK) error (rc);
-				setup.Release ();
+			if (doit) {
+				if (jsEnabledChanged) {
+					jsEnabledChanged = false;
+	
+					int /*long*/[] result = new int /*long*/[1];
+					int rc = webBrowser.QueryInterface (nsIWebBrowserSetup.NS_IWEBBROWSERSETUP_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	
+					nsIWebBrowserSetup setup = new nsIWebBrowserSetup (result[0]);
+					result[0] = 0;
+					rc = setup.SetProperty (nsIWebBrowserSetup.SETUP_ALLOW_JAVASCRIPT, jsEnabled ? 1 : 0);
+					if (rc != XPCOM.NS_OK) error (rc);
+					setup.Release ();
+				}
+				lastNavigateURL = value;
 			}
 		}
 	}

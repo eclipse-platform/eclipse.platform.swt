@@ -3348,12 +3348,12 @@
 <arg name="dataSource"></arg>
 <retval></retval>
 </method>
-<method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:">
-<arg name="sender"></arg>
-<arg name="identifier"></arg>
-<arg name="challenge"></arg>
-<arg name="dataSource"></arg>
-<retval></retval>
+<method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:" swt_gen="true">
+<arg name="sender" swt_gen="true"></arg>
+<arg name="identifier" swt_gen="true"></arg>
+<arg name="challenge" swt_gen="true"></arg>
+<arg name="dataSource" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="webView:resource:didReceiveContentLength:fromDataSource:">
 <arg name="sender"></arg>

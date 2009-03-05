@@ -32,7 +32,7 @@ class IE extends WebBrowser {
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int /*long*/ globalDispatch;
-	String html;
+	String html, lastNavigateURL;
 	int style, lastKeyCode, lastCharCode;
 	int lastMouseMoveX, lastMouseMoveY;
 
@@ -289,6 +289,7 @@ public void create(Composite parent, int style) {
 					}
 					functions = null;
 
+					lastNavigateURL = null;
 					domListener = null;
 					if (auto != null) auto.dispose();
 					auto = null;
@@ -361,6 +362,7 @@ public void create(Composite parent, int style) {
 							COM.MoveMemory(pCancel, new short[] {doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 						}
 						if (doit) {
+							lastNavigateURL = url;
 							varResult = event.arguments[0];
 							IDispatch dispatch = varResult.getDispatch();
 							Variant variant = new Variant(auto);

@@ -15,9 +15,10 @@ import java.util.Enumeration;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 class Safari extends WebBrowser {
@@ -421,6 +422,15 @@ static int eventProc7(int webview, int userData, int selector, int arg0, int arg
 	return 0;
 }
 
+static String getString (int ptr) {
+	int length = OS.CFStringGetLength (ptr);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (ptr, range, buffer);
+	return new String (buffer);
+}
+
 public boolean back() {
 	html = null;
 	return Cocoa.objc_msgSend(webView, Cocoa.S_goBack) != 0;
@@ -707,6 +717,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 32: handleEvent(arg0); break;
 		case 33: windowScriptObjectAvailable(arg0); break;
 		case 34: ret = callJava(arg0, arg1, arg2); break;
+		case 35: didReceiveAuthenticationChallengefromDataSource(arg0, arg1, arg2); break;
 	}
 	return ret;
 }
@@ -1206,6 +1217,170 @@ void didFailLoadingWithError(int identifier, int error, int dataSource) {
 	*/
 	// this code is intentionally commented
 	//if (this.identifier == identifier) this.identifier = 0;
+}
+
+void didReceiveAuthenticationChallengefromDataSource (int identifier, int challenge, int dataSource) {
+	/*
+	 * Do not invoke the listeners if this challenge has been failed too many
+	 * times because a listener is likely giving incorrect credentials repeatedly
+	 * and will do so indefinitely.
+	 */
+	int count = Cocoa.objc_msgSend (challenge, Cocoa.S_previousFailureCount);
+	if (count < 3) {
+		for (int i = 0; i < authenticationListeners.length; i++) {
+			AuthenticationEvent event = new AuthenticationEvent (browser);
+			event.location = url;
+			authenticationListeners[i].authenticate (event);
+			if (!event.doit) {
+				int challengeSender = Cocoa.objc_msgSend (challenge, Cocoa.S_sender);
+				Cocoa.objc_msgSend (challengeSender, Cocoa.S_cancelAuthenticationChallenge, challenge);
+				return;
+			}
+			if (event.user != null && event.password != null) {
+				int challengeSender = Cocoa.objc_msgSend (challenge, Cocoa.S_sender);
+				int length = event.user.length ();
+				char[] buffer = new char[length];
+				event.user.getChars (0, length, buffer, 0);
+				int user = OS.CFStringCreateWithCharacters (0, buffer, length);
+				length = event.password.length ();
+				buffer = new char[length];
+				event.password.getChars (0, length, buffer, 0);
+				int password = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int credential = Cocoa.objc_msgSend (Cocoa.C_NSURLCredential, Cocoa.S_credentialWithUser, user, password, Cocoa.NSURLCredentialPersistenceForSession);
+				Cocoa.objc_msgSend (challengeSender, Cocoa.S_useCredential, credential, challenge);
+				OS.CFRelease (password);
+				OS.CFRelease (user);
+				return;
+			}
+		}
+	}
+
+	/* no listener handled the challenge, so try to invoke the native panel */
+	int cls = Cocoa.C_WebPanelAuthenticationHandler;
+	if (cls != 0) {
+		int method = Cocoa.class_getClassMethod (cls, Cocoa.S_sharedHandler);
+		if (method != 0) {
+			int handler = Cocoa.objc_msgSend (cls, Cocoa.S_sharedHandler);
+			if (handler != 0) {
+				int window = Cocoa.objc_msgSend (webView, Cocoa.S_window);
+				Cocoa.objc_msgSend (handler, Cocoa.S_startAuthentication, challenge, window);
+				return;
+			}
+		}
+	}
+
+	/* the native panel was not available, so show a custom dialog */
+	String[] userReturn = new String[1], passwordReturn = new String[1];
+	int proposedCredential = Cocoa.objc_msgSend (challenge, Cocoa.S_proposedCredential);
+	if (proposedCredential != 0) {
+		int user = Cocoa.objc_msgSend (proposedCredential, Cocoa.S_user);
+		userReturn[0] = getString (user);
+		boolean hasPassword = Cocoa.objc_msgSend (proposedCredential, Cocoa.S_hasPassword) != 0;
+		if (hasPassword) {
+			int password = Cocoa.objc_msgSend (proposedCredential, Cocoa.S_password);
+			passwordReturn[0] = getString (password);
+		}
+	}
+
+	int space = Cocoa.objc_msgSend (challenge, Cocoa.S_protectionSpace);
+	int host = Cocoa.objc_msgSend (space, Cocoa.S_host);
+	String hostString = getString (host) + ':';
+	int port = Cocoa.objc_msgSend (space, Cocoa.S_port);
+	hostString += port;
+	int realm = Cocoa.objc_msgSend (space, Cocoa.S_realm);
+	String realmString = getString (realm);
+	boolean result = showAuthenticationDialog (userReturn, passwordReturn, hostString, realmString);
+	int challengeSender = Cocoa.objc_msgSend (challenge, Cocoa.S_sender);
+	if (!result) {
+		Cocoa.objc_msgSend (challengeSender, Cocoa.S_cancelAuthenticationChallenge, challenge);
+		return;
+	}
+
+	int length = userReturn[0].length ();
+	char[] buffer = new char[length];
+	userReturn[0].getChars (0, length, buffer, 0);
+	int user = OS.CFStringCreateWithCharacters (0, buffer, length);
+	length = passwordReturn[0].length ();
+	buffer = new char[length];
+	passwordReturn[0].getChars (0, length, buffer, 0);
+	int password = OS.CFStringCreateWithCharacters (0, buffer, length);
+	int credential = Cocoa.objc_msgSend (Cocoa.C_NSURLCredential, Cocoa.S_credentialWithUser, user, password, Cocoa.NSURLCredentialPersistenceForSession);
+	Cocoa.objc_msgSend (challengeSender, Cocoa.S_useCredential, credential, challenge);
+	OS.CFRelease (password);
+	OS.CFRelease (user);
+}
+
+boolean showAuthenticationDialog (final String[] user, final String[] password, String host, String realm) {
+	final Shell shell = new Shell (browser.getShell ());
+	shell.setLayout (new GridLayout ());
+	String title = SWT.getMessage ("SWT_Authentication_Required"); //$NON-NLS-1$
+	shell.setText (title);
+	Label label = new Label (shell, SWT.WRAP);
+	label.setText (Compatibility.getMessage ("SWT_Enter_Username_and_Password", new String[] {realm, host})); //$NON-NLS-1$
+
+	GridData data = new GridData ();
+	Monitor monitor = browser.getMonitor ();
+	int maxWidth = monitor.getBounds ().width * 2 / 3;
+	int width = label.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
+	data.widthHint = Math.min (width, maxWidth);
+	data.horizontalAlignment = GridData.FILL;
+	data.grabExcessHorizontalSpace = true;
+	label.setLayoutData (data);
+
+	Label userLabel = new Label (shell, SWT.NONE);
+	userLabel.setText (SWT.getMessage ("SWT_Username")); //$NON-NLS-1$
+
+	final Text userText = new Text (shell, SWT.BORDER);
+	if (user[0] != null) userText.setText (user[0]);
+	data = new GridData ();
+	data.horizontalAlignment = GridData.FILL;
+	data.grabExcessHorizontalSpace = true;
+	userText.setLayoutData (data);
+
+	Label passwordLabel = new Label (shell, SWT.NONE);
+	passwordLabel.setText (SWT.getMessage ("SWT_Password")); //$NON-NLS-1$
+
+	final Text passwordText = new Text (shell, SWT.PASSWORD | SWT.BORDER);
+	if (password[0] != null) passwordText.setText (password[0]);
+	data = new GridData ();
+	data.horizontalAlignment = GridData.FILL;
+	data.grabExcessHorizontalSpace = true;
+	passwordText.setLayoutData (data);
+
+	final boolean[] result = new boolean[1];
+	final Button[] buttons = new Button[2];
+	Listener listener = new Listener() {
+		public void handleEvent(Event event) {
+			user[0] = userText.getText();
+			password[0] = passwordText.getText();
+			result[0] = event.widget == buttons[1];
+			shell.close();
+		}	
+	};
+
+	Composite composite = new Composite (shell, SWT.NONE);
+	data = new GridData ();
+	data.horizontalAlignment = GridData.END;
+	composite.setLayoutData (data);
+	composite.setLayout (new GridLayout (2, true));
+	buttons[0] = new Button (composite, SWT.PUSH);
+	buttons[0].setText (SWT.getMessage("SWT_Cancel")); //$NON-NLS-1$
+	buttons[0].setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	buttons[0].addListener (SWT.Selection, listener);
+	buttons[1] = new Button (composite, SWT.PUSH);
+	buttons[1].setText (SWT.getMessage("SWT_OK")); //$NON-NLS-1$
+	buttons[1].setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	buttons[1].addListener (SWT.Selection, listener);
+
+	shell.setDefaultButton (buttons[1]);
+	shell.pack ();
+	shell.open ();
+	Display display = browser.getDisplay ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+
+	return result[0];
 }
 
 int identifierForInitialRequest(int request, int dataSource) {

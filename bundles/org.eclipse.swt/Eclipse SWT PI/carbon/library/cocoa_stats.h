@@ -31,6 +31,7 @@ typedef enum {
 	HIWebViewGetWebView_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
 	WebInitForCarbon_FUNC,
+	class_1getClassMethod_FUNC,
 	memcpy_FUNC,
 	memmove_FUNC,
 	objc_1getClass_FUNC,

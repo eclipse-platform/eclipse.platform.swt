@@ -46,6 +46,10 @@ public class OS extends C {
 	public static final int /*long*/ class_NSToolTipManager = OS.objc_getClass("NSToolTipManager");
 	public static final int /*long*/ sel_sharedToolTipManager = OS.sel_registerName("sharedToolTipManager");
 
+	public static final int /*long*/ class_WebPanelAuthenticationHandler = OS.objc_getClass("WebPanelAuthenticationHandler");
+	public static final int /*long*/ sel_sharedHandler = sel_registerName("sharedHandler");
+	public static final int /*long*/ sel_startAuthentication = sel_registerName("startAuthentication:window:");
+
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
@@ -246,6 +250,12 @@ public static final native boolean class_addMethod(int /*long*/ cls, int /*long*
  * @param protocol cast=(Protocol *)
  */
 public static final native boolean class_addProtocol(int /*long*/ cls, int /*long*/ protocol);
+/**
+ * @param method cast=(Method)
+ * @param aClass cast=(Class)
+ * @param aSelector cast=(SEL)
+ */
+public static final native int /*long*/ class_getClassMethod(int /*long*/ aClass, int /*long*/ aSelector);
 /**
  * @param cls cast=(Class)
  * @param name cast=(SEL)
@@ -472,7 +482,10 @@ public static final int /*long*/ class_NSToolbar = objc_getClass("NSToolbar");
 public static final int /*long*/ class_NSTrackingArea = objc_getClass("NSTrackingArea");
 public static final int /*long*/ class_NSTypesetter = objc_getClass("NSTypesetter");
 public static final int /*long*/ class_NSURL = objc_getClass("NSURL");
+public static final int /*long*/ class_NSURLAuthenticationChallenge = objc_getClass("NSURLAuthenticationChallenge");
+public static final int /*long*/ class_NSURLCredential = objc_getClass("NSURLCredential");
 public static final int /*long*/ class_NSURLDownload = objc_getClass("NSURLDownload");
+public static final int /*long*/ class_NSURLProtectionSpace = objc_getClass("NSURLProtectionSpace");
 public static final int /*long*/ class_NSURLRequest = objc_getClass("NSURLRequest");
 public static final int /*long*/ class_NSValue = objc_getClass("NSValue");
 public static final int /*long*/ class_NSView = objc_getClass("NSView");
@@ -645,6 +658,7 @@ public static final int /*long*/ sel_canGoBack = sel_registerName("canGoBack");
 public static final int /*long*/ sel_canGoForward = sel_registerName("canGoForward");
 public static final int /*long*/ sel_canShowMIMEType_ = sel_registerName("canShowMIMEType:");
 public static final int /*long*/ sel_cancel = sel_registerName("cancel");
+public static final int /*long*/ sel_cancelAuthenticationChallenge_ = sel_registerName("cancelAuthenticationChallenge:");
 public static final int /*long*/ sel_cancelButtonCell = sel_registerName("cancelButtonCell");
 public static final int /*long*/ sel_cancelTracking = sel_registerName("cancelTracking");
 public static final int /*long*/ sel_cascadeTopLeftFromPoint_ = sel_registerName("cascadeTopLeftFromPoint:");
@@ -734,6 +748,7 @@ public static final int /*long*/ sel_copy_ = sel_registerName("copy:");
 public static final int /*long*/ sel_count = sel_registerName("count");
 public static final int /*long*/ sel_createContext = sel_registerName("createContext");
 public static final int /*long*/ sel_createFileAtPath_contents_attributes_ = sel_registerName("createFileAtPath:contents:attributes:");
+public static final int /*long*/ sel_credentialWithUser_password_persistence_ = sel_registerName("credentialWithUser:password:persistence:");
 public static final int /*long*/ sel_crosshairCursor = sel_registerName("crosshairCursor");
 public static final int /*long*/ sel_ctrlKey = sel_registerName("ctrlKey");
 public static final int /*long*/ sel_currentContext = sel_registerName("currentContext");
@@ -896,6 +911,7 @@ public static final int /*long*/ sel_handleEvent_ = sel_registerName("handleEven
 public static final int /*long*/ sel_handleMouseEvent_ = sel_registerName("handleMouseEvent:");
 public static final int /*long*/ sel_hasAlpha = sel_registerName("hasAlpha");
 public static final int /*long*/ sel_hasMarkedText = sel_registerName("hasMarkedText");
+public static final int /*long*/ sel_hasPassword = sel_registerName("hasPassword");
 public static final int /*long*/ sel_hasShadow = sel_registerName("hasShadow");
 public static final int /*long*/ sel_headerCell = sel_registerName("headerCell");
 public static final int /*long*/ sel_headerRectOfColumn_ = sel_registerName("headerRectOfColumn:");
@@ -909,6 +925,7 @@ public static final int /*long*/ sel_highlightSelectionInClipRect_ = sel_registe
 public static final int /*long*/ sel_hitPart = sel_registerName("hitPart");
 public static final int /*long*/ sel_hitTest_ = sel_registerName("hitTest:");
 public static final int /*long*/ sel_hitTestForEvent_inRect_ofView_ = sel_registerName("hitTestForEvent:inRect:ofView:");
+public static final int /*long*/ sel_host = sel_registerName("host");
 public static final int /*long*/ sel_hourOfDay = sel_registerName("hourOfDay");
 public static final int /*long*/ sel_iconForFile_ = sel_registerName("iconForFile:");
 public static final int /*long*/ sel_iconForFileType_ = sel_registerName("iconForFileType:");
@@ -1128,6 +1145,7 @@ public static final int /*long*/ sel_panelConvertFont_ = sel_registerName("panel
 public static final int /*long*/ sel_paperSize = sel_registerName("paperSize");
 public static final int /*long*/ sel_paragraphs = sel_registerName("paragraphs");
 public static final int /*long*/ sel_parentWindow = sel_registerName("parentWindow");
+public static final int /*long*/ sel_password = sel_registerName("password");
 public static final int /*long*/ sel_paste_ = sel_registerName("paste:");
 public static final int /*long*/ sel_pasteboard_provideDataForType_ = sel_registerName("pasteboard:provideDataForType:");
 public static final int /*long*/ sel_pasteboardWithName_ = sel_registerName("pasteboardWithName:");
@@ -1140,9 +1158,11 @@ public static final int /*long*/ sel_pointValue = sel_registerName("pointValue")
 public static final int /*long*/ sel_pointingHandCursor = sel_registerName("pointingHandCursor");
 public static final int /*long*/ sel_pop = sel_registerName("pop");
 public static final int /*long*/ sel_popUpContextMenu_withEvent_forView_ = sel_registerName("popUpContextMenu:withEvent:forView:");
+public static final int /*long*/ sel_port = sel_registerName("port");
 public static final int /*long*/ sel_postEvent_atStart_ = sel_registerName("postEvent:atStart:");
 public static final int /*long*/ sel_prependTransform_ = sel_registerName("prependTransform:");
 public static final int /*long*/ sel_preventDefault = sel_registerName("preventDefault");
+public static final int /*long*/ sel_previousFailureCount = sel_registerName("previousFailureCount");
 public static final int /*long*/ sel_previousValidKeyView = sel_registerName("previousValidKeyView");
 public static final int /*long*/ sel_printDocumentView = sel_registerName("printDocumentView");
 public static final int /*long*/ sel_printOperationWithPrintInfo_ = sel_registerName("printOperationWithPrintInfo:");
@@ -1152,8 +1172,11 @@ public static final int /*long*/ sel_printer = sel_registerName("printer");
 public static final int /*long*/ sel_printerNames = sel_registerName("printerNames");
 public static final int /*long*/ sel_printerWithName_ = sel_registerName("printerWithName:");
 public static final int /*long*/ sel_propertyListForType_ = sel_registerName("propertyListForType:");
+public static final int /*long*/ sel_proposedCredential = sel_registerName("proposedCredential");
+public static final int /*long*/ sel_protectionSpace = sel_registerName("protectionSpace");
 public static final int /*long*/ sel_push = sel_registerName("push");
 public static final int /*long*/ sel_rangeValue = sel_registerName("rangeValue");
+public static final int /*long*/ sel_realm = sel_registerName("realm");
 public static final int /*long*/ sel_recentSearches = sel_registerName("recentSearches");
 public static final int /*long*/ sel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_ = sel_registerName("rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:");
 public static final int /*long*/ sel_rectOfColumn_ = sel_registerName("rectOfColumn:");
@@ -1250,6 +1273,7 @@ public static final int /*long*/ sel_selectedTextBackgroundColor = sel_registerN
 public static final int /*long*/ sel_selectedTextColor = sel_registerName("selectedTextColor");
 public static final int /*long*/ sel_sendAction_to_ = sel_registerName("sendAction:to:");
 public static final int /*long*/ sel_sendEvent_ = sel_registerName("sendEvent:");
+public static final int /*long*/ sel_sender = sel_registerName("sender");
 public static final int /*long*/ sel_separatorItem = sel_registerName("separatorItem");
 public static final int /*long*/ sel_set = sel_registerName("set");
 public static final int /*long*/ sel_setAcceptsMouseMovedEvents_ = sel_registerName("setAcceptsMouseMovedEvents:");
@@ -1556,7 +1580,9 @@ public static final int /*long*/ sel_unmarkText = sel_registerName("unmarkText")
 public static final int /*long*/ sel_unregisterDraggedTypes = sel_registerName("unregisterDraggedTypes");
 public static final int /*long*/ sel_updateTrackingAreas = sel_registerName("updateTrackingAreas");
 public static final int /*long*/ sel_use = sel_registerName("use");
+public static final int /*long*/ sel_useCredential_forAuthenticationChallenge_ = sel_registerName("useCredential:forAuthenticationChallenge:");
 public static final int /*long*/ sel_usedRectForTextContainer_ = sel_registerName("usedRectForTextContainer:");
+public static final int /*long*/ sel_user = sel_registerName("user");
 public static final int /*long*/ sel_userInfo = sel_registerName("userInfo");
 public static final int /*long*/ sel_usesAlternatingRowBackgroundColors = sel_registerName("usesAlternatingRowBackgroundColors");
 public static final int /*long*/ sel_validAttributesForMarkedText = sel_registerName("validAttributesForMarkedText");
@@ -1590,6 +1616,7 @@ public static final int /*long*/ sel_webView_mouseDidMoveOverElement_modifierFla
 public static final int /*long*/ sel_webView_printFrameView_ = sel_registerName("webView:printFrameView:");
 public static final int /*long*/ sel_webView_resource_didFailLoadingWithError_fromDataSource_ = sel_registerName("webView:resource:didFailLoadingWithError:fromDataSource:");
 public static final int /*long*/ sel_webView_resource_didFinishLoadingFromDataSource_ = sel_registerName("webView:resource:didFinishLoadingFromDataSource:");
+public static final int /*long*/ sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_ = sel_registerName("webView:resource:didReceiveAuthenticationChallenge:fromDataSource:");
 public static final int /*long*/ sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_ = sel_registerName("webView:resource:willSendRequest:redirectResponse:fromDataSource:");
 public static final int /*long*/ sel_webView_runJavaScriptAlertPanelWithMessage_ = sel_registerName("webView:runJavaScriptAlertPanelWithMessage:");
 public static final int /*long*/ sel_webView_runJavaScriptConfirmPanelWithMessage_ = sel_registerName("webView:runJavaScriptConfirmPanelWithMessage:");

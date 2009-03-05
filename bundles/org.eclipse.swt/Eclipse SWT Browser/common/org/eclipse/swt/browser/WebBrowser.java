@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.*;
 abstract class WebBrowser {
 	Browser browser;
 	Hashtable functions = new Hashtable ();
+	AuthenticationListener[] authenticationListeners = new AuthenticationListener[0];
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
 	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
@@ -194,6 +195,13 @@ public class EvaluateFunction extends BrowserFunction {
 		evaluateResult = arguments[0];
 		return null;
 	}
+}
+
+public void addAuthenticationListener (AuthenticationListener listener) {
+	AuthenticationListener[] newAuthenticationListeners = new AuthenticationListener[authenticationListeners.length + 1];
+	System.arraycopy(authenticationListeners, 0, newAuthenticationListeners, 0, authenticationListeners.length);
+	authenticationListeners = newAuthenticationListeners;
+	authenticationListeners[authenticationListeners.length - 1] = listener;
 }
 
 public void addCloseWindowListener (CloseWindowListener listener) {
@@ -401,6 +409,26 @@ public abstract void refresh ();
 
 void registerFunction (BrowserFunction function) {
 	functions.put (new Integer (function.index), function);
+}
+
+public void removeAuthenticationListener (AuthenticationListener listener) {
+	if (authenticationListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < authenticationListeners.length; i++) {
+		if (listener == authenticationListeners[i]) {
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (authenticationListeners.length == 1) {
+		authenticationListeners = new AuthenticationListener[0];
+		return;
+	}
+	AuthenticationListener[] newAuthenticationListeners = new AuthenticationListener[authenticationListeners.length - 1];
+	System.arraycopy (authenticationListeners, 0, newAuthenticationListeners, 0, index);
+	System.arraycopy (authenticationListeners, index + 1, newAuthenticationListeners, index, authenticationListeners.length - index - 1);
+	authenticationListeners = newAuthenticationListeners;
 }
 
 public void removeCloseWindowListener (CloseWindowListener listener) {

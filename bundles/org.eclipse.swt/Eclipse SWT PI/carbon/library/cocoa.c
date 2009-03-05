@@ -89,6 +89,18 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(WebInitForCarbon)
 }
 #endif
 
+#ifndef NO_class_1getClassMethod
+JNIEXPORT jintLong JNICALL Cocoa_NATIVE(class_1getClassMethod)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, class_1getClassMethod_FUNC);
+	rc = (jintLong)class_getClassMethod((Class)arg0, (SEL)arg1);
+	Cocoa_NATIVE_EXIT(env, that, class_1getClassMethod_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_memcpy
 JNIEXPORT void JNICALL Cocoa_NATIVE(memcpy)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -447,7 +459,7 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_inter
 	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		*lparg0 = (*(NSRect (*)(void *, SEL))objc_msgSend_stret)((void *)arg1, (SEL)arg2);
+		objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2);
 	} else {
 		*lparg0 = (*(NSRect (*)(void *, SEL))objc_msgSend)((void *)arg1, (SEL)arg2);
 	}
@@ -467,7 +479,7 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_inter
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		*lparg0 = (*(NSRect (*)(void *, SEL, NSRect, jint))objc_msgSend_stret)((void *)arg1, (SEL)arg2, *lparg3, arg4);
+		objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2, *lparg3, arg4);
 	} else {
 		*lparg0 = (*(NSRect (*)(void *, SEL, NSRect, jint))objc_msgSend)((void *)arg1, (SEL)arg2, *lparg3, arg4);
 	}

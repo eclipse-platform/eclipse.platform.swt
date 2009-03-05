@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cocoa_nativeFunctionCount = 33;
-int Cocoa_nativeFunctionCallCount[33];
+int Cocoa_nativeFunctionCount = 34;
+int Cocoa_nativeFunctionCallCount[34];
 char * Cocoa_nativeFunctionNames[] = {
 	"HICocoaViewCreate",
 	"HIJavaViewCreateWithCocoaView",
@@ -23,6 +23,7 @@ char * Cocoa_nativeFunctionNames[] = {
 	"HIWebViewGetWebView",
 	"NSDeviceRGBColorSpace",
 	"WebInitForCarbon",
+	"class_1getClassMethod",
 	"memcpy",
 	"memmove",
 	"objc_1getClass",

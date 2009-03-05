@@ -123,6 +123,10 @@ public NSObject autorelease() {
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);
 }
 
+public void cancelAuthenticationChallenge(NSURLAuthenticationChallenge challenge) {
+	OS.objc_msgSend(this.id, OS.sel_cancelAuthenticationChallenge_, challenge != null ? challenge.id : 0);
+}
+
 public NSString className() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_className);
 	return result != 0 ? new NSString(result) : null;
@@ -188,6 +192,10 @@ public int /*long*/ superclass() {
 	return OS.objc_msgSend(this.id, OS.sel_superclass);
 }
 
+public void useCredential(NSURLCredential credential, NSURLAuthenticationChallenge challenge) {
+	OS.objc_msgSend(this.id, OS.sel_useCredential_forAuthenticationChallenge_, credential != null ? credential.id : 0, challenge != null ? challenge.id : 0);
+}
+
 public id valueForKey(NSString key) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_valueForKey_, key != null ? key.id : 0);
 	return result != 0 ? new id(result) : null;
@@ -199,6 +207,10 @@ public void addEventListener(NSString type, id  listener, boolean useCapture) {
 
 public void handleEvent(DOMEvent evt) {
 	OS.objc_msgSend(this.id, OS.sel_handleEvent_, evt != null ? evt.id : 0);
+}
+
+public void webView(WebView sender, id identifier, NSURLAuthenticationChallenge challenge, WebDataSource dataSource) {
+	OS.objc_msgSend(this.id, OS.sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_, sender != null ? sender.id : 0, identifier != null ? identifier.id : 0, challenge != null ? challenge.id : 0, dataSource != null ? dataSource.id : 0);
 }
 
 }

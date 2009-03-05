@@ -16,6 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 class Safari extends WebBrowser {
@@ -144,6 +145,7 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_webView_didStartProvisionalLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_didCommitLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didFinishLoadingFromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_identifierForInitialRequest_fromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_, proc7, "@:@@@@@"); //$NON-NLS-1$
@@ -360,6 +362,8 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	Safari safari = (Safari)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_) {
 		safari.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
+	} else if (sel == OS.sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_) {
+		safari.webView_resource_didReceiveAuthenticationChallenge_fromDataSource(arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
@@ -817,6 +821,146 @@ void webView_resource_didFailLoadingWithError_fromDataSource(int /*long*/ sender
 	*/
 	// this code is intentionally commented
 	//if (this.identifier == identifier) this.identifier = 0;
+}
+
+void webView_resource_didReceiveAuthenticationChallenge_fromDataSource (int /*long*/ sender, int /*long*/ identifier, int /*long*/ challenge, int /*long*/ dataSource) {
+	NSURLAuthenticationChallenge nsChallenge = new NSURLAuthenticationChallenge (challenge);
+
+	/*
+	 * Do not invoke the listeners if this challenge has been failed too many
+	 * times because a listener is likely giving incorrect credentials repeatedly
+	 * and will do so indefinitely.
+	 */
+	if (nsChallenge.previousFailureCount () < 3) {
+		for (int i = 0; i < authenticationListeners.length; i++) {
+			AuthenticationEvent event = new AuthenticationEvent (browser);
+			event.location = url;
+			authenticationListeners[i].authenticate (event);
+			if (!event.doit) {
+				id challengeSender = nsChallenge.sender ();
+				OS.objc_msgSend (challengeSender.id, OS.sel_cancelAuthenticationChallenge_, challenge);
+				return;
+			}
+			if (event.user != null && event.password != null) {
+				id challengeSender = nsChallenge.sender ();
+				NSString user = NSString.stringWith (event.user);
+				NSString password = NSString.stringWith (event.password);
+				NSURLCredential credential = NSURLCredential.credentialWithUser (user, password, OS.NSURLCredentialPersistenceForSession);
+				OS.objc_msgSend (challengeSender.id, OS.sel_useCredential_forAuthenticationChallenge_, credential.id, challenge);
+				return;
+			}
+		}
+	}
+
+	/* no listener handled the challenge, so try to invoke the native panel */
+	int /*long*/ cls = OS.class_WebPanelAuthenticationHandler;
+	if (cls != 0) {
+		int /*long*/ method = OS.class_getClassMethod (cls, OS.sel_sharedHandler);
+		if (method != 0) {
+			int /*long*/ handler = OS.objc_msgSend (cls, OS.sel_sharedHandler);
+			if (handler != 0) {
+				OS.objc_msgSend (handler, OS.sel_startAuthentication, challenge, webView.window ().id);
+				return;
+			}
+		}
+	}
+
+	/* the native panel was not available, so show a custom dialog */
+	String[] userReturn = new String[1], passwordReturn = new String[1];
+	NSURLCredential proposedCredential = nsChallenge.proposedCredential ();
+	if (proposedCredential != null) {
+		userReturn[0] = proposedCredential.user ().getString ();
+		if (proposedCredential.hasPassword ()) {
+			passwordReturn[0] = proposedCredential.password ().getString ();
+		}
+	}
+	NSURLProtectionSpace space = nsChallenge.protectionSpace ();
+	String host = space.host ().getString () + ':' + space.port ();
+	String realm = space.realm ().getString ();
+	boolean result = showAuthenticationDialog (userReturn, passwordReturn, host, realm);
+	if (!result) {
+		id challengeSender = nsChallenge.sender ();
+		OS.objc_msgSend (challengeSender.id, OS.sel_cancelAuthenticationChallenge_, challenge);
+		return;
+	}
+	id challengeSender = nsChallenge.sender ();
+	NSString user = NSString.stringWith (userReturn[0]);
+	NSString password = NSString.stringWith (passwordReturn[0]);
+	NSURLCredential credential = NSURLCredential.credentialWithUser (user, password, OS.NSURLCredentialPersistenceForSession);
+	OS.objc_msgSend (challengeSender.id, OS.sel_useCredential_forAuthenticationChallenge_, credential.id, challenge);
+}
+
+boolean showAuthenticationDialog (final String[] user, final String[] password, String host, String realm) {
+	final Shell shell = new Shell (browser.getShell ());
+	shell.setLayout (new GridLayout ());
+	String title = SWT.getMessage ("SWT_Authentication_Required"); //$NON-NLS-1$
+	shell.setText (title);
+	Label label = new Label (shell, SWT.WRAP);
+	label.setText (Compatibility.getMessage ("SWT_Enter_Username_and_Password", new String[] {realm, host})); //$NON-NLS-1$
+
+	GridData data = new GridData ();
+	Monitor monitor = browser.getMonitor ();
+	int maxWidth = monitor.getBounds ().width * 2 / 3;
+	int width = label.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
+	data.widthHint = Math.min (width, maxWidth);
+	data.horizontalAlignment = GridData.FILL;
+	data.grabExcessHorizontalSpace = true;
+	label.setLayoutData (data);
+
+	Label userLabel = new Label (shell, SWT.NONE);
+	userLabel.setText (SWT.getMessage ("SWT_Username")); //$NON-NLS-1$
+
+	final Text userText = new Text (shell, SWT.BORDER);
+	if (user[0] != null) userText.setText (user[0]);
+	data = new GridData ();
+	data.horizontalAlignment = GridData.FILL;
+	data.grabExcessHorizontalSpace = true;
+	userText.setLayoutData (data);
+
+	Label passwordLabel = new Label (shell, SWT.NONE);
+	passwordLabel.setText (SWT.getMessage ("SWT_Password")); //$NON-NLS-1$
+
+	final Text passwordText = new Text (shell, SWT.PASSWORD | SWT.BORDER);
+	if (password[0] != null) passwordText.setText (password[0]);
+	data = new GridData ();
+	data.horizontalAlignment = GridData.FILL;
+	data.grabExcessHorizontalSpace = true;
+	passwordText.setLayoutData (data);
+
+	final boolean[] result = new boolean[1];
+	final Button[] buttons = new Button[2];
+	Listener listener = new Listener() {
+		public void handleEvent(Event event) {
+			user[0] = userText.getText();
+			password[0] = passwordText.getText();
+			result[0] = event.widget == buttons[1];
+			shell.close();
+		}	
+	};
+
+	Composite composite = new Composite (shell, SWT.NONE);
+	data = new GridData ();
+	data.horizontalAlignment = GridData.END;
+	composite.setLayoutData (data);
+	composite.setLayout (new GridLayout (2, true));
+	buttons[0] = new Button (composite, SWT.PUSH);
+	buttons[0].setText (SWT.getMessage("SWT_Cancel")); //$NON-NLS-1$
+	buttons[0].setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	buttons[0].addListener (SWT.Selection, listener);
+	buttons[1] = new Button (composite, SWT.PUSH);
+	buttons[1].setText (SWT.getMessage("SWT_OK")); //$NON-NLS-1$
+	buttons[1].setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	buttons[1].addListener (SWT.Selection, listener);
+
+	shell.setDefaultButton (buttons[1]);
+	shell.pack ();
+	shell.open ();
+	Display display = browser.getDisplay ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+
+	return result[0];
 }
 
 int /*long*/ webView_identifierForInitialRequest_fromDataSource(int /*long*/ sender, int /*long*/ request, int /*long*/ dataSourceID) {

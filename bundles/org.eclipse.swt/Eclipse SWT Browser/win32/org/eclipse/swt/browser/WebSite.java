@@ -23,6 +23,7 @@ class WebSite extends OleControlSite {
 	COMObject iServiceProvider;
 	COMObject iInternetSecurityManager;
 	COMObject iOleCommandTarget;
+	COMObject iAuthenticate;
 	COMObject iDispatch;
 	boolean ignoreNextMessage;
 	Boolean canExecuteApplets;
@@ -96,6 +97,12 @@ protected void createCOMInterfaces () {
 		public int /*long*/ method3(int /*long*/[] args) {return QueryStatus(args[0], (int)/*64*/args[1], args[2], args[3]);}		
 		public int /*long*/ method4(int /*long*/[] args) {return Exec(args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3], args[4]);}
 	};
+	iAuthenticate = new COMObject(new int[]{2, 0, 0, 3}){
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return Authenticate(args[0], args[1], args[2]);}
+	};
 	iDispatch = new COMObject (new int[] {2, 0, 0, 1, 3, 5, 8}) {
 		public int /*long*/ method0 (int /*long*/[] args) {
 			/* 
@@ -142,6 +149,10 @@ protected void disposeCOMInterfaces() {
 	if (iOleCommandTarget != null) {
 		iOleCommandTarget.dispose();
 		iOleCommandTarget = null;
+	}
+	if (iAuthenticate != null) {
+		iAuthenticate.dispose();
+		iAuthenticate = null;
 	}
 	if (iDispatch != null) {
 		iDispatch.dispose ();
@@ -455,6 +466,11 @@ int QueryService(int /*long*/ guidService, int /*long*/ riid, int /*long*/ ppvOb
 		AddRef();
 		return COM.S_OK;
 	}
+	if (COM.IsEqualGUID(guid, COM.IIDIAuthenticate)) {
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iAuthenticate.getAddress()}, OS.PTR_SIZEOF);
+		AddRef();
+		return COM.S_OK;
+	}
 	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
@@ -614,6 +630,36 @@ int Exec(int /*long*/ pguidCmdGroup, int nCmdID, int nCmdExecOpt, int /*long*/ p
 		}
 	}
 	return COM.E_NOTSUPPORTED;
+}
+
+/* IAuthenticate */
+
+int Authenticate (int /*long*/ hwnd, int /*long*/ szUsername, int /*long*/ szPassword) {
+	IE browser = (IE)((Browser)getParent ().getParent ()).webBrowser;
+	for (int i = 0; i < browser.authenticationListeners.length; i++) {
+		AuthenticationEvent event = new AuthenticationEvent (browser.browser);
+		event.location = browser.lastNavigateURL;
+		browser.authenticationListeners[i].authenticate (event);
+		if (!event.doit) return COM.E_ACCESSDENIED;
+		if (event.user != null && event.password != null) {
+			TCHAR user = new TCHAR (0, event.user, true);
+			int size = user.length () * TCHAR.sizeof;
+			int /*long*/ userPtr = COM.CoTaskMemAlloc (size);
+			OS.MoveMemory (userPtr, user, size);
+			TCHAR password = new TCHAR (0, event.password, true);
+			size = password.length () * TCHAR.sizeof;
+			int /*long*/ passwordPtr = COM.CoTaskMemAlloc (size);
+			OS.MoveMemory (passwordPtr, password, size);
+			C.memmove (hwnd, new int /*long*/[] {0}, C.PTR_SIZEOF);
+			C.memmove (szUsername, new int /*long*/[] {userPtr}, C.PTR_SIZEOF);
+			C.memmove (szPassword, new int /*long*/[] {passwordPtr}, C.PTR_SIZEOF);
+			return COM.S_OK;
+		}
+	}
+
+	/* no listener handled the challenge, so defer to the native dialog */
+	C.memmove (hwnd, new int /*long*/[] {getShell().handle}, C.PTR_SIZEOF);
+	return COM.S_OK;
 }
 
 /* IDispatch */

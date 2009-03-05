@@ -226,6 +226,33 @@ public static boolean setCookie (String value, String url) {
 
 /**	 
  * Adds the listener to the collection of listeners who will be
+ * notified when authentication is required.
+ * <p>
+ * This notification occurs when a page requiring authentication is
+ * encountered.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.5
+ */
+public void addAuthenticationListener (AuthenticationListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addAuthenticationListener (listener);
+}
+
+/**	 
+ * Adds the listener to the collection of listeners who will be
  * notified when the window hosting the receiver should be closed.
  * <p>
  * This notification occurs when a javascript command such as
@@ -682,6 +709,29 @@ public boolean isForwardEnabled () {
 public void refresh () {
 	checkWidget();
 	webBrowser.refresh ();
+}
+
+/**	 
+ * Removes the listener from the collection of listeners who will
+ * be notified when authentication is required.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void removeAuthenticationListener (AuthenticationListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeAuthenticationListener (listener);
 }
 
 /**	 

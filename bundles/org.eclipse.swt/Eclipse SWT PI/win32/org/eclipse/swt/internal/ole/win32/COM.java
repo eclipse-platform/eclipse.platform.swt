@@ -64,6 +64,7 @@ public class COM extends OS {
 	//public static final GUID IIDIFontDisp = IIDFromString("{BEF6E003-A874-101A-8BBA-00AA00300CAB}"); //$NON-NLS-1$
 	public static final /*GUID*/ String IIDIHTMLDocumentEvents2 = /*IIDFromString(*/"{3050F613-98B5-11CF-BB82-00AA00BDCE0B}"/*)*/;
 	public static final GUID IIDIInternetSecurityManager = IIDFromString("{79eac9ee-baf9-11ce-8c82-00aa004ba90b}"); //$NON-NLS-1$
+	public static final GUID IIDIAuthenticate = IIDFromString("{79eac9d0-baf9-11ce-8c82-00aa004ba90b}"); //$NON-NLS-1$
 	public static final GUID IIDIJScriptTypeInfo = IIDFromString("{C59C6B12-F6C1-11CF-8835-00A0C911E8B2}"); //$NON-NLS-1$
 	//public static final GUID IIDILockBytes = IIDFromString("{0000000A-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	//public static final GUID IIDIMalloc = IIDFromString("{00000002-0000-0000-C000-000000000046}"); //$NON-NLS-1$
@@ -240,6 +241,7 @@ public class COM extends OS {
 	//public static final int DVASPECT_DOCPRINT = 8;
 	//public static final int DVASPECT_ICON = 4;
 	//public static final int DVASPECT_THUMBNAIL = 2;
+	public static final int E_ACCESSDENIED = 0x80070005;
 	public static final int E_FAIL = -2147467259;
 	public static final int E_INVALIDARG = -2147024809;
 	public static final int E_NOINTERFACE = -2147467262;
