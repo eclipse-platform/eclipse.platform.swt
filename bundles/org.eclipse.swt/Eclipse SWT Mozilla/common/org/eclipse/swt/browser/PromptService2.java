@@ -357,34 +357,6 @@ int Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText,
 int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*long*/ checkboxLabel, int /*long*/ checkboxValue, int /*long*/ _retval) {
 	nsIAuthInformation auth = new nsIAuthInformation (authInfo);
 
-	nsIChannel channel = new nsIChannel (aChannel);
-	int /*long*/[] uri = new int /*long*/[1];
-	int rc = channel.GetURI (uri);
-	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	if (uri[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-
-	nsIURI nsURI = new nsIURI (uri[0]);
-	int /*long*/ host = XPCOM.nsEmbedCString_new ();
-	rc = nsURI.GetHost (host);
-	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	int length = XPCOM.nsEmbedCString_Length (host);
-	int /*long*/ buffer = XPCOM.nsEmbedCString_get (host);
-	byte[] bytes = new byte[length];
-	XPCOM.memmove (bytes, buffer, length);
-	String hostString = new String (bytes);
-	XPCOM.nsEmbedCString_delete (host);
-
-	int /*long*/ spec = XPCOM.nsEmbedCString_new ();
-	rc = nsURI.GetSpec (spec);
-	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	length = XPCOM.nsEmbedCString_Length (spec);
-	buffer = XPCOM.nsEmbedCString_get (spec);
-	bytes = new byte[length];
-	XPCOM.memmove (bytes, buffer, length);
-	String urlString = new String (bytes);
-	XPCOM.nsEmbedCString_delete (spec);
-	nsURI.Release ();
-
 	Browser browser = getBrowser (aParent);
 	if (browser != null) {
 		Mozilla mozilla = (Mozilla)browser.webBrowser;
@@ -396,7 +368,7 @@ int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*lon
 		if (mozilla.authCount++ < 3) {
 			for (int i = 0; i < mozilla.authenticationListeners.length; i++) {
 				AuthenticationEvent event = new AuthenticationEvent (browser);
-				event.location = urlString;
+				event.location = mozilla.lastNavigateURL;
 				mozilla.authenticationListeners[i].authenticate (event);
 				if (!event.doit) {
 					XPCOM.memmove (_retval, new int[] {0}, 4);	/* PRBool */
@@ -404,7 +376,7 @@ int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*lon
 				}
 				if (event.user != null && event.password != null) {
 					nsEmbedString string = new nsEmbedString (event.user);
-					rc = auth.SetUsername (string.getAddress ());
+					int rc = auth.SetUsername (string.getAddress ());
 					if (rc != XPCOM.NS_OK) SWT.error (rc);
 					string.dispose ();
 					string = new nsEmbedString (event.password);
@@ -427,7 +399,7 @@ int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*lon
 	String title = SWT.getMessage ("SWT_Authentication_Required"); //$NON-NLS-1$
 
 	if (checkboxLabel != 0 && checkboxValue != 0) {
-		length = XPCOM.strlen_PRUnichar (checkboxLabel);
+		int length = XPCOM.strlen_PRUnichar (checkboxLabel);
 		char[] dest = new char[length];
 		XPCOM.memmove (dest, checkboxLabel, length * 2);
 		checkLabel = new String (dest);
@@ -437,10 +409,10 @@ int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*lon
 	/* get initial username and password values */
 
 	int /*long*/ ptr = XPCOM.nsEmbedString_new ();
-	rc = auth.GetUsername (ptr);
+	int rc = auth.GetUsername (ptr);
 	if (rc != XPCOM.NS_OK) SWT.error (rc);
-	length = XPCOM.nsEmbedString_Length (ptr);
-	buffer = XPCOM.nsEmbedString_get (ptr);
+	int length = XPCOM.nsEmbedString_Length (ptr);
+	int /*long*/ buffer = XPCOM.nsEmbedString_get (ptr);
 	char[] chars = new char[length];
 	XPCOM.memmove (chars, buffer, length * 2);
 	userLabel[0] = new String (chars);
@@ -467,6 +439,24 @@ int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*lon
 	XPCOM.memmove (chars, buffer, length * 2);
 	String realm = new String (chars);
 	XPCOM.nsEmbedString_delete (ptr);
+
+	nsIChannel channel = new nsIChannel (aChannel);
+	int /*long*/[] uri = new int /*long*/[1];
+	rc = channel.GetURI (uri);
+	if (rc != XPCOM.NS_OK) SWT.error (rc);
+	if (uri[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+	nsIURI nsURI = new nsIURI (uri[0]);
+	int /*long*/ host = XPCOM.nsEmbedCString_new ();
+	rc = nsURI.GetHost (host);
+	if (rc != XPCOM.NS_OK) SWT.error (rc);
+	length = XPCOM.nsEmbedCString_Length (host);
+	buffer = XPCOM.nsEmbedCString_get (host);
+	byte[] bytes = new byte[length];
+	XPCOM.memmove (bytes, buffer, length);
+	String hostString = new String (bytes);
+	XPCOM.nsEmbedCString_delete (host);
+	nsURI.Release ();
 
 	String message;
 	if (realm.length () > 0 && hostString.length () > 0) {
