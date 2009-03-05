@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Button example snippet: tri-state check button
+ * Button example snippet: create a tri-state button (toggle three state)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
