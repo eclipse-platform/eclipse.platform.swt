@@ -36,7 +36,6 @@ import org.eclipse.swt.internal.gtk.*;
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
 	static final String SEPARATOR = System.getProperty ("file.separator");
-	int /*long*/ handle;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -127,6 +126,7 @@ String openChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	int /*long*/ handle = 0;
 	if (display.getDismissalAlignment() == SWT.RIGHT) {
 		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
 	} else {
