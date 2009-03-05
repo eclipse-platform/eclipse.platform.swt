@@ -39,7 +39,7 @@ public class AuthenticationEvent extends TypedEvent {
 	 */
 	public boolean doit = true;
 
-	static final long serialVersionUID = 4121132532906340919L; // TODO
+	static final long serialVersionUID = -8322331206780057921L;
 
 AuthenticationEvent(Widget w) {
 	super(w);
