@@ -1369,9 +1369,6 @@ public void setModified (boolean modified) {
 	this.modified = modified;
 }
 
-/**
-
-
 void setParent () {
 	/* Do nothing.  Not necessary for Shells */
 }
