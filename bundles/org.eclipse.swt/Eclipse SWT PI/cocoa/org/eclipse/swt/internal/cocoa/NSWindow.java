@@ -139,6 +139,10 @@ public void invalidateShadow() {
 	OS.objc_msgSend(this.id, OS.sel_invalidateShadow);
 }
 
+public boolean isDocumentEdited() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isDocumentEdited);
+}
+
 public boolean isKeyWindow() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isKeyWindow);
 }
@@ -225,6 +229,10 @@ public void setDefaultButtonCell(NSButtonCell defButt) {
 
 public void setDelegate(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
+}
+
+public void setDocumentEdited(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setDocumentEdited_, flag);
 }
 
 public void setFrame(NSRect frameRect, boolean flag) {

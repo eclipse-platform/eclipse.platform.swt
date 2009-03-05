@@ -603,6 +603,7 @@ public static final int /*long*/ sel_becomeFirstResponder = sel_registerName("be
 public static final int /*long*/ sel_beginDocument = sel_registerName("beginDocument");
 public static final int /*long*/ sel_beginEditing = sel_registerName("beginEditing");
 public static final int /*long*/ sel_beginPageInRect_atPlacement_ = sel_registerName("beginPageInRect:atPlacement:");
+public static final int /*long*/ sel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_ = sel_registerName("beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:");
 public static final int /*long*/ sel_bestRepresentationForDevice_ = sel_registerName("bestRepresentationForDevice:");
 public static final int /*long*/ sel_bezierPath = sel_registerName("bezierPath");
 public static final int /*long*/ sel_bezierPathByFlatteningPath = sel_registerName("bezierPathByFlatteningPath");
@@ -826,6 +827,7 @@ public static final int /*long*/ sel_enableFreedObjectCheck_ = sel_registerName(
 public static final int /*long*/ sel_endDocument = sel_registerName("endDocument");
 public static final int /*long*/ sel_endEditing = sel_registerName("endEditing");
 public static final int /*long*/ sel_endPage = sel_registerName("endPage");
+public static final int /*long*/ sel_endSheet_returnCode_ = sel_registerName("endSheet:returnCode:");
 public static final int /*long*/ sel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_ = sel_registerName("enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:");
 public static final int /*long*/ sel_enumeratorAtPath_ = sel_registerName("enumeratorAtPath:");
 public static final int /*long*/ sel_expandItem_ = sel_registerName("expandItem:");
@@ -953,6 +955,7 @@ public static final int /*long*/ sel_invalidate = sel_registerName("invalidate")
 public static final int /*long*/ sel_invalidateShadow = sel_registerName("invalidateShadow");
 public static final int /*long*/ sel_invert = sel_registerName("invert");
 public static final int /*long*/ sel_isActive = sel_registerName("isActive");
+public static final int /*long*/ sel_isDocumentEdited = sel_registerName("isDocumentEdited");
 public static final int /*long*/ sel_isDrawingToScreen = sel_registerName("isDrawingToScreen");
 public static final int /*long*/ sel_isEmpty = sel_registerName("isEmpty");
 public static final int /*long*/ sel_isEqual_ = sel_registerName("isEqual:");
@@ -1294,6 +1297,7 @@ public static final int /*long*/ sel_setDestination_allowOverwrite_ = sel_regist
 public static final int /*long*/ sel_setDictionary_ = sel_registerName("setDictionary:");
 public static final int /*long*/ sel_setDirectory_ = sel_registerName("setDirectory:");
 public static final int /*long*/ sel_setDocumentCursor_ = sel_registerName("setDocumentCursor:");
+public static final int /*long*/ sel_setDocumentEdited_ = sel_registerName("setDocumentEdited:");
 public static final int /*long*/ sel_setDocumentView_ = sel_registerName("setDocumentView:");
 public static final int /*long*/ sel_setDoubleAction_ = sel_registerName("setDoubleAction:");
 public static final int /*long*/ sel_setDoubleValue_ = sel_registerName("setDoubleValue:");
@@ -4265,6 +4269,8 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, boolean arg5, boolean arg6, int /*long*/ arg7, int /*long*/ arg8, int /*long*/ arg9);
 /** @method flags=cast */

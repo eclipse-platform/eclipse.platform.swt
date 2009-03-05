@@ -28,9 +28,17 @@ public void activateIgnoringOtherApps(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_activateIgnoringOtherApps_, flag);
 }
 
+public void beginSheet(NSWindow sheet, NSWindow docWindow, id modalDelegate, int /*long*/ didEndSelector, int /*long*/ contextInfo) {
+	OS.objc_msgSend(this.id, OS.sel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_, sheet != null ? sheet.id : 0, docWindow != null ? docWindow.id : 0, modalDelegate != null ? modalDelegate.id : 0, didEndSelector, contextInfo);
+}
+
 public NSEvent currentEvent() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_currentEvent);
 	return result != 0 ? new NSEvent(result) : null;
+}
+
+public void endSheet(NSWindow sheet, int /*long*/ returnCode) {
+	OS.objc_msgSend(this.id, OS.sel_endSheet_returnCode_, sheet != null ? sheet.id : 0, returnCode);
 }
 
 public void finishLaunching() {

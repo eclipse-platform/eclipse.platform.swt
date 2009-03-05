@@ -2725,13 +2725,13 @@
 <arg name="docWindow"></arg>
 <retval></retval>
 </method>
-<method selector="beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:">
-<arg name="sheet"></arg>
-<arg name="docWindow"></arg>
-<arg name="modalDelegate"></arg>
-<arg name="didEndSelector"></arg>
-<arg name="contextInfo"></arg>
-<retval></retval>
+<method selector="beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:" swt_gen="true">
+<arg name="sheet" swt_gen="true"></arg>
+<arg name="docWindow" swt_gen="true"></arg>
+<arg name="modalDelegate" swt_gen="true"></arg>
+<arg name="didEndSelector" swt_gen="true"></arg>
+<arg name="contextInfo" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="cancelUserAttentionRequest:">
 <arg name="request"></arg>
@@ -2777,10 +2777,10 @@
 <arg name="sheet"></arg>
 <retval></retval>
 </method>
-<method selector="endSheet:returnCode:">
-<arg name="sheet"></arg>
-<arg name="returnCode"></arg>
-<retval></retval>
+<method selector="endSheet:returnCode:" swt_gen="true">
+<arg name="sheet" swt_gen="true"></arg>
+<arg name="returnCode" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="finishLaunching" swt_gen="true">
 <retval swt_gen="true"></retval>
@@ -23022,8 +23022,8 @@
 <method selector="isAutodisplay">
 <retval></retval>
 </method>
-<method selector="isDocumentEdited">
-<retval></retval>
+<method selector="isDocumentEdited" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="isExcludedFromWindowsMenu">
 <retval></retval>
@@ -23360,9 +23360,9 @@
 <arg name="flag"></arg>
 <retval></retval>
 </method>
-<method selector="setDocumentEdited:">
-<arg name="flag"></arg>
-<retval></retval>
+<method selector="setDocumentEdited:" swt_gen="true">
+<arg name="flag" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setDynamicDepthLimit:">
 <arg name="flag"></arg>

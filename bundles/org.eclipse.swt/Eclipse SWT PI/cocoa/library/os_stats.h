@@ -422,6 +422,11 @@ typedef enum {
 	objc_1msgSend__JJJJJJ_FUNC,
 #endif
 #ifndef JNI64
+	objc_1msgSend__IIIIIII_FUNC,
+#else
+	objc_1msgSend__JJJJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIIIIII_FUNC,
 #else
 	objc_1msgSend__JJJJJJJJJ_FUNC,

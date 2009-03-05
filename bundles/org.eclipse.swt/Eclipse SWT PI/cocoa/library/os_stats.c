@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 401;
-int OS_nativeFunctionCallCount[401];
+int OS_nativeFunctionCount = 402;
+int OS_nativeFunctionCallCount[402];
 char * OS_nativeFunctionNames[] = {
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
@@ -412,6 +412,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIIIII",
 #else
 	"objc_1msgSend__JJJJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIIIIII",
+#else
+	"objc_1msgSend__JJJJJJJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIIIIIIII",
