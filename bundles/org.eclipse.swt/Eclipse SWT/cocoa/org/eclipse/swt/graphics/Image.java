@@ -1075,7 +1075,11 @@ void initNative(String filename) {
 		// We now have everything we neeed to construct an ImageData object and initialize everything from that.
 		ImageData data = new ImageData((int)/*64*/width, (int)/*64*/height, (int)/*64*/bpp, palette, 4, imageData);
 		data.bytesPerLine = (int)/*64*/bpr;
-		if ((dataFormat & OS.NSAlphaFirstBitmapFormat) == 0) nativeTransparentColor <<= bps;
+		
+		if (nativeTransparentColor != -1) {
+			if ((dataFormat & OS.NSAlphaFirstBitmapFormat) == 0) nativeTransparentColor <<= bps;
+		}
+		
 		data.transparentPixel = nativeTransparentColor;
 		data.alpha = -1;
 		data.alphaData = nativeAlphaData;
