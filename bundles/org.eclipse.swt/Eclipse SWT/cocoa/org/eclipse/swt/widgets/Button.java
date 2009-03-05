@@ -412,7 +412,7 @@ public int getAlignment () {
  */
 public boolean getGrayed() {
 	checkWidget ();
-	if ((style &SWT.CHECK) == 0) return false;
+	if ((style & SWT.CHECK) == 0) return false;
 	return grayed;
 }
 
