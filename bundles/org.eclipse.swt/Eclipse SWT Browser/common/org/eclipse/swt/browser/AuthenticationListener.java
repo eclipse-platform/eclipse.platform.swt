@@ -28,7 +28,7 @@ public interface AuthenticationListener extends SWTEventListener {
  * This method is called when a page is navigated to that requires
  * authentication.
  * <p>
- * Setting the event's <code>user</code> and <code>password</code>
+ * Setting both the event's <code>user</code> and <code>password</code>
  * fields causes these values to be used as credentials for authentication.
  * Leaving one or both of these fields as <code>null</code> indicates
  * that credentials are not known, so an authentication prompter should
@@ -49,7 +49,8 @@ public interface AuthenticationListener extends SWTEventListener {
  * </ul>
  * 
  * @param event the <code>AuthenticationEvent</code> that can be used to
- * supply authentication credentials or cancel an authentication challenge
+ * either supply authentication credentials, defer credential input to
+ * an authentication prompter, or cancel an authentication challenge.
  */
 public void authenticate(AuthenticationEvent event);
 }
