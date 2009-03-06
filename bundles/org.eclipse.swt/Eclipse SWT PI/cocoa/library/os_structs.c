@@ -370,7 +370,7 @@ struct objc_super *getobjc_superFields(JNIEnv *env, jobject lpObject, struct obj
 {
 	if (!objc_superFc.cached) cacheobjc_superFields(env, lpObject);
 	lpStruct->receiver = (id)(*env)->GetIntLongField(env, lpObject, objc_superFc.receiver);
-	lpStruct->super_class = (Class)(*env)->GetIntLongField(env, lpObject, objc_superFc.super_class);
+	lpStruct->swt_super_class = (Class)(*env)->GetIntLongField(env, lpObject, objc_superFc.super_class);
 	return lpStruct;
 }
 
@@ -378,7 +378,7 @@ void setobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStr
 {
 	if (!objc_superFc.cached) cacheobjc_superFields(env, lpObject);
 	(*env)->SetIntLongField(env, lpObject, objc_superFc.receiver, (jintLong)lpStruct->receiver);
-	(*env)->SetIntLongField(env, lpObject, objc_superFc.super_class, (jintLong)lpStruct->super_class);
+	(*env)->SetIntLongField(env, lpObject, objc_superFc.super_class, (jintLong)lpStruct->swt_super_class);
 }
 #endif
 

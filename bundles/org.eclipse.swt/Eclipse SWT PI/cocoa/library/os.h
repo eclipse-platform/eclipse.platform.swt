@@ -15,9 +15,6 @@
 /*#define NDEBUG*/
 /*#define DEBUG_EXCEPTIONS*/
 
-//TODO this is needed for objc_super, is it correct?
-#define __OBJC2__ 1
-
 #include <Cocoa/Cocoa.h>
 #include <WebKit/WebView.h>
 #import <objc/objc-runtime.h>
@@ -30,6 +27,15 @@ extern jint CPSSetProcessName(void *, jintLong);
 
 #ifndef __i386__
 #define objc_msgSend_fpret objc_msgSend
+#endif
+
+/* The structure objc_super defines "class" in i386/ppc and "super_class" in x86_64 */
+#ifdef __i386__
+#define swt_super_class class
+#elif __ppc__
+#define swt_super_class class
+#elif __x86_64__
+#define swt_super_class super_class
 #endif
 
 #ifdef __i386__
