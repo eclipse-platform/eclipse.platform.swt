@@ -61,6 +61,11 @@ public void deselectRow(int /*long*/ row) {
 	OS.objc_msgSend(this.id, OS.sel_deselectRow_, row);
 }
 
+public NSImage dragImageForRowsWithIndexes(NSIndexSet dragRows, NSArray tableColumns, NSEvent dragEvent, int /*long*/ dragImageOffset) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dragImageForRowsWithIndexes_tableColumns_event_offset_, dragRows != null ? dragRows.id : 0, tableColumns != null ? tableColumns.id : 0, dragEvent != null ? dragEvent.id : 0, dragImageOffset);
+	return result != 0 ? new NSImage(result) : null;
+}
+
 public NSRect frameOfCellAtColumn(int /*long*/ column, int /*long*/ row) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_frameOfCellAtColumn_row_, column, row);
@@ -191,6 +196,10 @@ public void setDelegate(id delegate) {
 
 public void setDoubleAction(int /*long*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setDoubleAction_, aSelector);
+}
+
+public void setDropRow(int /*long*/ row, int /*long*/ op) {
+	OS.objc_msgSend(this.id, OS.sel_setDropRow_dropOperation_, row, op);
 }
 
 public void setHeaderView(NSTableHeaderView headerView) {

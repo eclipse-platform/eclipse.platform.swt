@@ -70,6 +70,10 @@ public void setAutosaveExpandedItems(boolean save) {
 	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_, save);
 }
 
+public void setDropItem(id item, int /*long*/ index) {
+	OS.objc_msgSend(this.id, OS.sel_setDropItem_dropChildIndex_, item != null ? item.id : 0, index);
+}
+
 public void setOutlineTableColumn(NSTableColumn outlineTableColumn) {
 	OS.objc_msgSend(this.id, OS.sel_setOutlineTableColumn_, outlineTableColumn != null ? outlineTableColumn.id : 0);
 }

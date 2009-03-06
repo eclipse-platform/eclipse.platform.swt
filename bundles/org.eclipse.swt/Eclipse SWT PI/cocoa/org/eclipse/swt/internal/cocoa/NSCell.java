@@ -80,6 +80,10 @@ public NSRect imageRectForBounds(NSRect theRect) {
 	return result;
 }
 
+public boolean isHighlighted() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isHighlighted);
+}
+
 public int /*long*/ nextState() {
 	return OS.objc_msgSend(this.id, OS.sel_nextState);
 }

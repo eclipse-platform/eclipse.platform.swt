@@ -42,6 +42,10 @@ public int /*long*/ count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
+public int /*long*/ indexOfObjectIdenticalTo(id anObject) {
+	return OS.objc_msgSend(this.id, OS.sel_indexOfObjectIdenticalTo_, anObject != null ? anObject.id : 0);
+}
+
 public id objectAtIndex(int /*long*/ index) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectAtIndex_, index);
 	return result != 0 ? new id(result) : null;
