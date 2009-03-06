@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -30,6 +33,8 @@ import org.eclipse.swt.widgets.*;
  * @since 3.3
  */
 public class TreeDragSourceEffect extends DragSourceEffect {
+	Image dragSourceImage = null;
+
 	/**
 	 * Creates a new <code>TreeDragSourceEffect</code> to handle drag effect 
 	 * from the specified <code>Tree</code>.
@@ -38,5 +43,54 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 	 */
 	public TreeDragSourceEffect(Tree tree) {
 		super(tree);
+	}
+
+	/**
+	 * This implementation of <code>dragFinished</code> disposes the image
+	 * that was created in <code>TreeDragSourceEffect.dragStart</code>.
+	 * 
+	 * Subclasses that override this method should call <code>super.dragFinished(event)</code>
+	 * to dispose the image in the default implementation.
+	 * 
+	 * @param event the information associated with the drag finished event
+	 */
+	public void dragFinished(DragSourceEvent event) {
+		if (dragSourceImage != null) dragSourceImage.dispose();
+		dragSourceImage = null;
+	}
+
+	/**
+	 * This implementation of <code>dragStart</code> will create a default
+	 * image that will be used during the drag. The image should be disposed
+	 * when the drag is completed in the <code>TreeDragSourceEffect.dragFinished</code>
+	 * method.
+	 * 
+	 * Subclasses that override this method should call <code>super.dragStart(event)</code>
+	 * to use the image from the default implementation.
+	 * 
+	 * @param event the information associated with the drag start event
+	 */
+	public void dragStart(DragSourceEvent event) {
+		event.image = getDragSourceImage(event);
+	}
+
+	Image getDragSourceImage(DragSourceEvent event) {
+		if (dragSourceImage != null) dragSourceImage.dispose();
+		dragSourceImage = null;		
+		NSPoint point = new NSPoint();
+		int /*long*/ ptr = OS.malloc(NSPoint.sizeof);
+		OS.memmove(ptr, point, NSPoint.sizeof);
+		NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
+		NSTableView widget = (NSTableView)control.view;
+		NSImage nsImage = widget.dragImageForRowsWithIndexes(widget.selectedRowIndexes(), widget.tableColumns(), nsEvent, ptr);
+		OS.memmove(point, ptr, NSPoint.sizeof);
+		OS.free(ptr);
+		Image image = Image.cocoa_new(control.getDisplay(), SWT.BITMAP, nsImage);
+		dragSourceImage = image;
+		nsImage.retain();
+		NSSize size = nsImage.size();
+		event.offsetX = (int)(size.width / 2 - point.x);
+		event.offsetY = (int)(size.height - (size.height / 2 - point.y));
+		return image;
 	}
 }

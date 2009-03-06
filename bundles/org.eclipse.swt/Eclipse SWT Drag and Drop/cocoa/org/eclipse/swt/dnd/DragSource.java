@@ -354,7 +354,8 @@ void drag(Event dragEvent) {
 		
 		// If no image was provided, just create a trivial image. dragImage requires a non-null image.
 		if (image == null) {
-			Image newDragImage = new Image(Display.getCurrent(), 20, 20);
+			int width = 20, height = 20;
+			Image newDragImage = new Image(Display.getCurrent(), width, height);
 			GC imageGC = new GC(newDragImage);
 			Color grayColor = new Color(Display.getCurrent(), 50, 50, 50);
 			imageGC.setForeground(grayColor);
@@ -366,22 +367,22 @@ void drag(Event dragEvent) {
 			newDragImage.dispose();
 			grayColor.dispose();
 			image = defaultDragImage;
+			event.offsetX = width / 2;
+			event.offsetY = height / 2;
 		}
 
 		dragImage = image.handle;
 
 		NSSize imageSize = dragImage.size();
-		viewPt.x -= (imageSize.width / 2);
-		
+		viewPt.x -= event.offsetX;
+
 		if (control.view.isFlipped())
-			viewPt.y += (imageSize.height / 2);
+			viewPt.y += imageSize.height - event.offsetY;
 		else
-			viewPt.y -= (imageSize.height / 2);
-		
+			viewPt.y -= event.offsetY;
+
 		// The third argument to dragImage is ignored as of 10.4.
 		NSSize ignored = new NSSize();
-		ignored.width = 0;
-		ignored.height = 0;
 		
 		dragStarted = false;
 		control.view.dragImage(dragImage, viewPt, ignored, NSApplication.sharedApplication().currentEvent(), dragBoard, dragSourceDelegate, true);

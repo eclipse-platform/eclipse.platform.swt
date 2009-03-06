@@ -856,24 +856,18 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 
 	NSOutlineView widget = (NSOutlineView)this.view;
 	NSCell cell = new NSCell (id);
-	NSPoint pt = new NSPoint();
-	pt.x = rect.x + rect.width / 2;
-	pt.y = rect.y + rect.height / 2;
-	int rowIndex = (int)widget.rowAtPoint(pt);
-	TreeItem item = (TreeItem) display.getWidget (widget.itemAtRow (rowIndex).id);
-	int nsColumnIndex = 0;
+	int /*long*/ [] outValue = new int /*long*/ [1];
+	OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
+	TreeItem item = (TreeItem) display.getWidget (outValue [0]);
+	int /*long*/ rowIndex = widget.rowForItem(item.handle);
+	OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
+	int /*long*/ tableColumn = outValue[0];
+	int /*long*/ nsColumnIndex = widget.tableColumns().indexOfObjectIdenticalTo(new id(tableColumn));
 	int columnIndex = 0;
-	if (columnCount == 0) {
-		nsColumnIndex = (style & SWT.CHECK) != 0 ? 1 : 0;
-	} else {
-		nsColumnIndex = (int)widget.columnAtPoint (pt);
-		NSArray nsColumns = widget.tableColumns ();
-		id nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
-		for (int i = 0; i < columnCount; i++) {
-			if (columns[i].nsColumn.id == nsColumn.id) {
-				columnIndex = i;
-				break;
-			}
+	for (int i=0; i<columnCount; i++) {
+		if (columns [i].nsColumn.id == tableColumn) {
+			columnIndex = i;
+			break;
 		}
 	}
 
@@ -881,7 +875,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	if (background == null) background = item.background;
 	boolean drawBackground = background != null;
 	boolean drawForeground = true;
-	boolean isSelected = widget.isRowSelected (rowIndex);
+	boolean isSelected = cell.isHighlighted();
 	boolean drawSelection = isSelected;
 
 	Color selectionBackground = null;
@@ -916,6 +910,9 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		NSRect rowRect = widget.rectOfRow (rowIndex);
 		cellRect.width = rowRect.width;
 	}
+	NSRect frameCell = null;
+	if (hooksPaint || hooksErase) frameCell = widget.frameOfCellAtColumn(nsColumnIndex, rowIndex);
+	NSGraphicsContext context = NSGraphicsContext.currentContext ();
 	
 	if (hooksMeasure) {
 		GCData data = new GCData ();
@@ -944,6 +941,12 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	}	
 
 	if (hooksErase) {
+		context.saveGraphicsState();
+		float /*double*/ offsetX = rect.x - frameCell.x, offsetY = rect.y - frameCell.y;
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.translateXBy(offsetX, offsetY);
+		transform.concat();
+
 		GCData data = new GCData ();
 		data.paintRect = cellRect;
 		GC gc = GC.cocoa_new (this, data);
@@ -955,7 +958,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-		gc.setClipping ((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
+		gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
@@ -982,10 +985,11 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
 			cellRect.height += spacing.height;
 		}
+
+		context.restoreGraphicsState();
 	}
 
 	if (drawBackground && !drawSelection) {
-		NSGraphicsContext context = NSGraphicsContext.currentContext ();
 		context.saveGraphicsState ();
 		float /*double*/ [] colorRGB = background.handle;
 		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
@@ -1006,7 +1010,6 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			NSSize size = image.size();
 			srcRect.width = size.width;
 			srcRect.height = size.height;
-			NSGraphicsContext context = NSGraphicsContext.currentContext();
 			context.saveGraphicsState();
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.scaleXBy(1, -1);
@@ -1023,6 +1026,12 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	}
 
 	if (hooksPaint) {
+		context.saveGraphicsState();
+		float /*double*/ offsetX = rect.x - frameCell.x, offsetY = rect.y - frameCell.y;
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.translateXBy(offsetX, offsetY);
+		transform.concat();
+
 		NSRect contentRect = cell.titleRectForBounds (rect);
 		GCData data = new GCData ();
 		data.paintRect = cellRect;
@@ -1035,7 +1044,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-		gc.setClipping ((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
+		gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
@@ -1047,6 +1056,8 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		event.height = itemHeight;
 		sendEvent (SWT.PaintItem, event);
 		gc.dispose ();
+
+		context.restoreGraphicsState();
 	}
 }
 
@@ -1784,6 +1795,8 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 		}
 	}
 	NSTextFieldCell textCell = new NSTextFieldCell (cell);
+	OS.object_setInstanceVariable(cell, Display.SWT_ROW, itemID);
+	OS.object_setInstanceVariable(cell, Display.SWT_COLUMN, tableColumn);
 	Image image = index == 0 ? item.image : (item.images == null ? null : item.images [index]);
 	textCell.setImage (image != null ? image.handle : null);
 	NSOutlineView widget = (NSOutlineView)view;

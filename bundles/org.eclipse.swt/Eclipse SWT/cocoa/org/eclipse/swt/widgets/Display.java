@@ -260,6 +260,8 @@ public class Display extends Device {
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 	static final byte[] SWT_IMAGE = {'S', 'W', 'T', '_', 'I', 'M', 'A', 'G', 'E', '\0'};
+	static final byte[] SWT_ROW = {'S', 'W', 'T', '_', 'R', 'O', 'W', '\0'};
+	static final byte[] SWT_COLUMN = {'S', 'W', 'T', '_', 'C', 'O', 'L', 'U', 'M', 'N', '\0'};
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -2043,6 +2045,8 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair (OS.class_NSTextFieldCell, className, 0);
 	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addIvar (cls, SWT_IMAGE, size, (byte)align, types);
+	OS.class_addIvar (cls, SWT_ROW, size, (byte)align, types);
+	OS.class_addIvar (cls, SWT_COLUMN, size, (byte)align, types);
 	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod (cls, OS.sel_drawWithFrame_inView_, drawWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod (cls, OS.sel_imageRectForBounds_, imageRectForBoundsProc, "@:{NSRect}");
