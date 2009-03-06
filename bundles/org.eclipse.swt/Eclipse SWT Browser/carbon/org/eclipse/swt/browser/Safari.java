@@ -982,6 +982,7 @@ void hookDOMFocusListeners(int frame) {
 	if (!(0x1040 <= OS.VERSION && OS.VERSION < 0x1050)) return;
 
 	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
+	if (document == 0) return;
 
 	String string = DOMEVENT_FOCUSIN;
 	int length = string.length();
@@ -1008,6 +1009,7 @@ void hookDOMKeyListeners(int frame) {
 	if (OS.VERSION < 0x1040) return;
 
 	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
+	if (document == 0) return;
 
 	String string = DOMEVENT_KEYDOWN;
 	int length = string.length();
@@ -1034,6 +1036,7 @@ void hookDOMMouseListeners(int frame) {
 	if (OS.VERSION < 0x1040) return;
 
 	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
+	if (document == 0) return;
 
 	String string = DOMEVENT_MOUSEDOWN;
 	int length = string.length();

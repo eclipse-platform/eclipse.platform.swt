@@ -661,6 +661,7 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 void hookDOMKeyListeners(int /*long*/ frameID) {
 	WebFrame frame = new WebFrame(frameID);
 	DOMDocument document = frame.DOMDocument();
+	if (document == null) return;
 
 	NSString type = NSString.stringWith(DOMEVENT_KEYDOWN);
 	document.addEventListener(type, delegate, false);
@@ -672,6 +673,7 @@ void hookDOMKeyListeners(int /*long*/ frameID) {
 void hookDOMMouseListeners(int /*long*/ frameID) {
 	WebFrame frame = new WebFrame(frameID);
 	DOMDocument document = frame.DOMDocument();
+	if (document == null) return;
 
 	NSString type = NSString.stringWith(DOMEVENT_MOUSEDOWN);
 	document.addEventListener(type, delegate, false);
