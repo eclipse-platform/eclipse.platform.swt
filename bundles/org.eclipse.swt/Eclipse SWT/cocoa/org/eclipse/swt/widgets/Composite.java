@@ -841,7 +841,7 @@ int /*long*/ nextValidKeyView(int /*long*/ id, int /*long*/ sel) {
 		if ((state & CANVAS) != 0) {
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			
-			if (event.type() == OS.NSKeyDown) {
+			if (event != null && event.type() == OS.NSKeyDown) {
 				this.keyDown(id, sel, event.id);
 				return 0;
 			}			
