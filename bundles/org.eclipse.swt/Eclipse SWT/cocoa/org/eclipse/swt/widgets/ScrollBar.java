@@ -433,11 +433,11 @@ void sendSelection () {
 	        break;
 	    case OS.NSScrollerIncrementLine:
 	        value += increment;
-	        event.detail = SWT.PAGE_DOWN;
+	        event.detail = SWT.ARROW_DOWN;
 	        break;
 	    case OS.NSScrollerIncrementPage:
 	        value += pageIncrement;
-	        event.detail = SWT.ARROW_DOWN;
+	        event.detail = SWT.PAGE_DOWN;
 	        break;
 	    case OS.NSScrollerKnob:
 			event.detail = SWT.DRAG;
