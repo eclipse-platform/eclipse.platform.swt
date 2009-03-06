@@ -967,6 +967,8 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * <li><code>List</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
 	 * <li><code>FileDialog</code></li>
 	 * </ul></p>
 	 */
