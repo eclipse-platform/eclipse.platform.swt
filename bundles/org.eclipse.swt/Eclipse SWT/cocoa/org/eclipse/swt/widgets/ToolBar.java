@@ -241,6 +241,13 @@ void destroyItem (ToolItem item) {
 	relayout ();
 }
 
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (id != view.id) return;
+	if (background != null) {
+		fillBackground (view, context, rect, -1);
+	}
+}
+
 void enableWidget(boolean enabled) {
 	super.enableWidget(enabled);
 	for (int i = 0; i < itemCount; i++) {
