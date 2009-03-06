@@ -16490,9 +16490,9 @@
 <method selector="nextResponder">
 <retval></retval>
 </method>
-<method selector="noResponderFor:">
-<arg name="eventSelector"></arg>
-<retval></retval>
+<method selector="noResponderFor:" swt_gen="true">
+<arg name="eventSelector" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="otherMouseDown:" swt_gen="true">
 <arg name="theEvent" swt_gen="true"></arg>

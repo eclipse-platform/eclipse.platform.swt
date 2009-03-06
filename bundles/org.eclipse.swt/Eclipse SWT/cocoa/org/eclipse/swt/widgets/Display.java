@@ -2292,6 +2292,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_noResponderFor_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -4287,6 +4288,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.cursorUpdate(id, sel, arg0);
 	} else if (sel == OS.sel_menuForEvent_) {
 		return widget.menuForEvent(id, sel, arg0);
+	} else if (sel == OS.sel_noResponderFor_) {
+		widget.noResponderFor(id, sel, arg0);
 	} else if (sel == OS.sel_shouldDelayWindowOrderingForEvent_) {
 		return widget.shouldDelayWindowOrderingForEvent(id, sel, arg0) ? 1 : 0;
 	} else if (sel == OS.sel_acceptsFirstMouse_) {

@@ -960,6 +960,16 @@ boolean makeFirstResponder (int /*long*/ id, int /*long*/ sel, int /*long*/ noti
 	return result;
 }
 
+void noResponderFor(int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
+	/**
+	 * Feature in Cocoa.  If the selector is keyDown and nothing has handled the event
+	 * a system beep is generated.  There's no need to beep, as many keystrokes in the SWT
+	 * are listened for and acted upon but not explicitly handled in a keyDown handler.  Fix is to
+	 * not call the default implementation when a keyDown: is being handled. 
+	 */
+	if (selector != OS.sel_keyDown_) super.noResponderFor(id, sel, selector);
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other

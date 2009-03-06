@@ -1091,6 +1091,7 @@ public static final int /*long*/ sel_nextObject = sel_registerName("nextObject")
 public static final int /*long*/ sel_nextState = sel_registerName("nextState");
 public static final int /*long*/ sel_nextValidKeyView = sel_registerName("nextValidKeyView");
 public static final int /*long*/ sel_nextWordFromIndex_forward_ = sel_registerName("nextWordFromIndex:forward:");
+public static final int /*long*/ sel_noResponderFor_ = sel_registerName("noResponderFor:");
 public static final int /*long*/ sel_noteNumberOfRowsChanged = sel_registerName("noteNumberOfRowsChanged");
 public static final int /*long*/ sel_numberOfColumns = sel_registerName("numberOfColumns");
 public static final int /*long*/ sel_numberOfComponents = sel_registerName("numberOfComponents");

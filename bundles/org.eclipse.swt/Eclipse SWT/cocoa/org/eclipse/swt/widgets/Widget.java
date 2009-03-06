@@ -952,6 +952,10 @@ void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 }
 
+void noResponderFor(int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
+	callSuper(id, sel, selector);
+}
+
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return 0;
 }
@@ -1686,5 +1690,6 @@ void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
+
 
 }

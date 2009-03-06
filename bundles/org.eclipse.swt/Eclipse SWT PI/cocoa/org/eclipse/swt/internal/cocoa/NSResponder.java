@@ -100,6 +100,10 @@ public void moveUp(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_moveUp_, sender != null ? sender.id : 0);
 }
 
+public void noResponderFor(int /*long*/ eventSelector) {
+	OS.objc_msgSend(this.id, OS.sel_noResponderFor_, eventSelector);
+}
+
 public void otherMouseDown(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_otherMouseDown_, theEvent != null ? theEvent.id : 0);
 }
