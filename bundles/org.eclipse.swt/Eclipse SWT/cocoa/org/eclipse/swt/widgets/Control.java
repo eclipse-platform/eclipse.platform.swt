@@ -111,7 +111,7 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
-boolean acceptsFirstMouse (int id, int sel, int theEvent) {
+boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	Shell shell = getShell ();
 	if ((shell.style & SWT.ON_TOP) != 0) return true;
 	return super.acceptsFirstMouse (id, sel, theEvent);
@@ -3581,7 +3581,7 @@ void setZOrder () {
 	parent.contentView().addSubview(topView, OS.NSWindowBelow, null);
 }
 
-boolean shouldDelayWindowOrderingForEvent (int id, int sel, int theEvent) {
+boolean shouldDelayWindowOrderingForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	Shell shell = getShell ();
 	if ((shell.style & SWT.ON_TOP) != 0) return false;
 	return super.shouldDelayWindowOrderingForEvent (id, sel, theEvent);
