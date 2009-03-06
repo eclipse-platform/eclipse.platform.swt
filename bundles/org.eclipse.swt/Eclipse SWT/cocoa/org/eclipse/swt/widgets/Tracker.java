@@ -761,14 +761,16 @@ public boolean open () {
 	boolean down = false;
 	NSApplication application = NSApplication.sharedApplication();
 	NSEvent currentEvent = application.currentEvent();
-	switch ((int)/*64*/currentEvent.type()) {
-		case OS.NSLeftMouseDown:
-		case OS.NSLeftMouseDragged:
-		case OS.NSRightMouseDown:
-		case OS.NSRightMouseDragged:
-		case OS.NSOtherMouseDown:
-		case OS.NSOtherMouseDragged:
-			down = true;
+	if (currentEvent != null) {
+		switch ((int)/*64*/currentEvent.type()) {
+			case OS.NSLeftMouseDown:
+			case OS.NSLeftMouseDragged:
+			case OS.NSRightMouseDown:
+			case OS.NSRightMouseDragged:
+			case OS.NSOtherMouseDown:
+			case OS.NSOtherMouseDragged:
+				down = true;
+		}
 	}
 	if (down) {
 		cursorPos = display.getCursorLocation();
