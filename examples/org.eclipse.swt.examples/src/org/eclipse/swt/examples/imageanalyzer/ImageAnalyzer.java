@@ -41,6 +41,7 @@ public class ImageAnalyzer {
 	Font fixedWidthFont;
 	Cursor crossCursor;
 	GC imageCanvasGC;
+	PrinterData printerData;
 	
 	int paletteWidth = 140; // recalculated and used as a width hint
 	int ix = 0, iy = 0, py = 0; // used to scroll the image and palette
@@ -1212,7 +1213,8 @@ public class ImageAnalyzer {
 		try {
 			// Ask the user to specify the printer.
 			PrintDialog dialog = new PrintDialog(shell, SWT.NONE);
-			PrinterData printerData = dialog.open();
+			if (printerData != null) dialog.setPrinterData(printerData);
+			printerData = dialog.open();
 			if (printerData == null) return;
 			
 			Printer printer = new Printer(printerData);
