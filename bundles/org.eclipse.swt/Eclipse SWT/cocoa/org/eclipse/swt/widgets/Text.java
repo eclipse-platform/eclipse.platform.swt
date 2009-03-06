@@ -580,6 +580,11 @@ public int getCaretLineNumber () {
     return (getTopPixel () + getCaretLocation ().y) / getLineHeight ();
 }
 
+boolean acceptsFirstResponder(int /*long*/ id, int /*long*/ sel) {
+	if ((style & SWT.READ_ONLY) != 0) return true;
+	return super.acceptsFirstResponder(id, sel);
+}
+
 /**
  * Returns a point describing the receiver's location relative
  * to its parent (or its display if its parent is null).
