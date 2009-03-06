@@ -389,7 +389,8 @@ public Rectangle getBounds () {
 }
 
 void setClipRegion (float /*double*/ x, float /*double*/ y) {
-	parent.setClipRegion(x, y);
+	NSRect frame = view.frame();
+	parent.setClipRegion(frame.x + x, frame.y + y);
 }
 
 /**

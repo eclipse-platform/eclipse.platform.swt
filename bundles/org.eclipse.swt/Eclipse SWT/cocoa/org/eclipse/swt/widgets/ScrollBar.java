@@ -470,6 +470,11 @@ public void setIncrement (int value) {
 	increment = value;
 }
 
+void setClipRegion (float /*double*/ x, float /*double*/ y) {
+	NSRect frame = view.frame();
+	parent.setClipRegion(frame.x + x, frame.y + y);
+}
+
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
