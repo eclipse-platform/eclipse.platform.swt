@@ -31,7 +31,10 @@ public class ProgressEvent extends TypedEvent {
 	
 	static final long serialVersionUID = 3977018427045393972L;
 
-ProgressEvent(Widget w) {
+/**
+ * @since 3.5
+ */
+public ProgressEvent(Widget w) {
 	super(w);
 }
 

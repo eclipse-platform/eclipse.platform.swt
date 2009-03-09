@@ -43,7 +43,10 @@ public class LocationEvent extends TypedEvent {
 
 	static final long serialVersionUID = 3906644198244299574L;
 	
-LocationEvent(Widget w) {
+/**
+ * @since 3.5
+ */
+public LocationEvent(Widget w) {
 	super(w);
 }
 

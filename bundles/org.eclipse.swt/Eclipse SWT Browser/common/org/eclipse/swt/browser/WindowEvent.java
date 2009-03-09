@@ -185,7 +185,10 @@ public class WindowEvent extends TypedEvent {
 	
 	static final long serialVersionUID = 3617851997387174969L;
 	
-WindowEvent(Widget w) {
+/**
+ * @since 3.5
+ */
+public WindowEvent(Widget w) {
 	super(w);
 }
 

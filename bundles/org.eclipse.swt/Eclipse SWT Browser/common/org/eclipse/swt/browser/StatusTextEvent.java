@@ -29,7 +29,10 @@ public class StatusTextEvent extends TypedEvent {
 	
 	static final long serialVersionUID = 3258407348371600439L;
 
-StatusTextEvent(Widget w) {
+/**
+ * @since 3.5
+ */
+public StatusTextEvent(Widget w) {
 	super(w);
 }
 

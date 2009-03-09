@@ -41,7 +41,10 @@ public class AuthenticationEvent extends TypedEvent {
 
 	static final long serialVersionUID = -8322331206780057921L;
 
-AuthenticationEvent(Widget w) {
+/**
+ * @since 3.5
+ */
+public AuthenticationEvent(Widget w) {
 	super(w);
 }
 
