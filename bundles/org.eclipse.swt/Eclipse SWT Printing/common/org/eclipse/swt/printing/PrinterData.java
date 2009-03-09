@@ -105,6 +105,14 @@ public final class PrinterData extends DeviceData {
 	public boolean collate = false;
 	
 	/**
+	 * The orientation of the paper, which can be either PORTRAIT
+	 * or LANDSCAPE.
+	 * 
+	 * @since 3.5
+	 */
+	public int orientation = PORTRAIT;
+
+	/**
 	 * <code>scope</code> field value indicating that
 	 * all pages should be printed
 	 */	
@@ -122,6 +130,22 @@ public final class PrinterData extends DeviceData {
 	 * the current selection should be printed
 	 */	
 	public static final int SELECTION = 2;
+		
+	/**
+	 * <code>orientation</code> field value indicating
+	 * portrait paper orientation
+	 * 
+	 * @since 3.5
+	 */
+	public static final int PORTRAIT = 1;
+	
+	/**
+	 * <code>orientation</code> field value indicating
+	 * landscape paper orientation
+	 * 
+	 * @since 3.5
+	 */
+	public static final int LANDSCAPE = 2;
 	
 	/**
 	 * private, platform-specific data
