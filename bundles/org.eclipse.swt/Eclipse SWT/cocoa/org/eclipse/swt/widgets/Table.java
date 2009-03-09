@@ -1049,8 +1049,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	NSCell cell = new NSCell(id);
 	NSAttributedString attrStr = cell.attributedStringValue();
 	NSSize size = attrStr.size();
-	rect.y += (rect.height - size.height) / 2;
-	rect.height = size.height;
+	if (rect.height > size.height) {
+		rect.y += (rect.height - size.height) / 2;
+		rect.height = size.height;
+	}
 	callSuper (id, sel, rect, view);
 }
 
