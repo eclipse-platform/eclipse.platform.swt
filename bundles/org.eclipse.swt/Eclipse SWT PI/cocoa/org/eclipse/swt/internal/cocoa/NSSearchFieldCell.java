@@ -34,6 +34,12 @@ public NSButtonCell searchButtonCell() {
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 
+public NSRect searchTextRectForBounds(NSRect rect) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_searchTextRectForBounds_, rect);
+	return result;
+}
+
 public void setCancelButtonCell(NSButtonCell cell) {
 	OS.objc_msgSend(this.id, OS.sel_setCancelButtonCell_, cell != null ? cell.id : 0);
 }

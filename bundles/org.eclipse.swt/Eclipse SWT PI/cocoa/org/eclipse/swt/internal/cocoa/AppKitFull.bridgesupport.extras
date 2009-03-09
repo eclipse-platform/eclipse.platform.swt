@@ -5143,9 +5143,9 @@
 <arg name="writingDirection"></arg>
 <retval></retval>
 </method>
-<method selector="setBezeled:">
-<arg name="flag"></arg>
-<retval></retval>
+<method selector="setBezeled:" swt_gen="true">
+<arg name="flag" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setBordered:">
 <arg name="flag"></arg>
@@ -17524,9 +17524,9 @@
 <method selector="searchMenuTemplate">
 <retval></retval>
 </method>
-<method selector="searchTextRectForBounds:">
-<arg name="rect"></arg>
-<retval></retval>
+<method selector="searchTextRectForBounds:" swt_gen="true">
+<arg name="rect" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="sendsSearchStringImmediately">
 <retval></retval>

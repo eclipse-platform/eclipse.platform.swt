@@ -326,6 +326,33 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		NSSize size = widget.cell ().cellSize ();
 		width = (int)Math.ceil (size.width);
 		height = (int)Math.ceil (size.height);
+
+		Point border = null;
+		if ((style & SWT.BORDER) != 0 && (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT)) {
+			/* determine the size of the cell without its border */
+			if ((style & SWT.SEARCH) != 0) {
+				int /*long*/ clazz = SWTSearchField.cellClass ();
+				NSCell emptyCell = new NSCell (OS.class_createInstance (clazz, 0));
+				emptyCell.setBezeled (true);
+				NSSize emptySize = emptyCell.cellSize ();
+				emptyCell.release ();
+				border = new Point ((int)Math.ceil (emptySize.width), (int)Math.ceil (emptySize.height));				
+			} else {
+				NSRect insets = widget.cell ().titleRectForBounds (new NSRect ());
+				border = new Point (-(int)Math.ceil (insets.width), -(int)Math.ceil (insets.height));
+			}
+			width -= border.x;
+			height -= border.y;
+		}
+		if (width <= 0) width = DEFAULT_WIDTH;
+		if (height <= 0) height = DEFAULT_HEIGHT;
+		if (wHint != SWT.DEFAULT) width = wHint;
+		if (hHint != SWT.DEFAULT) height = hHint;
+		if (border != null) {
+			/* re-add the border size (if any) now that wHint/hHint is taken */
+			width += border.x;
+			height += border.y;
+		}
 	} else {
 		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager ().alloc ().init ();
 		NSTextContainer textContainer = (NSTextContainer)new NSTextContainer ().alloc ();
@@ -349,29 +376,50 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		textStorage.release ();
 		textContainer.release ();
 		layoutManager.release ();
+
+		if (width <= 0) width = DEFAULT_WIDTH;
+		if (height <= 0) height = DEFAULT_HEIGHT;
+		if (wHint != SWT.DEFAULT) width = wHint;
+		if (hHint != SWT.DEFAULT) height = hHint;
+		Rectangle trim = computeTrim (0, 0, width, height);
+		width = trim.width;
+		height = trim.height;
 	}
-	if (width <= 0) width = DEFAULT_WIDTH;
-	if (height <= 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim (0, 0, width, height);
-	width = trim.width;
-	height = trim.height;
 	return new Point (width, height);
 }
 
-// TODO
-//public Rectangle computeTrim (int x, int y, int width, int height) {
-//	Rectangle result = super.computeTrim (x, y, width, height);
-//	if ((style & SWT.SINGLE) != 0) {
-//		NSRect insets = ((NSTextField)view).cell ().titleRectForBounds (new NSRect ());
-//		result.x -= insets.x;
-//		result.y -= insets.y;
-//		result.width += 2 * insets.x;
-//		result.height += 2 * insets.y;
-//	}
-//	return result;
-//}
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	Rectangle result = super.computeTrim (x, y, width, height);
+	if ((style & SWT.SINGLE) != 0) {
+		NSTextField widget = (NSTextField) view;
+		if ((style & SWT.SEARCH) != 0) {
+			NSSearchFieldCell cell = new NSSearchFieldCell (widget.cell ());
+			int testWidth = 100;
+			NSRect rect = new NSRect ();
+			rect.width = testWidth;
+			rect = cell.searchTextRectForBounds (rect);
+			int leftIndent = (int)rect.x;
+			int rightIndent = testWidth - leftIndent - (int)Math.ceil (rect.width);
+			result.x -= leftIndent;
+			result.width += leftIndent + rightIndent;
+
+			int /*long*/ clazz = SWTSearchField.cellClass ();
+			NSCell emptyCell = new NSCell (OS.class_createInstance (clazz, 0));
+			emptyCell.setBezeled (true);
+			NSSize size = emptyCell.cellSize ();
+			emptyCell.release ();
+			result.y -= Math.ceil (size.height / 2.0f);
+			result.height += size.height;
+		} else {
+			NSRect inset = widget.cell ().titleRectForBounds (new NSRect ());
+			result.x -= inset.x;
+			result.y -= inset.y;
+			result.width -= inset.width;
+			result.height -= inset.height;
+		}
+	}
+	return result;
+}
 
 /**
  * Copies the selected text.
