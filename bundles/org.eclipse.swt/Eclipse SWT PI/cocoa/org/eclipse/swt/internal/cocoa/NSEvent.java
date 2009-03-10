@@ -84,6 +84,10 @@ public static NSEvent otherEventWithType(int /*long*/ type, NSPoint location, in
 	return result != 0 ? new NSEvent(result) : null;
 }
 
+public double timestamp() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_timestamp);
+}
+
 public int /*long*/ type() {
 	return OS.objc_msgSend(this.id, OS.sel_type);
 }

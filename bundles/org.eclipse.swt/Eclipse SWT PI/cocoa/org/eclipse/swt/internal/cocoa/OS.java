@@ -1563,6 +1563,7 @@ public static final int /*long*/ sel_textViewDidChangeSelection_ = sel_registerN
 public static final int /*long*/ sel_threadDictionary = sel_registerName("threadDictionary");
 public static final int /*long*/ sel_tile = sel_registerName("tile");
 public static final int /*long*/ sel_timeZone = sel_registerName("timeZone");
+public static final int /*long*/ sel_timestamp = sel_registerName("timestamp");
 public static final int /*long*/ sel_title = sel_registerName("title");
 public static final int /*long*/ sel_titleCell = sel_registerName("titleCell");
 public static final int /*long*/ sel_titleFont = sel_registerName("titleFont");
