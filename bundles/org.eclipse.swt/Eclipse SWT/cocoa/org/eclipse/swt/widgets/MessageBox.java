@@ -134,6 +134,8 @@ public int open () {
 	NSString title;
 	switch (bits) {
 		case SWT.OK:
+			title = NSString.stringWith(SWT.getMessage("SWT_OK"));
+			alert.addButtonWithTitle(title);
 			break;
 		case SWT.CANCEL:
 			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
@@ -191,70 +193,70 @@ public int open () {
 	switch (bits) {
 		case SWT.OK:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.OK;
 			}
 			break;
 		case SWT.CANCEL:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.CANCEL;
 			}
 			break;
 		case SWT.OK | SWT.CANCEL:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.OK;
-				case OS.NSAlertAlternateReturn:
+				case OS.NSAlertSecondButtonReturn:
 					return SWT.CANCEL;
 			}
 			break;
 		case SWT.YES:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.YES;
 			}
 			break;
 		case SWT.NO:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.NO;
 			}
 			break;
 		case SWT.YES | SWT.NO:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.YES;
-				case OS.NSAlertAlternateReturn:
+				case OS.NSAlertSecondButtonReturn:
 					return SWT.NO;
 			}
 			break;
 		case SWT.YES | SWT.NO | SWT.CANCEL:				
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.YES;
-				case OS.NSAlertAlternateReturn:
-					return SWT.NO;
-				case OS.NSAlertOtherReturn:
+				case OS.NSAlertSecondButtonReturn:
 					return SWT.CANCEL;
+				case OS.NSAlertThirdButtonReturn:
+					return SWT.NO;
 			}
 			break;
 		case SWT.RETRY | SWT.CANCEL:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.RETRY;
-				case OS.NSAlertAlternateReturn:
+				case OS.NSAlertSecondButtonReturn:
 					return SWT.CANCEL;
 			}
 			break;
 		case SWT.ABORT | SWT.RETRY | SWT.IGNORE:
 			switch (response) {
-				case OS.NSAlertDefaultReturn:
+				case OS.NSAlertFirstButtonReturn:
 					return SWT.ABORT;
-				case OS.NSAlertAlternateReturn:
-					return SWT.RETRY;
-				case OS.NSAlertOtherReturn:
+				case OS.NSAlertSecondButtonReturn:
 					return SWT.IGNORE;
+				case OS.NSAlertThirdButtonReturn:
+					return SWT.RETRY;
 			}
 			break;
 	}
