@@ -1320,12 +1320,8 @@ public Point [] getIconSizes () {
 }
 
 int getLastEventTime () {
-	/*
-	* This code is intentionally commented.  Event time is
-	* in seconds and we need an accurate time in milliseconds.
-	*/
-//	return (int) (OS.GetLastUserEventTime () * 1000.0);
-	return (int) System.currentTimeMillis ();
+	NSEvent event = application.currentEvent();
+	return event != null ? (int)(event.timestamp() * 1000) : 0;
 }
 
 Menu [] getMenus (Decorations shell) {
