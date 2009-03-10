@@ -1650,12 +1650,7 @@ public Point [] getIconSizes () {
 }
 
 int getLastEventTime () {
-	/*
-	* This code is intentionally commented.  Event time is
-	* in seconds and we need an accurate time in milliseconds.
-	*/
-//	return (int) (OS.GetLastUserEventTime () * 1000.0);
-	return (int) System.currentTimeMillis ();
+	return (int) (OS.GetLastUserEventTime () * 1000.0);
 }
 
 Menu [] getMenus (Decorations shell) {
@@ -3010,7 +3005,6 @@ int readImageRef(int path) {
 	}
 	return image;
 }
-
 
 /**
  * Reads an event from the operating system's event queue,
