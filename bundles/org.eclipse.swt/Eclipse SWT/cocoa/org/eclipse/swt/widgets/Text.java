@@ -330,17 +330,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		Point border = null;
 		if ((style & SWT.BORDER) != 0 && (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT)) {
 			/* determine the size of the cell without its border */
-			if ((style & SWT.SEARCH) != 0) {
-				int /*long*/ clazz = SWTSearchField.cellClass ();
-				NSCell emptyCell = new NSCell (OS.class_createInstance (clazz, 0));
-				emptyCell.setBezeled (true);
-				NSSize emptySize = emptyCell.cellSize ();
-				emptyCell.release ();
-				border = new Point ((int)Math.ceil (emptySize.width), (int)Math.ceil (emptySize.height));				
-			} else {
-				NSRect insets = widget.cell ().titleRectForBounds (new NSRect ());
-				border = new Point (-(int)Math.ceil (insets.width), -(int)Math.ceil (insets.height));
-			}
+			NSRect insets = widget.cell ().titleRectForBounds (new NSRect ());
+			border = new Point (-(int)Math.ceil (insets.width), -(int)Math.ceil (insets.height));
 			width -= border.x;
 			height -= border.y;
 		}
@@ -402,21 +393,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 			int rightIndent = testWidth - leftIndent - (int)Math.ceil (rect.width);
 			result.x -= leftIndent;
 			result.width += leftIndent + rightIndent;
-
-			int /*long*/ clazz = SWTSearchField.cellClass ();
-			NSCell emptyCell = new NSCell (OS.class_createInstance (clazz, 0));
-			emptyCell.setBezeled (true);
-			NSSize size = emptyCell.cellSize ();
-			emptyCell.release ();
-			result.y -= Math.ceil (size.height / 2.0f);
-			result.height += size.height;
-		} else {
-			NSRect inset = widget.cell ().titleRectForBounds (new NSRect ());
-			result.x -= inset.x;
-			result.y -= inset.y;
-			result.width -= inset.width;
-			result.height -= inset.height;
 		}
+		NSRect inset = widget.cell ().titleRectForBounds (new NSRect ());
+		result.x -= inset.x;
+		result.y -= inset.y;
+		result.width -= inset.width;
+		result.height -= inset.height;
 	}
 	return result;
 }

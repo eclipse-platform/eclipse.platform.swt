@@ -1304,7 +1304,6 @@ public static final int /*long*/ sel_setAutoresizingMask_ = sel_registerName("se
 public static final int /*long*/ sel_setAutosaveExpandedItems_ = sel_registerName("setAutosaveExpandedItems:");
 public static final int /*long*/ sel_setBackgroundColor_ = sel_registerName("setBackgroundColor:");
 public static final int /*long*/ sel_setBezelStyle_ = sel_registerName("setBezelStyle:");
-public static final int /*long*/ sel_setBezeled_ = sel_registerName("setBezeled:");
 public static final int /*long*/ sel_setBorderType_ = sel_registerName("setBorderType:");
 public static final int /*long*/ sel_setBorderWidth_ = sel_registerName("setBorderWidth:");
 public static final int /*long*/ sel_setBordered_ = sel_registerName("setBordered:");

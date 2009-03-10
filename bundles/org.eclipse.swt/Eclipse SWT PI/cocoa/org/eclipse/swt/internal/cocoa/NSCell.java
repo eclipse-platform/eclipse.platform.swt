@@ -96,10 +96,6 @@ public void setAttributedStringValue(NSAttributedString obj) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedStringValue_, obj != null ? obj.id : 0);
 }
 
-public void setBezeled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setBezeled_, flag);
-}
-
 public void setControlSize(int /*long*/ size) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, size);
 }

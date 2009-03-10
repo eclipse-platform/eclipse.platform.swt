@@ -5143,9 +5143,9 @@
 <arg name="writingDirection"></arg>
 <retval></retval>
 </method>
-<method selector="setBezeled:" swt_gen="true">
-<arg name="flag" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method selector="setBezeled:">
+<arg name="flag"></arg>
+<retval></retval>
 </method>
 <method selector="setBordered:">
 <arg name="flag"></arg>
