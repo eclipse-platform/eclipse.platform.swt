@@ -562,15 +562,18 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	/*
 	* For some reason the next event handler for embedded controls
 	* stops the event chain and does not let the default handler
-	* process the raw key event into unicode.  The fix to call
-	* the default handler by sending the event directly to the
-	* application event target.
+	* process the raw key event into unicode.  The fix to send
+	* the key from kEventRawKeyDown instead.
 	* 
 	* Note: should the embedded control no longer stop the event
 	* chain, there will be two key events issued for one key press.
 	*/	
 	if ((state & CANVAS) != 0  && (style & SWT.EMBEDDED) != 0) {
-		return OS.SendEventToEventTarget (theEvent, OS.GetApplicationEventTarget ());
+		int [] theControl = new int[1];
+		OS.GetKeyboardFocus (OS.GetControlOwner(handle), theControl);
+		if (theControl[0] != handle) {
+			if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+		}
 	}
 	
 	/*
