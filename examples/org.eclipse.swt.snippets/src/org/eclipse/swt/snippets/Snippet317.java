@@ -29,11 +29,11 @@ import org.eclipse.swt.browser.*;
 
 public class Snippet317 {
 
-public static void main(String [] args) {
-	final String KNOWN_HOST = "www.eclipse.org";
-	final String KNOWN_USER = "anonymous";
-	final String KNOWN_PASSWORD = "anonymousPassword";
+static String KNOWN_HOST = "www.eclipse.org";
+static String KNOWN_USER = "anonymous";
+static String KNOWN_PASSWORD = "anonymousPassword";
 
+public static void main(String [] args) {
 	Display display = new Display();
 	final Shell shell = new Shell(display);
 	GridLayout gridLayout = new GridLayout();
