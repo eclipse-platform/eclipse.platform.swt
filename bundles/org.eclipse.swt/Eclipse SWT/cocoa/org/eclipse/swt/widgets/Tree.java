@@ -910,8 +910,12 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		NSRect rowRect = widget.rectOfRow (rowIndex);
 		cellRect.width = rowRect.width;
 	}
-	NSRect frameCell = null;
-	if (hooksPaint || hooksErase) frameCell = widget.frameOfCellAtColumn(nsColumnIndex, rowIndex);
+	float /*double*/ offsetX = 0, offsetY = 0;
+	if (hooksPaint || hooksErase) {
+		NSRect frameCell = widget.frameOfCellAtColumn(nsColumnIndex, rowIndex);
+		offsetX = rect.x - frameCell.x;
+		offsetY = rect.y - frameCell.y;
+	}
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
 	
 	if (hooksMeasure) {
@@ -942,7 +946,6 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 
 	if (hooksErase) {
 		context.saveGraphicsState();
-		float /*double*/ offsetX = rect.x - frameCell.x, offsetY = rect.y - frameCell.y;
 		NSAffineTransform transform = NSAffineTransform.transform();
 		transform.translateXBy(offsetX, offsetY);
 		transform.concat();
@@ -1027,7 +1030,6 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 
 	if (hooksPaint) {
 		context.saveGraphicsState();
-		float /*double*/ offsetX = rect.x - frameCell.x, offsetY = rect.y - frameCell.y;
 		NSAffineTransform transform = NSAffineTransform.transform();
 		transform.translateXBy(offsetX, offsetY);
 		transform.concat();
