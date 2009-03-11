@@ -186,10 +186,14 @@ public class WindowEvent extends TypedEvent {
 	static final long serialVersionUID = 3617851997387174969L;
 	
 /**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
  * @since 3.5
  */
-public WindowEvent(Widget w) {
-	super(w);
+public WindowEvent(Widget widget) {
+	super(widget);
 }
 
 /**

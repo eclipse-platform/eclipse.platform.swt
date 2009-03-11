@@ -44,10 +44,14 @@ public class LocationEvent extends TypedEvent {
 	static final long serialVersionUID = 3906644198244299574L;
 	
 /**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
  * @since 3.5
  */
-public LocationEvent(Widget w) {
-	super(w);
+public LocationEvent(Widget widget) {
+	super(widget);
 }
 
 /**

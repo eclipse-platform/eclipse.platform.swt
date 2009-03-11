@@ -29,10 +29,14 @@ public class TitleEvent extends TypedEvent {
 	static final long serialVersionUID = 4121132532906340919L;
 
 /**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
  * @since 3.5
  */
-public TitleEvent(Widget w) {
-	super(w);
+public TitleEvent(Widget widget) {
+	super(widget);
 }
 
 /**

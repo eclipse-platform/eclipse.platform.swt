@@ -42,10 +42,14 @@ public class AuthenticationEvent extends TypedEvent {
 	static final long serialVersionUID = -8322331206780057921L;
 
 /**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
  * @since 3.5
  */
-public AuthenticationEvent(Widget w) {
-	super(w);
+public AuthenticationEvent(Widget widget) {
+	super(widget);
 }
 
 /**

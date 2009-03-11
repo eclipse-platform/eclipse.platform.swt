@@ -30,10 +30,14 @@ public class StatusTextEvent extends TypedEvent {
 	static final long serialVersionUID = 3258407348371600439L;
 
 /**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
  * @since 3.5
  */
-public StatusTextEvent(Widget w) {
-	super(w);
+public StatusTextEvent(Widget widget) {
+	super(widget);
 }
 
 /**

@@ -32,10 +32,14 @@ public class ProgressEvent extends TypedEvent {
 	static final long serialVersionUID = 3977018427045393972L;
 
 /**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
  * @since 3.5
  */
-public ProgressEvent(Widget w) {
-	super(w);
+public ProgressEvent(Widget widget) {
+	super(widget);
 }
 
 /**
