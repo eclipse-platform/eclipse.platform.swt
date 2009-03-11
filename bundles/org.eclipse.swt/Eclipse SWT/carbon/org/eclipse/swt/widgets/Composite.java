@@ -573,6 +573,7 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 		OS.GetKeyboardFocus (OS.GetControlOwner(handle), theControl);
 		if (theControl[0] != handle) {
 			if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+			return OS.eventNotHandledErr;
 		}
 	}
 	
