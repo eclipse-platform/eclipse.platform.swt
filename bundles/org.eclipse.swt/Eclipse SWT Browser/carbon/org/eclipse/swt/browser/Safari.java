@@ -1961,6 +1961,10 @@ Object convertToJava (int value) {
 		}
 		return arguments;
 	}
+	if (Cocoa.objc_msgSend (value, Cocoa.S_isKindOfClass, Cocoa.C_WebUndefined) != 0) {
+		return null;
+	}
+
 	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
 }

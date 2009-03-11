@@ -1476,6 +1476,10 @@ Object convertToJava (int /*long*/ value) {
 		}
 		return arguments;
 	}
+	clazz = OS.objc_lookUpClass ("WebUndefined"); //$NON-NLS-1$
+	if (object.isKindOfClass (clazz)) {
+		return null;
+	}
 
 	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
