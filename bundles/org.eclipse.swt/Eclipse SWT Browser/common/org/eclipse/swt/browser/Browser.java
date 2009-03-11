@@ -919,7 +919,7 @@ public void setJavascriptEnabled (boolean enabled) {
 }
 
 /**
- * Renders HTML.
+ * Renders a string containing HTML.  The rendering of the content occurs asynchronously.
  * 
  * <p>
  * The html parameter is Unicode encoded since it is a java <code>String</code>.
@@ -950,7 +950,7 @@ public boolean setText (String html) {
 }
 
 /**
- * Loads a URL.
+ * Begins loading a URL.  The loading of its content occurs asynchronously.
  * 
  * @param url the URL to be loaded
  *
