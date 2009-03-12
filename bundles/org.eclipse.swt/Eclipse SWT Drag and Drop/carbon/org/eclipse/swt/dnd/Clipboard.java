@@ -439,8 +439,9 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 		}
 	}
 	if ((clipboards & DND.CLIPBOARD) == 0) return;
-	if (OS.ClearCurrentScrap() != OS.noErr) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+	int errCode = OS.ClearCurrentScrap();
+	if (errCode != OS.noErr) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, errCode);
 	}
 	scrap = 0;
 	int[] currentScrap = new int[1];
