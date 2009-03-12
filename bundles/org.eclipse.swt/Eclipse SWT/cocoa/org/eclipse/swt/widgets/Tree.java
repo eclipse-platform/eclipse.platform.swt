@@ -985,7 +985,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			drawForeground = (event.detail & SWT.FOREGROUND) != 0;
 			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
 		}
-		if (drawSelection) {
+		if (drawSelection && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus())) {
 			cellRect.height -= spacing.height;
 			callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
 			cellRect.height += spacing.height;
@@ -1610,11 +1610,11 @@ public TreeItem getTopItem () {
 }
 
 void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
-	if (!hooks (SWT.EraseItem)) {
-		NSRect clipRect = new NSRect ();
-		OS.memmove (clipRect, rect, NSRect.sizeof);
-		callSuper (id, sel, clipRect);
-	}
+	if (hooks (SWT.EraseItem)) return;
+	if ((style & SWT.HIDE_SELECTION) != 0 && !hasFocus()) return;
+	NSRect clipRect = new NSRect ();
+	OS.memmove (clipRect, rect, NSRect.sizeof);
+	callSuper (id, sel, clipRect);
 }
 
 int /*long*/ hitTestForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event, NSRect rect, int /*long*/ controlView) {
