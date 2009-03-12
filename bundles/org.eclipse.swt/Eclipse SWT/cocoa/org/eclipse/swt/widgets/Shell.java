@@ -1213,7 +1213,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	frame.y = screenHeight - (int)(y + height);
 	frame.width = width;
 	frame.height = height;
-	window.setFrame(frame, false);
+	window.setFrame(frame, true);
 }
 
 void setClipRegion (float /*double*/ x, float /*double*/ y) {

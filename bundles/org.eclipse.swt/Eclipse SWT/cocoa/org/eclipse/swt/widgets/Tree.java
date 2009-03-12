@@ -839,8 +839,10 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 		int row = (int)/*64*/widget.rowAtPoint(pt);
 		if (!widget.isRowSelected(row)) {
 			//TODO expand current selection when Shift, Command key pressed??
-			NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
-			widget.selectRowIndexes (indexes, false);
+			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+			set = set.initWithIndex(row);
+			widget.selectRowIndexes (set, false);
+			set.release();
 		}
 	}
 	consume[0] = dragging;
@@ -1721,8 +1723,10 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 		
 		// figure out if the row that was just clicked on is currently selected
 		if (selectedRowIndexes.containsIndex(row) == false) {
-			NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
-			tree.selectRowIndexes (indexes, false);
+			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+			set = set.initWithIndex(row);
+			tree.selectRowIndexes (set, false);
+			set.release();
 		}
 		// else that row is currently selected, so don't change anything.
 	}
@@ -2152,8 +2156,12 @@ public void select (TreeItem item) {
 	showItem (item);
 	NSOutlineView outlineView = (NSOutlineView) view;
 	int /*long*/ row = outlineView.rowForItem (item.handle);
-	NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
-	outlineView.selectRowIndexes (indexes, false);
+	NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+	set = set.initWithIndex(row);
+	ignoreSelect = true;
+	outlineView.selectRowIndexes (set, false);
+	ignoreSelect = false;
+	set.release();
 }
 
 void sendDoubleSelection() {
@@ -2190,8 +2198,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 
 void selectItems (TreeItem[] items, boolean ignoreDisposed) {
 	NSOutlineView outlineView = (NSOutlineView) view;
-	NSMutableIndexSet rows = (NSMutableIndexSet) new NSMutableIndexSet ().alloc ().init ();
-	rows.autorelease ();
+	NSMutableIndexSet set = (NSMutableIndexSet) new NSMutableIndexSet ().alloc ().init ();
 	int length = items.length;
 	for (int i=0; i<length; i++) {
 		if (items [i] != null) {
@@ -2201,12 +2208,13 @@ void selectItems (TreeItem[] items, boolean ignoreDisposed) {
 			}
 			TreeItem item = items [i];
 			if (!ignoreDisposed) showItem (items [i], false);
-			rows.addIndex (outlineView.rowForItem (item.handle));
+			set.addIndex (outlineView.rowForItem (item.handle));
 		}
 	}
 	ignoreSelect = true;
-	outlineView.selectRowIndexes (rows, false);
+	outlineView.selectRowIndexes (set, false);
 	ignoreSelect = false;
+	set.release();
 }
 
 NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {

@@ -162,7 +162,6 @@ public void add (String string, int index) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	if (index != itemCount) fixSelection (index, true);
 	if (itemCount == items.length) {
 		String [] newItems = new String [itemCount + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
@@ -171,6 +170,7 @@ public void add (String string, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = string;
 	((NSTableView)view).noteNumberOfRowsChanged ();
+	if (index != itemCount) fixSelection (index, true);
 }
 
 /**
@@ -386,8 +386,10 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 		int row = (int)/*64*/widget.rowAtPoint(pt);
 		if (!widget.isRowSelected(row)) {
 			//TODO expand current selection when Shift, Command key pressed??
-			NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
-			widget.selectRowIndexes (indexes, false);
+			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+			set = set.initWithIndex(row);
+			widget.selectRowIndexes (set, false);
+			set.release();
 		}
 	}
 	consume[0] = dragging;
@@ -404,8 +406,8 @@ void fixSelection (int index, boolean add) {
 			fix = true;
 		} else {
 			int newIndex = newCount++;
-			selection [newIndex] = selection [i] + 1;
-			if (selection [newIndex] - 1 >= index) {
+			selection [newIndex] = selection [i];
+			if (selection [newIndex] >= index) {
 				selection [newIndex] += add ? 1 : -1;
 				fix = true;
 			}
@@ -727,8 +729,10 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 	
 	// figure out if the row that was just clicked on is currently selected
 	if (selectedRowIndexes.containsIndex(row) == false) {
-		NSIndexSet indexes = new NSIndexSet (NSIndexSet.indexSetWithIndex (row));
-		table.selectRowIndexes (indexes, false);
+		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+		set = set.initWithIndex(row);
+		table.selectRowIndexes (set, false);
+		set.release();
 	}
 	// else that row is currently selected, so don't change anything.
 	
@@ -915,12 +919,13 @@ public void removeSelectionListener(SelectionListener listener) {
 public void select (int index) {
 	checkWidget();
 	if (0 <= index && index < itemCount) {
-		NSIndexSet indexes = (NSIndexSet)new NSIndexSet().alloc();
-		indexes.initWithIndex(index);
+		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+		set = set.initWithIndex(index);
 		NSTableView widget = (NSTableView)view;
 		ignoreSelect = true;
-		widget.selectRowIndexes(indexes, (style & SWT.MULTI) != 0);
+		widget.selectRowIndexes(set, (style & SWT.MULTI) != 0);
 		ignoreSelect = false;
+		set.release();
 	}
 }
 
@@ -955,16 +960,16 @@ public void select (int start, int end) {
 	} else {
 		start = Math.max (0, start);
 		end = Math.min (end, itemCount - 1);
-		int length = end - start + 1;
-		NSIndexSet indexes = (NSIndexSet)new NSIndexSet().alloc();
 		NSRange range = new NSRange();
 		range.location = start;
-		range.length = length;
-		indexes.initWithIndexesInRange(range);
+		range.length = end - start + 1;
+		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+		set = set.initWithIndexesInRange(range);
 		NSTableView widget = (NSTableView)view;
 		ignoreSelect = true;
-		widget.selectRowIndexes(indexes, (style & SWT.MULTI) != 0);
+		widget.selectRowIndexes(set, (style & SWT.MULTI) != 0);
 		ignoreSelect = false;
+		set.release();
 	}
 }
 
@@ -996,29 +1001,31 @@ public void select (int [] indices) {
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int count = 0;
-	NSMutableIndexSet indexes = (NSMutableIndexSet)new NSMutableIndexSet().alloc().init();
+	NSMutableIndexSet set = (NSMutableIndexSet)new NSMutableIndexSet().alloc().init();
 	for (int i=0; i<length; i++) {
 		int index = indices [i];
 		if (index >= 0 && index < itemCount) {
-			indexes.addIndex (indices [i]);
+			set.addIndex (indices [i]);
 			count++;
 		}
 	}
 	if (count > 0) {
 		NSTableView widget = (NSTableView)view;
 		ignoreSelect = true;
-		widget.selectRowIndexes(indexes, (style & SWT.MULTI) != 0);
+		widget.selectRowIndexes(set, (style & SWT.MULTI) != 0);
 		ignoreSelect = false;
 	}
+	set.release();
 }
 
-void select (int [] ids, int count, boolean clear) {
-	NSMutableIndexSet indexes = (NSMutableIndexSet)new NSMutableIndexSet().alloc().init();
-	for (int i=0; i<count; i++) indexes.addIndex (ids [i] - 1); //WRONG -1
+void select (int [] indices, int count, boolean clear) {
+	NSMutableIndexSet set = (NSMutableIndexSet)new NSMutableIndexSet().alloc().init();
+	for (int i=0; i<count; i++) set.addIndex (indices [i]);
 	NSTableView widget = (NSTableView)view;
 	ignoreSelect = true;
-	widget.selectRowIndexes(indexes, !clear);
+	widget.selectRowIndexes(set, !clear);
 	ignoreSelect = false;
+	set.release();
 }
 
 /**
@@ -1149,16 +1156,15 @@ public void setItems (String [] items) {
 public void setSelection (int index) {
 	checkWidget();
 	deselectAll ();
-	setSelection (index, false);
-}
-
-void setSelection (int index, boolean notify) {
-//	checkWidget();
 	if (0 <= index && index < itemCount) {
-		int [] ids = new int [] {index + 1};
-		select (ids, ids.length, true);
+		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+		set = set.initWithIndex(index);
+		NSTableView widget = (NSTableView)view;
+		ignoreSelect = true;
+		widget.selectRowIndexes(set, false);
+		ignoreSelect = false;
+		set.release();
 		showIndex (index);
-		if (notify) postEvent (SWT.Selection);
 	}
 }
 
@@ -1190,11 +1196,17 @@ public void setSelection (int start, int end) {
 	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
 	end = Math.min (end, itemCount - 1);
-	int length = end - start + 1;
-	int [] ids = new int [length];
-	for (int i=0; i<length; i++) ids [i] = end - i + 1;
-	select (ids, length, true);
-	if (ids.length > 0) showIndex (ids [0] - 1);
+	NSRange range = new NSRange();
+	range.location = start;
+	range.length = end - start + 1;
+	NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+	set = set.initWithIndexesInRange(range);
+	NSTableView widget = (NSTableView)view;
+	ignoreSelect = true;
+	widget.selectRowIndexes(set, false);
+	ignoreSelect = false;
+	set.release();
+	showIndex(end);
 }
 
 /**
@@ -1224,17 +1236,17 @@ public void setSelection (int [] indices) {
 	deselectAll ();
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	int [] ids = new int [length];
+	int [] newIndices = new int [length];
 	int count = 0;
 	for (int i=0; i<length; i++) {
 		int index = indices [length - i - 1];
 		if (index >= 0 && index < itemCount) {
-			ids [count++] = index + 1;
+			newIndices [count++] = index;
 		}
 	}
 	if (count > 0) {
-		select (ids, count, true);
-		showIndex (ids [0] - 1);
+		select (newIndices, count, true);
+		showIndex (newIndices [0]);
 	}
 }
 
@@ -1267,31 +1279,31 @@ public void setSelection (String [] items) {
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int count = 0;
-	int [] ids = new int [length];
+	int [] indices = new int [length];
 	for (int i=0; i<length; i++) {
 		String string = items [length - i - 1];
 		if ((style & SWT.SINGLE) != 0) {
 			int index = indexOf (string, 0);
 			if (index != -1) {
 				count = 1;
-				ids = new int [] {index + 1};
+				indices = new int [] {index};
 			}
 		} else {
 			int index = 0;
 			while ((index = indexOf (string, index)) != -1) {
-				if (count == ids.length) {
-					int [] newIds = new int [ids.length + 4];
-					System.arraycopy (ids, 0, newIds, 0, ids.length);
-					ids = newIds;
+				if (count == indices.length) {
+					int [] newIds = new int [indices.length + 4];
+					System.arraycopy (indices, 0, newIds, 0, indices.length);
+					indices = newIds;
 				}
-				ids [count++] = index + 1;
+				indices [count++] = index;
 				index++;
 			}
 		}
 	}
 	if (count > 0) {
-		select (ids, count, true);
-		showIndex (ids [0] - 1);
+		select (indices, count, true);
+		showIndex (indices [0]);
 	}
 }
 

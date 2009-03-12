@@ -28,9 +28,4 @@ public void addIndex(int /*long*/ value) {
 	OS.objc_msgSend(this.id, OS.sel_addIndex_, value);
 }
 
-public static id indexSetWithIndex(int /*long*/ value) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableIndexSet, OS.sel_indexSetWithIndex_, value);
-	return result != 0 ? new id(result) : null;
-}
-
 }

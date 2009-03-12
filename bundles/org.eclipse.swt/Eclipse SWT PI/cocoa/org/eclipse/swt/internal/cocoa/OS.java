@@ -942,7 +942,6 @@ public static final int /*long*/ sel_indentationPerLevel = sel_registerName("ind
 public static final int /*long*/ sel_indexOfItemWithTarget_andAction_ = sel_registerName("indexOfItemWithTarget:andAction:");
 public static final int /*long*/ sel_indexOfObjectIdenticalTo_ = sel_registerName("indexOfObjectIdenticalTo:");
 public static final int /*long*/ sel_indexOfSelectedItem = sel_registerName("indexOfSelectedItem");
-public static final int /*long*/ sel_indexSetWithIndex_ = sel_registerName("indexSetWithIndex:");
 public static final int /*long*/ sel_infoDictionary = sel_registerName("infoDictionary");
 public static final int /*long*/ sel_init = sel_registerName("init");
 public static final int /*long*/ sel_initByReferencingFile_ = sel_registerName("initByReferencingFile:");

@@ -5533,9 +5533,9 @@
 <method class_method="true" selector="indexSet">
 <retval></retval>
 </method>
-<method class_method="true" selector="indexSetWithIndex:" swt_gen="true">
-<arg name="value" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method class_method="true" selector="indexSetWithIndex:">
+<arg name="value"></arg>
+<retval></retval>
 </method>
 <method class_method="true" selector="indexSetWithIndexesInRange:">
 <arg name="range"></arg>
@@ -5546,7 +5546,7 @@
 </method>
 <method selector="initWithIndex:" swt_gen="true">
 <arg name="value" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
 </method>
 <method selector="initWithIndexSet:">
 <arg name="indexSet"></arg>
@@ -5554,7 +5554,7 @@
 </method>
 <method selector="initWithIndexesInRange:" swt_gen="true">
 <arg name="range" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
 </method>
 <method selector="intersectsIndexesInRange:">
 <arg name="range"></arg>
