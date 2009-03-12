@@ -145,8 +145,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSTabView widget = (NSTabView)view;
 	NSRect rect = widget.contentRect ();
-	x -= rect.x; y -= rect.y;
-	width += Math.ceil (rect.x); height += Math.ceil (rect.y);
+	x -= rect.x;
+	y -= rect.y;
+	NSRect frame = widget.frame();
+	width += Math.ceil (frame.width - rect.width);
+	height += Math.ceil (frame.height - rect.height);
 	return super.computeTrim (x, y, width, height);
 }
 
