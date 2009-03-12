@@ -331,6 +331,7 @@ int canSetProperty (int /*long*/ iid, int /*long*/ propertyName, int /*long*/ _r
 Object convertToJava (nsIVariant variant, short type) {
 	switch (type) {
 		case nsIDataType.VTYPE_EMPTY:
+		case nsIDataType.VTYPE_VOID:
 			return null;
 		case nsIDataType.VTYPE_EMPTY_ARRAY:
 			return new Object[0];
