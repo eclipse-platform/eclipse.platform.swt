@@ -813,13 +813,14 @@ void destroyItem (TableItem item) {
 }
 
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
+	NSTableView widget = (NSTableView)view;
+	NSPoint pt = new NSPoint();
+	pt.x = x;
+	pt.y = y;
+	int /*long*/ row = widget.rowAtPoint(pt);
+	if (row == -1) return false;
 	boolean dragging = super.dragDetect(x, y, filter, consume);
 	if (dragging) {
-		NSTableView widget = (NSTableView)view;
-		NSPoint pt = new NSPoint();
-		pt.x = x;
-		pt.y = y;
-		int row = (int)/*64*/widget.rowAtPoint(pt);
 		if (!widget.isRowSelected(row)) {
 			//TODO expand current selection when Shift, Command key pressed??
 			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
