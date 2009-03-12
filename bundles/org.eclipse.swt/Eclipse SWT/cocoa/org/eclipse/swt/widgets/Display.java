@@ -3768,6 +3768,34 @@ void updateDefaultButton () {
 	timerExec(hasDefaultButton() ? DEFAULT_BUTTON_INTERVAL : -1, defaultButtonTimer);
 }
 
+void updateQuitMenu () {
+	boolean enabled = true;
+	Shell [] shells = getShells ();
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if ((shell.style & mask) != 0 && shell.isVisible ()) {
+			enabled = false;
+			break;
+		}
+	}
+	
+	NSMenu mainmenu = application.mainMenu();
+	NSMenuItem appitem = mainmenu.itemAtIndex(0);
+	if (appitem != null) {
+		NSMenu sm = appitem.submenu();
+
+		// Normally this would be sel_terminate_ but we changed it so terminate: doesn't kill the app.
+		int /*long*/ quitIndex = sm.indexOfItemWithTarget(applicationDelegate, OS.sel_quitRequested_);
+		
+		if (quitIndex != -1) {
+			NSMenuItem quitItem = sm.itemAtIndex(quitIndex);
+			quitItem.setEnabled(enabled);
+		}
+	}
+}
+
+
 /**
  * If the receiver's user-interface thread was <code>sleep</code>ing, 
  * causes it to be awakened and start running again. Note that this
@@ -4482,4 +4510,5 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	}
 	return 0;
 }
+
 }

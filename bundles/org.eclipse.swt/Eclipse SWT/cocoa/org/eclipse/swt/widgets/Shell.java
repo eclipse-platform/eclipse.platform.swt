@@ -1060,6 +1060,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	display.clearModal (this);
 	updateParent (false);
+	display.updateQuitMenu();
 	lastActive = null;
 }
 
@@ -1541,6 +1542,8 @@ void setWindowVisible (boolean visible, boolean key) {
 		invalidateVisibleRegion();
 		sendEvent (SWT.Hide);
 	}
+	
+	display.updateQuitMenu();
 }
 
 void setZOrder () {
