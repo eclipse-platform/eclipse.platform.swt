@@ -736,7 +736,7 @@ Point minimumSize (int wHint, int Hint, boolean changed) {
 	return new Point (width, height);
 }
 
-boolean mouseEvent (int id, int sel, int theEvent, int type) {
+boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
 	boolean result = super.mouseEvent (id, sel, theEvent, type);
 	return (state & CANVAS) == 0 ? result : new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
 }

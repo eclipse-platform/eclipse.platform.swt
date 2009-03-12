@@ -371,7 +371,7 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
-boolean mouseEvent (int id, int sel, int theEvent, int type) {
+boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
 	super.mouseEvent (id, sel, theEvent, type);
 	return new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
 }
