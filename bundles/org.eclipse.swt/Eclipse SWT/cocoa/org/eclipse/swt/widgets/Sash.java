@@ -348,6 +348,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDown(id, sel, theEvent);
+	if (isDisposed()) return;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	if (nsEvent.clickCount() != 1) return;
 	NSPoint location = nsEvent.locationInWindow();
@@ -378,6 +379,7 @@ boolean mouseEvent (int id, int sel, int theEvent, int type) {
 void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDragged(id, sel, theEvent);
+	if (isDisposed()) return;
 	if (!dragging) return;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint location = nsEvent.locationInWindow();
@@ -408,6 +410,7 @@ void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseUp(id, sel, theEvent);
+	if (isDisposed()) return;
 	if (!dragging) return;
 	dragging = false;
 	NSRect frame = view.frame();
