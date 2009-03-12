@@ -1111,6 +1111,16 @@ protected void releaseObjectInterfaces() {
  * @return true if the save was successful
  */
 public boolean save(File file, boolean includeOleInfo) {
+	String programID = getProgramID();
+	
+	/*
+	* Bug in Office 2007. Saving Office 2007 documents to compound file storage object
+	* causes the output file to be corrupted. The fix is to detect Office 2007 documents
+	* using the program ID and save only the content of the 'Package' stream. 
+	*/
+	if (programID != null && (programID.equals("Word.Document.12") || programID.equals("Excel.Sheet.12") || programID.equals("PowerPoint.Show.12"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
+		return saveOffice2007(file);
+	}
 	if (includeOleInfo)
 		return saveToStorageFile(file);
 	return saveToTraditionalFile(file);
@@ -1188,6 +1198,31 @@ private int SaveObject() {
 	updateStorage();
 		
 	return COM.S_OK;
+}
+private boolean saveOffice2007(File file) {
+	if (file == null || file.isDirectory()) return false;
+	if (!updateStorage()) return false;
+	boolean result = false;
+	
+	/* Excel fails to open the package stream when the PersistStorage is not in hands off mode */
+	int /*long*/[] ppv = new int /*long*/[1];
+	IPersistStorage iPersistStorage = null;
+	if (objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppv) == COM.S_OK) {
+		iPersistStorage = new IPersistStorage(ppv[0]);
+		tempStorage.AddRef();
+		iPersistStorage.HandsOffStorage();
+	}
+	int /*long*/[] address = new int /*long*/[1];
+	int grfMode = COM.STGM_DIRECT | COM.STGM_READ | COM.STGM_SHARE_EXCLUSIVE;
+	if (tempStorage.OpenStream("Package", 0, grfMode, 0, address) == COM.S_OK) { //$NON-NLS-1$
+		result = saveFromContents(address[0], file);
+	}
+	if (iPersistStorage != null) {
+		iPersistStorage.SaveCompleted(tempStorage.getAddress());
+		tempStorage.Release();
+		iPersistStorage.Release();
+	}
+	return result;
 }
 /**
  * Saves the document to the specified file and includes OLE specific information.  This method 
