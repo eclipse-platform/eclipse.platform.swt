@@ -112,6 +112,27 @@ public static final int kThemeCopyArrowCursor = 1;
 public static final int kThemeNotAllowedCursor = 18;
 public static final int kThemeAliasArrowCursor = 2;
 
+/** @method flags=dynamic 
+ * @param iFile cast=(const FSRef *)
+ * @param iContext cast=(ATSFontContext)
+ * @param iFormat cast=(ATSFontFormat)
+ * @param iReserved cast=(void *)
+ * @param iOptions cast=(ATSOptionFlags)
+ * @param oContainer cast=(ATSFontContainerRef *)
+ */
+public static final native int ATSFontActivateFromFileReference(byte[] iFile, int iContext, int iFormat, int /*long*/ iReserved, int iOptions, int /*long*/ [] oContainer);
+
+public static final int kATSFontContextLocal = 2;
+public static final int kATSOptionFlagsDefault = 0;
+public static final int kATSFontFormatUnspecified = 0;
+
+/** @method flags=dynamic 
+ * @param path cast=(const UInt8 *)
+ * @param ref cast=(FSRef *)
+ * @param isDirectory cast=(Boolean *)
+ */
+public static final native int FSPathMakeRef (int /*long*/ path, byte[] ref, boolean[] isDirectory);
+
 /** C calls */
 
 public static final native int getpid();
@@ -863,6 +884,7 @@ public static final int /*long*/ sel_enumeratorAtPath_ = sel_registerName("enume
 public static final int /*long*/ sel_expandItem_ = sel_registerName("expandItem:");
 public static final int /*long*/ sel_familyName = sel_registerName("familyName");
 public static final int /*long*/ sel_fieldEditor_forObject_ = sel_registerName("fieldEditor:forObject:");
+public static final int /*long*/ sel_fileSystemRepresentation = sel_registerName("fileSystemRepresentation");
 public static final int /*long*/ sel_fileURLWithPath_ = sel_registerName("fileURLWithPath:");
 public static final int /*long*/ sel_filename = sel_registerName("filename");
 public static final int /*long*/ sel_filenames = sel_registerName("filenames");

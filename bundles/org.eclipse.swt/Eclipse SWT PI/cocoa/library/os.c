@@ -15,6 +15,33 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
+#ifndef NO_ATSFontActivateFromFileReference
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontActivateFromFileReference)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jintLong arg3, jint arg4, jintLongArray arg5)
+{
+	jbyte *lparg0=NULL;
+	jintLong *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontActivateFromFileReference_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)ATSFontActivateFromFileReference((const FSRef *)lparg0, (ATSFontContext)arg1, (ATSFontFormat)arg2, (void *)arg3, (ATSOptionFlags)arg4, (ATSFontContainerRef *)lparg5);
+*/
+	{
+		LOAD_FUNCTION(fp, ATSFontActivateFromFileReference)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(const FSRef *, ATSFontContext, ATSFontFormat, void *, ATSOptionFlags, ATSFontContainerRef *))fp)((const FSRef *)lparg0, (ATSFontContext)arg1, (ATSFontFormat)arg2, (void *)arg3, (ATSOptionFlags)arg4, (ATSFontContainerRef *)lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, ATSFontActivateFromFileReference_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFDataGetBytePtr
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFDataGetBytePtr)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -527,6 +554,33 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EmptyRgn)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, EmptyRgn_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FSPathMakeRef
+JNIEXPORT jint JNICALL OS_NATIVE(FSPathMakeRef)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbooleanArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jboolean *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FSPathMakeRef_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)FSPathMakeRef((const UInt8 *)arg0, (FSRef *)lparg1, (Boolean *)lparg2);
+*/
+	{
+		LOAD_FUNCTION(fp, FSPathMakeRef)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(const UInt8 *, FSRef *, Boolean *))fp)((const UInt8 *)arg0, (FSRef *)lparg1, (Boolean *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, FSPathMakeRef_FUNC);
 	return rc;
 }
 #endif

@@ -36,3 +36,5 @@
 #define TISGetInputSourceProperty_LIB "com.apple.Carbon"
 #define UCKeyTranslate_LIB "com.apple.CoreServices"
 #define kTISPropertyUnicodeKeyLayoutData_LIB "com.apple.Carbon"
+#define ATSFontActivateFromFileReference_LIB "com.apple.ApplicationServices.ATS"
+#define FSPathMakeRef_LIB "com.apple.CoreServices"

@@ -25,6 +25,7 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	ATSFontActivateFromFileReference_FUNC,
 	CFDataGetBytePtr_FUNC,
 	CFDataGetLength_FUNC,
 	CFRelease_FUNC,
@@ -67,6 +68,7 @@ typedef enum {
 	DiffRgn_FUNC,
 	DisposeRgn_FUNC,
 	EmptyRgn_FUNC,
+	FSPathMakeRef_FUNC,
 	Gestalt_FUNC,
 	GetCurrentButtonState_FUNC,
 	GetCurrentProcess_FUNC,
