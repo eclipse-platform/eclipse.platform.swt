@@ -14649,9 +14649,9 @@
 <arg name="expandChildren"></arg>
 <retval></retval>
 </method>
-<method selector="frameOfOutlineCellAtRow:">
-<arg name="row"></arg>
-<retval></retval>
+<method selector="frameOfOutlineCellAtRow:" swt_gen="true">
+<arg name="row" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="indentationMarkerFollowsCell">
 <retval></retval>

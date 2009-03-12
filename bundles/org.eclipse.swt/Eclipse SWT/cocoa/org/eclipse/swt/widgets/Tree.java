@@ -1372,6 +1372,8 @@ public TreeItem getItem (Point point) {
 	pt.y = point.y;
 	int row = (int)/*64*/widget.rowAtPoint(pt);
 	if (row == -1) return null;
+	NSRect rect = widget.frameOfOutlineCellAtRow(row);
+	if (OS.NSPointInRect(pt, rect)) return null;
 	id id = widget.itemAtRow(row);
 	Widget item = display.getWidget (id.id);
 	if (item != null && item instanceof TreeItem) {

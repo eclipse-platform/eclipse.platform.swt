@@ -32,6 +32,12 @@ public void expandItem(id item) {
 	OS.objc_msgSend(this.id, OS.sel_expandItem_, item != null ? item.id : 0);
 }
 
+public NSRect frameOfOutlineCellAtRow(int /*long*/ row) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_frameOfOutlineCellAtRow_, row);
+	return result;
+}
+
 public float /*double*/ indentationPerLevel() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_indentationPerLevel);
 }

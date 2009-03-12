@@ -881,6 +881,7 @@ public static final int /*long*/ sel_fontName = sel_registerName("fontName");
 public static final int /*long*/ sel_fontWithName_size_ = sel_registerName("fontWithName:size:");
 public static final int /*long*/ sel_frame = sel_registerName("frame");
 public static final int /*long*/ sel_frameOfCellAtColumn_row_ = sel_registerName("frameOfCellAtColumn:row:");
+public static final int /*long*/ sel_frameOfOutlineCellAtRow_ = sel_registerName("frameOfOutlineCellAtRow:");
 public static final int /*long*/ sel_frameRectForContentRect_ = sel_registerName("frameRectForContentRect:");
 public static final int /*long*/ sel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_ = sel_registerName("frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:");
 public static final int /*long*/ sel_fullPathForApplication_ = sel_registerName("fullPathForApplication:");
