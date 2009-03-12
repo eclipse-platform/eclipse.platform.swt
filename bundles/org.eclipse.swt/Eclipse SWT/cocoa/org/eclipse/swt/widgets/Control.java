@@ -1021,7 +1021,7 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
-	if (id != view.id) return;
+	if (id != paintView().id) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
 	/* Send paint event */
@@ -1713,6 +1713,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
  */
 public int /*long*/ internal_new_GC (GCData data) {
 	checkWidget();
+	NSView view = paintView();
 	int /*long*/ context = 0;
 	if (data != null && data.paintRect != null) {
 		context = NSGraphicsContext.currentContext().id;
@@ -2228,6 +2229,10 @@ public void pack () {
 public void pack (boolean changed) {
 	checkWidget();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
+}
+
+NSView paintView () {
+	return eventView ();
 }
 
 /**
