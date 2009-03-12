@@ -3940,6 +3940,15 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 			break;
 	}
 	sendEvent = true;
+	
+	/*
+	 * Feature in Cocoa. The help key triggers context-sensitive help but doesn't get forwarded to the window as a key event.
+	 * If the event is destined for the key window, is the help key, and is an NSKeyDown, send it directly to the window first.
+	 */
+	if (window != null && window.isKeyWindow() && nsEvent.type() == OS.NSKeyDown && (nsEvent.modifierFlags() & OS.NSHelpKeyMask) != 0)	{
+		window.sendEvent(nsEvent);
+	}
+
 	/*
 	 * Feature in Cocoa. NSKeyUp events are not delivered to the window if the command key is down.
 	 * If the event is destined for the key window, and it's a key up and the command key is down, send it directly to the window.
