@@ -117,7 +117,6 @@ class Mozilla extends WebBrowser {
 				result[0] = 0;
 				rc = manager.GetEnumerator (result);
 				if (rc != XPCOM.NS_OK) error (rc);
-				manager.Release ();
 
 				nsISimpleEnumerator enumerator = new nsISimpleEnumerator (result[0]);
 				int[] moreElements = new int[1]; /* PRBool */
@@ -149,6 +148,7 @@ class Mozilla extends WebBrowser {
 					if (rc != XPCOM.NS_OK) error (rc);
 				}
 				enumerator.Release ();
+				manager.Release ();
 			}
 		};
 
