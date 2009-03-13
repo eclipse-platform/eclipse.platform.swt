@@ -520,6 +520,11 @@ void createHandle () {
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & SWT.TOOL) != 0) {
 			window.setHasShadow (true);
 		}
+		if (fixResize ()) {
+			if (window.respondsToSelector(OS.sel_setMovable_)) {
+				OS.objc_msgSend(window.id, OS.sel_setMovable_, 0);
+			}
+		}
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
 		float /*double*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;

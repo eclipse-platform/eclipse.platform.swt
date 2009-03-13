@@ -42,6 +42,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
 	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
 	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
+
+	public static final int /*long*/ sel_setMovable_ = OS.sel_registerName("setMovable:");
 	
 	public static final int /*long*/ class_NSToolTipManager = OS.objc_getClass("NSToolTipManager");
 	public static final int /*long*/ sel_sharedToolTipManager = OS.sel_registerName("sharedToolTipManager");
