@@ -201,8 +201,12 @@ public void test_isDisposed() {
 
 public void test_toString() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
-	assertNotNull(cursor.toString());
-	assertTrue(cursor.toString().length() > 0);
+	try {
+		assertNotNull(cursor.toString());
+		assertTrue(cursor.toString().length() > 0);
+	} finally {
+		cursor.dispose();
+	}
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
