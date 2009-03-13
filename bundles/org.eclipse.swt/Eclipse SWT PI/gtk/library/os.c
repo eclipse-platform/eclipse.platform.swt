@@ -7875,18 +7875,22 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
 
 #ifndef NO__1gtk_1file_1chooser_1set_1current_1folder_1uri
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder_1uri)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
 {
+	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1current_1folder_1uri_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	gtk_file_chooser_set_current_folder_uri(arg0, arg1);
+	gtk_file_chooser_set_current_folder_uri(arg0, lparg1);
 */
 	{
 		LOAD_FUNCTION(fp, gtk_file_chooser_set_current_folder_uri)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
 		}
 	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1current_1folder_1uri_FUNC);
 }
 #endif
@@ -8023,18 +8027,22 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1select_1multiple)
 
 #ifndef NO__1gtk_1file_1chooser_1set_1uri
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1uri)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
 {
+	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1uri_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	gtk_file_chooser_set_uri(arg0, arg1);
+	gtk_file_chooser_set_uri(arg0, lparg1);
 */
 	{
 		LOAD_FUNCTION(fp, gtk_file_chooser_set_uri)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
 		}
 	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1uri_FUNC);
 }
 #endif
