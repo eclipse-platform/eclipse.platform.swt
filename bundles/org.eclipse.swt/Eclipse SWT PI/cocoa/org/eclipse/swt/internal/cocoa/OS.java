@@ -161,7 +161,10 @@ public static final native void UnionRgn(int /*long*/ srcRgnA, int /*long*/ srcR
 public static final native void CloseRgn(int /*long*/ dstRgn);
 /** @method flags=dynamic */
 public static final native void DisposeRgn(int /*long*/ rgnHandle);
-/** @method flags=dynamic */
+/**
+ * @method flags=dynamic
+ * @param pt flags=struct,cast=(Point *)
+ */
 public static final native boolean PtInRgn(short[] pt, int /*long*/ rgnHandle);
 /** @method flags=dynamic */
 public static final native void GetRegionBounds(int /*long*/ rgnHandle, short[] bounds);

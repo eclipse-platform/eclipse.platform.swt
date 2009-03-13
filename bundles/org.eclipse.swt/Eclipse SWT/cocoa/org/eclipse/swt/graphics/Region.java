@@ -310,7 +310,7 @@ public boolean contains(int x, int y) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		short[] point = new short[]{(short)x, (short)y};
+		short[] point = new short[]{(short)y, (short)x};
 		return OS.PtInRgn(point, handle);
 	} finally {
 		if (pool != null) pool.release();
@@ -594,7 +594,7 @@ public boolean intersects (int x, int y, int width, int height) {
 	try {
 		short[] r = new short[4];
 		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
-		return OS.RectInRgn(rect, handle);
+		return OS.RectInRgn(r, handle);
 	} finally {
 		if (pool != null) pool.release();
 	}

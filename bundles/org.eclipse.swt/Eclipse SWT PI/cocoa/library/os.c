@@ -2652,12 +2652,12 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRgn)
 	OS_NATIVE_ENTER(env, that, PtInRgn_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL)) == NULL) goto fail;
 /*
-	rc = (jboolean)PtInRgn(lparg0, arg1);
+	rc = (jboolean)PtInRgn(*(Point *)lparg0, arg1);
 */
 	{
 		LOAD_FUNCTION(fp, PtInRgn)
 		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jshort *, jintLong))fp)(lparg0, arg1);
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(Point, jintLong))fp)(*(Point *)lparg0, arg1);
 		}
 	}
 fail:
