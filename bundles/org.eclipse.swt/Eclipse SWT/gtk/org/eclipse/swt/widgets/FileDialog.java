@@ -44,6 +44,7 @@ public class FileDialog extends Dialog {
 	String fullPath = "";
 	int filterIndex = -1;
 	boolean overwrite = false;
+	boolean uriMode;
 	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
@@ -96,15 +97,25 @@ String computeResultChooserDialog () {
 	/* MULTI is only valid if the native dialog's action is Open */
 	fullPath = null;
 	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
-		int /*long*/ list = OS.gtk_file_chooser_get_filenames (handle);
+		int /*long*/ list = 0;
+		if (uriMode) {
+			list = OS.gtk_file_chooser_get_uris (handle);
+		} else {
+			list = OS.gtk_file_chooser_get_filenames (handle);
+		}
 		int listLength = OS.g_slist_length (list);
 		fileNames = new String [listLength];
 		int /*long*/ current = list;
 		int writePos = 0;
 		for (int i = 0; i < listLength; i++) {
 			int /*long*/ name = OS.g_slist_data (current);
-			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
-			OS.g_free (name);
+			int /*long*/ utf8Ptr = 0;
+			if (uriMode) {
+				utf8Ptr = name;
+			} else {
+				utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
+				OS.g_free (name);
+			}
 			if (utf8Ptr != 0) {
 				int /*long*/ [] items_written = new int /*long*/ [1];
 				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
@@ -127,23 +138,28 @@ String computeResultChooserDialog () {
 		}
 		OS.g_slist_free (list);
 	} else {
-		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
-		if (path != 0) {
-			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
-			OS.g_free (path);
-			if (utf8Ptr != 0) {
-				int /*long*/ [] items_written = new int /*long*/ [1];
-				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
-				OS.g_free (utf8Ptr);
-				if (utf16Ptr != 0) {
-					int clength = (int)/*64*/items_written [0];
-					char [] chars = new char [clength];
-					OS.memmove (chars, utf16Ptr, clength * 2);
-					OS.g_free (utf16Ptr);
-					fullPath = new String (chars);
-					fileNames = new String [1];
-					fileNames[0] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
-				}
+		int /*long*/ utf8Ptr = 0;
+		if (uriMode) {
+			utf8Ptr = OS.gtk_file_chooser_get_uri (handle);
+		} else {
+			int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
+			if (path != 0) {
+				utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
+				OS.g_free (path);
+			}
+		}
+		if (utf8Ptr != 0) {
+			int /*long*/ [] items_written = new int /*long*/ [1];
+			int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+			OS.g_free (utf8Ptr);
+			if (utf16Ptr != 0) {
+				int clength = (int)/*64*/items_written [0];
+				char [] chars = new char [clength];
+				OS.memmove (chars, utf16Ptr, clength * 2);
+				OS.g_free (utf16Ptr);
+				fullPath = new String (chars);
+				fileNames = new String [1];
+				fileNames[0] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
 			}
 		}
 	}
@@ -382,6 +398,9 @@ String openChooserDialog () {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
 		OS.g_list_free (pixbufs);
 	}
+	if (uriMode) {
+		OS.gtk_file_chooser_set_local_only (handle, false);
+	}
 	presetChooserDialog ();
 	display.addIdleProc ();
 	String answer = null;
@@ -458,64 +477,58 @@ void presetChooserDialog () {
 	}
 	if (filterPath == null) filterPath = "";
 	if (fileName == null) fileName = "";
-	if (filterPath.length () > 0) {
-		StringBuffer stringBuffer = new StringBuffer ();
-		/* filename must be a full path */
-		if (filterPath.charAt (0) != SEPARATOR) {
-			stringBuffer.append (SEPARATOR);
-		}
-		stringBuffer.append (filterPath);
-
-		if (fileName.length () > 0 && (style & SWT.SAVE) == 0) {
-			if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
-				stringBuffer.append (SEPARATOR);
-			}
-			stringBuffer.append (fileName);
-			byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-			/*
-			* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
-			* when setting a file name that is not a true canonical path. 
-			* The fix is to use the canonical path.
-			*/
-			int /*long*/ ptr = OS.realpath (buffer, null);
-			if (ptr != 0) {
-				OS.gtk_file_chooser_set_filename (handle, ptr);
-				OS.g_free (ptr);
-			}
-		} else {
-			byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-			/*
-			* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
-			* when setting a file name that is not a true canonical path. 
-			* The fix is to use the canonical path.
-			*/
-			int /*long*/ ptr = OS.realpath (buffer, null);
-			if (ptr != 0) {
-				OS.gtk_file_chooser_set_current_folder (handle, ptr);
-				OS.g_free (ptr);
-			}
-		}
-	} else {
-		if (fileName.length () > 0) {
-			if (fileName.charAt (0) == SEPARATOR) {
-				byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
+	if ((style & SWT.SAVE) != 0) {
+		if (filterPath.length () > 0) {
+			if (uriMode) {
+				byte [] buffer = Converter.wcsToMbcs (null, filterPath, true);
+				OS.gtk_file_chooser_set_current_folder_uri (handle, buffer);
+			} else {
+				/* filename must be a full path */
+				byte [] buffer = Converter.wcsToMbcs (null, SEPARATOR + filterPath, true);
+				
 				/*
 				* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
 				* when setting a file name that is not a true canonical path. 
 				* The fix is to use the canonical path.
 				*/
 				int /*long*/ ptr = OS.realpath (buffer, null);
-				if (ptr != 0) {
-					OS.gtk_file_chooser_set_filename (handle, ptr);
-					OS.g_free (ptr);
-				}
+				OS.gtk_file_chooser_set_current_folder (handle, ptr);
+				OS.g_free (ptr);
 			}
 		}
+		if (fileName.length () > 0) {
+			byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
+			OS.gtk_file_chooser_set_current_name (handle, buffer);
+		}
+	} else {
+		StringBuffer stringBuffer = new StringBuffer();
+		if (filterPath.length () > 0) {
+			if (!uriMode) {
+				/* filename must be a full path */
+				stringBuffer.append(SEPARATOR);
+			}
+			stringBuffer.append(filterPath);
+			stringBuffer.append(SEPARATOR);
+		}
+		if (fileName.length () > 0) {
+			stringBuffer.append(fileName);
+		}
+		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString(), true);
+		if (uriMode) {
+			OS.gtk_file_chooser_set_uri (handle, buffer);
+		} else {
+			/*
+			* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+			* when setting a file name that is not a true canonical path. 
+			* The fix is to use the canonical path.
+			*/
+			int /*long*/ ptr = OS.realpath (buffer, null);
+			OS.gtk_file_chooser_set_filename (handle, ptr);
+			OS.g_free (ptr);
+		}
 	}
-	if ((style & SWT.SAVE) != 0 && fileName.length () > 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
-		OS.gtk_file_chooser_set_current_name (handle, buffer);
-	}
+	
+	/* Set overwrite mode */
 	if ((style & SWT.SAVE) != 0) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 8, 0)) {
 			OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
@@ -694,5 +707,16 @@ public void setFilterPath (String string) {
  */
 public void setOverwrite (boolean overwrite) {
 	this.overwrite = overwrite;
+}
+/* Sets URI Mode.
+ * 
+ * When the FileDialog is in URI mode it returns
+ * a URI (instead of a file name) for the following
+ * methods: open() and getFilterPath().
+ * The input argment for setFilterPath() should also 
+ * be a URI.
+ */
+/*public*/ void setURIMode (boolean uriMode) {
+	this.uriMode = uriMode;
 }
 }
