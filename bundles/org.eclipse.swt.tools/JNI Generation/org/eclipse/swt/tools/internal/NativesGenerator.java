@@ -487,11 +487,17 @@ void generateDynamicFunctionCall(JNIMethod method, JNIParameter[] params, JNITyp
 		if (i != 0) output(", ");
 		JNIParameter param = params[i];
 		String cast = param.getCast();
+		boolean isStruct = param.getFlag(FLAG_STRUCT);
 		if (cast.length() > 2) {
-			output(cast.substring(1, cast.length() - 1));
+			cast = cast.substring(1, cast.length() - 1);
+			if (isStruct) {
+				int index = cast.lastIndexOf('*');
+				if (index != -1) cast = cast.substring(0, index).trim();
+			}
+			output(cast);
 		} else {
 			JNIType paramType = param.getType(), paramType64 = param.getType64();
-			output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
+			output(paramType.getTypeSignature4(!paramType.equals(paramType64), isStruct));
 		}
 	}
 	output("))");
