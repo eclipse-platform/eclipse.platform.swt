@@ -916,7 +916,12 @@ void initNative(String filename) {
 		// initByReferencingFile returns null if the file can't be found or is
 		// not an image.
 		nativeImage = nativeImage.initWithContentsOfFile(NSString.stringWith(filename));
-		if (nativeImage == null) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		if (nativeImage == null) {
+			// In order to get the same kind of exception, let the file format try to load and throw
+			// the appropriate exception. It is possible file format supports some image formats
+			// that is not natively supported as well.
+			return;
+		}
 		
 		NSBitmapImageRep nativeRep = null;
 		NSImageRep bestRep = nativeImage.bestRepresentationForDevice(null);
