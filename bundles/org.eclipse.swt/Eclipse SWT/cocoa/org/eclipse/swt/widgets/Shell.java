@@ -1105,6 +1105,7 @@ void sendToolTipEvent (boolean enter) {
 	}
 	if (tooltipTrackingArea == null) return;
 	NSDictionary userInfo = tooltipTrackingArea.userInfo();
+	if (userInfo == null) return;
 	NSPoint pt = window.convertScreenToBase(NSEvent.mouseLocation());
 	NSEvent event = NSEvent.enterExitEventWithType(enter ? OS.NSMouseEntered : OS.NSMouseExited, pt, 0, 0, window.windowNumber(), null, 0, 0, userInfo.id);
 	if (OS.class_NSToolTipManager != 0) {
