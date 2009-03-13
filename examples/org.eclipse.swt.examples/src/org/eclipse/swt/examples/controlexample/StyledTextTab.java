@@ -316,7 +316,7 @@ class StyledTextTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Alignment", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Orientation", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopPixel", "WordWrap"};
+		return new String[] {"Alignment", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Indent", "Orientation", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopPixel", "WordWrap"};
 	}
 
 	
