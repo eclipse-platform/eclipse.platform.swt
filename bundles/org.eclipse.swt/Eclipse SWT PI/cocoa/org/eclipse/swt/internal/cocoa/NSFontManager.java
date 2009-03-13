@@ -39,9 +39,22 @@ public NSArray availableMembersOfFontFamily(NSString fam) {
 	return result != 0 ? new NSArray(result) : null;
 }
 
+public NSFont fontWithFamily(NSString family, int /*long*/ traits, int /*long*/ weight, float /*double*/ size) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_fontWithFamily_traits_weight_size_, family != null ? family.id : 0, traits, weight, size);
+	return result != 0 ? new NSFont(result) : null;
+}
+
 public static NSFontManager sharedFontManager() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSFontManager, OS.sel_sharedFontManager);
 	return result != 0 ? new NSFontManager(result) : null;
+}
+
+public int /*long*/ traitsOfFont(NSFont fontObj) {
+	return OS.objc_msgSend(this.id, OS.sel_traitsOfFont_, fontObj != null ? fontObj.id : 0);
+}
+
+public int /*long*/ weightOfFont(NSFont fontObj) {
+	return OS.objc_msgSend(this.id, OS.sel_weightOfFont_, fontObj != null ? fontObj.id : 0);
 }
 
 }

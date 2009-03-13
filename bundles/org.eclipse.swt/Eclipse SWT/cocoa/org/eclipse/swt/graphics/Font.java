@@ -203,9 +203,12 @@ public FontData[] getFontData() {
 		String name = family.getString();
 		NSString str = handle.fontName();
 		String nsName = str.getString();
+		NSFontManager manager = NSFontManager.sharedFontManager();
+		int /*long*/ traits = manager.traitsOfFont(handle);
+		int /*long*/ weight = manager.weightOfFont(handle);
 		int style = SWT.NORMAL;
-		if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
-		if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
+		if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
+		if (weight == 9) style |= SWT.BOLD;
 		Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 		FontData data = new FontData(name, (float)/*64*/handle.pointSize() * screenDPI.y / dpi.y, style);
 		data.nsName = nsName;
@@ -261,18 +264,23 @@ void init(String name, float height, int style, String nsName) {
 	if (nsName != null) {
 		handle = NSFont.fontWithName(NSString.stringWith(nsName), size);
 	} else {
-		nsName = name;
-		if ((style & SWT.BOLD) != 0) nsName += " Bold";
-		if ((style & SWT.ITALIC) != 0) nsName += " Italic";
-		handle = NSFont.fontWithName(NSString.stringWith(nsName), size);
+		int traits = 0;
+		if ((style & SWT.ITALIC) != 0) traits |= OS.NSItalicFontMask;
+		int weight = 5;
+		if ((style & SWT.BOLD) != 0) weight = 9;
+		NSString family = NSString.stringWith(name);
+		NSFontManager manager = NSFontManager.sharedFontManager();
+		handle = manager.fontWithFamily(family, traits, weight, size);
 		if (handle == null && (style & SWT.ITALIC) != 0) {
-			nsName = name;
-			if ((style & SWT.BOLD) != 0) nsName += " Bold";
-			handle = NSFont.fontWithName(NSString.stringWith(nsName), size);
+			traits &= ~OS.NSItalicFontMask;
+			handle = manager.fontWithFamily(family, traits, weight, size);
 		}
 		if (handle == null && (style & SWT.BOLD) != 0) {
-			nsName = name;
-			handle = NSFont.fontWithName(NSString.stringWith(nsName), size);
+			weight = 5;
+			handle = manager.fontWithFamily(family, traits, weight, size);
+		}
+		if (handle == null) {
+			handle = NSFont.systemFontOfSize(size);
 		}
 	}
 	if (handle == null) {

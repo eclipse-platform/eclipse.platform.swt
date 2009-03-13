@@ -355,27 +355,25 @@ NSScreen getPrimaryScreen () {
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
+	int count = 0;
 	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
-	int famCount = (int)/*64*/families.count();
-	int count = 0;	
+	int /*long*/ familyCount = families.count();
 	FontData[] fds = new FontData[100];
-	for (int i = 0; i < famCount; i++) {
-		NSString nsfamily = new NSString(families.objectAtIndex(i));
-		String family = nsfamily.getString();
-		NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsfamily);
+	for (int i = 0; i < familyCount; i++) {
+		NSString nsFamily = new NSString(families.objectAtIndex(i));
+		String name = nsFamily.getString();
+		NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsFamily);
 		int fontCount = (int)/*64*/fonts.count();
 		for (int j = 0; j < fontCount; j++) {
 			NSArray fontDetails = new NSArray(fonts.objectAtIndex(j));
-			NSString str = new NSString(fontDetails.objectAtIndex(0));
-			String nsName = str.getString();
-			String name  = nsName;
-			int index = nsName.indexOf('-');
-			if (index != -1) name = name.substring(0, index);
+			String nsName = new NSString(fontDetails.objectAtIndex(0)).getString();
+			int /*long*/ weight = new NSNumber(fontDetails.objectAtIndex(2)).integerValue();
+			int /*long*/ traits = new NSNumber(fontDetails.objectAtIndex(3)).integerValue();
 			int style = SWT.NORMAL;
-			if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
-			if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
+			if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
+			if (weight == 9) style |= SWT.BOLD;
 			if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
-				FontData data = new FontData(family, 0, style);
+				FontData data = new FontData(name, 0, style);
 				data.nsName = nsName;
 				if (count == fds.length) {
 					FontData[] newFds = new FontData[fds.length + 100];

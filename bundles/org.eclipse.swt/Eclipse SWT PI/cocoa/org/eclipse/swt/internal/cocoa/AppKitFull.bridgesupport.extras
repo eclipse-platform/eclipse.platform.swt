@@ -8705,12 +8705,12 @@
 <arg name="create"></arg>
 <retval></retval>
 </method>
-<method selector="fontWithFamily:traits:weight:size:">
-<arg name="family"></arg>
-<arg name="traits"></arg>
-<arg name="weight"></arg>
-<arg name="size"></arg>
-<retval></retval>
+<method selector="fontWithFamily:traits:weight:size:" swt_gen="true">
+<arg name="family" swt_gen="true"></arg>
+<arg name="traits" swt_gen="true"></arg>
+<arg name="weight" swt_gen="true"></arg>
+<arg name="size" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="isEnabled">
 <retval></retval>
@@ -8802,13 +8802,13 @@
 <method selector="target">
 <retval></retval>
 </method>
-<method selector="traitsOfFont:">
-<arg name="fontObj"></arg>
-<retval></retval>
+<method selector="traitsOfFont:" swt_gen="true">
+<arg name="fontObj" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
-<method selector="weightOfFont:">
-<arg name="fontObj"></arg>
-<retval></retval>
+<method selector="weightOfFont:" swt_gen="true">
+<arg name="fontObj" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 </class>
 <class name="NSFontPanel" swt_gen="mixed" swt_superclass="NSPanel">

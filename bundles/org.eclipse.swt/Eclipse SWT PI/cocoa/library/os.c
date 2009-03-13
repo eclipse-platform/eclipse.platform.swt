@@ -3837,6 +3837,29 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJ)(JNIEnv *env, jclass t
 }
 #endif
 
+#if (!defined(NO_objc_1msgSend__IIIIIF) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJJJJD) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIIIIF)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jfloatDouble arg5)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJD)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jfloatDouble arg5)
+#endif
+{
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIIIIF_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJD_FUNC);
+#endif
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jfloatDouble))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIF_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJJD_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_objc_1msgSend__IIIIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJJJJJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5)

@@ -902,6 +902,7 @@ public static final int /*long*/ sel_flushBuffer = sel_registerName("flushBuffer
 public static final int /*long*/ sel_flushGraphics = sel_registerName("flushGraphics");
 public static final int /*long*/ sel_font = sel_registerName("font");
 public static final int /*long*/ sel_fontName = sel_registerName("fontName");
+public static final int /*long*/ sel_fontWithFamily_traits_weight_size_ = sel_registerName("fontWithFamily:traits:weight:size:");
 public static final int /*long*/ sel_fontWithName_size_ = sel_registerName("fontWithName:size:");
 public static final int /*long*/ sel_frame = sel_registerName("frame");
 public static final int /*long*/ sel_frameOfCellAtColumn_row_ = sel_registerName("frameOfCellAtColumn:row:");
@@ -1595,6 +1596,7 @@ public static final int /*long*/ sel_titleOfSelectedItem = sel_registerName("tit
 public static final int /*long*/ sel_titleRectForBounds_ = sel_registerName("titleRectForBounds:");
 public static final int /*long*/ sel_toggleToolbarShown_ = sel_registerName("toggleToolbarShown:");
 public static final int /*long*/ sel_trackingAreas = sel_registerName("trackingAreas");
+public static final int /*long*/ sel_traitsOfFont_ = sel_registerName("traitsOfFont:");
 public static final int /*long*/ sel_transform = sel_registerName("transform");
 public static final int /*long*/ sel_transformPoint_ = sel_registerName("transformPoint:");
 public static final int /*long*/ sel_transformSize_ = sel_registerName("transformSize:");
@@ -1664,6 +1666,7 @@ public static final int /*long*/ sel_webViewClose_ = sel_registerName("webViewCl
 public static final int /*long*/ sel_webViewFocus_ = sel_registerName("webViewFocus:");
 public static final int /*long*/ sel_webViewShow_ = sel_registerName("webViewShow:");
 public static final int /*long*/ sel_webViewUnfocus_ = sel_registerName("webViewUnfocus:");
+public static final int /*long*/ sel_weightOfFont_ = sel_registerName("weightOfFont:");
 public static final int /*long*/ sel_wheelDelta = sel_registerName("wheelDelta");
 public static final int /*long*/ sel_width = sel_registerName("width");
 public static final int /*long*/ sel_window = sel_registerName("window");
@@ -4342,6 +4345,8 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, float /*double*/ arg3);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
 /** @method flags=cast */

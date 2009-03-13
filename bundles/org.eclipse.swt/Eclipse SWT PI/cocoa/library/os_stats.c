@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 411;
-int OS_nativeFunctionCallCount[411];
+int OS_nativeFunctionCount = 412;
+int OS_nativeFunctionCallCount[412];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"CFDataGetBytePtr",
@@ -414,6 +414,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIIII",
 #else
 	"objc_1msgSend__JJJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIIIIF",
+#else
+	"objc_1msgSend__JJJJJD",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIIIII",
