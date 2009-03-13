@@ -7835,6 +7835,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1uri)
 }
 #endif
 
+#ifndef NO__1gtk_1file_1chooser_1get_1uris
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1uris)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1get_1uris_FUNC);
+/*
+	rc = (jintLong)gtk_file_chooser_get_uris(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_file_chooser_get_uris)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1get_1uris_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1set_1current_1folder
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -7850,6 +7870,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1current_1folder_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1file_1chooser_1set_1current_1folder_1uri
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder_1uri)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1current_1folder_1uri_FUNC);
+/*
+	gtk_file_chooser_set_current_folder_uri(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_file_chooser_set_current_folder_uri)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1current_1folder_1uri_FUNC);
 }
 #endif
 
@@ -7980,6 +8018,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1select_1multiple)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1select_1multiple_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1file_1chooser_1set_1uri
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1uri)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1uri_FUNC);
+/*
+	gtk_file_chooser_set_uri(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_file_chooser_set_uri)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1uri_FUNC);
 }
 #endif
 

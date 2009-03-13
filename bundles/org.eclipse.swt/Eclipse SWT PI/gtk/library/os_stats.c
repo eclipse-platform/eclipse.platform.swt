@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1287;
-int OS_nativeFunctionCallCount[1287];
+int OS_nativeFunctionCount = 1290;
+int OS_nativeFunctionCallCount[1290];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -644,7 +644,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1file_1chooser_1get_1filenames",
 	"_1gtk_1file_1chooser_1get_1filter",
 	"_1gtk_1file_1chooser_1get_1uri",
+	"_1gtk_1file_1chooser_1get_1uris",
 	"_1gtk_1file_1chooser_1set_1current_1folder",
+	"_1gtk_1file_1chooser_1set_1current_1folder_1uri",
 	"_1gtk_1file_1chooser_1set_1current_1name",
 	"_1gtk_1file_1chooser_1set_1do_1overwrite_1confirmation",
 	"_1gtk_1file_1chooser_1set_1extra_1widget",
@@ -652,6 +654,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1file_1chooser_1set_1filter",
 	"_1gtk_1file_1chooser_1set_1local_1only",
 	"_1gtk_1file_1chooser_1set_1select_1multiple",
+	"_1gtk_1file_1chooser_1set_1uri",
 	"_1gtk_1file_1filter_1add_1pattern",
 	"_1gtk_1file_1filter_1get_1name",
 	"_1gtk_1file_1filter_1new",
