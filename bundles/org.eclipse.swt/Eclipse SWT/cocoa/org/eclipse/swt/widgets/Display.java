@@ -2295,7 +2295,7 @@ void initClasses () {
 }
 
 NSFont getFont (int /*long*/ cls, int /*long*/ sel) {
-	int /*long*/ widget = OS.objc_msgSend (OS.objc_msgSend (cls, OS.sel_alloc), OS.sel_init);
+	int /*long*/ widget = OS.objc_msgSend (OS.objc_msgSend (cls, OS.sel_alloc), OS.sel_initWithFrame_, new NSRect());
 	int /*long*/ font = 0;
 	if (OS.objc_msgSend_bool (widget, OS.sel_respondsToSelector_, sel)) {
 		font = OS.objc_msgSend (widget, sel);
