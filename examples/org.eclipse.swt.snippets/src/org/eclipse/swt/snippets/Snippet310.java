@@ -11,8 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Spinner example snippet: example on how to validates the current input in
- * a Spinner control. 
+ * Spinner example snippet: validate input in a spinner widget
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
