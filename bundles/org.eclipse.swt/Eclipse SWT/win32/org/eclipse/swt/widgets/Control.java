@@ -2036,6 +2036,17 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 		OS.GetWindowRect (hwndShell, rect2);
 		OS.IntersectRect (rect2, rect1, rect2);
 		boolean fixPrintWindow = !OS.EqualRect (rect2, rect1);
+		if (!fixPrintWindow) {
+			int /*long*/ rgn = OS.CreateRectRgn(0, 0, 0, 0);
+			int /*long*/ parent = OS.GetParent(hwnd);
+			while (parent != hwndShell && !fixPrintWindow) {
+				if (OS.GetWindowRgn(parent, rgn) != 0) {
+					fixPrintWindow = true;
+				}
+				parent = OS.GetParent(parent);
+			}
+			OS.DeleteObject(rgn);
+		}
 		int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
 		int /*long*/ hwndInsertAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
 		/*
@@ -2048,6 +2059,7 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 		if (hwndInsertAfter == 0 || hwndInsertAfter == hwnd) {
 			hwndInsertAfter = OS.HWND_TOP;
 		}
+		System.out.println("fixPrintWindow=" + fixPrintWindow);
 		if (fixPrintWindow) {
 			int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
 			int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
