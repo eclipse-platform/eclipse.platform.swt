@@ -2059,7 +2059,6 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 		if (hwndInsertAfter == 0 || hwndInsertAfter == hwnd) {
 			hwndInsertAfter = OS.HWND_TOP;
 		}
-		System.out.println("fixPrintWindow=" + fixPrintWindow);
 		if (fixPrintWindow) {
 			int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
 			int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
