@@ -61,6 +61,8 @@ public abstract class Device implements Drawable {
 
 	/* Advanced Graphics */
 	int /*long*/ [] gdipToken;
+	int /*long*/ fontCollection;
+	String[] loadedFonts;
 
 	boolean disposed;
 
@@ -135,6 +137,25 @@ public Device(DeviceData data) {
 	}
 }
 
+void addFont (String font) {
+	if (loadedFonts == null) loadedFonts = new String [4];
+	int length = loadedFonts.length;
+	for (int i=0; i<length; i++) {
+		if (font.equals(loadedFonts [i])) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (loadedFonts [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		String [] temp = new String [length + 4];
+		System.arraycopy (loadedFonts, 0, temp, 0, length);
+		loadedFonts = temp;
+	}
+	loadedFonts [index] = font;
+}
+
 /**
  * Throws an <code>SWTException</code> if the receiver can not
  * be accessed by the caller. This may include both checks on
@@ -168,6 +189,19 @@ void checkGDIP() {
 		input.GdiplusVersion = 1;
 		if (Gdip.GdiplusStartup (token, input, 0) == 0) {
 			gdipToken = token;
+			if (loadedFonts != null) {
+				fontCollection = Gdip.PrivateFontCollection_new();
+				if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				for (int i = 0; i < loadedFonts.length; i++) {
+					String path = loadedFonts[i];
+					if (path == null) break;
+					int length = path.length();
+					char [] buffer = new char [length + 1];
+					path.getChars(0, length, buffer, 0);
+					Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
+				}
+				loadedFonts = null;
+			}
 		}
 	} catch (Throwable t) {
 		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [GDI+ is required]"); //$NON-NLS-1$
@@ -791,7 +825,22 @@ public boolean loadFont (String path) {
 	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		TCHAR lpszFilename = new TCHAR (0, path, true);
-		return OS.AddFontResourceEx (lpszFilename, OS.FR_PRIVATE, 0) != 0;
+		boolean loaded = OS.AddFontResourceEx (lpszFilename, OS.FR_PRIVATE, 0) != 0;
+		if (loaded) {
+			if (gdipToken != null) {
+				if (fontCollection == 0) {
+					fontCollection = Gdip.PrivateFontCollection_new();
+					if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				}
+				int length = path.length();
+				char [] buffer = new char [length + 1];
+				path.getChars(0, length, buffer, 0);
+				Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
+			} else {
+				addFont(path);
+			}
+		}
+		return loaded;
 	}
 	return false;
 }
@@ -889,6 +938,10 @@ void printErrors () {
  */
 protected void release () {
 	if (gdipToken != null) {
+		if (fontCollection != 0) {
+			Gdip.PrivateFontCollection_delete(fontCollection);
+		}
+		fontCollection = 0;
 		Gdip.GdiplusShutdown (gdipToken[0]);
 	}
 	gdipToken = null;

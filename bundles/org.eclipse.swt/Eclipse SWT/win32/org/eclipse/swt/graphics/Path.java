@@ -282,17 +282,16 @@ public void addString(String string, float x, float y, Font font) {
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
 	int /*long*/ hDC = device.internal_new_GC(null);
-	int /*long*/ gdipFont = GC.createGdipFont(hDC, font.handle, 0, null);
+	int /*long*/ [] family = new int /*long*/ [1];
+	int /*long*/ gdipFont = GC.createGdipFont(hDC, font.handle, 0, device.fontCollection, family, null);
 	PointF point = new PointF();
 	point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 	point.Y = y;
-	int /*long*/ family = Gdip.FontFamily_new();
-	Gdip.Font_GetFamily(gdipFont, family);
 	int style = Gdip.Font_GetStyle(gdipFont);
 	float size = Gdip.Font_GetSize(gdipFont);
-	Gdip.GraphicsPath_AddString(handle, buffer, length, family, style, size, point, 0);
+	Gdip.GraphicsPath_AddString(handle, buffer, length, family[0], style, size, point, 0);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
-	Gdip.FontFamily_delete(family);
+	Gdip.FontFamily_delete(family[0]);
 	Gdip.Font_delete(gdipFont);
 	device.internal_dispose_GC(hDC, null);
 }

@@ -240,6 +240,14 @@ public static final native int PrivateFontCollection_AddFontFile(int /*long*/ co
 public static final native int /*long*/ Font_new(int /*long*/ hdc, int /*long*/ hfont);
 /**
  * @method flags=new
+ * @param family cast=(const FontFamily *)
+ * @param emSize cast=(REAL)
+ * @param style cast=(INT)
+ * @param unit cast=(Unit)
+ */
+public static final native int /*long*/ Font_new(int /*long*/ family, float emSize, int style, int unit);
+/**
+ * @method flags=new
  * @param familyName cast=(const WCHAR *)
  * @param emSize cast=(REAL)
  * @param style cast=(INT)
@@ -279,6 +287,12 @@ public static final native int Font_GetLogFontW (int /*long*/ font, int /*long*/
 public static final native boolean Font_IsAvailable(int /*long*/ font);
 /** @method flags=new */
 public static final native int /*long*/ FontFamily_new();
+/**
+ * @method flags=new
+ * @param name cast=(const WCHAR *)
+ * @param fontCollection cast=(const FontCollection *)
+ */
+public static final native int /*long*/ FontFamily_new(char[] name, int /*long*/ fontCollection);
 /** @method flags=delete */
 public static final native void FontFamily_delete(int /*long*/ family);
 /**
@@ -288,6 +302,11 @@ public static final native void FontFamily_delete(int /*long*/ family);
  * @param language cast=(WCHAR)
  */
 public static final native int FontFamily_GetFamilyName(int /*long*/ family, char[] name, char language);
+/**
+ * @method flags=cpp
+ * @param family cast=(FontFamily *)
+ */
+public static final native boolean FontFamily_IsAvailable(int /*long*/ family);
 /**
  * @method flags=new
  * @param hdc cast=(HDC)

@@ -296,7 +296,7 @@ void checkGC(int mask) {
 			Font font = data.font;
 			OS.SelectObject(handle, font.handle);
 			int /*long*/[] hFont = new int /*long*/[1];
-			int /*long*/ gdipFont = createGdipFont(handle, font.handle, gdipGraphics, hFont);
+			int /*long*/ gdipFont = createGdipFont(handle, font.handle, gdipGraphics, device.fontCollection, null, hFont);
 			if (hFont[0] != 0) {
 				OS.SelectObject(handle, hFont[0]);
 				if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
@@ -539,9 +539,10 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		}
 	}
 }
-static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont, int /*long*/ graphics, int /*long*/[] outFont) {
+static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont, int /*long*/ graphics, int /*long*/ fontCollection, int /*long*/ [] outFamily, int /*long*/[] outFont) {
 	int /*long*/ font = Gdip.Font_new(hDC, hFont);
 	if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int /*long*/ family = 0;
 	if (!Gdip.Font_IsAvailable(font)) {
 		Gdip.Font_delete(font);
 		LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
@@ -569,14 +570,36 @@ static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont, int /*l
 		}
 		char[] buffer = new char[name.length() + 1];
 		name.getChars(0, name.length(), buffer, 0);
-		font = Gdip.Font_new(buffer, size, style, Gdip.UnitPixel, 0);
-		if (outFont != null) {
+		family = Gdip.FontFamily_new(buffer, fontCollection);
+		if (!Gdip.FontFamily_IsAvailable(family)) {
+			Gdip.FontFamily_delete(family);
+			family = Gdip.FontFamily_new(buffer, 0);
+			if (!Gdip.FontFamily_IsAvailable(family)) {
+				Gdip.FontFamily_delete(family);
+				family = 0;
+			}
+		}
+		if (family != 0) {
+			font = Gdip.Font_new(family, size, style, Gdip.UnitPixel);
+		} else {
+			font = Gdip.Font_new(buffer, size, style, Gdip.UnitPixel, 0);
+		}
+		if (outFont != null && font != 0) {
 			int /*long*/ hHeap = OS.GetProcessHeap();
 			int /*long*/ pLogFont = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, LOGFONTW.sizeof);
 			Gdip.Font_GetLogFontW(font, graphics, pLogFont);
 			outFont[0] = OS.CreateFontIndirectW(pLogFont);
 			OS.HeapFree(hHeap, 0, pLogFont);
 		}
+	}
+	if (outFamily != null && font != 0) {
+		if (family == 0) {
+			family = Gdip.FontFamily_new();
+			Gdip.Font_GetFamily(font, family);
+		}
+		outFamily [0] = family;
+	} else {
+		if (family != 0) Gdip.FontFamily_delete(family);
 	}
 	if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	return font;

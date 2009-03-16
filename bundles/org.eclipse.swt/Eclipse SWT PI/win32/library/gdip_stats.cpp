@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 183;
-int Gdip_nativeFunctionCallCount[183];
+int Gdip_nativeFunctionCount = 186;
+int Gdip_nativeFunctionCallCount[186];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -46,14 +46,25 @@ char * Gdip_nativeFunctionNames[] = {
 	"Color_1delete",
 	"Color_1new",
 	"FontFamily_1GetFamilyName",
+	"FontFamily_1IsAvailable",
 	"FontFamily_1delete",
-	"FontFamily_1new",
+	"FontFamily_1new__",
+#ifndef JNI64
+	"FontFamily_1new___3CI",
+#else
+	"FontFamily_1new___3CJ",
+#endif
 	"Font_1GetFamily",
 	"Font_1GetLogFontW",
 	"Font_1GetSize",
 	"Font_1GetStyle",
 	"Font_1IsAvailable",
 	"Font_1delete",
+#ifndef JNI64
+	"Font_1new__IFII",
+#else
+	"Font_1new__JFII",
+#endif
 #ifndef JNI64
 	"Font_1new__II",
 #else

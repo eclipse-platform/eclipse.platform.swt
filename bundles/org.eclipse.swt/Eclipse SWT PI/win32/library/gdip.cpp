@@ -282,6 +282,19 @@ fail:
 }
 #endif
 
+#ifndef NO_FontFamily_1IsAvailable
+extern "C" JNIEXPORT jboolean JNICALL Gdip_NATIVE(FontFamily_1IsAvailable)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jboolean JNICALL Gdip_NATIVE(FontFamily_1IsAvailable)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	Gdip_NATIVE_ENTER(env, that, FontFamily_1IsAvailable_FUNC);
+	rc = (jboolean)((FontFamily *)arg0)->IsAvailable();
+	Gdip_NATIVE_EXIT(env, that, FontFamily_1IsAvailable_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FontFamily_1delete
 extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(FontFamily_1delete)(JNIEnv *env, jclass that, jintLong arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(FontFamily_1delete)
@@ -293,15 +306,44 @@ JNIEXPORT void JNICALL Gdip_NATIVE(FontFamily_1delete)
 }
 #endif
 
-#ifndef NO_FontFamily_1new
-extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new)(JNIEnv *env, jclass that);
-JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new)
+#ifndef NO_FontFamily_1new__
+extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new__)(JNIEnv *env, jclass that);
+JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new__)
 	(JNIEnv *env, jclass that)
 {
 	jintLong rc = 0;
-	Gdip_NATIVE_ENTER(env, that, FontFamily_1new_FUNC);
+	Gdip_NATIVE_ENTER(env, that, FontFamily_1new___FUNC);
 	rc = (jintLong)new FontFamily();
-	Gdip_NATIVE_EXIT(env, that, FontFamily_1new_FUNC);
+	Gdip_NATIVE_EXIT(env, that, FontFamily_1new___FUNC);
+	return rc;
+}
+#endif
+
+#if (!defined(NO_FontFamily_1new___3CI) && !defined(JNI64)) || (!defined(NO_FontFamily_1new___3CJ) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new___3CI)(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1);
+JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new___3CI)(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1)
+#else
+extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new___3CJ)(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1);
+JNIEXPORT jintLong JNICALL Gdip_NATIVE(FontFamily_1new___3CJ)(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1)
+#endif
+{
+	jchar *lparg0=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	Gdip_NATIVE_ENTER(env, that, FontFamily_1new___3CI_FUNC);
+#else
+	Gdip_NATIVE_ENTER(env, that, FontFamily_1new___3CJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)new FontFamily((const WCHAR *)lparg0, (const FontCollection *)arg1);
+fail:
+	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
+#ifndef JNI64
+	Gdip_NATIVE_EXIT(env, that, FontFamily_1new___3CI_FUNC);
+#else
+	Gdip_NATIVE_EXIT(env, that, FontFamily_1new___3CJ_FUNC);
+#endif
 	return rc;
 }
 #endif
@@ -379,6 +421,31 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Font_1delete)
 	Gdip_NATIVE_ENTER(env, that, Font_1delete_FUNC);
 	delete (Font *)arg0;
 	Gdip_NATIVE_EXIT(env, that, Font_1delete_FUNC);
+}
+#endif
+
+#if (!defined(NO_Font_1new__IFII) && !defined(JNI64)) || (!defined(NO_Font_1new__JFII) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(Font_1new__IFII)(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1, jint arg2, jint arg3);
+JNIEXPORT jintLong JNICALL Gdip_NATIVE(Font_1new__IFII)(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1, jint arg2, jint arg3)
+#else
+extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(Font_1new__JFII)(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1, jint arg2, jint arg3);
+JNIEXPORT jintLong JNICALL Gdip_NATIVE(Font_1new__JFII)(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1, jint arg2, jint arg3)
+#endif
+{
+	jintLong rc = 0;
+#ifndef JNI64
+	Gdip_NATIVE_ENTER(env, that, Font_1new__IFII_FUNC);
+#else
+	Gdip_NATIVE_ENTER(env, that, Font_1new__JFII_FUNC);
+#endif
+	rc = (jintLong)new Font((const FontFamily *)arg0, (REAL)arg1, (INT)arg2, (Unit)arg3);
+#ifndef JNI64
+	Gdip_NATIVE_EXIT(env, that, Font_1new__IFII_FUNC);
+#else
+	Gdip_NATIVE_EXIT(env, that, Font_1new__JFII_FUNC);
+#endif
+	return rc;
 }
 #endif
 

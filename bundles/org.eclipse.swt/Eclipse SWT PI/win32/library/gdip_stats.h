@@ -54,14 +54,25 @@ typedef enum {
 	Color_1delete_FUNC,
 	Color_1new_FUNC,
 	FontFamily_1GetFamilyName_FUNC,
+	FontFamily_1IsAvailable_FUNC,
 	FontFamily_1delete_FUNC,
-	FontFamily_1new_FUNC,
+	FontFamily_1new___FUNC,
+#ifndef JNI64
+	FontFamily_1new___3CI_FUNC,
+#else
+	FontFamily_1new___3CJ_FUNC,
+#endif
 	Font_1GetFamily_FUNC,
 	Font_1GetLogFontW_FUNC,
 	Font_1GetSize_FUNC,
 	Font_1GetStyle_FUNC,
 	Font_1IsAvailable_FUNC,
 	Font_1delete_FUNC,
+#ifndef JNI64
+	Font_1new__IFII_FUNC,
+#else
+	Font_1new__JFII_FUNC,
+#endif
 #ifndef JNI64
 	Font_1new__II_FUNC,
 #else
