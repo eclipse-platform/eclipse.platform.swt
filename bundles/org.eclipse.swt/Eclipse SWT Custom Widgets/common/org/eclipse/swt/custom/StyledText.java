@@ -5704,7 +5704,7 @@ void handleKey(Event event) {
 		action = getKeyBinding(event.character | event.stateMask);
 		if (action == SWT.NULL) {
 			// see if we have a control character
-			if ((event.stateMask & SWT.CTRL) != 0 && (event.character >= 0) && event.character <= 31) {
+			if ((event.stateMask & SWT.CTRL) != 0 && event.character <= 31) {
 				// get the character from the CTRL+char sequence, the control
 				// key subtracts 64 from the value of the key that it modifies
 				int c = event.character + 64;
