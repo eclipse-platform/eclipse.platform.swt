@@ -570,13 +570,15 @@ static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont, int /*l
 		}
 		char[] buffer = new char[name.length() + 1];
 		name.getChars(0, name.length(), buffer, 0);
-		family = Gdip.FontFamily_new(buffer, fontCollection);
-		if (!Gdip.FontFamily_IsAvailable(family)) {
-			Gdip.FontFamily_delete(family);
-			family = Gdip.FontFamily_new(buffer, 0);
+		if (fontCollection != 0) {
+			family = Gdip.FontFamily_new(buffer, fontCollection);
 			if (!Gdip.FontFamily_IsAvailable(family)) {
 				Gdip.FontFamily_delete(family);
-				family = 0;
+				family = Gdip.FontFamily_new(buffer, 0);
+				if (!Gdip.FontFamily_IsAvailable(family)) {
+					Gdip.FontFamily_delete(family);
+					family = 0;
+				}
 			}
 		}
 		if (family != 0) {
