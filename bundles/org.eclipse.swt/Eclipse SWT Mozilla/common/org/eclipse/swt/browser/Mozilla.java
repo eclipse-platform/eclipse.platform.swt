@@ -520,7 +520,6 @@ public void create (Composite parent, int style) {
 			/* extract external.xpt to temp */
 			String tempPath = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
 			File componentsDir = new File (tempPath, "eclipse/mozillaComponents"); //$NON-NLS-1$
-			LocationProvider.setComponentsPath (componentsDir.getAbsolutePath ());
 			java.io.InputStream is = Library.class.getResourceAsStream ("/external.xpt"); //$NON-NLS-1$
 			if (is != null) {
 				if (!componentsDir.exists ()) {
@@ -539,6 +538,9 @@ public void create (Composite parent, int style) {
 				} catch (FileNotFoundException e) {
 				} catch (IOException e) {
 				}
+			}
+			if (componentsDir.exists () && componentsDir.isDirectory ()) {
+				LocationProvider.setComponentsPath (componentsDir.getAbsolutePath ());
 			}
 
 			int /*long*/[] retVal = new int /*long*/[1];
