@@ -398,96 +398,38 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//	if (data.image != null) {
-//		copyArea(image, x, y, data.image.handle);
-//	} else if (data.control != 0) {
-//		int imageHandle = image.handle;
-//		int width = OS.CGImageGetWidth(imageHandle);
-//		int height = OS.CGImageGetHeight(imageHandle);
-//		int window = OS.GetControlOwner(data.control);
-//		Rect srcRect = new Rect ();
-//		CGPoint pt = new CGPoint ();
-//		int[] contentView = new int[1];
-//		OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
-//		OS.HIViewConvertPoint (pt, data.control, contentView[0]);
-//		x += (int) pt.x;
-//		y += (int) pt.y;
-//		Rect inset = data.insetRect;
-//		x -= inset.left;
-//		y -= inset.top;
-//		srcRect.left = (short)x;
-//		srcRect.top = (short)y;
-//		srcRect.right = (short)(x + width);
-//		srcRect.bottom = (short)(y + height);
-//		Rect destRect = new Rect();
-//		destRect.right = (short)width;
-//		destRect.bottom = (short)height;
-//		int bpl = width * 4;
-//		int[] gWorld = new int[1];
-//		int port = OS.GetWindowPort(window);		
-//		OS.NewGWorldFromPtr(gWorld, OS.k32ARGBPixelFormat, destRect, 0, 0, 0, image.data, bpl);
-//		OS.CopyBits(OS.GetPortBitMapForCopyBits(port), OS.GetPortBitMapForCopyBits(gWorld[0]), srcRect, destRect, (short)OS.srcCopy, 0);			
-//		OS.DisposeGWorld(gWorld [0]);
-//	} else if (data.window != 0) {
-//		int imageHandle = image.handle;
-//		CGRect rect = new CGRect();
-//		rect.x = x;
-//		rect.y = y;
-//		rect.width = OS.CGImageGetWidth(imageHandle);
-//		rect.height = OS.CGImageGetHeight(imageHandle);
-//		int[] displays = new int[16];
-//		int[] count = new int[1];
-//		if (OS.CGGetDisplaysWithRect(rect, displays.length, displays, count) != 0) return;
-//		for (int i = 0; i < count[0]; i++) {
-//			int display = displays[i];
-//			int address = OS.CGDisplayBaseAddress(display);
-//			if (address != 0) {
-//				int width = OS.CGDisplayPixelsWide(display);
-//				int height = OS.CGDisplayPixelsHigh(display);
-//				int bpr = OS.CGDisplayBytesPerRow(display);
-//				int bpp = OS.CGDisplayBitsPerPixel(display);
-//				int bps = OS.CGDisplayBitsPerSample(display);
-//				int bitmapInfo = OS.kCGImageAlphaNoneSkipFirst;
-//				switch (bpp) {
-//					case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
-//					case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
-//				}
-//				int srcImage = 0;
-//				if (OS.__BIG_ENDIAN__() && OS.VERSION >= 0x1040) {
-//					int context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, data.device.colorspace, bitmapInfo);
-//					srcImage = OS.CGBitmapContextCreateImage(context);
-//					OS.CGContextRelease(context);
-//				} else {
-//					int provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
-//					srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, bitmapInfo, provider, null, true, 0);
-//					OS.CGDataProviderRelease(provider);
-//				}
-//				copyArea(image, x, y, srcImage);
-//				if (srcImage != 0) OS.CGImageRelease(srcImage);
-//			}
-//		}
-//	}	
-}
-
-void copyArea (Image image, int x, int y, int srcImage) {
-	if (srcImage == 0) return;
-//	int imageHandle = image.handle;
-//	int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
-//	int width = OS.CGImageGetWidth(imageHandle);
-//	int height = OS.CGImageGetHeight(imageHandle);
-//	int bpr = OS.CGImageGetBytesPerRow(imageHandle);
-//	int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
-//	int context = OS.CGBitmapContextCreate(image.data, width, height, bpc, bpr, data.device.colorspace, alphaInfo);
-//	if (context != 0) {
-//	 	CGRect rect = new CGRect();
-//	 	rect.x = -x;
-//	 	rect.y = y;
-//	 	rect.width = OS.CGImageGetWidth(srcImage);
-//		rect.height = OS.CGImageGetHeight(srcImage);
-//		OS.CGContextTranslateCTM(context, 0, -(rect.height - height));
-//		OS.CGContextDrawImage(context, rect, srcImage);
-//		OS.CGContextRelease(context);
-//	}
+	Image srcImage = data.image;
+	if (srcImage != null) {
+		int srcX = x, srcY = y, destX = 0, destY = 0;
+		NSSize srcSize = srcImage.handle.size();
+		int imgHeight = (int)srcSize.height;
+		int destWidth = (int)srcSize.width - x, destHeight = (int)srcSize.height - y;
+		int srcWidth = destWidth, srcHeight = destHeight;		
+		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(image.imageRep);
+		NSGraphicsContext.static_saveGraphicsState();
+		NSGraphicsContext.setCurrentContext(context);
+		NSAffineTransform transform = NSAffineTransform.transform();
+		NSSize size = image.handle.size();
+		transform.translateXBy(0, size.height-(destHeight + 2 * destY));
+		transform.concat();
+		NSRect srcRect = new NSRect();
+		srcRect.x = srcX;
+		srcRect.y = imgHeight - (srcY + srcHeight);
+		srcRect.width = srcWidth;
+		srcRect.height = srcHeight;
+		NSRect destRect = new NSRect();
+		destRect.x = destX;
+		destRect.y = destY;
+		destRect.width = destWidth;
+		destRect.height = destHeight;
+		srcImage.handle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
+ 		NSGraphicsContext.static_restoreGraphicsState();
+		return;
+	}
+	if (data.view != null) {
+		//TODO implement copyArea(Image, int int) for views
+		return;
+	}
 }
 
 /**
@@ -527,125 +469,43 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * @since 3.1 
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
-//	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	if (data.updateClip) setCGClipping();
-//	if (width <= 0 || height <= 0) return;
-//	int deltaX = destX - srcX, deltaY = destY - srcY;
-//	if (deltaX == 0 && deltaY == 0) return;
-//	if (data.image != null) {
-// 		OS.CGContextSaveGState(handle);
-// 		OS.CGContextScaleCTM(handle, 1, -1);
-// 		OS.CGContextTranslateCTM(handle, 0, -(height + 2 * destY));
-// 		CGRect rect = new CGRect();
-// 		rect.x = destX;
-// 		rect.y = destY;
-// 		rect.width = width;
-//		rect.height = height;
-//		int h = OS.CGImageGetHeight(data.image.handle);
-//		int bpr = OS.CGImageGetBytesPerRow(data.image.handle);
-//		int provider = OS.CGDataProviderCreateWithData(0, data.image.data, bpr * h, 0);
-//		if (provider != 0) {
-//			int colorspace = device.colorspace;
-//			int img = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, true, 0);
-//			OS.CGDataProviderRelease(provider);
-//			OS.CGContextDrawImage(handle, rect, img);
-//			OS.CGImageRelease(img);
-//		}
-// 		OS.CGContextRestoreGState(handle);
-// 		return;
-//	}
-//	if (data.control != 0) {
-//		int port = data.port;
-//		int window = OS.GetControlOwner(data.control);
-//		if (port == 0) port = OS.GetWindowPort(window);
-//
-//		/* Calculate src and dest rectangles/regions */
-//		Rect rect = new Rect();
-//		OS.GetControlBounds(data.control, rect);
-//		int convertX = 0, convertY = 0;
-//		CGPoint pt = new CGPoint ();
-//		int[] contentView = new int[1];
-//		OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
-//		OS.HIViewConvertPoint(pt, OS.HIViewGetSuperview(data.control), contentView[0]);
-//		convertX = rect.left + (int) pt.x;
-//		convertY = rect.top + (int) pt.y;
-//		rect.left += (int) pt.x;
-//		rect.top += (int) pt.y;
-//		rect.right += (int) pt.x;
-//		rect.bottom += (int) pt.y;
-//		Rect srcRect = new Rect();
-//		int left = rect.left + srcX;
-//		int top = rect.top + srcY;
-//		OS.SetRect(srcRect, (short)left, (short)top, (short)(left + width), (short)(top + height));
-//		int srcRgn = OS.NewRgn();
-//		OS.RectRgn(srcRgn, srcRect);
-//		OS.SectRect(rect, srcRect, srcRect);
-//		Rect destRect = new Rect ();
-//		OS.SetRect(destRect, srcRect.left, srcRect.top, srcRect.right, srcRect.bottom);
-//		OS.OffsetRect(destRect, (short)deltaX, (short)deltaY);
-//		int destRgn = OS.NewRgn();
-//		OS.RectRgn(destRgn, destRect);
-//		
-//		/* Copy bits with appropriated clipping region */
-//		if (!OS.EmptyRect(srcRect)) {
-//			if (data.visibleRgn == 0 || OS.RectInRgn(srcRect, data.visibleRgn)) {
-//				int clipRgn = data.visibleRgn;
-//				if (data.clipRgn != 0) {
-//					clipRgn = OS.NewRgn();
-//					OS.SectRgn(data.clipRgn, data.visibleRgn, clipRgn);
-//				}
-//	
-//				/*
-//				* Feature in the Macintosh.  ScrollRect() only copies bits
-//				* that are inside the specified rectangle.  This means that
-//				* it is not possible to copy non overlaping bits without
-//				* copying the bits in between the source and destination
-//				* rectangles.  The fix is to check if the source and
-//				* destination rectangles are disjoint and use CopyBits()
-//				* instead.
-//				*/
-//				if (!OS.EmptyRgn(clipRgn)) {
-//					boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
-//					if (!disjoint && (deltaX == 0 || deltaY == 0)) {
-//						int[] currentPort = new int[1];
-//						OS.GetPort(currentPort);
-//						OS.SetPort(port);
-//						int oldClip = OS.NewRgn();
-//						OS.GetClip(oldClip);
-//						OS.SetClip(clipRgn);
-//						OS.UnionRect(srcRect, destRect, rect);
-//						OS.ScrollRect(rect, (short)deltaX, (short)deltaY, 0);
-//						OS.SetClip(oldClip);
-//						OS.DisposeRgn(oldClip);
-//						OS.SetPort(currentPort[0]);
-//					} else {
-//						int portBitMap = OS.GetPortBitMapForCopyBits (port);
-//						OS.CopyBits(portBitMap, portBitMap, srcRect, destRect, (short)OS.srcCopy, clipRgn);
-//						OS.QDFlushPortBuffer(port, destRgn);
-//					}
-//				}
-//				
-//				if (clipRgn != data.visibleRgn) OS.DisposeRgn(clipRgn);
-//			}
-//		}
-//		
-//		/* Invalidate src and obscured areas */
-//		if (paint) {
-//			int invalRgn = OS.NewRgn();
-//			OS.DiffRgn(srcRgn, data.visibleRgn, invalRgn);
-//			OS.OffsetRgn(invalRgn, (short)deltaX, (short)deltaY);
-//			OS.DiffRgn(srcRgn, destRgn, srcRgn);
-//			OS.UnionRgn(srcRgn, invalRgn, invalRgn);
-//			OS.SectRgn(data.visibleRgn, invalRgn, invalRgn);
-//			OS.OffsetRgn(invalRgn, (short)-convertX, (short)-convertY);
-//			OS.HIViewSetNeedsDisplayInRegion(data.control, invalRgn, true);
-//			OS.DisposeRgn(invalRgn);
-//		}
-//		
-//		/* Dispose src and dest regions */
-//		OS.DisposeRgn(destRgn);
-//		OS.DisposeRgn(srcRgn);
-//	}
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width <= 0 || height <= 0) return;
+	int deltaX = destX - srcX, deltaY = destY - srcY;
+	if (deltaX == 0 && deltaY == 0) return;
+	NSAutoreleasePool pool = checkGC(TRANSFORM | CLIPPING);
+	try {
+		Image image = data.image;
+		if (image != null) {
+			NSImage imageHandle = image.handle;
+			NSSize size = imageHandle.size();
+		 	int imgHeight = (int)size.height;
+			handle.saveGraphicsState();
+			NSAffineTransform transform = NSAffineTransform.transform();
+			transform.scaleXBy(1, -1);
+			transform.translateXBy(0, -(height + 2 * destY));
+			transform.concat();
+			NSRect srcRect = new NSRect();
+			srcRect.x = srcX;
+			srcRect.y = imgHeight - (srcY + height);
+			srcRect.width = width;
+			srcRect.height = height;
+			NSRect destRect = new NSRect();
+			destRect.x = destX;
+			destRect.y = destY;
+			destRect.width = width;
+			destRect.height = height;
+			imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
+			handle.restoreGraphicsState();
+	 		return;
+		}
+		if (data.view != null) {
+			//TODO implement copyArea(IIIIIIZ) for views
+			return;
+		}		
+	} finally {
+		uncheckGC(pool);
+	}
 }
 
 int /*long*/ createCGPathRef(NSBezierPath nsPath) {
