@@ -1179,8 +1179,6 @@ public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
-		data.bitmapDataAddress = 0;
 		if (context != 0) {
 			NSGraphicsContext contextObj = new NSGraphicsContext(context);
 			contextObj.release();

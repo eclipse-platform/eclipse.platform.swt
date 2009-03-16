@@ -45,7 +45,6 @@ public final class GCData {
 	public int antialias = SWT.DEFAULT;
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
-	public int /*long*/ bitmapDataAddress;
 	public Image image;
 	
 	public NSColor fg, bg;
