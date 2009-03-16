@@ -20,5 +20,5 @@ public class ThemeButtonDrawInfo {
 	public short value;
 	/** @field cast=(ThemeButtonAdornment) */
 	public short adornment;
-	public static final int sizof = 8;
+	public static final int sizeof = 8;
 }

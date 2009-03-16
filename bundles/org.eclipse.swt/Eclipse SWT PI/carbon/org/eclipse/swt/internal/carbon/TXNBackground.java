@@ -21,5 +21,5 @@ public class TXNBackground {
 	public short bg_green;
 	/** @field accessor=bg.color.blue */
 	public short bg_blue;
-	public static final int sizof = 10;
+	public static final int sizeof = 10;
 }
