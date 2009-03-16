@@ -99,7 +99,7 @@ public class OS extends C {
 					buffer = new TCHAR (0, buffer.length () + MAX_PATH);
 				}
 				int /*long*/ hHeap = OS.GetProcessHeap ();
-				int byteCount = buffer.length () * TCHAR.sizeof;
+				int byteCount = buffer.length () * (OS.IsUnicode ? 2 : 1);
 				int /*long*/ pszText = OS.HeapAlloc (hHeap, HEAP_ZERO_MEMORY, byteCount);
 				OS.MoveMemory (pszText, buffer, byteCount);	
 				ACTCTX pActCtx = new ACTCTX ();
