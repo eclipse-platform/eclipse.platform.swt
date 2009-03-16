@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 180;
-int Gdip_nativeFunctionCallCount[180];
+int Gdip_nativeFunctionCount = 183;
+int Gdip_nativeFunctionCallCount[183];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -267,6 +267,9 @@ char * Gdip_nativeFunctionNames[] = {
 	"Pen_1new",
 	"Point_1delete",
 	"Point_1new",
+	"PrivateFontCollection_1AddFontFile",
+	"PrivateFontCollection_1delete",
+	"PrivateFontCollection_1new",
 	"Region_1GetHRGN",
 	"Region_1IsInfinite",
 	"Region_1delete",

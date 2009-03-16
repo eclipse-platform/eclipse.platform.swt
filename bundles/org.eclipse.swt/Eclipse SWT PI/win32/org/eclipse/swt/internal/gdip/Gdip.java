@@ -222,6 +222,16 @@ public static final native int Brush_GetType(int /*long*/ brush);
 public static final native int /*long*/ Color_new(int argb);
 /** @method flags=delete */
 public static final native void Color_delete(int /*long*/ color);
+/** @method flags=new */
+public static final native int /*long*/ PrivateFontCollection_new();
+/** @method flags=delete */
+public static final native void PrivateFontCollection_delete(int /*long*/ collection);
+/**
+ * @method flags=cpp
+ * @param collection cast=(PrivateFontCollection *)
+ * @param filename cast=(const WCHAR *)
+ */
+public static final native int PrivateFontCollection_AddFontFile(int /*long*/ collection, char[] filename);
 /**
  * @method flags=new
  * @param hdc cast=(HDC)

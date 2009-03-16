@@ -2283,6 +2283,47 @@ JNIEXPORT jintLong JNICALL Gdip_NATIVE(Point_1new)
 }
 #endif
 
+#ifndef NO_PrivateFontCollection_1AddFontFile
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(PrivateFontCollection_1AddFontFile)(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1);
+JNIEXPORT jint JNICALL Gdip_NATIVE(PrivateFontCollection_1AddFontFile)
+	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1)
+{
+	jchar *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, PrivateFontCollection_1AddFontFile_FUNC);
+	if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jint)((PrivateFontCollection *)arg0)->AddFontFile((const WCHAR *)lparg1);
+fail:
+	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, PrivateFontCollection_1AddFontFile_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PrivateFontCollection_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(PrivateFontCollection_1delete)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT void JNICALL Gdip_NATIVE(PrivateFontCollection_1delete)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	Gdip_NATIVE_ENTER(env, that, PrivateFontCollection_1delete_FUNC);
+	delete (PrivateFontCollection *)arg0;
+	Gdip_NATIVE_EXIT(env, that, PrivateFontCollection_1delete_FUNC);
+}
+#endif
+
+#ifndef NO_PrivateFontCollection_1new
+extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(PrivateFontCollection_1new)(JNIEnv *env, jclass that);
+JNIEXPORT jintLong JNICALL Gdip_NATIVE(PrivateFontCollection_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	Gdip_NATIVE_ENTER(env, that, PrivateFontCollection_1new_FUNC);
+	rc = (jintLong)new PrivateFontCollection();
+	Gdip_NATIVE_EXIT(env, that, PrivateFontCollection_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Region_1GetHRGN
 extern "C" JNIEXPORT jintLong JNICALL Gdip_NATIVE(Region_1GetHRGN)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
 JNIEXPORT jintLong JNICALL Gdip_NATIVE(Region_1GetHRGN)
