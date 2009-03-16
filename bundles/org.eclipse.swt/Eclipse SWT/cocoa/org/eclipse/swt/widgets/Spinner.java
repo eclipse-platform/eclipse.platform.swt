@@ -257,12 +257,13 @@ void createHandle () {
 	buttonWidget.setValueWraps((style & SWT.WRAP) != 0);
 	buttonWidget.setTarget(buttonWidget);
 	buttonWidget.setAction(OS.sel_sendSelection);
+	buttonWidget.setMaxValue(100);
 	NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
 	textWidget.init();
 //	textWidget.setTarget(widget);
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
-	textFormatter = new NSNumberFormatter();
-	textFormatter.alloc().init();
+	textFormatter = (NSNumberFormatter)new NSNumberFormatter().alloc();
+	textFormatter.init();
 	widget.addSubview(textWidget);
 	widget.addSubview(buttonWidget);
 	buttonView = buttonWidget;
@@ -1024,6 +1025,14 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 
 void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	super.textDidChange (id, sel, aNotification);
+	boolean [] parseFail = new boolean [1];
+	int value = getSelectionText (parseFail);
+	if (!parseFail [0]) {
+		int pos = (int)buttonView.doubleValue();
+		if (value != pos) {
+			setSelection (value, true, false, true);
+		}
+	}
 	postEvent (SWT.Modify);
 }
 
