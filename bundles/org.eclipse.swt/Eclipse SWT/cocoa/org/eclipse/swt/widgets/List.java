@@ -44,6 +44,8 @@ public class List extends Scrollable {
 	int itemCount;
 	boolean ignoreSelect;
 
+	static final int CELL_GAP = 1;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -213,20 +215,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
-		GC gc = new GC (this);
-		for (int i=0; i<itemCount; i++) {
-			Point extent = gc.stringExtent (items [i]);
-			width = Math.max (width, extent.x);
+		NSCell cell = column.dataCell ();
+		Font font = this.font != null ? this.font : defaultFont ();
+		cell.setFont (font.handle);
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] != null) {
+				cell.setTitle (NSString.stringWith (items[i]));
+				NSSize size = cell.cellSize ();
+				width = Math.max (width, (int)Math.ceil (size.width));
+			}
 		}
-		gc.dispose ();
-//		width += EXTRA_WIDTH;
+		width += CELL_GAP;
 	} else {
 		width = wHint;
 	}
 	if (width <= 0) width = DEFAULT_WIDTH;
 	int height = 0;
 	if (hHint == SWT.DEFAULT) {
-		height = itemCount * getItemHeight ();
+		int itemHeight = getItemHeight () + CELL_GAP;
+		height = itemCount * itemHeight;
 	} else {
 		height = hHint;
 	}
@@ -249,6 +256,9 @@ void createHandle () {
 	widget.setDataSource(widget);
 	widget.setHeaderView(null);
 	widget.setDelegate(widget);
+	NSSize spacing = new NSSize();
+	spacing.width = spacing.height = 1;
+	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 	

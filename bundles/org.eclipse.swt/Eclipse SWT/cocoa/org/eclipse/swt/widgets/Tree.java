@@ -89,6 +89,7 @@ public class Tree extends Composite {
 	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
 	static final int IMAGE_GAP = 3;
 	static final int TEXT_GAP = 2;
+	static final int CELL_GAP = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -407,11 +408,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT) {
 		if (columnCount != 0) {
 			for (int i=0; i<columnCount; i++) {
-				width += columns [i].getWidth ();
+				width += columns [i].getWidth () + CELL_GAP;
 			}
 		} else {
 			GC gc = new GC (this);
-			width = calculateWidth (items, 0, gc, true);
+			width = calculateWidth (items, 0, gc, true) + CELL_GAP;
 			gc.dispose ();
 		}
 		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
@@ -419,7 +420,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = wHint;
 	}
 	if (hHint == SWT.DEFAULT) {
-		height = (int)/*64*/((NSOutlineView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
+		int itemHeight = getItemHeight () + CELL_GAP;
+		height = (int)/*64*/((NSOutlineView) view).numberOfRows () * itemHeight + getHeaderHeight ();
 	} else {
 		height = hHint;
 	}
@@ -498,7 +500,7 @@ void createHandle () {
 	widget.setDelegate (widget);
 	widget.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
 	NSSize spacing = new NSSize();
-	spacing.width = spacing.height = 1;
+	spacing.width = spacing.height = CELL_GAP;
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction (OS.sel_sendDoubleSelection);
 	if (!hasBorder ()) widget.setFocusRingType (OS.NSFocusRingTypeNone);
