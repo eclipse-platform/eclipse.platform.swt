@@ -732,7 +732,7 @@ public int getSelectionIndex () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return (int)/*64*/((NSPopUpButton)view).indexOfSelectedItem();
 	} else {
-		return indexOf (getText ());
+		return (int)/*64*/((NSComboBox)view).indexOfSelectedItem();
 	}
 }
 
