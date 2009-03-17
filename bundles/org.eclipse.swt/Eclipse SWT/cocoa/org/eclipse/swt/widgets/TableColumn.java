@@ -599,10 +599,8 @@ public void setMoveable (boolean moveable) {
 	// TODO how to make only some columns movable?
 	this.movable = moveable;
 	if (moveable) {
-		if (!movable) {
-			for (int i = 0; i < parent.columnCount; i++) {
-				movable |= parent.columns[i].movable;
-			}
+		for (int i = 0; i < parent.columnCount && !movable; i++) {
+			movable |= parent.columns[i].movable;
 		}
 		((NSTableView)parent.view).setAllowsColumnReordering (movable);
 	}
