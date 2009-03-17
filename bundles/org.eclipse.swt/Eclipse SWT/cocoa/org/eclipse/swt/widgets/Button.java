@@ -730,6 +730,8 @@ public void setImage (Image image) {
 		 */
 		((NSButton)view).setImage(image != null ? image.handle : null);
 		view.setNeedsDisplay(true);
+	} else {
+		((NSButton)view).setAttributedTitle(createString());
 	}
 	updateAlignment ();
 }
