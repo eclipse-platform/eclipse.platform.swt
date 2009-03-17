@@ -632,7 +632,7 @@ boolean acceptsFirstResponder(int /*long*/ id, int /*long*/ sel) {
 public Point getCaretLocation () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		//TODO - caret location for unicode text
+		//TODO - caret location for single text
 		return new Point (0, 0);
 	}
 //	NSText
@@ -829,8 +829,11 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-	//TODO
-	return 16;
+	Font font = this.font != null ? this.font : defaultFont();
+	NSFont nsFont = font.handle;
+	int ascent = (int)(0.5f + nsFont.ascender());
+	int descent = (int)(0.5f + (-nsFont.descender() + nsFont.leading()));	
+	return ascent + descent;
 }
 
 /**
