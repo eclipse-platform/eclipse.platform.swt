@@ -693,6 +693,7 @@ void createDisplay (DeviceData data) {
 	NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
 	NSNumber id = new NSNumber(dictionary.objectForKey(key));
 	pool = new NSAutoreleasePool(id.integerValue());
+	dictionary.removeObjectForKey(key);
 
 	application = NSApplication.sharedApplication();
 
@@ -801,6 +802,8 @@ void destroyDisplay () {
 		// Any top-level autorelease pool cannot be destroyed until the absolute end of the application.
 		// terminate is that absolute end of the app; it will also clean up any remaining pools.
 		public void run() {
+			//ensure that there is at least one pool available.
+			new NSAutoreleasePool().alloc().init();
 			NSApplication.sharedApplication().terminate(null);
 		}
 	});
@@ -3041,8 +3044,6 @@ void releaseDisplay () {
 		applicationDelegate = null;
 	}
 	
-	// The autorelease pool is cleaned up when we call NSApplication.terminate().
-
 	if (application != null && applicationClass != 0) {
 		OS.object_setClass (application.id, applicationClass);
 	}
@@ -3056,6 +3057,9 @@ void releaseDisplay () {
 	runLoopObserver = 0;
 	if (observerCallback != null) observerCallback.dispose();
 	observerCallback = null;
+	
+	if (pool != null) pool.release();
+	pool = null;
 }
 
 void removeContext (GCData context) {
