@@ -595,8 +595,11 @@ void redraw (int columnIndex) {
 		if (parent.columnCount == 0) {
 			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 		} else {
-			TableColumn column = parent.getColumn (columnIndex);
-			index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+			if (0 <= columnIndex && columnIndex < parent.columnCount) {
+				index = (int)/*64*/tableView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
+			} else {
+				return;
+			}
 		}
 		rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	}
