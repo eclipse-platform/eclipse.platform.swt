@@ -510,7 +510,9 @@ public void deselectAll () {
 		((NSPopUpButton)view).selectItem(null);
 		sendEvent (SWT.Modify);
 	} else {
-		setText ("");
+		NSComboBox widget = (NSComboBox)view;
+		int /*long*/ index = widget.indexOfSelectedItem();
+		if (index != -1) widget.deselectItemAtIndex(index);
 	}
 }
 
