@@ -82,6 +82,8 @@ public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
 public static final native int SetThemeCursor(int themeCursor);
 /** @method flags=dynamic */
 public static final native int GetCurrentButtonState();
+/** @method flags=dynamic */
+public static final native int GetDblTime();
 /** @method flags=dynamic 
     @param  cast=(CGContextRef) */
 public static final native int /*long*/ CGContextCopyPath(int /*long*/ context);

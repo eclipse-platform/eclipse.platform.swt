@@ -637,6 +637,26 @@ fail:
 }
 #endif
 
+#ifndef NO_GetDblTime
+JNIEXPORT jint JNICALL OS_NATIVE(GetDblTime)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetDblTime_FUNC);
+/*
+	rc = (jint)GetDblTime();
+*/
+	{
+		LOAD_FUNCTION(fp, GetDblTime)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, GetDblTime_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetRegionBounds
 JNIEXPORT void JNICALL OS_NATIVE(GetRegionBounds)
 	(JNIEnv *env, jclass that, jintLong arg0, jshortArray arg1)

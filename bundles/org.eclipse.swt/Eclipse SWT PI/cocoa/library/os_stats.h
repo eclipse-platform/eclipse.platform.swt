@@ -72,6 +72,7 @@ typedef enum {
 	Gestalt_FUNC,
 	GetCurrentButtonState_FUNC,
 	GetCurrentProcess_FUNC,
+	GetDblTime_FUNC,
 	GetRegionBounds_FUNC,
 	JNIGetObject_FUNC,
 	LineTo_FUNC,

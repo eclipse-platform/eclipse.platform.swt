@@ -1216,8 +1216,7 @@ public int getDismissalAlignment () {
  */
 public int getDoubleClickTime () {
 	checkDevice ();
-	return 0;
-//	return OS.GetDblTime () * 1000 / 60; 
+	return OS.GetDblTime () * 1000 / 60; 
 }
 
 /**

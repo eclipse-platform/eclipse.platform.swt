@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 412;
-int OS_nativeFunctionCallCount[412];
+int OS_nativeFunctionCount = 413;
+int OS_nativeFunctionCallCount[413];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"CFDataGetBytePtr",
@@ -64,6 +64,7 @@ char * OS_nativeFunctionNames[] = {
 	"Gestalt",
 	"GetCurrentButtonState",
 	"GetCurrentProcess",
+	"GetDblTime",
 	"GetRegionBounds",
 	"JNIGetObject",
 	"LineTo",
