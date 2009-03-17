@@ -248,6 +248,7 @@ void createHandle () {
 		NSBox widget = (NSBox)new SWTBox().alloc();
 		widget.init();
 		widget.setBoxType(OS.NSBoxSeparator);
+		widget.setBorderWidth(0);
 		view = widget;
 	} else {
 		NSView widget = (NSView)new SWTView().alloc();
@@ -742,6 +743,12 @@ public void setControl (Control control) {
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (this.control == control) return;
+	NSBox widget = (NSBox)view;
+	if (control == null) {
+		widget.setBoxType(OS.NSBoxSeparator);
+	} else {
+		widget.setBoxType(OS.NSBoxCustom);
+	}
 	this.control = control;
 	view.setHidden(control != null);
 	if (control != null && !control.isDisposed ()) {
