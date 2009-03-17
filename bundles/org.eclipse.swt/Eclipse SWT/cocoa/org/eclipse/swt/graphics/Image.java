@@ -969,7 +969,7 @@ void initNative(String filename) {
 				if (!(alpha == 0 || alpha == -1)) break;
 			}
 			this.alpha = -1;
-			if (i == alphaData.length) {
+			if (i == alphaData.length && transparentOffset != -1) {
 				NSColor color = rep.colorAtX(transparentOffset % width, transparentOffset / width);
 				int red = (int) (color.redComponent() * 255);
 				int green = (int) (color.greenComponent() * 255);
