@@ -2698,9 +2698,13 @@ public void setTopItem (TreeItem item) {
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	checkItems ();
 	showItem (item, false);
-	NSOutlineView outlineView = (NSOutlineView) view;
-	//FIXME
-	((NSOutlineView) view).scrollRowToVisible (outlineView.rowForItem (item.handle));
+	NSOutlineView widget = (NSOutlineView) view;
+	int /*long*/ row = widget.rowForItem (item.handle);
+	if (row == -1) return;
+	NSPoint pt = new NSPoint();
+	pt.x = scrollView.contentView().bounds().x;
+	pt.y = (widget.rowHeight () + widget.intercellSpacing().height) * row;
+	view.scrollPoint(pt);
 }
 
 /**

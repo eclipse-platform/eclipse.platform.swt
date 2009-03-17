@@ -22396,9 +22396,9 @@
 <arg name="aPoint"></arg>
 <retval></retval>
 </method>
-<method selector="scrollPoint:">
-<arg name="aPoint"></arg>
-<retval></retval>
+<method selector="scrollPoint:" swt_gen="true">
+<arg name="aPoint" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="scrollRect:by:">
 <arg name="aRect"></arg>

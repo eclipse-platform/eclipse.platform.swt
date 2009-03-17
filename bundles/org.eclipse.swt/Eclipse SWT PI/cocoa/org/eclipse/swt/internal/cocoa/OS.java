@@ -1282,6 +1282,7 @@ public static final int /*long*/ sel_scheduledTimerWithTimeInterval_target_selec
 public static final int /*long*/ sel_screen = sel_registerName("screen");
 public static final int /*long*/ sel_screens = sel_registerName("screens");
 public static final int /*long*/ sel_scrollColumnToVisible_ = sel_registerName("scrollColumnToVisible:");
+public static final int /*long*/ sel_scrollPoint_ = sel_registerName("scrollPoint:");
 public static final int /*long*/ sel_scrollRangeToVisible_ = sel_registerName("scrollRangeToVisible:");
 public static final int /*long*/ sel_scrollRectToVisible_ = sel_registerName("scrollRectToVisible:");
 public static final int /*long*/ sel_scrollRowToVisible_ = sel_registerName("scrollRowToVisible:");

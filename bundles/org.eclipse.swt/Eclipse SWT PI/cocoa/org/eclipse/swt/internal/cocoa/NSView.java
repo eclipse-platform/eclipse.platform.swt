@@ -225,6 +225,10 @@ public void resetCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_resetCursorRects);
 }
 
+public void scrollPoint(NSPoint aPoint) {
+	OS.objc_msgSend(this.id, OS.sel_scrollPoint_, aPoint);
+}
+
 public boolean scrollRectToVisible(NSRect aRect) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_scrollRectToVisible_, aRect);
 }
