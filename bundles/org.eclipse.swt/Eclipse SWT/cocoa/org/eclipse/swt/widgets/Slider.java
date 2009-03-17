@@ -515,6 +515,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	thumb = Math.min (thumb, maximum - minimum);
+	this.thumb = thumb;
+	this.maximum = maximum;
+	this.minimum = minimum;
 	this.increment = increment;
 	this.pageIncrement = pageIncrement;
 	updateBar(selection, minimum, maximum, thumb);
