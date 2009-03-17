@@ -420,8 +420,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = wHint;
 	}
 	if (hHint == SWT.DEFAULT) {
-		int itemHeight = getItemHeight () + CELL_GAP;
-		height = (int)/*64*/((NSOutlineView) view).numberOfRows () * itemHeight + getHeaderHeight ();
+		height = (int)/*64*/((NSOutlineView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
 	} else {
 		height = hHint;
 	}
@@ -1430,7 +1429,7 @@ int getItemCount (TreeItem item) {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return (int)((NSOutlineView) view).rowHeight ();
+	return (int)((NSOutlineView) view).rowHeight () + CELL_GAP;
 }
 
 /**

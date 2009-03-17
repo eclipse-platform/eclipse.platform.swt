@@ -411,8 +411,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (width <= 0) width = DEFAULT_WIDTH;
 	int height = 0;
 	if (hHint == SWT.DEFAULT) {
-		int itemHeight = getItemHeight () + CELL_GAP;
-		height = itemCount * itemHeight + getHeaderHeight();
+		height = itemCount * getItemHeight () + getHeaderHeight();
 	} else {
 		height = hHint;
 	}
@@ -1403,7 +1402,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return (int)((NSTableView)view).rowHeight();
+	return (int)((NSTableView)view).rowHeight() + CELL_GAP;
 }
 
 /**
