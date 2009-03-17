@@ -270,7 +270,7 @@ public int getSelection () {
 	checkWidget();
 	NSScroller widget = (NSScroller)view;
 	double value = widget.doubleValue();
-    return (int)((maximum - thumb - minimum) * value + minimum);
+    return (int)(0.5f + ((maximum - thumb - minimum) * value + minimum));
 }
 
 /**
@@ -482,8 +482,8 @@ public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
 	value = Math.min (value, maximum - minimum);
-	this.thumb = value;
 	updateBar(getSelection(), minimum, maximum, value);
+	this.thumb = value;
 }
 
 /**
