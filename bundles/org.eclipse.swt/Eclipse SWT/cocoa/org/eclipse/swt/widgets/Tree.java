@@ -305,6 +305,11 @@ void checkItems () {
 	TreeItem[] selectedItems = getSelection ();
 	((NSOutlineView)view).reloadData ();
 	selectItems (selectedItems, true);
+	ignoreExpand = true;
+	for (int i = 0; i < itemCount; i++) {
+		items[i].updateExpanded ();
+	}
+	ignoreExpand = false;
 }
 
 void clear (TreeItem parentItem, int index, boolean all) {
@@ -629,6 +634,9 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	}
 	ignoreExpand = true;
 	reloadItem (parentItem, true);
+	if (parentItem != null && parentItem.itemCount == 1 && parentItem.expanded) {
+		((NSOutlineView)view).expandItem (parentItem.handle);
+	}
 	ignoreExpand = false;
 }
 
@@ -1913,14 +1921,15 @@ void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*lon
 }
 
 boolean outlineView_shouldCollapseItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ itemID) {
-	TreeItem item = (TreeItem) display.getWidget (itemID);
 	if (!ignoreExpand) {
+		TreeItem item = (TreeItem) display.getWidget (itemID);
 		Event event = new Event ();
 		event.item = item;
 		sendEvent (SWT.Collapse, event);
 		if (isDisposed ()) return false;
 		ignoreExpand = true;
 		((NSOutlineView) view).collapseItem (item.handle);
+		item.expanded = false;
 		ignoreExpand = false;
 		setScrollWidth ();
 		return false;
@@ -1929,14 +1938,16 @@ boolean outlineView_shouldCollapseItem (int /*long*/ id, int /*long*/ sel, int /
 }
 
 boolean outlineView_shouldExpandItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ itemID) {
-	final TreeItem item = (TreeItem) display.getWidget (itemID);
 	if (!ignoreExpand) {
+		TreeItem item = (TreeItem) display.getWidget (itemID);
 		Event event = new Event ();
 		event.item = item;
 		sendEvent (SWT.Expand, event);
 		if (isDisposed ()) return false;
 		ignoreExpand = true;
 		((NSOutlineView) view).expandItem (item.handle);
+		item.expanded = true;
+		item.updateExpanded ();
 		ignoreExpand = false;
 		return false;
 	}
@@ -2432,6 +2443,12 @@ void setItemCount (TreeItem parentItem, int count) {
 			TreeItem[] selectedItems = getSelection ();
 			widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
 			selectItems (selectedItems, true);
+
+			if (parentItem != null && itemCount == 0 && parentItem.expanded) {
+				ignoreExpand = true;
+				widget.expandItem (parentItem.handle);
+				ignoreExpand = false;
+			}
 		}
 	}
 }
