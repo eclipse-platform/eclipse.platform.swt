@@ -40,6 +40,7 @@ public class TreeColumn extends Item {
 	NSTableColumn nsColumn;
 	Tree parent;
 	String toolTipText, displayText;
+	boolean movable;
 
 	static final int MARGIN = 2;
 
@@ -359,7 +360,7 @@ public Tree getParent () {
  */
 public boolean getMoveable () {
 	checkWidget ();
-	return ((NSTableView)parent.view).allowsColumnReordering();
+	return movable;
 }
 
 /**
@@ -596,9 +597,15 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
 	checkWidget ();
-	// TODO how to make only some columns movable?  And handle moveable == false.
+	// TODO how to make only some columns movable?
+	this.movable = moveable;
 	if (moveable) {
-		((NSOutlineView)parent.view).setAllowsColumnReordering (true);
+		if (!movable) {
+			for (int i = 0; i < parent.columnCount; i++) {
+				movable |= parent.columns[i].movable;
+			}
+		}
+		((NSTableView)parent.view).setAllowsColumnReordering (movable);
 	}
 }
 
