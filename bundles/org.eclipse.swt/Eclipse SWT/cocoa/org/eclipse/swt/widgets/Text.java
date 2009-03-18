@@ -1827,7 +1827,7 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	int row = Math.max(0, Math.min(index, getLineCount()));
+	int row = Math.max(0, Math.min(index, getLineCount() - 1));
 	NSPoint pt = new NSPoint();
 	pt.x = scrollView.contentView().bounds().x;
 	pt.y = getLineHeight() * row;
