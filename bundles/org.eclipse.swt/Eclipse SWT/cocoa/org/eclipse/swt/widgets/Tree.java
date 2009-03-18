@@ -2703,7 +2703,7 @@ public void setTopItem (TreeItem item) {
 	if (row == -1) return;
 	NSPoint pt = new NSPoint();
 	pt.x = scrollView.contentView().bounds().x;
-	pt.y = (widget.rowHeight () + widget.intercellSpacing().height) * row;
+	pt.y = widget.frameOfCellAtColumn(0, row).y;
 	view.scrollPoint(pt);
 }
 
