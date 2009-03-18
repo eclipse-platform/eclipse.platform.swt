@@ -274,6 +274,17 @@ public void setControl (Control control) {
 		view.autorelease();
 	}
 	nsItem.setView (view);
+	/*
+	* Feature in Cocoa.  The method setView() removes the old view from
+	* its parent.  The fix is to detected it has been removed and add
+	* it back.
+	*/
+	if (oldControl != null) {
+		NSView topView = oldControl.topView ();
+		if (topView.superview () == null) {
+			parent.contentView ().addSubview (topView, OS.NSWindowBelow, null);
+		}
+	}
 }
 
 public void setImage (Image image) {
