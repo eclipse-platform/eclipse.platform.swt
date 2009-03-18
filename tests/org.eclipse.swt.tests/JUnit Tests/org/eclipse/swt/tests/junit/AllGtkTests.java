@@ -40,7 +40,7 @@ static String[] excludeTests = {
 	"test_setTextLimitI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
 	"test_setTopIndexI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
 	"test_getHeaderHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree)",
-	"test_setSelectionI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabFolder)",
+	"test_setSelectionEmpty(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabFolder)",
 	"test_getSelectionIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_getRowCount(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ToolBar)",
 	"test_getHeaderHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Table)",

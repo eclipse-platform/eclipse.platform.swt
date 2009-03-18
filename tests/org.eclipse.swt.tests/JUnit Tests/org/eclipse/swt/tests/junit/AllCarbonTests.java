@@ -38,7 +38,7 @@ static String[] excludeTests = {
 	"test_getSelectionIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_setSelectionLorg_eclipse_swt_graphics_Point(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
-	"test_setSelectionI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabFolder)",
+	"test_setSelectionEmpty(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabFolder)",
 	"Browser4(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite)",
 	"Browser5(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite)",
 	//
