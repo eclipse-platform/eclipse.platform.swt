@@ -408,7 +408,10 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return (int)nsColumn.width();
+	int width = (int)nsColumn.width();
+	// TODO how to differentiate 0 and 1 cases?
+	if (width > 0) width += Table.CELL_GAP;
+	return width;
 }
 
 /**
@@ -674,6 +677,8 @@ public void setToolTipText (String string) {
 public void setWidth (int width) {
 	checkWidget ();
 	if (width < 0) return;
+	// TODO how to differentiate 0 and 1 cases?
+	width = Math.max (0, width - Table.CELL_GAP); 
 	nsColumn.setWidth (width);
 }
 

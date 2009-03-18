@@ -397,7 +397,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT) {
 		if (columnCount != 0) {
 			for (int i=0; i<columnCount; i++) {
-				width += columns [i].getWidth () + CELL_GAP;
+				width += columns [i].getWidth ();
 			}
 		} else {
 			GC gc = new GC (this);
