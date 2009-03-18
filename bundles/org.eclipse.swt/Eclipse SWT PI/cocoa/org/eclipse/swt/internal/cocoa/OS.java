@@ -1057,6 +1057,7 @@ public static final int /*long*/ sel_keyUp_ = sel_registerName("keyUp:");
 public static final int /*long*/ sel_keyWindow = sel_registerName("keyWindow");
 public static final int /*long*/ sel_knobThickness = sel_registerName("knobThickness");
 public static final int /*long*/ sel_lastPathComponent = sel_registerName("lastPathComponent");
+public static final int /*long*/ sel_layoutManager = sel_registerName("layoutManager");
 public static final int /*long*/ sel_leading = sel_registerName("leading");
 public static final int /*long*/ sel_length = sel_registerName("length");
 public static final int /*long*/ sel_levelForItem_ = sel_registerName("levelForItem:");

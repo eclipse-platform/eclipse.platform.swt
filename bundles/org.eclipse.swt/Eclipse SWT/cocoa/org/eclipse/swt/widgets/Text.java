@@ -829,11 +829,9 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
+	NSTextView widget = (NSTextView)view;
 	Font font = this.font != null ? this.font : defaultFont();
-	NSFont nsFont = font.handle;
-	int ascent = (int)(0.5f + nsFont.ascender());
-	int descent = (int)(0.5f + (-nsFont.descender() + nsFont.leading()));	
-	return ascent + descent;
+	return (int)Math.ceil(widget.layoutManager().defaultLineHeightForFont(font.handle));
 }
 
 /**
@@ -1117,8 +1115,7 @@ public int getTopIndex () {
 public int getTopPixel () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
-	//TODO
-	return 0;
+	return (int)scrollView.contentView().bounds().y;
 }
 
 /**
@@ -1804,11 +1801,11 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	//TODO no working
-//	NSTextView widget = (NSTextView) view;
-//	NSRange range = new NSRange ();
-//	NSRect rect = widget.firstRectForCharacterRange (range);
-//	view.scrollRectToVisible (rect);
+	int row = Math.max(0, Math.min(index, getLineCount()));
+	NSPoint pt = new NSPoint();
+	pt.x = scrollView.contentView().bounds().x;
+	pt.y = getLineHeight() * row;
+	view.scrollPoint(pt);
 }
 
 boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ affectedCharRange, int /*long*/ replacementString) {
