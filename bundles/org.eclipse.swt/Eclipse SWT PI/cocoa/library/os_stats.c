@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 413;
-int OS_nativeFunctionCallCount[413];
+int OS_nativeFunctionCount = 433;
+int OS_nativeFunctionCallCount[433];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"CFDataGetBytePtr",
@@ -27,9 +27,13 @@ char * OS_nativeFunctionNames[] = {
 	"CFRunLoopObserverInvalidate",
 	"CFURLCreateStringByAddingPercentEscapes",
 	"CGBitmapContextCreate",
+	"CGBitmapContextCreateImage",
 	"CGBitmapContextGetData",
+	"CGColorSpaceCreateDeviceRGB",
+	"CGColorSpaceRelease",
 	"CGContextAddPath",
 	"CGContextCopyPath",
+	"CGContextDrawImage",
 	"CGContextRelease",
 	"CGContextReplacePathWithStrokedPath",
 	"CGContextRestoreGState",
@@ -39,7 +43,22 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSetLineJoin",
 	"CGContextSetLineWidth",
 	"CGContextSetMiterLimit",
+	"CGContextTranslateCTM",
+	"CGDataProviderCreateWithData",
+	"CGDataProviderRelease",
+	"CGDisplayBaseAddress",
+	"CGDisplayBitsPerPixel",
+	"CGDisplayBitsPerSample",
+	"CGDisplayBounds",
+	"CGDisplayBytesPerRow",
+	"CGDisplayPixelsHigh",
+	"CGDisplayPixelsWide",
 	"CGEventGetIntegerValueField",
+	"CGGetDisplaysWithRect",
+	"CGImageCreate",
+	"CGImageGetHeight",
+	"CGImageGetWidth",
+	"CGImageRelease",
 	"CGPathAddCurveToPoint",
 	"CGPathAddLineToPoint",
 	"CGPathApply",
@@ -242,6 +261,7 @@ char * OS_nativeFunctionNames[] = {
 	"TransformProcessType",
 	"UCKeyTranslate",
 	"UnionRgn",
+	"_1_1BIG_1ENDIAN_1_1",
 	"accessibilityHitTest_1CALLBACK",
 	"attributedSubstringFromRange_1CALLBACK",
 	"call",

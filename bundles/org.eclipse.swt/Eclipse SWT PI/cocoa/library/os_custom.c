@@ -47,6 +47,36 @@ fail:
 }
 #endif
 
+#ifndef NO_CGDisplayBounds
+JNIEXPORT void JNICALL OS_NATIVE(CGDisplayBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGDisplayBounds_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	*lparg1 = CGDisplayBounds((CGDirectDisplayID)arg0);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGDisplayBounds_FUNC);
+}
+#endif
+
+#ifndef NO__1_1BIG_1ENDIAN_1_1
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1_1BIG_1ENDIAN_1_1)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
+#ifdef __BIG_ENDIAN__
+	rc = (jboolean)TRUE;
+#else
+	rc = (jboolean)FALSE;
+#endif
+	OS_NATIVE_EXIT(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
+	return rc;
+}
+#endif
+
 #ifndef NO_drawRect_1CALLBACK
 static jintLong drawRect_1CALLBACK;
 static void drawRect(id obj, SEL sel, NSRect rect)

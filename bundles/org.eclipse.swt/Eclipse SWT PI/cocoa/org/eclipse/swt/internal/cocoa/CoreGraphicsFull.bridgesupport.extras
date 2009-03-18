@@ -247,10 +247,10 @@
   <enum name="kCGBaseWindowLevelKey"></enum>
   <enum name="kCGBitmapAlphaInfoMask"></enum>
   <enum name="kCGBitmapByteOrder16Big"></enum>
-  <enum name="kCGBitmapByteOrder16Host"></enum>
+  <enum name="kCGBitmapByteOrder16Host" swt_gen="true"></enum>
   <enum name="kCGBitmapByteOrder16Little"></enum>
   <enum name="kCGBitmapByteOrder32Big"></enum>
-  <enum name="kCGBitmapByteOrder32Host"></enum>
+  <enum name="kCGBitmapByteOrder32Host" swt_gen="true"></enum>
   <enum name="kCGBitmapByteOrder32Little"></enum>
   <enum name="kCGBitmapByteOrderDefault"></enum>
   <enum name="kCGBitmapByteOrderMask"></enum>
@@ -412,10 +412,10 @@
   <enum name="kCGHeadInsertEventTap"></enum>
   <enum name="kCGHelpWindowLevel"></enum>
   <enum name="kCGHelpWindowLevelKey"></enum>
-  <enum name="kCGImageAlphaFirst"></enum>
+  <enum name="kCGImageAlphaFirst" swt_gen="true"></enum>
   <enum name="kCGImageAlphaLast"></enum>
   <enum name="kCGImageAlphaNone"></enum>
-  <enum name="kCGImageAlphaNoneSkipFirst"></enum>
+  <enum name="kCGImageAlphaNoneSkipFirst" swt_gen="true"></enum>
   <enum name="kCGImageAlphaNoneSkipLast"></enum>
   <enum name="kCGImageAlphaOnly" swt_gen="true"></enum>
   <enum name="kCGImageAlphaPremultipliedFirst"></enum>
@@ -653,9 +653,9 @@
     <arg name="bitmapInfo" swt_gen="true"></arg>
     <retval swt_gen="true"></retval>
   </function>
-  <function name="CGBitmapContextCreateImage">
-    <arg name="c"></arg>
-    <retval></retval>
+  <function name="CGBitmapContextCreateImage" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGBitmapContextGetAlphaInfo">
     <arg name="c"></arg>
@@ -806,8 +806,8 @@
   <function name="CGColorSpaceCreateDeviceGray">
     <retval></retval>
   </function>
-  <function name="CGColorSpaceCreateDeviceRGB">
-    <retval></retval>
+  <function name="CGColorSpaceCreateDeviceRGB" swt_gen="true">
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGColorSpaceCreateICCBased">
     <arg name="nComponents"></arg>
@@ -863,8 +863,8 @@
   <function name="CGColorSpaceGetTypeID">
     <retval></retval>
   </function>
-  <function name="CGColorSpaceRelease">
-    <arg name="space"></arg>
+  <function name="CGColorSpaceRelease" swt_gen="true">
+    <arg name="space" swt_gen="true"></arg>
   </function>
   <function name="CGColorSpaceRetain">
     <arg name="space"></arg>
@@ -1044,10 +1044,10 @@
     <arg name="size"></arg>
     <retval></retval>
   </function>
-  <function name="CGContextDrawImage">
-    <arg name="c"></arg>
-    <arg name="rect"></arg>
-    <arg name="image"></arg>
+  <function name="CGContextDrawImage" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="rect" swt_gen="true"></arg>
+    <arg name="image" swt_gen="true"></arg>
   </function>
   <function name="CGContextDrawLayerAtPoint">
     <arg name="context"></arg>
@@ -1438,10 +1438,10 @@
   <function name="CGContextSynchronize">
     <arg name="c"></arg>
   </function>
-  <function name="CGContextTranslateCTM">
-    <arg name="c"></arg>
-    <arg name="tx"></arg>
-    <arg name="ty"></arg>
+  <function name="CGContextTranslateCTM" swt_gen="true">
+    <arg name="c" swt_gen="true"></arg>
+    <arg name="tx" swt_gen="true"></arg>
+    <arg name="ty" swt_gen="true"></arg>
   </function>
   <function name="CGCursorIsDrawnInFramebuffer">
     <retval></retval>
@@ -1502,17 +1502,17 @@
     <arg name="data"></arg>
     <retval></retval>
   </function>
-  <function name="CGDataProviderCreateWithData">
-    <arg name="info"></arg>
-    <arg name="data"></arg>
-    <arg name="size"></arg>
-    <arg name="releaseData">
+  <function name="CGDataProviderCreateWithData" swt_gen="true">
+    <arg name="info" swt_gen="true"></arg>
+    <arg name="data" swt_gen="true"></arg>
+    <arg name="size" swt_gen="true"></arg>
+    <arg name="releaseData" swt_gen="true">
+      <arg swt_gen="true"></arg>
       <arg></arg>
       <arg></arg>
-      <arg></arg>
-      <retval></retval>
+      <retval swt_gen="true"></retval>
     </arg>
-    <retval></retval>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGDataProviderCreateWithFilename">
     <arg name="filename"></arg>
@@ -1525,8 +1525,8 @@
   <function name="CGDataProviderGetTypeID">
     <retval></retval>
   </function>
-  <function name="CGDataProviderRelease">
-    <arg name="provider"></arg>
+  <function name="CGDataProviderRelease" swt_gen="true">
+    <arg name="provider" swt_gen="true"></arg>
   </function>
   <function name="CGDataProviderRetain">
     <arg name="provider"></arg>
@@ -1542,9 +1542,9 @@
     <arg name="display"></arg>
     <retval></retval>
   </function>
-  <function name="CGDisplayBaseAddress">
-    <arg name="display"></arg>
-    <retval></retval>
+  <function name="CGDisplayBaseAddress" swt_gen="true">
+    <arg name="display" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGDisplayBeamPosition">
     <arg name="display"></arg>
@@ -1577,21 +1577,21 @@
     <arg name="exactMatch"></arg>
     <retval></retval>
   </function>
-  <function name="CGDisplayBitsPerPixel">
-    <arg name="display"></arg>
-    <retval></retval>
+  <function name="CGDisplayBitsPerPixel" swt_gen="true">
+    <arg name="display" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="CGDisplayBitsPerSample">
-    <arg name="display"></arg>
-    <retval></retval>
+  <function name="CGDisplayBitsPerSample" swt_gen="true">
+    <arg name="display" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGDisplayBounds">
     <arg name="display"></arg>
     <retval></retval>
   </function>
-  <function name="CGDisplayBytesPerRow">
-    <arg name="display"></arg>
-    <retval></retval>
+  <function name="CGDisplayBytesPerRow" swt_gen="true">
+    <arg name="display" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGDisplayCanSetPalette">
     <arg name="display"></arg>
@@ -1701,13 +1701,13 @@
     <arg name="point"></arg>
     <retval></retval>
   </function>
-  <function name="CGDisplayPixelsHigh">
-    <arg name="display"></arg>
-    <retval></retval>
+  <function name="CGDisplayPixelsHigh" swt_gen="true">
+    <arg name="display" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="CGDisplayPixelsWide">
-    <arg name="display"></arg>
-    <retval></retval>
+  <function name="CGDisplayPixelsWide" swt_gen="true">
+    <arg name="display" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGDisplayPrimaryDisplay">
     <arg name="display"></arg>
@@ -2246,12 +2246,12 @@
     <arg name="dspyCnt"></arg>
     <retval></retval>
   </function>
-  <function name="CGGetDisplaysWithRect">
-    <arg name="rect"></arg>
-    <arg name="maxDisplays"></arg>
-    <arg name="dspys"></arg>
-    <arg name="dspyCnt"></arg>
-    <retval></retval>
+  <function name="CGGetDisplaysWithRect" swt_gen="true">
+    <arg name="rect" swt_gen="true"></arg>
+    <arg name="maxDisplays" swt_gen="true"></arg>
+    <arg name="dspys" swt_gen="true"></arg>
+    <arg name="dspyCnt" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGGetEventTapList">
     <arg name="maxNumberOfTaps"></arg>
@@ -2292,19 +2292,19 @@
     <arg name="gradient"></arg>
     <retval></retval>
   </function>
-  <function name="CGImageCreate">
-    <arg name="width"></arg>
-    <arg name="height"></arg>
-    <arg name="bitsPerComponent"></arg>
-    <arg name="bitsPerPixel"></arg>
-    <arg name="bytesPerRow"></arg>
-    <arg name="colorspace"></arg>
-    <arg name="bitmapInfo"></arg>
-    <arg name="provider"></arg>
-    <arg name="decode"></arg>
-    <arg name="shouldInterpolate"></arg>
-    <arg name="intent"></arg>
-    <retval></retval>
+  <function name="CGImageCreate" swt_gen="true">
+    <arg name="width" swt_gen="true"></arg>
+    <arg name="height" swt_gen="true"></arg>
+    <arg name="bitsPerComponent" swt_gen="true"></arg>
+    <arg name="bitsPerPixel" swt_gen="true"></arg>
+    <arg name="bytesPerRow" swt_gen="true"></arg>
+    <arg name="colorspace" swt_gen="true"></arg>
+    <arg name="bitmapInfo" swt_gen="true"></arg>
+    <arg name="provider" swt_gen="true"></arg>
+    <arg name="decode" swt_gen="true"></arg>
+    <arg name="shouldInterpolate" swt_gen="true"></arg>
+    <arg name="intent" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGImageCreateCopy">
     <arg name="image"></arg>
@@ -2376,9 +2376,9 @@
     <arg name="image"></arg>
     <retval></retval>
   </function>
-  <function name="CGImageGetHeight">
-    <arg name="image"></arg>
-    <retval></retval>
+  <function name="CGImageGetHeight" swt_gen="true">
+    <arg name="image" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGImageGetRenderingIntent">
     <arg name="image"></arg>
@@ -2391,9 +2391,9 @@
   <function name="CGImageGetTypeID">
     <retval></retval>
   </function>
-  <function name="CGImageGetWidth">
-    <arg name="image"></arg>
-    <retval></retval>
+  <function name="CGImageGetWidth" swt_gen="true">
+    <arg name="image" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGImageIsMask">
     <arg name="image"></arg>
@@ -2410,8 +2410,8 @@
     <arg name="shouldInterpolate"></arg>
     <retval></retval>
   </function>
-  <function name="CGImageRelease">
-    <arg name="image"></arg>
+  <function name="CGImageRelease" swt_gen="true">
+    <arg name="image" swt_gen="true"></arg>
   </function>
   <function name="CGImageRetain">
     <arg name="image"></arg>

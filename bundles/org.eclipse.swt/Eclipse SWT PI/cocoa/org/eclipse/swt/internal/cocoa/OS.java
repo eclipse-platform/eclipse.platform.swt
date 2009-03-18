@@ -143,6 +143,16 @@ public static final native int getpid();
 
 public static final native void call(int /*long*/ proc, int /*long*/ id, int /*long*/ sel);
 
+/** @method flags=no_gen */
+public static final native boolean __BIG_ENDIAN__();
+public static final int kCGBitmapByteOrderDefault = 0 << 12;
+public static final int kCGBitmapByteOrder16Little = 1 << 12;
+public static final int kCGBitmapByteOrder32Little = 2 << 12;
+public static final int kCGBitmapByteOrder16Big = 3 << 12;
+public static final int kCGBitmapByteOrder32Big = 4 << 12;
+public static final int kCGBitmapByteOrder16Host = __BIG_ENDIAN__() ? kCGBitmapByteOrder16Big : kCGBitmapByteOrder16Little;
+public static final int kCGBitmapByteOrder32Host = __BIG_ENDIAN__() ? kCGBitmapByteOrder32Big : kCGBitmapByteOrder32Little;
+
 /** QuickDraw calls */
 
 /** @method flags=dynamic */
@@ -258,6 +268,11 @@ public static final native int /*long*/ setNeedsDisplayInRect_CALLBACK(int /*lon
 
 /** @method flags=no_gen */
 public static final native void NSIntersectionRect (NSRect result, NSRect aRect, NSRect bRect);
+/**
+ * @method flags=no_gen
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native void CGDisplayBounds(int display, CGRect rect);
 
 /** Objective-C runtime */
 
@@ -2645,6 +2660,8 @@ public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFRunLoopBeforeWaiting = 32;
 public static final int kCFStringEncodingUTF8 = 134217984;
+public static final int kCGImageAlphaFirst = 4;
+public static final int kCGImageAlphaNoneSkipFirst = 6;
 public static final int kCGImageAlphaOnly = 7;
 public static final int kCGKeyboardEventKeyboardType = 10;
 public static final int kCGLineCapButt = 0;
@@ -3960,12 +3977,27 @@ public static final native int /*long*/ CGBitmapContextCreate(int /*long*/ data,
 /**
  * @param c cast=(CGContextRef)
  */
+public static final native int /*long*/ CGBitmapContextCreateImage(int /*long*/ c);
+/**
+ * @param c cast=(CGContextRef)
+ */
 public static final native int /*long*/ CGBitmapContextGetData(int /*long*/ c);
+public static final native int /*long*/ CGColorSpaceCreateDeviceRGB();
+/**
+ * @param space cast=(CGColorSpaceRef)
+ */
+public static final native void CGColorSpaceRelease(int /*long*/ space);
 /**
  * @param context cast=(CGContextRef)
  * @param path cast=(CGPathRef)
  */
 public static final native void CGContextAddPath(int /*long*/ context, int /*long*/ path);
+/**
+ * @param c cast=(CGContextRef)
+ * @param rect flags=struct
+ * @param image cast=(CGImageRef)
+ */
+public static final native void CGContextDrawImage(int /*long*/ c, CGRect rect, int /*long*/ image);
 /**
  * @param c cast=(CGContextRef)
  */
@@ -4010,10 +4042,84 @@ public static final native void CGContextSetLineWidth(int /*long*/ c, float /*do
  */
 public static final native void CGContextSetMiterLimit(int /*long*/ c, float /*double*/ limit);
 /**
+ * @param c cast=(CGContextRef)
+ * @param tx cast=(CGFloat)
+ * @param ty cast=(CGFloat)
+ */
+public static final native void CGContextTranslateCTM(int /*long*/ c, float /*double*/ tx, float /*double*/ ty);
+/**
+ * @param info cast=(void*)
+ * @param data cast=(void*)
+ * @param size cast=(size_t)
+ * @param releaseData cast=(CGDataProviderReleaseDataCallback)
+ */
+public static final native int /*long*/ CGDataProviderCreateWithData(int /*long*/ info, int /*long*/ data, int /*long*/ size, int /*long*/ releaseData);
+/**
+ * @param provider cast=(CGDataProviderRef)
+ */
+public static final native void CGDataProviderRelease(int /*long*/ provider);
+/**
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBaseAddress(int display);
+/**
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBitsPerPixel(int display);
+/**
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBitsPerSample(int display);
+/**
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBytesPerRow(int display);
+/**
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayPixelsHigh(int display);
+/**
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayPixelsWide(int display);
+/**
  * @param event cast=(CGEventRef)
  * @param field cast=(CGEventField)
  */
 public static final native long CGEventGetIntegerValueField(int /*long*/ event, int field);
+/**
+ * @param rect flags=struct
+ * @param maxDisplays cast=(CGDisplayCount)
+ * @param dspys cast=(CGDirectDisplayID*)
+ * @param dspyCnt cast=(CGDisplayCount*)
+ */
+public static final native int CGGetDisplaysWithRect(CGRect rect, int maxDisplays, int /*long*/ dspys, int /*long*/ dspyCnt);
+/**
+ * @param width cast=(size_t)
+ * @param height cast=(size_t)
+ * @param bitsPerComponent cast=(size_t)
+ * @param bitsPerPixel cast=(size_t)
+ * @param bytesPerRow cast=(size_t)
+ * @param colorspace cast=(CGColorSpaceRef)
+ * @param bitmapInfo cast=(CGBitmapInfo)
+ * @param provider cast=(CGDataProviderRef)
+ * @param decode cast=(CGFloat*)
+ * @param shouldInterpolate cast=(_Bool)
+ * @param intent cast=(CGColorRenderingIntent)
+ */
+public static final native int /*long*/ CGImageCreate(int /*long*/ width, int /*long*/ height, int /*long*/ bitsPerComponent, int /*long*/ bitsPerPixel, int /*long*/ bytesPerRow, int /*long*/ colorspace, int bitmapInfo, int /*long*/ provider, int /*long*/ decode, boolean shouldInterpolate, int intent);
+/**
+ * @param image cast=(CGImageRef)
+ */
+public static final native int /*long*/ CGImageGetHeight(int /*long*/ image);
+/**
+ * @param image cast=(CGImageRef)
+ */
+public static final native int /*long*/ CGImageGetWidth(int /*long*/ image);
+/**
+ * @param image cast=(CGImageRef)
+ */
+public static final native void CGImageRelease(int /*long*/ image);
 /**
  * @param path cast=(CGMutablePathRef)
  * @param m cast=(CGAffineTransform*)

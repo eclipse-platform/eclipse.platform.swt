@@ -144,6 +144,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGBitmapContextCreate)
 }
 #endif
 
+#ifndef NO_CGBitmapContextCreateImage
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGBitmapContextCreateImage)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGBitmapContextCreateImage_FUNC);
+	rc = (jintLong)CGBitmapContextCreateImage((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGBitmapContextCreateImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGBitmapContextGetData
 JNIEXPORT jintLong JNICALL OS_NATIVE(CGBitmapContextGetData)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -153,6 +165,28 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGBitmapContextGetData)
 	rc = (jintLong)CGBitmapContextGetData((CGContextRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGBitmapContextGetData_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_CGColorSpaceCreateDeviceRGB
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGColorSpaceCreateDeviceRGB)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGColorSpaceCreateDeviceRGB_FUNC);
+	rc = (jintLong)CGColorSpaceCreateDeviceRGB();
+	OS_NATIVE_EXIT(env, that, CGColorSpaceCreateDeviceRGB_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGColorSpaceRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGColorSpaceRelease)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGColorSpaceRelease_FUNC);
+	CGColorSpaceRelease((CGColorSpaceRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGColorSpaceRelease_FUNC);
 }
 #endif
 
@@ -183,6 +217,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGContextCopyPath)
 	}
 	OS_NATIVE_EXIT(env, that, CGContextCopyPath_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_CGContextDrawImage
+JNIEXPORT void JNICALL OS_NATIVE(CGContextDrawImage)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextDrawImage_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	CGContextDrawImage((CGContextRef)arg0, *lparg1, (CGImageRef)arg2);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextDrawImage_FUNC);
 }
 #endif
 
@@ -280,6 +328,110 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
 }
 #endif
 
+#ifndef NO_CGContextTranslateCTM
+JNIEXPORT void JNICALL OS_NATIVE(CGContextTranslateCTM)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDouble arg1, jfloatDouble arg2)
+{
+	OS_NATIVE_ENTER(env, that, CGContextTranslateCTM_FUNC);
+	CGContextTranslateCTM((CGContextRef)arg0, (CGFloat)arg1, (CGFloat)arg2);
+	OS_NATIVE_EXIT(env, that, CGContextTranslateCTM_FUNC);
+}
+#endif
+
+#ifndef NO_CGDataProviderCreateWithData
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDataProviderCreateWithData)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDataProviderCreateWithData_FUNC);
+	rc = (jintLong)CGDataProviderCreateWithData((void*)arg0, (void*)arg1, (size_t)arg2, (CGDataProviderReleaseDataCallback)arg3);
+	OS_NATIVE_EXIT(env, that, CGDataProviderCreateWithData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDataProviderRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGDataProviderRelease)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGDataProviderRelease_FUNC);
+	CGDataProviderRelease((CGDataProviderRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGDataProviderRelease_FUNC);
+}
+#endif
+
+#ifndef NO_CGDisplayBaseAddress
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBaseAddress)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayBaseAddress_FUNC);
+	rc = (jintLong)CGDisplayBaseAddress((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayBaseAddress_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayBitsPerPixel
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBitsPerPixel)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerPixel_FUNC);
+	rc = (jintLong)CGDisplayBitsPerPixel((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerPixel_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayBitsPerSample
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBitsPerSample)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerSample_FUNC);
+	rc = (jintLong)CGDisplayBitsPerSample((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerSample_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayBytesPerRow
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBytesPerRow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayBytesPerRow_FUNC);
+	rc = (jintLong)CGDisplayBytesPerRow((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayBytesPerRow_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayPixelsHigh
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayPixelsHigh)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayPixelsHigh_FUNC);
+	rc = (jintLong)CGDisplayPixelsHigh((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayPixelsHigh_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayPixelsWide
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayPixelsWide)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayPixelsWide_FUNC);
+	rc = (jintLong)CGDisplayPixelsWide((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayPixelsWide_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGEventGetIntegerValueField
 JNIEXPORT jlong JNICALL OS_NATIVE(CGEventGetIntegerValueField)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -289,6 +441,68 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CGEventGetIntegerValueField)
 	rc = (jlong)CGEventGetIntegerValueField((CGEventRef)arg0, (CGEventField)arg1);
 	OS_NATIVE_EXIT(env, that, CGEventGetIntegerValueField_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_CGGetDisplaysWithRect
+JNIEXPORT jint JNICALL OS_NATIVE(CGGetDisplaysWithRect)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jintLong arg2, jintLong arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGGetDisplaysWithRect_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)CGGetDisplaysWithRect(*lparg0, (CGDisplayCount)arg1, (CGDirectDisplayID*)arg2, (CGDisplayCount*)arg3);
+fail:
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, CGGetDisplaysWithRect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGImageCreate
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGImageCreate)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jint arg6, jintLong arg7, jintLong arg8, jboolean arg9, jint arg10)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageCreate_FUNC);
+	rc = (jintLong)CGImageCreate((size_t)arg0, (size_t)arg1, (size_t)arg2, (size_t)arg3, (size_t)arg4, (CGColorSpaceRef)arg5, (CGBitmapInfo)arg6, (CGDataProviderRef)arg7, (CGFloat*)arg8, (_Bool)arg9, (CGColorRenderingIntent)arg10);
+	OS_NATIVE_EXIT(env, that, CGImageCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGImageGetHeight
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGImageGetHeight)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageGetHeight_FUNC);
+	rc = (jintLong)CGImageGetHeight((CGImageRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGImageGetHeight_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGImageGetWidth
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGImageGetWidth)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageGetWidth_FUNC);
+	rc = (jintLong)CGImageGetWidth((CGImageRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGImageGetWidth_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGImageRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGImageRelease)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGImageRelease_FUNC);
+	CGImageRelease((CGImageRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGImageRelease_FUNC);
 }
 #endif
 

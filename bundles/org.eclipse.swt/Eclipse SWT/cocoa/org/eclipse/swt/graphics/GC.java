@@ -398,37 +398,113 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Image srcImage = data.image;
-	if (srcImage != null) {
-		int srcX = x, srcY = y, destX = 0, destY = 0;
-		NSSize srcSize = srcImage.handle.size();
-		int imgHeight = (int)srcSize.height;
-		int destWidth = (int)srcSize.width - x, destHeight = (int)srcSize.height - y;
-		int srcWidth = destWidth, srcHeight = destHeight;		
-		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(image.imageRep);
-		NSGraphicsContext.static_saveGraphicsState();
-		NSGraphicsContext.setCurrentContext(context);
-		NSAffineTransform transform = NSAffineTransform.transform();
-		NSSize size = image.handle.size();
-		transform.translateXBy(0, size.height-(destHeight + 2 * destY));
-		transform.concat();
-		NSRect srcRect = new NSRect();
-		srcRect.x = srcX;
-		srcRect.y = imgHeight - (srcY + srcHeight);
-		srcRect.width = srcWidth;
-		srcRect.height = srcHeight;
-		NSRect destRect = new NSRect();
-		destRect.x = destX;
-		destRect.y = destY;
-		destRect.width = destWidth;
-		destRect.height = destHeight;
-		srcImage.handle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
- 		NSGraphicsContext.static_restoreGraphicsState();
-		return;
+	NSAutoreleasePool pool = checkGC(TRANSFORM | CLIPPING);
+	try {
+		if (data.image != null) {
+			int srcX = x, srcY = y, destX = 0, destY = 0;
+			NSSize srcSize = data.image.handle.size();
+			int imgHeight = (int)srcSize.height;
+			int destWidth = (int)srcSize.width - x, destHeight = (int)srcSize.height - y;
+			int srcWidth = destWidth, srcHeight = destHeight;		
+			NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(image.imageRep);
+			NSGraphicsContext.static_saveGraphicsState();
+			NSGraphicsContext.setCurrentContext(context);
+			NSAffineTransform transform = NSAffineTransform.transform();
+			NSSize size = image.handle.size();
+			transform.translateXBy(0, size.height-(destHeight + 2 * destY));
+			transform.concat();
+			NSRect srcRect = new NSRect();
+			srcRect.x = srcX;
+			srcRect.y = imgHeight - (srcY + srcHeight);
+			srcRect.width = srcWidth;
+			srcRect.height = srcHeight;
+			NSRect destRect = new NSRect();
+			destRect.x = destX;
+			destRect.y = destY;
+			destRect.width = destWidth;
+			destRect.height = destHeight;
+			data.image.handle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
+	 		NSGraphicsContext.static_restoreGraphicsState();
+			return;
+		}
+		if (data.view != null) {
+			//TODO implement copyArea(Image, int int) for views
+			return;
+		}
+		if (handle.isDrawingToScreen()) {
+			NSImage imageHandle = image.handle;
+			NSSize size = imageHandle.size();
+			CGRect rect = new CGRect();
+			rect.origin.x = x;
+			rect.origin.y = y;
+			rect.size.width = size.width;
+			rect.size.height = size.height;
+			int displayCount = 16;
+			int /*long*/ displays = OS.malloc(4 * displayCount), countPtr = OS.malloc(4);
+			if (OS.CGGetDisplaysWithRect(rect, displayCount, displays, countPtr) != 0) return;
+			int[] count = new int[1], display = new int[1];
+			OS.memmove(count, countPtr, OS.PTR_SIZEOF);
+			for (int i = 0; i < count[0]; i++) {
+				OS.memmove(display, displays + (i * 4), 4);
+				OS.CGDisplayBounds(display[0], rect);
+				int /*long*/ address = OS.CGDisplayBaseAddress(display[0]);
+				if (address != 0) {
+					int /*long*/ width = OS.CGDisplayPixelsWide(display[0]);
+					int /*long*/ height = OS.CGDisplayPixelsHigh(display[0]);
+					int /*long*/ bpr = OS.CGDisplayBytesPerRow(display[0]);
+					int /*long*/ bpp = OS.CGDisplayBitsPerPixel(display[0]);
+					int /*long*/ bps = OS.CGDisplayBitsPerSample(display[0]);
+					int bitmapInfo = OS.kCGImageAlphaNoneSkipFirst;
+					switch ((int)/*63*/bpp) {
+						case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
+						case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
+					}
+					int /*long*/ srcImage = 0;
+					if (OS.__BIG_ENDIAN__() && OS.VERSION >= 0x1040) {
+						int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+						int /*long*/ context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, colorspace, bitmapInfo);
+						OS.CGColorSpaceRelease(colorspace);
+						srcImage = OS.CGBitmapContextCreateImage(context);
+						OS.CGContextRelease(context);
+					} else {
+						int /*long*/ provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
+						int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+						srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, colorspace, bitmapInfo, provider, 0, true, 0);
+						OS.CGColorSpaceRelease(colorspace);
+						OS.CGDataProviderRelease(provider);
+					}
+					copyArea(image, x - (int)rect.origin.x, y - (int)rect.origin.y, srcImage);
+					if (srcImage != 0) OS.CGImageRelease(srcImage);
+				}
+			}
+			OS.free(displays);
+			OS.free(countPtr);
+		}	
+	} finally {
+		uncheckGC(pool);
 	}
-	if (data.view != null) {
-		//TODO implement copyArea(Image, int int) for views
-		return;
+}
+
+void copyArea (Image image, int x, int y, int /*long*/ srcImage) {
+	if (srcImage == 0) return;
+	NSBitmapImageRep rep = image.imageRep;
+	int /*long*/ bpc = rep.bitsPerSample();
+	int /*long*/ width = rep.pixelsWide();
+	int /*long*/ height = rep.pixelsHigh();
+	int /*long*/ bpr = rep.bytesPerRow();
+	int alphaInfo = rep.hasAlpha() ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaNoneSkipFirst;
+	int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+	int /*long*/ context = OS.CGBitmapContextCreate(rep.bitmapData(), width, height, bpc, bpr, colorspace, alphaInfo);
+	OS.CGColorSpaceRelease(colorspace);
+	if (context != 0) {
+	 	CGRect rect = new CGRect();
+	 	rect.origin.x = -x;
+	 	rect.origin.y = y;
+	 	rect.size.width = OS.CGImageGetWidth(srcImage);
+		rect.size.height = OS.CGImageGetHeight(srcImage);
+		OS.CGContextTranslateCTM(context, 0, -(rect.size.height - height));
+		OS.CGContextDrawImage(context, rect, srcImage);
+		OS.CGContextRelease(context);
 	}
 }
 
