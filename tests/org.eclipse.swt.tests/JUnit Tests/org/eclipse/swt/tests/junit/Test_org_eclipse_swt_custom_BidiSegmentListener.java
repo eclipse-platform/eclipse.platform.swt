@@ -39,10 +39,6 @@ public static void main(String[] args) {
 public Test_org_eclipse_swt_custom_BidiSegmentListener(String name) {
 	super(name);
 }
-
-private boolean isBidi() {
-	return BidiUtil.isBidiPlatform();
-}
 protected void setUp() {
 	shell = new Shell();
 	text = new StyledText(shell, SWT.NULL);

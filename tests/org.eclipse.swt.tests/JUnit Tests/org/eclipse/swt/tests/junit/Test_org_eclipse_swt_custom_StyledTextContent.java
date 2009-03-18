@@ -74,9 +74,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-private boolean isBidi() {
-	return BidiUtil.isBidiPlatform();
-}
 protected void setUp() {
 	if (isBidi()) XINSET = 2;
 	else XINSET = 0;

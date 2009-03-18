@@ -85,9 +85,6 @@ protected void getLineBackgrounds() {
 private String textString() {
 	return "This is the text component in testing\nNew Line1\nNew Line2\nNew Line3\nNew Line4.";
 }
-private boolean isBidi() {
-	return  SWT.getPlatform().equals("gtk") || SWT.getPlatform().equals("carbon") || BidiUtil.isBidiPlatform();// || isMirrored;
-}
 boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
