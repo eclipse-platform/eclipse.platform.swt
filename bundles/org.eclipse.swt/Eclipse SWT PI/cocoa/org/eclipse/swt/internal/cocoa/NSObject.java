@@ -163,6 +163,11 @@ public boolean isKindOfClass(int /*long*/ aClass) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isKindOfClass_, aClass);
 }
 
+public id mutableCopy() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_mutableCopy);
+	return result != 0 ? new id(result) : null;
+}
+
 public void performSelectorOnMainThread(int /*long*/ aSelector, id arg, boolean wait) {
 	OS.objc_msgSend(this.id, OS.sel_performSelectorOnMainThread_withObject_waitUntilDone_, aSelector, arg != null ? arg.id : 0, wait);
 }

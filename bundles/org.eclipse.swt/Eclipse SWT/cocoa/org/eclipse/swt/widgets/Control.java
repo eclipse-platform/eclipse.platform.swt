@@ -3678,6 +3678,22 @@ void sort (int [] items) {
 	}
 }
 
+NSSize textExtent (String string) {
+	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(1);
+	Font font = this.font != null ? this.font : defaultFont();
+	dict.setObject(font.handle, OS.NSFontAttributeName);
+	int length = string.length();
+	char[] chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	NSString str = ((NSString)new NSString().alloc()).initWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+	NSSize size = attribStr.size();
+	attribStr.release();
+	dict.release();
+	str.release();
+	return size;
+}
+
 String tooltipText () {
 	return toolTipText;
 }

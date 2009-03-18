@@ -28,6 +28,11 @@ public int /*long*/ characterIndexForInsertionAtPoint(NSPoint point) {
 	return OS.objc_msgSend(this.id, OS.sel_characterIndexForInsertionAtPoint_, point);
 }
 
+public NSParagraphStyle defaultParagraphStyle() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_defaultParagraphStyle);
+	return result != 0 ? new NSParagraphStyle(result) : null;
+}
+
 public boolean dragSelectionWithEvent(NSEvent event, NSSize mouseOffset, boolean slideBack) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_dragSelectionWithEvent_offset_slideBack_, event != null ? event.id : 0, mouseOffset, slideBack);
 }
@@ -45,6 +50,10 @@ public NSDictionary linkTextAttributes() {
 public NSDictionary markedTextAttributes() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_markedTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;
+}
+
+public void setDefaultParagraphStyle(NSParagraphStyle paragraphStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setDefaultParagraphStyle_, paragraphStyle != null ? paragraphStyle.id : 0);
 }
 
 public void setLinkTextAttributes(NSDictionary attributeDictionary) {

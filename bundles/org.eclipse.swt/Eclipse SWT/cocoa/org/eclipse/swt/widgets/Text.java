@@ -1715,14 +1715,20 @@ public void setSelection (Point selection) {
 public void setTabs (int tabs) {
 	checkWidget ();
 	if (this.tabs == tabs) return;
-//	if (txnObject == 0) return;
-//	this.tabs = tabs;
-//	TXNTab tab = new TXNTab ();
-//	tab.value = (short) (textExtent (new char[]{' '}, 0).x * tabs);
-//	int [] tags = new int [] {OS.kTXNTabSettingsTag};
-//	int [] datas = new int [1];
-//	OS.memmove (datas, tab, TXNTab.sizeof);
-//	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
+	this.tabs = tabs;
+	if ((style & SWT.SINGLE) != 0) return;
+	float /*double*/ size = textExtent("s").width * tabs;
+	NSTextView widget = (NSTextView)view;
+	NSParagraphStyle defaultStyle = widget.defaultParagraphStyle();
+	NSMutableParagraphStyle paragraphStyle = new NSMutableParagraphStyle(defaultStyle.mutableCopy());
+	paragraphStyle.setTabStops(NSArray.array());
+	NSTextTab tab = (NSTextTab)new NSTextTab().alloc();
+	tab = tab.initWithType(OS.NSLeftTabStopType, size);
+	paragraphStyle.addTabStop(tab);
+	tab.release();
+	paragraphStyle.setDefaultTabInterval(size);
+	widget.setDefaultParagraphStyle(paragraphStyle);
+	paragraphStyle.release();
 }
 
 /**
