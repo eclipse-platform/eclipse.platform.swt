@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -635,9 +636,18 @@ public Point getCaretLocation () {
 		//TODO - caret location for single text
 		return new Point (0, 0);
 	}
-//	NSText
-//	NSRange range = ((NSTextView)view).selectedRange();
-	return null;
+	NSTextView widget = (NSTextView)view;
+	NSLayoutManager layoutManager = widget.layoutManager();
+	NSTextContainer container = widget.textContainer();
+	NSRange range = widget.selectedRange();
+	int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
+	int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, pRectCount);
+	int /*long*/ [] rectCount = new int /*long*/ [1];
+	OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
+	OS.free(pRectCount);
+	NSRect rect = new NSRect();
+	if (rectCount[0] > 0) OS.memmove(rect, pArray, NSRect.sizeof);
+	return new Point((int)rect.x, (int)rect.y);
 }
 
 /**
@@ -656,8 +666,7 @@ public Point getCaretLocation () {
 public int getCaretPosition () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		//TODO
-		return 0;
+		return selectionRange != null ? (int)/*64*/selectionRange.location : 0;
 	} else {
 		NSRange range = ((NSTextView)view).selectedRange();
 		return (int)/*64*/range.location;
