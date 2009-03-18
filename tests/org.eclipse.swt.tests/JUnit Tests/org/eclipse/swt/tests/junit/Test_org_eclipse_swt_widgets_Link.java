@@ -40,10 +40,6 @@ protected void setUp() {
 	setWidget(link);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Link(Composite parent, int style)
 	link = new Link(shell, SWT.NULL);

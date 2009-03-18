@@ -36,10 +36,6 @@ protected void setUp() {
 	setWidget(progressBar);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		progressBar = new ProgressBar(null, 0);

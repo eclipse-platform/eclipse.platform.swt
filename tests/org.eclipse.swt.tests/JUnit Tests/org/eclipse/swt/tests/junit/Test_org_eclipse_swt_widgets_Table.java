@@ -38,10 +38,6 @@ protected void setUp() {
 	makeCleanEnvironment(false); // by default, use multi-select table.	
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new Table(null, 0);

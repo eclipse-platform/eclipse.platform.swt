@@ -32,14 +32,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-	super.setUp();
-}
-
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_Constructor() {
 	boolean exceptionThrown = false;
 	String detail = "";

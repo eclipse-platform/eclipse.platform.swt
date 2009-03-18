@@ -31,12 +31,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_Constructor() {
 	assertTrue (
 		"did not fill in code properly",

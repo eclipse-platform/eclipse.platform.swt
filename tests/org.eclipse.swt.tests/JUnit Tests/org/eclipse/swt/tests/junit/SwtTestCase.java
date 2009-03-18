@@ -15,6 +15,7 @@ import java.io.*;
 import junit.framework.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 
 public class SwtTestCase extends TestCase {
 	/**
@@ -227,9 +228,33 @@ protected boolean isReparentablePlatform() {
 	}
 	return false;
 }
+
 protected boolean isBidi() {
 	return  SWT.getPlatform().equals("gtk") || SWT.getPlatform().equals("carbon") ||  SWT.getPlatform().equals("cocoa") || BidiUtil.isBidiPlatform();// || isMirrored;
 }
+
+protected void setUp() {
+	try {
+		super.setUp();
+	} catch (Exception e) {
+		SWTError error = new SWTError();
+		error.throwable = e;
+		throw error;
+	}
+}
+
+protected void tearDown() {
+	try {
+		super.tearDown();
+		Display display = Display.getCurrent();
+		if (display != null) display.readAndDispatch();
+	} catch (Exception e) {
+		SWTError error = new SWTError();
+		error.throwable = e;
+		throw error;
+	}
+}
+
 protected void warnUnimpl(String message) {
 	if (verbose) {
 		System.out.println(this.getClass() + ": " + message);

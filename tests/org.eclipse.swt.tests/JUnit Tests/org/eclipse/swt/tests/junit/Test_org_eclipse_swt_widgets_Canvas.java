@@ -41,10 +41,6 @@ protected void setUp() {
 	super.setWidget(canvas);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 protected void setWidget(Widget w) {
 	if (!canvas.isDisposed())
 		canvas.dispose();

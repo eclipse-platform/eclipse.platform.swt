@@ -29,12 +29,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_ConstructorIII() {
 	// Test RGB(int red, int green, int blue)
 	new RGB(20,100,200);

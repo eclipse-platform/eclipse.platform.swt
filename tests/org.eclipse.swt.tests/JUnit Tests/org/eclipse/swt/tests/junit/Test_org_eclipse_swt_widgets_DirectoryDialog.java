@@ -36,10 +36,6 @@ protected void setUp() {
 	setDialog(dirDialog);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new DirectoryDialog(shell);
 	try {

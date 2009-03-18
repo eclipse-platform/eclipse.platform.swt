@@ -41,10 +41,6 @@ protected void setUp() {
 	setWidget(cTabItem);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_custom_CTabFolderI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_custom_CTabFolderI not written");
 }

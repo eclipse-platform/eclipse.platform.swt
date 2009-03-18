@@ -40,11 +40,6 @@ protected void setUp() {
 	makeCleanEnvironment(false); // use multi-line by default
 }
 
-protected void tearDown() {
-	super.tearDown();
-	shell.dispose();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		text = new Text(null, 0);

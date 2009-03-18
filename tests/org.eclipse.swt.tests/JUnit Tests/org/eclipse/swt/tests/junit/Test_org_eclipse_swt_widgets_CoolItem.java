@@ -39,10 +39,6 @@ protected void setUp() {
 	setWidget(coolItem);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarI() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	new CoolItem(coolBar, 0);

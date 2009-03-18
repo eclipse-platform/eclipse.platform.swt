@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_keyPressedLorg_eclipse_swt_events_KeyEvent() {
 	warnUnimpl("Test test_keyPressedLorg_eclipse_swt_events_KeyEvent not written");
 }

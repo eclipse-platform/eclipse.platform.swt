@@ -48,6 +48,7 @@ protected void tearDown() {
 		assertTrue(widget.isDisposed());
 	}
 	assertTrue(shell.isDisposed());
+	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {

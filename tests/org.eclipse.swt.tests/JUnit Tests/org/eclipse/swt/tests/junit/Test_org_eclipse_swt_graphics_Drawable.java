@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
 	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
 }

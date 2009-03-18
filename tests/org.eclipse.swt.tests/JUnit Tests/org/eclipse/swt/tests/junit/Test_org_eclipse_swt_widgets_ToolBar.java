@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(toolBar);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new ToolBar(null, 0);

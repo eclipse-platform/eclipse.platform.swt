@@ -40,10 +40,6 @@ protected void setUp() {
 	setWidget(expandBar);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	final boolean[] listenerCalled = new boolean[] {false};
 	ExpandListener expandListener = new ExpandListener() {		

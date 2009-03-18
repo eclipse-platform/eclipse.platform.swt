@@ -41,10 +41,6 @@ protected void setUp() {
 	setWidget(list);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		list = new List(null, 0);

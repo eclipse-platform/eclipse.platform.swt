@@ -29,14 +29,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-	super.setUp();
-}
-
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_dnd_DNDEvent() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_dnd_DNDEvent not written");
 }

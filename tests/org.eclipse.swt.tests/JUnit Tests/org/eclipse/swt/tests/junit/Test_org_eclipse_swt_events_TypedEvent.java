@@ -34,10 +34,12 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	shell = new Shell();
+	super.setUp();
 }
 
 protected void tearDown() {
 	shell.dispose();
+	super.tearDown();
 }
 
 public void test_ConstructorLjava_lang_Object() {

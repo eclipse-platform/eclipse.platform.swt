@@ -36,9 +36,7 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	display = Display.getDefault();
-}
-
-protected void tearDown() {
+	super.setUp();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData() {

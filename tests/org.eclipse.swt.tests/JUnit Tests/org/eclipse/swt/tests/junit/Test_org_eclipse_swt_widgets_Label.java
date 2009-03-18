@@ -37,21 +37,6 @@ protected void setUp() {
 	setWidget(label);
 }
 
-protected void tearDown() {
-//	super.tearDown();
-
-	if (label != null) {
-		assertEquals(shell.isDisposed(), false);
-		assertEquals(label.isDisposed(), false);
-	}
-
-	shell.dispose();
-	if (label != null) {
-		assertTrue(shell.isDisposed());
-		assertTrue(label.isDisposed());
-	}
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	try {
 		label = new Label(null, 0);

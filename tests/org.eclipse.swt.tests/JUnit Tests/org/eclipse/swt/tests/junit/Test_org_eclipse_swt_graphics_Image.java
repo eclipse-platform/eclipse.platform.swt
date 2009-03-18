@@ -37,10 +37,8 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	display = Display.getDefault();
-}
-
-protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {

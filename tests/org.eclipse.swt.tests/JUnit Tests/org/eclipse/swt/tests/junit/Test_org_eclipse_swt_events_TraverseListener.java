@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_keyTraversedLorg_eclipse_swt_events_TraverseEvent() {
 	warnUnimpl("Test test_keyTraversedLorg_eclipse_swt_events_TraverseEvent not written");
 }

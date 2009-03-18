@@ -36,10 +36,6 @@ protected void setUp() {
 	setWidget(sash);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		sash = new Sash(null, 0);

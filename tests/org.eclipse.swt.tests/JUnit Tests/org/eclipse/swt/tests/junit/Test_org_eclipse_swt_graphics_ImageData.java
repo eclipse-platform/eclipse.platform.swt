@@ -36,10 +36,8 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
-}
-
-protected void tearDown() {
 }
 
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {

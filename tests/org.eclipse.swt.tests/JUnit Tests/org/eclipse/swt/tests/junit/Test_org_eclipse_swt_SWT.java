@@ -29,12 +29,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_Constructor() {
 	// Do nothing. Class SWT is not intended to be subclassed.
 }

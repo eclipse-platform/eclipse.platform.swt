@@ -31,12 +31,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_hideLorg_eclipse_swt_browser_WindowEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);

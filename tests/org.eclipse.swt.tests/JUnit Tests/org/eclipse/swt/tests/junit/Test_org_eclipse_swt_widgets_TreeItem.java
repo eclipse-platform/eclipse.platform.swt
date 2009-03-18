@@ -36,10 +36,6 @@ protected void setUp() {
 	makeCleanEnvironment();
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 	try {
 		new TreeItem((TreeItem)null, SWT.NULL);

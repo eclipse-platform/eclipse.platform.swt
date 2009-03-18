@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceData() {
 	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceData not written");

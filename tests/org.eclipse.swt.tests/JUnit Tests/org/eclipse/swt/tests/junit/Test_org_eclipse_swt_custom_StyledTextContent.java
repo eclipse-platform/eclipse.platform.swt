@@ -75,14 +75,12 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	if (isBidi()) XINSET = 2;
 	else XINSET = 0;
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	styledText.setContent(content);
-}
-
-protected void tearDown() {
 }
 
 public void test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener() {

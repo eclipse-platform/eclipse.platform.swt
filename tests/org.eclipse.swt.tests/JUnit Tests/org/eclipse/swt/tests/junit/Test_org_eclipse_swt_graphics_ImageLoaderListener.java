@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_imageDataLoadedLorg_eclipse_swt_graphics_ImageLoaderEvent() {
 	warnUnimpl("Test test_imageDataLoadedLorg_eclipse_swt_graphics_ImageLoaderEvent not written");
 }

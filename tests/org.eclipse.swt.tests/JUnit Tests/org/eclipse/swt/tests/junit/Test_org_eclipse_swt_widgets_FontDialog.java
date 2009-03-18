@@ -37,9 +37,6 @@ protected void setUp() {
 	setDialog(fontDialog);
 }
 
-protected void tearDown() {
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new FontDialog(shell);
 	try {

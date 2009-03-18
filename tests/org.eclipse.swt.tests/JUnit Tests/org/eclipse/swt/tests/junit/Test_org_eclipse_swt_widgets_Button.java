@@ -41,10 +41,6 @@ protected void setUp() {
 	setWidget(button);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Button(Composite parent, int style)
 	new Button(shell, SWT.NULL);

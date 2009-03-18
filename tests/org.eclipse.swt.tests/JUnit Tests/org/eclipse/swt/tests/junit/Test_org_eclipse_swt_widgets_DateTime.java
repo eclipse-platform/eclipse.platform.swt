@@ -46,10 +46,6 @@ protected void setUp() {
 	setWidget(datetime);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	new DateTime(shell, SWT.NULL);
 

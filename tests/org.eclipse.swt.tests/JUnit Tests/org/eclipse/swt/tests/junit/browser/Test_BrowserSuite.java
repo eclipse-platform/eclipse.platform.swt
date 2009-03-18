@@ -31,12 +31,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void Browser1() {
 	if (verbose) System.out.println("** Browser1 **");
 	boolean result = Browser1.test();

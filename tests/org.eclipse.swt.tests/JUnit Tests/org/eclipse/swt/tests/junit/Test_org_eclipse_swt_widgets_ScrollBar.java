@@ -41,9 +41,6 @@ protected void setUp() {
 	shell.open();
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
 protected String valueString(int[] intArray) {
 	return " ("+intArray[1]+","+intArray[2]+","+intArray[3]+","+intArray[4]+")";
 }

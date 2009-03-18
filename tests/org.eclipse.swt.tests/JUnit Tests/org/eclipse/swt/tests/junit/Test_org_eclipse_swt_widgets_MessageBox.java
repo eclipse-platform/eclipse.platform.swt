@@ -36,10 +36,6 @@ protected void setUp() {
 	setDialog(messageBox);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 /**
  * Possible exceptions:
  * 

@@ -36,10 +36,6 @@ protected void setUp() {
 	makeCleanEnvironment();
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
 	try {
 		new TableItem(null, SWT.NULL);

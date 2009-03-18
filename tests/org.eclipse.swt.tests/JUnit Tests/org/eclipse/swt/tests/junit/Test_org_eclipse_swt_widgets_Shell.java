@@ -43,10 +43,6 @@ protected void setUp() {
 	assertTrue(testShell.getParent() == shell);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_Constructor() {
 	Shell newShell = new Shell();
 	assertNotNull("a: ", newShell.getDisplay());

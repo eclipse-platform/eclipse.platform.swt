@@ -36,10 +36,6 @@ protected void setUp() {
 	setDialog(fileDialog);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	// Test FileDialog(Shell)
 	new FileDialog(shell);

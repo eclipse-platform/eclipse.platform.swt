@@ -35,16 +35,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-	super.setUp();
-	// do nothing, even though this is not an abstract class, it was never meant to 
-	// be instantiated
-}
-
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// do nothing, even though this is not an abstract class, it was never meant to 
 	// be instantiated

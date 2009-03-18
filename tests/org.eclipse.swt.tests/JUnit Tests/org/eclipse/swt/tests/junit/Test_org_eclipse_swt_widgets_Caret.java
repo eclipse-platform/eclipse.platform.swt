@@ -42,10 +42,6 @@ protected void setUp() {
 	setWidget(caret);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CanvasI() {
 	try {
 		new Caret(null, 0);

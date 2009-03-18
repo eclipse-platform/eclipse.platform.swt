@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_getDescriptionLorg_eclipse_swt_accessibility_AccessibleEvent() {
 	warnUnimpl("Test test_getDescriptionLorg_eclipse_swt_accessibility_AccessibleEvent not written");
 }

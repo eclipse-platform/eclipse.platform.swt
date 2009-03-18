@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(menuItem);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
 	MenuItem mItem = new MenuItem(menu, SWT.NULL);
 	assertNotNull(mItem);

@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(toolItem);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI() {
 	try {
 		new ToolItem(null, SWT.NULL);

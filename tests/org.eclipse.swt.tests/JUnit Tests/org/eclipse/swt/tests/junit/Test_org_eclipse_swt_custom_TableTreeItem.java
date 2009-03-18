@@ -40,10 +40,6 @@ protected void setUp() {
 	setWidget(tableTreeItem);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_custom_TableTreeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_custom_TableTreeI not written");
 }

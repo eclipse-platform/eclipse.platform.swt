@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(tree);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		tree = new Tree(null, 0);

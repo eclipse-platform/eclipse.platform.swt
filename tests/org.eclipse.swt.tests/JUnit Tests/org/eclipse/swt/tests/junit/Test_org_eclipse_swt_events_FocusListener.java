@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_focusGainedLorg_eclipse_swt_events_FocusEvent() {
 	warnUnimpl("Test test_focusGainedLorg_eclipse_swt_events_FocusEvent not written");
 }

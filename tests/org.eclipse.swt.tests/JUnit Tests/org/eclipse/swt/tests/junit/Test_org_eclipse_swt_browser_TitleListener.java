@@ -32,12 +32,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_changedLorg_eclipse_swt_browser_TitleEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);

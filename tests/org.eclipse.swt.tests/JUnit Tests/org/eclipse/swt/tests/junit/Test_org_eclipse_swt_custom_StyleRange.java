@@ -50,6 +50,7 @@ protected void initializeColors() {
 }
 
 protected void setUp() {
+	super.setUp();
 	initializeColors();
 }
 
@@ -59,6 +60,7 @@ protected void tearDown() {
 		Color color = (Color)colors.get(elements.nextElement());
 		color.dispose();
 	}
+	super.tearDown();
 }
 
 public void test_Constructor() {

@@ -42,10 +42,6 @@ protected void setUp() {
 	setWidget(combo);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		combo = new Combo(null, 0);

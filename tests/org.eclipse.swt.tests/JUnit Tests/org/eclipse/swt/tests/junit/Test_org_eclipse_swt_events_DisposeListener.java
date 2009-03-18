@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_widgetDisposedLorg_eclipse_swt_events_DisposeEvent() {
 	warnUnimpl("Test test_widgetDisposedLorg_eclipse_swt_events_DisposeEvent not written");
 }

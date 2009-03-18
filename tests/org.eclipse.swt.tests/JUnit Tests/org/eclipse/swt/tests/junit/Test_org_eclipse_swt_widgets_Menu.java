@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(menu);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 	Composite comp = new Composite(shell, SWT.NULL);
 	new Menu(comp);

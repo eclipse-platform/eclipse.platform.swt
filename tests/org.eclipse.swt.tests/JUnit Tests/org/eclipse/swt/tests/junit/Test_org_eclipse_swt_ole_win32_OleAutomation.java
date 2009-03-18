@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_ConstructorLorg_eclipse_swt_ole_win32_OleClientSite() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_ole_win32_OleClientSite not written");
 }

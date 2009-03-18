@@ -36,10 +36,6 @@ protected void setUp() {
 	setDialog(printDialog);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new PrintDialog(shell);
 	

@@ -30,12 +30,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_Constructor() {
 	DeviceData data = new DeviceData();
 	data.debug = true;

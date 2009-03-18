@@ -34,10 +34,8 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	Display.getDefault();
-}
-
-protected void tearDown() {
 }
 
 public void test_equalsLjava_lang_Object() {
