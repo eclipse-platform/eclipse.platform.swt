@@ -264,11 +264,13 @@ public void append (String string) {
 		insertEditText (string);
 	} else {
 		NSTextView widget = (NSTextView) view;
-		NSMutableString mutableString = widget.textStorage ().mutableString ();
-		mutableString.appendString (str);
-		NSRange range = new NSRange ();
-		range.location = mutableString.length ();
+		NSTextStorage storage = widget.textStorage ();
+		NSRange range = new NSRange();
+		range.location = storage.length();
+		storage.replaceCharactersInRange (range, str);
+		range.location = storage.length();
 		widget.scrollRangeToVisible (range);
+		widget.setSelectedRange(range);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
@@ -806,7 +808,14 @@ char [] getEditText (int start, int end) {
 public int getLineCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 1;
-	return (int)/*64*/((NSTextView) view).textStorage ().paragraphs ().count ();
+	NSTextStorage storage = ((NSTextView) view).textStorage ();
+	int count = (int)/*64*/storage.paragraphs ().count ();
+	NSString string = storage.string();
+	int /*long*/ length = string.length(), c;
+	if (length == 0 || (c = string.characterAtIndex(length - 1)) == '\n' || c == '\r') {
+		count++;
+	}
+	return count;
 }
 
 /**
@@ -1765,8 +1774,10 @@ public void setText (String string) {
 	if ((style & SWT.SINGLE) != 0) {
 		setEditText (string);
 	} else {
+		NSTextView widget = (NSTextView)view;
 		NSString str = NSString.stringWith (string);
-		((NSTextView) view).setString (str);
+		widget.setString (str);
+		widget.setSelectedRange(new NSRange());
 	}
 	sendEvent (SWT.Modify);
 }
