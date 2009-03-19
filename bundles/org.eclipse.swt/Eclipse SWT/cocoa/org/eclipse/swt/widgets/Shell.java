@@ -837,10 +837,6 @@ public Point getMinimumSize () {
 	return new Point((int)size.width, (int)size.height);
 }
 
-float [] getParentBackground () {
-	return null;
-}
-
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -1557,13 +1553,17 @@ void setZOrder () {
 }
 
 void setZOrder (Control control, boolean above) {
-//	if (above) {
-//		//NOT DONE - move one window above another
-//	 	OS.BringToFront (shellHandle);
-//	 } else {
-//		int window = control == null ? 0 : OS.GetControlOwner (control.handle);
-//		OS.SendBehind (shellHandle, window);
-//	}
+	if (window == null) return;
+	if (control == null) {
+		if (above) {
+			window.orderFront(null);
+		} else {
+			window.orderBack(null);
+		}
+	} else {
+		NSWindow otherWindow = control.getShell().window;
+		window.orderWindow(above ? OS.NSWindowAbove : OS.NSWindowBelow, otherWindow.windowNumber());
+	}
 }
 
 boolean traverseEscape () {

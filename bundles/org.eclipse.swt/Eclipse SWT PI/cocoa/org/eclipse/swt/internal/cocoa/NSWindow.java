@@ -187,6 +187,10 @@ public NSPoint mouseLocationOutsideOfEventStream() {
 	return result;
 }
 
+public void orderBack(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_orderBack_, sender != null ? sender.id : 0);
+}
+
 public void orderFront(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_orderFront_, sender != null ? sender.id : 0);
 }
@@ -197,6 +201,10 @@ public void orderFrontRegardless() {
 
 public void orderOut(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_orderOut_, sender != null ? sender.id : 0);
+}
+
+public void orderWindow(int /*long*/ place, int /*long*/ otherWin) {
+	OS.objc_msgSend(this.id, OS.sel_orderWindow_relativeTo_, place, otherWin);
 }
 
 public NSWindow parentWindow() {

@@ -23139,9 +23139,9 @@
 <arg name="deqFlag"></arg>
 <retval></retval>
 </method>
-<method selector="orderBack:">
-<arg name="sender"></arg>
-<retval></retval>
+<method selector="orderBack:" swt_gen="true">
+<arg name="sender" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="orderFront:" swt_gen="true">
 <arg name="sender" swt_gen="true"></arg>
@@ -23154,10 +23154,10 @@
 <arg name="sender" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="orderWindow:relativeTo:">
-<arg name="place"></arg>
-<arg name="otherWin"></arg>
-<retval></retval>
+<method selector="orderWindow:relativeTo:" swt_gen="true">
+<arg name="place" swt_gen="true"></arg>
+<arg name="otherWin" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="orderedIndex">
 <retval></retval>
