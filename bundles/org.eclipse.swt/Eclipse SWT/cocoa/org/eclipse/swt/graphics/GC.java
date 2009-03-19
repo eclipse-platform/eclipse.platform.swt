@@ -596,7 +596,83 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	 		return;
 		}
 		if (data.view != null) {
-			//TODO implement copyArea(IIIIIIZ) for views
+			NSView view = data.view;
+			NSRect visibleRect = view.visibleRect();
+			if (visibleRect.width <= 0 || visibleRect.height <= 0) return;
+			NSRect damage = new NSRect();
+			damage.x = srcX;
+			damage.y = srcY;
+			damage.width = width;
+			damage.height = height;
+			NSPoint dest = new NSPoint();
+			dest.x = destX;
+			dest.y = destY;
+
+			view.lockFocus();
+			OS.NSCopyBits(0, damage , dest);
+			view.unlockFocus();
+
+			if (paint) {
+				boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+				if (disjoint) {
+					view.setNeedsDisplayInRect(damage);
+				} else {
+					if (deltaX != 0) {
+						int newX = destX - deltaX;
+						if (deltaX < 0) newX = destX + width;
+						damage.x = newX;
+						damage.width = Math.abs(deltaX);
+						view.setNeedsDisplayInRect(damage);
+					}
+					if (deltaY != 0) {
+						int newY = destY - deltaY;
+						if (deltaY < 0) newY = destY + height;
+						damage.x = srcX;
+						damage.y = newY;
+						damage.width = width;
+						damage.height =  Math.abs (deltaY);
+						view.setNeedsDisplayInRect(damage);
+					}
+				}
+	
+				NSRect srcRect = new NSRect();
+				srcRect.x = srcX;
+				srcRect.y = srcY;
+				srcRect.width = width;
+				srcRect.height = height;
+				OS.NSIntersectionRect(visibleRect, visibleRect, srcRect);
+	
+				if (!OS.NSEqualRects(visibleRect, srcRect)) {
+					if (srcRect.x != visibleRect.x) {
+						damage.x = srcRect.x + deltaX;
+						damage.y = srcRect.y + deltaY;
+						damage.width = visibleRect.x - srcRect.x;
+						damage.height = srcRect.height;
+						view.setNeedsDisplayInRect(damage);
+					} 
+					if (visibleRect.x + visibleRect.width != srcRect.x + srcRect.width) {
+						damage.x = srcRect.x + visibleRect.width + deltaX;
+						damage.y = srcRect.y + deltaY;
+						damage.width = srcRect.width - visibleRect.width;
+						damage.height = srcRect.height;
+						view.setNeedsDisplayInRect(damage);
+					}
+					if (visibleRect.y != srcRect.y) {
+						damage.x = visibleRect.x + deltaX;
+						damage.y = srcRect.y + deltaY;
+						damage.width = visibleRect.width;
+						damage.height = visibleRect.y - srcRect.y;
+						view.setNeedsDisplayInRect(damage);
+					}
+					if (visibleRect.y + visibleRect.height != srcRect.y + srcRect.height) {
+						damage.x = visibleRect.x + deltaX;
+						damage.y = visibleRect.y + visibleRect.height + deltaY;
+						damage.width = visibleRect.width;
+						damage.height = srcRect.y + srcRect.height - (visibleRect.y + visibleRect.height);
+						view.setNeedsDisplayInRect(damage);
+					}
+				}
+			}
 			return;
 		}		
 	} finally {
