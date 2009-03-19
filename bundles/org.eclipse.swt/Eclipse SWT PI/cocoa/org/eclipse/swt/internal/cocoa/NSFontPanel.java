@@ -38,4 +38,8 @@ public static NSFontPanel sharedFontPanel() {
 	return result != 0 ? new NSFontPanel(result) : null;
 }
 
+public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
+	return (float)OS.objc_msgSend_fpret(OS.class_NSFontPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+}
+
 }

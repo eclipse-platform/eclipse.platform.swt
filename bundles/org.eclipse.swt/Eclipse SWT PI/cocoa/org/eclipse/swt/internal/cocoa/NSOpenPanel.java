@@ -51,4 +51,8 @@ public static NSSavePanel savePanel() {
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 
+public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
+	return (float)OS.objc_msgSend_fpret(OS.class_NSOpenPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+}
+
 }

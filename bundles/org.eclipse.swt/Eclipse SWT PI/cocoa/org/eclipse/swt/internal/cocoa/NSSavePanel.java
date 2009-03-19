@@ -50,4 +50,8 @@ public void setTitle(NSString title) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
 }
 
+public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
+	return (float)OS.objc_msgSend_fpret(OS.class_NSSavePanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+}
+
 }

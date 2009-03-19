@@ -23107,13 +23107,13 @@
 <arg name="menu"></arg>
 <retval></retval>
 </method>
-<method class_method="true" selector="minFrameWidthWithTitle:styleMask:">
-<arg name="aTitle"></arg>
-<arg name="aStyle"></arg>
-<retval></retval>
+<method class_method="true" selector="minFrameWidthWithTitle:styleMask:" swt_gen="true">
+<arg name="aTitle" swt_gen="true"></arg>
+<arg name="aStyle" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
-<method selector="minSize">
-<retval></retval>
+<method selector="minSize" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="miniaturize:" swt_gen="true">
 <arg name="sender" swt_gen="true"></arg>
@@ -23444,9 +23444,9 @@
 <arg name="size"></arg>
 <retval></retval>
 </method>
-<method selector="setMinSize:">
-<arg name="size"></arg>
-<retval></retval>
+<method selector="setMinSize:" swt_gen="true">
+<arg name="size" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setMiniwindowImage:">
 <arg name="image"></arg>

@@ -520,6 +520,11 @@ void createHandle () {
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & SWT.TOOL) != 0) {
 			window.setHasShadow (true);
 		}
+		if ((style & SWT.NO_TRIM) == 0) {
+			NSSize size = window.minSize();
+			size.width = NSWindow.minFrameWidthWithTitle(NSString.stringWith(""), styleMask);
+			window.setMinSize(size);
+		}
 		if (fixResize ()) {
 			if (window.respondsToSelector(OS.sel_setMovable_)) {
 				OS.objc_msgSend(window.id, OS.sel_setMovable_, 0);
@@ -827,14 +832,9 @@ public boolean getMinimized () {
  */
 public Point getMinimumSize () {
 	checkWidget();
-//	Rect rect = new Rect ();
-//	OS.GetWindowStructureWidths (shellHandle, rect);
-//	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
-//	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
-//	int width = Math.max (1, (int) inMinLimits.x + (rect.left + rect.right));
-//	int height = Math.max (1, (int) inMinLimits.y + (rect.top + rect.bottom));
-//	return new Point (width, height);
-	return null;
+	if (window == null) return new Point(0, 0);
+	NSSize size = window.minSize();
+	return new Point((int)size.width, (int)size.height);
 }
 
 float [] getParentBackground () {
@@ -1375,24 +1375,17 @@ public void setMinimized (boolean minimized) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget();
-//	int clientWidth = 0, clientHeight = 0;
-//	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
-//	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-//		clientWidth = DEFAULT_CLIENT_WIDTH;
-//		clientHeight = DEFAULT_CLIENT_HEIGHT;
-//	}
-//	Rect rect = new Rect ();
-//	OS.GetWindowStructureWidths (shellHandle, rect);
-//	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
-//	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
-//	width = Math.max (width, clientWidth + rect.left + rect.right);
-//	height = Math.max (height, clientHeight + rect.top + rect.bottom);
-//	inMinLimits.x = width - (rect.left + rect.right);
-//	inMinLimits.y = height - (rect.top + rect.bottom);
-//	OS.SetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
-//	Point size = getSize ();
-//	int newWidth = Math.max (size.x, width), newHeight = Math.max (size.y, height);
-//	if (newWidth != size.x || newHeight != size.y) setSize (newWidth, newHeight);
+	if (window == null) return;
+	NSSize size = new NSSize();
+	size.width = width;
+	size.height = height;
+	window.setMinSize(size);
+	NSRect frame = window.frame();
+	if (width > frame.width || height > frame.height) {
+		width = (int)(width > frame.width ? width : frame.width);
+		height = (int)(height > frame.height ? height : frame.height);
+		setBounds(0, 0, width, height, false, true);
+	}
 }
 
 /**

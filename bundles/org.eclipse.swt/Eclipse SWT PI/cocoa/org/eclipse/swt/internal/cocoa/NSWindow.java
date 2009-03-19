@@ -167,6 +167,16 @@ public void makeKeyAndOrderFront(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_makeKeyAndOrderFront_, sender != null ? sender.id : 0);
 }
 
+public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
+	return (float)OS.objc_msgSend_fpret(OS.class_NSWindow, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+}
+
+public NSSize minSize() {
+	NSSize result = new NSSize();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_minSize);
+	return result;
+}
+
 public void miniaturize(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_miniaturize_, sender != null ? sender.id : 0);
 }
@@ -245,6 +255,10 @@ public void setHasShadow(boolean hasShadow) {
 
 public void setLevel(int /*long*/ newLevel) {
 	OS.objc_msgSend(this.id, OS.sel_setLevel_, newLevel);
+}
+
+public void setMinSize(NSSize size) {
+	OS.objc_msgSend(this.id, OS.sel_setMinSize_, size);
 }
 
 public void setOpaque(boolean isOpaque) {

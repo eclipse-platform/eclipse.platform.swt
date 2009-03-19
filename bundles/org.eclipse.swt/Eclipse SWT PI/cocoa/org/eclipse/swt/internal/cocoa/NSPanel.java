@@ -32,4 +32,8 @@ public boolean worksWhenModal() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_worksWhenModal);
 }
 
+public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
+	return (float)OS.objc_msgSend_fpret(OS.class_NSPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+}
+
 }
