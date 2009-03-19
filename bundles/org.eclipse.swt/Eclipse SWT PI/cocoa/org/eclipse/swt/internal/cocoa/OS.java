@@ -826,6 +826,7 @@ public static final int /*long*/ sel_dayOfMonth = sel_registerName("dayOfMonth")
 public static final int /*long*/ sel_decimalDigitCharacterSet = sel_registerName("decimalDigitCharacterSet");
 public static final int /*long*/ sel_decimalSeparator = sel_registerName("decimalSeparator");
 public static final int /*long*/ sel_declareTypes_owner_ = sel_registerName("declareTypes:owner:");
+public static final int /*long*/ sel_defaultBaselineOffsetForFont_ = sel_registerName("defaultBaselineOffsetForFont:");
 public static final int /*long*/ sel_defaultButtonCell = sel_registerName("defaultButtonCell");
 public static final int /*long*/ sel_defaultCenter = sel_registerName("defaultCenter");
 public static final int /*long*/ sel_defaultFlatness = sel_registerName("defaultFlatness");

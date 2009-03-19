@@ -42,6 +42,10 @@ public int /*long*/ characterIndexForGlyphAtIndex(int /*long*/ glyphIndex) {
 	return OS.objc_msgSend(this.id, OS.sel_characterIndexForGlyphAtIndex_, glyphIndex);
 }
 
+public float /*double*/ defaultBaselineOffsetForFont(NSFont theFont) {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_defaultBaselineOffsetForFont_, theFont != null ? theFont.id : 0);
+}
+
 public float /*double*/ defaultLineHeightForFont(NSFont theFont) {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_defaultLineHeightForFont_, theFont != null ? theFont.id : 0);
 }

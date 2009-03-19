@@ -9850,9 +9850,9 @@
 <method selector="defaultAttachmentScaling">
 <retval></retval>
 </method>
-<method selector="defaultBaselineOffsetForFont:">
-<arg name="theFont"></arg>
-<retval></retval>
+<method selector="defaultBaselineOffsetForFont:" swt_gen="true">
+<arg name="theFont" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="defaultLineHeightForFont:" swt_gen="true">
 <arg name="theFont" swt_gen="true"></arg>

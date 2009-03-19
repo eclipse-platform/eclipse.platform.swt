@@ -334,13 +334,12 @@ public void addString(String string, float x, float y, Font font) {
 			layoutManager.getGlyphs(glyphs, range);
 			NSBezierPath path = NSBezierPath.bezierPath();
 			NSPoint point = new NSPoint();
-			point.x = x;
-			point.y = y;
 			path.moveToPoint(point);
 			path.appendBezierPathWithGlyphs(glyphs, range.length, font.handle);
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.scaleXBy(1, -1);
-			transform.translateXBy(0, -((2*y) + textStorage.size().height));
+			float /*double*/ baseline = layoutManager.defaultBaselineOffsetForFont(font.handle);
+			transform.translateXBy(x, -(y + baseline));
 			path.transformUsingAffineTransform(transform);
 			OS.free(glyphs);
 			handle.appendBezierPath(path);
