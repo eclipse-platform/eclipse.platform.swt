@@ -225,7 +225,8 @@ public void test_setSelectionEmpty() {
 		tabFolder.setSelection(i);
 		assertEquals(i, tabFolder.getSelectionIndex());
 	}
-
+	
+	makeCleanEnvironment();
 	tabFolder.setSelection(-1);
 	assertEquals(0, tabFolder.getSelection().length);	
 }
