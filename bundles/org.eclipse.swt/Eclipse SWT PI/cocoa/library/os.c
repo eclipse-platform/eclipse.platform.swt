@@ -220,6 +220,31 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGContextCopyPath)
 }
 #endif
 
+#ifndef NO_CGContextCopyWindowContentsToRect
+JNIEXPORT void JNICALL OS_NATIVE(CGContextCopyWindowContentsToRect)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2, jintLong arg3, jobject arg4)
+{
+	CGRect _arg1, *lparg1=NULL;
+	CGRect _arg4, *lparg4=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextCopyWindowContentsToRect_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getCGRectFields(env, arg4, &_arg4)) == NULL) goto fail;
+/*
+	CGContextCopyWindowContentsToRect(arg0, *lparg1, arg2, arg3, *lparg4);
+*/
+	{
+		LOAD_FUNCTION(fp, CGContextCopyWindowContentsToRect)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, CGRect, jintLong, jintLong, CGRect))fp)(arg0, *lparg1, arg2, arg3, *lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) setCGRectFields(env, arg4, lparg4);
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextCopyWindowContentsToRect_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextDrawImage
 JNIEXPORT void JNICALL OS_NATIVE(CGContextDrawImage)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)

@@ -41,6 +41,7 @@ typedef enum {
 	CGColorSpaceRelease_FUNC,
 	CGContextAddPath_FUNC,
 	CGContextCopyPath_FUNC,
+	CGContextCopyWindowContentsToRect_FUNC,
 	CGContextDrawImage_FUNC,
 	CGContextRelease_FUNC,
 	CGContextReplacePathWithStrokedPath_FUNC,

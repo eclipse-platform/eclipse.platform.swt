@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 433;
-int OS_nativeFunctionCallCount[433];
+int OS_nativeFunctionCount = 434;
+int OS_nativeFunctionCallCount[434];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"CFDataGetBytePtr",
@@ -33,6 +33,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGColorSpaceRelease",
 	"CGContextAddPath",
 	"CGContextCopyPath",
+	"CGContextCopyWindowContentsToRect",
 	"CGContextDrawImage",
 	"CGContextRelease",
 	"CGContextReplacePathWithStrokedPath",

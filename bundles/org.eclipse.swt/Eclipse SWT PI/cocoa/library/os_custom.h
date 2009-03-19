@@ -39,3 +39,4 @@
 #define kTISPropertyUnicodeKeyLayoutData_LIB "com.apple.Carbon"
 #define ATSFontActivateFromFileReference_LIB "com.apple.ApplicationServices.ATS"
 #define FSPathMakeRef_LIB "com.apple.CoreServices"
+#define CGContextCopyWindowContentsToRect_LIB "com.apple.CoreGraphics"

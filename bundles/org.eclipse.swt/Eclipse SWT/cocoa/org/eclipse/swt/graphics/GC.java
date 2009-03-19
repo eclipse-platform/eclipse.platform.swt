@@ -428,7 +428,27 @@ public void copyArea(Image image, int x, int y) {
 			return;
 		}
 		if (data.view != null) {
-			//TODO implement copyArea(Image, int int) for views
+			NSPoint pt = new NSPoint();
+			pt.x = x;
+			pt.y = y;
+			NSWindow window = data.view.window();
+			pt = data.view.convertPoint_toView_(pt, window.contentView().superview());
+			NSRect frame = window.frame();
+			pt.y = frame.height - pt.y;
+			NSSize size = image.handle.size();
+			CGRect destRect = new CGRect();
+			destRect.size.width = size.width;
+			destRect.size.height = size.height;
+			CGRect srcRect = new CGRect();
+			srcRect.origin.x = pt.x;
+			srcRect.origin.y = pt.y;
+			srcRect.size.width = size.width;
+			srcRect.size.height = size.height;
+			image.handle.lockFocus();
+			NSGraphicsContext context = NSGraphicsContext.currentContext();
+			int /*long*/ contextID = OS.objc_msgSend(NSApplication.sharedApplication().id, OS.sel_contextID);
+			OS.CGContextCopyWindowContentsToRect(context.graphicsPort(), destRect, contextID, window.windowNumber(), srcRect);
+			image.handle.unlockFocus();
 			return;
 		}
 		if (handle.isDrawingToScreen()) {

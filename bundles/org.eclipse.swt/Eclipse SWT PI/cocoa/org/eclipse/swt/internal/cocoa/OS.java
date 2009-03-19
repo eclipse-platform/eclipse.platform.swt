@@ -44,6 +44,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
 
 	public static final int /*long*/ sel_setMovable_ = OS.sel_registerName("setMovable:");
+
+	public static final int /*long*/ sel_contextID = OS.sel_registerName("contextID");
 	
 	public static final int /*long*/ class_NSToolTipManager = OS.objc_getClass("NSToolTipManager");
 	public static final int /*long*/ sel_sharedToolTipManager = OS.sel_registerName("sharedToolTipManager");
@@ -152,6 +154,13 @@ public static final int kCGBitmapByteOrder16Big = 3 << 12;
 public static final int kCGBitmapByteOrder32Big = 4 << 12;
 public static final int kCGBitmapByteOrder16Host = __BIG_ENDIAN__() ? kCGBitmapByteOrder16Big : kCGBitmapByteOrder16Little;
 public static final int kCGBitmapByteOrder32Host = __BIG_ENDIAN__() ? kCGBitmapByteOrder32Big : kCGBitmapByteOrder32Little;
+
+/**
+ * @method flags=dynamic
+ * @param destRect flags=struct
+ * @param srcRect flags=struct
+ */
+public static final native void CGContextCopyWindowContentsToRect(int /*long*/ context, CGRect destRect, int /*long*/ contextID, int /*long*/ windowNumber, CGRect srcRect);
 
 /** QuickDraw calls */
 
