@@ -2565,8 +2565,8 @@
 <arg name="tableName"></arg>
 <retval></retval>
 </method>
-<method class_method="true" selector="mainBundle">
-<retval></retval>
+<method class_method="true" selector="mainBundle" swt_gen="true">
+<retval swt_gen="true"></retval>
 </method>
 <method selector="objectForInfoDictionaryKey:" swt_gen="true">
 <arg name="key" swt_gen="true"></arg>

@@ -48,6 +48,11 @@ public NSDictionary infoDictionary() {
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
+public static NSBundle mainBundle() {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSBundle, OS.sel_mainBundle);
+	return result != 0 ? new NSBundle(result) : null;
+}
+
 public id objectForInfoDictionaryKey(NSString key) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectForInfoDictionaryKey_, key != null ? key.id : 0);
 	return result != 0 ? new id(result) : null;

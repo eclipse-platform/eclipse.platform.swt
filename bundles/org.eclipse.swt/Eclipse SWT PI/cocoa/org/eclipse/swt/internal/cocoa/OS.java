@@ -1100,6 +1100,7 @@ public static final int /*long*/ sel_locationForGlyphAtIndex_ = sel_registerName
 public static final int /*long*/ sel_locationInWindow = sel_registerName("locationInWindow");
 public static final int /*long*/ sel_lockFocus = sel_registerName("lockFocus");
 public static final int /*long*/ sel_lowercaseString = sel_registerName("lowercaseString");
+public static final int /*long*/ sel_mainBundle = sel_registerName("mainBundle");
 public static final int /*long*/ sel_mainFrame = sel_registerName("mainFrame");
 public static final int /*long*/ sel_mainMenu = sel_registerName("mainMenu");
 public static final int /*long*/ sel_mainRunLoop = sel_registerName("mainRunLoop");

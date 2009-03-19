@@ -256,7 +256,7 @@ public class Display extends Device {
 		
 	};
 
-	static String APP_NAME = "SWT";
+	static String APP_NAME;
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 	static final byte[] SWT_IMAGE = {'S', 'W', 'T', '_', 'I', 'M', 'A', 'G', 'E', '\0'};
@@ -718,10 +718,7 @@ void createDisplay (DeviceData data) {
 		int [] psn = new int [2];
 		if (OS.GetCurrentProcess (psn) == OS.noErr) {
 			int pid = OS.getpid ();
-			int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + pid));
-			if (ptr  == 0 && APP_NAME != null) {
-				ptr = NSString.stringWith(APP_NAME).UTF8String();	
-			}
+			int /*long*/ ptr = getAppName().UTF8String();
 			if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
 			OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
 			OS.SetFrontProcess (psn);
@@ -3284,6 +3281,25 @@ void sendEvent (int eventType, Event event) {
 	}
 }
 
+static NSString getAppName() {
+	NSString name = null;
+	int pid = OS.getpid ();
+	int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + pid));
+	if (ptr != 0) name = NSString.stringWithUTF8String(ptr);
+	if (name == null && APP_NAME != null) name = NSString.stringWith(APP_NAME);
+	if (name == null) {
+		NSDictionary info = NSBundle.mainBundle().infoDictionary();
+		if (info != null) {
+			id value = info.objectForKey(NSString.stringWith("CFBundleName"));
+			if (value != null) {
+				name = new NSString(value);
+			}
+		}
+	}
+	if (name == null) name = NSString.stringWith("SWT");
+	return name;
+}
+
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
@@ -4012,11 +4028,14 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 		NSMenu mainmenu = application.mainMenu();
 		NSMenuItem appitem = mainmenu.itemAtIndex(0);
 		if (appitem != null) {
+			NSString name = getAppName();
+			NSString match = NSString.stringWith("%@");
+			appitem.setTitle(name);
 			NSMenu sm = appitem.submenu();
 			NSArray ia = sm.itemArray();
 			for(int i = 0; i < ia.count(); i++) {
 				NSMenuItem ni = new NSMenuItem(ia.objectAtIndex(i));
-				NSString title = ni.title().stringByReplacingOccurrencesOfString(NSString.stringWith("%@"), NSString.stringWith(APP_NAME));
+				NSString title = ni.title().stringByReplacingOccurrencesOfString(match, name);
 				ni.setTitle(title);
 			}
 
@@ -4030,8 +4049,6 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 	} else if (sel == OS.sel_terminate_) {
 		// Do nothing here -- without a definition of sel_terminate we get a warning dumped to the console.
 	} else if (sel == OS.sel_orderFrontStandardAboutPanel_) {
-//		Event event = new Event ();
-//		sendEvent (SWT.ABORT, event);
 	} else if (sel == OS.sel_hideOtherApplications_) {
 		application.hideOtherApplications(application);
 	} else if (sel == OS.sel_hide_) {
