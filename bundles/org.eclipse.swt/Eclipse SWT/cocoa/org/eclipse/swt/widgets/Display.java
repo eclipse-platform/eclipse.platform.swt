@@ -2512,7 +2512,7 @@ public boolean post(Event event) {
 			case SWT.MouseMove: 
 			case SWT.MouseUp: {
 				CGPoint mouseCursorPosition = new CGPoint ();
-				int chord = OS.GetCurrentEventButtonState ();
+				int chord = OS.GetCurrentButtonState ();
 				mouseCursorPosition.x = event.x;
 				mouseCursorPosition.y = event.y;
 

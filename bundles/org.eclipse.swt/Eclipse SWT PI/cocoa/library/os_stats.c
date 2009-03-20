@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 444;
-int OS_nativeFunctionCallCount[444];
+int OS_nativeFunctionCount = 443;
+int OS_nativeFunctionCallCount[443];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"CFDataGetBytePtr",
@@ -89,7 +89,6 @@ char * OS_nativeFunctionNames[] = {
 	"FSPathMakeRef",
 	"Gestalt",
 	"GetCurrentButtonState",
-	"GetCurrentEventButtonState",
 	"GetCurrentProcess",
 	"GetDblTime",
 	"GetRegionBounds",

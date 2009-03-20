@@ -936,26 +936,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentButtonState)
 }
 #endif
 
-#ifndef NO_GetCurrentEventButtonState
-JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentEventButtonState)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetCurrentEventButtonState_FUNC);
-/*
-	rc = (jint)GetCurrentEventButtonState();
-*/
-	{
-		LOAD_FUNCTION(fp, GetCurrentEventButtonState)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, GetCurrentEventButtonState_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GetCurrentProcess
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcess)
 	(JNIEnv *env, jclass that, jintArray arg0)

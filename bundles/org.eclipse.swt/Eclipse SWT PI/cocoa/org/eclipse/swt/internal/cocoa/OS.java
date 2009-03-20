@@ -227,9 +227,6 @@ public static final int kQDParseRegionFromRight = (1 << 3);
 public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
 public static final int kQDRegionToRectsMsgParse = 2;
 
-/** @method flags=dynamic */
-public static final native int GetCurrentEventButtonState();
-
 /** Custom callbacks */
 
 /** @method flags=no_gen */
