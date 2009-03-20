@@ -144,18 +144,6 @@ public static final native int FSPathMakeRef (int /*long*/ path, byte[] ref, boo
 /** @method flags=dynamic */
 public static final native byte LMGetKbdType();
 
-/**
- * @param mouseCursorPosition flags=struct
- * @param updateMouseCursorPosition cast=(boolean_t)
- * @param mouseButtonDown cast=(boolean_t)
- * @param mouseButtonDown2 cast=(boolean_t)
- * @param mouseButtonDown3 cast=(boolean_t)
- * @param mouseButtonDown4 cast=(boolean_t)
- * @param mouseButtonDown5 cast=(boolean_t)
- */
-public static final native int CGPostMouseEvent(CGPoint mouseCursorPosition, boolean updateMouseCursorPosition, int buttonCount, boolean mouseButtonDown, boolean mouseButtonDown2, boolean mouseButtonDown3, boolean mouseButtonDown4, boolean mouseButtonDown5);
-
-
 /** C calls */
 
 public static final native int getpid();
@@ -4219,6 +4207,13 @@ public static final native void CGPathRelease(int /*long*/ path);
  * @param keyDown cast=(boolean_t)
  */
 public static final native int CGPostKeyboardEvent(short keyChar, short virtualKey, boolean keyDown);
+/**
+ * @param mouseCursorPosition flags=struct
+ * @param updateMouseCursorPosition cast=(boolean_t)
+ * @param buttonCount cast=(CGButtonCount)
+ * @param mouseButtonDown cast=(boolean_t)
+ */
+public static final native int CGPostMouseEvent(CGPoint mouseCursorPosition, boolean updateMouseCursorPosition, int buttonCount, boolean mouseButtonDown, boolean varArg0, boolean varArg1, boolean varArg2, boolean varArg3);
 /**
  * @param wheelCount cast=(CGWheelCount)
  * @param wheel1 cast=(int32_t)

@@ -671,7 +671,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPostMouseEvent)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CGPostMouseEvent_FUNC);
 	if (arg0) if ((lparg0 = getCGPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, arg2, (boolean_t)arg3, (boolean_t)arg4, (boolean_t)arg5, (boolean_t)arg6, (boolean_t)arg7);
+	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, (CGButtonCount)arg2, (boolean_t)arg3, arg4, arg5, arg6, arg7);
 fail:
 	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, CGPostMouseEvent_FUNC);

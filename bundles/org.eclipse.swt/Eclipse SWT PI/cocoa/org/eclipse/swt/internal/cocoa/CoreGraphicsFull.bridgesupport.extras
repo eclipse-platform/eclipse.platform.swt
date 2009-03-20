@@ -302,6 +302,7 @@
   <enum name="kCGDesktopIconWindowLevelKey"></enum>
   <enum name="kCGDesktopWindowLevel"></enum>
   <enum name="kCGDesktopWindowLevelKey"></enum>
+  <enum name="kCGDirectMainDisplay"></enum>
   <enum name="kCGDisplayAddFlag"></enum>
   <enum name="kCGDisplayBeginConfigurationFlag"></enum>
   <enum name="kCGDisplayBlendNormal"></enum>
@@ -3171,12 +3172,12 @@
     <arg name="keyDown" swt_gen="true" swt_java_type="boolean" swt_java_type64="boolean"></arg>
     <retval swt_gen="true"></retval>
   </function>
-  <function name="CGPostMouseEvent">
-    <arg name="mouseCursorPosition"></arg>
-    <arg name="updateMouseCursorPosition"></arg>
-    <arg name="buttonCount"></arg>
-    <arg name="mouseButtonDown"></arg>
-    <retval></retval>
+  <function name="CGPostMouseEvent" swt_gen="true" swt_variadic_count="4" swt_variadic_java_types="boolean,*">
+    <arg name="mouseCursorPosition" swt_gen="true"></arg>
+    <arg name="updateMouseCursorPosition" swt_gen="true" swt_java_type="boolean"></arg>
+    <arg name="buttonCount" swt_gen="true"></arg>
+    <arg name="mouseButtonDown" swt_gen="true" swt_java_type="boolean"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGPostScrollWheelEvent" swt_gen="true">
     <arg name="wheelCount" swt_gen="true"></arg>
@@ -3531,5 +3532,4 @@
   <function_alias name="CGAffineTransformMake"></function_alias>
   <function_alias name="CGPointApplyAffineTransform"></function_alias>
   <function_alias name="CGSizeApplyAffineTransform"></function_alias>
-  <enum name="kCGDirectMainDisplay"></enum>
 </signatures>
