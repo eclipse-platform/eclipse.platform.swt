@@ -68,8 +68,20 @@ public class TextEditor {
 	
 	static final boolean SAMPLE_TEXT = false;
 	static final boolean USE_BASELINE = false;
-	protected static final int FONT_INCREMENT = 1;
 
+	static final String[] FONT_SIZES = new String[] {
+			"6",		//$NON-NLS-1$
+			"8", 		//$NON-NLS-1$
+			"9", 		//$NON-NLS-1$
+			"10", 		//$NON-NLS-1$
+			"11", 		//$NON-NLS-1$
+			"12",	 	//$NON-NLS-1$
+			"14",		//$NON-NLS-1$
+			"24",		//$NON-NLS-1$
+			"36",		//$NON-NLS-1$
+			"48" 		//$NON-NLS-1$
+	};
+	
 	static final ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");  //$NON-NLS-1$
 
 	static String getResourceString(String key) {
@@ -138,8 +150,21 @@ public class TextEditor {
 		styledText.setStyleRanges(0,0, ranges, styles);
 	}
 	
-	void adjustFontSize (int amount) {
-		
+	void adjustFontSize (int increment) {
+		String name = fontNameControl.getText();
+		int index = fontSizeControl.getSelectionIndex();
+		String newSize = "0";
+		if (index + increment < fontSizeControl.getItemCount()) {
+			int newIndex = index + increment;
+			fontSizeControl.select (newIndex);
+			newSize = fontSizeControl.getItem(newIndex);
+		} else {
+			newSize = fontSizeControl.getText();
+		}
+		int size = Integer.parseInt (newSize);
+		disposeResource(textFont);
+		textFont = new Font(display, name, size, SWT.NORMAL);
+		setStyle(FONT);
 	}
 
 	void createMenuBar() {
@@ -738,7 +763,8 @@ public class TextEditor {
 				if (USE_BASELINE) {
 					setStyle(BASELINE_UP);
 				} else {
-					adjustFontSize(FONT_INCREMENT);
+					adjustFontSize(1);
+					
 				}
 			}
 		});
@@ -751,7 +777,7 @@ public class TextEditor {
 				if (USE_BASELINE) {
 					setStyle(BASELINE_DOWN);
 				} else {
-					adjustFontSize(-FONT_INCREMENT);
+					adjustFontSize(-1);
 				}
 			}
 		});
@@ -775,19 +801,7 @@ public class TextEditor {
 		fontNameControl.setItems(getFontNames());
 		fontNameControl.setVisibleItemCount(12);
 		fontSizeControl = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		String[] fontSizes = new String[] {
-				"6",		//$NON-NLS-1$
-				"8", 		//$NON-NLS-1$
-				"9", 		//$NON-NLS-1$
-				"10", 		//$NON-NLS-1$
-				"11", 		//$NON-NLS-1$
-				"12",	 	//$NON-NLS-1$
-				"14",		//$NON-NLS-1$
-				"24",		//$NON-NLS-1$
-				"36",		//$NON-NLS-1$
-				"48" 		//$NON-NLS-1$
-		};
-		fontSizeControl.setItems(fontSizes);
+		fontSizeControl.setItems(FONT_SIZES);
 		fontSizeControl.setVisibleItemCount(8);
 		SelectionAdapter adapter = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
