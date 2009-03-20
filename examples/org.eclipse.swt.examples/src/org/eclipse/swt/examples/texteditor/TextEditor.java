@@ -67,6 +67,9 @@ public class TextEditor {
 	static final int BORDER = BORDER_SOLID | BORDER_DASH | BORDER_DOT;
 	
 	static final boolean SAMPLE_TEXT = false;
+	static final boolean USE_BASELINE = false;
+	protected static final int FONT_INCREMENT = 1;
+
 	static final ResourceBundle resources = ResourceBundle.getBundle("examples_texteditor");  //$NON-NLS-1$
 
 	static String getResourceString(String key) {
@@ -133,6 +136,10 @@ public class TextEditor {
 		int[] ranges = {offset, 1};
 		StyleRange[] styles = {style};
 		styledText.setStyleRanges(0,0, ranges, styles);
+	}
+	
+	void adjustFontSize (int amount) {
+		
 	}
 
 	void createMenuBar() {
@@ -725,19 +732,27 @@ public class TextEditor {
 
 		ToolItem baselineUpItem = new ToolItem(styleToolBar, SWT.PUSH);
 		baselineUpItem.setImage(iBaselineUp);
-		baselineUpItem.setToolTipText(getResourceString("IncreaseBaseline")); //$NON-NLS-1$
+		baselineUpItem.setToolTipText(getResourceString(USE_BASELINE ? "IncreaseBaseline" : "IncreaseFont")); //$NON-NLS-1$
 		baselineUpItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				setStyle(BASELINE_UP);
+				if (USE_BASELINE) {
+					setStyle(BASELINE_UP);
+				} else {
+					adjustFontSize(FONT_INCREMENT);
+				}
 			}
 		});
 
 		ToolItem baselineDownItem = new ToolItem(styleToolBar, SWT.PUSH);
 		baselineDownItem.setImage(iBaselineDown);
-		baselineDownItem.setToolTipText(getResourceString("DecreaseBaseline")); //$NON-NLS-1$
+		baselineDownItem.setToolTipText(getResourceString(USE_BASELINE ? "DecreaseBaseline" : "DecreaseFont")); //$NON-NLS-1$
 		baselineDownItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				setStyle(BASELINE_DOWN);
+				if (USE_BASELINE) {
+					setStyle(BASELINE_DOWN);
+				} else {
+					adjustFontSize(-FONT_INCREMENT);
+				}
 			}
 		});
 		ToolItem linkItem = new ToolItem(styleToolBar, SWT.PUSH);
