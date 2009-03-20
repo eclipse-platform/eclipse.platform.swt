@@ -1000,6 +1000,8 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	if (hooks (SWT.Verify)) {
 		String text = new NSString(replacementString).getString();
 		NSEvent currentEvent = display.application.currentEvent();
+		int /*long*/ type = currentEvent.type();
+		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
 		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
 		if (newText == null) return false;
 		if (text != newText) {

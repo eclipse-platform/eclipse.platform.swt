@@ -40,6 +40,10 @@ public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
+public void setObjectValue(id obj) {
+	OS.objc_msgSend(this.id, OS.sel_setObjectValue_, obj != null ? obj.id : 0);
+}
+
 public void setTarget(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setTarget_, anObject != null ? anObject.id : 0);
 }

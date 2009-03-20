@@ -2153,8 +2153,12 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
-	cls = registerCellSubclass(NSComboBox.cellClass(), size, align, types);
-	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	className = "SWTComboBoxCell";
+	cls = OS.objc_allocateClassPair(OS.class_NSComboBoxCell, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_setObjectValue_, proc3, "@:@");
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.objc_registerClassPair(cls);
 	NSComboBox.setCellClass(cls);
 
 	className = "SWTDatePicker";
@@ -4447,6 +4451,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		int /*long*/ result = OS.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
+	} else if (sel == OS.sel_setObjectValue_) {
+		widget.setObjectValue(id, sel, arg0);
 	}
 	return 0;
 }

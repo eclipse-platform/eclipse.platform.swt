@@ -57,6 +57,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Combo extends Composite {
 	int textLimit = LIMIT;
 	boolean receivingFocus;
+	boolean ignoreVerify;
 	NSRange selectionRange;
 
 	/**
@@ -897,6 +898,7 @@ public int indexOf (String string, int start) {
 }
 
 void insertEditText (String string) {
+	ignoreVerify = true;
 	int length = string.length ();
 	Point selection = getSelection ();
 	if (hasFocus ()) {
@@ -926,6 +928,7 @@ void insertEditText (String string) {
 		selectionRange = null;
 		setSelection (new Point(selection.x + string.length (), 0));
 	}
+	ignoreVerify = false;
 }
 
 boolean isEventView (int /*long*/ id) {
@@ -1197,6 +1200,7 @@ public void select (int index) {
 }
 
 void sendSelection () {
+	if ((style & SWT.READ_ONLY) != 0) postEvent(SWT.Modify);
 	postEvent(SWT.Selection);
 }
 
@@ -1459,6 +1463,7 @@ public void setText (String string) {
 }
 
 void setText (String string, boolean notify) {
+	ignoreVerify = true;
 	if (notify) {
 		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 			string = verifyText (string, 0, getCharCount (), null);
@@ -1472,10 +1477,14 @@ void setText (String string, boolean notify) {
 			if (notify) sendEvent (SWT.Modify);
 		}
 	} else {
-		new NSCell(((NSComboBox)view).cell()).setTitle(NSString.stringWith(string));
+		char[] buffer = new char [Math.min(string.length (), textLimit)];
+		string.getChars (0, buffer.length, buffer, 0);
+		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
+		new NSCell(((NSComboBox)view).cell()).setTitle(nsstring);
 		if (notify) sendEvent (SWT.Modify);
 	}
 	selectionRange = null;
+	ignoreVerify = false;
 }
 
 /**
@@ -1538,6 +1547,8 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	if (hooks (SWT.Verify)) {
 		String text = new NSString(replacementString).getString();
 		NSEvent currentEvent = display.application.currentEvent();
+		int /*long*/ type = currentEvent.type();
+		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
 		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
 		if (newText == null) return false;
 		if (text != newText) {
@@ -1547,6 +1558,20 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 		if (!result) sendEvent (SWT.Modify);
 	}
 	return result;
+}
+
+void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	if (!ignoreVerify) {
+		NSComboBox widget = (NSComboBox)view;
+		NSText currentEditor = widget.currentEditor();
+		if (currentEditor != null) {
+			String string = new NSString(arg0).getString();
+			String verified = verifyText(string, 0, string.length(), null);
+			arg0 = NSString.stringWith(verified).id;
+		}
+	}
+	super.setObjectValue(id, sel, arg0);
+	if (!ignoreVerify) sendEvent(SWT.Modify);
 }
 
 void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {

@@ -1563,6 +1563,10 @@ void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0
 	OS.objc_msgSendSuper(super_struct, sel, rect);
 }
 
+void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	callSuper(id, sel, arg0);
+}
+
 boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	return true;
 }

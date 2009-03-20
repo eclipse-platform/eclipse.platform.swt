@@ -2381,9 +2381,9 @@
 <arg name="image" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="setObjectValue:">
-<arg name="obj"></arg>
-<retval></retval>
+<method selector="setObjectValue:" swt_gen="true">
+<arg name="obj" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setTag:">
 <arg name="anInt"></arg>
@@ -16184,9 +16184,9 @@
 <arg name="style"></arg>
 <retval></retval>
 </method>
-<method selector="setUsesThreadedAnimation:">
-<arg name="threadedAnimation"></arg>
-<retval></retval>
+<method selector="setUsesThreadedAnimation:" swt_gen="true">
+<arg name="threadedAnimation" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="sizeToFit" swt_gen="true">
 <retval swt_gen="true"></retval>
@@ -24227,8 +24227,8 @@
 <method selector="comboBoxSelectionIsChanging:">
 <arg name="notification"></arg>
 </method>
-<method selector="comboBoxWillDismiss:">
-<arg name="notification"></arg>
+<method selector="comboBoxWillDismiss:" swt_gen="true">
+<arg name="notification" swt_gen="true"></arg>
 </method>
 <method selector="comboBoxWillPopUp:">
 <arg name="notification"></arg>

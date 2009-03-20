@@ -1841,7 +1841,12 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	if (!hooks(SWT.Verify) && echoCharacter =='\0') return result;
 	String text = new NSString(replacementString).getString();
 	String newText = text;
-	if (hooks (SWT.Verify)) newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length),  display.application.currentEvent());
+	if (hooks (SWT.Verify)) {
+		NSEvent currentEvent = display.application.currentEvent();
+		int /*long*/ type = currentEvent.type();
+		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
+		newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length),  currentEvent);
+	}
 	if (newText == null) return false;
 	if ((style & SWT.SINGLE) != 0) {
 		if (text != newText || echoCharacter != '\0') {
