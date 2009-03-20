@@ -14,8 +14,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 
-/**
- */
 class External {
 	public static final String EXTERNAL_IID_STR =
 		"ded01d20-ba6f-11dd-ad8b-0800200c9a66"; //$NON-NLS-1$
@@ -364,10 +362,10 @@ Object convertToJava (nsIVariant variant, short type) {
 		case nsIDataType.VTYPE_ARRAY:
 			Object[] arrayReturn = new Object[0];
 			int /*long*/ iid = C.malloc (nsID.sizeof);
+			C.memset (iid, 0, nsID.sizeof);
 			int[] count = new int[1]; /* PRUint32 */
-			int /*long*/[] ptr = new int /*long*/[1];
-			ptr[0] = C.malloc (C.PTR_SIZEOF);
 			short[] currentType = new short[1];
+			int /*long*/[] ptr = new int /*long*/[1];
 			rc = variant.GetAsArray (currentType, iid, count, ptr);
 			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 			if (ptr[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
@@ -375,16 +373,31 @@ Object convertToJava (nsIVariant variant, short type) {
 			XPCOM.memmove (id, iid, nsID.sizeof);
 			C.free (iid);
 
+			int /*long*/[] result = new int /*long*/[1];
+			rc = XPCOM.NS_GetServiceManager (result);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+			nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+			result[0] = 0;
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
+			serviceManager.Release ();
+
+			nsIMemory memory = new nsIMemory (result[0]);
+			result[0] = 0;
+
 			if (id.Equals (nsIVariant.NS_IVARIANT_IID)) {
 				arrayReturn = new Object[count[0]];
-				int /*long*/[] result = new int /*long*/[1];
 				for (int i = 0; i < count[0]; i++) {
 					int /*long*/[] arrayPtr = new int /*long*/[1];
 					C.memmove (arrayPtr, ptr[0] + i * C.PTR_SIZEOF, C.PTR_SIZEOF);
 					nsISupports supports = new nsISupports (arrayPtr[0]);
 					rc = supports.QueryInterface (nsIVariant.NS_IVARIANT_IID, result);
 					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-					if (ptr[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+					if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 
 					nsIVariant currentVariant = new nsIVariant (result[0]);
 					result[0] = 0;
@@ -397,7 +410,8 @@ Object convertToJava (nsIVariant variant, short type) {
 					} catch (IllegalArgumentException e) {
 						/* invalid argument value type */
 						currentVariant.Release ();
-						C.free (ptr[0]);
+						memory.Free (ptr[0]);
+						memory.Release ();
 						throw e;
 					}
 				}
@@ -440,11 +454,13 @@ Object convertToJava (nsIVariant variant, short type) {
 						}
 						break;
 					default:
-						C.free (ptr[0]);
+						memory.Free (ptr[0]);
+						memory.Release ();
 						SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 				}
 			}
-			C.free (ptr[0]);
+			memory.Free (ptr[0]);
+			memory.Release ();
 			return arrayReturn;
 	}
 	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
