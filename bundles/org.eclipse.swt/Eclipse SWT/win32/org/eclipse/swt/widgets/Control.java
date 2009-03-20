@@ -1992,14 +1992,7 @@ public boolean print (GC gc) {
 			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 			OS.RedrawWindow (topHandle, null, 0, flags);
 		}
-		int bits = OS.GetWindowLong (topHandle, OS.GWL_STYLE);
-		if ((bits & OS.WS_VISIBLE) == 0) {
-			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
-		}
 		printWidget (topHandle, hdc, gc);
-		if ((bits & OS.WS_VISIBLE) == 0) {
-			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 0, 0);
-		}
 		if (gdipGraphics != 0) {
 			OS.RestoreDC(hdc, state);
 			Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
@@ -2065,19 +2058,32 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 			int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 			int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 			int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
-			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+			}
 			SetWindowPos (hwnd, 0, x + width, y + height, 0, 0, flags);
 			OS.SetParent (hwnd, 0);
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
+			}
+		}
+		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 		}
 		success = OS.PrintWindow (hwnd, hdc, 0);
+		if ((bits & OS.WS_VISIBLE) == 0) {
+			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+		}
 		if (fixPrintWindow) {
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+			}
 			OS.SetParent (hwnd, hwndParent);
 			OS.MapWindowPoints (0, hwndParent, rect1, 2);
 			int flags = OS.SWP_NOSIZE | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
 			SetWindowPos (hwnd, hwndInsertAfter, rect1.left, rect1.top, rect1.right - rect1.left, rect1.bottom - rect1.top, flags);
-			if ((bits & OS.WS_VISIBLE) == 0) {
-				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 			}
 		}
 	}
