@@ -672,6 +672,11 @@ Document getDocument(String xmlPath) {
 public String[] getExtraAttributeNames(Node node) {
 	String name = node.getNodeName();
 	if (name.equals("method")) {
+	} else if (name.equals("function")) {
+		NamedNodeMap attribs = node.getAttributes();
+		if (attribs != null && attribs.getNamedItem("variadic") != null) {
+			return new String[]{"swt_variadic_count","swt_variadic_java_types"};
+		}
 	} else if (name.equals("class")) {
 		return new String[]{"swt_superclass"};
 	} else if (name.equals("retval")) {
@@ -1073,9 +1078,6 @@ String buildSend(Node method, boolean tags, boolean only64) {
 			} else {
 				String type = getType(param), type64 = getType64(param);
 				buffer.append(only64 ? type64 : type);
-				if (type64.length() == 0) {
-					System.out.println(getIDAttribute(method) + " " + getIDAttribute(method.getParentNode()));
-				}
 				if (!only64 && tags && !type.equals(type64)) {
 					buffer.append(" /*");
 					buffer.append(type64);
@@ -1397,6 +1399,15 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 	return "BAD " + code;
 }
 
+static String[] split(String str, String separator) {
+	StringTokenizer tk = new StringTokenizer(str, separator);
+	ArrayList result = new ArrayList();
+	while (tk.hasMoreElements()) {
+		result.add(tk.nextElement());
+	}
+	return (String[])result.toArray(new String[result.size()]);
+}
+
 void generateFunctions() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
@@ -1478,10 +1489,39 @@ void generateFunctions() {
 							out(paramAttributes.getNamedItem("name").getNodeValue());
 						}
 					}
+					generateVariadics(node);
 					out(");");
 					outln();
 				}
 			}
+		}
+	}
+}
+
+void generateVariadics(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	Node variadicCount = attributes.getNamedItem("swt_variadic_count");
+	if (variadicCount != null) {
+		Node variadicTypes = attributes.getNamedItem("swt_variadic_java_types");
+		String[] types = null;
+		if (variadicTypes != null) {
+			types = split(variadicTypes.getNodeValue(), ",");
+		}
+		int varCount = 0;
+		try {
+			varCount = Integer.parseInt(variadicCount.getNodeValue());
+		} catch (NumberFormatException e) {}
+		for (int j = 0; j < varCount; j++) {
+			out(", ");
+			if (types != null && types.length > j && !types[j].equals("*")) {
+				out(types[j]);
+			} else if (types != null && types[types.length - 1].equals("*")) {
+				out(types[types.length - 2]);
+			} else {
+				out("int /*long*/");
+			}
+			out(" varArg");
+			out("" + j);
 		}
 	}
 }
