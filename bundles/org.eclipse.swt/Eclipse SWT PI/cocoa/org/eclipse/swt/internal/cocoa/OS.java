@@ -30,6 +30,7 @@ public class OS extends C {
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
+	public static final int shiftKey = 1 << 9;
 
 	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
 	public static final int /*long*/ sel_sendCancelSelection = sel_registerName("sendCancelSelection");
@@ -113,6 +114,7 @@ public static final native int /*long*/ kTISPropertyUnicodeKeyLayoutData();
 public static final native int UCKeyTranslate (int /*long*/ keyLayoutPtr, short virtualKeyCode, short keyAction, int modifierKeyState, int keyboardType, int keyTranslateOptions, int[] deadKeyState, int maxStringLength, int[] actualStringLength, char[] unicodeString);
 
 public static final int kUCKeyActionDown = 0;
+public static final int kUCKeyActionUp = 1;
 
 public static final int kThemeCopyArrowCursor = 1;
 public static final int kThemeNotAllowedCursor = 18;
@@ -138,6 +140,21 @@ public static final int kATSFontFormatUnspecified = 0;
  * @param isDirectory cast=(Boolean *)
  */
 public static final native int FSPathMakeRef (int /*long*/ path, byte[] ref, boolean[] isDirectory);
+
+/** @method flags=dynamic */
+public static final native byte LMGetKbdType();
+
+/**
+ * @param mouseCursorPosition flags=struct
+ * @param updateMouseCursorPosition cast=(boolean_t)
+ * @param mouseButtonDown cast=(boolean_t)
+ * @param mouseButtonDown2 cast=(boolean_t)
+ * @param mouseButtonDown3 cast=(boolean_t)
+ * @param mouseButtonDown4 cast=(boolean_t)
+ * @param mouseButtonDown5 cast=(boolean_t)
+ */
+public static final native int CGPostMouseEvent(CGPoint mouseCursorPosition, boolean updateMouseCursorPosition, int buttonCount, boolean mouseButtonDown, boolean mouseButtonDown2, boolean mouseButtonDown3, boolean mouseButtonDown4, boolean mouseButtonDown5);
+
 
 /** C calls */
 
@@ -209,6 +226,9 @@ public static final int kQDParseRegionFromLeft = (1 << 2);
 public static final int kQDParseRegionFromRight = (1 << 3);
 public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
 public static final int kQDRegionToRectsMsgParse = 2;
+
+/** @method flags=dynamic */
+public static final native int GetCurrentEventButtonState();
 
 /** Custom callbacks */
 
@@ -2675,6 +2695,13 @@ public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFRunLoopBeforeWaiting = 32;
 public static final int kCFStringEncodingUTF8 = 134217984;
+public static final int kCGEventFilterMaskPermitLocalKeyboardEvents = 2;
+public static final int kCGEventFilterMaskPermitLocalMouseEvents = 1;
+public static final int kCGEventFilterMaskPermitSystemDefinedEvents = 4;
+public static final int kCGEventSourceStateCombinedSessionState = 0;
+public static final int kCGEventSuppressionStateRemoteMouseDrag = 1;
+public static final int kCGEventSuppressionStateSuppressionInterval = 0;
+public static final int kCGHIDEventTap = 0;
 public static final int kCGImageAlphaFirst = 4;
 public static final int kCGImageAlphaNoneSkipFirst = 6;
 public static final int kCGImageAlphaOnly = 7;
@@ -4104,6 +4131,10 @@ public static final native int /*long*/ CGDisplayPixelsHigh(int display);
  */
 public static final native int /*long*/ CGDisplayPixelsWide(int display);
 /**
+ * @param doCombineState cast=(boolean_t)
+ */
+public static final native int CGEnableEventStateCombining(boolean doCombineState);
+/**
  * @param event cast=(CGEventRef)
  * @param field cast=(CGEventField)
  */
@@ -4185,6 +4216,26 @@ public static final native void CGPathMoveToPoint(int /*long*/ path, int /*long*
  * @param path cast=(CGPathRef)
  */
 public static final native void CGPathRelease(int /*long*/ path);
+/**
+ * @param keyChar cast=(CGCharCode)
+ * @param virtualKey cast=(CGKeyCode)
+ * @param keyDown cast=(boolean_t)
+ */
+public static final native int CGPostKeyboardEvent(short keyChar, short virtualKey, boolean keyDown);
+/**
+ * @param wheelCount cast=(CGWheelCount)
+ * @param wheel1 cast=(int32_t)
+ */
+public static final native int CGPostScrollWheelEvent(int wheelCount, int wheel1);
+/**
+ * @param filter cast=(CGEventFilterMask)
+ * @param state cast=(CGEventSuppressionState)
+ */
+public static final native int CGSetLocalEventsFilterDuringSuppressionState(int filter, int state);
+/**
+ * @param seconds cast=(CFTimeInterval)
+ */
+public static final native int CGSetLocalEventsSuppressionInterval(double seconds);
 /**
  * @param newCursorPosition flags=struct
  */

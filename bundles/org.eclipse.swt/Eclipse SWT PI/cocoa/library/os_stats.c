@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 436;
-int OS_nativeFunctionCallCount[436];
+int OS_nativeFunctionCount = 444;
+int OS_nativeFunctionCallCount[444];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"CFDataGetBytePtr",
@@ -54,6 +54,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGDisplayBytesPerRow",
 	"CGDisplayPixelsHigh",
 	"CGDisplayPixelsWide",
+	"CGEnableEventStateCombining",
 	"CGEventGetIntegerValueField",
 	"CGGetDisplaysWithRect",
 	"CGImageCreate",
@@ -70,7 +71,12 @@ char * OS_nativeFunctionNames[] = {
 	"CGPathMoveToPoint",
 	"CGPathRelease",
 	"CGPoint_1sizeof",
+	"CGPostKeyboardEvent",
+	"CGPostMouseEvent",
+	"CGPostScrollWheelEvent",
 	"CGRect_1sizeof",
+	"CGSetLocalEventsFilterDuringSuppressionState",
+	"CGSetLocalEventsSuppressionInterval",
 	"CGSize_1sizeof",
 	"CGWarpMouseCursorPosition",
 	"CPSSetProcessName",
@@ -83,10 +89,12 @@ char * OS_nativeFunctionNames[] = {
 	"FSPathMakeRef",
 	"Gestalt",
 	"GetCurrentButtonState",
+	"GetCurrentEventButtonState",
 	"GetCurrentProcess",
 	"GetDblTime",
 	"GetRegionBounds",
 	"JNIGetObject",
+	"LMGetKbdType",
 	"LineTo",
 	"MoveTo",
 	"NSAccessibilityActionDescription",

@@ -457,6 +457,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayPixelsWide)
 }
 #endif
 
+#ifndef NO_CGEnableEventStateCombining
+JNIEXPORT jint JNICALL OS_NATIVE(CGEnableEventStateCombining)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGEnableEventStateCombining_FUNC);
+	rc = (jint)CGEnableEventStateCombining((boolean_t)arg0);
+	OS_NATIVE_EXIT(env, that, CGEnableEventStateCombining_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGEventGetIntegerValueField
 JNIEXPORT jlong JNICALL OS_NATIVE(CGEventGetIntegerValueField)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -639,6 +651,46 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPoint_1sizeof)
 }
 #endif
 
+#ifndef NO_CGPostKeyboardEvent
+JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPostKeyboardEvent_FUNC);
+	rc = (jint)CGPostKeyboardEvent((CGCharCode)arg0, (CGKeyCode)arg1, (boolean_t)arg2);
+	OS_NATIVE_EXIT(env, that, CGPostKeyboardEvent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPostMouseEvent
+JNIEXPORT jint JNICALL OS_NATIVE(CGPostMouseEvent)
+	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jint arg2, jboolean arg3, jboolean arg4, jboolean arg5, jboolean arg6, jboolean arg7)
+{
+	CGPoint _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPostMouseEvent_FUNC);
+	if (arg0) if ((lparg0 = getCGPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, arg2, (boolean_t)arg3, (boolean_t)arg4, (boolean_t)arg5, (boolean_t)arg6, (boolean_t)arg7);
+fail:
+	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, CGPostMouseEvent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPostScrollWheelEvent
+JNIEXPORT jint JNICALL OS_NATIVE(CGPostScrollWheelEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPostScrollWheelEvent_FUNC);
+	rc = (jint)CGPostScrollWheelEvent((CGWheelCount)arg0, (int32_t)arg1);
+	OS_NATIVE_EXIT(env, that, CGPostScrollWheelEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGRect_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CGRect_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -647,6 +699,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGRect_1sizeof)
 	OS_NATIVE_ENTER(env, that, CGRect_1sizeof_FUNC);
 	rc = (jint)CGRect_sizeof();
 	OS_NATIVE_EXIT(env, that, CGRect_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGSetLocalEventsFilterDuringSuppressionState
+JNIEXPORT jint JNICALL OS_NATIVE(CGSetLocalEventsFilterDuringSuppressionState)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGSetLocalEventsFilterDuringSuppressionState_FUNC);
+	rc = (jint)CGSetLocalEventsFilterDuringSuppressionState((CGEventFilterMask)arg0, (CGEventSuppressionState)arg1);
+	OS_NATIVE_EXIT(env, that, CGSetLocalEventsFilterDuringSuppressionState_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGSetLocalEventsSuppressionInterval
+JNIEXPORT jint JNICALL OS_NATIVE(CGSetLocalEventsSuppressionInterval)
+	(JNIEnv *env, jclass that, jdouble arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGSetLocalEventsSuppressionInterval_FUNC);
+	rc = (jint)CGSetLocalEventsSuppressionInterval((CFTimeInterval)arg0);
+	OS_NATIVE_EXIT(env, that, CGSetLocalEventsSuppressionInterval_FUNC);
 	return rc;
 }
 #endif
@@ -860,6 +936,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentButtonState)
 }
 #endif
 
+#ifndef NO_GetCurrentEventButtonState
+JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentEventButtonState)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetCurrentEventButtonState_FUNC);
+/*
+	rc = (jint)GetCurrentEventButtonState();
+*/
+	{
+		LOAD_FUNCTION(fp, GetCurrentEventButtonState)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, GetCurrentEventButtonState_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetCurrentProcess
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcess)
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -915,6 +1011,26 @@ JNIEXPORT void JNICALL OS_NATIVE(GetRegionBounds)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetRegionBounds_FUNC);
+}
+#endif
+
+#ifndef NO_LMGetKbdType
+JNIEXPORT jbyte JNICALL OS_NATIVE(LMGetKbdType)
+	(JNIEnv *env, jclass that)
+{
+	jbyte rc = 0;
+	OS_NATIVE_ENTER(env, that, LMGetKbdType_FUNC);
+/*
+	rc = (jbyte)LMGetKbdType();
+*/
+	{
+		LOAD_FUNCTION(fp, LMGetKbdType)
+		if (fp) {
+			rc = (jbyte)((jbyte (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, LMGetKbdType_FUNC);
+	return rc;
 }
 #endif
 

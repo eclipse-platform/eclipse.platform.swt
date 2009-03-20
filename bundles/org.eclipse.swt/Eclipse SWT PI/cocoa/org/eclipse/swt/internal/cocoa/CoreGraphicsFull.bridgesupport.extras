@@ -302,7 +302,6 @@
   <enum name="kCGDesktopIconWindowLevelKey"></enum>
   <enum name="kCGDesktopWindowLevel"></enum>
   <enum name="kCGDesktopWindowLevelKey"></enum>
-  <enum name="kCGDirectMainDisplay"></enum>
   <enum name="kCGDisplayAddFlag"></enum>
   <enum name="kCGDisplayBeginConfigurationFlag"></enum>
   <enum name="kCGDisplayBlendNormal"></enum>
@@ -347,9 +346,9 @@
   <enum name="kCGErrorRetryRegistration"></enum>
   <enum name="kCGErrorSuccess"></enum>
   <enum name="kCGErrorTypeCheck"></enum>
-  <enum name="kCGEventFilterMaskPermitLocalKeyboardEvents"></enum>
-  <enum name="kCGEventFilterMaskPermitLocalMouseEvents"></enum>
-  <enum name="kCGEventFilterMaskPermitSystemDefinedEvents"></enum>
+  <enum name="kCGEventFilterMaskPermitLocalKeyboardEvents" swt_gen="true"></enum>
+  <enum name="kCGEventFilterMaskPermitLocalMouseEvents" swt_gen="true"></enum>
+  <enum name="kCGEventFilterMaskPermitSystemDefinedEvents" swt_gen="true"></enum>
   <enum name="kCGEventFlagMaskAlphaShift"></enum>
   <enum name="kCGEventFlagMaskAlternate"></enum>
   <enum name="kCGEventFlagMaskCommand"></enum>
@@ -379,15 +378,15 @@
   <enum name="kCGEventRightMouseUp"></enum>
   <enum name="kCGEventScrollWheel"></enum>
   <enum name="kCGEventSourceGroupID"></enum>
-  <enum name="kCGEventSourceStateCombinedSessionState"></enum>
+  <enum name="kCGEventSourceStateCombinedSessionState" swt_gen="true"></enum>
   <enum name="kCGEventSourceStateHIDSystemState"></enum>
   <enum name="kCGEventSourceStateID"></enum>
   <enum name="kCGEventSourceStatePrivate"></enum>
   <enum name="kCGEventSourceUnixProcessID"></enum>
   <enum name="kCGEventSourceUserData"></enum>
   <enum name="kCGEventSourceUserID"></enum>
-  <enum name="kCGEventSuppressionStateRemoteMouseDrag"></enum>
-  <enum name="kCGEventSuppressionStateSuppressionInterval"></enum>
+  <enum name="kCGEventSuppressionStateRemoteMouseDrag" swt_gen="true"></enum>
+  <enum name="kCGEventSuppressionStateSuppressionInterval" swt_gen="true"></enum>
   <enum name="kCGEventSupressionStateRemoteMouseDrag"></enum>
   <enum name="kCGEventSupressionStateSupressionInterval"></enum>
   <enum name="kCGEventTabletPointer"></enum>
@@ -408,7 +407,7 @@
   <enum name="kCGGlyphMax"></enum>
   <enum name="kCGGradientDrawsAfterEndLocation"></enum>
   <enum name="kCGGradientDrawsBeforeStartLocation"></enum>
-  <enum name="kCGHIDEventTap"></enum>
+  <enum name="kCGHIDEventTap" swt_gen="true"></enum>
   <enum name="kCGHeadInsertEventTap"></enum>
   <enum name="kCGHelpWindowLevel"></enum>
   <enum name="kCGHelpWindowLevelKey"></enum>
@@ -1793,9 +1792,9 @@
     <arg name="lowerScanLine"></arg>
     <retval></retval>
   </function>
-  <function name="CGEnableEventStateCombining">
-    <arg name="doCombineState"></arg>
-    <retval></retval>
+  <function name="CGEnableEventStateCombining" swt_gen="true">
+    <arg name="doCombineState" swt_gen="true" swt_java_type="boolean" swt_java_type64="boolean"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGEventCreate">
     <arg name="source"></arg>
@@ -3166,11 +3165,11 @@
     <arg name="point"></arg>
     <retval></retval>
   </function>
-  <function name="CGPostKeyboardEvent">
-    <arg name="keyChar"></arg>
-    <arg name="virtualKey"></arg>
-    <arg name="keyDown"></arg>
-    <retval></retval>
+  <function name="CGPostKeyboardEvent" swt_gen="true">
+    <arg name="keyChar" swt_gen="true"></arg>
+    <arg name="virtualKey" swt_gen="true"></arg>
+    <arg name="keyDown" swt_gen="true" swt_java_type="boolean" swt_java_type64="boolean"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGPostMouseEvent">
     <arg name="mouseCursorPosition"></arg>
@@ -3179,10 +3178,10 @@
     <arg name="mouseButtonDown"></arg>
     <retval></retval>
   </function>
-  <function name="CGPostScrollWheelEvent">
-    <arg name="wheelCount"></arg>
-    <arg name="wheel1"></arg>
-    <retval></retval>
+  <function name="CGPostScrollWheelEvent" swt_gen="true">
+    <arg name="wheelCount" swt_gen="true"></arg>
+    <arg name="wheel1" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGRectApplyAffineTransform">
     <arg name="rect"></arg>
@@ -3380,14 +3379,14 @@
     <arg name="blueTable"></arg>
     <retval></retval>
   </function>
-  <function name="CGSetLocalEventsFilterDuringSuppressionState">
-    <arg name="filter"></arg>
-    <arg name="state"></arg>
-    <retval></retval>
+  <function name="CGSetLocalEventsFilterDuringSuppressionState" swt_gen="true">
+    <arg name="filter" swt_gen="true"></arg>
+    <arg name="state" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="CGSetLocalEventsSuppressionInterval">
-    <arg name="seconds"></arg>
-    <retval></retval>
+  <function name="CGSetLocalEventsSuppressionInterval" swt_gen="true">
+    <arg name="seconds" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="CGShadingCreateAxial">
     <arg name="colorspace"></arg>
@@ -3532,4 +3531,5 @@
   <function_alias name="CGAffineTransformMake"></function_alias>
   <function_alias name="CGPointApplyAffineTransform"></function_alias>
   <function_alias name="CGSizeApplyAffineTransform"></function_alias>
+  <enum name="kCGDirectMainDisplay"></enum>
 </signatures>

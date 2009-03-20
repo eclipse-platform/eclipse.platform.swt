@@ -40,3 +40,5 @@
 #define ATSFontActivateFromFileReference_LIB "com.apple.ApplicationServices.ATS"
 #define FSPathMakeRef_LIB "com.apple.CoreServices"
 #define CGContextCopyWindowContentsToRect_LIB "com.apple.CoreGraphics"
+#define GetCurrentEventButtonState_LIB "com.apple.Carbon"
+#define LMGetKbdType_LIB "com.apple.Carbon"
