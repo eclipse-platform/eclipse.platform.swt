@@ -587,7 +587,7 @@
 <constant name="NSNotApplicableMarker"></constant>
 <constant name="NSNotApplicablePlaceholderBindingOption"></constant>
 <constant name="NSNullPlaceholderBindingOption"></constant>
-<constant name="NSObliquenessAttributeName"></constant>
+<constant name="NSObliquenessAttributeName" swt_gen="true"></constant>
 <constant name="NSObservedKeyPathKey"></constant>
 <constant name="NSObservedObjectKey"></constant>
 <constant name="NSOffStateImageBinding"></constant>
@@ -762,7 +762,7 @@
 <constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
 <constant name="NSStringPboardType" swt_gen="true"></constant>
 <constant name="NSStrokeColorAttributeName"></constant>
-<constant name="NSStrokeWidthAttributeName"></constant>
+<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
 <constant name="NSSubjectDocumentAttribute"></constant>
 <constant name="NSSuperscriptAttributeName"></constant>
 <constant name="NSSystemColorsDidChangeNotification"></constant>

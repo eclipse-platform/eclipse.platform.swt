@@ -148,6 +148,7 @@ void computeRuns() {
 	NSRange range = new NSRange();
 	range.length = str.length();
 	attrStr.addAttribute(OS.NSFontAttributeName, defaultFont.handle, range);
+	defaultFont.addTraits(attrStr, range);
 	//TODO ascend descent wrap
 	NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	int align = OS.NSLeftTextAlignment;
@@ -191,6 +192,7 @@ void computeRuns() {
 		Font font = style.font;
 		if (font != null) {
 			attrStr.addAttribute(OS.NSFontAttributeName, font.handle, range);
+			font.addTraits(attrStr, range);
 		}
 		Color foreground = style.foreground;
 		if (foreground != null) {

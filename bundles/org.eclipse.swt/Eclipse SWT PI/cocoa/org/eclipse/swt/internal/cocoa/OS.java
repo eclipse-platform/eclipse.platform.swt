@@ -3814,6 +3814,9 @@ public static final NSString NSHTMLPboardType = new NSString(NSHTMLPboardType())
 public static final native int /*long*/ NSLinkAttributeName();
 public static final NSString NSLinkAttributeName = new NSString(NSLinkAttributeName());
 /** @method flags=const */
+public static final native int /*long*/ NSObliquenessAttributeName();
+public static final NSString NSObliquenessAttributeName = new NSString(NSObliquenessAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSParagraphStyleAttributeName();
 public static final NSString NSParagraphStyleAttributeName = new NSString(NSParagraphStyleAttributeName());
 /** @method flags=const */
@@ -3861,6 +3864,9 @@ public static final NSString NSStrikethroughStyleAttributeName = new NSString(NS
 /** @method flags=const */
 public static final native int /*long*/ NSStringPboardType();
 public static final NSString NSStringPboardType = new NSString(NSStringPboardType());
+/** @method flags=const */
+public static final native int /*long*/ NSStrokeWidthAttributeName();
+public static final NSString NSStrokeWidthAttributeName = new NSString(NSStrokeWidthAttributeName());
 /** @method flags=const */
 public static final native int /*long*/ NSTIFFPboardType();
 public static final NSString NSTIFFPboardType = new NSString(NSTIFFPboardType());

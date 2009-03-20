@@ -44,6 +44,11 @@ public final class Font extends Resource {
 	 */
 	public NSFont handle;
 	
+	int extraTraits;
+	
+	static final double SYNTHETIC_BOLD = -2.5;
+	static final double SYNTHETIC_ITALIC = 0.2;
+
 Font(Device device) {
 	super(device);
 }
@@ -160,6 +165,24 @@ public Font(Device device, String name, int height, int style) {
 	init();
 }
 
+void addTraits(NSMutableAttributedString attrStr, NSRange range) {
+	if ((extraTraits & OS.NSBoldFontMask) != 0) {
+		attrStr.addAttribute(OS.NSStrokeWidthAttributeName, NSNumber.numberWithDouble(SYNTHETIC_BOLD), range);
+	}
+	if ((extraTraits & OS.NSItalicFontMask) != 0) {
+		attrStr.addAttribute(OS.NSObliquenessAttributeName, NSNumber.numberWithDouble(SYNTHETIC_ITALIC), range);
+	}
+}
+
+void addTraits(NSMutableDictionary attrStr) {
+	if ((extraTraits & OS.NSBoldFontMask) != 0) {
+		attrStr.setObject(NSNumber.numberWithDouble(SYNTHETIC_BOLD), OS.NSStrokeWidthAttributeName);
+	}
+	if ((extraTraits & OS.NSItalicFontMask) != 0) {
+		attrStr.setObject(NSNumber.numberWithDouble(SYNTHETIC_ITALIC), OS.NSObliquenessAttributeName);
+	}
+}
+
 void destroy() {
 	handle.release();
 	handle = null;
@@ -209,6 +232,8 @@ public FontData[] getFontData() {
 		int style = SWT.NORMAL;
 		if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 		if (weight == 9) style |= SWT.BOLD;
+		if ((extraTraits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
+		if ((extraTraits & OS.NSBoldFontMask) != 0) style |= SWT.BOLD;
 		Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 		FontData data = new FontData(name, (float)/*64*/handle.pointSize() * screenDPI.y / dpi.y, style);
 		data.nsName = nsName;
@@ -281,6 +306,12 @@ void init(String name, float height, int style, String nsName) {
 		}
 		if (handle == null) {
 			handle = NSFont.systemFontOfSize(size);
+		}
+		if ((style & SWT.ITALIC) != 0 && (manager.traitsOfFont(handle) & OS.NSItalicFontMask) == 0) {
+			extraTraits |= OS.NSItalicFontMask;
+		}
+		if ((style & SWT.BOLD) != 0 && (manager.traitsOfFont(handle) & OS.NSBoldFontMask) == 0) {
+			extraTraits |= OS.NSBoldFontMask;
 		}
 	}
 	if (handle == null) {

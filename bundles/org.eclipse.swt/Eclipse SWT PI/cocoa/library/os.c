@@ -2503,6 +2503,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSNumberOfColorComponents)
 }
 #endif
 
+#ifndef NO_NSObliquenessAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSObliquenessAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSObliquenessAttributeName_FUNC);
+	rc = (jintLong)NSObliquenessAttributeName;
+	OS_NATIVE_EXIT(env, that, NSObliquenessAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSParagraphStyleAttributeName
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
 	(JNIEnv *env, jclass that)
@@ -2770,6 +2782,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSStringPboardType)
 	OS_NATIVE_ENTER(env, that, NSStringPboardType_FUNC);
 	rc = (jintLong)NSStringPboardType;
 	OS_NATIVE_EXIT(env, that, NSStringPboardType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSStrokeWidthAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSStrokeWidthAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStrokeWidthAttributeName_FUNC);
+	rc = (jintLong)NSStrokeWidthAttributeName;
+	OS_NATIVE_EXIT(env, that, NSStrokeWidthAttributeName_FUNC);
 	return rc;
 }
 #endif

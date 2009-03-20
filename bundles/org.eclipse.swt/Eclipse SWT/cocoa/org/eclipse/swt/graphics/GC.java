@@ -787,8 +787,10 @@ NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
 }
 
 NSAttributedString createString(String string, int flags, boolean draw) {
-	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(3);
-	dict.setObject(data.font.handle, OS.NSFontAttributeName);
+	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
+	Font font = data.font;
+	dict.setObject(font.handle, OS.NSFontAttributeName);
+	font.addTraits(dict);
 	if (draw) {
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null) {

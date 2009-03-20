@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 434;
-int OS_nativeFunctionCallCount[434];
+int OS_nativeFunctionCount = 436;
+int OS_nativeFunctionCallCount[436];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"CFDataGetBytePtr",
@@ -218,6 +218,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSIntersectionRect",
 	"NSLinkAttributeName",
 	"NSNumberOfColorComponents",
+	"NSObliquenessAttributeName",
 	"NSParagraphStyleAttributeName",
 	"NSPointInRect",
 	"NSPoint_1sizeof",
@@ -240,6 +241,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",
 	"NSStringPboardType",
+	"NSStrokeWidthAttributeName",
 	"NSTIFFPboardType",
 	"NSTemporaryDirectory",
 	"NSURLPboardType",
