@@ -35,6 +35,7 @@ public class DropTargetEvent extends TypedEvent {
 	 * @see DND#DROP_MOVE
 	 * @see DND#DROP_COPY
 	 * @see DND#DROP_LINK
+	 * @see DND#DROP_DEFAULT
 	 */
 	public int detail;
 	
@@ -46,6 +47,7 @@ public class DropTargetEvent extends TypedEvent {
 	 * @see DND#DROP_MOVE
 	 * @see DND#DROP_COPY
 	 * @see DND#DROP_LINK
+	 * @see DND#DROP_DEFAULT
 	 */
 	public int operations;
 	
