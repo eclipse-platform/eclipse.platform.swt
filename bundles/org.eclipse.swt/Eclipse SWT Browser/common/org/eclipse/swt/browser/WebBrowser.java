@@ -317,10 +317,15 @@ public void createFunction (BrowserFunction function) {
 	buffer.append (ERROR_ID);
 	buffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
 	buffer.append (ERROR_ID.length ());
-	buffer.append (")); throw error;} return result;}"); //$NON-NLS-1$
+	buffer.append (")); throw error;} return result;};"); //$NON-NLS-1$
+	buffer.append ("for (var i = 0; i < frames.length; i++) {try { frames[i]."); //$NON-NLS-1$
+	buffer.append (function.name);
+	buffer.append (" = window."); //$NON-NLS-1$
+	buffer.append (function.name);
+	buffer.append (";} catch (e) {} };"); //$NON-NLS-1$
 	function.functionString = buffer.toString ();
 	if (!execute (function.functionString)) {
-		deregisterFunction (function);	
+		deregisterFunction (function);
 	}
 }
 
@@ -329,7 +334,12 @@ void deregisterFunction (BrowserFunction function) {
 }
 
 public void destroyFunction (BrowserFunction function) {
-	execute (getDeleteFunctionString (function.name));
+	String deleteString = getDeleteFunctionString (function.name); 
+	StringBuffer buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {try {frames[i].eval(\""); //$NON-NLS-1$
+	buffer.append (deleteString);
+	buffer.append ("\");} catch (e) {}}"); //$NON-NLS-1$
+	execute (buffer.toString ());
+	execute (deleteString);
 	deregisterFunction (function);
 }
 
@@ -382,7 +392,7 @@ public abstract boolean forward ();
 public abstract String getBrowserType ();
 
 String getDeleteFunctionString (String functionName) {
-	return "delete window." + functionName + ';';	//$NON-NLS-1$
+	return "delete window." + functionName;	//$NON-NLS-1$
 }
 
 int getNextFunctionIndex () {

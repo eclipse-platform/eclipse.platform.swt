@@ -827,7 +827,7 @@ public String getBrowserType () {
 }
 
 String getDeleteFunctionString (String functionName) {
-	return "window." + functionName + "=undefined;"; //$NON-NLS-1$ //$NON-NLS-2$
+	return "window." + functionName + "=undefined"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 public String getText() {
