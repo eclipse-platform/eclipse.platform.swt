@@ -15,4 +15,8 @@ public class NSPoint {
 	public float /*double*/ x;
 	public float /*double*/ y;
 	public static final int sizeof = OS.NSPoint_sizeof();
+
+	public String toString() {
+		return "NSPoint{" + x + "," + y + "}"; 
+	}
 }

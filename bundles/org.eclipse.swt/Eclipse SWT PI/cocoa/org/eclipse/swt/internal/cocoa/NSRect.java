@@ -21,4 +21,8 @@ public class NSRect {
 	/** @field accessor=size.height */
 	public float /*double*/ height;
 	public static final int sizeof = OS.NSRect_sizeof();
+
+	public String toString() {
+		return "NSRect{" + x + "," + y + "," + width + "," + height + "}"; 
+	}
 }
