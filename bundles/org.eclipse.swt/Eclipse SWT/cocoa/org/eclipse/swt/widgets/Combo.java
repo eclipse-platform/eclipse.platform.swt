@@ -1196,62 +1196,6 @@ public void select (int index) {
 	}	
 }
 
-//boolean sendKeyEvent (int type, Event event) {
-//	if (!super.sendKeyEvent (type, event)) {
-//		return false;
-//	}
-//	if (type != SWT.KeyDown) return true;
-//	if ((style & SWT.READ_ONLY) != 0) return true;
-//	if (event.character == 0) return true;
-//	if ((event.stateMask & SWT.COMMAND) != 0) return true;
-//	String oldText = "", newText = "";
-//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-//		int charCount = getCharCount ();
-//		Point selection = getSelection ();
-//		int start = selection.x, end = selection.y;
-//		switch (event.character) {
-//			case SWT.BS:
-//				if (start == end) {
-//					if (start == 0) return true;
-//					start = Math.max (0, start - 1);
-//				}
-//				break;
-//			case SWT.DEL:
-//				if (start == end) {
-//					if (start == charCount) return true;
-//					end = Math.min (end + 1, charCount);
-//				}
-//				break;
-//			case SWT.CR:
-//				return true;
-//			default:
-//				if (event.character != '\t' && event.character < 0x20) return true;
-//				oldText = new String (new char [] {event.character});
-//		}
-//		newText = verifyText (oldText, start, end, event);
-//		if (newText == null) return false;
-//		if (charCount - (end - start) + newText.length () > textLimit) {
-//			return false;
-//		}
-//		if (newText != oldText) {
-//			String text = getText ();
-//			String leftText = text.substring (0, start);
-//			String rightText = text.substring (end, text.length ());
-//			setText (leftText + newText + rightText, false);
-//			start += newText.length ();
-//			setSelection (new Point (start, start));
-//		}
-//	}
-//	/*
-//	* Post the modify event so that the character will be inserted
-//	* into the widget when the modify event is delivered.  Normally,
-//	* modify events are sent but it is safe to post the event here
-//	* because this method is called from the event loop.
-//	*/
-//	postEvent (SWT.Modify);
-//	return newText == oldText;
-//}
-
 void sendSelection () {
 	postEvent(SWT.Selection);
 }

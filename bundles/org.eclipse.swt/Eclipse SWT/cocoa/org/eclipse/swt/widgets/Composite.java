@@ -385,17 +385,6 @@ public Control [] getChildren () {
 	return _getChildren ();
 }
 
-int getChildrenCount () {
-	/*
-	* NOTE:  The current implementation will count
-	* non-registered children.
-	*/
-//	short [] count = new short [1];
-//	OS.CountSubControls (handle, count);
-//	return count [0];
-	return 0;
-}
-
 /**
  * Returns layout which is associated with the receiver, or
  * null if one has not been set.

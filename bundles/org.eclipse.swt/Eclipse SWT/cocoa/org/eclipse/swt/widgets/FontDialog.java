@@ -127,69 +127,6 @@ public RGB getRGB () {
 	return rgb;
 }
 
-//int fontProc (int nextHandler, int theEvent, int userData) {
-//	int kind = OS.GetEventKind (theEvent);
-//	switch (kind) {
-//		case OS.kEventFontPanelClosed:
-//			open = false;
-//			break;
-//		case OS.kEventFontSelection:
-//			int [] fontID = new int [1];
-//			if (OS.GetEventParameter (theEvent, OS.kEventParamATSUFontID, OS.typeUInt32, null, 4, null, fontID) == OS.noErr) {
-//				this.fontID = fontID [0];
-//			}
-//			int [] fontSize = new int [1];
-//			if (OS.GetEventParameter (theEvent, OS.kEventParamATSUFontSize, OS.typeFixed, null, 4, null, fontSize) == OS.noErr) {
-//				this.fontSize = fontSize [0];
-//			}
-//			RGBColor color = new RGBColor ();
-//			int [] actualSize = new int [1];
-//			if (OS.GetEventParameter (theEvent, OS.kEventParamFontColor, OS.typeRGBColor, null, RGBColor.sizeof, actualSize, color) == OS.noErr) {
-//				int red = (color.red >> 8) & 0xFF;
-//				int green = (color.green >> 8) & 0xFF;
-//				int blue =	(color.blue >> 8) & 0xFF;
-//				rgb = new RGB (red, green, blue);
-//			} else {
-//				int [] dict = new int [1];
-//				if (OS.GetEventParameter (theEvent, OS.kEventParamDictionary, OS.typeCFDictionaryRef, null, 4, actualSize, dict) == OS.noErr) {
-//					int [] attrib = new int [1];
-//					if (OS.CFDictionaryGetValueIfPresent (dict [0], OS.kFontPanelAttributesKey (), attrib)) {
-//						int [] tags = new int [1];
-//						int [] sizes = new int [1];
-//						int [] values = new int [1];
-//						if (OS.CFDictionaryGetValueIfPresent (attrib [0], OS.kFontPanelAttributeTagsKey (), tags) &&
-//							OS.CFDictionaryGetValueIfPresent (attrib [0], OS.kFontPanelAttributeSizesKey (), sizes) &&
-//							OS.CFDictionaryGetValueIfPresent (attrib [0], OS.kFontPanelAttributeValuesKey (), values)
-//						) {
-//							int count = OS.CFDataGetLength (tags [0]) / 4;
-//							int tagPtr = OS.CFDataGetBytePtr (tags[0]);
-//                            int sizePtr = OS.CFDataGetBytePtr (sizes [0]);
-//                            int [] tag = new int [1];
-//                            int [] size = new int [1];
-//                            int valueOffset = 0;
-//                            for (int i = 0 ; i < count ; i++) {
-//                            	OS.memmove (tag, tagPtr + (i * 4), 4);
-//                            	OS.memmove (size, sizePtr + (i * 4), 4);
-//                                if (tag [0] == OS.kATSUColorTag && size[0] == RGBColor.sizeof) {
-//                                    int valuePtr = OS.CFDataGetBytePtr (values [0]);
-//                                	OS.memmove (color, valuePtr + valueOffset, RGBColor.sizeof);
-//                                	int red = (color.red >> 8) & 0xFF;
-//                    				int green = (color.green >> 8) & 0xFF;
-//                    				int blue =	(color.blue >> 8) & 0xFF;
-//                    				rgb = new RGB (red, green, blue);
-//                                    break ;
-//                                }
-//                                valueOffset = size[0];
-//                            }
-//						}
-//					}
-//				}
-//			}
-//			break;
-//	}
-//	return OS.noErr;
-//}
-	
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
