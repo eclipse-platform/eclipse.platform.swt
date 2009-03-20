@@ -3288,12 +3288,9 @@ static NSString getAppName() {
 	if (ptr != 0) name = NSString.stringWithUTF8String(ptr);
 	if (name == null && APP_NAME != null) name = NSString.stringWith(APP_NAME);
 	if (name == null) {
-		NSDictionary info = NSBundle.mainBundle().infoDictionary();
-		if (info != null) {
-			id value = info.objectForKey(NSString.stringWith("CFBundleName"));
-			if (value != null) {
-				name = new NSString(value);
-			}
+		id value = NSBundle.mainBundle().objectForInfoDictionaryKey(NSString.stringWith("CFBundleName"));
+		if (value != null) {
+			name = new NSString(value);
 		}
 	}
 	if (name == null) name = NSString.stringWith("SWT");
