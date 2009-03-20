@@ -3581,7 +3581,7 @@ Rectangle getBoundsAtOffset(int offset) {
 	}
 	if (offset == caretOffset) {
 		int lineEnd = lineOffset + line.length();
-		if (offset == lineEnd && caretAlignment == PREVIOUS_OFFSET_TRAILING) {
+		if (offset == lineEnd) {
 			bounds.width += getCaretWidth();
 		}
 	}
