@@ -2161,7 +2161,7 @@ void doAutoScroll(int direction, int distance) {
 					if (blockSelection) {
 						int verticalScrollOffset = getVerticalScrollOffset();
 						int y = blockYLocation - verticalScrollOffset;
-						int max = renderer.getHeight() - verticalScrollOffset - (clientAreaHeight - topMargin - bottomMargin);
+						int max = renderer.getHeight() - verticalScrollOffset - clientAreaHeight;
 						int pixels = Math.min(autoScrollDistance, Math.max(0,max));
 						if (pixels != 0) {
 							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels, true);
@@ -2182,7 +2182,7 @@ void doAutoScroll(int direction, int distance) {
 				if (autoScrollDirection == ST.COLUMN_NEXT) {
 					if (blockSelection) {
 						int x = blockXLocation - horizontalScrollOffset;
-						int max = renderer.getWidth() - horizontalScrollOffset - (clientAreaWidth - leftMargin - rightMargin);
+						int max = renderer.getWidth() - horizontalScrollOffset - clientAreaWidth;
 						int pixels = Math.min(autoScrollDistance, Math.max(0,max));
 						if (pixels != 0) {
 							setBlockSelectionLocation(x + pixels, blockYLocation - getVerticalScrollOffset(), true);
@@ -3501,7 +3501,7 @@ Rectangle getBlockSelectionRectangle() {
 	Rectangle rect = getBlockSelectonPosition();
 	rect.y = getLinePixel(rect.y);
 	rect.width = rect.width - rect.x;
-	rect.height =  getLinePixel(rect.height + 1) - rect.y - 1;
+	rect.height =  getLinePixel(rect.height + 1) - rect.y;
 	return rect;
 }
 String getBlockSelectionText(String delimiter) {
@@ -5900,7 +5900,7 @@ void handlePaint(Event event) {
 	if (blockSelection && blockXLocation != -1) {
 		gc.setBackground(getSelectionBackground());
 		Rectangle rect = getBlockSelectionRectangle();
-		gc.drawRectangle(rect);
+		gc.drawRectangle(rect.x, rect.y, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
 		gc.setAdvanced(true);
 		if (gc.getAdvanced()) {
 			gc.setAlpha(100);
