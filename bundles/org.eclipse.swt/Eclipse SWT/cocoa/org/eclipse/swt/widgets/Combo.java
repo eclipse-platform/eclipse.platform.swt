@@ -345,6 +345,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	height = (int)Math.ceil (size.height);
 
 	if ((style & SWT.READ_ONLY) == 0) {
+		ignoreVerify = true;
 		NSComboBoxCell cell = new NSComboBoxCell (viewCell.id);
 		NSArray array = cell.objectValues ();
 		int length = (int)/*64*/array.count ();
@@ -358,6 +359,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 			cell.release ();
 		}
+		ignoreVerify = false;
 	}
 
 	/*
