@@ -2048,10 +2048,6 @@
 	</class>
 	<class name="NSMenuItemCell" swt_superclass="NSButtonCell">
 	</class>
-	<class name="NSMenuView" swt_superclass="NSView">
-	</class>
-	<class name="NSMovieView" swt_superclass="NSView">
-	</class>
 	<class name="NSMutableAttributedString" swt_gen="mixed" swt_superclass="NSAttributedString">
 		<method selector="appendAttributedString:" swt_gen="true">
 			<arg name="attrString" swt_gen="true"></arg>
@@ -2589,8 +2585,6 @@
 			<arg name="sender" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSQuickDrawView" swt_superclass="NSView">
 	</class>
 	<class name="NSResponder" swt_gen="mixed">
 		<method selector="acceptsFirstResponder" swt_gen="true">
