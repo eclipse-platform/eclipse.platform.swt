@@ -118,6 +118,8 @@
 		<arg name="size" swt_gen="true"></arg>
 		<arg name="releaseData" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</arg>
 		<retval swt_gen="true"></retval>
@@ -211,6 +213,7 @@
 		<arg name="info" swt_gen="true"></arg>
 		<arg name="function" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<arg></arg>
 			<retval swt_gen="true"></retval>
 		</arg>
 	</function>
