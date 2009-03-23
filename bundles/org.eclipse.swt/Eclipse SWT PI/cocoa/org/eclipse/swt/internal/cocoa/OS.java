@@ -2535,7 +2535,7 @@ public static final native int /*long*/ CGDisplayPixelsWide(int display);
 /**
  * @param doCombineState cast=(boolean_t)
  */
-public static final native int CGEnableEventStateCombining(boolean doCombineState);
+public static final native int CGEnableEventStateCombining(int doCombineState);
 /**
  * @param event cast=(CGEventRef)
  * @param field cast=(CGEventField)

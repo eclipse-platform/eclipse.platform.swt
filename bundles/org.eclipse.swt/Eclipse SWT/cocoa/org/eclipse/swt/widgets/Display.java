@@ -2465,7 +2465,7 @@ public boolean post(Event event) {
 
 		if (!eventSourceDelaySet) {
 			OS.CGSetLocalEventsSuppressionInterval(0.0);
-	        OS.CGEnableEventStateCombining(true);
+	        OS.CGEnableEventStateCombining(1);
 	        OS.CGSetLocalEventsFilterDuringSuppressionState(OS.kCGEventFilterMaskPermitLocalKeyboardEvents | OS.kCGEventFilterMaskPermitLocalMouseEvents | OS.kCGEventFilterMaskPermitSystemDefinedEvents, OS.kCGEventSuppressionStateSuppressionInterval);
 	        OS.CGSetLocalEventsFilterDuringSuppressionState(OS.kCGEventFilterMaskPermitLocalKeyboardEvents | OS.kCGEventFilterMaskPermitLocalMouseEvents | OS.kCGEventFilterMaskPermitSystemDefinedEvents, OS.kCGEventSuppressionStateRemoteMouseDrag);
 			eventSourceDelaySet = true;
