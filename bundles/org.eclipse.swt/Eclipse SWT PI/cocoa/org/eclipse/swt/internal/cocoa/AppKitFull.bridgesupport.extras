@@ -131,945 +131,150 @@
 	<constant name="NSURLPboardType" swt_gen="true"></constant>
 	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
-	<enum name="NSAWTEventType" swt_gen="true"></enum>
-	<enum name="NSAboveBottom" swt_gen="true"></enum>
-	<enum name="NSAboveTop" swt_gen="true"></enum>
-	<enum name="NSAddTraitFontAction" swt_gen="true"></enum>
-	<enum name="NSAdobeCNS1CharacterCollection" swt_gen="true"></enum>
-	<enum name="NSAdobeGB1CharacterCollection" swt_gen="true"></enum>
-	<enum name="NSAdobeJapan1CharacterCollection" swt_gen="true"></enum>
-	<enum name="NSAdobeJapan2CharacterCollection" swt_gen="true"></enum>
-	<enum name="NSAdobeKorea1CharacterCollection" swt_gen="true"></enum>
-	<enum name="NSAlertAlternateReturn" swt_gen="true"></enum>
-	<enum name="NSAlertDefaultReturn" swt_gen="true"></enum>
-	<enum name="NSAlertErrorReturn" swt_gen="true"></enum>
 	<enum name="NSAlertFirstButtonReturn" swt_gen="true"></enum>
-	<enum name="NSAlertOtherReturn" swt_gen="true"></enum>
 	<enum name="NSAlertSecondButtonReturn" swt_gen="true"></enum>
 	<enum name="NSAlertThirdButtonReturn" swt_gen="true"></enum>
-	<enum name="NSAllScrollerParts" swt_gen="true"></enum>
 	<enum name="NSAlphaFirstBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
-	<enum name="NSAlphaShiftKeyMask" swt_gen="true"></enum>
 	<enum name="NSAlternateKeyMask" swt_gen="true"></enum>
-	<enum name="NSAnimationBlocking" swt_gen="true"></enum>
-	<enum name="NSAnimationEaseIn" swt_gen="true"></enum>
-	<enum name="NSAnimationEaseInOut" swt_gen="true"></enum>
-	<enum name="NSAnimationEaseOut" swt_gen="true"></enum>
-	<enum name="NSAnimationEffectDisappearingItemDefault" swt_gen="true"></enum>
-	<enum name="NSAnimationEffectPoof" swt_gen="true"></enum>
-	<enum name="NSAnimationLinear" swt_gen="true"></enum>
-	<enum name="NSAnimationNonblocking" swt_gen="true"></enum>
-	<enum name="NSAnimationNonblockingThreaded" swt_gen="true"></enum>
-	<enum name="NSAnyEventMask" swt_gen="true"></enum>
-	<enum name="NSAnyType" swt_gen="true"></enum>
-	<enum name="NSAppKitDefined" swt_gen="true"></enum>
-	<enum name="NSAppKitDefinedMask" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_0" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_1" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_2" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_2_3" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_3" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_3_2" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_3_3" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_3_5" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_3_7" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_3_9" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumber10_4" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumberWithColumnResizingBrowser" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumberWithContinuousScrollingBrowser" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumberWithCursorSizeSupport" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumberWithCustomSheetPosition" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumberWithDirectionalTabs" swt_gen="true"></enum>
-	<enum name="NSAppKitVersionNumberWithPatternColorLeakFix" swt_gen="true"></enum>
-	<enum name="NSApplicationActivatedEventType" swt_gen="true"></enum>
-	<enum name="NSApplicationDeactivatedEventType" swt_gen="true"></enum>
 	<enum name="NSApplicationDefined" swt_gen="true"></enum>
-	<enum name="NSApplicationDefinedMask" swt_gen="true"></enum>
-	<enum name="NSApplicationDelegateReplyCancel" swt_gen="true"></enum>
-	<enum name="NSApplicationDelegateReplyFailure" swt_gen="true"></enum>
-	<enum name="NSApplicationDelegateReplySuccess" swt_gen="true"></enum>
-	<enum name="NSAscendingPageOrder" swt_gen="true"></enum>
-	<enum name="NSAtBottom" swt_gen="true"></enum>
 	<enum name="NSAtTop" swt_gen="true"></enum>
-	<enum name="NSAttachmentCharacter" swt_gen="true"></enum>
-	<enum name="NSAutoPagination" swt_gen="true"></enum>
-	<enum name="NSAutosaveOperation" swt_gen="true"></enum>
-	<enum name="NSBMPFileType" swt_gen="true"></enum>
-	<enum name="NSBackTabCharacter" swt_gen="true"></enum>
-	<enum name="NSBackgroundStyleDark" swt_gen="true"></enum>
-	<enum name="NSBackgroundStyleLight" swt_gen="true"></enum>
-	<enum name="NSBackgroundStyleLowered" swt_gen="true"></enum>
-	<enum name="NSBackgroundStyleRaised" swt_gen="true"></enum>
-	<enum name="NSBackgroundTab" swt_gen="true"></enum>
 	<enum name="NSBackingStoreBuffered" swt_gen="true"></enum>
-	<enum name="NSBackingStoreNonretained" swt_gen="true"></enum>
-	<enum name="NSBackingStoreRetained" swt_gen="true"></enum>
 	<enum name="NSBackspaceCharacter" swt_gen="true"></enum>
-	<enum name="NSBacktabTextMovement" swt_gen="true"></enum>
-	<enum name="NSBeginFunctionKey" swt_gen="true"></enum>
-	<enum name="NSBelowBottom" swt_gen="true"></enum>
-	<enum name="NSBelowTop" swt_gen="true"></enum>
 	<enum name="NSBevelLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSBezelBorder" swt_gen="true"></enum>
-	<enum name="NSBlueControlTint" swt_gen="true"></enum>
 	<enum name="NSBoldFontMask" swt_gen="true"></enum>
 	<enum name="NSBorderlessWindowMask" swt_gen="true"></enum>
 	<enum name="NSBottomTabsBezelBorder" swt_gen="true"></enum>
 	<enum name="NSBoxCustom" swt_gen="true"></enum>
-	<enum name="NSBoxOldStyle" swt_gen="true"></enum>
-	<enum name="NSBoxPrimary" swt_gen="true"></enum>
-	<enum name="NSBoxSecondary" swt_gen="true"></enum>
 	<enum name="NSBoxSeparator" swt_gen="true"></enum>
-	<enum name="NSBreakFunctionKey" swt_gen="true"></enum>
-	<enum name="NSBrowserAutoColumnResizing" swt_gen="true"></enum>
-	<enum name="NSBrowserDropAbove" swt_gen="true"></enum>
-	<enum name="NSBrowserDropOn" swt_gen="true"></enum>
-	<enum name="NSBrowserNoColumnResizing" swt_gen="true"></enum>
-	<enum name="NSBrowserUserColumnResizing" swt_gen="true"></enum>
 	<enum name="NSButtLineCapStyle" swt_gen="true"></enum>
-	<enum name="NSCMYKColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSCMYKModeColorPanel" swt_gen="true"></enum>
 	<enum name="NSCancelButton" swt_gen="true"></enum>
-	<enum name="NSCancelTextMovement" swt_gen="true"></enum>
 	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
-	<enum name="NSCellAllowsMixedState" swt_gen="true"></enum>
-	<enum name="NSCellChangesContents" swt_gen="true"></enum>
-	<enum name="NSCellDisabled" swt_gen="true"></enum>
-	<enum name="NSCellEditable" swt_gen="true"></enum>
-	<enum name="NSCellHasImageHorizontal" swt_gen="true"></enum>
-	<enum name="NSCellHasImageOnLeftOrBottom" swt_gen="true"></enum>
-	<enum name="NSCellHasOverlappingImage" swt_gen="true"></enum>
-	<enum name="NSCellHighlighted" swt_gen="true"></enum>
-	<enum name="NSCellHitContentArea" swt_gen="true"></enum>
-	<enum name="NSCellHitEditableTextArea" swt_gen="true"></enum>
-	<enum name="NSCellHitNone" swt_gen="true"></enum>
-	<enum name="NSCellHitTrackableArea" swt_gen="true"></enum>
-	<enum name="NSCellIsBordered" swt_gen="true"></enum>
-	<enum name="NSCellIsInsetButton" swt_gen="true"></enum>
-	<enum name="NSCellLightsByBackground" swt_gen="true"></enum>
-	<enum name="NSCellLightsByContents" swt_gen="true"></enum>
-	<enum name="NSCellLightsByGray" swt_gen="true"></enum>
-	<enum name="NSCellState" swt_gen="true"></enum>
-	<enum name="NSCenterTabStopType" swt_gen="true"></enum>
 	<enum name="NSCenterTextAlignment" swt_gen="true"></enum>
-	<enum name="NSChangeAutosaved" swt_gen="true"></enum>
-	<enum name="NSChangeBackgroundCell" swt_gen="true"></enum>
-	<enum name="NSChangeBackgroundCellMask" swt_gen="true"></enum>
-	<enum name="NSChangeCleared" swt_gen="true"></enum>
-	<enum name="NSChangeDone" swt_gen="true"></enum>
-	<enum name="NSChangeGrayCell" swt_gen="true"></enum>
-	<enum name="NSChangeGrayCellMask" swt_gen="true"></enum>
-	<enum name="NSChangeReadOtherContents" swt_gen="true"></enum>
-	<enum name="NSChangeRedone" swt_gen="true"></enum>
-	<enum name="NSChangeUndone" swt_gen="true"></enum>
-	<enum name="NSCircularBezelStyle" swt_gen="true"></enum>
-	<enum name="NSCircularSlider" swt_gen="true"></enum>
-	<enum name="NSClearControlTint" swt_gen="true"></enum>
-	<enum name="NSClearDisplayFunctionKey" swt_gen="true"></enum>
-	<enum name="NSClearLineFunctionKey" swt_gen="true"></enum>
-	<enum name="NSClipPagination" swt_gen="true"></enum>
 	<enum name="NSClockAndCalendarDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSClosableWindowMask" swt_gen="true"></enum>
 	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSColorListModeColorPanel" swt_gen="true"></enum>
-	<enum name="NSColorPanelAllModesMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelCMYKModeMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelColorListModeMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelCrayonModeMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelCustomPaletteModeMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelGrayModeMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelHSBModeMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelRGBModeMask" swt_gen="true"></enum>
-	<enum name="NSColorPanelWheelModeMask" swt_gen="true"></enum>
-	<enum name="NSColorRenderingIntentAbsoluteColorimetric" swt_gen="true"></enum>
-	<enum name="NSColorRenderingIntentDefault" swt_gen="true"></enum>
-	<enum name="NSColorRenderingIntentPerceptual" swt_gen="true"></enum>
-	<enum name="NSColorRenderingIntentRelativeColorimetric" swt_gen="true"></enum>
-	<enum name="NSColorRenderingIntentSaturation" swt_gen="true"></enum>
 	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
 	<enum name="NSCompositeClear" swt_gen="true"></enum>
 	<enum name="NSCompositeCopy" swt_gen="true"></enum>
-	<enum name="NSCompositeDestinationAtop" swt_gen="true"></enum>
-	<enum name="NSCompositeDestinationIn" swt_gen="true"></enum>
-	<enum name="NSCompositeDestinationOut" swt_gen="true"></enum>
-	<enum name="NSCompositeDestinationOver" swt_gen="true"></enum>
-	<enum name="NSCompositeHighlight" swt_gen="true"></enum>
-	<enum name="NSCompositePlusDarker" swt_gen="true"></enum>
-	<enum name="NSCompositePlusLighter" swt_gen="true"></enum>
-	<enum name="NSCompositeSourceAtop" swt_gen="true"></enum>
-	<enum name="NSCompositeSourceIn" swt_gen="true"></enum>
-	<enum name="NSCompositeSourceOut" swt_gen="true"></enum>
 	<enum name="NSCompositeSourceOver" swt_gen="true"></enum>
 	<enum name="NSCompositeXOR" swt_gen="true"></enum>
-	<enum name="NSCompressedFontMask" swt_gen="true"></enum>
-	<enum name="NSCondensedFontMask" swt_gen="true"></enum>
-	<enum name="NSContentsCellMask" swt_gen="true"></enum>
-	<enum name="NSContinuousCapacityLevelIndicatorStyle" swt_gen="true"></enum>
-	<enum name="NSControlGlyph" swt_gen="true"></enum>
 	<enum name="NSControlKeyMask" swt_gen="true"></enum>
-	<enum name="NSCrayonModeColorPanel" swt_gen="true"></enum>
 	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
-	<enum name="NSCriticalRequest" swt_gen="true"></enum>
-	<enum name="NSCursorPointingDevice" swt_gen="true"></enum>
-	<enum name="NSCursorUpdate" swt_gen="true"></enum>
-	<enum name="NSCursorUpdateMask" swt_gen="true"></enum>
 	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSCustomPaletteModeColorPanel" swt_gen="true"></enum>
-	<enum name="NSDecimalTabStopType" swt_gen="true"></enum>
-	<enum name="NSDefaultControlTint" swt_gen="true"></enum>
-	<enum name="NSDefaultTokenStyle" swt_gen="true"></enum>
-	<enum name="NSDeleteCharFunctionKey" swt_gen="true"></enum>
 	<enum name="NSDeleteCharacter" swt_gen="true"></enum>
-	<enum name="NSDeleteFunctionKey" swt_gen="true"></enum>
-	<enum name="NSDeleteLineFunctionKey" swt_gen="true"></enum>
-	<enum name="NSDescendingPageOrder" swt_gen="true"></enum>
 	<enum name="NSDeviceIndependentModifierFlagsMask" swt_gen="true"></enum>
-	<enum name="NSDeviceNColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSDirectSelection" swt_gen="true"></enum>
-	<enum name="NSDisclosureBezelStyle" swt_gen="true"></enum>
-	<enum name="NSDiscreteCapacityLevelIndicatorStyle" swt_gen="true"></enum>
-	<enum name="NSDisplayWindowRunLoopOrdering" swt_gen="true"></enum>
-	<enum name="NSDocModalWindowMask" swt_gen="true"></enum>
-	<enum name="NSDockWindowLevel" swt_gen="true"></enum>
-	<enum name="NSDoubleType" swt_gen="true"></enum>
-	<enum name="NSDownArrowFunctionKey" swt_gen="true"></enum>
-	<enum name="NSDownTextMovement" swt_gen="true"></enum>
-	<enum name="NSDragOperationAll" swt_gen="true"></enum>
-	<enum name="NSDragOperationAll_Obsolete" swt_gen="true"></enum>
 	<enum name="NSDragOperationCopy" swt_gen="true"></enum>
 	<enum name="NSDragOperationDelete" swt_gen="true"></enum>
 	<enum name="NSDragOperationEvery" swt_gen="true"></enum>
-	<enum name="NSDragOperationGeneric" swt_gen="true"></enum>
 	<enum name="NSDragOperationLink" swt_gen="true"></enum>
 	<enum name="NSDragOperationMove" swt_gen="true"></enum>
 	<enum name="NSDragOperationNone" swt_gen="true"></enum>
-	<enum name="NSDragOperationPrivate" swt_gen="true"></enum>
-	<enum name="NSDrawerClosedState" swt_gen="true"></enum>
-	<enum name="NSDrawerClosingState" swt_gen="true"></enum>
-	<enum name="NSDrawerOpenState" swt_gen="true"></enum>
-	<enum name="NSDrawerOpeningState" swt_gen="true"></enum>
-	<enum name="NSEndFunctionKey" swt_gen="true"></enum>
 	<enum name="NSEnterCharacter" swt_gen="true"></enum>
-	<enum name="NSEraDatePickerElementFlag" swt_gen="true"></enum>
-	<enum name="NSEraserPointingDevice" swt_gen="true"></enum>
 	<enum name="NSEvenOddWindingRule" swt_gen="true"></enum>
-	<enum name="NSExclude10_4ElementsIconCreationOption" swt_gen="true"></enum>
-	<enum name="NSExcludeQuickDrawElementsIconCreationOption" swt_gen="true"></enum>
-	<enum name="NSExecuteFunctionKey" swt_gen="true"></enum>
-	<enum name="NSExpandedFontMask" swt_gen="true"></enum>
-	<enum name="NSF10FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF11FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF12FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF13FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF14FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF15FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF16FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF17FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF18FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF19FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF1FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF20FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF21FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF22FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF23FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF24FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF25FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF26FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF27FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF28FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF29FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF2FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF30FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF31FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF32FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF33FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF34FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF35FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF3FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF4FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF5FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF6FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF7FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF8FunctionKey" swt_gen="true"></enum>
-	<enum name="NSF9FunctionKey" swt_gen="true"></enum>
-	<enum name="NSFPCurrentField" swt_gen="true"></enum>
-	<enum name="NSFPPreviewButton" swt_gen="true"></enum>
-	<enum name="NSFPPreviewField" swt_gen="true"></enum>
-	<enum name="NSFPRevertButton" swt_gen="true"></enum>
-	<enum name="NSFPSetButton" swt_gen="true"></enum>
-	<enum name="NSFPSizeField" swt_gen="true"></enum>
-	<enum name="NSFPSizeTitle" swt_gen="true"></enum>
-	<enum name="NSFileHandlingPanelCancelButton" swt_gen="true"></enum>
 	<enum name="NSFileHandlingPanelOKButton" swt_gen="true"></enum>
-	<enum name="NSFindFunctionKey" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionNext" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionPrevious" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionReplace" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionReplaceAll" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionReplaceAllInSelection" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionReplaceAndFind" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionSelectAll" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionSelectAllInSelection" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionSetFindString" swt_gen="true"></enum>
-	<enum name="NSFindPanelActionShowFindPanel" swt_gen="true"></enum>
-	<enum name="NSFindPanelSubstringMatchTypeContains" swt_gen="true"></enum>
-	<enum name="NSFindPanelSubstringMatchTypeEndsWith" swt_gen="true"></enum>
-	<enum name="NSFindPanelSubstringMatchTypeFullWord" swt_gen="true"></enum>
-	<enum name="NSFindPanelSubstringMatchTypeStartsWith" swt_gen="true"></enum>
-	<enum name="NSFitPagination" swt_gen="true"></enum>
-	<enum name="NSFixedPitchFontMask" swt_gen="true"></enum>
 	<enum name="NSFlagsChanged" swt_gen="true"></enum>
-	<enum name="NSFlagsChangedMask" swt_gen="true"></enum>
-	<enum name="NSFloatType" swt_gen="true"></enum>
-	<enum name="NSFloatingPointSamplesBitmapFormat" swt_gen="true"></enum>
-	<enum name="NSFloatingWindowLevel" swt_gen="true"></enum>
-	<enum name="NSFocusRingAbove" swt_gen="true"></enum>
-	<enum name="NSFocusRingBelow" swt_gen="true"></enum>
-	<enum name="NSFocusRingOnly" swt_gen="true"></enum>
-	<enum name="NSFocusRingTypeDefault" swt_gen="true"></enum>
-	<enum name="NSFocusRingTypeExterior" swt_gen="true"></enum>
 	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
-	<enum name="NSFontAntialiasedIntegerAdvancementsRenderingMode" swt_gen="true"></enum>
-	<enum name="NSFontAntialiasedRenderingMode" swt_gen="true"></enum>
-	<enum name="NSFontBoldTrait" swt_gen="true"></enum>
-	<enum name="NSFontClarendonSerifsClass" swt_gen="true"></enum>
-	<enum name="NSFontCollectionApplicationOnlyMask" swt_gen="true"></enum>
-	<enum name="NSFontCondensedTrait" swt_gen="true"></enum>
-	<enum name="NSFontDefaultRenderingMode" swt_gen="true"></enum>
-	<enum name="NSFontExpandedTrait" swt_gen="true"></enum>
-	<enum name="NSFontFamilyClassMask" swt_gen="true"></enum>
-	<enum name="NSFontFreeformSerifsClass" swt_gen="true"></enum>
-	<enum name="NSFontIntegerAdvancementsRenderingMode" swt_gen="true"></enum>
-	<enum name="NSFontItalicTrait" swt_gen="true"></enum>
-	<enum name="NSFontModernSerifsClass" swt_gen="true"></enum>
-	<enum name="NSFontMonoSpaceTrait" swt_gen="true"></enum>
-	<enum name="NSFontOldStyleSerifsClass" swt_gen="true"></enum>
-	<enum name="NSFontOrnamentalsClass" swt_gen="true"></enum>
-	<enum name="NSFontPanelAllEffectsModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelAllModesMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelCollectionModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelDocumentColorEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelFaceModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelShadowEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelSizeModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelStandardModesMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelStrikethroughEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelTextColorEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelUnderlineEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontSansSerifClass" swt_gen="true"></enum>
-	<enum name="NSFontScriptsClass" swt_gen="true"></enum>
-	<enum name="NSFontSlabSerifsClass" swt_gen="true"></enum>
-	<enum name="NSFontSymbolicClass" swt_gen="true"></enum>
-	<enum name="NSFontTransitionalSerifsClass" swt_gen="true"></enum>
-	<enum name="NSFontUIOptimizedTrait" swt_gen="true"></enum>
-	<enum name="NSFontUnknownClass" swt_gen="true"></enum>
-	<enum name="NSFontVerticalTrait" swt_gen="true"></enum>
-	<enum name="NSFormFeedCharacter" swt_gen="true"></enum>
-	<enum name="NSFunctionKeyMask" swt_gen="true"></enum>
-	<enum name="NSGIFFileType" swt_gen="true"></enum>
-	<enum name="NSGlyphAttributeBidiLevel" swt_gen="true"></enum>
-	<enum name="NSGlyphAttributeElastic" swt_gen="true"></enum>
-	<enum name="NSGlyphAttributeInscribe" swt_gen="true"></enum>
-	<enum name="NSGlyphAttributeSoft" swt_gen="true"></enum>
-	<enum name="NSGlyphInscribeAbove" swt_gen="true"></enum>
-	<enum name="NSGlyphInscribeBase" swt_gen="true"></enum>
-	<enum name="NSGlyphInscribeBelow" swt_gen="true"></enum>
-	<enum name="NSGlyphInscribeOverBelow" swt_gen="true"></enum>
-	<enum name="NSGlyphInscribeOverstrike" swt_gen="true"></enum>
-	<enum name="NSGradientConcaveStrong" swt_gen="true"></enum>
-	<enum name="NSGradientConcaveWeak" swt_gen="true"></enum>
-	<enum name="NSGradientConvexStrong" swt_gen="true"></enum>
-	<enum name="NSGradientConvexWeak" swt_gen="true"></enum>
-	<enum name="NSGradientDrawsAfterEndingLocation" swt_gen="true"></enum>
-	<enum name="NSGradientDrawsBeforeStartingLocation" swt_gen="true"></enum>
-	<enum name="NSGradientNone" swt_gen="true"></enum>
-	<enum name="NSGraphiteControlTint" swt_gen="true"></enum>
-	<enum name="NSGrayColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSGrayModeColorPanel" swt_gen="true"></enum>
-	<enum name="NSGrooveBorder" swt_gen="true"></enum>
-	<enum name="NSHSBModeColorPanel" swt_gen="true"></enum>
-	<enum name="NSHUDWindowMask" swt_gen="true"></enum>
-	<enum name="NSHeavierFontAction" swt_gen="true"></enum>
-	<enum name="NSHelpButtonBezelStyle" swt_gen="true"></enum>
 	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
-	<enum name="NSHighlightModeMatrix" swt_gen="true"></enum>
-	<enum name="NSHomeFunctionKey" swt_gen="true"></enum>
-	<enum name="NSHorizontalRuler" swt_gen="true"></enum>
 	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSHourMinuteSecondDatePickerElementFlag" swt_gen="true"></enum>
-	<enum name="NSIdentityMappingCharacterCollection" swt_gen="true"></enum>
-	<enum name="NSIllegalTextMovement" swt_gen="true"></enum>
 	<enum name="NSImageAbove" swt_gen="true"></enum>
-	<enum name="NSImageAlignBottom" swt_gen="true"></enum>
-	<enum name="NSImageAlignBottomLeft" swt_gen="true"></enum>
-	<enum name="NSImageAlignBottomRight" swt_gen="true"></enum>
 	<enum name="NSImageAlignCenter" swt_gen="true"></enum>
 	<enum name="NSImageAlignLeft" swt_gen="true"></enum>
 	<enum name="NSImageAlignRight" swt_gen="true"></enum>
-	<enum name="NSImageAlignTop" swt_gen="true"></enum>
-	<enum name="NSImageAlignTopLeft" swt_gen="true"></enum>
-	<enum name="NSImageAlignTopRight" swt_gen="true"></enum>
-	<enum name="NSImageBelow" swt_gen="true"></enum>
-	<enum name="NSImageCacheAlways" swt_gen="true"></enum>
-	<enum name="NSImageCacheBySize" swt_gen="true"></enum>
-	<enum name="NSImageCacheDefault" swt_gen="true"></enum>
 	<enum name="NSImageCacheNever" swt_gen="true"></enum>
-	<enum name="NSImageCellType" swt_gen="true"></enum>
-	<enum name="NSImageFrameButton" swt_gen="true"></enum>
-	<enum name="NSImageFrameGrayBezel" swt_gen="true"></enum>
-	<enum name="NSImageFrameGroove" swt_gen="true"></enum>
-	<enum name="NSImageFrameNone" swt_gen="true"></enum>
-	<enum name="NSImageFramePhoto" swt_gen="true"></enum>
 	<enum name="NSImageInterpolationDefault" swt_gen="true"></enum>
 	<enum name="NSImageInterpolationHigh" swt_gen="true"></enum>
 	<enum name="NSImageInterpolationLow" swt_gen="true"></enum>
 	<enum name="NSImageInterpolationNone" swt_gen="true"></enum>
 	<enum name="NSImageLeft" swt_gen="true"></enum>
-	<enum name="NSImageLoadStatusCancelled" swt_gen="true"></enum>
-	<enum name="NSImageLoadStatusCompleted" swt_gen="true"></enum>
-	<enum name="NSImageLoadStatusInvalidData" swt_gen="true"></enum>
-	<enum name="NSImageLoadStatusReadError" swt_gen="true"></enum>
-	<enum name="NSImageLoadStatusUnexpectedEOF" swt_gen="true"></enum>
 	<enum name="NSImageOnly" swt_gen="true"></enum>
 	<enum name="NSImageOverlaps" swt_gen="true"></enum>
-	<enum name="NSImageRepLoadStatusCompleted" swt_gen="true"></enum>
-	<enum name="NSImageRepLoadStatusInvalidData" swt_gen="true"></enum>
-	<enum name="NSImageRepLoadStatusReadingHeader" swt_gen="true"></enum>
-	<enum name="NSImageRepLoadStatusUnexpectedEOF" swt_gen="true"></enum>
-	<enum name="NSImageRepLoadStatusUnknownType" swt_gen="true"></enum>
-	<enum name="NSImageRepLoadStatusWillNeedAllData" swt_gen="true"></enum>
-	<enum name="NSImageRepMatchesDevice" swt_gen="true"></enum>
-	<enum name="NSImageRight" swt_gen="true"></enum>
-	<enum name="NSImageScaleAxesIndependently" swt_gen="true"></enum>
-	<enum name="NSImageScaleNone" swt_gen="true"></enum>
-	<enum name="NSImageScaleProportionallyDown" swt_gen="true"></enum>
-	<enum name="NSImageScaleProportionallyUpOrDown" swt_gen="true"></enum>
-	<enum name="NSIndexedColorSpaceModel" swt_gen="true"></enum>
 	<enum name="NSInformationalAlertStyle" swt_gen="true"></enum>
-	<enum name="NSInformationalRequest" swt_gen="true"></enum>
-	<enum name="NSInsertCharFunctionKey" swt_gen="true"></enum>
-	<enum name="NSInsertFunctionKey" swt_gen="true"></enum>
-	<enum name="NSInsertLineFunctionKey" swt_gen="true"></enum>
-	<enum name="NSIntType" swt_gen="true"></enum>
 	<enum name="NSItalicFontMask" swt_gen="true"></enum>
-	<enum name="NSJPEG2000FileType" swt_gen="true"></enum>
-	<enum name="NSJPEGFileType" swt_gen="true"></enum>
 	<enum name="NSJustifiedTextAlignment" swt_gen="true"></enum>
 	<enum name="NSKeyDown" swt_gen="true"></enum>
-	<enum name="NSKeyDownMask" swt_gen="true"></enum>
 	<enum name="NSKeyUp" swt_gen="true"></enum>
-	<enum name="NSKeyUpMask" swt_gen="true"></enum>
-	<enum name="NSLABColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSLandscapeOrientation" swt_gen="true"></enum>
-	<enum name="NSLeftArrowFunctionKey" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDown" swt_gen="true"></enum>
-	<enum name="NSLeftMouseDownMask" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDragged" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDraggedMask" swt_gen="true"></enum>
 	<enum name="NSLeftMouseUp" swt_gen="true"></enum>
 	<enum name="NSLeftMouseUpMask" swt_gen="true"></enum>
 	<enum name="NSLeftTabStopType" swt_gen="true"></enum>
-	<enum name="NSLeftTabsBezelBorder" swt_gen="true"></enum>
 	<enum name="NSLeftTextAlignment" swt_gen="true"></enum>
-	<enum name="NSLeftTextMovement" swt_gen="true"></enum>
-	<enum name="NSLighterFontAction" swt_gen="true"></enum>
-	<enum name="NSLineBorder" swt_gen="true"></enum>
-	<enum name="NSLineBreakByCharWrapping" swt_gen="true"></enum>
 	<enum name="NSLineBreakByClipping" swt_gen="true"></enum>
-	<enum name="NSLineBreakByTruncatingHead" swt_gen="true"></enum>
-	<enum name="NSLineBreakByTruncatingMiddle" swt_gen="true"></enum>
-	<enum name="NSLineBreakByTruncatingTail" swt_gen="true"></enum>
 	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
-	<enum name="NSLineDoesntMove" swt_gen="true"></enum>
-	<enum name="NSLineMovesDown" swt_gen="true"></enum>
-	<enum name="NSLineMovesLeft" swt_gen="true"></enum>
-	<enum name="NSLineMovesRight" swt_gen="true"></enum>
-	<enum name="NSLineMovesUp" swt_gen="true"></enum>
-	<enum name="NSLineSeparatorCharacter" swt_gen="true"></enum>
-	<enum name="NSLineSweepDown" swt_gen="true"></enum>
-	<enum name="NSLineSweepLeft" swt_gen="true"></enum>
-	<enum name="NSLineSweepRight" swt_gen="true"></enum>
-	<enum name="NSLineSweepUp" swt_gen="true"></enum>
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSLinearSlider" swt_gen="true"></enum>
-	<enum name="NSListModeMatrix" swt_gen="true"></enum>
-	<enum name="NSMacintoshInterfaceStyle" swt_gen="true"></enum>
-	<enum name="NSMainMenuWindowLevel" swt_gen="true"></enum>
-	<enum name="NSMenuFunctionKey" swt_gen="true"></enum>
-	<enum name="NSMiniControlSize" swt_gen="true"></enum>
 	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSMixedState" swt_gen="true"></enum>
-	<enum name="NSModalPanelWindowLevel" swt_gen="true"></enum>
-	<enum name="NSModeSwitchFunctionKey" swt_gen="true"></enum>
-	<enum name="NSMomentaryChangeButton" swt_gen="true"></enum>
-	<enum name="NSMomentaryLight" swt_gen="true"></enum>
 	<enum name="NSMomentaryLightButton" swt_gen="true"></enum>
-	<enum name="NSMomentaryPushButton" swt_gen="true"></enum>
-	<enum name="NSMomentaryPushInButton" swt_gen="true"></enum>
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
-	<enum name="NSMouseEnteredMask" swt_gen="true"></enum>
-	<enum name="NSMouseEventSubtype" swt_gen="true"></enum>
 	<enum name="NSMouseExited" swt_gen="true"></enum>
-	<enum name="NSMouseExitedMask" swt_gen="true"></enum>
 	<enum name="NSMouseMoved" swt_gen="true"></enum>
-	<enum name="NSMouseMovedMask" swt_gen="true"></enum>
 	<enum name="NSMoveToBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSNarrowFontMask" swt_gen="true"></enum>
-	<enum name="NSNativeShortGlyphPacking" swt_gen="true"></enum>
-	<enum name="NSNaturalTextAlignment" swt_gen="true"></enum>
 	<enum name="NSNewlineCharacter" swt_gen="true"></enum>
-	<enum name="NSNextFunctionKey" swt_gen="true"></enum>
-	<enum name="NSNextStepInterfaceStyle" swt_gen="true"></enum>
 	<enum name="NSNoBorder" swt_gen="true"></enum>
-	<enum name="NSNoCellMask" swt_gen="true"></enum>
-	<enum name="NSNoFontChangeAction" swt_gen="true"></enum>
 	<enum name="NSNoImage" swt_gen="true"></enum>
-	<enum name="NSNoInterfaceStyle" swt_gen="true"></enum>
-	<enum name="NSNoModeColorPanel" swt_gen="true"></enum>
-	<enum name="NSNoScrollerParts" swt_gen="true"></enum>
-	<enum name="NSNoTabsBezelBorder" swt_gen="true"></enum>
-	<enum name="NSNoTabsLineBorder" swt_gen="true"></enum>
-	<enum name="NSNoTabsNoBorder" swt_gen="true"></enum>
 	<enum name="NSNoTitle" swt_gen="true"></enum>
-	<enum name="NSNoUnderlineStyle" swt_gen="true"></enum>
-	<enum name="NSNonStandardCharacterSetFontMask" swt_gen="true"></enum>
 	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
-	<enum name="NSNonactivatingPanelMask" swt_gen="true"></enum>
-	<enum name="NSNormalWindowLevel" swt_gen="true"></enum>
-	<enum name="NSNullCellType" swt_gen="true"></enum>
-	<enum name="NSNullGlyph" swt_gen="true"></enum>
-	<enum name="NSNumericPadKeyMask" swt_gen="true"></enum>
-	<enum name="NSOKButton" swt_gen="true"></enum>
-	<enum name="NSOPENGL_CURRENT_VERSION" swt_gen="true"></enum>
 	<enum name="NSOffState" swt_gen="true"></enum>
-	<enum name="NSOnOffButton" swt_gen="true"></enum>
 	<enum name="NSOnState" swt_gen="true"></enum>
-	<enum name="NSOnlyScrollerArrows" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPRasterizationEnable" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPStateValidation" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPSurfaceOpacity" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPSurfaceOrder" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPSwapInterval" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPSwapRectangle" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPSwapRectangleEnable" swt_gen="true"></enum>
-	<enum name="NSOpenGLGOClearFormatCache" swt_gen="true"></enum>
-	<enum name="NSOpenGLGOFormatCacheSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLGOResetLibrary" swt_gen="true"></enum>
-	<enum name="NSOpenGLGORetainRenderers" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAAccelerated" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAccumSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAAllRenderers" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAAllowOfflineRenderers" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAlphaSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAAuxBuffers" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAAuxDepthStencil" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFABackingStore" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAClosestPolicy" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAColorFloat" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAColorSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFACompliant" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFADepthSize" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFADoubleBuffer" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAFullScreen" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAMPSafe" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAMaximumPolicy" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAMinimumPolicy" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAMultiScreen" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAMultisample" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFANoRecovery" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAOffScreen" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAPixelBuffer" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFARendererID" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFARobust" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFASampleAlpha" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFASampleBuffers" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFASamples" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAScreenMask" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFASingleRenderer" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAStencilSize" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAStereo" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFASupersample" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAVirtualScreenCount" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAWindow" swt_gen="true"></enum>
 	<enum name="NSOtherMouseDown" swt_gen="true"></enum>
-	<enum name="NSOtherMouseDownMask" swt_gen="true"></enum>
 	<enum name="NSOtherMouseDragged" swt_gen="true"></enum>
-	<enum name="NSOtherMouseDraggedMask" swt_gen="true"></enum>
 	<enum name="NSOtherMouseUp" swt_gen="true"></enum>
-	<enum name="NSOtherMouseUpMask" swt_gen="true"></enum>
-	<enum name="NSOtherTextMovement" swt_gen="true"></enum>
-	<enum name="NSOutlineViewDropOnItemIndex" swt_gen="true"></enum>
-	<enum name="NSPNGFileType" swt_gen="true"></enum>
-	<enum name="NSPageDownFunctionKey" swt_gen="true"></enum>
-	<enum name="NSPageUpFunctionKey" swt_gen="true"></enum>
-	<enum name="NSParagraphSeparatorCharacter" swt_gen="true"></enum>
-	<enum name="NSPathStyleNavigationBar" swt_gen="true"></enum>
-	<enum name="NSPathStylePopUp" swt_gen="true"></enum>
-	<enum name="NSPathStyleStandard" swt_gen="true"></enum>
-	<enum name="NSPatternColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSPauseFunctionKey" swt_gen="true"></enum>
-	<enum name="NSPenLowerSideMask" swt_gen="true"></enum>
-	<enum name="NSPenPointingDevice" swt_gen="true"></enum>
-	<enum name="NSPenTipMask" swt_gen="true"></enum>
-	<enum name="NSPenUpperSideMask" swt_gen="true"></enum>
-	<enum name="NSPeriodic" swt_gen="true"></enum>
-	<enum name="NSPeriodicMask" swt_gen="true"></enum>
-	<enum name="NSPlainTextTokenStyle" swt_gen="true"></enum>
-	<enum name="NSPopUpArrowAtBottom" swt_gen="true"></enum>
-	<enum name="NSPopUpArrowAtCenter" swt_gen="true"></enum>
-	<enum name="NSPopUpMenuWindowLevel" swt_gen="true"></enum>
-	<enum name="NSPopUpNoArrow" swt_gen="true"></enum>
-	<enum name="NSPortraitOrientation" swt_gen="true"></enum>
-	<enum name="NSPositiveDoubleType" swt_gen="true"></enum>
-	<enum name="NSPositiveFloatType" swt_gen="true"></enum>
-	<enum name="NSPositiveIntType" swt_gen="true"></enum>
-	<enum name="NSPosterFontMask" swt_gen="true"></enum>
-	<enum name="NSPowerOffEventType" swt_gen="true"></enum>
-	<enum name="NSPressedTab" swt_gen="true"></enum>
-	<enum name="NSPrevFunctionKey" swt_gen="true"></enum>
-	<enum name="NSPrintFunctionKey" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsCopies" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsOrientation" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsPageRange" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsPaperSize" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsPreview" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsScaling" swt_gen="true"></enum>
-	<enum name="NSPrintScreenFunctionKey" swt_gen="true"></enum>
-	<enum name="NSPrinterTableError" swt_gen="true"></enum>
-	<enum name="NSPrinterTableNotFound" swt_gen="true"></enum>
-	<enum name="NSPrinterTableOK" swt_gen="true"></enum>
-	<enum name="NSPrintingCancelled" swt_gen="true"></enum>
-	<enum name="NSPrintingFailure" swt_gen="true"></enum>
-	<enum name="NSPrintingReplyLater" swt_gen="true"></enum>
-	<enum name="NSPrintingSuccess" swt_gen="true"></enum>
-	<enum name="NSProgressIndicatorBarStyle" swt_gen="true"></enum>
-	<enum name="NSProgressIndicatorPreferredAquaThickness" swt_gen="true"></enum>
-	<enum name="NSProgressIndicatorPreferredLargeThickness" swt_gen="true"></enum>
-	<enum name="NSProgressIndicatorPreferredSmallThickness" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
-	<enum name="NSProgressIndicatorSpinningStyle" swt_gen="true"></enum>
-	<enum name="NSPushInCell" swt_gen="true"></enum>
-	<enum name="NSPushInCellMask" swt_gen="true"></enum>
 	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
-	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSRGBModeColorPanel" swt_gen="true"></enum>
 	<enum name="NSRadioButton" swt_gen="true"></enum>
-	<enum name="NSRadioModeMatrix" swt_gen="true"></enum>
-	<enum name="NSRangeDateMode" swt_gen="true"></enum>
-	<enum name="NSRatingLevelIndicatorStyle" swt_gen="true"></enum>
-	<enum name="NSRecessedBezelStyle" swt_gen="true"></enum>
-	<enum name="NSRedoFunctionKey" swt_gen="true"></enum>
 	<enum name="NSRegularControlSize" swt_gen="true"></enum>
-	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
-	<enum name="NSRelevancyLevelIndicatorStyle" swt_gen="true"></enum>
-	<enum name="NSRemoveTraitFontAction" swt_gen="true"></enum>
-	<enum name="NSResetCursorRectsRunLoopOrdering" swt_gen="true"></enum>
-	<enum name="NSResetFunctionKey" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
-	<enum name="NSReturnTextMovement" swt_gen="true"></enum>
-	<enum name="NSRightArrowFunctionKey" swt_gen="true"></enum>
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
-	<enum name="NSRightMouseDownMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseDragged" swt_gen="true"></enum>
-	<enum name="NSRightMouseDraggedMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseUp" swt_gen="true"></enum>
-	<enum name="NSRightMouseUpMask" swt_gen="true"></enum>
-	<enum name="NSRightTabStopType" swt_gen="true"></enum>
-	<enum name="NSRightTabsBezelBorder" swt_gen="true"></enum>
 	<enum name="NSRightTextAlignment" swt_gen="true"></enum>
-	<enum name="NSRightTextMovement" swt_gen="true"></enum>
 	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
-	<enum name="NSRoundRectBezelStyle" swt_gen="true"></enum>
 	<enum name="NSRoundedBezelStyle" swt_gen="true"></enum>
-	<enum name="NSRoundedDisclosureBezelStyle" swt_gen="true"></enum>
-	<enum name="NSRoundedTokenStyle" swt_gen="true"></enum>
-	<enum name="NSRuleEditorNestingModeCompound" swt_gen="true"></enum>
-	<enum name="NSRuleEditorNestingModeList" swt_gen="true"></enum>
-	<enum name="NSRuleEditorNestingModeSimple" swt_gen="true"></enum>
-	<enum name="NSRuleEditorNestingModeSingle" swt_gen="true"></enum>
-	<enum name="NSRuleEditorRowTypeCompound" swt_gen="true"></enum>
-	<enum name="NSRuleEditorRowTypeSimple" swt_gen="true"></enum>
-	<enum name="NSRunAbortedResponse" swt_gen="true"></enum>
-	<enum name="NSRunContinuesResponse" swt_gen="true"></enum>
-	<enum name="NSRunStoppedResponse" swt_gen="true"></enum>
-	<enum name="NSSaveAsOperation" swt_gen="true"></enum>
-	<enum name="NSSaveOperation" swt_gen="true"></enum>
-	<enum name="NSSaveToOperation" swt_gen="true"></enum>
 	<enum name="NSScaleNone" swt_gen="true"></enum>
-	<enum name="NSScaleProportionally" swt_gen="true"></enum>
-	<enum name="NSScaleToFit" swt_gen="true"></enum>
-	<enum name="NSScreenChangedEventType" swt_gen="true"></enum>
-	<enum name="NSScreenSaverWindowLevel" swt_gen="true"></enum>
-	<enum name="NSScrollLockFunctionKey" swt_gen="true"></enum>
 	<enum name="NSScrollWheel" swt_gen="true"></enum>
-	<enum name="NSScrollWheelMask" swt_gen="true"></enum>
-	<enum name="NSScrollerArrowsDefaultSetting" swt_gen="true"></enum>
-	<enum name="NSScrollerArrowsMaxEnd" swt_gen="true"></enum>
-	<enum name="NSScrollerArrowsMinEnd" swt_gen="true"></enum>
-	<enum name="NSScrollerArrowsNone" swt_gen="true"></enum>
-	<enum name="NSScrollerDecrementArrow" swt_gen="true"></enum>
 	<enum name="NSScrollerDecrementLine" swt_gen="true"></enum>
 	<enum name="NSScrollerDecrementPage" swt_gen="true"></enum>
-	<enum name="NSScrollerIncrementArrow" swt_gen="true"></enum>
 	<enum name="NSScrollerIncrementLine" swt_gen="true"></enum>
 	<enum name="NSScrollerIncrementPage" swt_gen="true"></enum>
 	<enum name="NSScrollerKnob" swt_gen="true"></enum>
-	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>
-	<enum name="NSScrollerNoPart" swt_gen="true"></enum>
-	<enum name="NSSearchFieldClearRecentsMenuItemTag" swt_gen="true"></enum>
-	<enum name="NSSearchFieldNoRecentsMenuItemTag" swt_gen="true"></enum>
-	<enum name="NSSearchFieldRecentsMenuItemTag" swt_gen="true"></enum>
-	<enum name="NSSearchFieldRecentsTitleMenuItemTag" swt_gen="true"></enum>
-	<enum name="NSSegmentStyleAutomatic" swt_gen="true"></enum>
-	<enum name="NSSegmentStyleCapsule" swt_gen="true"></enum>
-	<enum name="NSSegmentStyleRoundRect" swt_gen="true"></enum>
-	<enum name="NSSegmentStyleRounded" swt_gen="true"></enum>
-	<enum name="NSSegmentStyleSmallSquare" swt_gen="true"></enum>
-	<enum name="NSSegmentStyleTexturedRounded" swt_gen="true"></enum>
-	<enum name="NSSegmentStyleTexturedSquare" swt_gen="true"></enum>
-	<enum name="NSSegmentSwitchTrackingMomentary" swt_gen="true"></enum>
-	<enum name="NSSegmentSwitchTrackingSelectAny" swt_gen="true"></enum>
-	<enum name="NSSegmentSwitchTrackingSelectOne" swt_gen="true"></enum>
-	<enum name="NSSelectByCharacter" swt_gen="true"></enum>
-	<enum name="NSSelectByParagraph" swt_gen="true"></enum>
-	<enum name="NSSelectByWord" swt_gen="true"></enum>
-	<enum name="NSSelectFunctionKey" swt_gen="true"></enum>
-	<enum name="NSSelectedTab" swt_gen="true"></enum>
-	<enum name="NSSelectingNext" swt_gen="true"></enum>
-	<enum name="NSSelectingPrevious" swt_gen="true"></enum>
-	<enum name="NSSelectionAffinityDownstream" swt_gen="true"></enum>
-	<enum name="NSSelectionAffinityUpstream" swt_gen="true"></enum>
-	<enum name="NSServiceApplicationLaunchFailedError" swt_gen="true"></enum>
-	<enum name="NSServiceApplicationNotFoundError" swt_gen="true"></enum>
-	<enum name="NSServiceErrorMaximum" swt_gen="true"></enum>
-	<enum name="NSServiceErrorMinimum" swt_gen="true"></enum>
-	<enum name="NSServiceInvalidPasteboardDataError" swt_gen="true"></enum>
-	<enum name="NSServiceMalformedServiceDictionaryError" swt_gen="true"></enum>
-	<enum name="NSServiceMiscellaneousError" swt_gen="true"></enum>
-	<enum name="NSServiceRequestTimedOutError" swt_gen="true"></enum>
 	<enum name="NSShadowlessSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
-	<enum name="NSShowControlGlyphs" swt_gen="true"></enum>
-	<enum name="NSShowInvisibleGlyphs" swt_gen="true"></enum>
-	<enum name="NSSingleDateMode" swt_gen="true"></enum>
-	<enum name="NSSingleUnderlineStyle" swt_gen="true"></enum>
-	<enum name="NSSizeDownFontAction" swt_gen="true"></enum>
-	<enum name="NSSizeUpFontAction" swt_gen="true"></enum>
-	<enum name="NSSmallCapsFontMask" swt_gen="true"></enum>
 	<enum name="NSSmallControlSize" swt_gen="true"></enum>
-	<enum name="NSSmallIconButtonBezelStyle" swt_gen="true"></enum>
-	<enum name="NSSmallSquareBezelStyle" swt_gen="true"></enum>
-	<enum name="NSSpecialPageOrder" swt_gen="true"></enum>
-	<enum name="NSSpeechImmediateBoundary" swt_gen="true"></enum>
-	<enum name="NSSpeechSentenceBoundary" swt_gen="true"></enum>
-	<enum name="NSSpeechWordBoundary" swt_gen="true"></enum>
-	<enum name="NSSpellingStateGrammarFlag" swt_gen="true"></enum>
-	<enum name="NSSpellingStateSpellingFlag" swt_gen="true"></enum>
-	<enum name="NSSplitViewDividerStyleThick" swt_gen="true"></enum>
-	<enum name="NSSplitViewDividerStyleThin" swt_gen="true"></enum>
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
-	<enum name="NSSquareStatusItemLength" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
-	<enum name="NSStopFunctionKey" swt_gen="true"></enum>
-	<enum name="NSStringDrawingDisableScreenFontSubstitution" swt_gen="true"></enum>
-	<enum name="NSStringDrawingOneShot" swt_gen="true"></enum>
-	<enum name="NSStringDrawingTruncatesLastVisibleLine" swt_gen="true"></enum>
-	<enum name="NSStringDrawingUsesDeviceMetrics" swt_gen="true"></enum>
-	<enum name="NSStringDrawingUsesFontLeading" swt_gen="true"></enum>
-	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
-	<enum name="NSSubmenuWindowLevel" swt_gen="true"></enum>
 	<enum name="NSSwitchButton" swt_gen="true"></enum>
-	<enum name="NSSysReqFunctionKey" swt_gen="true"></enum>
-	<enum name="NSSystemDefined" swt_gen="true"></enum>
-	<enum name="NSSystemDefinedMask" swt_gen="true"></enum>
-	<enum name="NSSystemFunctionKey" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionCCITTFAX3" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionCCITTFAX4" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionJPEG" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionLZW" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionNEXT" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionNone" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionOldJPEG" swt_gen="true"></enum>
-	<enum name="NSTIFFCompressionPackBits" swt_gen="true"></enum>
-	<enum name="NSTIFFFileType" swt_gen="true"></enum>
 	<enum name="NSTabCharacter" swt_gen="true"></enum>
-	<enum name="NSTabTextMovement" swt_gen="true"></enum>
-	<enum name="NSTableColumnAutoresizingMask" swt_gen="true"></enum>
 	<enum name="NSTableColumnNoResizing" swt_gen="true"></enum>
 	<enum name="NSTableColumnUserResizingMask" swt_gen="true"></enum>
-	<enum name="NSTableViewDropAbove" swt_gen="true"></enum>
-	<enum name="NSTableViewDropOn" swt_gen="true"></enum>
-	<enum name="NSTableViewFirstColumnOnlyAutoresizingStyle" swt_gen="true"></enum>
-	<enum name="NSTableViewGridNone" swt_gen="true"></enum>
-	<enum name="NSTableViewLastColumnOnlyAutoresizingStyle" swt_gen="true"></enum>
 	<enum name="NSTableViewNoColumnAutoresizing" swt_gen="true"></enum>
-	<enum name="NSTableViewReverseSequentialColumnAutoresizingStyle" swt_gen="true"></enum>
-	<enum name="NSTableViewSelectionHighlightStyleRegular" swt_gen="true"></enum>
-	<enum name="NSTableViewSelectionHighlightStyleSourceList" swt_gen="true"></enum>
-	<enum name="NSTableViewSequentialColumnAutoresizingStyle" swt_gen="true"></enum>
-	<enum name="NSTableViewSolidHorizontalGridLineMask" swt_gen="true"></enum>
-	<enum name="NSTableViewSolidVerticalGridLineMask" swt_gen="true"></enum>
-	<enum name="NSTableViewUniformColumnAutoresizingStyle" swt_gen="true"></enum>
-	<enum name="NSTabletPoint" swt_gen="true"></enum>
-	<enum name="NSTabletPointEventSubtype" swt_gen="true"></enum>
-	<enum name="NSTabletPointMask" swt_gen="true"></enum>
-	<enum name="NSTabletProximity" swt_gen="true"></enum>
-	<enum name="NSTabletProximityEventSubtype" swt_gen="true"></enum>
-	<enum name="NSTabletProximityMask" swt_gen="true"></enum>
-	<enum name="NSTerminateCancel" swt_gen="true"></enum>
-	<enum name="NSTerminateLater" swt_gen="true"></enum>
-	<enum name="NSTerminateNow" swt_gen="true"></enum>
-	<enum name="NSTextBlockAbsoluteValueType" swt_gen="true"></enum>
-	<enum name="NSTextBlockBaselineAlignment" swt_gen="true"></enum>
-	<enum name="NSTextBlockBorder" swt_gen="true"></enum>
-	<enum name="NSTextBlockBottomAlignment" swt_gen="true"></enum>
-	<enum name="NSTextBlockHeight" swt_gen="true"></enum>
-	<enum name="NSTextBlockMargin" swt_gen="true"></enum>
-	<enum name="NSTextBlockMaximumHeight" swt_gen="true"></enum>
-	<enum name="NSTextBlockMaximumWidth" swt_gen="true"></enum>
-	<enum name="NSTextBlockMiddleAlignment" swt_gen="true"></enum>
-	<enum name="NSTextBlockMinimumHeight" swt_gen="true"></enum>
-	<enum name="NSTextBlockMinimumWidth" swt_gen="true"></enum>
-	<enum name="NSTextBlockPadding" swt_gen="true"></enum>
-	<enum name="NSTextBlockPercentageValueType" swt_gen="true"></enum>
-	<enum name="NSTextBlockTopAlignment" swt_gen="true"></enum>
-	<enum name="NSTextBlockWidth" swt_gen="true"></enum>
-	<enum name="NSTextCellType" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
-	<enum name="NSTextFieldDatePickerStyle" swt_gen="true"></enum>
-	<enum name="NSTextFieldRoundedBezel" swt_gen="true"></enum>
-	<enum name="NSTextFieldSquareBezel" swt_gen="true"></enum>
-	<enum name="NSTextListPrependEnclosingMarker" swt_gen="true"></enum>
-	<enum name="NSTextReadInapplicableDocumentTypeError" swt_gen="true"></enum>
-	<enum name="NSTextReadWriteErrorMaximum" swt_gen="true"></enum>
-	<enum name="NSTextReadWriteErrorMinimum" swt_gen="true"></enum>
-	<enum name="NSTextStorageEditedAttributes" swt_gen="true"></enum>
-	<enum name="NSTextStorageEditedCharacters" swt_gen="true"></enum>
-	<enum name="NSTextTableAutomaticLayoutAlgorithm" swt_gen="true"></enum>
-	<enum name="NSTextTableFixedLayoutAlgorithm" swt_gen="true"></enum>
-	<enum name="NSTextWriteInapplicableDocumentTypeError" swt_gen="true"></enum>
-	<enum name="NSTexturedBackgroundWindowMask" swt_gen="true"></enum>
-	<enum name="NSTexturedRoundedBezelStyle" swt_gen="true"></enum>
-	<enum name="NSTexturedSquareBezelStyle" swt_gen="true"></enum>
-	<enum name="NSThickSquareBezelStyle" swt_gen="true"></enum>
-	<enum name="NSThickerSquareBezelStyle" swt_gen="true"></enum>
-	<enum name="NSTickMarkAbove" swt_gen="true"></enum>
-	<enum name="NSTickMarkBelow" swt_gen="true"></enum>
-	<enum name="NSTickMarkLeft" swt_gen="true"></enum>
-	<enum name="NSTickMarkRight" swt_gen="true"></enum>
-	<enum name="NSTimeZoneDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
-	<enum name="NSToggleButton" swt_gen="true"></enum>
-	<enum name="NSToolbarDisplayModeDefault" swt_gen="true"></enum>
-	<enum name="NSToolbarDisplayModeIconAndLabel" swt_gen="true"></enum>
-	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
-	<enum name="NSToolbarDisplayModeLabelOnly" swt_gen="true"></enum>
-	<enum name="NSToolbarItemVisibilityPriorityHigh" swt_gen="true"></enum>
-	<enum name="NSToolbarItemVisibilityPriorityLow" swt_gen="true"></enum>
-	<enum name="NSToolbarItemVisibilityPriorityStandard" swt_gen="true"></enum>
-	<enum name="NSToolbarItemVisibilityPriorityUser" swt_gen="true"></enum>
-	<enum name="NSToolbarSizeModeDefault" swt_gen="true"></enum>
-	<enum name="NSToolbarSizeModeRegular" swt_gen="true"></enum>
-	<enum name="NSToolbarSizeModeSmall" swt_gen="true"></enum>
-	<enum name="NSTopTabsBezelBorder" swt_gen="true"></enum>
-	<enum name="NSTornOffMenuWindowLevel" swt_gen="true"></enum>
-	<enum name="NSTrackModeMatrix" swt_gen="true"></enum>
-	<enum name="NSTrackingActiveAlways" swt_gen="true"></enum>
-	<enum name="NSTrackingActiveInActiveApp" swt_gen="true"></enum>
-	<enum name="NSTrackingActiveInKeyWindow" swt_gen="true"></enum>
-	<enum name="NSTrackingActiveWhenFirstResponder" swt_gen="true"></enum>
-	<enum name="NSTrackingAssumeInside" swt_gen="true"></enum>
-	<enum name="NSTrackingCursorUpdate" swt_gen="true"></enum>
-	<enum name="NSTrackingEnabledDuringMouseDrag" swt_gen="true"></enum>
-	<enum name="NSTrackingInVisibleRect" swt_gen="true"></enum>
-	<enum name="NSTrackingMouseEnteredAndExited" swt_gen="true"></enum>
-	<enum name="NSTrackingMouseMoved" swt_gen="true"></enum>
-	<enum name="NSTypesetterBehavior_10_2" swt_gen="true"></enum>
-	<enum name="NSTypesetterBehavior_10_2_WithCompatibility" swt_gen="true"></enum>
-	<enum name="NSTypesetterBehavior_10_3" swt_gen="true"></enum>
-	<enum name="NSTypesetterBehavior_10_4" swt_gen="true"></enum>
-	<enum name="NSTypesetterContainerBreakAction" swt_gen="true"></enum>
-	<enum name="NSTypesetterHorizontalTabAction" swt_gen="true"></enum>
-	<enum name="NSTypesetterLatestBehavior" swt_gen="true"></enum>
-	<enum name="NSTypesetterLineBreakAction" swt_gen="true"></enum>
-	<enum name="NSTypesetterOriginalBehavior" swt_gen="true"></enum>
-	<enum name="NSTypesetterParagraphBreakAction" swt_gen="true"></enum>
-	<enum name="NSTypesetterWhitespaceAction" swt_gen="true"></enum>
-	<enum name="NSTypesetterZeroAdvancementAction" swt_gen="true"></enum>
-	<enum name="NSUnboldFontMask" swt_gen="true"></enum>
-	<enum name="NSUnderlinePatternDash" swt_gen="true"></enum>
-	<enum name="NSUnderlinePatternDashDot" swt_gen="true"></enum>
-	<enum name="NSUnderlinePatternDashDotDot" swt_gen="true"></enum>
-	<enum name="NSUnderlinePatternDot" swt_gen="true"></enum>
-	<enum name="NSUnderlinePatternSolid" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleThick" swt_gen="true"></enum>
-	<enum name="NSUndoFunctionKey" swt_gen="true"></enum>
-	<enum name="NSUnifiedTitleAndToolbarWindowMask" swt_gen="true"></enum>
-	<enum name="NSUnitalicFontMask" swt_gen="true"></enum>
-	<enum name="NSUnknownColorSpaceModel" swt_gen="true"></enum>
-	<enum name="NSUnknownPageOrder" swt_gen="true"></enum>
-	<enum name="NSUnknownPointingDevice" swt_gen="true"></enum>
-	<enum name="NSUnscaledWindowMask" swt_gen="true"></enum>
-	<enum name="NSUpArrowFunctionKey" swt_gen="true"></enum>
-	<enum name="NSUpTextMovement" swt_gen="true"></enum>
-	<enum name="NSUpdateWindowsRunLoopOrdering" swt_gen="true"></enum>
-	<enum name="NSUserFunctionKey" swt_gen="true"></enum>
-	<enum name="NSUtilityWindowMask" swt_gen="true"></enum>
-	<enum name="NSVariableStatusItemLength" swt_gen="true"></enum>
-	<enum name="NSVerticalRuler" swt_gen="true"></enum>
-	<enum name="NSViaPanelFontAction" swt_gen="true"></enum>
 	<enum name="NSViewHeightSizable" swt_gen="true"></enum>
-	<enum name="NSViewMaxXMargin" swt_gen="true"></enum>
-	<enum name="NSViewMaxYMargin" swt_gen="true"></enum>
-	<enum name="NSViewMinXMargin" swt_gen="true"></enum>
-	<enum name="NSViewMinYMargin" swt_gen="true"></enum>
-	<enum name="NSViewNotSizable" swt_gen="true"></enum>
 	<enum name="NSViewWidthSizable" swt_gen="true"></enum>
-	<enum name="NSWantsBidiLevels" swt_gen="true"></enum>
 	<enum name="NSWarningAlertStyle" swt_gen="true"></enum>
-	<enum name="NSWheelModeColorPanel" swt_gen="true"></enum>
 	<enum name="NSWindowAbove" swt_gen="true"></enum>
-	<enum name="NSWindowBackingLocationDefault" swt_gen="true"></enum>
-	<enum name="NSWindowBackingLocationMainMemory" swt_gen="true"></enum>
-	<enum name="NSWindowBackingLocationVideoMemory" swt_gen="true"></enum>
 	<enum name="NSWindowBelow" swt_gen="true"></enum>
-	<enum name="NSWindowCloseButton" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorCanJoinAllSpaces" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorDefault" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorMoveToActiveSpace" swt_gen="true"></enum>
-	<enum name="NSWindowDocumentIconButton" swt_gen="true"></enum>
-	<enum name="NSWindowExposedEventType" swt_gen="true"></enum>
-	<enum name="NSWindowMiniaturizeButton" swt_gen="true"></enum>
-	<enum name="NSWindowMovedEventType" swt_gen="true"></enum>
-	<enum name="NSWindowOut" swt_gen="true"></enum>
-	<enum name="NSWindowSharingNone" swt_gen="true"></enum>
-	<enum name="NSWindowSharingReadOnly" swt_gen="true"></enum>
-	<enum name="NSWindowSharingReadWrite" swt_gen="true"></enum>
-	<enum name="NSWindowToolbarButton" swt_gen="true"></enum>
-	<enum name="NSWindowZoomButton" swt_gen="true"></enum>
-	<enum name="NSWindows95InterfaceStyle" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchAllowingClassicStartup" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchAndHide" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchAndHideOthers" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchAndPrint" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchAsync" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchDefault" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchInhibitingBackgroundOnly" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchNewInstance" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchPreferringClassic" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchWithoutActivation" swt_gen="true"></enum>
-	<enum name="NSWorkspaceLaunchWithoutAddingToRecents" swt_gen="true"></enum>
-	<enum name="NSWritingDirectionLeftToRight" swt_gen="true"></enum>
-	<enum name="NSWritingDirectionNatural" swt_gen="true"></enum>
-	<enum name="NSWritingDirectionRightToLeft" swt_gen="true"></enum>
 	<enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSYearMonthDayDatePickerElementFlag" swt_gen="true"></enum>
 	<function name="NSAccessibilityActionDescription" swt_gen="true">
