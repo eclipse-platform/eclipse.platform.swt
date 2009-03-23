@@ -1202,7 +1202,7 @@ public void select (int index) {
 }
 
 void sendSelection () {
-	if ((style & SWT.READ_ONLY) != 0) postEvent(SWT.Modify);
+	postEvent(SWT.Modify);
 	postEvent(SWT.Selection);
 }
 
@@ -1563,17 +1563,17 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 }
 
 void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	if (!ignoreVerify) {
-		NSComboBox widget = (NSComboBox)view;
-		NSText currentEditor = widget.currentEditor();
-		if (currentEditor != null) {
-			String string = new NSString(arg0).getString();
-			String verified = verifyText(string, 0, string.length(), null);
-			arg0 = NSString.stringWith(verified).id;
-		}
-	}
+//	if (!ignoreVerify) {
+//		NSComboBox widget = (NSComboBox)view;
+//		NSText currentEditor = widget.currentEditor();
+//		if (currentEditor != null) {
+//			String string = new NSString(arg0).getString();
+//			String verified = verifyText(string, 0, string.length(), null);
+//			arg0 = NSString.stringWith(verified).id;
+//		}
+//	}
 	super.setObjectValue(id, sel, arg0);
-	if (!ignoreVerify) sendEvent(SWT.Modify);
+//	if (!ignoreVerify) sendEvent(SWT.Modify);
 }
 
 void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
