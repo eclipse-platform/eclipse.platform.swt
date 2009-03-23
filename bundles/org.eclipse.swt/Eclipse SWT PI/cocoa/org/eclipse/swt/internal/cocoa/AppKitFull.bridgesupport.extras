@@ -3538,7 +3538,7 @@
 			<arg name="options" swt_gen="true"></arg>
 			<arg name="owner" swt_gen="true"></arg>
 			<arg name="userInfo" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
+			<retval swt_gen="true" swt_java_type="NSTrackingArea"></retval>
 		</method>
 		<method selector="userInfo" swt_gen="true">
 			<retval swt_gen="true"></retval>
