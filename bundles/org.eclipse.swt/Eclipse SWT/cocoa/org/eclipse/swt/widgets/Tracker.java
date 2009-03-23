@@ -734,6 +734,13 @@ public boolean open () {
 	window.setOpaque(false);
 	window.setContentView(null);
 	window.setBackgroundColor(NSColor.clearColor());
+	NSGraphicsContext context = window.graphicsContext();
+	NSGraphicsContext.static_saveGraphicsState();
+	NSGraphicsContext.setCurrentContext(context);
+	context.setCompositingOperation(OS.NSCompositeClear);
+	frame.x = frame.y = 0;
+	NSBezierPath.fillRect(frame);
+	NSGraphicsContext.static_restoreGraphicsState();
 	window.orderFrontRegardless();
 
 	drawRectangles (window, rectangles, false);
