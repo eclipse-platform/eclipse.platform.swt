@@ -755,9 +755,6 @@
 	<enum name="NSPushInCell" swt_gen="true"></enum>
 	<enum name="NSPushInCellMask" swt_gen="true"></enum>
 	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
-	<enum name="NSQTMovieLoopingBackAndForthPlayback" swt_gen="true"></enum>
-	<enum name="NSQTMovieLoopingPlayback" swt_gen="true"></enum>
-	<enum name="NSQTMovieNormalPlayback" swt_gen="true"></enum>
 	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>
 	<enum name="NSRGBModeColorPanel" swt_gen="true"></enum>
 	<enum name="NSRadioButton" swt_gen="true"></enum>
