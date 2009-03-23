@@ -2347,9 +2347,9 @@
 <arg name="aSelector" swt_gen="true"></arg>
 <retval swt_gen="true"></retval>
 </method>
-<method selector="setAlignment:" swt_gen="true">
-<arg name="mode" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method selector="setAlignment:">
+<arg name="mode"></arg>
+<retval></retval>
 </method>
 <method selector="setBezeled:">
 <arg name="flag"></arg>
@@ -2377,13 +2377,13 @@
 <arg name="fontObj"></arg>
 <retval></retval>
 </method>
-<method selector="setImage:" swt_gen="true">
-<arg name="image" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method selector="setImage:">
+<arg name="image"></arg>
+<retval></retval>
 </method>
-<method selector="setObjectValue:" swt_gen="true">
-<arg name="obj" swt_gen="true"></arg>
-<retval swt_gen="true"></retval>
+<method selector="setObjectValue:">
+<arg name="obj"></arg>
+<retval></retval>
 </method>
 <method selector="setTag:">
 <arg name="anInt"></arg>
@@ -5115,9 +5115,9 @@
 <arg name="aSelector"></arg>
 <retval></retval>
 </method>
-<method selector="setAlignment:">
-<arg name="mode"></arg>
-<retval></retval>
+<method selector="setAlignment:" swt_gen="true">
+<arg name="mode" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setAllowsEditingTextAttributes:">
 <arg name="flag"></arg>
@@ -5245,9 +5245,9 @@
 <method selector="setNextState">
 <retval></retval>
 </method>
-<method selector="setObjectValue:">
-<arg name="obj"></arg>
-<retval></retval>
+<method selector="setObjectValue:" swt_gen="true">
+<arg name="obj" swt_gen="true"></arg>
+<retval swt_gen="true"></retval>
 </method>
 <method selector="setRefusesFirstResponder:">
 <arg name="flag"></arg>
