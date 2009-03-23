@@ -341,18 +341,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(textView_1willChangeSelectionFromCharacterR
 }
 #endif
 
-#ifndef NO_NSZeroRect
-JNIEXPORT jint JNICALL OS_NATIVE(NSZeroRect)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, NSZeroRect_FUNC);
-	rc = (jint)&NSZeroRect;
-	OS_NATIVE_EXIT(env, that, NSZeroRect_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_accessibilityHitTest_1CALLBACK
 static jintLong accessibilityHitTest_1CALLBACK;
 static void accessibilityHitTest(id obj, SEL sel, NSPoint point)
