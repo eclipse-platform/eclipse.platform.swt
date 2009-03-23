@@ -1721,6 +1721,25 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 			display.tooltipControl = control;
 			display.tooltipTarget = target;
 			break;
+			
+		case OS.NSKeyDown:
+			/**
+			 * Feature in cocoa.  Control+Tab and Ctrl+Shift+Tab are swallowed to handle native traversal.
+			 * If we find that, force the key event to the first responder.
+			 */
+			if ((nsEvent.modifierFlags() & OS.NSControlKeyMask) != 0) {
+				NSString chars = nsEvent.characters();
+				
+				if (chars != null && chars.length() == 1) {
+					int /*long*/ firstChar = chars.characterAtIndex(0);
+
+					// Shift-tab appears as control-Y.
+					if (firstChar == '\t' || firstChar == 25)	{
+						window.firstResponder().keyDown(nsEvent);
+					}
+				}
+			}
+			break;
 	}
 	super.windowSendEvent (id, sel, event);
 }

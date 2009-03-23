@@ -1966,8 +1966,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_characterIndexForPoint_, characterIndexForPointProc, "@:{NSPoint}");
 	OS.class_addMethod(cls, OS.sel_firstRectForCharacterRange_, firstRectForCharacterRangeProc, "@:{NSRange}");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
-	OS.class_addMethod(cls, OS.sel_nextValidKeyView, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_previousValidKeyView, proc2, "@:");
 	
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
@@ -4252,10 +4250,6 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.nextState(id, sel);
 	} else if (sel == OS.sel_resetCursorRects) {
 		widget.resetCursorRects(id, sel);
-	} else if (sel == OS.sel_nextValidKeyView) {
-		return widget.nextValidKeyView(id, sel);
-	} else if (sel == OS.sel_previousValidKeyView) {
-		return widget.previousValidKeyView(id, sel);
 	} else if (sel == OS.sel_updateTrackingAreas) {
 		widget.updateTrackingAreas(id, sel);
 	} else if (sel == OS.sel_viewDidMoveToWindow) {

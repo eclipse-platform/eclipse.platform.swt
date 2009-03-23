@@ -199,16 +199,6 @@ public NSMenu menuForEvent(NSEvent event) {
 	return result != 0 ? new NSMenu(result) : null;
 }
 
-public NSView nextValidKeyView() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_nextValidKeyView);
-	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
-}
-
-public NSView previousValidKeyView() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_previousValidKeyView);
-	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
-}
-
 public void registerForDraggedTypes(NSArray newTypes) {
 	OS.objc_msgSend(this.id, OS.sel_registerForDraggedTypes_, newTypes != null ? newTypes.id : 0);
 }
