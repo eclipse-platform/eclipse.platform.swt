@@ -2093,7 +2093,6 @@ public void cut() {
 	if (copySelection(DND.CLIPBOARD)) {
 		if (blockSelection && blockXLocation != -1) {
 			insertBlockSelectionText((char)0, SWT.NULL);
-			clearBlockSelection(true, true);
 		} else {
 			doDelete();
 		}
