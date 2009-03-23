@@ -151,20 +151,15 @@ public class TextEditor {
 	}
 	
 	void adjustFontSize (int increment) {
-		String name = fontNameControl.getText();
-		int index = fontSizeControl.getSelectionIndex();
-		String newSize = "0";
-		if (index + increment < fontSizeControl.getItemCount()) {
-			int newIndex = index + increment;
-			fontSizeControl.select (newIndex);
-			newSize = fontSizeControl.getItem(newIndex);
-		} else {
-			newSize = fontSizeControl.getText();
+		int newIndex = fontSizeControl.getSelectionIndex() + increment;
+		if (0 <= newIndex && newIndex < fontSizeControl.getItemCount()) {
+			disposeResource(textFont);
+			String name = fontNameControl.getText();
+			int size = Integer.parseInt(fontSizeControl.getItem(newIndex));
+			textFont = new Font(display, name, size, SWT.NORMAL);
+			setStyle(FONT);
+			updateToolBar();
 		}
-		int size = Integer.parseInt (newSize);
-		disposeResource(textFont);
-		textFont = new Font(display, name, size, SWT.NORMAL);
-		setStyle(FONT);
 	}
 
 	void createMenuBar() {
@@ -757,21 +752,24 @@ public class TextEditor {
 
 		ToolItem baselineUpItem = new ToolItem(styleToolBar, SWT.PUSH);
 		baselineUpItem.setImage(iBaselineUp);
-		baselineUpItem.setToolTipText(getResourceString(USE_BASELINE ? "IncreaseBaseline" : "IncreaseFont")); //$NON-NLS-1$
+		String tooltip = "IncreaseFont"; //$NON-NLS-1$
+		if (USE_BASELINE) tooltip = "IncreaseBaseline"; //$NON-NLS-1$
+		baselineUpItem.setToolTipText(getResourceString(tooltip));
 		baselineUpItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				if (USE_BASELINE) {
 					setStyle(BASELINE_UP);
 				} else {
 					adjustFontSize(1);
-					
 				}
 			}
 		});
 
 		ToolItem baselineDownItem = new ToolItem(styleToolBar, SWT.PUSH);
 		baselineDownItem.setImage(iBaselineDown);
-		baselineDownItem.setToolTipText(getResourceString(USE_BASELINE ? "DecreaseBaseline" : "DecreaseFont")); //$NON-NLS-1$
+		tooltip = "DecreaseFont"; //$NON-NLS-1$
+		if (USE_BASELINE) tooltip = "DecreaseBaseline"; //$NON-NLS-1$
+		baselineDownItem.setToolTipText(getResourceString(tooltip));
 		baselineDownItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				if (USE_BASELINE) {
