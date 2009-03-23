@@ -381,7 +381,7 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 			NSBezierPath.strokeRect(frame);
 		}
 	}
-	context.flushGraphics();
+	if (!erase) context.flushGraphics();
 	context.restoreGraphicsState();
 	NSGraphicsContext.static_restoreGraphicsState();
 }
@@ -733,13 +733,7 @@ public boolean open () {
 	window = window.initWithContentRect(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 	window.setOpaque(false);
 	window.setContentView(null);
-	NSGraphicsContext context = window.graphicsContext();
-	NSGraphicsContext.static_saveGraphicsState();
-	NSGraphicsContext.setCurrentContext(context);
-	context.setCompositingOperation(OS.NSCompositeClear);
-	frame.x = frame.y = 0;
-	NSBezierPath.fillRect(frame);
-	NSGraphicsContext.static_restoreGraphicsState();
+	window.setBackgroundColor(NSColor.clearColor());
 	window.orderFrontRegardless();
 
 	drawRectangles (window, rectangles, false);
