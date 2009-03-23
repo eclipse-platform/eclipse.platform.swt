@@ -172,10 +172,13 @@ class Mozilla extends WebBrowser {
 				byte[] bytes = MozillaDelegate.wcsToMbcs (null, CookieUrl, false);
 				int /*long*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
 				rc = ioService.NewURI (aSpec, null, 0, result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
 				XPCOM.nsEmbedCString_delete (aSpec);
 				ioService.Release ();
+				if (rc != XPCOM.NS_OK) {
+					serviceManager.Release ();
+					return;
+				}
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
 
 				nsIURI aURI = new nsIURI (result[0]);
 				result[0] = 0;
@@ -256,13 +259,12 @@ class Mozilla extends WebBrowser {
 				int /*long*/ aSpec = XPCOM.nsEmbedCString_new (bytes, bytes.length);
 				rc = ioService.NewURI (aSpec, null, 0, result);
 				XPCOM.nsEmbedCString_delete (aSpec);
+				ioService.Release ();
 				if (rc != XPCOM.NS_OK) {
-					ioService.Release ();
 					serviceManager.Release ();
 					return;
 				}
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
-				ioService.Release ();
 
 				nsIURI aURI = new nsIURI(result[0]);
 				result[0] = 0;
