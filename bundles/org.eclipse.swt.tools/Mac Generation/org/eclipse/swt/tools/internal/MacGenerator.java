@@ -84,6 +84,10 @@ void merge(Document document, Document extraDocument) {
 	String delimiter = System.getProperty("line.separator");
 	for (Iterator iterator = sortedNodes.iterator(); iterator.hasNext();) {
 		Node node = (Node) iterator.next();
+		String name = node.getNodeName();
+		if ("arg".equals(name) || "retval".equals(name)) {
+			if (!sortedNodes.contains(node.getParentNode())) continue;
+		}
 		Node parent = (Node)lookup.get(getKey(node.getParentNode()));
 		Element element = document.createElement(node.getNodeName());
 		String text = parent.getChildNodes().getLength() == 0 ? delimiter : "";
