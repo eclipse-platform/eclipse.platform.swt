@@ -53,15 +53,15 @@ public NSWindow draggingDestinationWindow() {
 	return result != 0 ? new NSWindow(result) : null;
 }
 
-public void draggingEnded(id  sender) {
+public void draggingEnded(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_draggingEnded_, sender != null ? sender.id : 0);
 }
 
-public int /*long*/ draggingEntered(id  sender) {
+public int /*long*/ draggingEntered(id sender) {
 	return OS.objc_msgSend(this.id, OS.sel_draggingEntered_, sender != null ? sender.id : 0);
 }
 
-public void draggingExited(id  sender) {
+public void draggingExited(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_draggingExited_, sender != null ? sender.id : 0);
 }
 
@@ -206,7 +206,7 @@ public id valueForKey(NSString key) {
 	return result != 0 ? new id(result) : null;
 }
 
-public void addEventListener(NSString type, id  listener, boolean useCapture) {
+public void addEventListener(NSString type, id listener, boolean useCapture) {
 	OS.objc_msgSend(this.id, OS.sel_addEventListener_listener_useCapture_, type != null ? type.id : 0, listener != null ? listener.id : 0, useCapture);
 }
 

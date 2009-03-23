@@ -128,7 +128,7 @@ public void setLineBreakMode(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, mode);
 }
 
-public void setObjectValue(id  obj) {
+public void setObjectValue(id obj) {
 	OS.objc_msgSend(this.id, OS.sel_setObjectValue_, obj != null ? obj.id : 0);
 }
 

@@ -1352,7 +1352,7 @@ String getJNIType(Node node) {
 String getJavaType(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	Node javaType = attributes.getNamedItem("swt_java_type");
-	if (javaType != null) return javaType.getNodeValue();
+	if (javaType != null) return javaType.getNodeValue().trim();
 	String code = attributes.getNamedItem("type").getNodeValue();
 	return getJavaType(code, attributes, false);
 }
@@ -1396,10 +1396,10 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 		if (index != -1) type = type.substring(0, index);
 		index = type.indexOf('<');
 		if (index != -1) type = type.substring(0, index);
-		return type;
+		return type.trim();
 	}
 	if (code.startsWith("{")) {		
-		return attributes.getNamedItem("declared_type").getNodeValue();
+		return attributes.getNamedItem("declared_type").getNodeValue().trim();
 	}
 	return "BAD " + code;
 }
