@@ -302,6 +302,11 @@ public void toggleToolbarShown(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_toggleToolbarShown_, sender != null ? sender.id : 0);
 }
 
+public NSToolbar toolbar() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_toolbar);
+	return result != 0 ? new NSToolbar(result) : null;
+}
+
 public int /*long*/ windowNumber() {
 	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
 }

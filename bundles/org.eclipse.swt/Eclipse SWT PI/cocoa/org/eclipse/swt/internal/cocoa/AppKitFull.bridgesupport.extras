@@ -128,6 +128,7 @@
 	<constant name="NSStringPboardType" swt_gen="true"></constant>
 	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
 	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
+	<constant name="NSToolbarSeparatorItemIdentifier" swt_gen="true"></constant>
 	<constant name="NSURLPboardType" swt_gen="true"></constant>
 	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
@@ -3523,10 +3524,69 @@
 	<class name="NSToolbar" swt_gen="mixed">
 		<method selector="initWithIdentifier:" swt_gen="true">
 			<arg name="identifier" swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSToolbar"></retval>
+		</method>
+		<method selector="insertItemWithItemIdentifier:atIndex:" swt_gen="true">
+			<arg name="itemIdentifier" swt_gen="true"></arg>
+			<arg name="index" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="removeItemAtIndex:" swt_gen="true">
+			<arg name="index" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setDelegate:" swt_gen="true">
+			<arg name="delegate" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setDisplayMode:" swt_gen="true">
+			<arg name="displayMode" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setVisible:" swt_gen="true">
 			<arg name="shown" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="NSToolbarItem" swt_gen="mixed">
+		<method selector="initWithItemIdentifier:" swt_gen="true">
+			<arg name="itemIdentifier" swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSToolbarItem"></retval>
+		</method>
+		<method selector="setAction:" swt_gen="true">
+			<arg name="action" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setEnabled:" swt_gen="true">
+			<arg name="enabled" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setImage:" swt_gen="true">
+			<arg name="image" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setLabel:" swt_gen="true">
+			<arg name="label" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setMaxSize:" swt_gen="true">
+			<arg name="size" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setMinSize:" swt_gen="true">
+			<arg name="size" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setTarget:" swt_gen="true">
+			<arg name="target" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setToolTip:" swt_gen="true">
+			<arg name="toolTip" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setView:" swt_gen="true">
+			<arg name="view" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -4056,6 +4116,9 @@
 			<arg name="sender" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="toolbar" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="windowNumber" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4355,6 +4418,13 @@
 			<arg name="tag" swt_gen="true"></arg>
 			<arg name="point" swt_gen="true"></arg>
 			<arg name="data" swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="NSToolbarDelegate" swt_gen="mixed">
+		<method selector="toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:" swt_gen="true">
+			<arg name="toolbar" swt_gen="true"></arg>
+			<arg name="itemIdentifier" swt_gen="true"></arg>
+			<arg name="flag" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSWindowDelegate" swt_gen="mixed">

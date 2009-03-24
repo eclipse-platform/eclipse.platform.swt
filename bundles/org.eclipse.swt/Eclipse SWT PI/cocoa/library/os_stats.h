@@ -259,6 +259,7 @@ typedef enum {
 	NSStrokeWidthAttributeName_FUNC,
 	NSTIFFPboardType_FUNC,
 	NSTemporaryDirectory_FUNC,
+	NSToolbarSeparatorItemIdentifier_FUNC,
 	NSURLPboardType_FUNC,
 	NSUnderlineColorAttributeName_FUNC,
 	NSUnderlineStyleAttributeName_FUNC,

@@ -2918,6 +2918,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSTemporaryDirectory)
 }
 #endif
 
+#ifndef NO_NSToolbarSeparatorItemIdentifier
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarSeparatorItemIdentifier)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarSeparatorItemIdentifier_FUNC);
+	rc = (jintLong)NSToolbarSeparatorItemIdentifier;
+	OS_NATIVE_EXIT(env, that, NSToolbarSeparatorItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSURLPboardType
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSURLPboardType)
 	(JNIEnv *env, jclass that)
