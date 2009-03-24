@@ -47,9 +47,6 @@ public class OS extends C {
 	public static final int /*long*/ sel_setMovable_ = OS.sel_registerName("setMovable:");
 
 	public static final int /*long*/ sel_contextID = OS.sel_registerName("contextID");
-	
-	public static final int /*long*/ class_NSToolTipManager = OS.objc_getClass("NSToolTipManager");
-	public static final int /*long*/ sel_sharedToolTipManager = OS.sel_registerName("sharedToolTipManager");
 
 	public static final int /*long*/ class_WebPanelAuthenticationHandler = OS.objc_getClass("WebPanelAuthenticationHandler");
 	public static final int /*long*/ sel_sharedHandler = sel_registerName("sharedHandler");
@@ -1210,6 +1207,7 @@ public static final int /*long*/ sel_outlineViewColumnDidMove_ = sel_registerNam
 public static final int /*long*/ sel_outlineViewColumnDidResize_ = sel_registerName("outlineViewColumnDidResize:");
 public static final int /*long*/ sel_outlineViewItemDidExpand_ = sel_registerName("outlineViewItemDidExpand:");
 public static final int /*long*/ sel_outlineViewSelectionDidChange_ = sel_registerName("outlineViewSelectionDidChange:");
+public static final int /*long*/ sel_owner = sel_registerName("owner");
 public static final int /*long*/ sel_pageDown_ = sel_registerName("pageDown:");
 public static final int /*long*/ sel_pageTitle = sel_registerName("pageTitle");
 public static final int /*long*/ sel_pageUp_ = sel_registerName("pageUp:");

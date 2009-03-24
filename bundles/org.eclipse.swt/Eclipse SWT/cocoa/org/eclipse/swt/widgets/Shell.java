@@ -117,7 +117,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
-	NSTrackingArea tooltipTrackingArea;
+	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
 	boolean opened, moved, resized, fullScreen;
 	Control lastActive;
 	Rectangle normalBounds;
@@ -1094,19 +1094,28 @@ public void removeShellListener(ShellListener listener) {
 }
 
 void sendToolTipEvent (boolean enter) {
-	if (tooltipTrackingArea == null && isVisible()) {
-		NSView contentView = window.contentView();
-		int /*long*/ tag = contentView.addToolTipRect(new NSRect(), window, 0);
-		if (tag != 0) tooltipTrackingArea = new NSTrackingArea(tag);
+	if (isVisible()) return;
+	if (tooltipTag == 0) {
+		NSView view = window.contentView();
+		tooltipTag = view.addToolTipRect(new NSRect(), window, 0);
+		if (tooltipTag != 0) {
+			NSTrackingArea trackingArea = new NSTrackingArea(tooltipTag);
+			id owner = trackingArea.owner();
+			if (owner != null) tooltipOwner = owner.id;
+			id userInfo = trackingArea.userInfo();
+			if (userInfo != null) {
+				tooltipUserData = userInfo.id;
+			} else {
+				int /*long*/ [] value = new int /*long*/ [1];
+				OS.object_getInstanceVariable(tooltipTag, new byte[]{'_','u', 's', 'e', 'r', 'I', 'n', 'f', 'o'}, value);
+				tooltipUserData = value[0];
+			}
+		}
 	}
-	if (tooltipTrackingArea == null) return;
-	NSDictionary userInfo = tooltipTrackingArea.userInfo();
-	if (userInfo == null) return;
+	if (tooltipTag == 0 || tooltipOwner == 0 || tooltipUserData == 0) return;
 	NSPoint pt = window.convertScreenToBase(NSEvent.mouseLocation());
-	NSEvent event = NSEvent.enterExitEventWithType(enter ? OS.NSMouseEntered : OS.NSMouseExited, pt, 0, 0, window.windowNumber(), null, 0, 0, userInfo.id);
-	if (OS.class_NSToolTipManager != 0) {
-		OS.objc_msgSend(OS.objc_msgSend(OS.class_NSToolTipManager, OS.sel_sharedToolTipManager), enter ? OS.sel_mouseEntered_ : OS.sel_mouseExited_, event.id);
-	}
+	NSEvent event = NSEvent.enterExitEventWithType(enter ? OS.NSMouseEntered : OS.NSMouseExited, pt, 0, 0, window.windowNumber(), null, 0, tooltipTag, tooltipUserData);
+	OS.objc_msgSend(tooltipOwner, enter ? OS.sel_mouseEntered_ : OS.sel_mouseExited_, event.id);
 }
 
 /**

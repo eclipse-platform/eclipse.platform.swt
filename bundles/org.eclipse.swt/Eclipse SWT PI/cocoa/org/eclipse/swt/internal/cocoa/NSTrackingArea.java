@@ -29,6 +29,11 @@ public NSTrackingArea initWithRect(NSRect rect, int /*long*/ options, id owner, 
 	return result == this.id ? this : (result != 0 ? new NSTrackingArea(result) : null);
 }
 
+public id owner() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_owner);
+	return result != 0 ? new id(result) : null;
+}
+
 public NSDictionary userInfo() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_userInfo);
 	return result != 0 ? new NSDictionary(result) : null;
