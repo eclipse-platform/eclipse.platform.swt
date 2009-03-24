@@ -2753,6 +2753,20 @@ public static final boolean ImmSetCompositionFont (int /*long*/ hIMC, LOGFONT lp
 	return ImmSetCompositionFontA (hIMC, (LOGFONTA)lplf);
 }
 
+public static final int ImmGetCompositionString (int /*long*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen) {
+	if (IsUnicode) {
+		return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf, dwBufLen);
+	}
+	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf, dwBufLen);
+}
+
+public static final int ImmGetCompositionString (int /*long*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen) {
+	if (IsUnicode) {
+		return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf, dwBufLen);
+	}
+	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf, dwBufLen);
+}
+
 public static final int ImmGetCompositionString (int /*long*/ hIMC, int dwIndex, TCHAR lpBuf, int dwBufLen) {
 	if (IsUnicode) {
 		char [] lpBuf1 = lpBuf == null ? null : lpBuf.chars;
@@ -4595,6 +4609,11 @@ public static final native int ImmGetCompositionStringA (int /*long*/ hIMC, int 
  * @param lpBuf cast=(LPWSTR)
  */
 public static final native int ImmGetCompositionStringW (int /*long*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
+/**
+ * @param hIMC cast=(HIMC)
+ * @param lpBuf cast=(LPWSTR)
+ */
+public static final native int ImmGetCompositionStringA (int /*long*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpBuf cast=(LPWSTR)

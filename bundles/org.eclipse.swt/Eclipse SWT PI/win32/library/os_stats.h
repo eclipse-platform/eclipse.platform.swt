@@ -511,7 +511,16 @@ typedef enum {
 	ImmDisableTextFrameService_FUNC,
 	ImmGetCompositionFontA_FUNC,
 	ImmGetCompositionFontW_FUNC,
-	ImmGetCompositionStringA_FUNC,
+#ifndef JNI64
+	ImmGetCompositionStringA__II_3BI_FUNC,
+#else
+	ImmGetCompositionStringA__JI_3BI_FUNC,
+#endif
+#ifndef JNI64
+	ImmGetCompositionStringA__II_3II_FUNC,
+#else
+	ImmGetCompositionStringA__JI_3II_FUNC,
+#endif
 #ifndef JNI64
 	ImmGetCompositionStringW__II_3BI_FUNC,
 #else

@@ -6853,18 +6853,56 @@ fail:
 }
 #endif
 
-#ifndef NO_ImmGetCompositionStringA
-JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringA)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jint arg3)
+#if (!defined(NO_ImmGetCompositionStringA__II_3BI) && !defined(JNI64)) || (!defined(NO_ImmGetCompositionStringA__JI_3BI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringA__II_3BI)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jint arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringA__JI_3BI)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jint arg3)
+#endif
 {
 	jbyte *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringA_FUNC);
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringA__II_3BI_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringA__JI_3BI_FUNC);
+#endif
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)ImmGetCompositionStringA((HIMC)arg0, arg1, (LPSTR)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringA_FUNC);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringA__II_3BI_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringA__JI_3BI_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_ImmGetCompositionStringA__II_3II) && !defined(JNI64)) || (!defined(NO_ImmGetCompositionStringA__JI_3II) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringA__II_3II)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jint arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringA__JI_3II)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jint arg3)
+#endif
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringA__II_3II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringA__JI_3II_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)ImmGetCompositionStringA((HIMC)arg0, arg1, (LPWSTR)lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringA__II_3II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringA__JI_3II_FUNC);
+#endif
 	return rc;
 }
 #endif

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 964;
-int OS_nativeFunctionCallCount[964];
+int OS_nativeFunctionCount = 965;
+int OS_nativeFunctionCallCount[965];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -503,7 +503,16 @@ char * OS_nativeFunctionNames[] = {
 	"ImmDisableTextFrameService",
 	"ImmGetCompositionFontA",
 	"ImmGetCompositionFontW",
-	"ImmGetCompositionStringA",
+#ifndef JNI64
+	"ImmGetCompositionStringA__II_3BI",
+#else
+	"ImmGetCompositionStringA__JI_3BI",
+#endif
+#ifndef JNI64
+	"ImmGetCompositionStringA__II_3II",
+#else
+	"ImmGetCompositionStringA__JI_3II",
+#endif
 #ifndef JNI64
 	"ImmGetCompositionStringW__II_3BI",
 #else
