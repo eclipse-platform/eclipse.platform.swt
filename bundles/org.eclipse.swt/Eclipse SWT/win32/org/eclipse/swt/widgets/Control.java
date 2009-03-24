@@ -2025,10 +2025,20 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 		}
 		RECT rect1 = new RECT ();
 		OS.GetWindowRect (hwnd, rect1);
-		RECT rect2 = new RECT ();
-		OS.GetWindowRect (hwndShell, rect2);
-		OS.IntersectRect (rect2, rect1, rect2);
-		boolean fixPrintWindow = !OS.EqualRect (rect2, rect1);
+		boolean fixPrintWindow = !OS.IsWindowVisible(hwnd);
+		if (!fixPrintWindow) {
+			RECT rect2 = new RECT ();
+			OS.GetWindowRect (hwndShell, rect2);
+			OS.IntersectRect (rect2, rect1, rect2);
+			fixPrintWindow = !OS.EqualRect (rect2, rect1);
+		}
+		/*
+		* Bug in Windows. PrintWindow does not print portions
+		* of the receiver that are removed by regions set int a
+		* parent.  The fix is temporarily reparent the window to
+		* the desktop, call PrintWindow() then reparent the window
+		* back.
+		*/
 		if (!fixPrintWindow) {
 			int /*long*/ rgn = OS.CreateRectRgn(0, 0, 0, 0);
 			int /*long*/ parent = OS.GetParent(hwnd);
