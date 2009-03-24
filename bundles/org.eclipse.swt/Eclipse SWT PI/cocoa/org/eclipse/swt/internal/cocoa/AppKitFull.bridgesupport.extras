@@ -4426,6 +4426,12 @@
 			<arg name="itemIdentifier" swt_gen="true"></arg>
 			<arg name="flag" swt_gen="true"></arg>
 		</method>
+		<method selector="toolbarAllowedItemIdentifiers:" swt_gen="true">
+			<arg name="toolbar" swt_gen="true"></arg>
+		</method>
+		<method selector="toolbarDefaultItemIdentifiers:" swt_gen="true">
+			<arg name="toolbar" swt_gen="true"></arg>
+		</method>
 	</informal_protocol>
 	<informal_protocol name="NSWindowDelegate" swt_gen="mixed">
 		<method selector="windowShouldClose:" swt_gen="true">
