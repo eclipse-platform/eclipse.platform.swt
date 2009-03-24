@@ -366,7 +366,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	if (hIMC != 0) {
 		TCHAR buffer = null;
 		if ((lParam & OS.GCS_RESULTSTR) != 0) {
-			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, null, 0);
+			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, (TCHAR)null, 0);
 			if (length > 0) {
 				buffer = new TCHAR (codePage, length / TCHAR.sizeof);
 				OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, buffer, length);
@@ -405,26 +405,26 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 		buffer = null;
 		if ((lParam & OS.GCS_COMPSTR) != 0) {
-			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, null, 0);
+			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (TCHAR)null, 0);
 			if (length > 0) {
 				buffer = new TCHAR (codePage, length / TCHAR.sizeof);
 				OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, buffer, length);
 				if ((lParam & OS.GCS_CURSORPOS) != 0) {
-					caretOffset = OS.ImmGetCompositionString (hIMC, OS.GCS_CURSORPOS, null, 0);
+					caretOffset = OS.ImmGetCompositionString (hIMC, OS.GCS_CURSORPOS, (TCHAR) null, 0);
 				}
 				int [] clauses = null;
 				if ((lParam & OS.GCS_COMPCLAUSE) != 0) {
-					length = OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPCLAUSE, (int [])null, 0);
+					length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPCLAUSE, (int [])null, 0);
 					if (length > 0) {
 						clauses = new int [length / 4];
-						OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPCLAUSE, clauses, length);
+						OS.ImmGetCompositionString (hIMC, OS.GCS_COMPCLAUSE, clauses, length);
 					}
 				}
 				if ((lParam & OS.GCS_COMPATTR) != 0 && clauses != null) {
-					length = OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPATTR, (byte [])null, 0);
+					length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPATTR, (byte [])null, 0);
 					if (length > 0) {
 						byte [] attrs = new byte [length];
-						OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPATTR, attrs, length);
+						OS.ImmGetCompositionString (hIMC, OS.GCS_COMPATTR, attrs, length);
 						length = clauses.length - 1;
 						ranges = new int [length * 2];
 						styles = new TextStyle [length];
@@ -537,7 +537,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	if (hIMC != 0) {
 		if (OS.ImmGetOpenStatus (hIMC)) {
-			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, null, 0) > 0) {
+			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (TCHAR)null, 0) > 0) {
 				Event event = new Event ();
 				event.detail = SWT.COMPOSITION_OFFSET;
 				event.x = OS.GET_X_LPARAM (lParam); 
