@@ -130,11 +130,14 @@ public void add (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	NSString str = NSString.stringWith(string);
 	if ((style & SWT.READ_ONLY) != 0) {
-		NSMenu nsMenu = ((NSPopUpButton)view).menu();
+		NSPopUpButton widget = (NSPopUpButton)view;
+		int /*long*/ selection = widget.indexOfSelectedItem();
+		NSMenu nsMenu = widget.menu();
 		NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
 		nsItem.initWithTitle(str, 0, NSString.stringWith(""));
 		nsMenu.addItem(nsItem);
 		nsItem.release();
+		if (selection == -1) widget.selectItemAtIndex(-1);
 	} else {
 		((NSComboBox)view).addItemWithObjectValue(str);
 	}
@@ -170,11 +173,14 @@ public void add (String string, int index) {
 	if (0 > index || index > count) error (SWT.ERROR_INVALID_RANGE);
 	NSString str = NSString.stringWith(string);
 	if ((style & SWT.READ_ONLY) != 0) {
-		NSMenu nsMenu = ((NSPopUpButton)view).menu();
+		NSPopUpButton widget = (NSPopUpButton)view;
+		int /*long*/ selection = widget.indexOfSelectedItem();
+		NSMenu nsMenu = widget.menu();
 		NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
 		nsItem.initWithTitle(str, 0, NSString.stringWith(""));
 		nsMenu.insertItem(nsItem, index);
 		nsItem.release();
+		if (selection == -1) widget.selectItemAtIndex(-1);
 	} else {
 		((NSComboBox)view).insertItemWithObjectValue(str, index);
 	}
@@ -1353,6 +1359,8 @@ public void setItems (String [] items) {
 			nsItem.initWithTitle(str, 0, NSString.stringWith(""));
 			nsMenu.addItem(nsItem);
 			nsItem.release();
+			//clear the selection
+			((NSPopUpButton)view).selectItemAtIndex(-1);
 		} else {
 			((NSComboBox)view).addItemWithObjectValue(str);
 		}
