@@ -134,7 +134,7 @@ public void add (String string) {
 	}
 	items [itemCount++] = string;
 	((NSTableView)view).noteNumberOfRowsChanged ();
-	//TODO adjust horizontal scrollbar
+	setScrollWidth(string);
 }
 
 /**
@@ -173,6 +173,7 @@ public void add (String string, int index) {
 	items [index] = string;
 	((NSTableView)view).noteNumberOfRowsChanged ();
 	if (index != itemCount) fixSelection (index, true);
+	setScrollWidth(string);
 }
 
 /**
@@ -256,6 +257,9 @@ void createHandle () {
 	widget.setDataSource(widget);
 	widget.setHeaderView(null);
 	widget.setDelegate(widget);
+	if ((style & SWT.H_SCROLL) != 0) {
+		widget.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
+	}
 	NSSize spacing = new NSSize();
 	spacing.width = spacing.height = CELL_GAP;
 	widget.setIntercellSpacing(spacing);
@@ -782,10 +786,15 @@ void releaseWidget () {
 public void remove (int index) {
 	checkWidget();
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	remove(index, true);
+}
+
+void remove (int index, boolean fixScroll) {
 	if (index != itemCount - 1) fixSelection (index, false);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	((NSTableView)view).noteNumberOfRowsChanged();
+	if (fixScroll) setScrollWidth();
 }
 
 /**
@@ -811,7 +820,8 @@ public void remove (int start, int end) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int length = end - start + 1;
-	for (int i=0; i<length; i++) remove (start);
+	for (int i=0; i<length; i++) remove (start, false);
+	setScrollWidth();
 }
 
 /**
@@ -869,10 +879,11 @@ public void remove (int [] indices) {
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
 		if (index != last) {
-			remove (index);
+			remove (index, false);
 			last = index;
 		}
 	}
+	setScrollWidth();
 }
 
 /**
@@ -888,6 +899,7 @@ public void removeAll () {
 	items = new String [4];
 	itemCount = 0;
 	((NSTableView)view).noteNumberOfRowsChanged();
+	setScrollWidth();
 }
 
 /**
@@ -1095,6 +1107,7 @@ void setFont (NSFont font) {
 	float /*double*/ ascent = font.ascender ();
 	float /*double*/ descent = -font.descender () + font.leading ();
 	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
+	setScrollWidth();
 }
 
 /**
@@ -1121,6 +1134,7 @@ public void setItem (int index, String string) {
 	NSTableView tableView = (NSTableView)view;
 	NSRect rect = tableView.rectOfRow (index);
 	tableView.setNeedsDisplayInRect (rect);
+	setScrollWidth(string);
 }
 
 /**
@@ -1147,6 +1161,38 @@ public void setItems (String [] items) {
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	itemCount = items.length;
 	((NSTableView)view).reloadData();
+	setScrollWidth();
+}
+
+boolean setScrollWidth (String item) {
+	if ((style & SWT.H_SCROLL) == 0) return false;
+	NSCell cell = column.dataCell ();
+	Font font = this.font != null ? this.font : defaultFont ();
+	cell.setFont (font.handle);
+	cell.setTitle (NSString.stringWith (item));
+	NSSize size = cell.cellSize ();
+	float /*double*/ oldWidth = column.width ();
+	if (oldWidth < size.width) {
+		column.setWidth (size.width);
+		return true;
+	}
+	return false;
+}
+
+boolean setScrollWidth () {
+	if ((style & SWT.H_SCROLL) == 0) return false;
+	if (items == null) return false;
+	NSCell cell = column.dataCell ();
+	Font font = this.font != null ? this.font : defaultFont ();
+	cell.setFont (font.handle);
+	float /*double*/ width = 0;
+	for (int i = 0; i < itemCount; i++) {
+		cell.setTitle (NSString.stringWith (items[i]));
+		NSSize size = cell.cellSize ();
+		width = Math.max (width, size.width);
+	}
+	column.setWidth (width);
+	return true;
 }
 
 /**
