@@ -257,7 +257,7 @@ void createHandle () {
 	widget.setHeaderView(null);
 	widget.setDelegate(widget);
 	NSSize spacing = new NSSize();
-	spacing.width = spacing.height = 1;
+	spacing.width = spacing.height = CELL_GAP;
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
