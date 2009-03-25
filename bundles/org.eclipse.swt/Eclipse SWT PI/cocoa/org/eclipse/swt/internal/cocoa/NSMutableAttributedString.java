@@ -49,6 +49,10 @@ public void endEditing() {
 	OS.objc_msgSend(this.id, OS.sel_endEditing);
 }
 
+public void removeAttribute(NSString name, NSRange range) {
+	OS.objc_msgSend(this.id, OS.sel_removeAttribute_range_, name != null ? name.id : 0, range);
+}
+
 public void setAttributedString(NSAttributedString attrString) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedString_, attrString != null ? attrString.id : 0);
 }

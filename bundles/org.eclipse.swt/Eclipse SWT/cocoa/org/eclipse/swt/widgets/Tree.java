@@ -1049,11 +1049,37 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		}
 		cell.setHighlighted (false);
 		if (userForeground != null) {
+			/*
+			* Bug in Cocoa.  For some reason, it is not possible to change the
+			* foreground color to black when the cell is highlighted. The text
+			* still draws white.  The fix is to draw the text and not call super.
+			*/
 			float /*double*/ [] color = userForeground.handle;
-			NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
-			cell.setTextColor(nsColor);
+			if (color[0] == 0 && color[1] == 0 && color[2] == 0 && color[3] == 1) {
+				NSMutableAttributedString newStr = new NSMutableAttributedString(cell.attributedStringValue().mutableCopy());
+				NSRange range = new NSRange();
+				range.length = newStr.length();
+				newStr.removeAttribute(OS.NSForegroundColorAttributeName, range);
+				NSRect newRect = new NSRect();
+				newRect.x = rect.x + TEXT_GAP;
+				newRect.y = rect.y;
+				newRect.width = rect.width - TEXT_GAP;
+				newRect.height = rect.height;
+				NSSize size = newStr.size();
+				if (newRect.height > size.height) {
+					newRect.y += (newRect.height - size.height) / 2;
+					newRect.height = size.height;
+				}
+				newStr.drawInRect(newRect);
+				newStr.release();
+			} else {
+				NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
+				cell.setTextColor(nsColor);
+				callSuper (id, sel, rect, view);
+			}			
+		} else {
+			callSuper (id, sel, rect, view);
 		}
-		callSuper (id, sel, rect, view);
 	}
 
 	if (hooksPaint) {

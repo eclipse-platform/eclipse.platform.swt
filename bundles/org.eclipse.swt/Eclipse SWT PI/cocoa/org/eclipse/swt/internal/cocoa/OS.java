@@ -1265,6 +1265,7 @@ public static final int /*long*/ sel_reloadData = sel_registerName("reloadData")
 public static final int /*long*/ sel_reloadItem_reloadChildren_ = sel_registerName("reloadItem:reloadChildren:");
 public static final int /*long*/ sel_removeAllItems = sel_registerName("removeAllItems");
 public static final int /*long*/ sel_removeAllPoints = sel_registerName("removeAllPoints");
+public static final int /*long*/ sel_removeAttribute_range_ = sel_registerName("removeAttribute:range:");
 public static final int /*long*/ sel_removeChildWindow_ = sel_registerName("removeChildWindow:");
 public static final int /*long*/ sel_removeFromSuperview = sel_registerName("removeFromSuperview");
 public static final int /*long*/ sel_removeItem_ = sel_registerName("removeItem:");
