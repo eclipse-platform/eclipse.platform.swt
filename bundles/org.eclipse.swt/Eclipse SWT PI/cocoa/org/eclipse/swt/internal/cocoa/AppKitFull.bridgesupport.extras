@@ -235,6 +235,8 @@
 	<enum name="NSOtherMouseDown" swt_gen="true"></enum>
 	<enum name="NSOtherMouseDragged" swt_gen="true"></enum>
 	<enum name="NSOtherMouseUp" swt_gen="true"></enum>
+	<enum name="NSPageDownFunctionKey" swt_gen="true"></enum>
+	<enum name="NSPageUpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
 	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>

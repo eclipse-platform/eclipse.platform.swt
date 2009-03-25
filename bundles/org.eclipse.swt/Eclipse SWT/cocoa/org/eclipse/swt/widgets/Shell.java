@@ -1737,18 +1737,26 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 			
 		case OS.NSKeyDown:
 			/**
-			 * Feature in cocoa.  Control+Tab and Ctrl+Shift+Tab are swallowed to handle native traversal.
-			 * If we find that, force the key event to the first responder.
+			 * Feature in cocoa.  Control+Tab, Ctrl+Shift+Tab, Ctrl+PageDown and Ctrl+PageUp are
+			 * swallowed to handle native traversal. If we find that, force the key event to
+			 * the first responder.
 			 */
 			if ((nsEvent.modifierFlags() & OS.NSControlKeyMask) != 0) {
 				NSString chars = nsEvent.characters();
 				
 				if (chars != null && chars.length() == 1) {
-					int /*long*/ firstChar = chars.characterAtIndex(0);
+					int firstChar = (int)/*64*/chars.characterAtIndex(0);
 
 					// Shift-tab appears as control-Y.
-					if (firstChar == '\t' || firstChar == 25)	{
-						window.firstResponder().keyDown(nsEvent);
+					switch (firstChar) {
+						case '\t':
+						case 25:
+							window.firstResponder().keyDown(nsEvent);
+							break;
+						case OS.NSPageDownFunctionKey:
+						case OS.NSPageUpFunctionKey:
+							window.firstResponder().keyDown(nsEvent);
+							return;
 					}
 				}
 			}
