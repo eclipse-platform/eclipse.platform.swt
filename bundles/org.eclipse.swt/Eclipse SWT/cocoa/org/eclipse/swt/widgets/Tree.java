@@ -868,8 +868,9 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	boolean hooksPaint = hooks (SWT.PaintItem);
 	boolean hooksMeasure = hooks (SWT.MeasureItem);
 
+	NSTextFieldCell cell = new NSTextFieldCell (id);
+
 	NSOutlineView widget = (NSOutlineView)this.view;
-	NSCell cell = new NSCell (id);
 	int /*long*/ [] outValue = new int /*long*/ [1];
 	OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
 	TreeItem item = (TreeItem) display.getWidget (outValue [0]);
@@ -946,6 +947,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		sendEvent (SWT.MeasureItem, event);
 		gc.dispose ();
 		if (isDisposed ()) return;
+		if (item.isDisposed ()) return;
 		if (itemHeight < event.height) {
 			widget.setRowHeight (event.height);
 		}
@@ -958,6 +960,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		}
 	}	
 
+	Color userForeground = null;
 	if (hooksErase) {
 		context.saveGraphicsState();
 		NSAffineTransform transform = NSAffineTransform.transform();
@@ -988,8 +991,6 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		event.width = (int)cellRect.width;
 		event.height = (int)cellRect.height;
 		sendEvent (SWT.EraseItem, event);
-		gc.dispose ();
-		if (item.isDisposed ()) return;
 		if (!event.doit) {
 			drawForeground = drawBackground = drawSelection = false; 
 		} else {
@@ -997,13 +998,21 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			drawForeground = (event.detail & SWT.FOREGROUND) != 0;
 			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
 		}
+		if (!drawSelection && isSelected) {
+			userForeground = Color.cocoa_new(display, gc.getForeground().handle);
+		}
+		gc.dispose ();
+		
+		context.restoreGraphicsState();
+
+		if (isDisposed ()) return;
+		if (item.isDisposed ()) return;
+
 		if (drawSelection && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus())) {
 			cellRect.height -= spacing.height;
 			callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
 			cellRect.height += spacing.height;
 		}
-
-		context.restoreGraphicsState();
 	}
 
 	if (drawBackground && !drawSelection) {
@@ -1039,6 +1048,11 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			rect.width -= imageWidth;
 		}
 		cell.setHighlighted (false);
+		if (userForeground != null) {
+			float /*double*/ [] color = userForeground.handle;
+			NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
+			cell.setTextColor(nsColor);
+		}
 		callSuper (id, sel, rect, view);
 	}
 
@@ -1057,7 +1071,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			gc.setForeground (selectionForeground);
 			gc.setBackground (selectionBackground);
 		} else {
-			gc.setForeground (item.getForeground (columnIndex));
+			gc.setForeground (userForeground != null ? userForeground : item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
 		gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
@@ -1065,7 +1079,9 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		event.item = item;
 		event.gc = gc;
 		event.index = columnIndex;
-		if (isSelected) event.detail |= SWT.SELECTED;
+		if (drawForeground) event.detail |= SWT.FOREGROUND;
+		if (drawBackground) event.detail |= SWT.BACKGROUND;
+		if (drawSelection) event.detail |= SWT.SELECTED;
 		event.x = (int)contentRect.x;
 		event.y = (int)contentRect.y;
 		event.width = contentWidth;
