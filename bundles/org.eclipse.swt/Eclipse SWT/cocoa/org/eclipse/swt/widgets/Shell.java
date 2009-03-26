@@ -1518,6 +1518,10 @@ void setWindowVisible (boolean visible, boolean key) {
 	}
 	if (window != null && (window.isVisible() == visible)) return;
 	if (visible) {
+		if (display.loopCounter == 0) {
+			display.pool.release();
+			display.pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		topView ().setHidden (false);

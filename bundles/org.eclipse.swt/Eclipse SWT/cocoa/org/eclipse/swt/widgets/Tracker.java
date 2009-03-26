@@ -792,51 +792,54 @@ public boolean open () {
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	while (tracking && !cancelled) {
 		NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-		NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
-		if (event == null) continue;
-		int type = (int)/*64*/event.type();
-		switch (type) {
-			case OS.NSLeftMouseUp:
-			case OS.NSRightMouseUp:
-			case OS.NSOtherMouseUp:
-			case OS.NSMouseMoved:
-			case OS.NSLeftMouseDragged:
-			case OS.NSRightMouseDragged:
-			case OS.NSOtherMouseDragged:
-				mouse(event);
-				break;
-			case OS.NSKeyDown:
-//			case OS.NSKeyUp:
-			case OS.NSFlagsChanged:
-				key(event);
-				break;
+		try {
+			NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
+			if (event == null) continue;
+			int type = (int)/*64*/event.type();
+			switch (type) {
+				case OS.NSLeftMouseUp:
+				case OS.NSRightMouseUp:
+				case OS.NSOtherMouseUp:
+				case OS.NSMouseMoved:
+				case OS.NSLeftMouseDragged:
+				case OS.NSRightMouseDragged:
+				case OS.NSOtherMouseDragged:
+					mouse(event);
+					break;
+				case OS.NSKeyDown:
+//				case OS.NSKeyUp:
+				case OS.NSFlagsChanged:
+					key(event);
+					break;
+			}
+			boolean dispatch = true;
+			switch (type) {
+				case OS.NSLeftMouseDown:
+				case OS.NSLeftMouseUp:
+				case OS.NSRightMouseDown:
+				case OS.NSRightMouseUp:
+				case OS.NSOtherMouseDown:
+				case OS.NSOtherMouseUp:
+				case OS.NSMouseMoved:
+				case OS.NSLeftMouseDragged:
+				case OS.NSRightMouseDragged:
+				case OS.NSOtherMouseDragged:
+				case OS.NSMouseEntered:
+				case OS.NSMouseExited:
+				case OS.NSKeyDown:
+				case OS.NSKeyUp:
+				case OS.NSFlagsChanged:
+					dispatch = false;
+			}
+			if (dispatch) application.sendEvent(event);
+			if (clientCursor != null && resizeCursor == null) {
+				display.lockCursor = false;
+				clientCursor.handle.set();
+				display.lockCursor = true;
+			}
+		} finally {
+			pool.release();
 		}
-		boolean dispatch = true;
-		switch (type) {
-			case OS.NSLeftMouseDown:
-			case OS.NSLeftMouseUp:
-			case OS.NSRightMouseDown:
-			case OS.NSRightMouseUp:
-			case OS.NSOtherMouseDown:
-			case OS.NSOtherMouseUp:
-			case OS.NSMouseMoved:
-			case OS.NSLeftMouseDragged:
-			case OS.NSRightMouseDragged:
-			case OS.NSOtherMouseDragged:
-			case OS.NSMouseEntered:
-			case OS.NSMouseExited:
-			case OS.NSKeyDown:
-			case OS.NSKeyUp:
-			case OS.NSFlagsChanged:
-				dispatch = false;
-		}
-		if (dispatch) application.sendEvent(event);
-		if (clientCursor != null && resizeCursor == null) {
-			display.lockCursor = false;
-			clientCursor.handle.set();
-			display.lockCursor = true;
-		}
-		pool.release();
 	}
 	if (oldTrackingControl != null && !oldTrackingControl.isDisposed()) {
 		display.trackingControl = oldTrackingControl;

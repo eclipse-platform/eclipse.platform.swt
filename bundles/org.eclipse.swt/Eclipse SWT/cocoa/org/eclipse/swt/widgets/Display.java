@@ -2866,6 +2866,7 @@ public boolean readAndDispatch () {
 		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	}
 	loopCounter ++;
+	NSAutoreleasePool localPool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	try {
 		boolean events = false;
 		events |= runTimers ();
@@ -2880,11 +2881,11 @@ public boolean readAndDispatch () {
 		if (events || runDeferredEvents ()) {
 			return true;
 		}
-		return runAsyncMessages (false);
 	} finally {
+		localPool.release();
 		loopCounter --;
 	}
-	
+	return runAsyncMessages (false);
 }
 
 static void register (Display display) {
@@ -3168,7 +3169,12 @@ void removePopup (Menu menu) {
 }
 
 boolean runAsyncMessages (boolean all) {
-	return synchronizer.runAsyncMessages (all);
+	NSAutoreleasePool localPool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		return synchronizer.runAsyncMessages (all);
+	} finally {
+		localPool.release();
+	}
 }
 
 boolean runContexts () {
@@ -3625,9 +3631,14 @@ public boolean sleep () {
 		pool.release();
 		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	}
-	allowTimers = runAsyncMessages = false;
-	NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
-	allowTimers = runAsyncMessages = true;
+	NSAutoreleasePool localPool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	try {
+		allowTimers = runAsyncMessages = false;
+		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
+		allowTimers = runAsyncMessages = true;
+	} finally {
+		localPool.release();
+	}
 	return true;
 }
 
@@ -3663,7 +3674,12 @@ public void syncExec (Runnable runnable) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		synchronizer = this.synchronizer;
 	}
-	synchronizer.syncExec (runnable);
+	NSAutoreleasePool localPool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		synchronizer.syncExec (runnable);
+	} finally {
+		localPool.release();
+	}
 }
 
 /**
@@ -3835,6 +3851,7 @@ public void wake () {
 }
 
 void wakeThread () {
+	//new pool?
 	NSObject object = new NSObject().alloc().init();
 	object.performSelectorOnMainThread(OS.sel_release, null, false);
 }
