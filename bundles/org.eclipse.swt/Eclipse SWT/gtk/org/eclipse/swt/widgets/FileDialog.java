@@ -523,8 +523,10 @@ void presetChooserDialog () {
 			* The fix is to use the canonical path.
 			*/
 			int /*long*/ ptr = OS.realpath (buffer, null);
-			OS.gtk_file_chooser_set_filename (handle, ptr);
-			OS.g_free (ptr);
+			if (ptr != 0) {
+				OS.gtk_file_chooser_set_filename (handle, ptr);
+				OS.g_free (ptr);
+			}
 		}
 	}
 	
