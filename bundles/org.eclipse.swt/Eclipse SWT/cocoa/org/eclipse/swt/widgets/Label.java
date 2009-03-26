@@ -253,30 +253,7 @@ void createWidget() {
 }
 
 NSAttributedString createString() {
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-	if (foreground != null) {
-		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName);
-	}
-	Font font = this.font != null ? this.font : defaultFont ();
-	dict.setObject(font.handle, OS.NSFontAttributeName);
-	addTraits(dict, font);
-	if ((style & SWT.WRAP) == 0) {
-		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-		paragraphStyle.autorelease ();
-		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
-		if ((style & SWT.RIGHT) != 0) paragraphStyle.setAlignment(OS.NSRightTextAlignment);
-		if ((style & SWT.LEFT) != 0) paragraphStyle.setAlignment(OS.NSLeftTextAlignment);
-		if ((style & SWT.CENTER) != 0) paragraphStyle.setAlignment(OS.NSCenterTextAlignment);
-		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
-	}
-
-	char [] chars = new char [text.length ()];
-	text.getChars (0, chars.length, chars, 0);
-	int length = fixMnemonic (chars);
-
-	NSString str = NSString.stringWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+	NSAttributedString attribStr = createString(text, null, foreground, (style & SWT.WRAP) == 0 ? style : 0, true);
 	attribStr.autorelease();
 	return attribStr;
 }

@@ -817,6 +817,39 @@ NSView contentView () {
 	return view;
 }
 
+NSAttributedString createString (String string, Font font, Color foreground, int style, boolean mnemonics) {
+	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
+	if (font == null) font = this.font != null ? this.font : defaultFont();
+	dict.setObject (font.handle, OS.NSFontAttributeName);
+	addTraits(dict, font);
+	if (foreground != null) {
+		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], foreground.handle[3]);
+		dict.setObject (color, OS.NSForegroundColorAttributeName);
+	}
+	if (style != 0) {
+		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
+		int alignment = SWT.LEFT;
+		if ((style & SWT.CENTER) != 0) {
+			alignment = OS.NSCenterTextAlignment;
+		} else if ((style & SWT.RIGHT) != 0) {
+			alignment = OS.NSRightTextAlignment;
+		}
+		paragraphStyle.setAlignment (alignment);
+		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+		paragraphStyle.release ();
+	}
+	int length = string.length ();
+	char [] chars = new char [length];
+	string.getChars (0, chars.length, chars, 0);
+	if (mnemonics) length = fixMnemonic (chars);
+	NSString str = ((NSString)new NSString().alloc()).initWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (str, dict);
+	str.release();
+	dict.release();
+	return attribStr;
+}
+
 void createWidget () {
 	state |= DRAG_DETECT;
 	checkOrientation (parent);
@@ -3690,19 +3723,9 @@ void sort (int [] items) {
 }
 
 NSSize textExtent (String string) {
-	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(1);
-	Font font = this.font != null ? this.font : defaultFont();
-	dict.setObject(font.handle, OS.NSFontAttributeName);
-	addTraits(dict, font);
-	int length = string.length();
-	char[] chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	NSString str = ((NSString)new NSString().alloc()).initWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+	NSAttributedString attribStr = createString(string, null, null, 0, false);
 	NSSize size = attribStr.size();
 	attribStr.release();
-	dict.release();
-	str.release();
 	return size;
 }
 

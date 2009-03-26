@@ -238,8 +238,14 @@ int calculateWidth (int index, GC gc) {
 	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
 	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
 	NSCell cell = parent.dataCell;
-	cell.setFont (font.handle);
-	cell.setTitle (NSString.stringWith(text != null ? text : ""));
+	if (font.extraTraits != 0) {
+		NSAttributedString attribStr = parent.createString(text, font, null, 0, false);
+		cell.setAttributedStringValue(attribStr);
+		attribStr.release();
+	} else {
+		cell.setFont (font.handle);
+		cell.setTitle (NSString.stringWith(text != null ? text : ""));
+	}
 
 	/* This code is inlined for performance */
 	objc_super super_struct = new objc_super();

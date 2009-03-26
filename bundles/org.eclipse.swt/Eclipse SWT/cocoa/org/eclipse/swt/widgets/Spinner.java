@@ -206,13 +206,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	float /*double*/ width = 0, height = 0;
 	String string = Double.toString (buttonView.maxValue ());
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (1);
-	dict.setObject(textView.font (), OS.NSFontAttributeName);
-	int length = string.length ();
-	char [] chars = new char [length];
-	string.getChars (0, length, chars, 0);
-	NSString nsString = NSString.stringWithCharacters (chars, length);
-	NSAttributedString str = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (nsString, dict);
+	Font font = Font.cocoa_new(display, textView.font ());
+	NSAttributedString str = parent.createString(string, font, null, 0, false);
 	NSSize size = str.size ();
 	str.release ();
 	width = (float)/*64*/size.width;

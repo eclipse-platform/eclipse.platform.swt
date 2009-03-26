@@ -1418,20 +1418,7 @@ boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, i
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-	if (foreground != null) {
-		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName);
-	}
-	Font font = this.font != null ? this.font : defaultFont ();
-	dict.setObject(font.handle, OS.NSFontAttributeName);
-	addTraits(dict, font);
-	String text = items[(int)/*64*/rowIndex];
-	int length = text.length();
-	char[] chars = new char[length];
-	text.getChars(0, length, chars, 0);
-	NSString str = NSString.stringWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, foreground, 0, false);
 	attribStr.autorelease();
 	return attribStr.id;
 }

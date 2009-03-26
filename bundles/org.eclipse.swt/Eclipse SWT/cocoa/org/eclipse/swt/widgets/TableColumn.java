@@ -432,11 +432,9 @@ public void pack () {
 
 	/* compute header width */
 	if (displayText != null) {
-		NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
 		NSTableHeaderCell headerCell = nsColumn.headerCell ();
-		dict.setObject (headerCell.font (), OS.NSFontAttributeName);
-		NSString string = NSString.stringWith (displayText);
-		NSAttributedString attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
+		Font font = Font.cocoa_new(display, headerCell.font ());
+		NSAttributedString attrString = parent.createString(displayText, font, null, 0, false);
 		NSSize stringSize = attrString.size ();
 		attrString.release ();
 		width += Math.ceil (stringSize.width);

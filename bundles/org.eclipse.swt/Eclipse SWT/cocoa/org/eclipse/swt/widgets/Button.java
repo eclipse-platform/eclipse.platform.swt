@@ -194,32 +194,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 NSAttributedString createString() {
-	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-	if (foreground != null) {
-		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName);
-	}
-	Font font = this.font != null ? this.font : defaultFont ();
-	dict.setObject(font.handle, OS.NSFontAttributeName);
-	addTraits(dict, font);
-
-	int alignment;
-	if ((style & SWT.CENTER) != 0) {
-		alignment = OS.NSCenterTextAlignment;
-	} else if ((style & SWT.LEFT) != 0) {
-		alignment = OS.NSLeftTextAlignment;
-	} else {
-		alignment = OS.NSRightTextAlignment;
-	}
-	NSMutableParagraphStyle pStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
-	pStyle.setAlignment(alignment);
-	dict.setObject(pStyle, OS.NSParagraphStyleAttributeName);
-	pStyle.release();
-	char [] chars = new char [text.length ()];
-	text.getChars (0, chars.length, chars, 0);
-	int length = fixMnemonic (chars);
-	NSString str = NSString.stringWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+	NSAttributedString attribStr = createString(text, null, foreground, style, true);
 	attribStr.autorelease();
 
 	if ((style & (SWT.RADIO|SWT.CHECK)) != 0 && image != null) {
