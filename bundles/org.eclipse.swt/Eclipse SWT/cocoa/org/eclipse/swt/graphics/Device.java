@@ -190,6 +190,7 @@ public void dispose () {
 		disposed = true;
 		if (tracking) {
 			synchronized (trackingLock) {
+				printErrors ();
 				objects = null;
 				errors = null;
 				trackingLock = null;
@@ -626,6 +627,54 @@ void new_Object (Object object) {
 	}
 }
 
+void printErrors () {
+	if (!DEBUG) return;
+	if (tracking) {
+		synchronized (trackingLock) {
+			if (objects == null || errors == null) return;
+			int objectCount = 0;
+			int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
+			int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms = 0;
+			for (int i=0; i<objects.length; i++) {
+				Object object = objects [i];
+				if (object != null) {
+					objectCount++;
+					if (object instanceof Color) colors++;
+					if (object instanceof Cursor) cursors++;
+					if (object instanceof Font) fonts++;
+					if (object instanceof GC) gcs++;
+					if (object instanceof Image) images++;
+					if (object instanceof Path) paths++;
+					if (object instanceof Pattern) patterns++;
+					if (object instanceof Region) regions++;
+					if (object instanceof TextLayout) textLayouts++;
+					if (object instanceof Transform) transforms++;
+				}
+			}
+			if (objectCount != 0) {
+				String string = "Summary: ";
+				if (colors != 0) string += colors + " Color(s), ";
+				if (cursors != 0) string += cursors + " Cursor(s), ";
+				if (fonts != 0) string += fonts + " Font(s), ";
+				if (gcs != 0) string += gcs + " GC(s), ";
+				if (images != 0) string += images + " Image(s), ";
+				if (paths != 0) string += paths + " Path(s), ";
+				if (patterns != 0) string += patterns + " Pattern(s), ";
+				if (regions != 0) string += regions + " Region(s), ";
+				if (textLayouts != 0) string += textLayouts + " TextLayout(s), ";
+				if (transforms != 0) string += transforms + " Transforms(s), ";
+				if (string.length () != 0) {
+					string = string.substring (0, string.length () - 2);
+					System.out.println (string);
+				}
+				for (int i=0; i<errors.length; i++) {
+					if (errors [i] != null) errors [i].printStackTrace (System.out);
+				}
+			}
+		}
+	}
+}
+
 /**
  * Releases any internal resources back to the operating
  * system and clears all fields except the device handle.
@@ -656,6 +705,22 @@ protected void release () {
 	if (systemFont != null) systemFont.dispose();
 	systemFont = null;
 
+	if (COLOR_BLACK != null) COLOR_BLACK.dispose();
+	if (COLOR_DARK_RED != null) COLOR_DARK_RED.dispose();
+	if (COLOR_DARK_GREEN != null) COLOR_DARK_GREEN.dispose();
+	if (COLOR_DARK_YELLOW != null) COLOR_DARK_YELLOW.dispose();
+	if (COLOR_DARK_BLUE != null) COLOR_DARK_BLUE.dispose();
+	if (COLOR_DARK_MAGENTA != null) COLOR_DARK_MAGENTA.dispose();
+	if (COLOR_DARK_CYAN != null) COLOR_DARK_CYAN.dispose();
+	if (COLOR_GRAY != null) COLOR_GRAY.dispose();
+	if (COLOR_DARK_GRAY != null) COLOR_DARK_GRAY.dispose();
+	if (COLOR_RED != null) COLOR_RED.dispose();
+	if (COLOR_GREEN != null) COLOR_GREEN.dispose();
+	if (COLOR_YELLOW != null) COLOR_YELLOW.dispose();
+	if (COLOR_BLUE != null) COLOR_BLUE.dispose();
+	if (COLOR_MAGENTA != null) COLOR_MAGENTA.dispose();
+	if (COLOR_CYAN != null) COLOR_CYAN.dispose();
+	if (COLOR_WHITE != null) COLOR_WHITE.dispose();
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
