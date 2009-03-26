@@ -131,6 +131,7 @@ public void test_addLorg_eclipse_swt_graphics_Region() {
 	Region reg2 = new Region(display);
 	reg2.add(new Rectangle(40, 50, 10, 20));
 	reg1.add(reg2);
+	reg2.dispose();
 
 	try {
 		reg1.add((Region)null);
@@ -158,6 +159,8 @@ public void test_addLorg_eclipse_swt_graphics_Region() {
 		fail("no exception thrown for adding a Region to a Region which got disposed");
 	}
 	catch (SWTException e) {
+	} finally {
+		if (reg2 != null) reg2.dispose();
 	}
 }
 
@@ -518,6 +521,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	reg.dispose();
 	reg1.dispose();
 	reg4.dispose();
+	reg5.dispose();
 }
 
 public void test_intersectsIIII() {

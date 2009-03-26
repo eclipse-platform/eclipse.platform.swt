@@ -55,17 +55,20 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
-
+	
+	Image image = null;
+	GC gc1 = null, gc2 = null;
 	try {
-		Image image = new Image(display, 10, 10);
-		GC gc1 = new GC(image);
-		GC gc2 = new GC(image);
-		gc1.dispose();
-		gc2.dispose();
-		image.dispose();
+		image = new Image(display, 10, 10);
+		gc1 = new GC(image);
+		gc2 = new GC(image);
 		fail("No exception thrown for more than one GC on one image");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+	} finally {
+		if (image != null) image.dispose();
+		if (gc1 != null) gc1.dispose();
+		if (gc2 != null) gc2.dispose();
 	}
 }
 
@@ -78,16 +81,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
+	Image image = null;
+	GC gc1 = null, gc2 = null;
 	try {
-		Image image = new Image(display, 10, 10);
-		GC gc1 = new GC(image, SWT.RIGHT_TO_LEFT);
-		GC gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
-		gc1.dispose();
-		gc2.dispose();
-		image.dispose();
+		image = new Image(display, 10, 10);
+		gc1 = new GC(image, SWT.RIGHT_TO_LEFT);
+		gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
 		fail("No exception thrown for more than one GC on one image");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+	} finally {
+		if (image != null) image.dispose();
+		if (gc1 != null) gc1.dispose();
+		if (gc2 != null) gc2.dispose();
 	}
 
 	Canvas canvas = new Canvas(shell, SWT.NULL);

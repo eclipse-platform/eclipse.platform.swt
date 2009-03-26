@@ -717,6 +717,7 @@ public void test_getTransparencyMask() {
 	imageData = image.getImageData();
 	ImageData maskData = imageData.getTransparencyMask();
 	assertNotNull(":b:", maskData);
+	image.dispose();
 
 //	Bug 71472 - transparency mask should be null	
 /*	image = new Image(Display.getDefault(), getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]));
@@ -736,6 +737,7 @@ public void test_getTransparencyType() {
 	} catch (IOException e) {}
 	imageData = image.getImageData();
 	assertFalse(":b:", SWT.TRANSPARENCY_NONE == imageData.getTransparencyType());
+	image.dispose();
 	
 	stream = getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]);
 	image = new Image(Display.getDefault(), stream);
@@ -744,6 +746,7 @@ public void test_getTransparencyType() {
 	} catch (IOException e) {}
 	imageData = image.getImageData();
 	assertEquals(":c:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
+	image.dispose();
 }
 
 public void test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII() {
