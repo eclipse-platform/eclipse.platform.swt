@@ -34,9 +34,9 @@ public NSTableHeaderCell headerCell() {
 	return result != 0 ? new NSTableHeaderCell(result) : null;
 }
 
-public id initWithIdentifier(id identifier) {
+public NSTableColumn initWithIdentifier(id identifier) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSTableColumn(result) : null);
 }
 
 public int /*long*/ resizingMask() {

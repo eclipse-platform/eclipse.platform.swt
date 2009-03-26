@@ -474,7 +474,7 @@ public Rectangle getBounds (int index) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TreeColumn column = parent.getColumn (index);
-		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
@@ -677,7 +677,7 @@ public Rectangle getImageBounds (int index) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TreeColumn column = parent.getColumn (index);
-		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	rect.x += Tree.IMAGE_GAP;
@@ -856,7 +856,7 @@ public Rectangle getTextBounds (int index) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TreeColumn column = parent.getColumn (index);
-		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	rect.x += Tree.TEXT_GAP;
@@ -913,7 +913,7 @@ void redraw (int columnIndex) {
 			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 		} else {
 			if (0 <= columnIndex && columnIndex < parent.columnCount) {
-				index = (int)/*64*/outlineView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
+				index = parent.indexOf (parent.columns[columnIndex].nsColumn);
 			} else {
 				return;
 			}

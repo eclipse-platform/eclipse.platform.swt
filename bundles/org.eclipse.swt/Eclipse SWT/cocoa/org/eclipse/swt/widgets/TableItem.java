@@ -289,7 +289,7 @@ public Rectangle getBounds (int index) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TableColumn column = parent.getColumn (index);
-		index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
@@ -468,7 +468,7 @@ public Rectangle getImageBounds (int index) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TableColumn column = parent.getColumn (index);
-		index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	rect.x += Tree.IMAGE_GAP;
@@ -576,7 +576,7 @@ public Rectangle getTextBounds (int index) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TableColumn column = parent.getColumn (index);
-		index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	rect.x += Tree.TEXT_GAP;
@@ -602,7 +602,7 @@ void redraw (int columnIndex) {
 			index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 		} else {
 			if (0 <= columnIndex && columnIndex < parent.columnCount) {
-				index = (int)/*64*/tableView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
+				index = parent.indexOf (parent.columns[columnIndex].nsColumn);
 			} else {
 				return;
 			}

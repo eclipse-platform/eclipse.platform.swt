@@ -44,6 +44,8 @@ public class List extends Scrollable {
 	int itemCount;
 	boolean ignoreSelect;
 
+	static int NEXT_ID;
+
 	static final int CELL_GAP = 1;
 
 /**
@@ -267,7 +269,7 @@ void createHandle () {
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 	
 	column = (NSTableColumn)new NSTableColumn().alloc();
-	column.initWithIdentifier(NSString.stringWith(""));
+	column = column.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
 	widget.addTableColumn (column);
 	
 	scrollView = scrollWidget;

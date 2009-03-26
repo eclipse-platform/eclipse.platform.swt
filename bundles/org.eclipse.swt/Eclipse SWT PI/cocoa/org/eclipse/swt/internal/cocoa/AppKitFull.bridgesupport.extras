@@ -3029,7 +3029,7 @@
 		</method>
 		<method selector="initWithIdentifier:" swt_gen="true">
 			<arg name="identifier" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
+			<retval swt_gen="true" swt_java_type="NSTableColumn"></retval>
 		</method>
 		<method selector="resizingMask" swt_gen="true">
 			<retval swt_gen="true"></retval>

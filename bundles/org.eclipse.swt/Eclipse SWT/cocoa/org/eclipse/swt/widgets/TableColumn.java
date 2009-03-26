@@ -211,8 +211,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	 * right edge and the table's right edge.  If this case is detected then
 	 * nothing should be drawn.
 	 */
-	NSTableView tableView = (NSTableView)parent.view;
-	int columnIndex = (int)/*64*/tableView.columnWithIdentifier (nsColumn);
+	int columnIndex = parent.indexOf (nsColumn);
 	NSRect headerRect = parent.headerView.headerRectOfColumn (columnIndex);
 	if (headerRect.x != cellRect.x || headerRect.width != cellRect.width) return;
 
@@ -545,7 +544,7 @@ public void setAlignment (int alignment) {
 	NSTableView tableView = ((NSTableView) parent.view);
 	NSTableHeaderView headerView = tableView.headerView ();
 	if (headerView == null) return;
-	index = (int)/*64*/tableView.columnWithIdentifier (nsColumn);
+	index = parent.indexOf (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 	rect = tableView.rectOfColumn (index);
@@ -560,7 +559,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
-	int /*long*/ index = ((NSTableView)parent.view).columnWithIdentifier (nsColumn);
+	int index = parent.indexOf (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
@@ -629,7 +628,7 @@ public void setText (String string) {
 	nsColumn.headerCell ().setTitle (title);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
-	int /*long*/ index = ((NSTableView)parent.view).columnWithIdentifier (nsColumn);
+	int index = parent.indexOf (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }

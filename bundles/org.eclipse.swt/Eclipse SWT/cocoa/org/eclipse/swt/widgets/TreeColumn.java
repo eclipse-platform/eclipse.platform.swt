@@ -213,8 +213,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	 * right edge and the tree's right edge.  If this case is detected then
 	 * nothing should be drawn.
 	 */
-	NSOutlineView outlineView = (NSOutlineView)parent.view;
-	int columnIndex = (int)/*64*/outlineView.columnWithIdentifier (nsColumn);
+	int columnIndex = parent.indexOf (nsColumn);
 	NSRect headerRect = parent.headerView.headerRectOfColumn (columnIndex);
 	if (headerRect.x != cellRect.x || headerRect.width != cellRect.width) return;
 
@@ -546,7 +545,7 @@ public void setAlignment (int alignment) {
 	NSOutlineView outlineView = ((NSOutlineView) parent.view);
 	NSTableHeaderView headerView = outlineView.headerView ();
 	if (headerView == null) return;
-	index = (int)/*64*/outlineView.columnWithIdentifier (nsColumn);
+	index = parent.indexOf (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 	rect = outlineView.rectOfColumn (index);
@@ -561,7 +560,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	NSTableHeaderView headerView = ((NSOutlineView) parent.view).headerView ();
 	if (headerView == null) return;
-	int /*long*/ index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
+	int index = parent.indexOf (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
@@ -628,7 +627,7 @@ public void setText (String string) {
 	nsColumn.headerCell ().setTitle (title);
 	NSTableHeaderView headerView = ((NSOutlineView) parent.view).headerView ();
 	if (headerView == null) return;
-	int /*long*/ index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
+	int index = parent.indexOf (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }

@@ -78,6 +78,8 @@ public class Table extends Composite {
 	boolean ignoreSelect, fixScrollWidth;
 	Rectangle imageBounds;
 
+	static int NEXT_ID;
+
 	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
 	static final int IMAGE_GAP = 3;
 	static final int TEXT_GAP = 2;
@@ -488,7 +490,7 @@ void createHandle () {
 	NSString str = NSString.stringWith(""); //$NON-NLS-1$
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn)new NSTableColumn().alloc();
-		checkColumn.initWithIdentifier(checkColumn);
+		checkColumn = checkColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
 		checkColumn.headerCell().setTitle(str);
 		widget.addTableColumn (checkColumn);
 		checkColumn.setWidth(getCheckColumnWidth());
@@ -504,7 +506,7 @@ void createHandle () {
 	}
 
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
-	firstColumn.initWithIdentifier(firstColumn);
+	firstColumn = firstColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
 	/*
 	* Feature in Cocoa.  If a column's width is too small to show any content
 	* then tableView_objectValueForTableColumn_row is never invoked to
@@ -539,7 +541,7 @@ void createItem (TableColumn column, int index) {
 	} else {
 		//TODO - set attributes, alignment etc.
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
-		nsColumn.initWithIdentifier(nsColumn);
+		nsColumn = nsColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
 		nsColumn.setMinWidth(0);
 		((NSTableView)view).addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
@@ -766,7 +768,7 @@ void destroyItem (TableColumn column) {
 		}
 	}
 
-	int oldIndex = (int)/*64*/((NSTableView)view).columnWithIdentifier (column.nsColumn);
+	int oldIndex = indexOf (column.nsColumn);
 
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
@@ -1264,7 +1266,7 @@ public int [] getColumnOrder () {
 	int [] order = new int [columnCount];
 	for (int i = 0; i < columnCount; i++) {
 		TableColumn column = columns [i];
-		int index = (int)/*64*/((NSTableView)view).columnWithIdentifier (column.nsColumn);
+		int index = indexOf (column.nsColumn);
 		if ((style & SWT.CHECK) != 0) index -= 1;
 		order [index] = i;
 	}
@@ -1697,6 +1699,10 @@ NSRect imageRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) 
 		cellFrame.height = imageBounds.height;
 	}
 	return cellFrame;
+}
+
+int indexOf (NSTableColumn column) {
+	return (int)/*64*/((NSTableView)view).tableColumns().indexOfObjectIdenticalTo(column);
 }
 
 /**
@@ -2232,7 +2238,7 @@ public void setColumnOrder (int [] order) {
 		for (int i=0; i<order.length; i++) {
 			int index = order [i];
 			TableColumn column = columns[index];
-			int oldIndex = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+			int oldIndex = indexOf (column.nsColumn);
 			int newIndex = i + check;
 			tableView.moveColumn (oldIndex, newIndex);
 			newX [index] = (int)tableView.rectOfColumn (newIndex).x;
@@ -2650,7 +2656,7 @@ public void setSortDirection  (int direction) {
 	if (sortColumn == null) return;
 	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
 	if (headerView == null) return;
-	int /*long*/ index = ((NSTableView)view).columnWithIdentifier (sortColumn.nsColumn);
+	int index = indexOf (sortColumn.nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
@@ -2707,7 +2713,7 @@ public void showColumn (TableColumn column) {
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (column.parent != this) return;
 	if (columnCount <= 1) return;
-	int index = (int)/*64*/((NSTableView)view).columnWithIdentifier (column.nsColumn);
+	int index = indexOf (column.nsColumn);
 	if (!(0 <= index && index < columnCount + ((style & SWT.CHECK) != 0 ? 1 : 0))) return;
 	((NSTableView)view).scrollColumnToVisible (index);
 }
@@ -2825,7 +2831,7 @@ void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	if (isDisposed ()) return;
 
 	NSTableView tableView = (NSTableView)view;
-	int index = (int)/*64*/tableView.columnWithIdentifier (columnId);
+	int index = indexOf (column.nsColumn);
 	if (index == -1) return; /* column was disposed in Resize callback */
 
 	NSArray nsColumns = tableView.tableColumns ();
