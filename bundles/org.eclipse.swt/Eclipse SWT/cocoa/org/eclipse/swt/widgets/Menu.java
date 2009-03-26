@@ -277,7 +277,7 @@ public void addMenuListener (MenuListener listener) {
 void createHandle () {
 	display.addMenu (this);
 	NSMenu widget = (NSMenu)new SWTMenu().alloc();
-	widget.initWithTitle(NSString.stringWith(""));
+	widget = widget.initWithTitle(NSString.stringWith(""));
 	widget.setAutoenablesItems(false);
 	widget.setDelegate(widget);	
 	nsMenu = widget;	
@@ -309,7 +309,7 @@ void createItem (MenuItem item, int index) {
 	NSMenu emptyMenu = item.createEmptyMenu ();
 	if (emptyMenu != null) {
 		nsItem.setSubmenu (emptyMenu);
-		emptyMenu.autorelease();
+		emptyMenu.release();
 	}
 	//TODO - find a way to disable the menu instead of each item
 	if (!getEnabled ()) nsItem.setEnabled (false);

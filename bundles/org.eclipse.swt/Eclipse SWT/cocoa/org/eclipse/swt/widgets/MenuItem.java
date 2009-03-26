@@ -656,14 +656,16 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 	
 	/* Update the menu in the OS */
-	NSMenu menuHandle;
 	if (menu == null) {
-		menuHandle = createEmptyMenu ();
+		NSMenu emptyMenu = createEmptyMenu ();
+		if (emptyMenu != null) {
+			nsItem.setSubmenu (emptyMenu);
+			emptyMenu.release();
+		}
 	} else {
 		menu.cascade = this;
-		menuHandle = menu.nsMenu;
+		nsItem.setSubmenu (menu.nsMenu);
 	}
-	nsItem.setSubmenu (menuHandle);
 	
 	if (menu != null) {
 		nsItem.setTarget(null);
