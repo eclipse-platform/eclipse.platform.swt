@@ -406,7 +406,7 @@ public void copyArea(Image image, int x, int y) {
 			int imgHeight = (int)srcSize.height;
 			int destWidth = (int)srcSize.width - x, destHeight = (int)srcSize.height - y;
 			int srcWidth = destWidth, srcHeight = destHeight;		
-			NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(image.imageRep);
+			NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(image.getRepresentation());
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(context);
 			NSAffineTransform transform = NSAffineTransform.transform();
@@ -507,7 +507,7 @@ public void copyArea(Image image, int x, int y) {
 
 void copyArea (Image image, int x, int y, int /*long*/ srcImage) {
 	if (srcImage == 0) return;
-	NSBitmapImageRep rep = image.imageRep;
+	NSBitmapImageRep rep = image.getRepresentation();
 	int /*long*/ bpc = rep.bitsPerSample();
 	int /*long*/ width = rep.pixelsWide();
 	int /*long*/ height = rep.pixelsHigh();
