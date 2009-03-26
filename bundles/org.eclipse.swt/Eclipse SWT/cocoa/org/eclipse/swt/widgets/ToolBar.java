@@ -235,9 +235,7 @@ void destroyItem (ToolItem item) {
 	if (index == itemCount) return;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	NSView nsItem = item.view;
-	nsItem.removeFromSuperview();
-	item.view = null;
+	item.view.removeFromSuperview();
 	relayout ();
 }
 

@@ -262,6 +262,7 @@ void createHandle () {
 		*/
 		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
 		button.setCell (cell);
+		cell.release();
 		button.setBordered(false);
 		button.setAction(OS.sel_sendSelection);
 		button.setTarget(button);
@@ -647,10 +648,7 @@ void releaseParent () {
 void releaseHandle () {
 	super.releaseHandle ();
 	if (view != null) view.release ();
-	if (button != null) {
-		button.release ();
-		button.cell ().release (); /* using custom cell */
-	}
+	if (button != null) button.release ();
 	view = button = null;
 	parent = null;
 }
