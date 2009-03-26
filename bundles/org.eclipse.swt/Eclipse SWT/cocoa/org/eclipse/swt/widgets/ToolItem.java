@@ -283,10 +283,9 @@ NSAttributedString createString() {
 		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
 		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
-	Font font = parent.getFont();
-	if (font != null) {
-		dict.setObject(font.handle, OS.NSFontAttributeName);
-	}
+	Font font = parent.font != null ? parent.font : parent.defaultFont ();
+	dict.setObject(font.handle, OS.NSFontAttributeName);
+	parent.addTraits(dict, font);
 	char [] chars = new char [text.length ()];
 	text.getChars (0, chars.length, chars, 0);
 	int length = fixMnemonic (chars);

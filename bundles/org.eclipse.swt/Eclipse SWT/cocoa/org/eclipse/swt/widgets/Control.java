@@ -582,6 +582,18 @@ public void addPaintListener(PaintListener listener) {
 	addListener(SWT.Paint,typedListener);
 }
 
+static final double SYNTHETIC_BOLD = -2.5;
+static final double SYNTHETIC_ITALIC = 0.2;
+
+void addTraits(NSMutableDictionary dict, Font font) {
+	if ((font.extraTraits & OS.NSBoldFontMask) != 0) {
+		dict.setObject(NSNumber.numberWithDouble(SYNTHETIC_BOLD), OS.NSStrokeWidthAttributeName);
+	}
+	if ((font.extraTraits & OS.NSItalicFontMask) != 0) {
+		dict.setObject(NSNumber.numberWithDouble(SYNTHETIC_ITALIC), OS.NSObliquenessAttributeName);
+	}
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when traversal events occur, by sending it
@@ -3158,7 +3170,6 @@ public void setFont (Font font) {
 }
 
 void setFont (NSFont font) {
-	//TODO - bad cast
 	if (view instanceof NSControl) {
 		((NSControl)view).setFont(font);
 	}
@@ -3682,6 +3693,7 @@ NSSize textExtent (String string) {
 	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(1);
 	Font font = this.font != null ? this.font : defaultFont();
 	dict.setObject(font.handle, OS.NSFontAttributeName);
+	addTraits(dict, font);
 	int length = string.length();
 	char[] chars = new char[length];
 	string.getChars(0, length, chars, 0);

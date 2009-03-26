@@ -1424,9 +1424,8 @@ int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long
 		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
 	Font font = this.font != null ? this.font : defaultFont ();
-	if (font != null) {
-		dict.setObject(font.handle, OS.NSFontAttributeName);
-	}
+	dict.setObject(font.handle, OS.NSFontAttributeName);
+	addTraits(dict, font);
 	String text = items[(int)/*64*/rowIndex];
 	int length = text.length();
 	char[] chars = new char[length];

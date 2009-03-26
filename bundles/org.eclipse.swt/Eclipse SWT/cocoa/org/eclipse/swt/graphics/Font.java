@@ -44,7 +44,17 @@ public final class Font extends Resource {
 	 */
 	public NSFont handle;
 	
-	int extraTraits;
+	/**
+	 * the traits not supported to the OS font resource
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 */
+	public int extraTraits;
 	
 	static final double SYNTHETIC_BOLD = -2.5;
 	static final double SYNTHETIC_ITALIC = 0.2;
@@ -174,12 +184,12 @@ void addTraits(NSMutableAttributedString attrStr, NSRange range) {
 	}
 }
 
-void addTraits(NSMutableDictionary attrStr) {
+void addTraits(NSMutableDictionary dict) {
 	if ((extraTraits & OS.NSBoldFontMask) != 0) {
-		attrStr.setObject(NSNumber.numberWithDouble(SYNTHETIC_BOLD), OS.NSStrokeWidthAttributeName);
+		dict.setObject(NSNumber.numberWithDouble(SYNTHETIC_BOLD), OS.NSStrokeWidthAttributeName);
 	}
 	if ((extraTraits & OS.NSItalicFontMask) != 0) {
-		attrStr.setObject(NSNumber.numberWithDouble(SYNTHETIC_ITALIC), OS.NSObliquenessAttributeName);
+		dict.setObject(NSNumber.numberWithDouble(SYNTHETIC_ITALIC), OS.NSObliquenessAttributeName);
 	}
 }
 

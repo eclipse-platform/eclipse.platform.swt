@@ -258,9 +258,9 @@ NSAttributedString createString() {
 		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
 		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
-	if (font != null) {
-		dict.setObject(font.handle, OS.NSFontAttributeName);
-	}
+	Font font = this.font != null ? this.font : defaultFont ();
+	dict.setObject(font.handle, OS.NSFontAttributeName);
+	addTraits(dict, font);
 	if ((style & SWT.WRAP) == 0) {
 		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 		paragraphStyle.autorelease ();

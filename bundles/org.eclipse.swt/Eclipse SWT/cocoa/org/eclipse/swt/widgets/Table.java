@@ -2909,35 +2909,53 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 			break;
 		}
 	}
+	NSTableView widget = (NSTableView)view;
 	NSTextFieldCell textCell = new NSTextFieldCell (cell);
 	OS.object_setInstanceVariable(cell, Display.SWT_ROW, rowIndex);
 	OS.object_setInstanceVariable(cell, Display.SWT_COLUMN, tableColumn);
 	Image image = index == 0 ? item.image : (item.images == null ? null : item.images [index]);
 	textCell.setImage (image != null ? image.handle : null);
-	NSTableView widget = (NSTableView)view;
+	NSColor color;
 	if (widget.isRowSelected (rowIndex)) {
-		textCell.setTextColor(NSColor.selectedControlTextColor());
+		color = NSColor.selectedControlTextColor();
 	} else {
 		Color foreground = item.cellForeground != null ? item.cellForeground [index] : null;
 		if (foreground == null) foreground = item.foreground;
 		if (foreground == null) foreground = this.foreground;
 		if (foreground == null) foreground = defaultForeground();
-		NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
-		textCell.setTextColor(color);
+		color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+	}
+	int alignment = OS.NSLeftTextAlignment;
+	if (columnCount > 0) {
+		int style = columns [index].style;
+		if ((style & SWT.CENTER) != 0) {
+			alignment = OS.NSCenterTextAlignment;
+		} else if ((style & SWT.RIGHT) != 0) {
+			alignment = OS.NSRightTextAlignment;
+		}
 	}
 	Font font = item.cellFont != null ? item.cellFont [index] : null;
 	if (font == null) font = item.font;
 	if (font == null) font = this.font;
 	if (font == null) font = defaultFont ();
-	textCell.setFont(font.handle);
-	textCell.setAlignment (OS.NSLeftTextAlignment);
-	if (columnCount > 0) {
-		int style = columns [index].style;
-		if ((style & SWT.CENTER) != 0) {
-			textCell.setAlignment (OS.NSCenterTextAlignment);
-		} else if ((style & SWT.RIGHT) != 0) {
-			textCell.setAlignment (OS.NSRightTextAlignment);
-		}
+	if (font.extraTraits != 0) {
+		NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
+		dict.setObject (color, OS.NSForegroundColorAttributeName);
+		dict.setObject (font.handle, OS.NSFontAttributeName);
+		addTraits(dict, font);
+		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
+		paragraphStyle.setAlignment (alignment);
+		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+		paragraphStyle.release ();
+		NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (textCell.title(), dict);
+		textCell.setAttributedStringValue(attribStr);
+		attribStr.release();
+		dict.release();
+	} else {
+		textCell.setFont(font.handle);
+		textCell.setTextColor(color);
+		textCell.setAlignment (alignment);
 	}
 }
 

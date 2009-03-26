@@ -325,6 +325,7 @@ public void addString(String string, float x, float y, Font font) {
 		attrStr.id = attrStr.initWithString(str).id;
 		attrStr.beginEditing();
 		attrStr.addAttribute(OS.NSFontAttributeName, font.handle, range);
+		font.addTraits(attrStr, range);
 		attrStr.endEditing();
 		textStorage.setAttributedString(attrStr);
 		attrStr.release();
