@@ -817,14 +817,18 @@ NSView contentView () {
 	return view;
 }
 
-NSAttributedString createString (String string, Font font, Color foreground, int style, boolean mnemonics) {
+NSAttributedString createString (String string, Font font, Color foreground, int style, boolean enabled, boolean mnemonics) {
 	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
 	if (font == null) font = this.font != null ? this.font : defaultFont();
 	dict.setObject (font.handle, OS.NSFontAttributeName);
 	addTraits(dict, font);
-	if (foreground != null) {
-		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], foreground.handle[3]);
-		dict.setObject (color, OS.NSForegroundColorAttributeName);
+	if (enabled) {
+		if (foreground != null) {
+			NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], foreground.handle[3]);
+			dict.setObject (color, OS.NSForegroundColorAttributeName);
+		}
+	} else {
+		dict.setObject (NSColor.disabledControlTextColor (), OS.NSForegroundColorAttributeName);
 	}
 	if (style != 0) {
 		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
@@ -3723,7 +3727,7 @@ void sort (int [] items) {
 }
 
 NSSize textExtent (String string) {
-	NSAttributedString attribStr = createString(string, null, null, 0, false);
+	NSAttributedString attribStr = createString(string, null, null, 0, true, false);
 	NSSize size = attribStr.size();
 	attribStr.release();
 	return size;

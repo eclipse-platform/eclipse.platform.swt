@@ -277,7 +277,7 @@ void createHandle () {
 }
 
 NSAttributedString createString() {
-	NSAttributedString attribStr = parent.createString(text, null, parent.foreground, SWT.CENTER, true);
+	NSAttributedString attribStr = parent.createString(text, null, parent.foreground, SWT.CENTER, true, true);
 	attribStr.autorelease();
 	return attribStr;
 }

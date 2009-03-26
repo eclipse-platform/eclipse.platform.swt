@@ -194,7 +194,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 NSAttributedString createString() {
-	NSAttributedString attribStr = createString(text, null, foreground, style, true);
+	NSAttributedString attribStr = createString(text, null, foreground, style, true, true);
 	attribStr.autorelease();
 
 	if ((style & (SWT.RADIO|SWT.CHECK)) != 0 && image != null) {

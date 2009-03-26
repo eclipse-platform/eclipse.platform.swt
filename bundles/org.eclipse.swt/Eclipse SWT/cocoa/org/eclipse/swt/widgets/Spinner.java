@@ -207,7 +207,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	float /*double*/ width = 0, height = 0;
 	String string = Double.toString (buttonView.maxValue ());
 	Font font = Font.cocoa_new(display, textView.font ());
-	NSAttributedString str = parent.createString(string, font, null, 0, false);
+	NSAttributedString str = parent.createString(string, font, null, 0, true, false);
 	NSSize size = str.size ();
 	str.release ();
 	width = (float)/*64*/size.width;

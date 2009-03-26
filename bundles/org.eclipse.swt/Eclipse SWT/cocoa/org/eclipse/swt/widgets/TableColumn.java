@@ -224,17 +224,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	NSAttributedString attrString = null;
 	NSTableHeaderCell headerCell = nsColumn.headerCell ();
 	if (displayText != null) {
-		NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-		dict.setObject (headerCell.font (), OS.NSFontAttributeName);
-		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-		paragraphStyle.autorelease ();
-		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
-		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
-		if ((parent.state & DISABLED) != 0) {
-			dict.setObject (NSColor.disabledControlTextColor (), OS.NSForegroundColorAttributeName);
-		}
-		NSString string = NSString.stringWith (displayText);
-		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
+		Font font = Font.cocoa_new(display, headerCell.font ());
+		attrString = parent.createString(displayText, font, null, SWT.LEFT, (parent.state & DISABLED) == 0, false);
 		stringSize = attrString.size ();
 		contentWidth += Math.ceil (stringSize.width);
 		if (image != null) contentWidth += MARGIN; /* space between image and text */
@@ -291,8 +282,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		destRect.width = Math.min (stringSize.width, cellRect.x + cellRect.width - MARGIN - drawX);
 		destRect.height = Math.min (stringSize.height, cellRect.height);
 		attrString.drawInRect (destRect);
-		attrString.release ();
 	}
+	if (attrString != null) attrString.release ();
 
 	context.restoreGraphicsState ();
 }
@@ -434,7 +425,7 @@ public void pack () {
 	if (displayText != null) {
 		NSTableHeaderCell headerCell = nsColumn.headerCell ();
 		Font font = Font.cocoa_new(display, headerCell.font ());
-		NSAttributedString attrString = parent.createString(displayText, font, null, 0, false);
+		NSAttributedString attrString = parent.createString(displayText, font, null, 0, true, false);
 		NSSize stringSize = attrString.size ();
 		attrString.release ();
 		width += Math.ceil (stringSize.width);
