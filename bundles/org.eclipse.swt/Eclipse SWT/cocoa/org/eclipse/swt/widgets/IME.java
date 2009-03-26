@@ -286,6 +286,7 @@ TextStyle getStyle (NSDictionary attribs) {
 			style.strikeout = value.intValue () != OS.NSUnderlineStyleNone;
 		} else if (key.isEqualTo (OS.NSFontAttributeName)) {
 			NSFont font = new NSFont (attribs.objectForKey (key));
+			font.retain();
 			style.font = Font.cocoa_new (display, font);
 		} 
 	}
@@ -342,8 +343,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	}
 	int length = (int)/*64*/str.length ();
 	int end = startOffset + text.length ();
-	ranges = null;
-	styles = null;
+	resetStyles ();
 	caretOffset = commitCount = length;
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_CHANGED;
@@ -372,6 +372,18 @@ NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
 	return range;
 }
 
+void resetStyles () {
+	if (styles != null) {
+		for (int i = 0; i < styles.length; i++) {
+			TextStyle style = styles [i];
+			Font font = style.font;
+			if (font != null) font.handle.release ();
+		}
+	}
+	styles = null;
+	ranges = null;
+}
+
 void releaseParent () {
 	super.releaseParent ();
 	if (this == parent.getIME ()) parent.setIME (null);
@@ -381,8 +393,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 	text = null;
-	styles = null;
-	ranges = null;
+	resetStyles ();
 }
 
 NSRange selectedRange (int /*long*/ id, int /*long*/ sel) {
@@ -421,8 +432,7 @@ public void setCompositionOffset (int offset) {
 
 boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ selRange) {
 	if (!isInlineEnabled ()) return true;
-	ranges = null;
-	styles = null;
+	resetStyles ();
 	caretOffset = commitCount = 0;
 	int end = startOffset + text.length ();
 	if (startOffset == -1) {

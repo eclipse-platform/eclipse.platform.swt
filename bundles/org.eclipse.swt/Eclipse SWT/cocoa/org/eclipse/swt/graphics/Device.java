@@ -522,6 +522,7 @@ protected void init () {
 	float /*double*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
 	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
 	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / screenDPI.y);
+	font.retain();
 	systemFont = Font.cocoa_new(this, font);
 }
 
@@ -652,6 +653,9 @@ protected void release () {
 	if (paragraphStyle != null) paragraphStyle.release();
 	paragraphStyle = null;
 	
+	if (systemFont != null) systemFont.dispose();
+	systemFont = null;
+
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
