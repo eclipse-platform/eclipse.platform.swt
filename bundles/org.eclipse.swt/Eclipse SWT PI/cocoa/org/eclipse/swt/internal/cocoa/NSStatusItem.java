@@ -28,6 +28,10 @@ public void drawStatusBarBackgroundInRect(NSRect rect, boolean highlight) {
 	OS.objc_msgSend(this.id, OS.sel_drawStatusBarBackgroundInRect_withHighlight_, rect, highlight);
 }
 
+public void popUpStatusItemMenu(NSMenu menu) {
+	OS.objc_msgSend(this.id, OS.sel_popUpStatusItemMenu_, menu != null ? menu.id : 0);
+}
+
 public void setHighlightMode(boolean highlightMode) {
 	OS.objc_msgSend(this.id, OS.sel_setHighlightMode_, highlightMode);
 }

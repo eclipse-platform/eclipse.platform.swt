@@ -199,6 +199,7 @@
 	<enum name="NSKeyDown" swt_gen="true"></enum>
 	<enum name="NSKeyUp" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDown" swt_gen="true"></enum>
+	<enum name="NSLeftMouseDownMask" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDragged" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDraggedMask" swt_gen="true"></enum>
 	<enum name="NSLeftMouseUp" swt_gen="true"></enum>
@@ -2914,6 +2915,10 @@
 		<method selector="drawStatusBarBackgroundInRect:withHighlight:" swt_gen="true">
 			<arg name="rect" swt_gen="true"></arg>
 			<arg name="highlight" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="popUpStatusItemMenu:" swt_gen="true">
+			<arg name="menu" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setHighlightMode:" swt_gen="true">
