@@ -261,14 +261,20 @@ public ToolItem [] getItems () {
 	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new ToolItem [0];
 	int count = OS.g_list_length (list);
-	ToolItem [] result = new ToolItem [count];
+	ToolItem [] items = new ToolItem [count];
+	int index = 0;
 	for (int i=0; i<count; i++) {
 		int /*long*/ data = OS.g_list_nth_data (list, i);
 		Widget widget = display.getWidget (data);
-		result [i] = (ToolItem) widget;
+		if (widget != null) items [index++] = (ToolItem) widget;
 	}
 	OS.g_list_free (list);
-	return result;
+	if (index != items.length) {
+		ToolItem [] newItems = new ToolItem [index];
+		System.arraycopy (items, 0, newItems, 0, index);
+		items = newItems;
+	}
+	return items;
 }
 
 /**
