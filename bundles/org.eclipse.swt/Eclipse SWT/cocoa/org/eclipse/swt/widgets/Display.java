@@ -2162,7 +2162,7 @@ void initClasses () {
 	className = "SWTDatePicker";
 	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
+	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -2690,11 +2690,20 @@ public Point map (Control from, Control to, int x, int y) {
 	NSWindow fromWindow = from != null ? from.view.window() : null;
 	NSWindow toWindow = to != null ? to.view.window() : null;
 	if (toWindow != null && fromWindow != null && toWindow.id == fromWindow.id) {
+		if (!from.view.isFlipped ()) {
+			pt.y = from.view.bounds().height - pt.y;
+		}
 		pt = from.view.convertPoint_toView_(pt, to.view);
+		if (!to.view.isFlipped ()) {
+			pt.y = to.view.bounds().height - pt.y;
+		}
 	} else {
 		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
 			NSView view = from.eventView ();
+			if (!view.isFlipped ()) {
+				pt.y = view.bounds().height - pt.y;
+			}
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
@@ -2704,6 +2713,9 @@ public Point map (Control from, Control to, int x, int y) {
 			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);
+			if (!view.isFlipped ()) {
+				pt.y = view.bounds().height - pt.y;
+			}
 		}
 	}
 	point.x = (int)pt.x;
@@ -2803,11 +2815,20 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	NSWindow fromWindow = from != null ? from.view.window() : null;
 	NSWindow toWindow = to != null ? to.view.window() : null;
 	if (toWindow != null && fromWindow != null && toWindow.id == fromWindow.id) {
+		if (!from.view.isFlipped ()) {
+			pt.y = from.view.bounds().height - pt.y;
+		}
 		pt = from.view.convertPoint_toView_(pt, to.view);
+		if (!to.view.isFlipped ()) {
+			pt.y = to.view.bounds().height - pt.y;
+		}
 	} else {
 		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
 			NSView view = from.eventView ();
+			if (!view.isFlipped ()) {
+				pt.y = view.bounds().height - pt.y;
+			}
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
@@ -2817,6 +2838,9 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);
+			if (!view.isFlipped ()) {
+				pt.y = view.bounds().height - pt.y;
+			}
 		}
 	}
 	rectangle.x = (int)pt.x;
@@ -4227,6 +4251,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.resignFirstResponder(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_isOpaque) {
 		return widget.isOpaque(id, sel) ? 1 : 0;
+	} else if (sel == OS.sel_isFlipped) {
+		return widget.isFlipped(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_unmarkText) {
 		//TODO not called?
 	} else if (sel == OS.sel_validAttributesForMarkedText) {

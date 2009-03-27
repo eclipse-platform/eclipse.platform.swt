@@ -297,6 +297,11 @@ boolean isEventView (int /*long*/ id) {
 	return true;
 }
 
+boolean isFlipped (int /*long*/ id, int /*long*/ sel) {
+	if ((style & SWT.CALENDAR) != 0) return super.isFlipped (id, sel);
+	return true;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected by the user.

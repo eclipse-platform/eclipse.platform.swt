@@ -1042,6 +1042,9 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 			dragEvents.addObject(event);
 			NSPoint windowLoc = event.locationInWindow();
 			NSPoint viewLoc = view.convertPoint_fromView_(windowLoc, null);
+			if (!view.isFlipped ()) {
+				viewLoc.y = view.bounds().height - viewLoc.y;
+			}
 			if ((Math.abs(viewLoc.x - dragX) > DEFAULT_DRAG_HYSTERESIS) || (Math.abs(viewLoc.y - dragY) > DEFAULT_DRAG_HYSTERESIS)) {
 				dragging = true;
 				break;
@@ -1712,6 +1715,9 @@ int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 		NSView superview = new NSView(id).superview();
 		if (superview != null) {
 			NSPoint pt = superview.convertPoint_toView_(point, view);
+			if (!view.isFlipped ()) {
+				pt.y = view.bounds().height - pt.y;
+			}
 			if (!regionPath.containsPoint(pt)) return 0;
 		}
 	}
@@ -1765,7 +1771,9 @@ public int /*long*/ internal_new_GC (GCData data) {
 	NSView view = paintView();
 	int /*long*/ context = 0;
 	if (data != null && data.paintRect != null) {
-		context = NSGraphicsContext.currentContext().id;
+		NSGraphicsContext graphicsContext = NSGraphicsContext.currentContext();
+		context = graphicsContext.id;
+		if (!view.isFlipped()) data.state &= ~VISIBLE_REGION;
 	} else {
 		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (view.window ());
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
@@ -2099,6 +2107,9 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 			if (nsEvent.clickCount() == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				consume = new boolean[1];
 				NSPoint location = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
+				if (!view.isFlipped ()) {
+					location.y = view.bounds().height - location.y;
+				}
 				dragging = dragDetect((int)location.x, (int)location.y, false, consume);
 			}
 			break;
@@ -2887,6 +2898,9 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 		windowPoint = nsEvent.locationInWindow();
 	}
 	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
+	if (!view.isFlipped ()) {
+		point.y = view.bounds().height - point.y;
+	}
 	event.x = (int) point.x;
 	event.y = (int) point.y;
 	setInputState (event, nsEvent, type);

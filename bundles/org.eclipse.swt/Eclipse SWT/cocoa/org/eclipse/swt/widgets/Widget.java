@@ -817,6 +817,13 @@ boolean isDrawing () {
 	return true;
 }
 
+boolean isFlipped(int /*long*/ id, int /*long*/ sel) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel) != 0;
+}
+
 /**
  * Returns <code>true</code> if there are any listeners
  * for the specified event type associated with the receiver,
