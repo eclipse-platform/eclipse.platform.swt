@@ -575,6 +575,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setVisible (boolean visible) {
+	checkWidget ();
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
 	if (runnable != null) display.timerExec (-1, runnable);
