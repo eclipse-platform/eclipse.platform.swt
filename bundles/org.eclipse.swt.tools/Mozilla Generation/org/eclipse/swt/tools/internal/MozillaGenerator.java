@@ -684,7 +684,7 @@ public class MozillaGenerator {
 		+ " *\r\n" 
 		+ " * IBM\r\n"
 		+ " * -  Binding to permit interfacing between Mozilla and SWT\r\n"
-		+ " * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.\r\n"
+		+ " * -  Copyright (C) 2003, 2009 IBM Corp.  All Rights Reserved.\r\n"
 		+ " *\r\n" + " * ***** END LICENSE BLOCK ***** */";
 
 	static String PACKAGE_DECLARATION = "package org.eclipse.swt.internal.mozilla;";
