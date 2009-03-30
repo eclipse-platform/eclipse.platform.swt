@@ -26,9 +26,13 @@ import org.eclipse.swt.opengl.GLData;
  */
 
 public class GLCanvas extends Canvas {
-	NSOpenGLView glView;
+	SWTOpenGLView glView;
 	NSOpenGLPixelFormat pixelFormat;
+	
 	static final int MAX_ATTRIBUTES = 32;
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
+	static final String EVENT_VIEW_KEY = "org.eclipse.swt.internal.eventView"; //$NON-NLS-1$
+	static final String PAINT_VIEW_KEY = "org.eclipse.swt.internal.paintView"; //$NON-NLS-1$
 
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
@@ -109,7 +113,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	
 	pixelFormat.initWithAttributes(attrib);
 	
-	glView = (NSOpenGLView)new NSOpenGLView().alloc();
+	glView = (SWTOpenGLView)new SWTOpenGLView().alloc();
 	if (glView == null) {		
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
@@ -125,11 +129,19 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	}
 	glView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 	view.addSubview(glView);
-
+	Display display = getDisplay();
+	display.setData(ADD_WIDGET_KEY, new Object[] {glView, this});
+	display.setData(EVENT_VIEW_KEY, glView);
+	display.setData(PAINT_VIEW_KEY, view);
+	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose:
+					event.display.setData(ADD_WIDGET_KEY, new Object[] {glView, null});
+					event.display.setData(EVENT_VIEW_KEY, null);
+					event.display.setData(PAINT_VIEW_KEY, null);
+
 					if (glView != null) {
 						glView.clearGLContext();
 						glView.release();

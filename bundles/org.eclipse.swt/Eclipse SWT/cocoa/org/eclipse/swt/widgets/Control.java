@@ -64,6 +64,12 @@ public abstract class Control extends Widget implements Drawable {
 	NSBezierPath regionPath;
 	int /*long*/ visibleRgn;
 	Accessible accessible;
+
+	boolean fetchedPaintView;
+	NSView cachedPaintView;
+
+	boolean fetchedEventView;
+	NSView cachedEventView;
 	
 	final static int CLIPPING = 1 << 10;
 	final static int VISIBLE_REGION = 1 << 12;
@@ -1099,7 +1105,14 @@ void enableWidget (boolean enabled) {
 }
 
 NSView eventView () {
-	return view;
+	if (!fetchedEventView) {
+		cachedEventView = (NSView)display.getData(Display.EVENT_VIEW_KEY);
+		if (cachedEventView == null) cachedEventView = view;
+		fetchedEventView = true;
+		cachedEventView.retain();
+	}
+	
+	return cachedEventView;
 }
 
 void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight) {
@@ -2292,7 +2305,14 @@ public void pack (boolean changed) {
 }
 
 NSView paintView () {
-	return eventView ();
+	if (!fetchedPaintView) {
+		cachedPaintView = (NSView)display.getData(Display.PAINT_VIEW_KEY);
+		if (cachedPaintView == null) cachedPaintView = eventView();
+		cachedPaintView.retain();
+		fetchedPaintView = true;
+	}
+	
+	return cachedPaintView;
 }
 
 /**
@@ -2479,6 +2499,15 @@ void releaseWidget () {
 	region = null;
 	if (regionPath != null) regionPath.release();
 	regionPath = null;
+	
+	if (cachedEventView != null) {
+		cachedEventView.release();
+		cachedEventView = null;
+	}
+	if (cachedPaintView != null) {
+		cachedPaintView.release();
+		cachedPaintView = null;
+	}
 }
 
 /**
