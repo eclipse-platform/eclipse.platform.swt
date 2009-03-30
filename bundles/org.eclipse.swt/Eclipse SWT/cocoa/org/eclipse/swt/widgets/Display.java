@@ -3546,10 +3546,15 @@ void setMenuBar (Menu menu) {
 	menuBar = menu;
 	//remove all existing menu items except the application menu
 	NSMenu menubar = application.mainMenu();
+	/*
+	* For some reason, NSMenu.cancelTracking() does not dismisses
+	* the menu right away when the menu bar is set in a stacked
+	* event loop. The fix is to use CancelMenuTracking() instead.
+	*/
+//	menubar.cancelTracking();
+	OS.CancelMenuTracking (OS.AcquireRootMenu (), true, 0);
 	int /*long*/ count = menubar.numberOfItems();
 	while (count > 1) {
-		NSMenu submenu = menubar.itemAtIndex(count - 1).submenu();
-		if (submenu != null) submenu.cancelTracking();
 		menubar.removeItemAtIndex(count - 1);
 		count--;
 	}

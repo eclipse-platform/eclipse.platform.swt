@@ -14,10 +14,11 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 444;
-int OS_nativeFunctionCallCount[444];
+int OS_nativeFunctionCount = 446;
+int OS_nativeFunctionCallCount[446];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
+	"AcquireRootMenu",
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
 	"CFRelease",
@@ -80,6 +81,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGSize_1sizeof",
 	"CGWarpMouseCursorPosition",
 	"CPSSetProcessName",
+	"CancelMenuTracking",
 	"CloseRgn",
 	"CopyRgn",
 	"DeleteGlobalRef",

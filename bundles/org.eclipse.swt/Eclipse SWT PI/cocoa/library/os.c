@@ -42,6 +42,26 @@ fail:
 }
 #endif
 
+#ifndef NO_AcquireRootMenu
+JNIEXPORT jintLong JNICALL OS_NATIVE(AcquireRootMenu)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, AcquireRootMenu_FUNC);
+/*
+	rc = (jintLong)AcquireRootMenu();
+*/
+	{
+		LOAD_FUNCTION(fp, AcquireRootMenu)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, AcquireRootMenu_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFDataGetBytePtr
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFDataGetBytePtr)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -767,6 +787,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(CPSSetProcessName)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, CPSSetProcessName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CancelMenuTracking
+JNIEXPORT jint JNICALL OS_NATIVE(CancelMenuTracking)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CancelMenuTracking_FUNC);
+/*
+	rc = (jint)CancelMenuTracking(arg0, arg1, arg2);
+*/
+	{
+		LOAD_FUNCTION(fp, CancelMenuTracking)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jboolean, jint))fp)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CancelMenuTracking_FUNC);
 	return rc;
 }
 #endif
@@ -3048,7 +3088,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRgn)
 	{
 		LOAD_FUNCTION(fp, PtInRgn)
 		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(Point *, jintLong))fp)(*(Point *)lparg0, arg1);
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(Point, jintLong))fp)(*(Point *)lparg0, arg1);
 		}
 	}
 fail:

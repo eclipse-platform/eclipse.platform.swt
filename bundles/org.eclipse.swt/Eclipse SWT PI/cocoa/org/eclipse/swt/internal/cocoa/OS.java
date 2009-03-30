@@ -142,6 +142,11 @@ public static final native int FSPathMakeRef (int /*long*/ path, byte[] ref, boo
 /** @method flags=dynamic */
 public static final native byte LMGetKbdType();
 
+/** @method flags=dynamic */
+public static final native int /*long*/ AcquireRootMenu ();
+/** @method flags=dynamic */
+public static final native int CancelMenuTracking (int /*long*/ inRootMenu, boolean inImmediate, int inDismissalReason);
+
 /** C calls */
 
 public static final native int getpid();
