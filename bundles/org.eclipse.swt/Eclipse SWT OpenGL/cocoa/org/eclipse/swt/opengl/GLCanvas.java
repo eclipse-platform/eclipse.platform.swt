@@ -114,9 +114,17 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	glView.initWithFrame(parent.view.bounds(), pixelFormat);
+	glView.initWithFrame(view.bounds(), pixelFormat);
+	
+	if (data.shareContext != null) {
+		NSOpenGLContext ctx = data.shareContext.glView.openGLContext();
+		NSOpenGLContext newContext = (NSOpenGLContext) new NSOpenGLContext().alloc();
+		newContext.initWithFormat(pixelFormat, ctx);
+		glView.setOpenGLContext(newContext);
+		newContext.release();
+	}
 	glView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-	parent.view.addSubview(glView);
+	view.addSubview(glView);
 
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {

@@ -3048,7 +3048,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRgn)
 	{
 		LOAD_FUNCTION(fp, PtInRgn)
 		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(Point, jintLong))fp)(*(Point *)lparg0, arg1);
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(Point *, jintLong))fp)(*(Point *)lparg0, arg1);
 		}
 	}
 fail:

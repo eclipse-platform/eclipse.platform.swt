@@ -37,6 +37,11 @@ public void flushBuffer() {
 	OS.objc_msgSend(this.id, OS.sel_flushBuffer);
 }
 
+public id initWithFormat(NSOpenGLPixelFormat format, NSOpenGLContext share) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_shareContext_, format != null ? format.id : 0, share != null ? share.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
 public void makeCurrentContext() {
 	OS.objc_msgSend(this.id, OS.sel_makeCurrentContext);
 }

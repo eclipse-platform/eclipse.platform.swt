@@ -122,6 +122,14 @@ public class GLData {
 	 */
 	public int samples;
 	
+	/**
+	 * Another GLCanvas whose texture namespace and display lists
+	 * should be shared.
+	 * 
+	 * @since 3.5
+	 */
+	public GLCanvas shareContext;
+	
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

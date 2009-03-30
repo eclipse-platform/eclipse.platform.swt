@@ -116,9 +116,8 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	OS.XFree (infoPtr);
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	int /*long*/ gdkvisual = OS.gdk_x11_screen_lookup_visual (screen, vinfo.visualid);
-	//FIXME- share lists
-	//context = GLX.glXCreateContext (xDisplay, info, share == null ? 0 : share.context, true);
-	context = GLX.glXCreateContext (xDisplay, vinfo, 0, true);
+	int /*long*/ share = data.shareContext != null ? data.shareContext.context : 0;
+	context = GLX.glXCreateContext (xDisplay, vinfo, share, true);
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	GdkWindowAttr attrs = new GdkWindowAttr ();
 	attrs.width = 1;

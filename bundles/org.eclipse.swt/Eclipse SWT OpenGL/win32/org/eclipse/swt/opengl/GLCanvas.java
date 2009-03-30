@@ -89,8 +89,9 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		SWT.error (SWT.ERROR_NO_HANDLES);
 	}
 	OS.ReleaseDC (handle, hDC);
-	//FIXME- share lists
-	//if (share != null) WGL.wglShareLists (context, share.context);
+	if (data.shareContext != null) {
+		WGL.wglShareLists (data.shareContext.context, context);
+	}
 	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {

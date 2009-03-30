@@ -38,6 +38,10 @@ public NSOpenGLContext openGLContext() {
 	return result != 0 ? new NSOpenGLContext(result) : null;
 }
 
+public void setOpenGLContext(NSOpenGLContext context) {
+	OS.objc_msgSend(this.id, OS.sel_setOpenGLContext_, context != null ? context.id : 0);
+}
+
 public void setPixelFormat(NSOpenGLPixelFormat pixelFormat) {
 	OS.objc_msgSend(this.id, OS.sel_setPixelFormat_, pixelFormat != null ? pixelFormat.id : 0);
 }
