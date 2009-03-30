@@ -3548,6 +3548,8 @@ void setMenuBar (Menu menu) {
 	NSMenu menubar = application.mainMenu();
 	int /*long*/ count = menubar.numberOfItems();
 	while (count > 1) {
+		NSMenu submenu = menubar.itemAtIndex(count - 1).submenu();
+		if (submenu != null) submenu.cancelTracking();
 		menubar.removeItemAtIndex(count - 1);
 		count--;
 	}
