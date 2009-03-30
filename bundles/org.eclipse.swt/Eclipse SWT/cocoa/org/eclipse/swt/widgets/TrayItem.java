@@ -174,7 +174,6 @@ Point getLocation () {
 	NSRect windowRect = view.window().frame();
 	NSPoint pt = new NSPoint();
 	pt.x = rect.width / 2;
-	pt.y = rect.height;
 	pt = view.convertPoint_fromView_(pt, null);
 	pt.x += windowRect.x;
 	return new Point ((int)pt.x, (int)pt.y);
@@ -435,33 +434,90 @@ public void setVisible (boolean visible) {
 	if (!visible) sendEvent (SWT.Hide);
 }
 
+void showMenu (Menu menu) {
+	display.trayItemMenu = menu;
+	item.popUpStatusItemMenu(menu.nsMenu);
+}
+
 void showMenu () {
 	_setToolTipText (null);
+	Display display = this.display;
+	display.currentTrayItem = this;
 	sendEvent (SWT.MenuDetect);
-	if (isDisposed ()) return;
-//	display.runPopups ();
+	if (!isDisposed ()) display.runPopups();
+	display.currentTrayItem = null;
 	if (isDisposed ()) return;
 	_setToolTipText (toolTipText);
 }
 
-void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
-	NSEvent nsEvent = new NSEvent(event);
-	if ((nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == OS.NSControlKeyMask) {
+void displayMenu () {
+	if (highlight) {
+		view.display();
+		display.trayItemMenu = null;
 		showMenu();
-	} else {
-		highlight = true;
-		view.setNeedsDisplay(true);
-		postEvent(nsEvent.clickCount() == 2 ? SWT.DefaultSelection : SWT.Selection);
+		if (display.trayItemMenu != null) {
+			display.trayItemMenu = null;
+			highlight = false;
+			view.setNeedsDisplay(true);
+		}
 	}
 }
 
+boolean shouldShowMenu (NSEvent event) {
+	if (!hooks(SWT.MenuDetect)) return false;
+	switch ((int)/*64*/event.type()) {
+		case OS.NSRightMouseDown: return true;
+		case OS.NSLeftMouseDown:
+			if (!(hooks(SWT.Selection) || hooks(SWT.DefaultSelection))) {
+				return true;
+			}
+			if ((event.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == OS.NSControlKeyMask) {
+				return true;
+			}
+			return false;
+		case OS.NSLeftMouseDragged:
+		case OS.NSRightMouseDragged:
+			return true;
+	}
+	return false;
+}
+
+void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSEvent nsEvent = new NSEvent(theEvent);
+	highlight = true;
+	view.setNeedsDisplay(true);
+	if (shouldShowMenu(nsEvent)) displayMenu();
+}
+
+void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSEvent nsEvent = new NSEvent(theEvent);
+	NSRect frame = view.frame();
+	highlight = OS.NSPointInRect(nsEvent.locationInWindow(), frame);
+	view.setNeedsDisplay(true);
+	if (shouldShowMenu(nsEvent)) displayMenu();
+}
+
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (highlight) {
+		NSEvent nsEvent = new NSEvent(theEvent);
+		if (nsEvent.type() == OS.NSLeftMouseUp) {
+			postEvent(nsEvent.clickCount() == 2 ? SWT.DefaultSelection : SWT.Selection);
+		}
+	}
 	highlight = false;
 	view.setNeedsDisplay(true);
 }
 
 void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	showMenu();
+	mouseDown(id, sel, theEvent);
+}
+
+void rightMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	mouseUp(id, sel, theEvent);
+}
+
+void rightMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	mouseDragged(id, sel, theEvent);
 }
 
 void drawRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {

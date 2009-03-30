@@ -173,6 +173,8 @@ public class Display extends Device {
 
 	/* System Tray */
 	Tray tray;
+	TrayItem currentTrayItem;
+	Menu trayItemMenu;
 	
 	/* System Resources */
 	Image errorImage, infoImage, warningImage;

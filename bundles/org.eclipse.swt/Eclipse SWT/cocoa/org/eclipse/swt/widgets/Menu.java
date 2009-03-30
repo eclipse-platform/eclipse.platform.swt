@@ -201,6 +201,11 @@ static int checkStyle (int style) {
 
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	TrayItem trayItem = display.currentTrayItem;
+	if (trayItem != null && visible) {
+		trayItem.showMenu (this);
+		return;
+	}
 	if (visible) {
 		Shell shell = getShell ();
 		NSWindow window = shell.window;
