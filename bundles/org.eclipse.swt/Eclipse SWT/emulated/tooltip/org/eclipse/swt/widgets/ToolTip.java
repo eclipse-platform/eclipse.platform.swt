@@ -45,7 +45,7 @@ public class ToolTip extends Widget {
 	int x, y;
 	int [] borderPolygon;
 	boolean spikeAbove, autohide;
-	Listener listener;
+	Listener listener, parentListener;
 	TextLayout layoutText, layoutMessage;
 	Region region;
 	Font boldFont;
@@ -109,6 +109,12 @@ public ToolTip (Shell parent, int style) {
 	addListener (SWT.Dispose, listener);
 	tip.addListener (SWT.Paint, listener);
 	tip.addListener (SWT.MouseDown, listener);
+	parentListener = new Listener () {
+		public void handleEvent (Event event) {
+			dispose ();
+		}
+	};
+	parent.addListener(SWT.Dispose, parentListener);
 }
 
 static int checkStyle (int style) {
@@ -384,6 +390,8 @@ public boolean isVisible () {
 }
 
 void onDispose (Event event) {
+	Control parent = getParent ();
+	parent.removeListener (SWT.Dispose, parentListener);
 	removeListener (SWT.Dispose, listener);
 	notifyListeners (SWT.Dispose, event);
 	event.type = SWT.None;
@@ -615,6 +623,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setVisible (boolean visible) {
+	checkWidget ();
 	if (visible) configure ();
 	tip.setVisible (visible);
 	Display display = getDisplay ();
