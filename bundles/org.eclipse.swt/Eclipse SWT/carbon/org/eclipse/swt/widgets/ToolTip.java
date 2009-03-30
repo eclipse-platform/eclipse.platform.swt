@@ -94,6 +94,7 @@ public ToolTip (Shell parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	createWidget ();
+	parent.addToolTip (this);
 }
 
 static int checkStyle (int style) {
@@ -400,6 +401,7 @@ void onPaint (Event event) {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (parent != null) parent.removeTooTip (this);
 	if (runnable != null) {
 		Display display = getDisplay ();
 		display.timerExec (-1, runnable);

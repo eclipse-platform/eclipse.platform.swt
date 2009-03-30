@@ -128,6 +128,7 @@ public class Shell extends Decorations {
 	Rect rgnRect;
 	Rectangle normalBounds;
 	int imHandle;
+	ToolTip [] toolTips;
 
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -416,6 +417,20 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deactivate,typedListener);
 	addListener(SWT.Iconify,typedListener);
 	addListener(SWT.Deiconify,typedListener);
+}
+
+void addToolTip (ToolTip toolTip) {
+	if (toolTips  == null) toolTips = new ToolTip [4];
+	for (int i=0; i<toolTips.length; i++) {
+		if (toolTips [i] == null) {
+			toolTips [i] = toolTip;
+			return;
+		}
+	}
+	ToolTip [] newToolTips = new ToolTip [toolTips.length + 4];
+	newToolTips [toolTips.length] = toolTip;
+	System.arraycopy (toolTips, 0, newToolTips, 0, toolTips.length);
+	toolTips = newToolTips;
 }
 
 void bringToTop (boolean force) {
@@ -1344,6 +1359,15 @@ void releaseChildren (boolean destroy) {
 			shell.dispose ();
 		}
 	}
+	if (toolTips != null) {
+		for (int i=0; i<toolTips.length; i++) {
+			ToolTip toolTip = toolTips [i];
+			if (toolTip != null && !toolTip.isDisposed ()) {
+				toolTip.dispose ();
+			}
+		}
+		toolTips = null;
+	}
 	super.releaseChildren (destroy);
 }
 
@@ -1394,6 +1418,16 @@ public void removeShellListener(ShellListener listener) {
 	eventTable.unhook(SWT.Deactivate, listener);
 	eventTable.unhook(SWT.Iconify,listener);
 	eventTable.unhook(SWT.Deiconify,listener);
+}
+
+void removeTooTip (ToolTip toolTip) {
+	if (toolTips == null) return;
+	for (int i=0; i<toolTips.length; i++) {
+		if (toolTips [i] == toolTip) {
+			toolTips [i] = null;
+			return;
+		}
+	}
 }
 
 /**
