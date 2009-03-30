@@ -236,11 +236,10 @@ NSAutoreleasePool checkGC (int mask) {
 			handle.restoreGraphicsState();
 			handle.saveGraphicsState();
 			handle.setShouldAntialias(antialias);
-			boolean flipped = false;
-			if (view != null && (data.paintRect == null || !(flipped = view.isFlipped()))) {
+			if (view != null && (data.paintRect == null || !view.isFlipped())) {
 				NSAffineTransform transform = NSAffineTransform.transform();
 				NSRect rect = view.convertRect_toView_(view.bounds(), null);
-				if (flipped) {
+				if (data.paintRect == null) {
 					transform.translateXBy(rect.x, rect.y + rect.height);
 				} else {
 					transform.translateXBy(0, rect.height);
