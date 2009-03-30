@@ -91,6 +91,7 @@ public ToolTip (Shell parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	createWidget (0);
+	parent.addToolTip (this);
 }
 
 static int checkStyle (int style) {
@@ -294,6 +295,7 @@ void deregister () {
 
 void destroyWidget () {
 	int /*long*/ topHandle = topHandle ();
+	if (parent != null) parent.removeTooTip (this);
 	releaseHandle ();
 	if (topHandle != 0 && (state & HANDLE) != 0) {
 		if ((style & SWT.BALLOON) != 0) {
@@ -771,6 +773,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setVisible (boolean visible) {
+	checkWidget ();
 	if (timerId != 0) OS.gtk_timeout_remove(timerId);
 	timerId = 0;
 	if (visible) {

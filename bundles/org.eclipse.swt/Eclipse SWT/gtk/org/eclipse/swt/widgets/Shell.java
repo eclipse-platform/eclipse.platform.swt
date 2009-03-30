@@ -122,6 +122,7 @@ public class Shell extends Decorations {
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
+	ToolTip [] toolTips;
 
 	static final int MAXIMUM_TRIM = 128;
 
@@ -412,6 +413,20 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Deiconify,typedListener);
 	addListener (SWT.Activate, typedListener);
 	addListener (SWT.Deactivate, typedListener);
+}
+
+void addToolTip (ToolTip toolTip) {
+	if (toolTips  == null) toolTips = new ToolTip [4];
+	for (int i=0; i<toolTips.length; i++) {
+		if (toolTips [i] == null) {
+			toolTips [i] = toolTip;
+			return;
+		}
+	}
+	ToolTip [] newToolTips = new ToolTip [toolTips.length + 4];
+	newToolTips [toolTips.length] = toolTip;
+	System.arraycopy (toolTips, 0, newToolTips, 0, toolTips.length);
+	toolTips = newToolTips;
 }
 
 void adjustTrim () {
@@ -1200,6 +1215,16 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deactivate, listener);
 }
 
+void removeTooTip (ToolTip toolTip) {
+	if (toolTips == null) return;
+	for (int i=0; i<toolTips.length; i++) {
+		if (toolTips [i] == toolTip) {
+			toolTips [i] = null;
+			return;
+		}
+	}
+}
+
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
@@ -1986,6 +2011,15 @@ void releaseChildren (boolean destroy) {
 		if (shell != null && !shell.isDisposed ()) {
 			shell.release (false);
 		}
+	}
+	if (toolTips != null) {
+		for (int i=0; i<toolTips.length; i++) {
+			ToolTip toolTip = toolTips [i];
+			if (toolTip != null && !toolTip.isDisposed ()) {
+				toolTip.dispose ();
+			}
+		}
+		toolTips = null;
 	}
 	super.releaseChildren (destroy);
 }
