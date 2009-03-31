@@ -869,6 +869,7 @@ void createWidget () {
 	setDefaultFont ();
 	setZOrder ();
 	setRelations ();
+	display.clearPool ();
 }
 
 Color defaultBackground () {

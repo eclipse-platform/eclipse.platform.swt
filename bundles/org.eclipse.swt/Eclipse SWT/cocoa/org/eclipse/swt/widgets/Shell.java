@@ -1518,10 +1518,7 @@ void setWindowVisible (boolean visible, boolean key) {
 	}
 	if (window != null && (window.isVisible() == visible)) return;
 	if (visible) {
-		if (display.sendEventCount == 0 && display.loopCount == display.poolCount - 1) {
-			display.removePool ();
-			display.addPool ();
-		}
+		display.clearPool ();
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		topView ().setHidden (false);

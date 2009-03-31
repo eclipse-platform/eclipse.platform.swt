@@ -656,6 +656,13 @@ void clearModal (Shell shell) {
 	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
+void clearPool () {
+	if (sendEventCount == 0 && loopCount == poolCount - 1) {
+		removePool ();
+		addPool ();
+	}
+}
+
 /**
  * Requests that the connection between SWT and the underlying
  * operating system be closed.
