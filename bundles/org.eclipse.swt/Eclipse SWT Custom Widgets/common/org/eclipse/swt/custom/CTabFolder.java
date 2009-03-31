@@ -157,6 +157,7 @@ public class CTabFolder extends Composite {
 	static Color borderColor;
 	
 	// close, min/max and chevron buttons
+	static Color fillColor;
 	boolean showClose = false;
 	boolean showUnselectedClose = true;
 	
@@ -1194,6 +1195,12 @@ public Rectangle getClientArea() {
 	height -= tabHeight;
 	return new Rectangle(xClient, yClient, width, height);
 }
+Color getFillColor() {
+	if (fillColor == null) {
+		fillColor = new Color(getDisplay(), CTabFolder.CLOSE_FILL);
+	}
+	return fillColor;
+}
 /**
  * Return the tab that is located at the specified index.
  * 
@@ -1891,6 +1898,10 @@ void onDispose(Event event) {
 		if (items[i] != null) {
 			items[i].dispose();
 		}
+	}
+	if (fillColor != null) {
+	    fillColor.dispose();
+	    fillColor = null;
 	}
 	
 	selectionGradientColors = null;

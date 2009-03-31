@@ -198,10 +198,8 @@ void drawClose(GC gc) {
 					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
 			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
 			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-			Color fill = new Color(display, CTabFolder.CLOSE_FILL);
-			gc.setBackground(fill);
+			gc.setBackground(parent.getFillColor());
 			gc.fillPolygon(shape);
-			fill.dispose();
 			gc.setForeground(closeBorder);
 			gc.drawPolygon(shape);
 			break;
@@ -211,10 +209,8 @@ void drawClose(GC gc) {
 					                 x+10,y+3, x+8,y+5, x+8,y+6, x+10,y+8, x+10,y+10,
 			                         x+8,y+10, x+6,y+8, x+5,y+8, x+3,y+10, x+1,y+10,
 			                         x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
-			Color fill = new Color(display, CTabFolder.CLOSE_FILL);
-			gc.setBackground(fill);
+			gc.setBackground(parent.getFillColor());
 			gc.fillPolygon(shape);
-			fill.dispose();
 			gc.setForeground(closeBorder);
 			gc.drawPolygon(shape);
 			break;
