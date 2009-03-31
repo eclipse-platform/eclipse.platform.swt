@@ -713,6 +713,15 @@ void createItem (TableColumn column, int index) {
 			}
 		}
 	}
+	/*
+	 * Feature in GTK. The tree view does not resize immediately if a table 
+	 * column is created when the table is not visible. If the width of the
+ 	 * new column is queried, GTK returns an incorrect value. The fix is to
+ 	 * ensure that the columns are resized before any queries.
+	 */
+	if(!isVisible ()) {
+		OS.gtk_container_resize_children (handle);
+	}
 }
 
 void createItem (TableItem item, int index) {
