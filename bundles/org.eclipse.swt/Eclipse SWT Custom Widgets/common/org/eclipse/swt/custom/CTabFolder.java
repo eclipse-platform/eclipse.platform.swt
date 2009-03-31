@@ -157,7 +157,7 @@ public class CTabFolder extends Composite {
 	static Color borderColor;
 	
 	// close, min/max and chevron buttons
-	static Color fillColor;
+	Color fillColor;
 	boolean showClose = false;
 	boolean showUnselectedClose = true;
 	
