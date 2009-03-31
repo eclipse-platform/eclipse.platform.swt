@@ -98,6 +98,7 @@ public class Display extends Device {
 	Event [] eventQueue;
 	EventTable eventTable, filterTable;
 	boolean disposing;
+	int sendEventCount;
 
 	/* Key event management */
 	int [] deadKeyState = new int[1];
@@ -142,8 +143,9 @@ public class Display extends Device {
 	Control focusControl;
 	
 	NSWindow screenWindow;
-	NSAutoreleasePool pool;
-	int loopCounter = 0;
+
+	NSAutoreleasePool[] pools;
+	int poolCount, loopCount;
 
 	int[] screenID = new int[32];
 	NSPoint[] screenCascade = new NSPoint[32];
@@ -162,11 +164,6 @@ public class Display extends Device {
 	static Callback dialogCallback3;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
 	static Callback fieldEditorCallback3, fieldEditorCallback4;
-	
-	/* Menus */
-//	Menu menuBar;
-//	static final int ID_TEMPORARY = 1000;
-//	static final int ID_START = 1001;
 	
 	/* Display Shutdown */
 	Runnable [] disposeList;
@@ -438,6 +435,20 @@ void addMenu (Menu menu) {
 	menus = newMenus;
 }
 
+void addPool () {
+	addPool ((NSAutoreleasePool)new NSAutoreleasePool().alloc().init());
+}
+
+void addPool (NSAutoreleasePool pool) {
+	if (pools == null) pools = new NSAutoreleasePool [4];
+	if (poolCount == pools.length) {
+		NSAutoreleasePool[] temp = new NSAutoreleasePool [poolCount + 4];
+		System.arraycopy (pools, 0, temp, 0, poolCount);
+		pools = temp;
+	}
+	pools [poolCount++] = pool;
+}
+
 void addPopup (Menu menu) {
 	if (popups == null) popups = new Menu [4];
 	int length = popups.length;
@@ -697,7 +708,7 @@ void createDisplay (DeviceData data) {
 	NSMutableDictionary dictionary = nsthread.threadDictionary();
 	NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
 	NSNumber id = new NSNumber(dictionary.objectForKey(key));
-	pool = new NSAutoreleasePool(id.integerValue());
+	addPool(new NSAutoreleasePool(id.integerValue()));
 
 	application = NSApplication.sharedApplication();
 
@@ -2898,14 +2909,11 @@ int /*long*/ observerProc (int /*long*/ observer, int /*long*/ activity, int /*l
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	if (loopCounter == 0) {
-		pool.release();
-		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-	}
-	loopCounter ++;
-	NSAutoreleasePool localPool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	if (sendEventCount == 0 && loopCount == poolCount - 1) removePool ();
+	addPool ();
+	loopCount++;
+	boolean events = false;
 	try {
-		boolean events = false;
 		events |= runTimers ();
 		events |= runContexts ();
 		events |= runPopups ();
@@ -2915,14 +2923,16 @@ public boolean readAndDispatch () {
 			application.sendEvent(event);
 		}
 		events |= runPaint ();
-		if (events || runDeferredEvents ()) {
-			return true;
+		events |= runDeferredEvents ();
+		if (!events) {
+			events = runAsyncMessages (false);
 		}
 	} finally {
-		localPool.release();
-		loopCounter --;
+		removePool ();
+		loopCount--;
+		if (sendEventCount == 0 && loopCount == poolCount) addPool ();
 	}
-	return runAsyncMessages (false);
+	return events;
 }
 
 static void register (Display display) {
@@ -3195,6 +3205,12 @@ void removeMenu (Menu menu) {
 	}
 }
 
+void removePool () {
+	NSAutoreleasePool pool = pools [poolCount - 1];
+	pools [--poolCount] = null;
+	pool.release ();
+}
+
 void removePopup (Menu menu) {
 	if (popups == null) return;
 	for (int i=0; i<popups.length; i++) {
@@ -3206,12 +3222,7 @@ void removePopup (Menu menu) {
 }
 
 boolean runAsyncMessages (boolean all) {
-	NSAutoreleasePool localPool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		return synchronizer.runAsyncMessages (all);
-	} finally {
-		localPool.release();
-	}
+	return synchronizer.runAsyncMessages (all);
 }
 
 boolean runContexts () {
@@ -3326,8 +3337,17 @@ void sendEvent (int eventType, Event event) {
 	event.display = this;
 	event.type = eventType;
 	if (event.time == 0) event.time = getLastEventTime ();
-	if (!filterEvent (event)) {
-		if (eventTable != null) eventTable.sendEvent (event);
+	sendEvent(eventTable, event);
+}
+
+void sendEvent (EventTable table, Event event) {
+	try {
+		sendEventCount++;
+		if (!filterEvent (event)) {
+			if (table != null) table.sendEvent (event);
+		}
+	} finally {
+		sendEventCount--;
 	}
 }
 
@@ -3671,17 +3691,13 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	if (loopCounter == 0) {
-		pool.release();
-		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-	}
-	NSAutoreleasePool localPool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	try {
+		addPool();
 		allowTimers = runAsyncMessages = false;
 		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
 		allowTimers = runAsyncMessages = true;
 	} finally {
-		localPool.release();
+		removePool();
 	}
 	return true;
 }
@@ -3718,12 +3734,7 @@ public void syncExec (Runnable runnable) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		synchronizer = this.synchronizer;
 	}
-	NSAutoreleasePool localPool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		synchronizer.syncExec (runnable);
-	} finally {
-		localPool.release();
-	}
+	synchronizer.syncExec (runnable);
 }
 
 /**

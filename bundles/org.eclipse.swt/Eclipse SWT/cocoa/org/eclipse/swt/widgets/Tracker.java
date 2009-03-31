@@ -791,7 +791,7 @@ public boolean open () {
 	display.trackingControl = null;
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	while (tracking && !cancelled) {
-		NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+		display.addPool();
 		try {
 			NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
 			if (event == null) continue;
@@ -838,7 +838,7 @@ public boolean open () {
 				display.lockCursor = true;
 			}
 		} finally {
-			pool.release();
+			display.removePool();
 		}
 	}
 	if (oldTrackingControl != null && !oldTrackingControl.isDisposed()) {

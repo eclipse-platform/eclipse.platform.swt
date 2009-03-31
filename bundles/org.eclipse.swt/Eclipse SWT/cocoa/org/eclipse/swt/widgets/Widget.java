@@ -1206,10 +1206,7 @@ void sendDoubleSelection() {
 }
 
 void sendEvent (Event event) {
-	Display display = event.display;
-	if (!display.filterEvent (event)) {
-		if (eventTable != null) eventTable.sendEvent (event);
-	}
+	display.sendEvent (eventTable, event);
 }
 
 void sendEvent (int eventType) {
