@@ -50,6 +50,7 @@ class Mozilla extends WebBrowser {
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
 	String lastNavigateURL;
+	byte[] htmlBytes;
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
@@ -1447,6 +1448,8 @@ public void create (Composite parent, int style) {
 }
 
 public boolean back () {
+	htmlBytes = null;
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1702,6 +1705,8 @@ static Browser findBrowser (nsIDOMWindow aDOMWindow) {
 }
 
 public boolean forward () {
+	htmlBytes = null;
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1914,6 +1919,7 @@ void onDispose (Display display) {
 	webBrowser = null;
 	webBrowserObject = null;
 	lastNavigateURL = null;
+	htmlBytes = null;
 
 	if (tip != null && !tip.isDisposed ()) tip.dispose ();
 	tip = null;
@@ -1983,6 +1989,8 @@ void onResize () {
 }
 
 public void refresh () {
+	htmlBytes = null;
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -2045,92 +2053,107 @@ public boolean setText (String html) {
 	 */
 	delegate.removeWindowSubclass ();
 
-	byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
-	int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
-	byte[] contentCharsetBuffer = MozillaDelegate.wcsToMbcs (null, "UTF-8", true);	//$NON-NLS-1$
-	int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new (contentCharsetBuffer, contentCharsetBuffer.length);
-
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	int rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+	if (rc == XPCOM.NS_OK && result[0] != 0) {
+		/*
+		* Setting mozilla's content through nsIWebBrowserStream does not cause a page
+		* load to occur, so the events that usually accompany a page change are not
+		* fired.  To make this behave as expected, navigate to about:blank first and
+		* then set the html content once the page has loaded.
+		*/
+		new nsISupports (result[0]).Release ();
+		result[0] = 0;
 
-	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-	result[0] = 0;
-	rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	serviceManager.Release ();
+		/*
+		* If htmlBytes is not null then the about:blank page is already being loaded,
+		* so no Navigate is required.  Just set the html that is to be shown.
+		*/
+		boolean blankLoading = htmlBytes != null;
+		htmlBytes = data;
+		if (blankLoading) return true;
 
-	nsIIOService ioService = new nsIIOService (result[0]);
-	result[0] = 0;
-	/*
-	* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
-	* when the URI protocol for the nsInputStreamChannel
-	* is about:blank.  The fix is to specify the file protocol.
-	*/
-	byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
-	int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
-	rc = ioService.NewURI (aSpec, null, 0, result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	XPCOM.nsEmbedCString_delete (aSpec);
-	ioService.Release ();
-
-	nsIURI uri = new nsIURI (result[0]);
-	result[0] = 0;
-
-	rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-	nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
-	result[0] = 0;
-
-	/*
-	* Feature in Mozilla. LoadStream invokes the nsIInputStream argument
-	* through a different thread.  The callback mechanism must attach 
-	* a non java thread to the JVM otherwise the nsIInputStream Read and
-	* Close methods never get called.
-	*/
-	InputStream inputStream = new InputStream (data);
-	inputStream.AddRef ();
-
-	rc = interfaceRequestor.GetInterface (nsIDocShell_1_9.NS_IDOCSHELL_IID, result);
-	if (rc == XPCOM.NS_OK) {
+		/* navigate to about:blank */
+		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-		nsIDocShell_1_9 docShell = new nsIDocShell_1_9 (result[0]);
+		nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
+		result[0] = 0;
+	    char[] uri = new char[ABOUT_BLANK.length () + 1];
+	    ABOUT_BLANK.getChars (0, ABOUT_BLANK.length (), uri, 0);
+		rc = webNavigation.LoadURI (uri, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
+		if (rc != XPCOM.NS_OK) error (rc);
+		webNavigation.Release ();
+	} else {
+		byte[] contentCharsetBuffer = MozillaDelegate.wcsToMbcs (null, "UTF-8", true);	//$NON-NLS-1$
+		int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new (contentCharsetBuffer, contentCharsetBuffer.length);
+		byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
+		int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
+
+		rc = XPCOM.NS_GetServiceManager (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+		result[0] = 0;
+		rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		serviceManager.Release ();
+
+		nsIIOService ioService = new nsIIOService (result[0]);
+		result[0] = 0;
+		/*
+		* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
+		* when the URI protocol for the nsInputStreamChannel
+		* is about:blank.  The fix is to specify the file protocol.
+		*/
+		byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
+		int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
+		rc = ioService.NewURI (aSpec, null, 0, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		XPCOM.nsEmbedCString_delete (aSpec);
+		ioService.Release ();
+
+		nsIURI uri = new nsIURI (result[0]);
+		result[0] = 0;
+
+		rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
+		result[0] = 0;
+
+		/*
+		* Feature in Mozilla. LoadStream invokes the nsIInputStream argument
+		* through a different thread.  The callback mechanism must attach 
+		* a non java thread to the JVM otherwise the nsIInputStream Read and
+		* Close methods never get called.
+		*/
+		InputStream inputStream = new InputStream (data);
+		inputStream.AddRef ();
+
+		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		nsIDocShell docShell = new nsIDocShell (result[0]);
+		result[0] = 0;
 		rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
 		docShell.Release ();
-	} else {
-		result[0] = 0;
-		rc = interfaceRequestor.GetInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
-		if (rc == XPCOM.NS_OK) {	
-			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-			nsIDocShell_1_8 docShell = new nsIDocShell_1_8 (result[0]);
-			rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
-			docShell.Release ();
-		} else {
-			result[0] = 0;
-			rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
-			if (rc != XPCOM.NS_OK) error (rc);
-			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-			nsIDocShell docShell = new nsIDocShell (result[0]);
-			rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
-			docShell.Release ();
-		}
-	}
-	if (rc != XPCOM.NS_OK) error (rc);
-	result[0] = 0;
 
-	inputStream.Release ();
-	interfaceRequestor.Release ();
-	uri.Release ();
-	XPCOM.nsEmbedCString_delete (aContentCharset);
-	XPCOM.nsEmbedCString_delete (aContentType);
+		inputStream.Release ();
+		interfaceRequestor.Release ();
+		uri.Release ();
+		XPCOM.nsEmbedCString_delete (aContentType);
+		XPCOM.nsEmbedCString_delete (aContentCharset);
+	}
 	return true;
 }
 
 public boolean setUrl (String url) {
+	htmlBytes = null;
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -2152,6 +2175,8 @@ public boolean setUrl (String url) {
 }
 
 public void stop () {
+	htmlBytes = null;
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -2468,6 +2493,109 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			*/
 			unhookedDOMWindows.remove (ptrObject);
 			new nsISupports (ptrObject.value).Release ();
+		}
+
+		/*
+		 * If htmlBytes is not null then there is html from a previous setText() call
+		 * waiting to be set into the about:blank page once it has completed loading. 
+		 */
+		if (htmlBytes != null) {
+			nsIRequest req = new nsIRequest (aRequest);
+			int /*long*/ name = XPCOM.nsEmbedCString_new ();
+			rc = req.GetName (name);
+			if (rc != XPCOM.NS_OK) error (rc);
+			int length = XPCOM.nsEmbedCString_Length (name);
+			int /*long*/ buffer = XPCOM.nsEmbedCString_get (name);
+			byte[] dest = new byte[length];
+			XPCOM.memmove (dest, buffer, length);
+			String url = new String (dest);
+			XPCOM.nsEmbedCString_delete (name);
+
+			if (url.startsWith (ABOUT_BLANK)) {
+				/*
+				 * Setting mozilla's content with nsIWebBrowserStream invalidates the 
+				 * DOM listeners that were hooked on it (about:blank), so remove them and
+				 * add new ones after the content has been set.
+				 */
+				unhookDOMListeners ();
+
+				rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;
+				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				serviceManager.Release ();
+
+				nsIIOService ioService = new nsIIOService (result[0]);
+				result[0] = 0;
+				/*
+				* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
+				* when the URI protocol for the nsInputStreamChannel
+				* is about:blank.  The fix is to specify the file protocol.
+				*/
+				byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
+				int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
+				rc = ioService.NewURI (aSpec, null, 0, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				XPCOM.nsEmbedCString_delete (aSpec);
+				ioService.Release ();
+
+				nsIURI uri = new nsIURI (result[0]);
+				result[0] = 0;
+
+				rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIWebBrowserStream stream = new nsIWebBrowserStream (result[0]);
+				result[0] = 0;
+
+				byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
+				int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
+
+				rc = stream.OpenStream (uri.getAddress (), aContentType);
+				if (rc != XPCOM.NS_OK) error (rc);
+				int /*long*/ ptr = C.malloc (htmlBytes.length);
+				XPCOM.memmove (ptr, htmlBytes, htmlBytes.length);
+				int pageSize = 8192;
+				int pageCount = htmlBytes.length / pageSize + 1;
+				int /*long*/ current = ptr;
+				for (int i = 0; i < pageCount; i++) {
+					length = i == pageCount - 1 ? htmlBytes.length % pageSize : pageSize;
+					if (length > 0) {
+						rc = stream.AppendToStream (current, length);
+						if (rc != XPCOM.NS_OK) error (rc);
+					}
+					current += pageSize;
+				}
+				rc = stream.CloseStream ();
+				if (rc != XPCOM.NS_OK) error (rc);
+				C.free (ptr);
+				XPCOM.nsEmbedCString_delete (aContentType);
+				stream.Release ();
+				uri.Release ();
+				htmlBytes = null;
+
+				rc = webBrowser.GetContentDOMWindow (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+				boolean isTop = result[0] == domWindow.getAddress ();
+				new nsISupports (result[0]).Release ();
+				result[0] = 0;
+
+				rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+				nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+				result[0] = 0;
+				hookDOMListeners (target, isTop);
+				target.Release ();
+			}
 		}
 		domWindow.Release ();
 
