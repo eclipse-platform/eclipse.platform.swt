@@ -3067,7 +3067,13 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 		int /*long*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
 		int /*long*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
 		int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
-		if (OS.ScriptStringAnalyse(metaFileDc, chars, chars.length, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
+		/*
+		* Bug in Uniscribe. In some version of Uniscribe, ScriptStringAnalyse crashes
+		* when the character array is too long. The fix is to limit the size of character
+		* array to two. Note, limiting the array to only one character would cause surrogate 
+		* pairs to stop working.
+		*/
+		if (OS.ScriptStringAnalyse(metaFileDc, chars, Math.min(chars.length, 2), 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
 			OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
 			OS.ScriptStringFree(ssa);
 		}
