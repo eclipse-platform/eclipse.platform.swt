@@ -85,6 +85,8 @@ public class Tree extends Composite {
 	int sortDirection;
 	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending;
 	Rectangle imageBounds;
+	TreeItem insertItem;
+	boolean insertBefore;
 
 	static int NEXT_ID;
 
@@ -1023,6 +1025,22 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 		color.setFill ();
 		NSBezierPath.fillRect (cellRect);
+		context.restoreGraphicsState ();
+	}
+	
+	if (insertItem != null && !insertItem.isDisposed()) {
+		context.saveGraphicsState ();
+		NSRect contentRect = cell.titleRectForBounds (rect);
+		GCData data = new GCData ();
+		data.paintRect = contentRect;
+		GC gc = GC.cocoa_new (this, data);
+		gc.setClipping ((int)(contentRect.x - offsetX), (int)(contentRect.y - offsetY), (int)contentRect.width, (int)contentRect.height);
+		Rectangle itemRect = insertItem.getImageBounds(0).union(insertItem.getBounds());
+		Rectangle clientRect = getClientArea();
+		int x = clientRect.x + clientRect.width;
+		int posY = insertBefore ? itemRect.y : itemRect.y + itemRect.height - 1;
+		gc.drawLine(itemRect.x, posY, x, posY);
+		gc.dispose ();
 		context.restoreGraphicsState ();
 	}
 
@@ -2188,9 +2206,12 @@ void setImage (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
  */
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
-	if (item != null) {
-		if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	TreeItem oldMark = insertItem;
+	insertItem = item;
+	insertBefore = before;
+	if (oldMark != null && !oldMark.isDisposed()) oldMark.redraw (-1);
+	if (item != null) item.redraw (-1);
 }
 
 /**
