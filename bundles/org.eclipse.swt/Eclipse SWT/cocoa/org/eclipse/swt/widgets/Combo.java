@@ -57,7 +57,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Combo extends Composite {
 	int textLimit = LIMIT;
 	boolean receivingFocus;
-	boolean ignoreVerify;
+	boolean ignoreVerify, ignoreSelection;
 	NSRange selectionRange;
 
 	/**
@@ -1197,6 +1197,7 @@ public void removeVerifyListener (VerifyListener listener) {
 public void select (int index) {
 	checkWidget ();
 	int count = getItemCount ();
+	ignoreSelection = true;
 	if (0 <= index && index < count) {
 		if ((style & SWT.READ_ONLY) != 0) {
 			((NSPopUpButton)view).selectItemAtIndex(index);
@@ -1204,12 +1205,13 @@ public void select (int index) {
 		} else {
 			((NSComboBox)view).selectItemAtIndex(index);
 		}
-	}	
+	}
+	ignoreSelection = false;
 }
 
 void sendSelection () {
 	postEvent(SWT.Modify);
-	postEvent(SWT.Selection);
+	if (!ignoreSelection) postEvent(SWT.Selection);
 }
 
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
