@@ -133,6 +133,8 @@ void createHandle () {
 	NSSlider widget = (NSSlider)new SWTSlider().alloc();
 	widget.init();
 	widget.setMaxValue(100);
+	widget.setTarget(widget);
+	widget.setAction(OS.sel_sendSelection);
 	view = widget;
 }
 
@@ -222,12 +224,6 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget();
-//	int value = OS.GetControl32BitValue (handle);
-//	if ((style & SWT.VERTICAL) != 0) {
-//		int minimum = OS.GetControl32BitMinimum (handle);
-//		int maximum = OS.GetControl32BitMaximum (handle);
-//		value = maximum - value + minimum;
-//	}
     return (int)((NSSlider)view).doubleValue();
 }
 
@@ -259,6 +255,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
+}
+
+void sendSelection () {
+	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
+	
+	if (currEvent.type() != OS.NSLeftMouseUp)
+		postEvent (SWT.Selection);
 }
 
 /**
