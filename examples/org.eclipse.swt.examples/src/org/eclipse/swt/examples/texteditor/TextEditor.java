@@ -153,9 +153,9 @@ public class TextEditor {
 	void adjustFontSize (int increment) {
 		int newIndex = fontSizeControl.getSelectionIndex() + increment;
 		if (0 <= newIndex && newIndex < fontSizeControl.getItemCount()) {
-			disposeResource(textFont);
 			String name = fontNameControl.getText();
 			int size = Integer.parseInt(fontSizeControl.getItem(newIndex));
+			disposeResource(textFont);
 			textFont = new Font(display, name, size, SWT.NORMAL);
 			setStyle(FONT);
 			updateToolBar();
@@ -1353,6 +1353,8 @@ public class TextEditor {
 		iBulletList = null;
 		iNumberedList.dispose();
 		iNumberedList = null;
+		iLink.dispose();
+		iLink = null;
 		
 		if (textFont != null) textFont.dispose();
 		textFont = null;
