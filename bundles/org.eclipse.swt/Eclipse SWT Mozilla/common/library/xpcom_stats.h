@@ -25,7 +25,21 @@ extern char* XPCOM_nativeFunctionNames[];
 #endif
 
 typedef enum {
-	_1Call_FUNC,
+#ifndef JNI64
+	_1Call__I_FUNC,
+#else
+	_1Call__J_FUNC,
+#endif
+#ifndef JNI64
+	_1Call__IIIIII_FUNC,
+#else
+	_1Call__JJJJJI_FUNC,
+#endif
+#ifndef JNI64
+	_1Call__III_3BII_3I_FUNC,
+#else
+	_1Call__JJJ_3BII_3I_FUNC,
+#endif
 	_1NS_1GetComponentManager_FUNC,
 	_1NS_1GetServiceManager_FUNC,
 	_1NS_1InitXPCOM2_FUNC,
@@ -830,6 +844,7 @@ typedef enum {
 #else
 	_1VtblCall__IJ_3SJ_3I_3J_FUNC,
 #endif
+	_1XPCOMGlueLoadXULFunctions_FUNC,
 	_1XPCOMGlueShutdown_FUNC,
 	_1XPCOMGlueStartup_FUNC,
 	_1nsEmbedCString_1Length_FUNC,
@@ -853,6 +868,11 @@ typedef enum {
 	_1nsIMemory_1Alloc_FUNC,
 	_1nsIMemory_1Realloc_FUNC,
 #ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
@@ -862,5 +882,6 @@ typedef enum {
 #else
 	memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2JI_FUNC,
 #endif
+	nsDynamicFunctionLoad_1sizeof_FUNC,
 	strlen_1PRUnichar_FUNC,
 } XPCOM_FUNCS;

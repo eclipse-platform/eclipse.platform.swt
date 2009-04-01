@@ -560,16 +560,38 @@ public void create (Composite parent, int style) {
 			}
 
 			nsIFile localFile = new nsILocalFile (retVal[0]);
-			rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), LocationProvider.getAddress ());
+			if (IsXULRunner) {
+				int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
+				/* alloc memory for two structs, the second is empty to signify the end of the list */
+				int /*long*/ ptr = C.malloc (size * 2);
+				C.memset (ptr, 0, size * 2);
+				nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
+				byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_InitEmbedding", true); //$NON-NLS-1$
+				functionLoad.functionName = C.malloc (bytes.length);
+				C.memmove (functionLoad.functionName, bytes, bytes.length);
+				functionLoad.function = C.malloc (C.PTR_SIZEOF);
+				C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
+				XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
+				XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+				C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
+				int /*long*/ functionPtr = result[0];
+				result[0] = 0;
+				C.free (functionLoad.function);
+				C.free (functionLoad.functionName);
+				C.free (ptr);
+				rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
+				if (rc == XPCOM.NS_OK) {
+					System.setProperty (XULRUNNER_PATH, mozillaPath);
+				}
+			} else {
+				rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), LocationProvider.getAddress ());
+			}
 			localFile.Release ();
 			if (rc != XPCOM.NS_OK) {
 				browser.dispose ();
 				SWT.error (SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 			System.setProperty (GRE_INITIALIZED, "true"); //$NON-NLS-1$
-			if (IsXULRunner) {
-				System.setProperty (XULRUNNER_PATH, mozillaPath);
-			}
 		}
 
 		/* If JavaXPCOM is detected then attempt to initialize it with the XULRunner being used */
@@ -1196,6 +1218,27 @@ public void create (Composite parent, int style) {
 							XPCOM.XPCOMGlueShutdown ();
 						}
 					});
+
+					int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
+					/* alloc memory for two structs, the second is empty to signify the end of the list */
+					int /*long*/ ptr = C.malloc (size * 2);
+					C.memset (ptr, 0, size * 2);
+					nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
+					byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_TermEmbedding", true); //$NON-NLS-1$
+					functionLoad.functionName = C.malloc (bytes.length);
+					C.memmove (functionLoad.functionName, bytes, bytes.length);
+					functionLoad.function = C.malloc (C.PTR_SIZEOF);
+					C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
+					XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
+					XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+					C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
+					int /*long*/ functionPtr = result[0];
+					result[0] = 0;
+					C.free (functionLoad.function);
+					C.free (functionLoad.functionName);
+					C.free (ptr);
+					XPCOM.Call (functionPtr);
+
 					XPCOMWasGlued = false;
 				}
 				if (XPCOMInitWasGlued) {

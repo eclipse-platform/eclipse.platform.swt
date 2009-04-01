@@ -24,8 +24,14 @@
 
 #ifdef _WIN32
 #define STDMETHODCALLTYPE __stdcall
+#define NO__1NS_1InitXPCOM2
 #else
 #define STDMETHODCALLTYPE
-#endif
+#ifdef _OSX
+#define NO__1NS_1InitXPCOM2
+#endif /* _OSX */
+#endif /* _WIN32 */
+
+#define SWT_XREInitEmbedding nsresult (*)(nsILocalFile *,nsILocalFile *,nsIDirectoryServiceProvider *,nsStaticModuleInfo const *,PRUint32)
 
 #endif /* INC_xpcom_H */

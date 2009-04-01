@@ -14,10 +14,24 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 186;
-int XPCOM_nativeFunctionCallCount[186];
+int XPCOM_nativeFunctionCount = 191;
+int XPCOM_nativeFunctionCallCount[191];
 char * XPCOM_nativeFunctionNames[] = {
-	"_1Call",
+#ifndef JNI64
+	"_1Call__I",
+#else
+	"_1Call__J",
+#endif
+#ifndef JNI64
+	"_1Call__IIIIII",
+#else
+	"_1Call__JJJJJI",
+#endif
+#ifndef JNI64
+	"_1Call__III_3BII_3I",
+#else
+	"_1Call__JJJ_3BII_3I",
+#endif
 	"_1NS_1GetComponentManager",
 	"_1NS_1GetServiceManager",
 	"_1NS_1InitXPCOM2",
@@ -822,6 +836,7 @@ char * XPCOM_nativeFunctionNames[] = {
 #else
 	"_1VtblCall__IJ_3SJ_3I_3J",
 #endif
+	"_1XPCOMGlueLoadXULFunctions",
 	"_1XPCOMGlueShutdown",
 	"_1XPCOMGlueStartup",
 	"_1nsEmbedCString_1Length",
@@ -845,6 +860,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1nsIMemory_1Alloc",
 	"_1nsIMemory_1Realloc",
 #ifndef JNI64
+	"memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I",
+#else
+	"memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_mozilla_nsID_2I",
@@ -854,6 +874,7 @@ char * XPCOM_nativeFunctionNames[] = {
 #else
 	"memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2JI",
 #endif
+	"nsDynamicFunctionLoad_1sizeof",
 	"strlen_1PRUnichar",
 };
 

@@ -11,6 +11,18 @@
 
 #include "xpcom.h"
 
+#ifndef NO_nsDynamicFunctionLoad
+void cachensDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject);
+nsDynamicFunctionLoad *getnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct);
+void setnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct);
+#define nsDynamicFunctionLoad_sizeof() sizeof(nsDynamicFunctionLoad)
+#else
+#define cachensDynamicFunctionLoadFields(a,b)
+#define getnsDynamicFunctionLoadFields(a,b,c) NULL
+#define setnsDynamicFunctionLoadFields(a,b,c)
+#define nsDynamicFunctionLoad_sizeof() 0
+#endif
+
 #ifndef NO_nsID
 void cachensIDFields(JNIEnv *env, jobject lpObject);
 nsID *getnsIDFields(JNIEnv *env, jobject lpObject, nsID *lpStruct);

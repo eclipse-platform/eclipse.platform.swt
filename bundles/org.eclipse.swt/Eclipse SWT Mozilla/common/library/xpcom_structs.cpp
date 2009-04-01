@@ -12,6 +12,40 @@
 #include "swt.h"
 #include "xpcom_structs.h"
 
+#ifndef NO_nsDynamicFunctionLoad
+typedef struct nsDynamicFunctionLoad_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID functionName, function;
+} nsDynamicFunctionLoad_FID_CACHE;
+
+nsDynamicFunctionLoad_FID_CACHE nsDynamicFunctionLoadFc;
+
+void cachensDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject)
+{
+	if (nsDynamicFunctionLoadFc.cached) return;
+	nsDynamicFunctionLoadFc.clazz = env->GetObjectClass(lpObject);
+	nsDynamicFunctionLoadFc.functionName = env->GetFieldID(nsDynamicFunctionLoadFc.clazz, "functionName", I_J);
+	nsDynamicFunctionLoadFc.function = env->GetFieldID(nsDynamicFunctionLoadFc.clazz, "function", I_J);
+	nsDynamicFunctionLoadFc.cached = 1;
+}
+
+nsDynamicFunctionLoad *getnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct)
+{
+	if (!nsDynamicFunctionLoadFc.cached) cachensDynamicFunctionLoadFields(env, lpObject);
+	lpStruct->functionName = (const char *)env->GetIntLongField(lpObject, nsDynamicFunctionLoadFc.functionName);
+	lpStruct->function = (NSFuncPtr  *)env->GetIntLongField(lpObject, nsDynamicFunctionLoadFc.function);
+	return lpStruct;
+}
+
+void setnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct)
+{
+	if (!nsDynamicFunctionLoadFc.cached) cachensDynamicFunctionLoadFields(env, lpObject);
+	env->SetIntLongField(lpObject, nsDynamicFunctionLoadFc.functionName, (jintLong)lpStruct->functionName);
+	env->SetIntLongField(lpObject, nsDynamicFunctionLoadFc.function, (jintLong)lpStruct->function);
+}
+#endif
+
 #ifndef NO_nsID
 typedef struct nsID_FID_CACHE {
 	int cached;

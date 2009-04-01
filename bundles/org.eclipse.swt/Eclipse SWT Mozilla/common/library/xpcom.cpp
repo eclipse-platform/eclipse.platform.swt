@@ -15,22 +15,84 @@
 
 #define XPCOM_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_XPCOM_##func
 
-#ifndef NO__1Call
-extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1Call)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6);
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1Call)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6)
+#if (!defined(NO__1Call__I) && !defined(JNI64)) || (!defined(NO__1Call__J) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__I)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__I)(JNIEnv *env, jclass that, jintLong arg0)
+#else
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__J)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__J)(JNIEnv *env, jclass that, jintLong arg0)
+#endif
+{
+	jint rc = 0;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1Call__I_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1Call__J_FUNC);
+#endif
+	rc = (jint)((jint (*)())arg0)();
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1Call__I_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1Call__J_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1Call__IIIIII) && !defined(JNI64)) || (!defined(NO__1Call__JJJJJI) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5)
+#else
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__JJJJJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__JJJJJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5)
+#endif
+{
+	jint rc = 0;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1Call__IIIIII_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1Call__JJJJJI_FUNC);
+#endif
+	rc = (jint)((SWT_XREInitEmbedding)arg0)((nsILocalFile *)arg1, (nsILocalFile *)arg2, (nsIDirectoryServiceProvider *)arg3, (nsStaticModuleInfo const *)arg4, arg5);
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1Call__IIIIII_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1Call__JJJJJI_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1Call__III_3BII_3I) && !defined(JNI64)) || (!defined(NO__1Call__JJJ_3BII_3I) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1Call__III_3BII_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1Call__III_3BII_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6)
+#else
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1Call__JJJ_3BII_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1Call__JJJ_3BII_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6)
+#endif
 {
 	jbyte *lparg3=NULL;
 	jint *lparg6=NULL;
 	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1Call_FUNC);
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1Call__III_3BII_3I_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1Call__JJJ_3BII_3I_FUNC);
+#endif
 	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
 	rc = (jintLong)((nsWriteSegmentFun)arg0)((nsIInputStream *)arg1, (void *)arg2, (const char *)lparg3, arg4, arg5, (PRUint32 *)lparg6);
 fail:
 	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, _1Call_FUNC);
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1Call__III_3BII_3I_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1Call__JJJ_3BII_3I_FUNC);
+#endif
 	return rc;
 }
 #endif
@@ -5199,6 +5261,19 @@ fail:
 }
 #endif
 
+#ifndef NO__1XPCOMGlueLoadXULFunctions
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1XPCOMGlueLoadXULFunctions)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1XPCOMGlueLoadXULFunctions)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1XPCOMGlueLoadXULFunctions_FUNC);
+	rc = (jint)XPCOMGlueLoadXULFunctions((const nsDynamicFunctionLoad *)arg0);
+	XPCOM_NATIVE_EXIT(env, that, _1XPCOMGlueLoadXULFunctions_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XPCOMGlueShutdown
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1XPCOMGlueShutdown)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(_1XPCOMGlueShutdown)
@@ -5451,6 +5526,32 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Realloc)
 }
 #endif
 
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2);
+JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#else
+extern "C" JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2);
+JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#endif
+{
+	nsDynamicFunctionLoad _arg1, *lparg1=NULL;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getnsDynamicFunctionLoadFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+fail:
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_mozilla_nsID_2I) && defined(JNI64))
 #ifndef JNI64
 extern "C" JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2);
@@ -5502,6 +5603,19 @@ fail:
 #else
 	XPCOM_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2JI_FUNC);
 #endif
+}
+#endif
+
+#ifndef NO_nsDynamicFunctionLoad_1sizeof
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(nsDynamicFunctionLoad_1sizeof)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsDynamicFunctionLoad_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, nsDynamicFunctionLoad_1sizeof_FUNC);
+	rc = (jint)nsDynamicFunctionLoad_sizeof();
+	XPCOM_NATIVE_EXIT(env, that, nsDynamicFunctionLoad_1sizeof_FUNC);
+	return rc;
 }
 #endif
 

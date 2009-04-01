@@ -129,6 +129,14 @@ public class XPCOM extends C {
 	public static final int NS_ERROR_FILE_NOT_FOUND = 0x80520012;
 	public static final int NS_ERROR_FILE_UNRECOGNIZED_PATH = 0x80520001;
 
+public static final native int nsDynamicFunctionLoad_sizeof ();
+
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out critical
+ * @param size cast=(size_t)
+ */
+public static final native void memmove (int /*long*/ dest, nsDynamicFunctionLoad src, int /*long*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *)
@@ -394,6 +402,16 @@ public static final int /*long*/ nsIMemory_Realloc(int /*long*/ ptr1, int /*long
 		lock.unlock();
 	}
 }
+/** @param functionLoad cast=(const nsDynamicFunctionLoad *) */
+public static final native int _XPCOMGlueLoadXULFunctions (int /*long*/ functionLoad);
+public static final int XPCOMGlueLoadXULFunctions (int /*long*/ functionLoad) {
+	lock.lock();
+	try {
+		return _XPCOMGlueLoadXULFunctions(functionLoad);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param place cast=(const char *) */
 public static final native int _XPCOMGlueStartup(byte[] place);
 public static final int XPCOMGlueStartup(byte[] place) {
@@ -414,6 +432,16 @@ public static final int XPCOMGlueShutdown() {
 	}
 }
 
+public static final native int _Call(int /*long*/ ptr);
+public static final int Call(int /*long*/ ptr) {
+	lock.lock();
+	try {
+		return _Call(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /**
  * @param ptr cast=(nsWriteSegmentFun)
  * @param aInStream cast=(nsIInputStream *)
@@ -426,6 +454,23 @@ public static final int /*long*/ Call(int /*long*/ ptr, int /*long*/ aInStream, 
 	lock.lock();
 	try {
 		return _Call(ptr, aInStream, aClosure, aFromSegment, aToOffset, aCount, aWriteCount);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param ptr cast=(SWT_XREInitEmbedding)
+ * @param aLibXULDirectory cast=(nsILocalFile *)
+ * @param aAppDirectory cast=(nsILocalFile *)
+ * @param aAppDirProvider cast=(nsIDirectoryServiceProvider *)
+ * @param aStaticComponents cast=(nsStaticModuleInfo const *)
+ */
+public static final native int _Call(int /*long*/ ptr, int /*long*/ aLibXULDirectory, int /*long*/ aAppDirectory, int /*long*/ aAppDirProvider, int /*long*/ aStaticComponents, int aStaticComponentsCount);
+public static final int Call(int /*long*/ ptr, int /*long*/ aLibXULDirectory, int /*long*/ aAppDirectory, int /*long*/ aAppDirProvider, int /*long*/ aStaticComponents, int aStaticComponentsCount) {
+	lock.lock();
+	try {
+		return _Call(ptr, aLibXULDirectory, aAppDirectory, aAppDirProvider, aStaticComponents, aStaticComponentsCount);
 	} finally {
 		lock.unlock();
 	}

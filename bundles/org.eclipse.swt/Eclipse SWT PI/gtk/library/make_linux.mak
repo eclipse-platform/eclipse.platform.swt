@@ -78,8 +78,15 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
 MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
-MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown -DNO__1XPCOMGlueStartup
-	
+MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
+	-DNO__1XPCOMGlueStartup \
+	-DNO__1XPCOMGlueLoadXULFunctions \
+	-DNO_memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I \
+	-DNO_nsDynamicFunctionLoad_1sizeof \
+	-DNO__1Call__IIIIII \
+	-DNO_nsDynamicFunctionLoad
+XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
+
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
@@ -213,13 +220,13 @@ xpcom.o: xpcom.cpp
 	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom.cpp
 
 xpcom_structs.o: xpcom_structs.cpp
-	$(CXX) $(MOZILLACFLAGS) ${MOZILLA_INCLUDES} -c xpcom_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_structs.cpp
 	
 xpcom_custom.o: xpcom_custom.cpp
-	$(CXX) $(MOZILLACFLAGS) ${MOZILLA_INCLUDES} -c xpcom_custom.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_custom.cpp
 
 xpcom_stats.o: xpcom_stats.cpp
-	$(CXX) $(MOZILLACFLAGS) ${MOZILLA_INCLUDES} -c xpcom_stats.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_stats.cpp
 
 #
 # XULRunner lib
@@ -230,16 +237,16 @@ $(XULRUNNER_LIB): $(XULRUNNER_OBJECTS)
 	$(CXX) -o $(XULRUNNER_LIB) $(XULRUNNER_OBJECTS) $(MOZILLALIBS) ${XULRUNNER_LIBS}
 
 xpcomxul.o: xpcom.cpp
-	$(CXX) -o xpcomxul.o $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcom.cpp
+	$(CXX) -o xpcomxul.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom.cpp
 
 xpcomxul_structs.o: xpcom_structs.cpp
-	$(CXX) -o xpcomxul_structs.o $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
+	$(CXX) -o xpcomxul_structs.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
 	
 xpcomxul_custom.o: xpcom_custom.cpp
-	$(CXX) -o xpcomxul_custom.o $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
+	$(CXX) -o xpcomxul_custom.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
 
 xpcomxul_stats.o: xpcom_stats.cpp
-	$(CXX) -o xpcomxul_stats.o $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
+	$(CXX) -o xpcomxul_stats.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
 
 #
 # XPCOMInit lib
