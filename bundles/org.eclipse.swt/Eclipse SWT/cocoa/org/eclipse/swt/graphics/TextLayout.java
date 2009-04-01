@@ -403,6 +403,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					OS.memmove(rect, pArray, NSRect.sizeof);
 					rect.x += pt.x;
 					rect.y += pt.y;
+					rect.height = Math.max(rect.height, ascent + descent);
 					path.appendBezierPathWithRect(rect);
 				}
 			}
@@ -412,7 +413,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				rect.x = pt.x + bounds.x + bounds.width;
 				rect.y = y + bounds.y;
 				rect.width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : bounds.height / 3;
-				rect.height = bounds.height;
+				rect.height = Math.max(bounds.height, ascent + descent);
 				path.appendBezierPathWithRect(rect);
 			}
 			selectionColor.setFill();
@@ -910,7 +911,8 @@ public Rectangle getLineBounds(int lineIndex) {
 		computeRuns();
 		if (!(0 <= lineIndex && lineIndex < lineBounds.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 		NSRect rect = lineBounds[lineIndex];
-		return new Rectangle((int)rect.x, (int)rect.y, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height));
+		int height =  Math.max((int)Math.ceil(rect.height), ascent + descent);
+		return new Rectangle((int)rect.x, (int)rect.y, (int)Math.ceil(rect.width), height);
 	} finally {
 		if (pool != null) pool.release();
 	}
