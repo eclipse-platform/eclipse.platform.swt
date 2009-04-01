@@ -729,7 +729,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 }
 
 public void test_setImageIndentI() {
-	if (SwtJunit.isCarbon || SwtJunit.isGTK) {
+	if (SwtJunit.isCarbon || SwtJunit.isCocoa || SwtJunit.isGTK) {
 		//setImageIndent not implemented on Carbon
 		tableItem.setImageIndent(1);
 		return; 

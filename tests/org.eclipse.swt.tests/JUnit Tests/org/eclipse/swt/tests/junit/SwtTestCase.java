@@ -244,15 +244,6 @@ protected void setUp() {
 }
 
 protected void tearDown() {
-	try {
-		super.tearDown();
-		Display display = Display.getCurrent();
-		if (display != null) display.readAndDispatch();
-	} catch (Exception e) {
-		SWTError error = new SWTError();
-		error.throwable = e;
-		throw error;
-	}
 }
 
 protected void warnUnimpl(String message) {
