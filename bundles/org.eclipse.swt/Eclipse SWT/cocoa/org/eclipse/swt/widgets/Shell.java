@@ -1278,45 +1278,14 @@ public void setEnabled (boolean enabled) {
 public void setFullScreen (boolean fullScreen) {
 	checkWidget ();
 	this.fullScreen = fullScreen; 
+//reparents into a new shell.
 //	if (fullScreen) {
-//		normalBounds = getBounds ();
-//		OS.ChangeWindowAttributes (shellHandle, OS.kWindowNoTitleBarAttribute, OS.kWindowResizableAttribute | OS.kWindowLiveResizeAttribute);
-//		updateSystemUIMode ();
-//		Rectangle screen = getMonitor ().getBounds ();
-//		if (menuBar != null && getMonitor ().equals(display.getPrimaryMonitor ())) {
-//			Rect rect = new Rect ();
-//			int gdevice = OS.GetMainDevice ();
-//			OS.GetAvailableWindowPositioningBounds (gdevice, rect);
-//			screen.height -= rect.top;
-//			screen.y += rect.top;
-//		}
-//		Rect rect = new Rect ();
-//		OS.SetRect (rect, (short) screen.x, (short) screen.y, (short) (screen.x + screen.width), (short) (screen.y + screen.height));
-//		OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+//		NSScreen screen = window.screen();
+//		contentView().enterFullScreenMode(screen, null);
+//		System.out.println(contentView().window()+ " " + window);
 //	} else {
-//		int attributes = 0;
-//		if ((style & SWT.RESIZE) != 0) {
-//			attributes |= OS.kWindowResizableAttribute;
-//			/*
-//			* Bug in the Macintosh.  For some reason, a window has no title bar
-//			* and the kWindowResizableAttribute, no rubber banding feedback is
-//			* given while the window is resizing.  The fix is to create the window 
-//			* with kWindowLiveResizeAttribute in this case.  This is inconsistent
-//			* with other windows, but the user will get feedback when resizing.
-//			*/
-//			if ((style & SWT.TITLE) == 0) attributes |= OS.kWindowLiveResizeAttribute;
-//			if (!OS.__BIG_ENDIAN__()) attributes |= OS.kWindowLiveResizeAttribute;
-//		}
-//		OS.ChangeWindowAttributes (shellHandle, attributes, OS.kWindowNoTitleBarAttribute);
-//		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
-//		if (maximized) {
-//			setMaximized (true);
-//		} else {
-//			Rect rect = new Rect ();
-//			if (normalBounds != null) OS.SetRect (rect, (short) normalBounds.x, (short) normalBounds.y, (short) (normalBounds.x + normalBounds.width), (short) (normalBounds.y + normalBounds.height));
-//			OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-//		}
-//		normalBounds = null;
+//		contentView().exitFullScreenModeWithOptions(null);
+//		System.out.println("out: "+contentView().window()+ " " + window);
 //	}
 }
 
