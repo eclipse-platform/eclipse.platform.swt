@@ -2786,6 +2786,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1object_1new)
 }
 #endif
 
+#ifndef NO__1g_1object_1notify
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1notify)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1g_1object_1notify_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	g_object_notify((GObject *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1object_1notify_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1object_1ref
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1object_1ref)
 	(JNIEnv *env, jclass that, jintLong arg0)

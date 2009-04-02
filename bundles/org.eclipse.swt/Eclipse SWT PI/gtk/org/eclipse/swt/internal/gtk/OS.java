@@ -457,6 +457,8 @@ public class OS extends C {
 	public static final byte[] realize = ascii("realize");
 	public static final byte[] row_activated = ascii("row-activated");
 	public static final byte[] row_changed = ascii("row-changed");
+	public static final byte[] row_inserted = ascii("row-inserted");
+	public static final byte[] row_deleted = ascii("row-deleted");
 	public static final byte[] scroll_child = ascii("scroll-child");
 	public static final byte[] scroll_event = ascii("scroll-event");
 	public static final byte[] select = ascii("select");
@@ -498,6 +500,7 @@ public class OS extends C {
 	public static final byte[] inconsistent = ascii("inconsistent");
 	public static final byte[] interior_focus = ascii("interior-focus");
 	public static final byte[] mode = ascii("mode");
+	public static final byte[] model = ascii("model");
 	public static final byte[] pixbuf = ascii("pixbuf");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
@@ -2271,6 +2274,19 @@ public static final int /*long*/ g_object_new (int /*long*/ type, int /*long*/ f
 	lock.lock();
 	try {
 		return _g_object_new(type, first_property_name);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param object cast=(GObject *)
+ * @param property_name cast=(const gchar *)
+ */
+public static final native void _g_object_notify (int /*long*/ object, byte[] property_name);
+public static final void g_object_notify (int /*long*/ object, byte[] property_name) {
+	lock.lock(); 
+	try {
+		_g_object_notify(object, property_name);
 	} finally {
 		lock.unlock();
 	}

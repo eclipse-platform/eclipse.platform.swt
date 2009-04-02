@@ -251,6 +251,7 @@ typedef enum {
 	_1g_1object_1get_FUNC,
 	_1g_1object_1get_1qdata_FUNC,
 	_1g_1object_1new_FUNC,
+	_1g_1object_1notify_FUNC,
 	_1g_1object_1ref_FUNC,
 #ifndef JNI64
 	_1g_1object_1set__I_3BFI_FUNC,

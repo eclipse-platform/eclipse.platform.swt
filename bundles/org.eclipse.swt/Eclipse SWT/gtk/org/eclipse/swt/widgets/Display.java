@@ -2440,6 +2440,7 @@ void initializeCallbacks () {
 	closures [Widget.UNMAP_EVENT] = OS.g_cclosure_new (windowProc3, Widget.UNMAP_EVENT, 0);
 	closures [Widget.VISIBILITY_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.VISIBILITY_NOTIFY_EVENT, 0);
 	closures [Widget.WINDOW_STATE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.WINDOW_STATE_EVENT, 0);
+	closures [Widget.ROW_DELETED] = OS.g_cclosure_new (windowProc3, Widget.ROW_DELETED, 0);
 
 	windowCallback4 = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc4 = windowCallback4.getAddress ();
@@ -2453,6 +2454,7 @@ void initializeCallbacks () {
 	closures [Widget.SWITCH_PAGE] = OS.g_cclosure_new (windowProc4, Widget.SWITCH_PAGE, 0);
 	closures [Widget.TEST_COLLAPSE_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_COLLAPSE_ROW, 0);
 	closures [Widget.TEST_EXPAND_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_EXPAND_ROW, 0);
+	closures [Widget.ROW_INSERTED] = OS.g_cclosure_new (windowProc4, Widget.ROW_INSERTED, 0);
 
 	windowCallback5 = new Callback (this, "windowProc", 5); //$NON-NLS-1$
 	windowProc5 = windowCallback5.getAddress ();

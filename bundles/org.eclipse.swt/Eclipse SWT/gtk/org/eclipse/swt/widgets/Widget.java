@@ -162,7 +162,9 @@ public abstract class Widget {
 	static final int DAY_SELECTED = 61;
 	static final int MONTH_CHANGED = 62;
 	static final int STATUS_ICON_POPUP_MENU = 63;
-	static final int LAST_SIGNAL = 64;
+	static final int ROW_INSERTED = 64;
+	static final int ROW_DELETED = 65;
+	static final int LAST_SIGNAL = 66;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -754,6 +756,14 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long*/ column) {
+	return 0;
+}
+
+int /*long*/ gtk_row_deleted (int /*long*/ model, int /*long*/ path) {
+	return 0;
+}
+
+int /*long*/ gtk_row_inserted (int /*long*/ model, int /*long*/ path, int /*long*/ iter) {
 	return 0;
 }
 
@@ -1560,6 +1570,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
 		case VISIBILITY_NOTIFY_EVENT: return gtk_visibility_notify_event (handle, arg0);
 		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);
+		case ROW_DELETED: return gtk_row_deleted (handle, arg0);
 		default: return 0;
 	}
 }
@@ -1574,6 +1585,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 		case SWITCH_PAGE: return gtk_switch_page (handle, arg0, arg1);
 		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
+		case ROW_INSERTED: return gtk_row_inserted (handle, arg0, arg1);
 		default: return 0;
 	}
 }
