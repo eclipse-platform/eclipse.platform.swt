@@ -1219,25 +1219,28 @@ public void create (Composite parent, int style) {
 						}
 					});
 
-					int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
-					/* alloc memory for two structs, the second is empty to signify the end of the list */
-					int /*long*/ ptr = C.malloc (size * 2);
-					C.memset (ptr, 0, size * 2);
-					nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
-					byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_TermEmbedding", true); //$NON-NLS-1$
-					functionLoad.functionName = C.malloc (bytes.length);
-					C.memmove (functionLoad.functionName, bytes, bytes.length);
-					functionLoad.function = C.malloc (C.PTR_SIZEOF);
-					C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
-					XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
-					XPCOM.XPCOMGlueLoadXULFunctions (ptr);
-					C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
-					int /*long*/ functionPtr = result[0];
-					result[0] = 0;
-					C.free (functionLoad.function);
-					C.free (functionLoad.functionName);
-					C.free (ptr);
-					XPCOM.Call (functionPtr);
+					// the following is intentionally commented, because calling XRE_TermEmbedding
+					// causes subsequent browser instantiations within the process to fail
+
+//					int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
+//					/* alloc memory for two structs, the second is empty to signify the end of the list */
+//					int /*long*/ ptr = C.malloc (size * 2);
+//					C.memset (ptr, 0, size * 2);
+//					nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
+//					byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_TermEmbedding", true); //$NON-NLS-1$
+//					functionLoad.functionName = C.malloc (bytes.length);
+//					C.memmove (functionLoad.functionName, bytes, bytes.length);
+//					functionLoad.function = C.malloc (C.PTR_SIZEOF);
+//					C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
+//					XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
+//					XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+//					C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
+//					int /*long*/ functionPtr = result[0];
+//					result[0] = 0;
+//					C.free (functionLoad.function);
+//					C.free (functionLoad.functionName);
+//					C.free (ptr);
+//					XPCOM.Call (functionPtr);
 
 					XPCOMWasGlued = false;
 				}
