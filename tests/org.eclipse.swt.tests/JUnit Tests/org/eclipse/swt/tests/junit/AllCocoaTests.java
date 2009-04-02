@@ -28,6 +28,22 @@ static String[] excludeTests = {
 	"test_getBounds(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeItem)",
 	"test_getTopPixel(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
 	"test_postLorg_eclipse_swt_widgets_Event(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
+	
+	//tests pass locally, but fail on the releng machine
+	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_selectAll(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
+	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
+	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
+	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_CCombo)",
+	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_CCombo)",
+	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_CCombo)",
+	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_invokeActionI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
 };
 
 static boolean isExcluded(String name) {
