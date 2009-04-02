@@ -2324,7 +2324,7 @@ public void setItemCount (int count) {
 	int length = Math.max (4, (count + 3) / 4 * 4);
 	TableItem [] newItems = new TableItem [length];
 	if (children != null) {
-		System.arraycopy (items, 0, children, 0, Math.min (count, itemCount));
+		System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
 	}
 	children = newItems;
 	this.items = newItems;
