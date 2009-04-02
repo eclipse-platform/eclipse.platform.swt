@@ -763,7 +763,6 @@ public static final int /*long*/ sel_colorWithPatternImage_ = sel_registerName("
 public static final int /*long*/ sel_columnAtPoint_ = sel_registerName("columnAtPoint:");
 public static final int /*long*/ sel_columnIndexesInRect_ = sel_registerName("columnIndexesInRect:");
 public static final int /*long*/ sel_columnWithIdentifier_ = sel_registerName("columnWithIdentifier:");
-public static final int /*long*/ sel_comboBoxSelectionDidChange_ = sel_registerName("comboBoxSelectionDidChange:");
 public static final int /*long*/ sel_comboBoxWillDismiss_ = sel_registerName("comboBoxWillDismiss:");
 public static final int /*long*/ sel_compare_ = sel_registerName("compare:");
 public static final int /*long*/ sel_concat = sel_registerName("concat");

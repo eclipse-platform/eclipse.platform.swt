@@ -453,9 +453,6 @@ boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*lo
 	return true;
 }
 
-void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-}
-
 void copyToClipboard (char [] buffer) {
 	if (buffer.length == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();

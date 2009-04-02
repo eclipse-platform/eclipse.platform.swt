@@ -337,10 +337,6 @@ public void clearSelection () {
 	}
 }
 
-void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	sendSelection();
-}
-
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -414,6 +410,8 @@ void createHandle () {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
 		widget.init();
 		widget.setDelegate(widget);
+		widget.setTarget(widget);
+		widget.setAction(OS.sel_sendSelection);
 		view = widget;
 	}
 }
@@ -1201,16 +1199,16 @@ public void select (int index) {
 	if (0 <= index && index < count) {
 		if ((style & SWT.READ_ONLY) != 0) {
 			((NSPopUpButton)view).selectItemAtIndex(index);
-			sendEvent (SWT.Modify);
 		} else {
 			((NSComboBox)view).selectItemAtIndex(index);
 		}
 	}
 	ignoreSelection = false;
+	sendEvent (SWT.Modify);
 }
 
 void sendSelection () {
-	postEvent(SWT.Modify);
+	sendEvent(SWT.Modify);
 	if (!ignoreSelection) postEvent(SWT.Selection);
 }
 
@@ -1570,20 +1568,6 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 		if (!result) sendEvent (SWT.Modify);
 	}
 	return result;
-}
-
-void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-//	if (!ignoreVerify) {
-//		NSComboBox widget = (NSComboBox)view;
-//		NSText currentEditor = widget.currentEditor();
-//		if (currentEditor != null) {
-//			String string = new NSString(arg0).getString();
-//			String verified = verifyText(string, 0, string.length(), null);
-//			arg0 = NSString.stringWith(verified).id;
-//		}
-//	}
-	super.setObjectValue(id, sel, arg0);
-//	if (!ignoreVerify) sendEvent(SWT.Modify);
 }
 
 void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {

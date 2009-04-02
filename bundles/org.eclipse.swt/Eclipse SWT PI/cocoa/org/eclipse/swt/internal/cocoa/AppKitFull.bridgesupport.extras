@@ -4245,9 +4245,6 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSComboBoxNotifications" swt_gen="mixed">
-		<method selector="comboBoxSelectionDidChange:" swt_gen="true">
-			<arg name="notification" swt_gen="true"></arg>
-		</method>
 		<method selector="comboBoxWillDismiss:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>

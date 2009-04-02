@@ -2173,7 +2173,6 @@ void initClasses () {
 	className = "SWTComboBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSComboBox, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
@@ -2183,12 +2182,8 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
-	className = "SWTComboBoxCell";
-	cls = OS.objc_allocateClassPair(OS.class_NSComboBoxCell, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_setObjectValue_, proc3, "@:@");
-	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
-	OS.objc_registerClassPair(cls);
+	cls = registerCellSubclass(NSComboBox.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
 	NSComboBox.setCellClass(cls);
 
 	className = "SWTDatePicker";
@@ -4427,8 +4422,6 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		return widget.acceptsFirstMouse(id, sel, arg0) ? 1 : 0;
 	} else if (sel == OS.sel_numberOfRowsInTableView_) {
 		return widget.numberOfRowsInTableView(id, sel, arg0);
-	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
-		widget.comboBoxSelectionDidChange(id, sel, arg0);
 	} else if (sel == OS.sel_tableViewSelectionDidChange_) {
 		widget.tableViewSelectionDidChange(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidResignKey_) {
