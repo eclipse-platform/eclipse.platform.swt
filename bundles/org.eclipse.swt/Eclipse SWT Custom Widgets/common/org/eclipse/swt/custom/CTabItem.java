@@ -221,11 +221,10 @@ void drawClose(GC gc) {
 				parent.drawBackground(gc, shape, false);
 			} else {
 				Color defaultBackground = parent.getBackground();
-				Image image = parent.bgImage;
 				Color[] colors = parent.gradientColors;
 				int[] percents = parent.gradientPercents;
 				boolean vertical = parent.gradientVertical; 
-				parent.drawBackground(gc, shape, x, y, 10, 10, defaultBackground, image, colors, percents, vertical);
+				parent.drawBackground(gc, shape, x, y, 10, 10, defaultBackground, null, colors, percents, vertical);
 			}
 			break;
 		}
@@ -359,8 +358,7 @@ void drawSelected(GC gc ) {
 		    inside = null;
 		}
 		RGB outside = parent.getBackground().getRGB();		
-		if (parent.bgImage != null || 
-		    (parent.gradientColors != null && parent.gradientColors.length > 1)) {
+		if (parent.gradientColors != null && parent.gradientColors.length > 1) {
 		    outside = null;
 		}
 		parent.antialias(shape, CTabFolder.borderColor.getRGB(), inside, outside, gc);

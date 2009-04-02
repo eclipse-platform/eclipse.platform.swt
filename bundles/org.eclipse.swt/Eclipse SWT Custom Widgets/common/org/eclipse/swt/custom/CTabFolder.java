@@ -148,7 +148,6 @@ public class CTabFolder extends Composite {
 	Color[] selectionHighlightGradientColorsCache = null;  //null is a legal value, check on access
 	
 	/* Unselected item appearance */
-	Image bgImage;
 	Color[] gradientColors;
 	int[] gradientPercents;
 	boolean gradientVertical;
@@ -661,7 +660,7 @@ void destroyItem (CTabItem item) {
 }
 void drawBackground(GC gc, int[] shape, boolean selected) {
 	Color defaultBackground = selected ? selectionBackground : getBackground();
-	Image image = selected ? selectionBgImage : bgImage;
+	Image image = selected ? selectionBgImage : null;
 	Color[] colors = selected ? selectionGradientColors : gradientColors;
 	int[] percents = selected ? selectionGradientPercents : gradientPercents;
 	boolean vertical = selected ? selectionGradientVertical : gradientVertical; 
@@ -2566,28 +2565,24 @@ void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	}
 	
 	// Are these settings the same as before?
-	if (bgImage == null) {
-		if ((gradientColors != null) && (colors != null) && 
-			(gradientColors.length == colors.length)) {
-			boolean same = false;
-			for (int i = 0; i < gradientColors.length; i++) {
-				if (gradientColors[i] == null) {
-					same = colors[i] == null;
-				} else {
-					same = gradientColors[i].equals(colors[i]);
-				}
-				if (!same) break;
-			}
-			if (same) {
-				for (int i = 0; i < gradientPercents.length; i++) {
-					same = gradientPercents[i] == percents[i];
-					if (!same) break;
-				}
-			}
-			if (same && this.gradientVertical == vertical) return;
+	if ((gradientColors != null) && (colors != null) && 
+		(gradientColors.length == colors.length)) {
+		boolean same = false;
+		for (int i = 0; i < gradientColors.length; i++) {
+		    if (gradientColors[i] == null) {
+			same = colors[i] == null;
+		    } else {
+			same = gradientColors[i].equals(colors[i]);
+		    }
+		    if (!same) break;
 		}
-	} else {
-		bgImage = null;
+		if (same) {
+		    for (int i = 0; i < gradientPercents.length; i++) {
+			same = gradientPercents[i] == percents[i];
+			if (!same) break;
+		    }
+		}
+		if (same && this.gradientVertical == vertical) return;
 	}
 	// Store the new settings
 	if (colors == null) {
@@ -2609,30 +2604,6 @@ void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	}
 
 	// Refresh with the new settings
-	redraw();
-}
-
-/**
- * Set the image to be drawn in the background of the unselected tab.  Image
- * is stretched or compressed to cover entire unselected tab area.
- * 
- * @param image the image to be drawn in the background
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- */
-void setBackground(Image image) {
-	checkWidget();
-	if (image == bgImage) return;
-	if (image != null) {
-		gradientColors = null;
-		gradientPercents = null;
-	}
-	bgImage = image;
 	redraw();
 }
 /**
