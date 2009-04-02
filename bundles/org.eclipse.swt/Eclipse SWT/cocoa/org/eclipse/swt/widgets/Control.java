@@ -1213,7 +1213,9 @@ void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 					break;
 			}
 			if (mask != 0) {
+				s.keyInputHappened = true;
 				int type = (mask & modifiers) != 0 ? SWT.KeyDown : SWT.KeyUp;
+				if (type == SWT.KeyDown) s.keyInputHappened = true;
 				Event event = new Event();
 				event.keyCode = keyCode;
 				setInputState (event, nsEvent, type);
