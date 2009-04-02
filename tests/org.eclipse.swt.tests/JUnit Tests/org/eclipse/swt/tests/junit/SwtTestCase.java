@@ -12,10 +12,11 @@ package org.eclipse.swt.tests.junit;
 
 
 import java.io.*;
+
 import junit.framework.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.widgets.*;
 
 public class SwtTestCase extends TestCase {
 	/**
