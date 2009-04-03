@@ -2540,7 +2540,7 @@ public boolean post(Event event) {
 				 */
 				boolean postUnicode = false;
 				
-				if (vKey == -1) {
+				if (vKey == -1 && event.character != 0) {
 					vKey = 0;
 					postUnicode = true;
 				}
