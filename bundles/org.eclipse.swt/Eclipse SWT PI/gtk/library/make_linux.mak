@@ -82,8 +82,10 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO__1XPCOMGlueStartup \
 	-DNO__1XPCOMGlueLoadXULFunctions \
 	-DNO_memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I \
+	-DNO_memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J \
 	-DNO_nsDynamicFunctionLoad_1sizeof \
 	-DNO__1Call__IIIIII \
+	-DNO__1Call__JJJJJI \
 	-DNO_nsDynamicFunctionLoad
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
