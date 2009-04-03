@@ -2532,10 +2532,33 @@ public boolean post(Event event) {
 							}
 						}
 					}
-					if (vKey == -1) return false;
+				}
+
+				/**
+				 * Feature in Quartz. If the character doesn't map to any valid key, add the Unicode value to the
+				 * event as a string and post it via key 0.  That will override the keyCode and arrive unmodified in the host app.
+				 */
+				boolean postUnicode = false;
+				
+				if (vKey == -1) {
+					vKey = 0;
+					postUnicode = true;
 				}
 				
-				return OS.CGPostKeyboardEvent((short)0, vKey, type == SWT.KeyDown) == 0;
+				int /*long*/ eventRef = OS.CGEventCreateKeyboardEvent(0, vKey, type == SWT.KeyDown);
+				if (eventRef != 0) {
+					if (postUnicode) {
+						char eventString[] = new char[1];
+						eventString[0] = event.character;
+						OS.CGEventKeyboardSetUnicodeString(eventRef, eventString.length, eventString);
+					}
+					OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
+					OS.CFRelease(eventRef);
+					return true;
+				} else {
+					return false;
+				}
+				
 			}
 			case SWT.MouseDown:
 			case SWT.MouseMove: 

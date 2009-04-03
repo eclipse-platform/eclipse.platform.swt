@@ -1905,10 +1905,8 @@ public static final int kCFStringEncodingUTF8 = 134217984;
 public static final int kCGEventFilterMaskPermitLocalKeyboardEvents = 2;
 public static final int kCGEventFilterMaskPermitLocalMouseEvents = 1;
 public static final int kCGEventFilterMaskPermitSystemDefinedEvents = 4;
-public static final int kCGEventSourceStateCombinedSessionState = 0;
 public static final int kCGEventSuppressionStateRemoteMouseDrag = 1;
 public static final int kCGEventSuppressionStateSuppressionInterval = 0;
-public static final int kCGHIDEventTap = 0;
 public static final int kCGImageAlphaFirst = 4;
 public static final int kCGImageAlphaNoneSkipFirst = 6;
 public static final int kCGImageAlphaOnly = 7;
@@ -1925,6 +1923,7 @@ public static final int kCGPathElementAddQuadCurveToPoint = 2;
 public static final int kCGPathElementCloseSubpath = 4;
 public static final int kCGPathElementMoveToPoint = 0;
 public static final int kCGPathStroke = 2;
+public static final int kCGSessionEventTap = 1;
 public static final int NSAllApplicationsDirectory = 100;
 public static final int NSAllDomainsMask = 65535;
 public static final int NSNotFound = 2147483647;
@@ -2559,10 +2558,27 @@ public static final native int /*long*/ CGDisplayPixelsWide(int display);
  */
 public static final native int CGEnableEventStateCombining(int doCombineState);
 /**
+ * @param source cast=(CGEventSourceRef)
+ * @param virtualKey cast=(CGKeyCode)
+ * @param keyDown cast=(_Bool)
+ */
+public static final native int /*long*/ CGEventCreateKeyboardEvent(int /*long*/ source, short virtualKey, boolean keyDown);
+/**
  * @param event cast=(CGEventRef)
  * @param field cast=(CGEventField)
  */
 public static final native long CGEventGetIntegerValueField(int /*long*/ event, int field);
+/**
+ * @param event cast=(CGEventRef)
+ * @param stringLength cast=(UniCharCount)
+ * @param unicodeString cast=(UniChar*)
+ */
+public static final native void CGEventKeyboardSetUnicodeString(int /*long*/ event, int /*long*/ stringLength, char[] unicodeString);
+/**
+ * @param tap cast=(CGEventTapLocation)
+ * @param event cast=(CGEventRef)
+ */
+public static final native void CGEventPost(int tap, int /*long*/ event);
 /**
  * @param rect flags=struct
  * @param maxDisplays cast=(CGDisplayCount)
@@ -2640,12 +2656,6 @@ public static final native void CGPathMoveToPoint(int /*long*/ path, int /*long*
  * @param path cast=(CGPathRef)
  */
 public static final native void CGPathRelease(int /*long*/ path);
-/**
- * @param keyChar cast=(CGCharCode)
- * @param virtualKey cast=(CGKeyCode)
- * @param keyDown cast=(boolean_t)
- */
-public static final native int CGPostKeyboardEvent(short keyChar, short virtualKey, boolean keyDown);
 /**
  * @param mouseCursorPosition flags=struct
  * @param updateMouseCursorPosition cast=(boolean_t)

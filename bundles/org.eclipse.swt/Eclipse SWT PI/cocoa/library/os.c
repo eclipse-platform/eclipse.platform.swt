@@ -489,6 +489,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGEnableEventStateCombining)
 }
 #endif
 
+#ifndef NO_CGEventCreateKeyboardEvent
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGEventCreateKeyboardEvent)
+	(JNIEnv *env, jclass that, jintLong arg0, jshort arg1, jboolean arg2)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGEventCreateKeyboardEvent_FUNC);
+	rc = (jintLong)CGEventCreateKeyboardEvent((CGEventSourceRef)arg0, (CGKeyCode)arg1, (_Bool)arg2);
+	OS_NATIVE_EXIT(env, that, CGEventCreateKeyboardEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGEventGetIntegerValueField
 JNIEXPORT jlong JNICALL OS_NATIVE(CGEventGetIntegerValueField)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -498,6 +510,30 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CGEventGetIntegerValueField)
 	rc = (jlong)CGEventGetIntegerValueField((CGEventRef)arg0, (CGEventField)arg1);
 	OS_NATIVE_EXIT(env, that, CGEventGetIntegerValueField_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_CGEventKeyboardSetUnicodeString
+JNIEXPORT void JNICALL OS_NATIVE(CGEventKeyboardSetUnicodeString)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jcharArray arg2)
+{
+	jchar *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGEventKeyboardSetUnicodeString_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	CGEventKeyboardSetUnicodeString((CGEventRef)arg0, (UniCharCount)arg1, (UniChar*)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, CGEventKeyboardSetUnicodeString_FUNC);
+}
+#endif
+
+#ifndef NO_CGEventPost
+JNIEXPORT void JNICALL OS_NATIVE(CGEventPost)
+	(JNIEnv *env, jclass that, jint arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGEventPost_FUNC);
+	CGEventPost((CGEventTapLocation)arg0, (CGEventRef)arg1);
+	OS_NATIVE_EXIT(env, that, CGEventPost_FUNC);
 }
 #endif
 
@@ -667,18 +703,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPoint_1sizeof)
 	OS_NATIVE_ENTER(env, that, CGPoint_1sizeof_FUNC);
 	rc = (jint)CGPoint_sizeof();
 	OS_NATIVE_EXIT(env, that, CGPoint_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGPostKeyboardEvent
-JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
-	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CGPostKeyboardEvent_FUNC);
-	rc = (jint)CGPostKeyboardEvent((CGCharCode)arg0, (CGKeyCode)arg1, (boolean_t)arg2);
-	OS_NATIVE_EXIT(env, that, CGPostKeyboardEvent_FUNC);
 	return rc;
 }
 #endif
