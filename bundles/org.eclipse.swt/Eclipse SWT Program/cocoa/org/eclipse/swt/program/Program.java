@@ -66,16 +66,48 @@ public static Program findProgram (String extension) {
 		NSString fullPath = temp.stringByAppendingPathComponent(fileName);
 		NSFileManager fileManager = NSFileManager.defaultManager();
 		fileManager.createFileAtPath(fullPath, null, null);
-		workspace.getInfoForFile(fullPath, appName, type);
+		if (!workspace.getInfoForFile(fullPath, appName, type)) return null;
 		fileManager.removeItemAtPath(fullPath, 0);
 		int /*long*/ [] buffer = new int /*long*/[1];
+		int /*long*/ [] buffer2 = new int /*long*/[1];
 		OS.memmove(buffer, appName, C.PTR_SIZEOF);
+		OS.memmove(buffer2, type, C.PTR_SIZEOF);
 		OS.free(appName);
 		OS.free(type);
 		if (buffer [0] != 0) {
 			NSString appPath = new NSString(buffer[0]);
+			NSString appType = new NSString(buffer2[0]);
 			NSBundle bundle = NSBundle.bundleWithPath(appPath);
-			if (bundle != null) return getProgram(bundle);
+			if (bundle != null) {
+				NSString textEditId = NSString.stringWith("com.apple.TextEdit");
+				NSString bundleId = NSString.stringWith("CFBundleIdentifier");
+				NSDictionary infoDictionary = bundle.infoDictionary();
+				boolean textEdit = textEditId.isEqual(infoDictionary.objectForKey(bundleId));
+				if (!textEdit) return getProgram(bundle);
+				// if text edit, make sure we're really one of the extensions that
+				// text edit says it can handle.
+				NSString CFBundleDocumentTypes = NSString.stringWith("CFBundleDocumentTypes");
+				NSString CFBundleTypeExtensions = NSString.stringWith("CFBundleTypeExtensions");
+				id id = infoDictionary.objectForKey(CFBundleDocumentTypes);
+				if (id != null) {
+					NSDictionary documentTypes = new NSDictionary(id.id);
+					NSEnumerator documentTypesEnumerator = documentTypes.objectEnumerator();
+					while ((id = documentTypesEnumerator.nextObject()) != null) {
+						NSDictionary documentType = new NSDictionary(id.id);
+						NSDictionary supportedExtensions = new NSDictionary(documentType.objectForKey(CFBundleTypeExtensions));
+						if (supportedExtensions != null) {
+							NSEnumerator supportedExtensionsEnumerator = supportedExtensions.objectEnumerator();
+							if (supportedExtensionsEnumerator != null) {
+								id ext = null;
+								while((ext = supportedExtensionsEnumerator.nextObject()) != null) {
+									NSString strExt = new NSString(ext);
+									if (appType.isEqual(strExt)) return getProgram (bundle);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		return null;
 	} finally {
