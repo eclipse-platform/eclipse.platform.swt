@@ -2565,10 +2565,10 @@ public boolean post(Event event) {
 			case SWT.MouseUp: {
 				CGPoint mouseCursorPosition = new CGPoint ();
 				int chord = OS.GetCurrentButtonState ();
-				mouseCursorPosition.x = event.x;
-				mouseCursorPosition.y = event.y;
 
 				if (type == SWT.MouseMove) {
+					mouseCursorPosition.x = event.x;
+					mouseCursorPosition.y = event.y;
 					return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, (chord & 0x1) != 0, (chord & 0x2) != 0, (chord & 0x4) != 0, (chord & 0x8) != 0, (chord & 0x10) != 0) == 0;
 				} else {
 					int button = event.button;
@@ -2616,7 +2616,11 @@ public boolean post(Event event) {
 							break;
 						}
 					}
-
+	 				
+	 				NSPoint nsCursorPosition = NSEvent.mouseLocation();
+	 				NSRect primaryFrame = getPrimaryFrame();
+	 				mouseCursorPosition.x = nsCursorPosition.x;
+	 				mouseCursorPosition.y = (int) (primaryFrame.height - nsCursorPosition.y);
 					return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, button1, button3, button2, button4, button5) == 0;
 				}
 			}
