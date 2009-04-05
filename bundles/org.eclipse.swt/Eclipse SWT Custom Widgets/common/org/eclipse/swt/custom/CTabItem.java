@@ -256,7 +256,7 @@ void drawSelected(GC gc ) {
 			int x1 = Math.max(0, parent.borderLeft - 1);
 			int y1 = (parent.onBottom) ? y - 1 : y + height;
 			int x2 = size.x - parent.borderRight;
-			gc.setForeground(CTabFolder.borderColor);
+			gc.setForeground(getDisplay().getSystemColor(CTabFolder.BORDER1_COLOR));
 			gc.drawLine(x1, y1, x2, y1);
 			return;
 		}
@@ -361,8 +361,9 @@ void drawSelected(GC gc ) {
 		if (parent.gradientColors != null && parent.gradientColors.length > 1) {
 		    outside = null;
 		}
-		parent.antialias(shape, CTabFolder.borderColor.getRGB(), inside, outside, gc);
-		gc.setForeground(CTabFolder.borderColor);
+		Color borderColor = getDisplay().getSystemColor(CTabFolder.BORDER1_COLOR);
+		parent.antialias(shape, borderColor.getRGB(), inside, outside, gc);
+		gc.setForeground(borderColor);
 		gc.drawPolyline(shape);
 		
 		if (!tabInPaint) return;
@@ -564,7 +565,7 @@ void drawRightUnselectedBorder(GC gc) {
  */
 void drawBorder(GC gc, int[] shape) {
 
-	gc.setForeground(CTabFolder.borderColor);
+	gc.setForeground(getDisplay().getSystemColor(CTabFolder.BORDER1_COLOR));
 	gc.drawPolyline(shape);
 }
 

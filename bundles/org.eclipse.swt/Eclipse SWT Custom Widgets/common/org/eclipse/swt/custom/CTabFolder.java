@@ -153,8 +153,6 @@ public class CTabFolder extends Composite {
 	boolean gradientVertical;
 	boolean showUnselectedImage = true;
 	
-	static Color borderColor;
-	
 	// close, min/max and chevron buttons
 	Color fillColor;
 	boolean showClose = false;
@@ -308,7 +306,6 @@ void init(int style) {
 	Display display = getDisplay();
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
 	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
-	borderColor = display.getSystemColor(BORDER1_COLOR);
 	updateTabHeight(false);
 	
 	initAccessible();
@@ -821,7 +818,7 @@ void drawBody(Event event) {
 	
 	//draw 1 pixel border around outside
 	if (borderLeft > 0) {
-		gc.setForeground(borderColor);
+		gc.setForeground(getDisplay().getSystemColor(BORDER1_COLOR));
 		int x1 = borderLeft - 1;
 		int x2 = size.x - borderRight;
 		int y1 = onBottom ? borderTop - 1 : borderTop + tabHeight;
@@ -1038,6 +1035,7 @@ void drawTabArea(Event event) {
 	GC gc = event.gc;
 	Point size = getSize();
 	int[] shape = null;
+	Color borderColor = getDisplay().getSystemColor(BORDER1_COLOR);
 	
 	if (tabHeight == 0) {
 		int style = getStyle();
