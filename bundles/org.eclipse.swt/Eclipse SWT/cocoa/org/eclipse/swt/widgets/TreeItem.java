@@ -56,8 +56,7 @@ public class TreeItem extends Item {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	//
-	SWTTreeItem handle;
+	public SWTTreeItem handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1433,7 +1432,7 @@ void updateExpanded () {
 		}
 	}
 	for (int i = 0; i < itemCount; i++) {
-		items[i].updateExpanded ();
+		if (items[i] != null) items[i].updateExpanded ();
 	}
 }
 }

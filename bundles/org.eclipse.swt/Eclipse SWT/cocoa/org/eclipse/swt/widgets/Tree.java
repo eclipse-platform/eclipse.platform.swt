@@ -312,7 +312,7 @@ void checkItems () {
 	selectItems (selectedItems, true);
 	ignoreExpand = true;
 	for (int i = 0; i < itemCount; i++) {
-		items[i].updateExpanded ();
+		if (items[i] != null) items[i].updateExpanded ();
 	}
 	ignoreExpand = false;
 }

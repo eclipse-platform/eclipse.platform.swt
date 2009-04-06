@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -44,33 +43,6 @@ import org.eclipse.swt.widgets.*;
  * @since 3.3
  */
 public class TableDropTargetEffect extends DropTargetEffect {
-	static final int SCROLL_HYSTERESIS = 150; // milli seconds
-
-	TableItem scrollItem;
-	long scrollBeginTime;
-//	DataBrowserCallbacks callbacks = null;
-
-//	static Callback AcceptDragProc;
-//	static {
-//		AcceptDragProc = new Callback(TableDropTargetEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
-//		int acceptDragProc = AcceptDragProc.getAddress();
-//		if (acceptDragProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-//	}
-
-//	static int AcceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
-//		DropTarget target = FindDropTarget(theControl, theDrag);
-//		if (target == null) return 0;
-//		return (target.feedback & DND.FEEDBACK_SELECT) != 0 ? 1 : 0;
-//	}
-	
-//	static DropTarget FindDropTarget(int theControl, int theDrag) {
-//		if (theControl == 0) return null;
-//		Display display = Display.findDisplay(Thread.currentThread());
-//		if (display == null || display.isDisposed()) return null;
-//		Widget widget = display.findWidget(theControl);
-//		if (widget == null) return null;
-//		return (DropTarget)widget.getData(DND.DROP_TARGET_KEY); 
-//	}
 	
 	/**
 	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified 
@@ -104,15 +76,6 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetEvent
 	 */
 	public void dragEnter(DropTargetEvent event) {
-//		if (callbacks == null) {
-//			Table table = (Table) control;
-//			DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-//			OS.GetDataBrowserCallbacks (table.handle, callbacks);
-//			callbacks.v1_acceptDragCallback = AcceptDragProc.getAddress();
-//			OS.SetDataBrowserCallbacks(table.handle, callbacks);
-//		}
-		scrollBeginTime = 0;
-		scrollItem = null;
 	}
 
 	/**
@@ -130,8 +93,6 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
-		scrollBeginTime = 0;
-		scrollItem = null;
 	}
 
 	/**
@@ -152,42 +113,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 * @see DND#FEEDBACK_SCROLL
 	 */
 	public void dragOver(DropTargetEvent event) {
-		Table table = (Table) control;
 		int effect = checkEffect(event.feedback);
-
-		TableItem item = (TableItem)getItem(table, event.x, event.y);
-
-		if ((effect & DND.FEEDBACK_SCROLL) == 0) {
-			scrollBeginTime = 0;
-			scrollItem = null;
-		} else {
-			if (item != null && item.equals(scrollItem)  && scrollBeginTime != 0) {
-				if (System.currentTimeMillis() >= scrollBeginTime) {
-					Rectangle area = table.getClientArea();
-					int headerHeight = table.getHeaderHeight();
-					int itemHeight= table.getItemHeight();
-					Point pt = new Point(event.x, event.y);
-					pt = table.getDisplay().map(null, table, pt);
-					TableItem nextItem = null;
-					if (pt.y < area.y + headerHeight + 2 * itemHeight) {
-						int index = Math.max(0, table.indexOf(item)-1);
-						nextItem = table.getItem(index);
-					}
-					if (pt.y > area.y + area.height - 2 * itemHeight) {
-						int index = Math.min(table.getItemCount()-1, table.indexOf(item)+1);
-						nextItem = table.getItem(index);
-					}
-					if (nextItem != null) table.showItem(nextItem);
-					scrollBeginTime = 0;
-					scrollItem = null;
-				}
-			} else {
-				scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
-				scrollItem = item;
-			}
-		}
-		
-		// store current effect for selection feedback
 		((DropTarget)event.widget).feedback = effect;
 	}
 }
