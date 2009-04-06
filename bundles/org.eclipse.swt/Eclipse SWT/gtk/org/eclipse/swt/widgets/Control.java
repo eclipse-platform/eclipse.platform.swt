@@ -2628,6 +2628,12 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+	/*
+	 * It is possible to send out too many enter/exit events if entering a 
+	 * control through a subwindow. The fix is to return without sending any 
+	 * events if the GdkEventCrossing subwindow field is set and the control 
+	 * requests to check the field.
+	 */
 	if (gdkEvent.subwindow != 0 && checkSubwindow ()) return 0;
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
 	if ((gdkEvent.state & (OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK)) != 0) return 0;
