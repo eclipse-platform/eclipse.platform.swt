@@ -28,8 +28,16 @@ public void collapseItem(id item) {
 	OS.objc_msgSend(this.id, OS.sel_collapseItem_, item != null ? item.id : 0);
 }
 
+public void collapseItem(id item, boolean collapseChildren) {
+	OS.objc_msgSend(this.id, OS.sel_collapseItem_collapseChildren_, item != null ? item.id : 0, collapseChildren);
+}
+
 public void expandItem(id item) {
 	OS.objc_msgSend(this.id, OS.sel_expandItem_, item != null ? item.id : 0);
+}
+
+public void expandItem(id item, boolean expandChildren) {
+	OS.objc_msgSend(this.id, OS.sel_expandItem_expandChildren_, item != null ? item.id : 0, expandChildren);
 }
 
 public NSRect frameOfOutlineCellAtRow(int /*long*/ row) {

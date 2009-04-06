@@ -1093,12 +1093,12 @@ public void setExpanded (boolean expanded) {
 
 	parent.checkItems ();
 	parent.ignoreExpand = true;
+	this.expanded = expanded;
 	if (expanded) {
 		((NSOutlineView) parent.view).expandItem (handle);
 	} else {
 		((NSOutlineView) parent.view).collapseItem (handle);
 	}
-	this.expanded = expanded;
 	parent.ignoreExpand = false;
 	cached = true;
 	if (!expanded) {

@@ -716,7 +716,6 @@ boolean outlineView_acceptDrop_item_childIndex(int /*long*/ id, int /*long*/ sel
 
 int /*long*/ outlineView_validateDrop_proposedItem_proposedChildIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ info, int /*long*/ item, int /*long*/ index) {
 	//TODO stop scrolling and expansion when app does not set FEEDBACK_SCROLL and/or FEEDBACK_EXPAND
-	//TODO expansion animation and auto collapse not working because of outlineView:shouldExpandItem:
 	NSOutlineView widget = new NSOutlineView(outlineView);
 	NSObject sender = new NSObject(info);
 	NSPoint pt = sender.draggingLocation();

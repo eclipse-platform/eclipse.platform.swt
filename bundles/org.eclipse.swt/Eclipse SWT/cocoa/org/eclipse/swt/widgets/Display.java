@@ -2106,7 +2106,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_expandItem_expandChildren_, proc4, "@:@Z");
+	OS.class_addMethod(cls, OS.sel_collapseItem_collapseChildren_, proc4, "@:@Z");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -4584,6 +4586,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
 		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
+	} else if (sel == OS.sel_expandItem_expandChildren_) {
+		widget.expandItem_expandChildren(id, sel, arg0, arg1 != 0);
+	} else if (sel == OS.sel_collapseItem_collapseChildren_) {
+		widget.collapseItem_collapseChildren(id, sel, arg0, arg1 != 0);
 	}
 	return 0;
 }

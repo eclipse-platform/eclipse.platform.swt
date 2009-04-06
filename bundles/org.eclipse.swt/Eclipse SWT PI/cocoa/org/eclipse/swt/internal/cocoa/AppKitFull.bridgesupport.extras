@@ -2257,8 +2257,18 @@
 			<arg name="item" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="collapseItem:collapseChildren:" swt_gen="true">
+			<arg name="item" swt_gen="true"></arg>
+			<arg name="collapseChildren" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="expandItem:" swt_gen="true">
 			<arg name="item" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="expandItem:expandChildren:" swt_gen="true">
+			<arg name="item" swt_gen="true"></arg>
+			<arg name="expandChildren" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="frameOfOutlineCellAtRow:" swt_gen="true">

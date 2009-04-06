@@ -453,6 +453,13 @@ boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*lo
 	return true;
 }
 
+void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ item, boolean children) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, item, children ? 1 : 0);
+}
+
 void copyToClipboard (char [] buffer) {
 	if (buffer.length == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
@@ -583,6 +590,13 @@ void redrawWidget (NSView view, int /*long*/ x, int /*long*/ y, int /*long*/ wid
 
 void error (int code) {
 	SWT.error(code);
+}
+
+void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ item, boolean children) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, item, children ? 1 : 0);
 }
 
 boolean filters (int eventType) {

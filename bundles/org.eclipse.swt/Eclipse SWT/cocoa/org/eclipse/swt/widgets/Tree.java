@@ -85,6 +85,8 @@ public class Tree extends Composite {
 	int sortDirection;
 	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending;
 	Rectangle imageBounds;
+	TreeItem expandRoot, collapseRoot;
+	boolean expandChildren, collapseChildren;
 	TreeItem insertItem;
 	boolean insertBefore;
 
@@ -404,6 +406,16 @@ void clearCachedWidth (TreeItem[] items) {
 		item.width = -1;
 		clearCachedWidth (item.items);
 	}
+}
+
+void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ itemID, boolean children) {
+	TreeItem item = (TreeItem)display.getWidget(itemID);
+	collapseRoot = item;
+	collapseChildren = children;
+	super.collapseItem_collapseChildren (id, sel, itemID, children);
+	collapseRoot = null;
+	if (isDisposed()) return;
+	setScrollWidth ();
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -1150,6 +1162,22 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		rect.height = size.height;
 	}
 	callSuper (id, sel, rect, view);
+}
+
+void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ itemID, boolean children) {
+	TreeItem item = (TreeItem)display.getWidget(itemID);
+	expandRoot = item;
+	expandChildren = children;
+	super.expandItem_expandChildren (id, sel, itemID, children);
+	expandRoot = null;
+	if (children) return;
+	if (item.isDisposed()) return;
+	ignoreExpand = true;
+	TreeItem[] items = item.items;
+	for (int i = 0; i < item.itemCount; i++) {
+		if (items[i] != null) items[i].updateExpanded ();
+	}
+	ignoreExpand = false;
 }
 
 Widget findTooltip (NSPoint pt) {
@@ -2006,37 +2034,27 @@ void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*lon
 }
 
 boolean outlineView_shouldCollapseItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ itemID) {
-	if (!ignoreExpand) {
-		TreeItem item = (TreeItem) display.getWidget (itemID);
+	TreeItem item = (TreeItem) display.getWidget (itemID);
+	if (!ignoreExpand && (collapseRoot == null || collapseRoot == item || (collapseChildren && item.expanded))) {
 		Event event = new Event ();
 		event.item = item;
 		sendEvent (SWT.Collapse, event);
 		if (isDisposed ()) return false;
-		ignoreExpand = true;
-		((NSOutlineView) view).collapseItem (item.handle);
 		item.expanded = false;
-		ignoreExpand = false;
-		setScrollWidth ();
-		return false;
 	}
-	return true;
+	return collapseChildren || !item.expanded;
 }
 
 boolean outlineView_shouldExpandItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ itemID) {
-	if (!ignoreExpand) {
-		TreeItem item = (TreeItem) display.getWidget (itemID);
+	TreeItem item = (TreeItem) display.getWidget (itemID);
+	if (!ignoreExpand && (expandRoot == null || expandRoot == item || (expandChildren && !item.expanded))) {
 		Event event = new Event ();
 		event.item = item;
 		sendEvent (SWT.Expand, event);
 		if (isDisposed ()) return false;
-		ignoreExpand = true;
-		((NSOutlineView) view).expandItem (item.handle);
 		item.expanded = true;
-		item.updateExpanded ();
-		ignoreExpand = false;
-		return false;
 	}
-	return true;
+	return expandChildren || item.expanded;
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ itemID) {
@@ -2094,8 +2112,8 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	//release handle
 	sortColumn = null;
+	expandRoot = collapseRoot = null;
 }
 
 void reloadItem (TreeItem item, boolean recurse) {
