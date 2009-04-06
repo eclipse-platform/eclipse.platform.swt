@@ -236,6 +236,7 @@
 	<enum name="NSOtherMouseDown" swt_gen="true"></enum>
 	<enum name="NSOtherMouseDragged" swt_gen="true"></enum>
 	<enum name="NSOtherMouseUp" swt_gen="true"></enum>
+	<enum name="NSOutlineViewDropOnItemIndex" swt_gen="true"></enum>
 	<enum name="NSPageDownFunctionKey" swt_gen="true"></enum>
 	<enum name="NSPageUpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
@@ -267,6 +268,8 @@
 	<enum name="NSTabCharacter" swt_gen="true"></enum>
 	<enum name="NSTableColumnNoResizing" swt_gen="true"></enum>
 	<enum name="NSTableColumnUserResizingMask" swt_gen="true"></enum>
+	<enum name="NSTableViewDropAbove" swt_gen="true"></enum>
+	<enum name="NSTableViewDropOn" swt_gen="true"></enum>
 	<enum name="NSTableViewNoColumnAutoresizing" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
@@ -4303,6 +4306,12 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSOutlineViewDataSource" swt_gen="mixed">
+		<method selector="outlineView:acceptDrop:item:childIndex:" swt_gen="true">
+			<arg name="outlineView" swt_gen="true"></arg>
+			<arg name="info" swt_gen="true"></arg>
+			<arg name="item" swt_gen="true"></arg>
+			<arg name="index" swt_gen="true"></arg>
+		</method>
 		<method selector="outlineView:child:ofItem:" swt_gen="true">
 			<arg name="outlineView" swt_gen="true"></arg>
 			<arg name="index" swt_gen="true"></arg>
@@ -4326,6 +4335,17 @@
 			<arg name="object" swt_gen="true"></arg>
 			<arg name="tableColumn" swt_gen="true"></arg>
 			<arg name="item" swt_gen="true"></arg>
+		</method>
+		<method selector="outlineView:validateDrop:proposedItem:proposedChildIndex:" swt_gen="true">
+			<arg name="outlineView" swt_gen="true"></arg>
+			<arg name="info" swt_gen="true"></arg>
+			<arg name="item" swt_gen="true"></arg>
+			<arg name="index" swt_gen="true"></arg>
+		</method>
+		<method selector="outlineView:writeItems:toPasteboard:" swt_gen="true">
+			<arg name="outlineView" swt_gen="true"></arg>
+			<arg name="items" swt_gen="true"></arg>
+			<arg name="pasteboard" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSOutlineViewDelegate" swt_gen="mixed">
@@ -4372,6 +4392,12 @@
 		<method selector="numberOfRowsInTableView:" swt_gen="true">
 			<arg name="tableView" swt_gen="true"></arg>
 		</method>
+		<method selector="tableView:acceptDrop:row:dropOperation:" swt_gen="true">
+			<arg name="tableView" swt_gen="true"></arg>
+			<arg name="info" swt_gen="true"></arg>
+			<arg name="row" swt_gen="true"></arg>
+			<arg name="dropOperation" swt_gen="true"></arg>
+		</method>
 		<method selector="tableView:objectValueForTableColumn:row:" swt_gen="true">
 			<arg name="tableView" swt_gen="true"></arg>
 			<arg name="tableColumn" swt_gen="true"></arg>
@@ -4382,6 +4408,12 @@
 			<arg name="object" swt_gen="true"></arg>
 			<arg name="tableColumn" swt_gen="true"></arg>
 			<arg name="row" swt_gen="true"></arg>
+		</method>
+		<method selector="tableView:validateDrop:proposedRow:proposedDropOperation:" swt_gen="true">
+			<arg name="tableView" swt_gen="true"></arg>
+			<arg name="info" swt_gen="true"></arg>
+			<arg name="row" swt_gen="true"></arg>
+			<arg name="dropOperation" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSTableViewDelegate" swt_gen="mixed">

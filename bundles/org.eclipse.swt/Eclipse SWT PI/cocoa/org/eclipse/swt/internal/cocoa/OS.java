@@ -326,6 +326,8 @@ public static final native int /*long*/ class_getMethodImplementation(int /*long
  * @param name cast=(SEL)
  */
 public static final native int /*long*/ class_getInstanceMethod(int /*long*/ cls, int /*long*/ name);
+/** @param cls cast=(Class) */
+public static final native int /*long*/ class_getSuperclass(int /*long*/ cls);
 /**
  * @param method cast=(Method)
  * @param imp cast=(IMP)
@@ -1204,6 +1206,7 @@ public static final int /*long*/ sel_otherMouseDown_ = sel_registerName("otherMo
 public static final int /*long*/ sel_otherMouseDragged_ = sel_registerName("otherMouseDragged:");
 public static final int /*long*/ sel_otherMouseUp_ = sel_registerName("otherMouseUp:");
 public static final int /*long*/ sel_outlineTableColumn = sel_registerName("outlineTableColumn");
+public static final int /*long*/ sel_outlineView_acceptDrop_item_childIndex_ = sel_registerName("outlineView:acceptDrop:item:childIndex:");
 public static final int /*long*/ sel_outlineView_child_ofItem_ = sel_registerName("outlineView:child:ofItem:");
 public static final int /*long*/ sel_outlineView_didClickTableColumn_ = sel_registerName("outlineView:didClickTableColumn:");
 public static final int /*long*/ sel_outlineView_isItemExpandable_ = sel_registerName("outlineView:isItemExpandable:");
@@ -1212,7 +1215,9 @@ public static final int /*long*/ sel_outlineView_objectValueForTableColumn_byIte
 public static final int /*long*/ sel_outlineView_setObjectValue_forTableColumn_byItem_ = sel_registerName("outlineView:setObjectValue:forTableColumn:byItem:");
 public static final int /*long*/ sel_outlineView_shouldCollapseItem_ = sel_registerName("outlineView:shouldCollapseItem:");
 public static final int /*long*/ sel_outlineView_shouldExpandItem_ = sel_registerName("outlineView:shouldExpandItem:");
+public static final int /*long*/ sel_outlineView_validateDrop_proposedItem_proposedChildIndex_ = sel_registerName("outlineView:validateDrop:proposedItem:proposedChildIndex:");
 public static final int /*long*/ sel_outlineView_willDisplayCell_forTableColumn_item_ = sel_registerName("outlineView:willDisplayCell:forTableColumn:item:");
+public static final int /*long*/ sel_outlineView_writeItems_toPasteboard_ = sel_registerName("outlineView:writeItems:toPasteboard:");
 public static final int /*long*/ sel_outlineViewColumnDidMove_ = sel_registerName("outlineViewColumnDidMove:");
 public static final int /*long*/ sel_outlineViewColumnDidResize_ = sel_registerName("outlineViewColumnDidResize:");
 public static final int /*long*/ sel_outlineViewItemDidExpand_ = sel_registerName("outlineViewItemDidExpand:");
@@ -1625,10 +1630,12 @@ public static final int /*long*/ sel_tabView_didSelectTabViewItem_ = sel_registe
 public static final int /*long*/ sel_tabView_willSelectTabViewItem_ = sel_registerName("tabView:willSelectTabViewItem:");
 public static final int /*long*/ sel_tabViewItemAtPoint_ = sel_registerName("tabViewItemAtPoint:");
 public static final int /*long*/ sel_tableColumns = sel_registerName("tableColumns");
+public static final int /*long*/ sel_tableView_acceptDrop_row_dropOperation_ = sel_registerName("tableView:acceptDrop:row:dropOperation:");
 public static final int /*long*/ sel_tableView_didClickTableColumn_ = sel_registerName("tableView:didClickTableColumn:");
 public static final int /*long*/ sel_tableView_objectValueForTableColumn_row_ = sel_registerName("tableView:objectValueForTableColumn:row:");
 public static final int /*long*/ sel_tableView_setObjectValue_forTableColumn_row_ = sel_registerName("tableView:setObjectValue:forTableColumn:row:");
 public static final int /*long*/ sel_tableView_shouldEditTableColumn_row_ = sel_registerName("tableView:shouldEditTableColumn:row:");
+public static final int /*long*/ sel_tableView_validateDrop_proposedRow_proposedDropOperation_ = sel_registerName("tableView:validateDrop:proposedRow:proposedDropOperation:");
 public static final int /*long*/ sel_tableView_willDisplayCell_forTableColumn_row_ = sel_registerName("tableView:willDisplayCell:forTableColumn:row:");
 public static final int /*long*/ sel_tableViewColumnDidMove_ = sel_registerName("tableViewColumnDidMove:");
 public static final int /*long*/ sel_tableViewColumnDidResize_ = sel_registerName("tableViewColumnDidResize:");
@@ -1855,6 +1862,7 @@ public static final int NSOpenGLPFAStereo = 6;
 public static final int NSOtherMouseDown = 25;
 public static final int NSOtherMouseDragged = 27;
 public static final int NSOtherMouseUp = 26;
+public static final int NSOutlineViewDropOnItemIndex = -1;
 public static final int NSPageDownFunctionKey = 63277;
 public static final int NSPageUpFunctionKey = 63276;
 public static final int NSPrintPanelShowsPageSetupAccessory = 256;
@@ -1886,6 +1894,8 @@ public static final int NSSwitchButton = 3;
 public static final int NSTabCharacter = 9;
 public static final int NSTableColumnNoResizing = 0;
 public static final int NSTableColumnUserResizingMask = 2;
+public static final int NSTableViewDropAbove = 1;
+public static final int NSTableViewDropOn = 0;
 public static final int NSTableViewNoColumnAutoresizing = 0;
 public static final int NSTextFieldAndStepperDatePickerStyle = 0;
 public static final int NSTitledWindowMask = 1;

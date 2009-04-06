@@ -3489,6 +3489,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(class_1getMethodImplementation)
 }
 #endif
 
+#ifndef NO_class_1getSuperclass
+JNIEXPORT jintLong JNICALL OS_NATIVE(class_1getSuperclass)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, class_1getSuperclass_FUNC);
+	rc = (jintLong)class_getSuperclass((Class)arg0);
+	OS_NATIVE_EXIT(env, that, class_1getSuperclass_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_getpid
 JNIEXPORT jint JNICALL OS_NATIVE(getpid)
 	(JNIEnv *env, jclass that)

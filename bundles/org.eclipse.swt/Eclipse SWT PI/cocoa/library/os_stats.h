@@ -298,6 +298,7 @@ typedef enum {
 	class_1getInstanceMethod_FUNC,
 	class_1getMethodImplementation_FUNC,
 	class_1getName_FUNC,
+	class_1getSuperclass_FUNC,
 	dragSelectionWithEvent_1offset_1slideBack_1CALLBACK_FUNC,
 	draggedImage_1beganAt_1CALLBACK_FUNC,
 	draggedImage_1endedAt_1operation_1CALLBACK_FUNC,
