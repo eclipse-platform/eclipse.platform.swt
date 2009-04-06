@@ -1378,6 +1378,10 @@ void showWidget () {
 	if (scrolledHandle == 0) fixStyle (handle);
 }
 
+boolean checkSubwindow () {
+	return true;
+}
+
 boolean translateMnemonic (Event event, Control control) {
 	if (super.translateMnemonic (event, control)) return true;
 	if (control != null) {

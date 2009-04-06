@@ -2181,6 +2181,10 @@ public void setVisibleItemCount (int count) {
 	visibleCount = count;
 }
 
+boolean checkSubwindow () {
+	return false;
+}
+
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {

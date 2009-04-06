@@ -2628,6 +2628,7 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+	if (gdkEvent.subwindow != 0 && checkSubwindow ()) return 0;
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
 	if ((gdkEvent.state & (OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK)) != 0) return 0;
 	if (display.currentControl != null && !display.currentControl.isDisposed ()) {
@@ -2639,6 +2640,10 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 		return sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 	}
 	return 0;
+}
+
+boolean checkSubwindow () {
+	return false;
 }
 
 int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {

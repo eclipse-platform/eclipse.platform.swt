@@ -251,6 +251,10 @@ void createHandle (int index) {
 	}
 }
 
+boolean checkSubwindow () {
+	return false;
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	if ((style & SWT.CALENDAR) != 0) {

@@ -1127,6 +1127,10 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
+boolean checkSubwindow () {
+	return false;
+}
+
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {
