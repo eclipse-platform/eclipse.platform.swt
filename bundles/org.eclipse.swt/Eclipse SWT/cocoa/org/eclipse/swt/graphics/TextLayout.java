@@ -127,6 +127,7 @@ void computeRuns() {
 	NSString str = NSString.stringWith(segmentsText);
 	textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
+	layoutManager.setBackgroundLayoutEnabled(NSThread.isMainThread());
 	textContainer = (NSTextContainer)new NSTextContainer().alloc();
 	NSSize size = new NSSize();
 	size.width = wrapWidth != -1 ? wrapWidth : Float.MAX_VALUE;

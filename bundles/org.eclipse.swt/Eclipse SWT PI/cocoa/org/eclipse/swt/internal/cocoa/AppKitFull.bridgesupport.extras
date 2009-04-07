@@ -1897,6 +1897,10 @@
 			<arg name="charRange" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setBackgroundLayoutEnabled:" swt_gen="true">
+			<arg name="flag" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setLineFragmentRect:forGlyphRange:usedRect:" swt_gen="true">
 			<arg name="fragmentRect" swt_gen="true"></arg>
 			<arg name="glyphRange" swt_gen="true"></arg>

@@ -116,6 +116,10 @@ public void removeTemporaryAttribute(NSString attrName, NSRange charRange) {
 	OS.objc_msgSend(this.id, OS.sel_removeTemporaryAttribute_forCharacterRange_, attrName != null ? attrName.id : 0, charRange);
 }
 
+public void setBackgroundLayoutEnabled(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundLayoutEnabled_, flag);
+}
+
 public void setLineFragmentRect(NSRect fragmentRect, NSRange glyphRange, NSRect usedRect) {
 	OS.objc_msgSend(this.id, OS.sel_setLineFragmentRect_forGlyphRange_usedRect_, fragmentRect, glyphRange, usedRect);
 }

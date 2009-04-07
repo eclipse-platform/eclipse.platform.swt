@@ -1389,6 +1389,7 @@ public static final int /*long*/ sel_setAutoresizesSubviews_ = sel_registerName(
 public static final int /*long*/ sel_setAutoresizingMask_ = sel_registerName("setAutoresizingMask:");
 public static final int /*long*/ sel_setAutosaveExpandedItems_ = sel_registerName("setAutosaveExpandedItems:");
 public static final int /*long*/ sel_setBackgroundColor_ = sel_registerName("setBackgroundColor:");
+public static final int /*long*/ sel_setBackgroundLayoutEnabled_ = sel_registerName("setBackgroundLayoutEnabled:");
 public static final int /*long*/ sel_setBezelStyle_ = sel_registerName("setBezelStyle:");
 public static final int /*long*/ sel_setBorderType_ = sel_registerName("setBorderType:");
 public static final int /*long*/ sel_setBorderWidth_ = sel_registerName("setBorderWidth:");
