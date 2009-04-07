@@ -7271,7 +7271,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(InternetGetCookieA)
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jboolean)InternetGetCookieA((LPCTSTR)lparg0, (LPCTSTR)lparg1, (LPSTR)lparg2, lparg3);
+	rc = (jboolean)InternetGetCookieA((LPCTSTR)lparg0, (LPCTSTR)lparg1, (LPSTR)lparg2, (LPDWORD)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
@@ -7296,7 +7296,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(InternetGetCookieW)
 	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jboolean)InternetGetCookieW((LPCWSTR)lparg0, (LPCWSTR)lparg1, (LPWSTR)lparg2, lparg3);
+	rc = (jboolean)InternetGetCookieW((LPCWSTR)lparg0, (LPCWSTR)lparg1, (LPWSTR)lparg2, (LPDWORD)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);

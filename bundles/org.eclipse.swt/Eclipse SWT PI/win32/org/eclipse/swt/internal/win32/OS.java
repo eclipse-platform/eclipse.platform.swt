@@ -4668,12 +4668,14 @@ public static final native boolean InsertMenuItemA (int /*long*/ hMenu, int uIte
  * @param lpszUrl cast=(LPCTSTR)
  * @param lpszCookieName cast=(LPCTSTR)
  * @param lpszCookieData cast=(LPSTR)
+ * @param lpdwSize cast=(LPDWORD)
  */
 public static final native boolean InternetGetCookieA (byte[] lpszUrl, byte[] lpszCookieName, byte[] lpszCookieData, int[] lpdwSize);
 /**
  * @param lpszUrl cast=(LPCWSTR)
  * @param lpszCookieName cast=(LPCWSTR)
  * @param lpszCookieData cast=(LPWSTR)
+ * @param lpdwSize cast=(LPDWORD)
  */
 public static final native boolean InternetGetCookieW (char[] lpszUrl, char[] lpszCookieName, char[] lpszCookieData, int[] lpdwSize);
 /**

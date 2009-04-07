@@ -338,7 +338,10 @@
 #define NO_IIDFromString
 #define NO_ImmDisableTextFrameService
 #define NO_ImmGetCompositionFontA
-#define NO_ImmGetCompositionStringA
+#define NO_ImmGetCompositionStringA__II_3BI
+#define NO_ImmGetCompositionStringA__JI_3BI
+#define NO_ImmGetCompositionStringA__II_3II
+#define NO_ImmGetCompositionStringA__JI_3II
 #define NO_ImmSetCompositionFontA
 #define NO_InsertMenuA
 #define NO_InsertMenuItemA
