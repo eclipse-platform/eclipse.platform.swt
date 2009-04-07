@@ -274,6 +274,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	if ((clipboards & DND.CLIPBOARD) == 0) return null;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+	if (pasteboard == null) return null;
 	String[] typeNames = transfer.getTypeNames();
 	NSMutableArray types = NSMutableArray.arrayWithCapacity(typeNames.length);
 	for (int i = 0; i < typeNames.length; i++) {
