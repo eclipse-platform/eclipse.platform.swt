@@ -1000,21 +1000,10 @@ int /*long*/ outlineView_numberOfChildrenOfItem(int /*long*/ id, int /*long*/ se
 void outlineView_willDisplayCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
 }
 
-boolean outlineView_shouldCollapseItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
-	return false;
-}
-
-boolean outlineView_shouldExpandItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
-	return false;
-}
-
 void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 }
 
 void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
-}
-
-void outlineViewItemDidExpand(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
 void outlineViewSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {

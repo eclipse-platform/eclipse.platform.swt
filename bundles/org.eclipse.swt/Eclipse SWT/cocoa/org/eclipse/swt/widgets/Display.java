@@ -2095,9 +2095,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_highlightSelectionInClipRect_, highlightSelectionInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_outlineViewItemDidExpand_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_outlineView_shouldCollapseItem_, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_shouldExpandItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_child_ofItem_, proc5, "@:@i@");
 	OS.class_addMethod(cls, OS.sel_outlineView_isItemExpandable_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
@@ -4469,8 +4466,6 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.menuNeedsUpdate(id, sel, arg0);
 	} else if (sel == OS.sel_outlineViewSelectionDidChange_) {
 		widget.outlineViewSelectionDidChange(id, sel, arg0);
-	} else if (sel == OS.sel_outlineViewItemDidExpand_) {
-		widget.outlineViewItemDidExpand(id, sel, arg0);
 	} else if (sel == OS.sel_sendEvent_) {
 		widget.windowSendEvent(id, sel, arg0);
 	} else if (sel == OS.sel_helpRequested_) {
@@ -4566,10 +4561,6 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		return widget.outlineView_isItemExpandable(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_numberOfChildrenOfItem_) {
 		return widget.outlineView_numberOfChildrenOfItem(id, sel, arg0, arg1);
-	} else if (sel == OS.sel_outlineView_shouldCollapseItem_) {
-		return widget.outlineView_shouldCollapseItem(id, sel, arg0, arg1) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_shouldExpandItem_) {
-		return widget.outlineView_shouldExpandItem(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_menu_willHighlightItem_) {
 		widget.menu_willHighlightItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_setMarkedText_selectedRange_) {

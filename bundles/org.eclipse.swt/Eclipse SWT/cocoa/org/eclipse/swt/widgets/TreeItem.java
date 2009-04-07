@@ -985,6 +985,22 @@ public void removeAll () {
 	parent.setItemCount (0);
 }
 
+void sendExpand (boolean expand, boolean recurse) {
+	if (itemCount == 0) return;
+	if (expanded != expand) {
+		Event event = new Event ();
+		event.item = this;
+		parent.sendEvent (expand ? SWT.Expand : SWT.Collapse, event);
+		if (isDisposed ()) return;
+		expanded = expand;
+	}
+	if (recurse) {
+		for (int i = 0; i < itemCount; i++) {
+			if (items[i] != null) items[i].sendExpand (expand, recurse);
+		}
+	}
+}
+
 /**
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the item
@@ -1423,6 +1439,7 @@ public void setText (String string) {
 }
 
 void updateExpanded () {
+	if (itemCount == 0) return;
 	NSOutlineView outlineView = (NSOutlineView)parent.view;
 	if (expanded != outlineView.isItemExpanded (handle)) {
 		if (expanded) {
