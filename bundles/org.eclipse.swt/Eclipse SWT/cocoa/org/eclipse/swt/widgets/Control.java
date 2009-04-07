@@ -3144,6 +3144,7 @@ public void setCursor (Cursor cursor) {
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
 	if (!isEnabled()) return;
+	if (!view.window().areCursorRectsEnabled()) return;
 	display.setCursor (display.currentControl);
 }
 
