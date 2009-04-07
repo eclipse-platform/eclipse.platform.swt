@@ -1094,7 +1094,7 @@ public void removeShellListener(ShellListener listener) {
 }
 
 void sendToolTipEvent (boolean enter) {
-	if (isVisible()) return;
+	if (!isVisible()) return;
 	if (tooltipTag == 0) {
 		NSView view = window.contentView();
 		tooltipTag = view.addToolTipRect(new NSRect(), window, 0);
