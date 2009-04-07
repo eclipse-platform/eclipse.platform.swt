@@ -270,6 +270,7 @@ void createHandle () {
 	
 	column = (NSTableColumn)new NSTableColumn().alloc();
 	column = column.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
+	column.setWidth(0);
 	widget.addTableColumn (column);
 	
 	scrollView = scrollWidget;

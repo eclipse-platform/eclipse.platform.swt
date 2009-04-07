@@ -515,6 +515,7 @@ void createHandle () {
 	* column always has a minimal width that makes this call come in.
 	*/
 	firstColumn.setMinWidth (FIRST_COLUMN_MINIMUM_WIDTH);
+	firstColumn.setWidth(0);
 	firstColumn.headerCell ().setTitle (str);
 	widget.addTableColumn (firstColumn);
 	dataCell = (NSTextFieldCell)new SWTImageTextCell ().alloc ().init ();
