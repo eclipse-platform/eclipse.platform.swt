@@ -29,6 +29,11 @@ public NSToolbarItem initWithItemIdentifier(NSString itemIdentifier) {
 	return result == this.id ? this : (result != 0 ? new NSToolbarItem(result) : null);
 }
 
+public NSString itemIdentifier() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemIdentifier);
+	return result != 0 ? new NSString(result) : null;
+}
+
 public void setAction(int /*long*/ action) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, action);
 }
@@ -51,6 +56,10 @@ public void setMaxSize(NSSize size) {
 
 public void setMinSize(NSSize size) {
 	OS.objc_msgSend(this.id, OS.sel_setMinSize_, size);
+}
+
+public void setPaletteLabel(NSString paletteLabel) {
+	OS.objc_msgSend(this.id, OS.sel_setPaletteLabel_, paletteLabel != null ? paletteLabel.id : 0);
 }
 
 public void setTarget(id target) {

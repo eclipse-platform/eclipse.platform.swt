@@ -29,6 +29,10 @@ public NSButton addButtonWithTitle(NSString title) {
 	return result != 0 ? new NSButton(result) : null;
 }
 
+public void beginSheetModalForWindow(NSWindow window, id delegate, int /*long*/ didEndSelector, int /*long*/ contextInfo) {
+	OS.objc_msgSend(this.id, OS.sel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_, window != null ? window.id : 0, delegate != null ? delegate.id : 0, didEndSelector, contextInfo);
+}
+
 public int /*long*/ runModal() {
 	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }

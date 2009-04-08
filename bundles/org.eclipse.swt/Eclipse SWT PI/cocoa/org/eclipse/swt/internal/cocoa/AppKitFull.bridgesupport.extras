@@ -128,7 +128,15 @@
 	<constant name="NSStringPboardType" swt_gen="true"></constant>
 	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
 	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
+	<constant name="NSToolbarCustomizeToolbarItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarDidRemoveItemNotification" swt_gen="true"></constant>
+	<constant name="NSToolbarFlexibleSpaceItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarPrintItemIdentifier" swt_gen="true"></constant>
 	<constant name="NSToolbarSeparatorItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarShowColorsItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarShowFontsItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarSpaceItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarWillAddItemNotification" swt_gen="true"></constant>
 	<constant name="NSURLPboardType" swt_gen="true"></constant>
 	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
@@ -408,6 +416,13 @@
 	<class name="NSAlert" swt_gen="mixed">
 		<method selector="addButtonWithTitle:" swt_gen="true">
 			<arg name="title" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:" swt_gen="true">
+			<arg name="window" swt_gen="true"></arg>
+			<arg name="delegate" swt_gen="true"></arg>
+			<arg name="didEndSelector" swt_gen="true"></arg>
+			<arg name="contextInfo" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="runModal" swt_gen="true">
@@ -2904,7 +2919,63 @@
 	</class>
 	<class name="NSSecureTextFieldCell" swt_superclass="NSTextFieldCell">
 	</class>
-	<class name="NSSegmentedCell" swt_superclass="NSActionCell">
+	<class name="NSSegmentedCell" swt_gen="mixed" swt_superclass="NSActionCell">
+		<method selector="setEnabled:forSegment:" swt_gen="true">
+			<arg name="enabled" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setImage:forSegment:" swt_gen="true">
+			<arg name="image" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setLabel:forSegment:" swt_gen="true">
+			<arg name="label" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setMenu:forSegment:" swt_gen="true">
+			<arg name="menu" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSegmentCount:" swt_gen="true">
+			<arg name="count" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSegmentStyle:" swt_gen="true">
+			<arg name="segmentStyle" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSelected:forSegment:" swt_gen="true">
+			<arg name="selected" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSelectedSegment:" swt_gen="true">
+			<arg name="selectedSegment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setTag:forSegment:" swt_gen="true">
+			<arg name="tag" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setToolTip:forSegment:" swt_gen="true">
+			<arg name="toolTip" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setTrackingMode:" swt_gen="true">
+			<arg name="trackingMode" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setWidth:forSegment:" swt_gen="true">
+			<arg name="width" swt_gen="true"></arg>
+			<arg name="segment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSSegmentedControl" swt_superclass="NSControl">
 	</class>
@@ -3575,6 +3646,10 @@
 			<arg name="index" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setAllowsUserCustomization:" swt_gen="true">
+			<arg name="allowCustomization" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setDelegate:" swt_gen="true">
 			<arg name="delegate" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3592,6 +3667,9 @@
 		<method selector="initWithItemIdentifier:" swt_gen="true">
 			<arg name="itemIdentifier" swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSToolbarItem"></retval>
+		</method>
+		<method selector="itemIdentifier" swt_gen="true">
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAction:" swt_gen="true">
 			<arg name="action" swt_gen="true"></arg>
@@ -3615,6 +3693,10 @@
 		</method>
 		<method selector="setMinSize:" swt_gen="true">
 			<arg name="size" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setPaletteLabel:" swt_gen="true">
+			<arg name="paletteLabel" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setTarget:" swt_gen="true">
@@ -4269,6 +4351,9 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSComboBoxNotifications" swt_gen="mixed">
+		<method selector="comboBoxSelectionDidChange:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
 		<method selector="comboBoxWillDismiss:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>
@@ -4492,7 +4577,7 @@
 			<arg name="data" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
-	<informal_protocol name="NSToolbarDelegate" swt_gen="mixed">
+	<informal_protocol name="NSToolbarDelegate" swt_gen="true">
 		<method selector="toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:" swt_gen="true">
 			<arg name="toolbar" swt_gen="true"></arg>
 			<arg name="itemIdentifier" swt_gen="true"></arg>
@@ -4503,6 +4588,17 @@
 		</method>
 		<method selector="toolbarDefaultItemIdentifiers:" swt_gen="true">
 			<arg name="toolbar" swt_gen="true"></arg>
+		</method>
+		<method selector="toolbarSelectableItemIdentifiers:" swt_gen="true">
+			<arg name="toolbar" swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="NSToolbarNotifications" swt_gen="true">
+		<method selector="toolbarDidRemoveItem:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
+		<method selector="toolbarWillAddItem:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSWindowDelegate" swt_gen="mixed">

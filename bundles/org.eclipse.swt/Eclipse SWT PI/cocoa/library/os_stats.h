@@ -263,7 +263,15 @@ typedef enum {
 	NSStrokeWidthAttributeName_FUNC,
 	NSTIFFPboardType_FUNC,
 	NSTemporaryDirectory_FUNC,
+	NSToolbarCustomizeToolbarItemIdentifier_FUNC,
+	NSToolbarDidRemoveItemNotification_FUNC,
+	NSToolbarFlexibleSpaceItemIdentifier_FUNC,
+	NSToolbarPrintItemIdentifier_FUNC,
 	NSToolbarSeparatorItemIdentifier_FUNC,
+	NSToolbarShowColorsItemIdentifier_FUNC,
+	NSToolbarShowFontsItemIdentifier_FUNC,
+	NSToolbarSpaceItemIdentifier_FUNC,
+	NSToolbarWillAddItemNotification_FUNC,
 	NSURLPboardType_FUNC,
 	NSUnderlineColorAttributeName_FUNC,
 	NSUnderlineStyleAttributeName_FUNC,
@@ -439,6 +447,11 @@ typedef enum {
 	objc_1msgSend__IIFFFF_FUNC,
 #else
 	objc_1msgSend__JJDDDD_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend__IIFI_FUNC,
+#else
+	objc_1msgSend__JJDJ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__III_FUNC,

@@ -2982,6 +2982,54 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSTemporaryDirectory)
 }
 #endif
 
+#ifndef NO_NSToolbarCustomizeToolbarItemIdentifier
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarCustomizeToolbarItemIdentifier)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarCustomizeToolbarItemIdentifier_FUNC);
+	rc = (jintLong)NSToolbarCustomizeToolbarItemIdentifier;
+	OS_NATIVE_EXIT(env, that, NSToolbarCustomizeToolbarItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolbarDidRemoveItemNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarDidRemoveItemNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarDidRemoveItemNotification_FUNC);
+	rc = (jintLong)NSToolbarDidRemoveItemNotification;
+	OS_NATIVE_EXIT(env, that, NSToolbarDidRemoveItemNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolbarFlexibleSpaceItemIdentifier
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarFlexibleSpaceItemIdentifier)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarFlexibleSpaceItemIdentifier_FUNC);
+	rc = (jintLong)NSToolbarFlexibleSpaceItemIdentifier;
+	OS_NATIVE_EXIT(env, that, NSToolbarFlexibleSpaceItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolbarPrintItemIdentifier
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarPrintItemIdentifier)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarPrintItemIdentifier_FUNC);
+	rc = (jintLong)NSToolbarPrintItemIdentifier;
+	OS_NATIVE_EXIT(env, that, NSToolbarPrintItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSToolbarSeparatorItemIdentifier
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarSeparatorItemIdentifier)
 	(JNIEnv *env, jclass that)
@@ -2990,6 +3038,54 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarSeparatorItemIdentifier)
 	OS_NATIVE_ENTER(env, that, NSToolbarSeparatorItemIdentifier_FUNC);
 	rc = (jintLong)NSToolbarSeparatorItemIdentifier;
 	OS_NATIVE_EXIT(env, that, NSToolbarSeparatorItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolbarShowColorsItemIdentifier
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarShowColorsItemIdentifier)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarShowColorsItemIdentifier_FUNC);
+	rc = (jintLong)NSToolbarShowColorsItemIdentifier;
+	OS_NATIVE_EXIT(env, that, NSToolbarShowColorsItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolbarShowFontsItemIdentifier
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarShowFontsItemIdentifier)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarShowFontsItemIdentifier_FUNC);
+	rc = (jintLong)NSToolbarShowFontsItemIdentifier;
+	OS_NATIVE_EXIT(env, that, NSToolbarShowFontsItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolbarSpaceItemIdentifier
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarSpaceItemIdentifier)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarSpaceItemIdentifier_FUNC);
+	rc = (jintLong)NSToolbarSpaceItemIdentifier;
+	OS_NATIVE_EXIT(env, that, NSToolbarSpaceItemIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolbarWillAddItemNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSToolbarWillAddItemNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolbarWillAddItemNotification_FUNC);
+	rc = (jintLong)NSToolbarWillAddItemNotification;
+	OS_NATIVE_EXIT(env, that, NSToolbarWillAddItemNotification_FUNC);
 	return rc;
 }
 #endif
@@ -4207,6 +4303,29 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJDDDD)(JNIEnv *env, jclass 
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIFFFF_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJDDDD_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend__IIFI) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJDJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIFI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jfloatDouble arg2, jintLong arg3)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJDJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jfloatDouble arg2, jintLong arg3)
+#endif
+{
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIFI_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJDJ_FUNC);
+#endif
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jfloatDouble, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIFI_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJDJ_FUNC);
 #endif
 	return rc;
 }

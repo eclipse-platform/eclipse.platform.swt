@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 449;
-int OS_nativeFunctionCallCount[449];
+int OS_nativeFunctionCount = 458;
+int OS_nativeFunctionCallCount[458];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -255,7 +255,15 @@ char * OS_nativeFunctionNames[] = {
 	"NSStrokeWidthAttributeName",
 	"NSTIFFPboardType",
 	"NSTemporaryDirectory",
+	"NSToolbarCustomizeToolbarItemIdentifier",
+	"NSToolbarDidRemoveItemNotification",
+	"NSToolbarFlexibleSpaceItemIdentifier",
+	"NSToolbarPrintItemIdentifier",
 	"NSToolbarSeparatorItemIdentifier",
+	"NSToolbarShowColorsItemIdentifier",
+	"NSToolbarShowFontsItemIdentifier",
+	"NSToolbarSpaceItemIdentifier",
+	"NSToolbarWillAddItemNotification",
 	"NSURLPboardType",
 	"NSUnderlineColorAttributeName",
 	"NSUnderlineStyleAttributeName",
@@ -431,6 +439,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIFFFF",
 #else
 	"objc_1msgSend__JJDDDD",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIFI",
+#else
+	"objc_1msgSend__JJDJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__III",
