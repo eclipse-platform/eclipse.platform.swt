@@ -36,6 +36,8 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class FileDialog extends Dialog {
+	NSSavePanel panel;
+	NSPopUpButton popup;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];	
@@ -192,7 +194,6 @@ public boolean getOverwrite () {
 public String open () {
 	String fullPath = null;
 	fileNames = new String [0];
-	NSSavePanel panel;
 	int /*long*/ method = 0;
 	int /*long*/ methodImpl = 0;
 	Callback callback = null;
@@ -213,6 +214,35 @@ public String open () {
 	}
 	panel.setCanCreateDirectories(true);
 	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
+	int /*long*/ jniRef = 0;
+	SWTPanelDelegate delegate = null;
+	if (filterExtensions != null && filterExtensions.length != 0) {
+		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
+		jniRef = OS.NewGlobalRef(this);
+		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
+		panel.setDelegate(delegate);
+		NSPopUpButton widget = (NSPopUpButton)new NSPopUpButton().alloc();
+		widget.initWithFrame(new NSRect(), false);
+		widget.setTarget(delegate);
+		widget.setAction(OS.sel_sendSelection_);
+		NSMenu menu = widget.menu();
+		menu.setAutoenablesItems(false);
+		for (int i = 0; i < filterExtensions.length; i++) {
+			String str = filterExtensions [i];
+			if (filterNames != null && filterNames.length > i) {
+				str = filterNames [i];
+			}
+			NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
+			nsItem.initWithTitle(NSString.stringWith(str), 0, NSString.stringWith(""));
+			menu.addItem(nsItem);
+			nsItem.release();
+		}
+		widget.selectItemAtIndex(0 <= filterIndex && filterIndex < filterExtensions.length ? filterIndex : 0);
+		widget.sizeToFit();
+		panel.setAccessoryView(widget);
+		popup = widget;
+	}
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	int /*long*/ response = panel.runModal();
 	if (overwrite) {
@@ -249,11 +279,63 @@ public String open () {
 		}
 		filterIndex = -1;
 	}
+	if (popup != null) {
+		filterIndex = (int)/*64*/popup.indexOfSelectedItem();
+		panel.setAccessoryView(null);
+		popup.release();
+		popup = null;
+	}
+	if (delegate != null) {
+		panel.setDelegate(null);
+		delegate.release();
+	}
+	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
+	panel = null;
 	return fullPath;	
 }
 
 int /*long*/ _overwriteExistingFileCheck (int /*long*/ id, int /*long*/ sel, int /*long*/ str) {
 	return 1;
+}
+
+int /*long*/ panel_shouldShowFilename (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	NSString path = new NSString(arg1);
+	if (filterExtensions != null && filterExtensions.length != 0) {
+		NSFileManager manager = NSFileManager.defaultManager();
+		int /*long*/ ptr = OS.malloc(1);
+		boolean found = manager.fileExistsAtPath(path, ptr);
+		byte[] isDirectory = new byte[1];
+		OS.memmove(isDirectory, ptr, 1);
+		OS.free(ptr);
+		if (found) {
+			if (isDirectory[0] != 0) {
+				return 1;
+			} else {
+				NSString ext = path.pathExtension();
+				if (ext != null) {
+					int filterIndex = (int)/*64*/popup.indexOfSelectedItem();
+					String extension = ext.getString();
+					String extensions = filterExtensions [filterIndex];
+					int start = 0, length = extensions.length ();
+					while (start < length) {
+						int index = extensions.indexOf (EXTENSION_SEPARATOR, start);
+						if (index == -1) index = length;
+						String filter = extensions.substring (start, index).trim ();
+						if (filter.equals ("*") || filter.equals ("*.*")) return 1;
+						if (filter.startsWith ("*.")) filter = filter.substring (2);
+						if (filter.toLowerCase ().equals(extension.toLowerCase ())) return 1;
+						start = index + 1;
+					}
+				}
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+void sendSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {
+	panel.validateVisibleColumns();
 }
 
 /**

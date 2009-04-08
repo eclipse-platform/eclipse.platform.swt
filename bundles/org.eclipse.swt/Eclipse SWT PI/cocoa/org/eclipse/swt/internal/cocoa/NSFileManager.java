@@ -38,6 +38,10 @@ public NSDirectoryEnumerator enumeratorAtPath(NSString path) {
 	return result != 0 ? new NSDirectoryEnumerator(result) : null;
 }
 
+public boolean fileExistsAtPath(NSString path, int /*long*/ isDirectory) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_fileExistsAtPath_isDirectory_, path != null ? path.id : 0, isDirectory);
+}
+
 public boolean removeItemAtPath(NSString path, int /*long*/ error) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_removeItemAtPath_error_, path != null ? path.id : 0, error);
 }

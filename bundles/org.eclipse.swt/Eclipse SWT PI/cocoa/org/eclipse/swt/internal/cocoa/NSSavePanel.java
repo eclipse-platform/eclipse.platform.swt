@@ -38,6 +38,10 @@ public static NSSavePanel savePanel() {
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 
+public void setAccessoryView(NSView view) {
+	OS.objc_msgSend(this.id, OS.sel_setAccessoryView_, view != null ? view.id : 0);
+}
+
 public void setCanCreateDirectories(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setCanCreateDirectories_, flag);
 }
@@ -48,6 +52,10 @@ public void setDirectory(NSString path) {
 
 public void setTitle(NSString title) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, title != null ? title.id : 0);
+}
+
+public void validateVisibleColumns() {
+	OS.objc_msgSend(this.id, OS.sel_validateVisibleColumns);
 }
 
 public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {

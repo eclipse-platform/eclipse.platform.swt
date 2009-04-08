@@ -2749,6 +2749,10 @@
 		<method class_method="true" selector="savePanel" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setAccessoryView:" swt_gen="true">
+			<arg name="view" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setCanCreateDirectories:" swt_gen="true">
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2759,6 +2763,9 @@
 		</method>
 		<method selector="setTitle:" swt_gen="true">
 			<arg name="title" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="validateVisibleColumns" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -4390,6 +4397,12 @@
 		<method selector="pasteboard:provideDataForType:" swt_gen="true">
 			<arg name="sender" swt_gen="true"></arg>
 			<arg name="type" swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="NSSavePanelDelegate" swt_gen="mixed">
+		<method selector="panel:shouldShowFilename:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<arg name="filename" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSTabViewDelegate" swt_gen="mixed">

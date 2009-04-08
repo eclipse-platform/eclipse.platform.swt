@@ -161,7 +161,7 @@ public class Display extends Device {
 	static Callback applicationDelegateCallback3;
 	static Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
 	static Callback windowDelegateCallback6;
-	static Callback dialogCallback3;
+	static Callback dialogCallback3, dialogCallback4;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
 	static Callback fieldEditorCallback3, fieldEditorCallback4;
 	
@@ -1879,7 +1879,10 @@ void initClasses () {
 	Class clazz = getClass ();
 	dialogCallback3 = new Callback(clazz, "dialogProc", 3);
 	int /*long*/ dialogProc3 = dialogCallback3.getAddress();
-	if (dialogProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
+	if (dialogProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	dialogCallback4 = new Callback(clazz, "dialogProc", 4);
+	int /*long*/ dialogProc4 = dialogCallback4.getAddress();
+	if (dialogProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
 	windowDelegateCallback3 = new Callback(clazz, "windowDelegateProc", 3);
 	int /*long*/ proc3 = windowDelegateCallback3.getAddress();
 	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1949,6 +1952,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowWillClose_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_changeColor_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_changeFont_, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_sendSelection_, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_panel_shouldShowFilename_, dialogProc4, "@:@@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTMenu";
@@ -4198,6 +4203,10 @@ static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		dialog.changeFont(id, sel, arg0);
+	} else if (sel == OS.sel_sendSelection_) {
+		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
+		if (dialog == null) return 0;
+		dialog.sendSelection(id, sel, arg0);
 	} else if (sel == OS.sel_windowWillClose_) {
 		Object object = OS.JNIGetObject(jniRef[0]);
 		if (object instanceof FontDialog) {
@@ -4205,6 +4214,18 @@ static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		} else if (object instanceof ColorDialog) {
 			((ColorDialog)object).windowWillClose(id, sel, arg0);
 		}
+	}
+	return 0;
+}
+
+static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	int /*long*/ [] jniRef = new int /*long*/ [1];
+	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
+	if (jniRef[0] == 0) return 0;
+	if (sel == OS.sel_panel_shouldShowFilename_) {
+		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
+		if (dialog == null) return 0;
+		return dialog.panel_shouldShowFilename(id, sel, arg0, arg1);
 	}
 	return 0;
 }

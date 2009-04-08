@@ -83,6 +83,11 @@ public NSString lowercaseString() {
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
+public NSString pathExtension() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_pathExtension);
+	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
+}
+
 public NSString stringByAddingPercentEscapesUsingEncoding(int /*long*/ enc) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByAddingPercentEscapesUsingEncoding_, enc);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
