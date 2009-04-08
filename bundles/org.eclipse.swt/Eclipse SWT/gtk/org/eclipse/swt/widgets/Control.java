@@ -4203,6 +4203,8 @@ boolean showMenu (int x, int y) {
 	event.x = x;
 	event.y = y;
 	sendEvent (SWT.MenuDetect, event);
+	//widget could be disposed at this point
+	if (isDisposed ()) return false;
 	if (event.doit) {
 		if (menu != null && !menu.isDisposed ()) {
 			boolean hooksKeys = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
