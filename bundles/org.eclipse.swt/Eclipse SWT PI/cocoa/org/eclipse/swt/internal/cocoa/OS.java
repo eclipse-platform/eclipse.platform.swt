@@ -714,6 +714,7 @@ public static final int /*long*/ sel_boundingRectForGlyphRange_inTextContainer_ 
 public static final int /*long*/ sel_bounds = sel_registerName("bounds");
 public static final int /*long*/ sel_bundleIdentifier = sel_registerName("bundleIdentifier");
 public static final int /*long*/ sel_bundlePath = sel_registerName("bundlePath");
+public static final int /*long*/ sel_bundleWithIdentifier_ = sel_registerName("bundleWithIdentifier:");
 public static final int /*long*/ sel_bundleWithPath_ = sel_registerName("bundleWithPath:");
 public static final int /*long*/ sel_button = sel_registerName("button");
 public static final int /*long*/ sel_buttonNumber = sel_registerName("buttonNumber");
@@ -1245,6 +1246,7 @@ public static final int /*long*/ sel_paste_ = sel_registerName("paste:");
 public static final int /*long*/ sel_pasteboard_provideDataForType_ = sel_registerName("pasteboard:provideDataForType:");
 public static final int /*long*/ sel_pasteboardWithName_ = sel_registerName("pasteboardWithName:");
 public static final int /*long*/ sel_pathExtension = sel_registerName("pathExtension");
+public static final int /*long*/ sel_pathForResource_ofType_ = sel_registerName("pathForResource:ofType:");
 public static final int /*long*/ sel_performDragOperation_ = sel_registerName("performDragOperation:");
 public static final int /*long*/ sel_performSelectorOnMainThread_withObject_waitUntilDone_ = sel_registerName("performSelectorOnMainThread:withObject:waitUntilDone:");
 public static final int /*long*/ sel_pixelsHigh = sel_registerName("pixelsHigh");

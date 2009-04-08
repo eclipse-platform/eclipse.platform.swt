@@ -120,6 +120,10 @@
 		<method selector="bundlePath" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="bundleWithIdentifier:" swt_gen="true">
+			<arg name="identifier" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="bundleWithPath:" swt_gen="true">
 			<arg name="path" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -132,6 +136,11 @@
 		</method>
 		<method selector="objectForInfoDictionaryKey:" swt_gen="true">
 			<arg name="key" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="pathForResource:ofType:" swt_gen="true">
+			<arg name="name" swt_gen="true"></arg>
+			<arg name="ext" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>

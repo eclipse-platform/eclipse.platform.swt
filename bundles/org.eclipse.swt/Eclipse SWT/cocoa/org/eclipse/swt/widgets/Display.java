@@ -4128,12 +4128,10 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 	id applicationDelegate = display.applicationDelegate;
 	NSApplication application = display.application;
 	if (sel == OS.sel_applicationWillFinishLaunching_) {
+		NSBundle javaFrameworkBundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
+		NSString defaultAppNib = javaFrameworkBundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
 		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-		NSString nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
-		if (!NSBundle.loadNibFile(nibFile, dict, 0)) {
-			nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
-			NSBundle.loadNibFile(nibFile, dict, 0);	
-		}
+		NSBundle.loadNibFile(defaultAppNib, dict, 0);
 		//replace %@ with application name
 		NSMenu mainmenu = application.mainMenu();
 		NSMenuItem appitem = mainmenu.itemAtIndex(0);

@@ -38,6 +38,11 @@ public NSString bundlePath() {
 	return result != 0 ? new NSString(result) : null;
 }
 
+public static NSBundle bundleWithIdentifier(NSString identifier) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSBundle, OS.sel_bundleWithIdentifier_, identifier != null ? identifier.id : 0);
+	return result != 0 ? new NSBundle(result) : null;
+}
+
 public static NSBundle bundleWithPath(NSString path) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSBundle, OS.sel_bundleWithPath_, path != null ? path.id : 0);
 	return result != 0 ? new NSBundle(result) : null;
@@ -56,6 +61,11 @@ public static NSBundle mainBundle() {
 public id objectForInfoDictionaryKey(NSString key) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectForInfoDictionaryKey_, key != null ? key.id : 0);
 	return result != 0 ? new id(result) : null;
+}
+
+public NSString pathForResource(NSString name, NSString ext) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_pathForResource_ofType_, name != null ? name.id : 0, ext != null ? ext.id : 0);
+	return result != 0 ? new NSString(result) : null;
 }
 
 }
