@@ -107,6 +107,10 @@ int getHandle() {
 	return result;
 }
 
+String getJSLibraryName () {
+	return "libmozjs.so"; //$NON-NLS-1$
+}
+
 String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }

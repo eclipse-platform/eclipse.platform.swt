@@ -79,6 +79,10 @@ int /*long*/ getHandle () {
 	return browser.view.id;
 }
 
+String getJSLibraryName () {
+	return "libmozjs.dylib"; //$NON-NLS-1$
+}
+
 String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }

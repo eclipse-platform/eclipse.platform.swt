@@ -56,6 +56,7 @@ MOZILLACFLAGS = -c \
 	$(NATIVE_STATS) \
 	-MD \
 	-DMOZILLA_STRICT_API=1 \
+	-DXULRUNNER \
 	-W3 \
 	-I. \
 	-I"$(JAVA_HOME)/include" \

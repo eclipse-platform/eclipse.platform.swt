@@ -21,15 +21,23 @@
 #include "nsIMemory.h"
 #include "nsISupportsUtils.h"
 #include "nsXPCOMGlue.h"
+#include "xpcom_custom.h"
+
+#ifdef XULRUNNER
+#ifndef nsIScriptContext_h__
+#include "nsIScriptContext.h"
+#include "nsIScriptGlobalObject.h"
+#endif /* nsIScriptContext_h__ */
+#endif
 
 #ifdef _WIN32
 #define STDMETHODCALLTYPE __stdcall
 #define NO__1NS_1InitXPCOM2
-#else
+#else /* _WIN32 */
 #define STDMETHODCALLTYPE
-#ifdef _OSX
+#ifdef __APPLE__
 #define NO__1NS_1InitXPCOM2
-#endif /* _OSX */
+#endif /* __APPLE__ */
 #endif /* _WIN32 */
 
 #define SWT_XREInitEmbedding nsresult (*)(nsILocalFile *,nsILocalFile *,nsIDirectoryServiceProvider *,nsStaticModuleInfo const *,PRUint32)

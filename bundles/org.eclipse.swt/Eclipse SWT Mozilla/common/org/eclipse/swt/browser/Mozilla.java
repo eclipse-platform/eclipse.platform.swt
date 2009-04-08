@@ -1679,18 +1679,118 @@ void disposeCOMInterfaces () {
 }
 
 public boolean execute (String script) {
-	String url = PREFIX_JAVASCRIPT + script + ";void(0);";	//$NON-NLS-1$
+	/*
+	* This could be the first content that is set into the browser, so
+	* ensure that the custom subclass that works around Mozilla bug
+	* https://bugzilla.mozilla.org/show_bug.cgi?id=453523 is removed.
+	*/
+	delegate.removeWindowSubclass ();
+
+	/*
+	* As of mozilla 1.9 executing javascript via the javascript: protocol no
+	* longer happens synchronously.  As a result, the result of executing JS
+	* is not returned to the java side when expected by the client.  The
+	* workaround is to invoke the javascript handler directly via C++, which is
+	* exposed as of mozilla 1.9.
+	*/
 	int /*long*/[] result = new int /*long*/[1];
+	if (!IsPre_1_9) {
+		int rc = XPCOM.NS_GetServiceManager (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+		result[0] = 0;
+		nsIPrincipal principal = null;
+		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_SCRIPTSECURITYMANAGER_CONTRACTID, true);
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager_1_9_1.NS_ISCRIPTSECURITYMANAGER_IID, result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			nsIScriptSecurityManager_1_9_1 securityManager = new nsIScriptSecurityManager_1_9_1 (result[0]);
+			result[0] = 0;
+			rc = securityManager.GetSystemPrincipal (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+			principal = new nsIPrincipal (result[0]);
+			result[0] = 0;
+			securityManager.Release ();
+		} else {
+			rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager_1_9.NS_ISCRIPTSECURITYMANAGER_IID, result);
+			if (rc == XPCOM.NS_OK && result[0] != 0) {
+				nsIScriptSecurityManager_1_9 securityManager = new nsIScriptSecurityManager_1_9 (result[0]);
+				result[0] = 0;
+				rc = securityManager.GetSystemPrincipal (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+				principal = new nsIPrincipal (result[0]);
+				result[0] = 0;
+				securityManager.Release ();
+			}
+		}
+		serviceManager.Release ();
+
+		if (principal != null) {
+			rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+			nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
+			result[0] = 0;
+			nsID scriptGlobalObjectNSID = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+			rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID, result);
+			interfaceRequestor.Release ();
+
+			if (rc == XPCOM.NS_OK && result[0] != 0) {
+				int /*long*/ scriptGlobalObject = result[0];
+				result[0] = 0;
+				rc = XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+				if (rc != XPCOM.NS_OK) error (rc);
+				int /*long*/ scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+				int /*long*/ globalJSObject = XPCOM.nsIScriptGlobalObject_GetScriptGlobal (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+				new nsISupports (scriptGlobalObject).Release ();
+
+				if (scriptContext != 0 && globalJSObject != 0) {
+					/* ensure that the received nsIScriptContext implements the expected interface */
+					nsID scriptContextNSID = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
+					rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID, result);
+					if (rc == XPCOM.NS_OK && result[0] != 0) {
+						new nsISupports (result[0]).Release ();
+						result[0] = 0;
+
+						int /*long*/ nativeContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
+						if (nativeContext != 0) {
+							int length = script.length ();
+							char[] scriptChars = new char[length];
+							script.getChars(0, length, scriptChars, 0);
+							byte[] urlbytes = MozillaDelegate.wcsToMbcs (null, getUrl (), true);
+							rc = principal.GetJSPrincipals (nativeContext, result);
+							if (rc == XPCOM.NS_OK && result[0] != 0) {
+								int /*long*/ principals = result[0];
+								result[0] = 0;
+								principal.Release ();
+								String mozillaPath = LocationProvider.mozillaPath + delegate.getJSLibraryName () + '\0';
+								byte[] pathBytes = null;
+								try {
+									pathBytes = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
+								} catch (UnsupportedEncodingException e) {
+									pathBytes = mozillaPath.getBytes ();
+								}
+								rc = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result);
+								return rc != 0;
+							}
+						}
+					}
+				}
+			}
+			principal.Release ();
+		}
+	}
+
+	/* fall back to the pre-1.9 approach */
+
+	String url = PREFIX_JAVASCRIPT + script + ";void(0);";	//$NON-NLS-1$
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-
-	/*
-	 * This could be the first content that is set into the browser, so
-	 * ensure that the custom subclass that works around Mozilla bug
-	 * https://bugzilla.mozilla.org/show_bug.cgi?id=453523 is removed.
-	 */
-	delegate.removeWindowSubclass ();
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
     char[] arg = url.toCharArray (); 

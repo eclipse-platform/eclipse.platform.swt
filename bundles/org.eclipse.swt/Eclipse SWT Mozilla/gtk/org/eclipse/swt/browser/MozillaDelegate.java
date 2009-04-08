@@ -89,6 +89,10 @@ int /*long*/ getHandle () {
 	return embedHandle;
 }
 
+String getJSLibraryName () {
+	return "libmozjs.so"; //$NON-NLS-1$
+}
+
 String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }

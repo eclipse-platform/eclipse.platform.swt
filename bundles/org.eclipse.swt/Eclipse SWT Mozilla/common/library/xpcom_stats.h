@@ -25,6 +25,7 @@ extern char* XPCOM_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	GetAddress_FUNC,
 #ifndef JNI64
 	_1Call__I_FUNC,
 #else
@@ -40,6 +41,7 @@ typedef enum {
 #else
 	_1Call__JJJ_3BII_3I_FUNC,
 #endif
+	_1JS_1EvaluateUCScriptForPrincipals_FUNC,
 	_1NS_1GetComponentManager_FUNC,
 	_1NS_1GetServiceManager_FUNC,
 	_1NS_1InitXPCOM2_FUNC,
@@ -100,9 +102,19 @@ typedef enum {
 	_1VtblCall__IJIIIIIIIIIIIIISI_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIIIIIIII_3I_FUNC,
+#else
+	_1VtblCall__IJIIIIIII_3I_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIIIIIII_3C_3I_3I_FUNC,
 #else
 	_1VtblCall__IJIIIIII_3C_3I_3I_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIIIIII_3I_FUNC,
+#else
+	_1VtblCall__IJIIIII_3I_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIIIIIJII_FUNC,
@@ -160,6 +172,16 @@ typedef enum {
 	_1VtblCall__IJII_3BI_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIII_3BII_FUNC,
+#else
+	_1VtblCall__IJII_3BII_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIII_3B_3B_FUNC,
+#else
+	_1VtblCall__IJII_3B_3B_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIII_3C_FUNC,
 #else
 	_1VtblCall__IJII_3C_FUNC,
@@ -195,9 +217,19 @@ typedef enum {
 	_1VtblCall__IJIJJ_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIIJJJJJJ_3J_FUNC,
+#else
+	_1VtblCall__IJIJJJJJJ_3J_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIILorg_eclipse_swt_internal_mozilla_nsID_2_FUNC,
 #else
 	_1VtblCall__IJILorg_eclipse_swt_internal_mozilla_nsID_2_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIILorg_eclipse_swt_internal_mozilla_nsID_2II_3I_FUNC,
+#else
+	_1VtblCall__IJILorg_eclipse_swt_internal_mozilla_nsID_2II_3I_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIILorg_eclipse_swt_internal_mozilla_nsID_2_3I_FUNC,
@@ -218,6 +250,11 @@ typedef enum {
 	_1VtblCall__III_3BI_3I_FUNC,
 #else
 	_1VtblCall__IJI_3BI_3I_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__III_3BS_FUNC,
+#else
+	_1VtblCall__IJI_3BS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__III_3B_3B_3BI_3I_FUNC,
@@ -405,6 +442,11 @@ typedef enum {
 	_1VtblCall__IJJJJJJJJ_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIJJJJJ_3J_FUNC,
+#else
+	_1VtblCall__IJJJJJJ_3J_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIJJJ_3B_3BJ_FUNC,
 #else
 	_1VtblCall__IJJJJ_3B_3BJ_FUNC,
@@ -423,6 +465,16 @@ typedef enum {
 	_1VtblCall__IIJJ_3BJ_FUNC,
 #else
 	_1VtblCall__IJJJ_3BJ_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJJ_3BJI_FUNC,
+#else
+	_1VtblCall__IJJJ_3BJI_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJJ_3B_3B_FUNC,
+#else
+	_1VtblCall__IJJJ_3B_3B_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIJJ_3CIJI_FUNC,
@@ -455,6 +507,11 @@ typedef enum {
 	_1VtblCall__IJJLorg_eclipse_swt_internal_mozilla_nsID_2_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2JJ_3J_FUNC,
+#else
+	_1VtblCall__IJJLorg_eclipse_swt_internal_mozilla_nsID_2JJ_3J_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
 #else
 	_1VtblCall__IJJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
@@ -470,9 +527,19 @@ typedef enum {
 	_1VtblCall__IJJ_3BI_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIJ_3BJ_FUNC,
+#else
+	_1VtblCall__IJJ_3BJ_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIJ_3BJ_3J_FUNC,
 #else
 	_1VtblCall__IJJ_3BJ_3J_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJ_3BS_FUNC,
+#else
+	_1VtblCall__IJJ_3BS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIJ_3B_3B_3BJ_3J_FUNC,
@@ -670,6 +737,11 @@ typedef enum {
 	_1VtblCall__IJ_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__II_3BJ_3I_FUNC,
+#else
+	_1VtblCall__IJ_3BJ_3I_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
 #else
 	_1VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
@@ -800,6 +872,11 @@ typedef enum {
 	_1VtblCall__IJ_3I_3I_3I_3I_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__II_3I_3I_3I_3I_3I_3I_FUNC,
+#else
+	_1VtblCall__IJ_3I_3I_3I_3I_3I_3I_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__II_3I_3J_FUNC,
 #else
 	_1VtblCall__IJ_3I_3J_FUNC,
@@ -828,6 +905,11 @@ typedef enum {
 	_1VtblCall__II_3J_3J_3J_FUNC,
 #else
 	_1VtblCall__IJ_3J_3J_3J_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__II_3J_3J_3J_3J_3J_3I_FUNC,
+#else
+	_1VtblCall__IJ_3J_3J_3J_3J_3J_3I_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__II_3S_FUNC,
@@ -867,6 +949,10 @@ typedef enum {
 	_1nsID_1new_FUNC,
 	_1nsIMemory_1Alloc_FUNC,
 	_1nsIMemory_1Realloc_FUNC,
+	_1nsIScriptContext_1GetNativeContext_FUNC,
+	_1nsIScriptGlobalObject_1EnsureScriptEnvironment_FUNC,
+	_1nsIScriptGlobalObject_1GetScriptContext_FUNC,
+	_1nsIScriptGlobalObject_1GetScriptGlobal_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I_FUNC,
 #else

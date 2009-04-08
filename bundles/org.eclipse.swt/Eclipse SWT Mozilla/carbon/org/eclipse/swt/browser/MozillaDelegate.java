@@ -178,6 +178,10 @@ int getHandle () {
 	return embedHandle;
 }
 
+String getJSLibraryName () {
+	return "libmozjs.dylib"; //$NON-NLS-1$
+}
+
 String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }

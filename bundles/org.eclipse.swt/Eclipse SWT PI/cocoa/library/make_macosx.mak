@@ -43,7 +43,7 @@ XULRUNNER_SDK = /Users/Shared/xulrunner/1.8.0.1/mozilla/dist/i386/dist/sdk
 #XULRUNNER_SDK = /Users/Shared/gecko-sdk
 #XULRUNNER_LIBS = -L${XULRUNNER_SDK}/lib -lxpcomglue
 XULRUNNER_LIBS = $(XULRUNNER_SDK)/lib/libxpcomglue.a $(XULRUNNER_SDK)/../../../ppc/dist/sdk/lib/libxpcomglue.a
-XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -D_OSX -I /System/Library/Frameworks/JavaVM.framework/Headers \
+XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -DXULRUNNER -I /System/Library/Frameworks/JavaVM.framework/Headers \
 	-Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include 
 XULRUNNERLFLAGS = $(LFLAGS)
 

@@ -81,6 +81,10 @@ int /*long*/ getHandle () {
 	return browser.handle;
 }
 
+String getJSLibraryName () {
+	return "js3250.dll"; //$NON-NLS-1$
+}
+
 String getLibraryName () {
 	return "xpcom.dll"; //$NON-NLS-1$
 }
