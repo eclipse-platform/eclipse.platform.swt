@@ -1972,6 +1972,8 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 		event.x = x;
 		event.y = y;
 		sendEvent (SWT.MenuDetect, event);
+		// widget could be disposed at this point
+		if (isDisposed ()) return OS.noErr;
 		if (event.doit) {
 			if (menu != null && !menu.isDisposed ()) {
 				if (event.x != x || event.y != y) {
