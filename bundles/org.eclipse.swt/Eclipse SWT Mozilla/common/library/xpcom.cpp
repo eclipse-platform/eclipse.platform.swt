@@ -6049,13 +6049,13 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetNativeContext)
 #endif
 
 #ifndef NO__1nsIScriptGlobalObject_1EnsureScriptEnvironment
-extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject_1EnsureScriptEnvironment)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject_1EnsureScriptEnvironment)
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject_1EnsureScriptEnvironment)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject_1EnsureScriptEnvironment)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
-	jintLong rc = 0;
+	jint rc = 0;
 	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptGlobalObject_1EnsureScriptEnvironment_FUNC);
-	rc = (jintLong)((nsIScriptGlobalObject *)arg0)->EnsureScriptEnvironment(arg1);
+	rc = (jint)((nsIScriptGlobalObject *)arg0)->EnsureScriptEnvironment(arg1);
 	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptGlobalObject_1EnsureScriptEnvironment_FUNC);
 	return rc;
 }

@@ -277,8 +277,8 @@ public static final int nsEmbedCString_Length(int /*long*/ ptr) {
  * @method flags=cpp
  * @param ptr cast=(nsIScriptGlobalObject *)
  */
-public static final native int /*long*/ _nsIScriptGlobalObject_EnsureScriptEnvironment(int /*long*/ ptr, int lang);
-public static final int /*long*/ nsIScriptGlobalObject_EnsureScriptEnvironment(int /*long*/ ptr, int lang) {
+public static final native int _nsIScriptGlobalObject_EnsureScriptEnvironment(int /*long*/ ptr, int lang);
+public static final int nsIScriptGlobalObject_EnsureScriptEnvironment(int /*long*/ ptr, int lang) {
 	lock.lock();
 	try {
 		return _nsIScriptGlobalObject_EnsureScriptEnvironment(ptr, lang);
