@@ -2071,6 +2071,8 @@ int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEv
 	event.x = x;
 	event.y = y;
 	sendEvent (SWT.MenuDetect, event);
+	//widget could be disposed at this point
+	if (isDisposed ()) return 0;
 	if (!event.doit) return 0;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
