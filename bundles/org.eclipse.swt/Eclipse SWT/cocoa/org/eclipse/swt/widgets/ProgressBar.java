@@ -39,6 +39,8 @@ import org.eclipse.swt.*;
  */
 public class ProgressBar extends Control {
 	
+	NSBezierPath visiblePath;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -97,20 +99,43 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	NSProgressIndicator widget = (NSProgressIndicator)new SWTProgressIndicator().alloc();
 	widget.init();
-	/*
-	* Bug in Cocoa.  Turning off threaded animation in NSProgressIndicator can cause
-	* the widget to attempt to access a deallocated NSBitmapGraphicsContext when  
-	* drawing itself.  The work around is to leave threaded animation on.
-	* 
-	*  This code is intentionally commented.
-	*/
-//	widget.setUsesThreadedAnimation(false);
+	widget.setUsesThreadedAnimation(false);
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
 	view = widget;
 }
 
 NSFont defaultNSFont () {
 	return display.progressIndicatorFont;
+}
+
+void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	/*
+	* Bug in Cocoa.  When the threaded animation is turned off by calling
+	* setUsesThreadedAnimation(), _drawThemeProgressArea() attempts to
+	* access a deallocated NSBitmapGraphicsContext when drawing a zero sized
+	* progress bar.  The fix is to avoid calling super when progress is
+	* zero sized.
+	*/
+	NSRect frame = view.frame();
+	System.out.println(frame);
+	if (frame.width == 0 || frame.height == 0) return;
+	
+	/*
+	* Bug in Cocoa. When the progress bar is animating it calls
+	* _drawThemeProgressArea() directly without taking into account
+	* obscured areas. The fix is to clip the drawing to the visible
+	* region of the progress bar before calling super.
+	*/	
+	if (visiblePath == null) {
+		int /*long*/ visibleRegion = getVisibleRegion();
+		visiblePath = getPath(visibleRegion);
+		OS.DisposeRgn(visibleRegion);
+	}
+	NSGraphicsContext context = NSGraphicsContext.currentContext();
+	context.saveGraphicsState();
+	visiblePath.setClip();
+	super._drawThemeProgressArea (id, sel, arg0);
+	context.restoreGraphicsState();	
 }
 
 /**
@@ -267,6 +292,18 @@ public void setSelection (int value) {
 public void setState (int state) {
 	checkWidget ();
 	//NOT IMPLEMENTED
+}
+
+void releaseWidget () {
+	super.releaseWidget();
+	if (visiblePath != null) visiblePath.release();
+	visiblePath = null;
+}
+
+void resetVisibleRegion () {
+	super.resetVisibleRegion ();
+	if (visiblePath != null) visiblePath.release();
+	visiblePath = null;
 }
 
 void viewDidMoveToWindow(int /*long*/ id, int /*long*/ sel) {

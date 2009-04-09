@@ -49,6 +49,8 @@ public class OS extends C {
 
 	public static final int /*long*/ sel_contextID = OS.sel_registerName("contextID");
 
+	public static final int /*long*/ sel__drawThemeProgressArea_ = OS.sel_registerName("_drawThemeProgressArea:");
+
 	public static final int /*long*/ class_WebPanelAuthenticationHandler = OS.objc_getClass("WebPanelAuthenticationHandler");
 	public static final int /*long*/ sel_sharedHandler = sel_registerName("sharedHandler");
 	public static final int /*long*/ sel_startAuthentication = sel_registerName("startAuthentication:window:");

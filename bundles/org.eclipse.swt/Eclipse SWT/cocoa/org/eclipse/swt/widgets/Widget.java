@@ -572,6 +572,13 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	display.isPainting.removeObjectIdenticalTo(view);
 }
 
+void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, arg0);
+}
+
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 }
 

@@ -2143,6 +2143,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_viewDidMoveToWindow, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel__drawThemeProgressArea_, proc3, "@:c");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -4411,6 +4412,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		widget.drawRect(id, sel, rect);
+	} else if (sel == OS.sel__drawThemeProgressArea_) {
+		widget._drawThemeProgressArea(id, sel, arg0);
 	} else if (sel == OS.sel_setFrameOrigin_) {
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg0, NSPoint.sizeof);

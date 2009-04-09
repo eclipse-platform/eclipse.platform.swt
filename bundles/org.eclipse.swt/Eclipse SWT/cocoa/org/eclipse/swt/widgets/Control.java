@@ -1585,11 +1585,15 @@ Control [] getPath () {
 
 NSBezierPath getPath(Region region) {
 	if (region == null) return null;
+	return getPath(region.handle);
+}
+
+NSBezierPath getPath(int /*long*/ region) {
 	Callback callback = new Callback(this, "regionToRects", 4);
 	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	NSBezierPath path = NSBezierPath.bezierPath();
 	path.retain();
-	OS.QDRegionToRects(region.handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
+	OS.QDRegionToRects(region, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
 	callback.dispose();
 	if (path.isEmpty()) path.appendBezierPathWithRect(new NSRect());
 	return path;
