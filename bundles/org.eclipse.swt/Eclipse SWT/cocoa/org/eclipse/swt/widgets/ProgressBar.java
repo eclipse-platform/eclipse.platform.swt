@@ -117,7 +117,6 @@ void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg
 	* zero sized.
 	*/
 	NSRect frame = view.frame();
-	System.out.println(frame);
 	if (frame.width == 0 || frame.height == 0) return;
 	
 	/*
