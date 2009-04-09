@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 458;
-int OS_nativeFunctionCallCount[458];
+int OS_nativeFunctionCount = 460;
+int OS_nativeFunctionCallCount[460];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -207,6 +207,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityWindowAttribute",
 	"NSAccessibilityWindowRole",
 	"NSAffineTransformStruct_1sizeof",
+	"NSApplicationDidChangeScreenParametersNotification",
 	"NSBackgroundColorAttributeName",
 	"NSBaselineOffsetAttributeName",
 	"NSBeep",
@@ -253,6 +254,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSStrikethroughStyleAttributeName",
 	"NSStringPboardType",
 	"NSStrokeWidthAttributeName",
+	"NSSystemColorsDidChangeNotification",
 	"NSTIFFPboardType",
 	"NSTemporaryDirectory",
 	"NSToolbarCustomizeToolbarItemIdentifier",

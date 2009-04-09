@@ -2394,6 +2394,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSAffineTransformStruct_1sizeof)
 }
 #endif
 
+#ifndef NO_NSApplicationDidChangeScreenParametersNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSApplicationDidChangeScreenParametersNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSApplicationDidChangeScreenParametersNotification_FUNC);
+	rc = (jintLong)NSApplicationDidChangeScreenParametersNotification;
+	OS_NATIVE_EXIT(env, that, NSApplicationDidChangeScreenParametersNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSBackgroundColorAttributeName
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSBackgroundColorAttributeName)
 	(JNIEnv *env, jclass that)
@@ -2954,6 +2966,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSStrokeWidthAttributeName)
 	OS_NATIVE_ENTER(env, that, NSStrokeWidthAttributeName_FUNC);
 	rc = (jintLong)NSStrokeWidthAttributeName;
 	OS_NATIVE_EXIT(env, that, NSStrokeWidthAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSSystemColorsDidChangeNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSSystemColorsDidChangeNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSSystemColorsDidChangeNotification_FUNC);
+	rc = (jintLong)NSSystemColorsDidChangeNotification;
+	OS_NATIVE_EXIT(env, that, NSSystemColorsDidChangeNotification_FUNC);
 	return rc;
 }
 #endif

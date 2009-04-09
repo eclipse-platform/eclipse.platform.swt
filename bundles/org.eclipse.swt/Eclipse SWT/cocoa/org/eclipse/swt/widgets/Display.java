@@ -277,6 +277,11 @@ public class Display extends Device {
 	NSTimer nsTimers [];
 	SWTWindowDelegate timerDelegate;
 	SWTApplicationDelegate applicationDelegate;
+
+	/* Settings */
+	boolean runSettings;
+	SWTWindowDelegate settingsDelegate;
+
 	static final int DEFAULT_BUTTON_INTERVAL = 30;
 	
 	/* Display Data */
@@ -1771,6 +1776,11 @@ protected void init () {
 	if (method != 0) oldCursorSetProc = OS.method_setImplementation(method, cursorSetProc);
 		
 	timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+
+	settingsDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+	NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
+	defaultCenter.addObserver(settingsDelegate, OS.sel_systemSettingsChanged_, OS.NSSystemColorsDidChangeNotification, null);
+	defaultCenter.addObserver(settingsDelegate, OS.sel_systemSettingsChanged_, OS.NSApplicationDidChangeScreenParametersNotification, null);
 	
 	NSTextView textView = (NSTextView)new NSTextView().alloc();
 	textView.init ();
@@ -1944,6 +1954,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowDidResignKey_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_timerProc_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_systemSettingsChanged_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTPanelDelegate";
@@ -2949,6 +2960,7 @@ public boolean readAndDispatch () {
 	loopCount++;
 	boolean events = false;
 	try {
+		events |= runSettings ();
 		events |= runTimers ();
 		events |= runContexts ();
 		events |= runPopups ();
@@ -3112,6 +3124,12 @@ void releaseDisplay () {
 	cursorSetCallback = null;
 
 	deadKeyState = null;
+
+	if (settingsDelegate != null) {
+		NSNotificationCenter.defaultCenter().removeObserver(settingsDelegate);
+		settingsDelegate.release();
+	}
+	settingsDelegate = null;
 	
 	// Clear the menu bar if we created it.
 	if (!isEmbedded) {
@@ -3346,6 +3364,21 @@ boolean runPopups () {
 	}
 	popups = null;
 	return result;
+}
+
+boolean runSettings () {
+	if (!runSettings) return false;
+	runSettings = false;
+	sendEvent (SWT.Settings, null);
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) {
+			shell.redraw (true);
+			shell.layout (true, true);
+		}
+	}
+	return true;
 }
 
 boolean runTimers () {
@@ -4403,6 +4436,13 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		Display display = getCurrent ();
 		if (display == null) return 0;
 		return display.timerProc (id, sel, arg0);
+	}
+	if (sel == OS.sel_systemSettingsChanged_) {
+		//TODO optimize getting the display
+		Display display = getCurrent ();
+		if (display == null) return 0;
+		display.runSettings = true;
+		return 0;
 	}
 	Widget widget = GetWidget(id);
 	if (widget == null) return 0;

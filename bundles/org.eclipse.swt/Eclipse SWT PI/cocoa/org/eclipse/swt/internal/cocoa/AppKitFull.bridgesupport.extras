@@ -97,6 +97,7 @@
 	<constant name="NSAccessibilityVisibleChildrenAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityWindowAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityWindowRole" swt_gen="true"></constant>
+	<constant name="NSApplicationDidChangeScreenParametersNotification" swt_gen="true"></constant>
 	<constant name="NSBackgroundColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
 	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
@@ -127,6 +128,7 @@
 	<constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
 	<constant name="NSStringPboardType" swt_gen="true"></constant>
 	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
+	<constant name="NSSystemColorsDidChangeNotification" swt_gen="true"></constant>
 	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
 	<constant name="NSToolbarCustomizeToolbarItemIdentifier" swt_gen="true"></constant>
 	<constant name="NSToolbarDidRemoveItemNotification" swt_gen="true"></constant>

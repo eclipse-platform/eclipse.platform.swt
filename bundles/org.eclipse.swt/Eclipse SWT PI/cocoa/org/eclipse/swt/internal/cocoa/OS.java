@@ -43,6 +43,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
 	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
+	public static final int /*long*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");
+	
 	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
 
 	public static final int /*long*/ sel_setMovable_ = OS.sel_registerName("setMovable:");
@@ -2270,6 +2272,9 @@ public static final NSString NSAccessibilityWindowAttribute = new NSString(NSAcc
 public static final native int /*long*/ NSAccessibilityWindowRole();
 public static final NSString NSAccessibilityWindowRole = new NSString(NSAccessibilityWindowRole());
 /** @method flags=const */
+public static final native int /*long*/ NSApplicationDidChangeScreenParametersNotification();
+public static final NSString NSApplicationDidChangeScreenParametersNotification = new NSString(NSApplicationDidChangeScreenParametersNotification());
+/** @method flags=const */
 public static final native int /*long*/ NSBackgroundColorAttributeName();
 public static final NSString NSBackgroundColorAttributeName = new NSString(NSBackgroundColorAttributeName());
 /** @method flags=const */
@@ -2359,6 +2364,9 @@ public static final NSString NSStringPboardType = new NSString(NSStringPboardTyp
 /** @method flags=const */
 public static final native int /*long*/ NSStrokeWidthAttributeName();
 public static final NSString NSStrokeWidthAttributeName = new NSString(NSStrokeWidthAttributeName());
+/** @method flags=const */
+public static final native int /*long*/ NSSystemColorsDidChangeNotification();
+public static final NSString NSSystemColorsDidChangeNotification = new NSString(NSSystemColorsDidChangeNotification());
 /** @method flags=const */
 public static final native int /*long*/ NSTIFFPboardType();
 public static final NSString NSTIFFPboardType = new NSString(NSTIFFPboardType());
