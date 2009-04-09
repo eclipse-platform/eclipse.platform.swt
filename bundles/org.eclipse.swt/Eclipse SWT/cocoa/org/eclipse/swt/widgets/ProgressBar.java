@@ -113,8 +113,8 @@ void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg
 	* Bug in Cocoa.  When the threaded animation is turned off by calling
 	* setUsesThreadedAnimation(), _drawThemeProgressArea() attempts to
 	* access a deallocated NSBitmapGraphicsContext when drawing a zero sized
-	* progress bar.  The fix is to avoid calling super when progress is
-	* zero sized.
+	* progress bar.  The fix is to avoid calling super when the progress bar
+	* is zero sized.
 	*/
 	NSRect frame = view.frame();
 	if (frame.width == 0 || frame.height == 0) return;
