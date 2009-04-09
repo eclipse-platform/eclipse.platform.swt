@@ -13,6 +13,7 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 
 /**
@@ -260,6 +261,19 @@ public TableCursor(Table parent, int style) {
 	if (vBar != null) {
 		vBar.addListener(SWT.Selection, resizeListener);
 	}
+
+	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void getRole(AccessibleControlEvent e) {
+			e.detail = ACC.ROLE_TABLECELL;
+		}
+	});
+	getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		public void getName(AccessibleEvent e) {
+			if (row == null) return;
+			int columnIndex = column == null ? 0 : table.indexOf(column);
+			e.result = row.getText(columnIndex);
+		}
+	});
 }
 
 /**
@@ -561,6 +575,7 @@ void setRowColumn(TableItem row, TableColumn column, boolean notify) {
 			notifyListeners(SWT.Selection, new Event());
 		}
 	}
+	getAccessible().setFocus(ACC.CHILDID_SELF);
 }
 
 public void setVisible(boolean visible) {
