@@ -219,8 +219,12 @@ void _setVisible (boolean visible) {
 		} else {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
+	
+		// Hold on to window in case it is disposed while the popup is open.
+		window.retain();
 		NSEvent nsEvent = NSEvent.otherEventWithType(OS.NSApplicationDefined, location, 0, 0.0, window.windowNumber(), window.graphicsContext(), (short)0, 0, 0);
 		NSMenu.popUpContextMenu(nsMenu, nsEvent, shell.view);
+		window.release();
 	} else {
 		nsMenu.cancelTracking ();
 	}
