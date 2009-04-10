@@ -94,6 +94,8 @@ public class DropTarget extends Widget {
 		if (proc6Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);	
 	}
 
+	static boolean dropNotAllowed = false;
+	
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
@@ -207,13 +209,12 @@ protected void checkSubclass () {
 }
 
 int draggingEntered(int /*long*/ id, int /*long*/ sel, NSObject sender) {
-	NSCursor.currentCursor().push();
 	if (sender == null) return OS.NSDragOperationNone;	
 	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(sender, event)) {
 		keyOperation = -1;
-		if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+		setDropNotAllowed();
 		return OS.NSDragOperationNone;
 	}
 	
@@ -242,7 +243,11 @@ int draggingEntered(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 		selectedOperation = event.detail;
 	}
 	
-	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) {
+		setDropNotAllowed();
+	} else {
+		clearDropNotAllowed();
+	}
 
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
 		return (int)/*64*/callSuper(id, sel, sender.id);
@@ -251,7 +256,7 @@ int draggingEntered(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 }
 
 void draggingExited(int /*long*/ id, int /*long*/ sel, NSObject sender) {
-	NSCursor.pop();
+	clearDropNotAllowed();
 	if (keyOperation == -1) return;
 	keyOperation = -1;
 	
@@ -263,7 +268,6 @@ void draggingExited(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
 		callSuper(id, sel, sender.id);
-		return;
 	}
 }
 
@@ -274,7 +278,7 @@ int draggingUpdated(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(sender, event)) {
 		keyOperation = -1;
-		if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+		setDropNotAllowed();
 		return OS.NSDragOperationNone;
 	}
 
@@ -311,7 +315,11 @@ int draggingUpdated(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 		selectedOperation = event.detail;
 	}
 	
-	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) {
+		setDropNotAllowed();
+	} else {
+		clearDropNotAllowed();
+	}
 
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
 		return (int)/*64*/callSuper(id, sel, sender.id);
@@ -590,6 +598,7 @@ int osOpToOp(int /*long*/ osOperation){
 }
 
 boolean drop(NSObject sender) {
+	clearDropNotAllowed();
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = (int)System.currentTimeMillis();
@@ -716,6 +725,7 @@ boolean outlineView_acceptDrop_item_childIndex(int /*long*/ id, int /*long*/ sel
 
 int /*long*/ outlineView_validateDrop_proposedItem_proposedChildIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ info, int /*long*/ item, int /*long*/ index) {
 	//TODO stop scrolling and expansion when app does not set FEEDBACK_SCROLL and/or FEEDBACK_EXPAND
+	//TODO expansion animation and auto collapse not working because of outlineView:shouldExpandItem:
 	NSOutlineView widget = new NSOutlineView(outlineView);
 	NSObject sender = new NSObject(info);
 	NSPoint pt = sender.draggingLocation();
@@ -905,6 +915,21 @@ public void setTransfer(Transfer[] transferAgents){
 	
 	control.view.registerForDraggedTypes(nsTypeStrings);
 
+}
+
+void setDropNotAllowed() {
+	if (!dropNotAllowed) {
+		NSCursor.currentCursor().push();
+		if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);	
+		dropNotAllowed = true;
+	}
+}
+
+void clearDropNotAllowed() {
+	if (dropNotAllowed) {
+		NSCursor.pop();
+		dropNotAllowed = false;
+	}
 }
 
 boolean tableView_acceptDrop_row_dropOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ info, int /*long*/ row, int /*long*/ operation) {
