@@ -98,33 +98,38 @@ import org.eclipse.swt.widgets.*;
  */
 public class DragSource extends Widget {
 
-	static Callback dragSource2Args, dragSource3Args, dragSource4Args, dragSource5Args;
-	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
+	// TODO: These should either move out of Display or be accessible to this class.
+	static byte[] types = {'*','\0'};
+	static int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
+	static Callback dragSource2Args, dragSource3Args, dragSource4Args, dragSource5Args, dragSource6Args;
+	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
+	static int /*long*/ proc2 = 0, proc3 = 0, proc4 = 0, proc5 = 0, proc6 = 0;
+	
 	static {
 		String className = "SWTDragSourceDelegate";
-
-		// TODO: These should either move out of Display or be accessible to this class.
-		byte[] types = {'*','\0'};
-		int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
 		Class clazz = DragSource.class;
 
 		dragSource2Args = new Callback(clazz, "dragSourceProc", 2);
-		int /*long*/ proc2 = dragSource2Args.getAddress();
+		proc2 = dragSource2Args.getAddress();
 		if (proc2 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dragSource3Args = new Callback(clazz, "dragSourceProc", 3);
-		int /*long*/ proc3 = dragSource3Args.getAddress();
+		proc3 = dragSource3Args.getAddress();
 		if (proc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dragSource4Args = new Callback(clazz, "dragSourceProc", 4);
-		int /*long*/ proc4 = dragSource4Args.getAddress();
+		proc4 = dragSource4Args.getAddress();
 		if (proc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dragSource5Args = new Callback(clazz, "dragSourceProc", 5);
-		int /*long*/ proc5 = dragSource5Args.getAddress();
+		proc5 = dragSource5Args.getAddress();
 		if (proc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		dragSource6Args = new Callback(clazz, "dragSourceProc", 6);
+		proc6 = dragSource6Args.getAddress();
+		if (proc6 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
@@ -132,7 +137,7 @@ public class DragSource extends Widget {
 		int /*long*/ draggedImage_endedAt_operationProc = OS.draggedImage_endedAt_operation_CALLBACK(proc5);
 
 		// Add the NSDraggingSource callbacks
-		OS.class_addMethod(cls, OS.sel_draggingSourceOperationMaskForLocal_, proc3, "@:c");
+		OS.class_addMethod(cls, OS.sel_draggingSourceOperationMaskForLocal_, proc3, "@:I");
 		OS.class_addMethod(cls, OS.sel_draggedImage_beganAt_, proc4, "@:@{NSPoint=ff}");
 		OS.class_addMethod(cls, OS.sel_draggedImage_endedAt_operation_, draggedImage_endedAt_operationProc, "@:@{NSPoint=ff}I");
 		OS.class_addMethod(cls, OS.sel_ignoreModifierKeysWhileDragging, proc3, "@:");
@@ -143,19 +148,19 @@ public class DragSource extends Widget {
 		OS.objc_registerClassPair(cls);
 	}	
 
-
 	// info for registering as a drag source
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
 	DragSourceEffect dragEffect;
+	Image dragImageFromListener;
 	private int dragOperations;
 	SWTDragSourceDelegate dragSourceDelegate;
 	
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 
-	boolean dragStarted = false;
 	private int /*long*/ delegateJniRef;
+	private Point dragOffset;
 	
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -203,7 +208,11 @@ public DragSource(Control control, int style) {
 			}
 			if (event.type == SWT.DragDetect) {
 				if (!DragSource.this.isDisposed()) {
-					DragSource.this.drag(event);
+					if (event.widget instanceof Table || event.widget instanceof Tree) {
+						DragSource.this.dragOutlineViewStart(event);
+					} else {
+						DragSource.this.drag(event);
+					}
 				}
 			}
 		}
@@ -225,13 +234,39 @@ public DragSource(Control control, int style) {
 	} else if (control instanceof Table) {
 		dragEffect = new TableDragSourceEffect((Table) control);
 	}
-	
-	// Create a delegate, but then stuff a pointer back to this object so callbacks will have
-	// access to this object's data.
-	dragSourceDelegate = (SWTDragSourceDelegate)new SWTDragSourceDelegate().alloc().init();
+
 	delegateJniRef = OS.NewGlobalRef(this);
 	if (delegateJniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
+	// The dragSourceDelegate implements the pasteboard callback to provide the dragged data, so we always need
+	// to create it. NSDraggingSource methods are ignored in the table and tree case. 
+	dragSourceDelegate = (SWTDragSourceDelegate)new SWTDragSourceDelegate().alloc().init();
 	OS.object_setInstanceVariable(dragSourceDelegate.id, SWT_OBJECT, delegateJniRef);
+
+	// Tables and trees already implement dragging, so we need to override their drag methods instead of creating a dragging source.
+	if (control instanceof Tree || control instanceof Table) {
+		int /*long*/ cls = OS.object_getClass(control.view.id);
+
+		if (cls == 0) {
+			DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+		}
+
+		// If we already added it, no need to do it again.
+		int /*long*/ procPtr = OS.class_getMethodImplementation(cls, OS.sel_draggingSourceOperationMaskForLocal_);
+		if (procPtr == proc3) return;
+
+		int /*long*/ draggedImage_endedAt_operationProc = OS.draggedImage_endedAt_operation_CALLBACK(proc5);
+
+		// Add the NSDraggingSource overrides.
+		OS.class_addMethod(cls, OS.sel_draggingSourceOperationMaskForLocal_, proc3, "@:I");
+		OS.class_addMethod(cls, OS.sel_draggedImage_beganAt_, proc4, "@:@{NSPoint=ff}");
+		OS.class_addMethod(cls, OS.sel_draggedImage_endedAt_operation_, draggedImage_endedAt_operationProc, "@:@{NSPoint=ff}I");
+		OS.class_addMethod(cls, OS.sel_ignoreModifierKeysWhileDragging, proc3, "@:");
+		
+		// Override to return the drag effect's image.
+		OS.class_addMethod(cls, OS.sel_dragImageForRowsWithIndexes_tableColumns_event_offset_, proc6, "@:@@@^NSPoint");
+	} 
+
 }
 
 /**
@@ -273,6 +308,27 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragEnd, typedListener);
 }
 
+void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2);
+}
+
+void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
+}
+
+int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2, arg3);
+}
+
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DragSource.class.getName();
@@ -286,65 +342,15 @@ static int checkStyle (int style) {
 	return style;
 }
 
-void drag(Event dragEvent) {
-	DNDEvent event = new DNDEvent();
-	event.widget = this;
-	event.x = dragEvent.x;
-	event.y = dragEvent.y;
-	event.time = dragEvent.time;
-	event.doit = true;
-	notifyListeners(DND.DragStart, event);
-	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
+void drag(Event dragDetectEvent) {
 	
-	NSPasteboard dragBoard = NSPasteboard.pasteboardWithName(OS.NSDragPboard);
-	NSMutableArray nativeTypeArray = NSMutableArray.arrayWithCapacity(10);
-	Transfer fileTrans = null;
+	DNDEvent event = startDrag(dragDetectEvent);
+	if (event == null) return;
 	
-	for (int i = 0; i < transferAgents.length; i++) {
-		Transfer transfer = transferAgents[i];
-		if (transfer != null) {
-			String[] typeNames = transfer.getTypeNames();
-
-			for (int j = 0; j < typeNames.length; j++) {
-				nativeTypeArray.addObject(NSString.stringWith(typeNames[j]));
-			}	
-
-			if (transfer instanceof FileTransfer) {
-				fileTrans = transfer;
-			}			
-		}		
-	}
-
-	if (nativeTypeArray != null)
-		dragBoard.declareTypes(nativeTypeArray, dragSourceDelegate);
-
-	if (fileTrans != null) {
-		int[] types = fileTrans.getTypeIds();
-		TransferData transferData = new TransferData();
-		transferData.type = types[0];
-		DNDEvent event2 = new DNDEvent();
-		event2.widget = this;
-		event2.time = (int)System.currentTimeMillis(); 
-		event2.dataType = transferData; 
-		notifyListeners(DND.DragSetData, event2);
-		if (event2.data != null) {
-			for (int j = 0; j < types.length; j++) {
-				transferData.type = types[j];
-				fileTrans.javaToNative(event2.data, transferData);
-				if (transferData.data != null) {
-					dragBoard.setPropertyList(transferData.data, OS.NSFilenamesPboardType);
-				}
-			}
-		}
-	}
-
 	// Start the drag here from the Control's view.
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
 	NSPoint pt = currEvent.locationInWindow();
 	NSPoint viewPt = control.view.convertPoint_fromView_(pt, null);
-
-	// Save off the drag operations -- AppKit will call back to us to request them during the drag.
-	dragOperations = opToOsOp(getStyle());
 	
 	// Get the image for the drag. The drag should happen from the middle of the image.
 	NSImage dragImage = null;
@@ -384,42 +390,62 @@ void drag(Event dragEvent) {
 		// The third argument to dragImage is ignored as of 10.4.
 		NSSize ignored = new NSSize();
 		
-		dragStarted = false;
-		control.view.dragImage(dragImage, viewPt, ignored, NSApplication.sharedApplication().currentEvent(), dragBoard, dragSourceDelegate, true);
-
-		// If we actually dragged, dragStarted will be set to true in dragImage:beganAt:
-		// If not, send a DragEnd indicating nothing happened.
-		if (!dragStarted) {
-			event = new DNDEvent();
-			event.widget = this;
-			event.time = (int)System.currentTimeMillis();
-			event.doit = false;
-			event.detail = DND.DROP_NONE; 
-			notifyListeners(DND.DragEnd, event);
-		}
+		control.view.dragImage(dragImage, viewPt, ignored, NSApplication.sharedApplication().currentEvent(), NSPasteboard.pasteboardWithName(OS.NSDragPboard), dragSourceDelegate, true);
+		
 	} finally {	
 		if (defaultDragImage != null) defaultDragImage.dispose();
 	}
 }
 
-void draggedImage_beganAt(NSImage image) {
-	this.dragStarted = true;
+void dragOutlineViewStart(Event dragDetectEvent) {
+	DNDEvent event = startDrag(dragDetectEvent);
+	if (event == null) return;
+
+	// Save off the custom image, if any.
+	dragImageFromListener = event.image;
+	
+	// Save the computed offset for the image.  This needs to be passed back in dragImageForRowsWithIndexes
+	// so the proxy image originates from the selection and not centered under the mouse. 
+	dragOffset = new Point(event.offsetX, event.offsetY);
 }
 
-void draggedImage_endedAt_operation(NSImage image, NSPoint location, int /*long*/ operation) {
-	int swtOperation = osOpToOp(operation);
+void draggedImage_beganAt(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
+		callSuper(id, sel, arg0, arg1);
+	}
+}
+
+void draggedImage_endedAt_operation(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2) {
+	int swtOperation = osOpToOp(arg2);
 	Event event = new DNDEvent();
 	event.widget = this;
 	event.time = (int)System.currentTimeMillis();	
 	event.doit = swtOperation != DND.DROP_NONE;
 	event.detail = swtOperation; 
 	notifyListeners(DND.DragEnd, event);
+	dragImageFromListener = null;
+
+	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
+		callSuper(id, sel, arg0, arg1, arg2);
+	}
+}
+
+int /*long*/ dragImageForRowsWithIndexes_tableColumns_event_offset(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+	if (dragImageFromListener != null) {
+		NSPoint point = new NSPoint();
+		point.x = dragOffset.x;
+		point.y = dragOffset.y;
+		OS.memmove(arg3, point, NSPoint.sizeof);
+		return dragImageFromListener.handle.id;
+	} else {
+		return callSuperObject(id, sel, arg0, arg1, arg2, arg3);
+	}
 }
 
 /** 
  * Cocoa NSDraggingSource implementations
  */
-int draggingSourceOperationMaskForLocal(boolean flag) {
+int /*long*/ draggingSourceOperationMaskForLocal(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	// Drag operations are same for local or remote drags.
 	return dragOperations;
 }
@@ -429,11 +455,18 @@ static int /*long*/ dragSourceProc(int /*long*/ id, int /*long*/ sel) {
 	if (display == null || display.isDisposed()) return 0;
 	Widget widget = display.findWidget(id);
 	if (widget == null) return 0;
-	DragSource ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
+	DragSource ds = null;
+	
+	if (widget instanceof DragSource) {
+		ds = (DragSource)widget;
+	} else {
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+	}
+
 	if (ds == null) return 0;
 	
 	if (sel == OS.sel_ignoreModifierKeysWhileDragging) {
-		return (ds.ignoreModifierKeysWhileDragging() ? 1 : 0);
+		return (ds.ignoreModifierKeysWhileDragging(id, sel) ? 1 : 0);
 	}
 	
 	return 0;
@@ -446,13 +479,16 @@ static int /*long*/ dragSourceProc(int /*long*/ id, int /*long*/ sel, int /*long
 	if (widget == null) return 0;
 	DragSource ds = null;
 	
-	if (widget instanceof DragSource)
+	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
+	} else {
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+	}
 	
 	if (ds == null) return 0;
 	
 	if (sel == OS.sel_draggingSourceOperationMaskForLocal_) {
-		return ds.draggingSourceOperationMaskForLocal(arg0 == 1);
+		return ds.draggingSourceOperationMaskForLocal(id, sel, arg0);
 	}
 	
 	return 0;
@@ -465,19 +501,18 @@ static int /*long*/ dragSourceProc(int /*long*/ id, int /*long*/ sel, int /*long
 	if (widget == null) return 0;
 	DragSource ds = null;
 	
-	if (widget instanceof DragSource)
+	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
-	
+	} else {
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+	}
+
 	if (ds == null) return 0;
 	
 	if (sel == OS.sel_draggedImage_beganAt_) {
-		NSImage image = new NSImage(arg0);
-		// I am deliberately ignoring arg1 (an NSPoint). It's not needed for our purposes.
-		ds.draggedImage_beganAt(image);
+		ds.draggedImage_beganAt(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_pasteboard_provideDataForType_) {
-		NSPasteboard pb = new NSPasteboard(arg0);
-		NSString type = new NSString(arg1);
-		ds.pasteboard_provideDataForType(pb, type);
+		ds.pasteboard_provideDataForType(id, sel, arg0, arg1);
 	}
 	
 	return 0;
@@ -490,16 +525,40 @@ static int /*long*/ dragSourceProc(int /*long*/ id, int /*long*/ sel, int /*long
 	if (widget == null) return 0;
 	DragSource ds = null;
 	
-	if (widget instanceof DragSource)
+	if (widget instanceof DragSource) {
 		ds = (DragSource)widget;
-	
+	} else {
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+	}
+
 	if (ds == null) return 0;
 	
 	if (sel == OS.sel_draggedImage_endedAt_operation_) {
-		NSImage image = new NSImage(arg0);
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg1, NSPoint.sizeof);
-		ds.draggedImage_endedAt_operation(image, point, arg2);
+		ds.draggedImage_endedAt_operation(id, sel, arg0, point, arg2);
+	}
+	
+	return 0;
+}
+
+static int /*long*/ dragSourceProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display == null || display.isDisposed()) return 0;
+	Widget widget = display.findWidget(id);
+	if (widget == null) return 0;
+	DragSource ds = null;
+	
+	if (widget instanceof DragSource) {
+		ds = (DragSource)widget;
+	} else {
+		ds = (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);		
+	}
+
+	if (ds == null) return 0;
+	
+	if (sel == OS.sel_dragImageForRowsWithIndexes_tableColumns_event_offset_) {
+		return ds.dragImageForRowsWithIndexes_tableColumns_event_offset(id, sel, arg0, arg1, arg2, arg3);
 	}
 	
 	return 0;
@@ -577,13 +636,14 @@ public Transfer[] getTransfer(){
 /**
  * We always want the modifier keys to potentially update the drag.
  */
-boolean ignoreModifierKeysWhileDragging() {
+boolean ignoreModifierKeysWhileDragging(int /*long*/ id, int /*long*/ sel) {
 	return false;
 }
 
 void onDispose() {
 	if (control == null)
 		return;
+
 	if (controlListener != null) {
 		control.removeListener(SWT.Dispose, controlListener);
 		control.removeListener(SWT.DragDetect, controlListener);
@@ -595,8 +655,11 @@ void onDispose() {
 
 	if (delegateJniRef != 0) OS.DeleteGlobalRef(delegateJniRef);
 	delegateJniRef = 0;
-	OS.object_setInstanceVariable(dragSourceDelegate.id, SWT_OBJECT, 0);
-	if (dragSourceDelegate != null) dragSourceDelegate.release();
+	
+	if (dragSourceDelegate != null) {
+		OS.object_setInstanceVariable(dragSourceDelegate.id, SWT_OBJECT, 0);
+		dragSourceDelegate.release();
+	}
 }
 
 int opToOsOp(int operation) {
@@ -636,7 +699,9 @@ int osOpToOp(int /*long*/ osOperation){
 	return operation;
 }
 
-void pasteboard_provideDataForType(NSPasteboard pasteboard, NSString dataType) {
+void pasteboard_provideDataForType(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	NSPasteboard pasteboard = new NSPasteboard(arg0);
+	NSString dataType = new NSString(arg1);
 	if (pasteboard == null || dataType == null) return;
 	TransferData transferData = new TransferData();
 	transferData.type = Transfer.registerType(dataType.getString());
@@ -722,4 +787,61 @@ public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 }
 
+DNDEvent startDrag(Event dragEvent) {
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.x = dragEvent.x;
+	event.y = dragEvent.y;
+	event.time = dragEvent.time;
+	event.doit = true;
+	notifyListeners(DND.DragStart, event);
+	if (!event.doit || transferAgents == null || transferAgents.length == 0) return null;
+	
+	NSPasteboard dragBoard = NSPasteboard.pasteboardWithName(OS.NSDragPboard);
+	NSMutableArray nativeTypeArray = NSMutableArray.arrayWithCapacity(10);
+	Transfer fileTrans = null;
+	
+	for (int i = 0; i < transferAgents.length; i++) {
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			String[] typeNames = transfer.getTypeNames();
+
+			for (int j = 0; j < typeNames.length; j++) {
+				nativeTypeArray.addObject(NSString.stringWith(typeNames[j]));
+			}	
+
+			if (transfer instanceof FileTransfer) {
+				fileTrans = transfer;
+			}			
+		}		
+	}
+
+	if (nativeTypeArray != null)
+		dragBoard.declareTypes(nativeTypeArray, dragSourceDelegate);
+
+	if (fileTrans != null) {
+		int[] types = fileTrans.getTypeIds();
+		TransferData transferData = new TransferData();
+		transferData.type = types[0];
+		DNDEvent event2 = new DNDEvent();
+		event2.widget = this;
+		event2.time = (int)System.currentTimeMillis(); 
+		event2.dataType = transferData; 
+		notifyListeners(DND.DragSetData, event2);
+		if (event2.data != null) {
+			for (int j = 0; j < types.length; j++) {
+				transferData.type = types[j];
+				fileTrans.javaToNative(event2.data, transferData);
+				if (transferData.data != null) {
+					dragBoard.setPropertyList(transferData.data, OS.NSFilenamesPboardType);
+				}
+			}
+		}
+	}
+
+	// Save off the drag operations -- AppKit will call back to us to request them during the drag.
+	dragOperations = opToOsOp(getStyle());	
+
+	return event;
+}
 }
