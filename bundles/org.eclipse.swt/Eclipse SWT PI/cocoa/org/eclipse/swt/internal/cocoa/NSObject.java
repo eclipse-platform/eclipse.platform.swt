@@ -98,6 +98,10 @@ public void outlineView(NSOutlineView outlineView, NSTableColumn tableColumn) {
 	OS.objc_msgSend(this.id, OS.sel_outlineView_didClickTableColumn_, outlineView != null ? outlineView.id : 0, tableColumn != null ? tableColumn.id : 0);
 }
 
+public boolean outlineView(NSOutlineView outlineView, NSArray items, NSPasteboard pasteboard) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_writeItems_toPasteboard_, outlineView != null ? outlineView.id : 0, items != null ? items.id : 0, pasteboard != null ? pasteboard.id : 0);
+}
+
 public void outlineViewColumnDidMove(NSNotification notification) {
 	OS.objc_msgSend(this.id, OS.sel_outlineViewColumnDidMove_, notification != null ? notification.id : 0);
 }
@@ -108,6 +112,10 @@ public void outlineViewColumnDidResize(NSNotification notification) {
 
 public void tableView(NSTableView tableView, NSTableColumn tableColumn) {
 	OS.objc_msgSend(this.id, OS.sel_tableView_didClickTableColumn_, tableView != null ? tableView.id : 0, tableColumn != null ? tableColumn.id : 0);
+}
+
+public boolean tableView(NSTableView tableView, NSIndexSet rowIndexes, NSPasteboard pboard) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, tableView != null ? tableView.id : 0, rowIndexes != null ? rowIndexes.id : 0, pboard != null ? pboard.id : 0);
 }
 
 public void tableViewColumnDidMove(NSNotification notification) {

@@ -269,8 +269,6 @@ public static final native int /*long*/ firstRectForCharacterRange_CALLBACK(int 
 /** @method flags=no_gen */
 public static final native int /*long*/ textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ draggedImage_movedTo_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
 public static final native int /*long*/ draggedImage_beganAt_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ draggedImage_endedAt_operation_CALLBACK(int /*long*/ func);
@@ -282,6 +280,8 @@ public static final native int /*long*/ dragSelectionWithEvent_offset_slideBack_
 public static final native int /*long*/ shouldChangeTextInRange_replacementString_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ view_stringForToolTip_point_userData_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ canDragRowsWithIndexes_atPoint_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ setNeedsDisplayInRect_CALLBACK(int /*long*/ func);
 
@@ -365,6 +365,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
  * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSPoint arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1);
  /**
   * @method flags=cast
   * @param arg0 flags=struct
@@ -379,6 +384,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /**
  *  @method flags=cast
+ *  @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2);
+/**
+ *  @method flags=cast
  *  @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
@@ -391,6 +401,9 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
+
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
 /** @param cls cast=(Class) */
@@ -727,6 +740,7 @@ public static final int /*long*/ sel_bytesPerPlane = sel_registerName("bytesPerP
 public static final int /*long*/ sel_bytesPerRow = sel_registerName("bytesPerRow");
 public static final int /*long*/ sel_calendarDate = sel_registerName("calendarDate");
 public static final int /*long*/ sel_canBecomeKeyWindow = sel_registerName("canBecomeKeyWindow");
+public static final int /*long*/ sel_canDragRowsWithIndexes_atPoint_ = sel_registerName("canDragRowsWithIndexes:atPoint:");
 public static final int /*long*/ sel_canGoBack = sel_registerName("canGoBack");
 public static final int /*long*/ sel_canGoForward = sel_registerName("canGoForward");
 public static final int /*long*/ sel_canShowMIMEType_ = sel_registerName("canShowMIMEType:");
@@ -1670,6 +1684,7 @@ public static final int /*long*/ sel_tableView_setObjectValue_forTableColumn_row
 public static final int /*long*/ sel_tableView_shouldEditTableColumn_row_ = sel_registerName("tableView:shouldEditTableColumn:row:");
 public static final int /*long*/ sel_tableView_validateDrop_proposedRow_proposedDropOperation_ = sel_registerName("tableView:validateDrop:proposedRow:proposedDropOperation:");
 public static final int /*long*/ sel_tableView_willDisplayCell_forTableColumn_row_ = sel_registerName("tableView:willDisplayCell:forTableColumn:row:");
+public static final int /*long*/ sel_tableView_writeRowsWithIndexes_toPasteboard_ = sel_registerName("tableView:writeRowsWithIndexes:toPasteboard:");
 public static final int /*long*/ sel_tableViewColumnDidMove_ = sel_registerName("tableViewColumnDidMove:");
 public static final int /*long*/ sel_tableViewColumnDidResize_ = sel_registerName("tableViewColumnDidResize:");
 public static final int /*long*/ sel_tableViewSelectionDidChange_ = sel_registerName("tableViewSelectionDidChange:");
@@ -2807,6 +2822,11 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSRect arg0);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1);
 /**
  * @method flags=cast
  * @param arg1 flags=struct

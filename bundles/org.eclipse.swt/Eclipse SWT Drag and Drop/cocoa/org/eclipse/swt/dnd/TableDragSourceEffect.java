@@ -89,9 +89,8 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		Image image = Image.cocoa_new(control.getDisplay(), SWT.BITMAP, nsImage);
 		dragSourceImage = image;
 		nsImage.retain();
-		NSSize size = nsImage.size();
-		event.offsetX = (int)(size.width / 2 - point.x);
-		event.offsetY = (int)(size.height - (size.height / 2 - point.y));
+		event.offsetX = (int)point.x;
+		event.offsetY = (int)point.y;
 		return image;
 	}
 }

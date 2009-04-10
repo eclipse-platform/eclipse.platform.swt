@@ -32,6 +32,10 @@ public boolean allowsColumnReordering() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_allowsColumnReordering);
 }
 
+public boolean canDragRowsWithIndexes(NSIndexSet rowIndexes, NSPoint mouseDownPoint) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_canDragRowsWithIndexes_atPoint_, rowIndexes != null ? rowIndexes.id : 0, mouseDownPoint);
+}
+
 public int /*long*/ clickedColumn() {
 	return OS.objc_msgSend(this.id, OS.sel_clickedColumn);
 }

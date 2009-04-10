@@ -91,6 +91,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(drawRect_1CALLBACK)
 }
 #endif
 
+#ifndef NO_draggedImage_1beganAt_1CALLBACK
+static jintLong draggedImage_1beganAt_1CALLBACK;
+static BOOL draggedImage_1beganAt_1(id obj, SEL sel, NSImage *image, NSPoint point)
+{
+	return ((BOOL (*)(id, SEL, NSImage*, NSPoint*))draggedImage_1beganAt_1CALLBACK)(obj, sel, image, &point);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(draggedImage_1beganAt_1CALLBACK)
+(JNIEnv *env, jclass that, jintLong func)
+{
+	draggedImage_1beganAt_1CALLBACK = func;
+	return (jintLong)draggedImage_1beganAt_1;
+}
+#endif
+
 #ifndef NO_draggedImage_1endedAt_1operation_1CALLBACK
 static jintLong draggedImage_1endedAt_1operation_1CALLBACK;
 static void draggedImage_1endedAt_1operation(id obj, SEL sel, NSImage *image, NSPoint point, NSDragOperation op)
@@ -412,6 +426,21 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(view_1stringForToolTip_1point_1userData_1CA
 	return (jintLong)view_1stringForToolTip_1point_1userDataProc;
 }
 #endif
+
+#ifndef NO_canDragRowsWithIndexes_1atPoint_1CALLBACK
+static jintLong canDragRowsWithIndexes_1atPoint_1CALLBACK;
+static BOOL canDragRowsWithIndexes_1atPoint_1Proc(id obj, SEL sel, NSIndexSet *indexes, NSPoint point)
+{
+	return ((BOOL (*)(id, SEL, NSIndexSet*, NSPoint*))canDragRowsWithIndexes_1atPoint_1CALLBACK)(obj, sel, indexes, &point);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(canDragRowsWithIndexes_1atPoint_1CALLBACK)
+(JNIEnv *env, jclass that, jintLong func)
+{
+	canDragRowsWithIndexes_1atPoint_1CALLBACK = func;
+	return (jintLong)canDragRowsWithIndexes_1atPoint_1Proc;
+}
+#endif
+
 
 #ifndef NO_setNeedsDisplayInRect_1CALLBACK
 static jintLong setNeedsDisplayInRect_1CALLBACK;

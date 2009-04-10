@@ -298,6 +298,7 @@ typedef enum {
 	accessibilityHitTest_1CALLBACK_FUNC,
 	attributedSubstringFromRange_1CALLBACK_FUNC,
 	call_FUNC,
+	canDragRowsWithIndexes_1atPoint_1CALLBACK_FUNC,
 	cellSize_1CALLBACK_FUNC,
 	characterIndexForPoint_1CALLBACK_FUNC,
 	class_1addIvar_FUNC,
@@ -312,7 +313,6 @@ typedef enum {
 	dragSelectionWithEvent_1offset_1slideBack_1CALLBACK_FUNC,
 	draggedImage_1beganAt_1CALLBACK_FUNC,
 	draggedImage_1endedAt_1operation_1CALLBACK_FUNC,
-	draggedImage_1movedTo_1CALLBACK_FUNC,
 	drawImage_1withFrame_1inView_1CALLBACK_FUNC,
 	drawInteriorWithFrame_1inView_1CALLBACK_FUNC,
 	drawRect_1CALLBACK_FUNC,
@@ -765,9 +765,24 @@ typedef enum {
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJ_FUNC,
 #endif
 #ifndef JNI64
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ_FUNC,
 #else
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJJZ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
@@ -824,6 +839,11 @@ typedef enum {
 	objc_1msgSend_1bool__IIIIIII_FUNC,
 #else
 	objc_1msgSend_1bool__JJJJJJJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend_1bool__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend_1bool__IIILorg_eclipse_swt_internal_cocoa_NSSize_2Z_FUNC,

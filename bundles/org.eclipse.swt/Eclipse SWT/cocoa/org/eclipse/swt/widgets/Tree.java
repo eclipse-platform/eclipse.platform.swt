@@ -264,6 +264,21 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	return size;
 }
 
+boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	NSPoint clickPoint = new NSPoint();
+	OS.memmove(clickPoint, arg1, NSPoint.sizeof);
+	NSOutlineView tree = (NSOutlineView)view;
+	int /*long*/ row = tree.rowAtPoint(clickPoint);
+	if (!tree.isRowSelected(row)) {
+		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+		set = set.initWithIndex(row);
+		tree.selectRowIndexes (set, false);
+		set.release();
+	}
+	
+	return ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect));
+}
+
 boolean checkData (TreeItem item) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
@@ -854,26 +869,8 @@ void destroyItem (TreeItem item) {
 }
 
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
-	NSOutlineView widget = (NSOutlineView)view;
-	NSPoint pt = new NSPoint();
-	pt.x = x;
-	pt.y = y;
-	int /*long*/ row = widget.rowAtPoint(pt);
-	if (row == -1) return false;
-	NSRect rect = widget.frameOfOutlineCellAtRow(row);
-	if (OS.NSPointInRect(pt, rect)) return false;
-	boolean dragging = super.dragDetect(x, y, filter, consume);
-	if (dragging) {
-		if (!widget.isRowSelected(row)) {
-			//TODO expand current selection when Shift, Command key pressed??
-			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
-			set = set.initWithIndex(row);
-			widget.selectRowIndexes (set, false);
-			set.release();
-		}
-	}
-	consume[0] = dragging;
-	return dragging;
+	// Let Cocoa determine if a drag is starting and fire the notification when we get the callback.
+	return false;
 }
 
 void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
@@ -2035,6 +2032,10 @@ void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*lo
 		postEvent (SWT.Selection, event);
 		item.redraw (-1);
 	}
+}
+
+boolean outlineView_writeItems_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+	return sendMouseEvent(NSApplication.sharedApplication().currentEvent(), SWT.DragDetect, true);
 }
 
 void register () {

@@ -269,6 +269,11 @@ int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg
 	return OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
+boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	// Trees/tables are not draggable unless explicitly told they are.
+	return false;
+}
+
 int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
 	return OS.NSNotFound;
 }
@@ -1019,6 +1024,11 @@ void outlineViewSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long
 void outlineView_setObjectValue_forTableColumn_byItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ item) {
 }
 
+boolean outlineView_writeItems_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+	return false;
+}
+
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -1670,6 +1680,10 @@ void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*
 }
 
 void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+}
+
+boolean tableView_writeRowsWithIndexes_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+	return false;
 }
 
 int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {

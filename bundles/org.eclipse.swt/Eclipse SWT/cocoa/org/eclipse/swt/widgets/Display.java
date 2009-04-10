@@ -1939,6 +1939,7 @@ void initClasses () {
 	int /*long*/ shouldChangeTextInRange_replacementString_Proc = OS.shouldChangeTextInRange_replacementString_CALLBACK(fieldEditorProc4);
 	int /*long*/ shouldChangeTextInRange_replacementString_fieldEditorProc = shouldChangeTextInRange_replacementString_Proc;
 	int /*long*/ view_stringForToolTip_point_userDataProc = OS.view_stringForToolTip_point_userData_CALLBACK(proc6);
+	int /*long*/ canDragRowsWithIndexes_atPoint_Proc = OS.canDragRowsWithIndexes_atPoint_CALLBACK(proc4);
 	int /*long*/ setNeedsDisplayInRectProc = OS.setNeedsDisplayInRect_CALLBACK(proc3);
 	
 	byte[] types = {'*','\0'};
@@ -2062,6 +2063,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@");
+	OS.class_addMethod(cls, OS.sel_canDragRowsWithIndexes_atPoint_, canDragRowsWithIndexes_atPoint_Proc, "@:@{NSPoint=ff}");
+	OS.class_addMethod(cls, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, proc5, "@:@@@");	
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2120,6 +2123,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_canDragRowsWithIndexes_atPoint_, canDragRowsWithIndexes_atPoint_Proc, "@:@{NSPoint=ff}");
+	OS.class_addMethod(cls, OS.sel_outlineView_writeItems_toPasteboard_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_expandItem_expandChildren_, proc4, "@:@Z");
 	OS.class_addMethod(cls, OS.sel_collapseItem_collapseChildren_, proc4, "@:@Z");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
@@ -4639,6 +4644,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
 		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
+	} else if (sel == OS.sel_canDragRowsWithIndexes_atPoint_) {
+		return widget.canDragRowsWithIndexes_atPoint(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_expandItem_expandChildren_) {
 		widget.expandItem_expandChildren(id, sel, arg0, arg1 != 0);
 	} else if (sel == OS.sel_collapseItem_collapseChildren_) {
@@ -4678,6 +4685,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		NSRect rect = new NSRect ();
 		OS.memmove (rect, arg1, NSRect.sizeof);
 		return widget.hitTestForEvent (id, sel, arg0, rect, arg2);
+	} else if (sel == OS.sel_tableView_writeRowsWithIndexes_toPasteboard_) {
+		return (widget.tableView_writeRowsWithIndexes_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
+	} else if (sel == OS.sel_outlineView_writeItems_toPasteboard_) {
+		return (widget.outlineView_writeItems_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
 	}
 	return 0;
 }

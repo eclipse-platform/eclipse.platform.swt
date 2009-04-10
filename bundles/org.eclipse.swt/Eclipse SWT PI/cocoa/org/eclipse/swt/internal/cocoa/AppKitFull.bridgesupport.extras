@@ -2177,6 +2177,12 @@
 			<arg name="tableColumn" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="outlineView:writeItems:toPasteboard:" swt_gen="true">
+			<arg name="outlineView" swt_gen="true"></arg>
+			<arg name="items" swt_gen="true"></arg>
+			<arg name="pasteboard" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="outlineViewColumnDidMove:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2188,6 +2194,12 @@
 		<method selector="tableView:didClickTableColumn:" swt_gen="true">
 			<arg name="tableView" swt_gen="true"></arg>
 			<arg name="tableColumn" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="tableView:writeRowsWithIndexes:toPasteboard:" swt_gen="true">
+			<arg name="tableView" swt_gen="true"></arg>
+			<arg name="rowIndexes" swt_gen="true"></arg>
+			<arg name="pboard" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableViewColumnDidMove:" swt_gen="true">
@@ -3206,6 +3218,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="allowsColumnReordering" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="canDragRowsWithIndexes:atPoint:" swt_gen="true">
+			<arg name="rowIndexes" swt_gen="true"></arg>
+			<arg name="mouseDownPoint" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="clickedColumn" swt_gen="true">
