@@ -1742,7 +1742,7 @@ public boolean execute (String script) {
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
 				int /*long*/ scriptGlobalObject = result[0];
 				result[0] = 0;
-				rc = XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+				rc = (int/*64*/)XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
 				if (rc != XPCOM.NS_OK) error (rc);
 				int /*long*/ scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
 				int /*long*/ globalJSObject = XPCOM.nsIScriptGlobalObject_GetScriptGlobal (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
