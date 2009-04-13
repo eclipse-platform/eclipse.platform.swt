@@ -33,36 +33,9 @@ public boolean accessibilitySetOverrideValue(id value, NSString attribute) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_accessibilitySetOverrideValue_forAttribute_, value != null ? value.id : 0, attribute != null ? attribute.id : 0);
 }
 
-public int /*long*/ applicationShouldTerminate(NSApplication sender) {
-	return OS.objc_msgSend(this.id, OS.sel_applicationShouldTerminate_, sender != null ? sender.id : 0);
-}
-
-public NSImage draggedImage() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggedImage);
-	return result != 0 ? new NSImage(result) : null;
-}
-
-public NSPoint draggedImageLocation() {
-	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_draggedImageLocation);
-	return result;
-}
-
 public NSWindow draggingDestinationWindow() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggingDestinationWindow);
 	return result != 0 ? new NSWindow(result) : null;
-}
-
-public void draggingEnded(id sender) {
-	OS.objc_msgSend(this.id, OS.sel_draggingEnded_, sender != null ? sender.id : 0);
-}
-
-public int /*long*/ draggingEntered(id sender) {
-	return OS.objc_msgSend(this.id, OS.sel_draggingEntered_, sender != null ? sender.id : 0);
-}
-
-public void draggingExited(id sender) {
-	OS.objc_msgSend(this.id, OS.sel_draggingExited_, sender != null ? sender.id : 0);
 }
 
 public NSPoint draggingLocation() {
@@ -76,54 +49,8 @@ public NSPasteboard draggingPasteboard() {
 	return result != 0 ? new NSPasteboard(result) : null;
 }
 
-public int /*long*/ draggingSequenceNumber() {
-	return OS.objc_msgSend(this.id, OS.sel_draggingSequenceNumber);
-}
-
-public id draggingSource() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggingSource);
-	return result != 0 ? new id(result) : null;
-}
-
 public int /*long*/ draggingSourceOperationMask() {
 	return OS.objc_msgSend(this.id, OS.sel_draggingSourceOperationMask);
-}
-
-public NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_namesOfPromisedFilesDroppedAtDestination_, dropDestination != null ? dropDestination.id : 0);
-	return result != 0 ? new NSArray(result) : null;
-}
-
-public void outlineView(NSOutlineView outlineView, NSTableColumn tableColumn) {
-	OS.objc_msgSend(this.id, OS.sel_outlineView_didClickTableColumn_, outlineView != null ? outlineView.id : 0, tableColumn != null ? tableColumn.id : 0);
-}
-
-public boolean outlineView(NSOutlineView outlineView, NSArray items, NSPasteboard pasteboard) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_writeItems_toPasteboard_, outlineView != null ? outlineView.id : 0, items != null ? items.id : 0, pasteboard != null ? pasteboard.id : 0);
-}
-
-public void outlineViewColumnDidMove(NSNotification notification) {
-	OS.objc_msgSend(this.id, OS.sel_outlineViewColumnDidMove_, notification != null ? notification.id : 0);
-}
-
-public void outlineViewColumnDidResize(NSNotification notification) {
-	OS.objc_msgSend(this.id, OS.sel_outlineViewColumnDidResize_, notification != null ? notification.id : 0);
-}
-
-public void tableView(NSTableView tableView, NSTableColumn tableColumn) {
-	OS.objc_msgSend(this.id, OS.sel_tableView_didClickTableColumn_, tableView != null ? tableView.id : 0, tableColumn != null ? tableColumn.id : 0);
-}
-
-public boolean tableView(NSTableView tableView, NSIndexSet rowIndexes, NSPasteboard pboard) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, tableView != null ? tableView.id : 0, rowIndexes != null ? rowIndexes.id : 0, pboard != null ? pboard.id : 0);
-}
-
-public void tableViewColumnDidMove(NSNotification notification) {
-	OS.objc_msgSend(this.id, OS.sel_tableViewColumnDidMove_, notification != null ? notification.id : 0);
-}
-
-public void tableViewColumnDidResize(NSNotification notification) {
-	OS.objc_msgSend(this.id, OS.sel_tableViewColumnDidResize_, notification != null ? notification.id : 0);
 }
 
 public NSObject autorelease() {

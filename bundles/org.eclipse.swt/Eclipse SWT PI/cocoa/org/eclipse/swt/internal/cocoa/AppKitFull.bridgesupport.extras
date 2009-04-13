@@ -2128,29 +2128,7 @@
 			<arg name="attribute" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="applicationShouldTerminate:" swt_gen="true">
-			<arg name="sender" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="draggedImage" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="draggedImageLocation" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="draggingDestinationWindow" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="draggingEnded:" swt_gen="true">
-			<arg name="sender" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="draggingEntered:" swt_gen="true">
-			<arg name="sender" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="draggingExited:" swt_gen="true">
-			<arg name="sender" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="draggingLocation" swt_gen="true">
@@ -2159,55 +2137,7 @@
 		<method selector="draggingPasteboard" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="draggingSequenceNumber" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="draggingSource" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="draggingSourceOperationMask" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="namesOfPromisedFilesDroppedAtDestination:" swt_gen="true">
-			<arg name="dropDestination" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="outlineView:didClickTableColumn:" swt_gen="true">
-			<arg name="outlineView" swt_gen="true"></arg>
-			<arg name="tableColumn" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="outlineView:writeItems:toPasteboard:" swt_gen="true">
-			<arg name="outlineView" swt_gen="true"></arg>
-			<arg name="items" swt_gen="true"></arg>
-			<arg name="pasteboard" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="outlineViewColumnDidMove:" swt_gen="true">
-			<arg name="notification" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="outlineViewColumnDidResize:" swt_gen="true">
-			<arg name="notification" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="tableView:didClickTableColumn:" swt_gen="true">
-			<arg name="tableView" swt_gen="true"></arg>
-			<arg name="tableColumn" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="tableView:writeRowsWithIndexes:toPasteboard:" swt_gen="true">
-			<arg name="tableView" swt_gen="true"></arg>
-			<arg name="rowIndexes" swt_gen="true"></arg>
-			<arg name="pboard" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="tableViewColumnDidMove:" swt_gen="true">
-			<arg name="notification" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="tableViewColumnDidResize:" swt_gen="true">
-			<arg name="notification" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -4350,6 +4280,11 @@
 			<arg name="attribute" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
+	<informal_protocol name="NSApplicationDelegate" swt_gen="mixed">
+		<method selector="applicationShouldTerminate:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
 	<informal_protocol name="NSApplicationNotifications" swt_gen="mixed">
 		<method selector="applicationDidBecomeActive:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
@@ -4474,6 +4409,10 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSOutlineViewDelegate" swt_gen="mixed">
+		<method selector="outlineView:didClickTableColumn:" swt_gen="true">
+			<arg name="outlineView" swt_gen="true"></arg>
+			<arg name="tableColumn" swt_gen="true"></arg>
+		</method>
 		<method selector="outlineView:shouldCollapseItem:" swt_gen="true">
 			<arg name="outlineView" swt_gen="true"></arg>
 			<arg name="item" swt_gen="true"></arg>
@@ -4490,6 +4429,12 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSOutlineViewNotifications" swt_gen="mixed">
+		<method selector="outlineViewColumnDidMove:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
+		<method selector="outlineViewColumnDidResize:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
 		<method selector="outlineViewItemDidExpand:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>
@@ -4546,8 +4491,17 @@
 			<arg name="row" swt_gen="true"></arg>
 			<arg name="dropOperation" swt_gen="true"></arg>
 		</method>
+		<method selector="tableView:writeRowsWithIndexes:toPasteboard:" swt_gen="true">
+			<arg name="tableView" swt_gen="true"></arg>
+			<arg name="rowIndexes" swt_gen="true"></arg>
+			<arg name="pboard" swt_gen="true"></arg>
+		</method>
 	</informal_protocol>
 	<informal_protocol name="NSTableViewDelegate" swt_gen="mixed">
+		<method selector="tableView:didClickTableColumn:" swt_gen="true">
+			<arg name="tableView" swt_gen="true"></arg>
+			<arg name="tableColumn" swt_gen="true"></arg>
+		</method>
 		<method selector="tableView:shouldEditTableColumn:row:" swt_gen="true">
 			<arg name="tableView" swt_gen="true"></arg>
 			<arg name="tableColumn" swt_gen="true"></arg>
@@ -4561,6 +4515,12 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSTableViewNotifications" swt_gen="mixed">
+		<method selector="tableViewColumnDidMove:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
+		<method selector="tableViewColumnDidResize:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
 		<method selector="tableViewSelectionDidChange:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>
