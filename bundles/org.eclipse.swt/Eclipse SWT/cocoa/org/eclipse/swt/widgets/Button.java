@@ -189,7 +189,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
 		height += EXTRA_HEIGHT;
 	}
-	width += EXTRA_WIDTH;
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		width += EXTRA_WIDTH;
+	}
 	return new Point (width, height);
 }
 
