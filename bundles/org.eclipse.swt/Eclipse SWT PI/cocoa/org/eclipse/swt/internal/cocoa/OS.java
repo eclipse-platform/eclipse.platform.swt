@@ -1939,6 +1939,7 @@ public static final int NSSmallControlSize = 1;
 public static final int NSSquareLineCapStyle = 2;
 public static final int NSStatusWindowLevel = 25;
 public static final int NSSwitchButton = 3;
+public static final int NSSystemDefined = 14;
 public static final int NSTabCharacter = 9;
 public static final int NSTableColumnNoResizing = 0;
 public static final int NSTableColumnUserResizingMask = 2;
