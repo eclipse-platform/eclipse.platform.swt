@@ -149,8 +149,4 @@ public void handleEvent(DOMEvent evt) {
 	OS.objc_msgSend(this.id, OS.sel_handleEvent_, evt != null ? evt.id : 0);
 }
 
-public void webView(WebView sender, id identifier, NSURLAuthenticationChallenge challenge, WebDataSource dataSource) {
-	OS.objc_msgSend(this.id, OS.sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_, sender != null ? sender.id : 0, identifier != null ? identifier.id : 0, challenge != null ? challenge.id : 0, dataSource != null ? dataSource.id : 0);
-}
-
 }
