@@ -648,7 +648,7 @@ public void forceActive () {
 	checkWidget ();
 	if (!isVisible()) return;
 	if (window == null) return;
-	window.makeKeyAndOrderFront (null);
+	makeKeyAndOrderFront ();
 	NSApplication application = NSApplication.sharedApplication ();
 	application.activateIgnoringOtherApps (true);
 }
@@ -955,6 +955,23 @@ boolean makeFirstResponder (int /*long*/ id, int /*long*/ sel, int /*long*/ noti
 	return result;
 }
 
+void makeKeyAndOrderFront() {
+	/*
+	* Bug in Cocoa.  If a child window becomes the key window when its
+	* parent window is miniaturized, the parent window appears as if
+	* restored to its full size without actually being restored. In this
+	* case the parent window does become active when its child is closed
+	* and the user is forced to restore the window from the dock.
+	* The fix is to be sure that the parent window is deminiaturized before
+	* making the child a key window. 
+	*/
+	if (parent !=  null) {
+		Shell shell = (Shell) parent;
+		if (shell.window.isMiniaturized()) shell.window.deminiaturize(null);
+	}
+	window.makeKeyAndOrderFront (null);
+}
+
 void noResponderFor(int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
 	/**
 	 * Feature in Cocoa.  If the selector is keyDown and nothing has handled the event
@@ -997,9 +1014,13 @@ public void open () {
 	bringToTop (false);
 	setWindowVisible (true, true);
 	if (isDisposed ()) return;
-//	if (active) {
-		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
-//	}
+	if (!restoreFocus () && !traverseGroup (true)) {
+		// if the parent shell is minimized, setting focus will cause it
+		// to become unminimized.
+		if (parent != null && !((Shell)parent).window.isMiniaturized()) {	
+			setFocus ();
+		}
+	}
 }
 
 public boolean print (GC gc) {
@@ -1124,7 +1145,7 @@ public void setActive () {
 	if (window == null) return;	
 	checkWidget ();
 	if (!isVisible()) return;
-	window.makeKeyAndOrderFront (null);
+	makeKeyAndOrderFront ();
 }
 
 void setActiveControl (Control control) {
@@ -1473,10 +1494,14 @@ void setWindowVisible (boolean visible, boolean key) {
 		if (isDisposed ()) return;
 		topView ().setHidden (false);
 		invalidateVisibleRegion();
-		if (key) {
-			window.makeKeyAndOrderFront (null);
-		} else {
-			window.orderFront (null);
+		// If the parent window is miniaturized, the window will be shown
+		// when its parent is shown.
+		if (parent != null && !((Shell)parent).window.isMiniaturized()) {
+			if (key) {
+				makeKeyAndOrderFront ();
+			} else {
+				window.orderFront (null);
+			}
 		}
 		updateParent (visible);
 		opened = true;
