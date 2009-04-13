@@ -185,7 +185,7 @@ public int open () {
 			break;
 	}
 	title = NSString.stringWith(this.title != null ? this.title : "");
-	new NSWindow(alert.window().id).setTitle(title);
+	alert.window().setTitle(title);
 	NSString message = NSString.stringWith(this.message != null ? this.message : "");
 	alert.setMessageText(message);
 	int response = (int)/*64*/alert.runModal();
