@@ -44,6 +44,7 @@ public class Synchronizer {
 
 	//TEMPORARY CODE
 	static final boolean IS_CARBON = "carbon".equals (SWT.getPlatform ());
+	static final boolean IS_GTK = "gtk".equals (SWT.getPlatform ());
 
 /**
  * Constructs a new instance of this class.
@@ -83,7 +84,7 @@ void addLast (RunnableLock lock) {
 protected void asyncExec (Runnable runnable) {
 	if (runnable == null) {
 		//TEMPORARY CODE
-		if (!IS_CARBON) {
+		if (!(IS_CARBON || IS_GTK)) {
 			display.wake ();
 			return;
 		}
