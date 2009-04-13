@@ -867,18 +867,26 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	boolean drawForeground = true;
 	boolean isSelected = cell.isHighlighted();
 	boolean drawSelection = isSelected;
+	boolean hasFocus = hooksErase && hasFocus ();
 
 	Color selectionBackground = null;
 	Color selectionForeground = null;
 	if (isSelected && (hooksErase || hooksPaint)) {
 		NSColor nsSelectionForeground, nsSelectionBackground;
-		if (isFocusControl ()) {
+		if (hasFocus) {
 			nsSelectionForeground = NSColor.alternateSelectedControlTextColor ();
 		} else {
 			nsSelectionForeground = NSColor.selectedControlTextColor ();
 		}
 		nsSelectionForeground = nsSelectionForeground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
 		nsSelectionBackground = cell.highlightColorWithFrame(rect, widget);
+		if (nsSelectionBackground == null) {
+			if (hasFocus) {
+				nsSelectionBackground = NSColor.alternateSelectedControlColor();
+			} else {
+				nsSelectionBackground = NSColor.selectedControlColor();
+			}
+		}
 		nsSelectionBackground = nsSelectionBackground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
 		float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
 		nsSelectionForeground.getComponents (components);	
@@ -982,7 +990,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		if (isDisposed ()) return;
 		if (item.isDisposed ()) return;
 
-		if (drawSelection && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus())) {
+		if (drawSelection && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus)) {
 			cellRect.height -= spacing.height;
 			callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
 			cellRect.height += spacing.height;
