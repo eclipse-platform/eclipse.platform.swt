@@ -34,7 +34,8 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class ColorDialog extends Dialog {
 	RGB rgb;
-	
+	boolean selected;
+
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -90,7 +91,7 @@ public ColorDialog(Shell parent, int style) {
 }
 
 void changeColor(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
-	//TODO
+	selected = true;
 }
 
 /**
@@ -134,10 +135,12 @@ public RGB open() {
 	panel.setDelegate(null);
 	delegate.release();
 	OS.DeleteGlobalRef(jniRef);
-	NSColor color = panel.color();
-	if (color != null) {
-		color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
-		rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
+	if (selected) {
+		NSColor color = panel.color();
+		if (color != null) {
+			color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
+			rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
+		}
 	}
 	return rgb;
 }
