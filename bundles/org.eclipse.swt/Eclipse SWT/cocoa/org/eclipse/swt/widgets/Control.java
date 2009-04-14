@@ -1753,7 +1753,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 		Shell s = this.getShell();
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null) {
-			int type = nsEvent.type ();
+			int /*long*/ type = nsEvent.type ();
 			if ((!s.keyInputHappened && type == OS.NSKeyDown) || type == OS.NSSystemDefined) {
 				NSString str = new NSString (string);
 				if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
