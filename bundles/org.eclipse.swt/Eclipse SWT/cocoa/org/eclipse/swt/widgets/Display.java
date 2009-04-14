@@ -4170,7 +4170,14 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 		NSBundle javaFrameworkBundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
 		NSString defaultAppNib = javaFrameworkBundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
 		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-		NSBundle.loadNibFile(defaultAppNib, dict, 0);
+//		javaFrameworkBundle.loadNibFile(defaultAppNib, dict, 0);
+		if (!OS.objc_msgSend_bool(javaFrameworkBundle.id, OS.sel_loadNibFile_externalNameTable_withZone_, defaultAppNib.id, dict.id, 0)) {
+			//TEMPORARY CODE
+			System.out.println("*** SSQ path=" + defaultAppNib.getString());
+			defaultAppNib = javaFrameworkBundle.resourcePath().stringByAppendingString(NSString.stringWith("English.lproj/DefaultApp.nib"));
+//			javaFrameworkBundle.loadNibFile(defaultAppNib, dict, 0);
+			OS.objc_msgSend_bool(javaFrameworkBundle.id, OS.sel_loadNibFile_externalNameTable_withZone_, defaultAppNib.id, dict.id, 0);
+		}
 		//replace %@ with application name
 		NSMenu mainmenu = application.mainMenu();
 		NSMenuItem appitem = mainmenu.itemAtIndex(0);
