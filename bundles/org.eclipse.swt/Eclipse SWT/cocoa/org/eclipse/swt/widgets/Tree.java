@@ -1848,6 +1848,25 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 	return super.menuForEvent(id, sel, theEvent);
 }
 
+void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if (headerView != null && id == headerView.id) {
+		NSTableView widget = (NSTableView)view;
+		widget.setAllowsColumnReordering(false);
+		NSPoint pt = headerView.convertPoint_fromView_(new NSEvent(theEvent).locationInWindow(), null);
+		int /*long*/ nsIndex = headerView.columnAtPoint(pt);
+		if (nsIndex != -1) {
+			id nsColumn = widget.tableColumns().objectAtIndex(nsIndex);
+			for (int i = 0; i < columnCount; i++) {
+				if (columns[i].nsColumn.id == nsColumn.id) {
+					widget.setAllowsColumnReordering(columns[i].movable);
+					break;
+				}
+			}
+		}
+	}
+	super.mouseDown(id, sel, theEvent);
+}
+
 /*
  * Feature in Cocoa.  If a checkbox is in multi-state mode, nextState cycles
  * from off to mixed to on and back to off again.  This will cause the on state

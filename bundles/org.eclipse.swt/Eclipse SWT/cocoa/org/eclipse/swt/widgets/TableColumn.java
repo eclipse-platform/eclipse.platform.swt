@@ -587,14 +587,7 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
 	checkWidget ();
-	// TODO how to make only some columns movable?
 	this.movable = moveable;
-	if (moveable) {
-		for (int i = 0; i < parent.columnCount && !movable; i++) {
-			movable |= parent.columns[i].movable;
-		}
-		((NSTableView)parent.view).setAllowsColumnReordering (movable);
-	}
 }
 
 /**
