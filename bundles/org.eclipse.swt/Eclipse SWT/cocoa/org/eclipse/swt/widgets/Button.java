@@ -186,10 +186,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = (int)Math.ceil (size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-		height += EXTRA_HEIGHT;
-	}
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		if (display.smallFonts) height += EXTRA_HEIGHT;
 		width += EXTRA_WIDTH;
 	}
 	return new Point (width, height);
