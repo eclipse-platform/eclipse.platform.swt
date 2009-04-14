@@ -1335,6 +1335,7 @@ public static final int /*long*/ sel_resizeRightCursor = sel_registerName("resiz
 public static final int /*long*/ sel_resizeUpCursor = sel_registerName("resizeUpCursor");
 public static final int /*long*/ sel_resizeUpDownCursor = sel_registerName("resizeUpDownCursor");
 public static final int /*long*/ sel_resizingMask = sel_registerName("resizingMask");
+public static final int /*long*/ sel_resourcePath = sel_registerName("resourcePath");
 public static final int /*long*/ sel_respondsToSelector_ = sel_registerName("respondsToSelector:");
 public static final int /*long*/ sel_restoreGraphicsState = sel_registerName("restoreGraphicsState");
 public static final int /*long*/ sel_retain = sel_registerName("retain");

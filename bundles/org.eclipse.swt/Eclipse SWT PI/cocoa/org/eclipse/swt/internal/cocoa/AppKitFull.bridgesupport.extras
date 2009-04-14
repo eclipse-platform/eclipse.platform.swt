@@ -275,6 +275,7 @@
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSSwitchButton" swt_gen="true"></enum>
+	<enum name="NSSystemDefined" swt_gen="true"></enum>
 	<enum name="NSTabCharacter" swt_gen="true"></enum>
 	<enum name="NSTableColumnNoResizing" swt_gen="true"></enum>
 	<enum name="NSTableColumnUserResizingMask" swt_gen="true"></enum>

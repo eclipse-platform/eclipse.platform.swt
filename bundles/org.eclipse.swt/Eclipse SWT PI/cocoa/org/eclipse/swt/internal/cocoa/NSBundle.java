@@ -68,4 +68,9 @@ public NSString pathForResource(NSString name, NSString ext) {
 	return result != 0 ? new NSString(result) : null;
 }
 
+public NSString resourcePath() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_resourcePath);
+	return result != 0 ? new NSString(result) : null;
+}
+
 }

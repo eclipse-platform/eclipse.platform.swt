@@ -143,6 +143,9 @@
 			<arg name="ext" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="resourcePath" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSCalendarDate" swt_gen="mixed" swt_superclass="NSDate">
 		<method class_method="true" selector="calendarDate" swt_gen="true">
