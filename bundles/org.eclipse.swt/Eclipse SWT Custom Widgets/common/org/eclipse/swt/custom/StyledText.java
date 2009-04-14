@@ -794,6 +794,7 @@ public class StyledText extends Canvas {
 				}
 				write("\\u");
 				write(Integer.toString((short) ch));
+				write('?');						// ANSI representation (1 byte long, \\uc1)
 				write(' ');						// control word delimiter
 				start = index + 1;
 			} else if (ch == '}' || ch == '{' || ch == '\\') {
@@ -828,7 +829,7 @@ public class StyledText extends Canvas {
 			header.append("\\ansicpg");
 			header.append(cpg);
 		}
-		header.append("\\uc0\\deff0{\\fonttbl{\\f0\\fnil ");
+		header.append("\\uc1\\deff0{\\fonttbl{\\f0\\fnil ");
 		header.append(fontData.getName());
 		header.append(";");
 		for (int i = 1; i < fontTable.size(); i++) {
