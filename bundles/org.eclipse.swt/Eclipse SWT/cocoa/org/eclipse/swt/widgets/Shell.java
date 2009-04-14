@@ -1496,7 +1496,8 @@ void setWindowVisible (boolean visible, boolean key) {
 		invalidateVisibleRegion();
 		// If the parent window is miniaturized, the window will be shown
 		// when its parent is shown.
-		if (parent != null && !((Shell)parent).window.isMiniaturized()) {
+		boolean parentMinimized = parent != null && ((Shell)parent).window.isMiniaturized();
+		if (!parentMinimized) {
 			if (key) {
 				makeKeyAndOrderFront ();
 			} else {
