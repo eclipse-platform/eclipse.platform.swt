@@ -130,6 +130,7 @@ public RGB open() {
 	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
 	rgb = null;
+	selected = false;
 	panel.orderFront(null);
 	NSApplication.sharedApplication().runModalForWindow(panel);
 	panel.setDelegate(null);
