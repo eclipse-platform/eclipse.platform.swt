@@ -2977,7 +2977,7 @@ public boolean readAndDispatch () {
 		events |= runPaint ();
 		events |= runDeferredEvents ();
 		if (!events) {
-			events = runAsyncMessages (false);
+			events = isDisposed () || runAsyncMessages (false);
 		}
 	} finally {
 		removePool ();
@@ -4167,10 +4167,24 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 	id applicationDelegate = display.applicationDelegate;
 	NSApplication application = display.application;
 	if (sel == OS.sel_applicationWillFinishLaunching_) {
-		NSBundle javaFrameworkBundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
-		NSString defaultAppNib = javaFrameworkBundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+		NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
 		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-		NSBundle.loadNibFile(defaultAppNib, dict, 0);
+		NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+		boolean succed = false;
+		if (!succed) succed = path != null && NSBundle.loadNibFile(path, dict, 0);
+		if (!succed) {
+			NSString resourcePath = bundle.resourcePath();
+			path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
+			succed = path != null && NSBundle.loadNibFile(path, dict, 0);
+		}
+		if (!succed) {
+			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
+			succed = path != null && NSBundle.loadNibFile(path, dict, 0);
+		}
+		if (!succed) {
+			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
+			succed = path != null && NSBundle.loadNibFile(path, dict, 0);
+		}
 		//replace %@ with application name
 		NSMenu mainmenu = application.mainMenu();
 		NSMenuItem appitem = mainmenu.itemAtIndex(0);
