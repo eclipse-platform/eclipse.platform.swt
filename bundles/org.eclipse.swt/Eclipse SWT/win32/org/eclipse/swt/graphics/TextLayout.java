@@ -3073,7 +3073,18 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 		* array to two. Note, limiting the array to only one character would cause surrogate 
 		* pairs to stop working.
 		*/
-		if (OS.ScriptStringAnalyse(metaFileDc, chars, Math.min(chars.length, 2), 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
+		char[] sampleChars = new char[Math.min(chars.length, 2)];
+		SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
+		breakRun(run);
+		int count = 0;
+		for (int i = 0; i < chars.length; i++) {
+			OS.MoveMemory(logAttr, run.psla + (i * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+			if (!logAttr.fWhiteSpace) {
+				sampleChars[count++] = chars[i];
+				if (count == sampleChars.length) break;
+			}
+		}
+		if (OS.ScriptStringAnalyse(metaFileDc, sampleChars, count, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
 			OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
 			OS.ScriptStringFree(ssa);
 		}
