@@ -4172,7 +4172,7 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
 		if (!NSBundle.loadNibFile(defaultAppNib, dict, 0)) {
 			//TEMPORARY CODE
-			System.out.println("*** SSQ path=" + defaultAppNib.getString());
+			System.out.println("*** SSQ path=" + defaultAppNib != null ? defaultAppNib.getString() : " defaultAppNib=null");
 			defaultAppNib = javaFrameworkBundle.resourcePath().stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib"));
 			NSBundle.loadNibFile(defaultAppNib, dict, 0);
 		}
