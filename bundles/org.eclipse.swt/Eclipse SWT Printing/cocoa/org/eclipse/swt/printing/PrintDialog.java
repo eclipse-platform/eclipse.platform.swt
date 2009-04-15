@@ -29,10 +29,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class PrintDialog extends Dialog {
-	PrinterData printerData;
-	int scope = PrinterData.ALL_PAGES;
-	int startPage = 1, endPage = 1;
-	boolean printToFile = false;
+	PrinterData printerData = new PrinterData();
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -127,15 +124,15 @@ public PrinterData open() {
 	PrinterData data = null;
 	NSPrintPanel panel = NSPrintPanel.printPanel();
 	NSPrintInfo printInfo = new NSPrintInfo(NSPrintInfo.sharedPrintInfo().copy());
+	printInfo.setOrientation(printerData.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation);
 	NSMutableDictionary dict = printInfo.dictionary();	
-	if (printToFile) {
+	if (printerData.printToFile) {
 		dict.setValue(OS.NSPrintSaveJob, OS.NSPrintJobDisposition);
 	}
-	//TODO - setting range not work. why?
-	dict.setValue(NSNumber.numberWithBool(scope == PrinterData.ALL_PAGES), OS.NSPrintAllPages);
-	if (scope == PrinterData.PAGE_RANGE) {
-		dict.setValue(NSNumber.numberWithInt(startPage), OS.NSPrintFirstPage);
-		dict.setValue(NSNumber.numberWithInt(endPage), OS.NSPrintLastPage);
+	dict.setValue(NSNumber.numberWithBool(printerData.scope == PrinterData.ALL_PAGES), OS.NSPrintAllPages);
+	if (printerData.scope == PrinterData.PAGE_RANGE) {
+		dict.setValue(NSNumber.numberWithInt(printerData.startPage), OS.NSPrintFirstPage);
+		dict.setValue(NSNumber.numberWithInt(printerData.endPage), OS.NSPrintLastPage);
 	}
 	panel.setOptions(OS.NSPrintPanelShowsPageSetupAccessory | panel.options());
 	if (panel.runModalWithPrintInfo(printInfo) != OS.NSCancelButton) {
@@ -154,14 +151,11 @@ public PrinterData open() {
 		}
 		data.collate = new NSNumber(dict.objectForKey(OS.NSPrintMustCollate)).intValue() != 0;
 		data.copyCount = new NSNumber(dict.objectForKey(OS.NSPrintCopies)).intValue();
+		data.orientation = printInfo.orientation() == OS.NSLandscapeOrientation ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 		NSData nsData = NSKeyedArchiver.archivedDataWithRootObject(printInfo);
 		data.otherData = new byte[(int)/*64*/nsData.length()];
 		OS.memmove(data.otherData, nsData.bytes(), data.otherData.length);
-
-		printToFile = data.printToFile;
-		scope = data.scope;
-		startPage = data.startPage;
-		endPage = data.endPage;
+		printerData = data;
 	}
 	printInfo.release();
 	return data;
@@ -183,7 +177,7 @@ public PrinterData open() {
  * @return the scope setting that the user selected
  */
 public int getScope() {
-	return scope;
+	return printerData.scope;
 }
 
 /**
@@ -202,7 +196,7 @@ public int getScope() {
  * @param scope the scope setting when the dialog is opened
  */
 public void setScope(int scope) {
-	this.scope = scope;
+	printerData.scope = scope;
 }
 
 /**
@@ -216,7 +210,7 @@ public void setScope(int scope) {
  * @return the start page setting that the user selected
  */
 public int getStartPage() {
-	return startPage;
+	return printerData.startPage;
 }
 
 /**
@@ -230,7 +224,7 @@ public int getStartPage() {
  * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
-	this.startPage = startPage;
+	printerData.startPage = startPage;
 }
 
 /**
@@ -244,7 +238,7 @@ public void setStartPage(int startPage) {
  * @return the end page setting that the user selected
  */
 public int getEndPage() {
-	return endPage;
+	return printerData.endPage;
 }
 
 /**
@@ -258,7 +252,7 @@ public int getEndPage() {
  * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
-	this.endPage = endPage;
+	printerData.endPage = endPage;
 }
 
 /**
@@ -268,7 +262,7 @@ public void setEndPage(int endPage) {
  * @return the 'Print to file' setting that the user selected
  */
 public boolean getPrintToFile() {
-	return printToFile;
+	return printerData.printToFile;
 }
 
 /**
@@ -278,7 +272,7 @@ public boolean getPrintToFile() {
  * @param printToFile the 'Print to file' setting when the dialog is opened
  */
 public void setPrintToFile(boolean printToFile) {
-	this.printToFile = printToFile;
+	printerData.printToFile = printToFile;
 }
 
 protected void checkSubclass() {

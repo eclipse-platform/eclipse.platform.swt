@@ -50,6 +50,10 @@ public NSString jobDisposition() {
 	return result != 0 ? new NSString(result) : null;
 }
 
+public int /*long*/ orientation() {
+	return OS.objc_msgSend(this.id, OS.sel_orientation);
+}
+
 public NSSize paperSize() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_paperSize);
@@ -63,6 +67,10 @@ public NSPrinter printer() {
 
 public void setJobDisposition(NSString disposition) {
 	OS.objc_msgSend(this.id, OS.sel_setJobDisposition_, disposition != null ? disposition.id : 0);
+}
+
+public void setOrientation(int /*long*/ orientation) {
+	OS.objc_msgSend(this.id, OS.sel_setOrientation_, orientation);
 }
 
 public void setPrinter(NSPrinter printer) {
