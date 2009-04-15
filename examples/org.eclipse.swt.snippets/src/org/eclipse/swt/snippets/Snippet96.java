@@ -31,7 +31,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new GridLayout());
 
-	// create a a table with 3 columns and fill with data
+	// create a table with 3 columns and fill with data
 	final Table table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
 	table.setLayoutData(new GridData(GridData.FILL_BOTH));
 	TableColumn column1 = new TableColumn(table, SWT.NONE);
@@ -93,7 +93,7 @@ public static void main(String[] args) {
 		}
 	});
 	// Hide the TableCursor when the user hits the "CTRL" or "SHIFT" key.
-	// This alows the user to select multiple items in the table.
+	// This allows the user to select multiple items in the table.
 	cursor.addKeyListener(new KeyAdapter() {
 		public void keyPressed(KeyEvent e) {
 			if (e.keyCode == SWT.CTRL
@@ -105,7 +105,7 @@ public static void main(String[] args) {
 		}
 	});
 	// When the user double clicks in the TableCursor, pop up a text editor so that 
-	// they can change the text of the cell
+	// they can change the text of the cell.
 	cursor.addMouseListener(new MouseAdapter() {
 		public void mouseDown(MouseEvent e) {
 			final Text text = new Text(cursor, SWT.NONE);
