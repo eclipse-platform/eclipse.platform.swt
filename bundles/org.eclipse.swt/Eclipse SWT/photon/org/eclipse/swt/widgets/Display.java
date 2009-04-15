@@ -2043,7 +2043,7 @@ public boolean readAndDispatch () {
 	}
 	OS.PtRelease ();
 	OS.PtHold ();
-	return result;
+	return isDisposed () || result;
 }
 
 static void register (Display display) {

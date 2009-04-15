@@ -2977,7 +2977,7 @@ public boolean readAndDispatch () {
 		events |= runPaint ();
 		events |= runDeferredEvents ();
 		if (!events) {
-			events = runAsyncMessages (false);
+			events = isDisposed () || runAsyncMessages (false);
 		}
 	} finally {
 		removePool ();

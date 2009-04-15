@@ -3103,7 +3103,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return runAsyncMessages (false);
+	return isDisposed () || runAsyncMessages (false);
 }
 
 static void register (Display display) {
