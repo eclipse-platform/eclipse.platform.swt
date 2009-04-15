@@ -12,12 +12,12 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.accessibility.gtk.ATK;
-import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.accessibility.gtk.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -2118,7 +2118,11 @@ boolean forceFocus (int /*long*/ focusHandle) {
 	int /*long*/ shellHandle = shell.shellHandle;
 	int /*long*/ handle = OS.gtk_window_get_focus (shellHandle);
 	while (handle != 0) {
-		if (handle == focusHandle) return true;
+		if (handle == focusHandle) {
+			/* Cancel any previous ignoreFocus requests */
+			display.ignoreFocus = false;
+			return true;
+		}
 		Widget widget = display.getWidget (handle);
 		if (widget != null && widget instanceof Control) {
 			return widget == this;
@@ -2683,6 +2687,8 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 			 * box to lose focus when focus is received for the menu.  The
 			 * fix is to check the current grab handle and see if it is a GTK_MENU
 			 * and ignore the focus event when the menu is both shown and hidden.
+			 * 
+			 * NOTE: This code runs for all menus.
 			 */
 			Display display = this.display;
 			if (gdkEventFocus.in != 0) {
@@ -2695,16 +2701,8 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 				int /*long*/ grabHandle = OS.gtk_grab_get_current ();
 				if (grabHandle != 0) {
 					if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
-						/*
-						 * Feature in GTK. The GTK combo box popup that is implemented 
-						 * as a GTK_MENU is always attached to the combo box. If the menu
-						 * being shown is attached to the current control, then it is safe
-						 * to ignore focus.
-						 */
-						if (handle == OS.gtk_menu_get_attach_widget (grabHandle)) {
-							display.ignoreFocus = true;
-							break;
-						}
+						display.ignoreFocus = true;
+						break;
 					}
 				}
 			}
