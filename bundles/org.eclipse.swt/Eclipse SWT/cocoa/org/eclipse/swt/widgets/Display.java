@@ -4239,11 +4239,7 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
 		}
 		if (!loaded) {
-			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
-			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		}
-		if (!loaded) {
-			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
+			path = NSString.stringWith(System.getProperty("java.home") + "/../Resources/English.lproj/DefaultApp.nib");
 			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
 		}
 		if (!loaded) {
