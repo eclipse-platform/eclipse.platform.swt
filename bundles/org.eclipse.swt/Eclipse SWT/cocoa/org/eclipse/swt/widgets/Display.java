@@ -2002,6 +2002,7 @@ void initClasses () {
 	int /*long*/ view_stringForToolTip_point_userDataProc = OS.view_stringForToolTip_point_userData_CALLBACK(proc6);
 	int /*long*/ canDragRowsWithIndexes_atPoint_Proc = OS.canDragRowsWithIndexes_atPoint_CALLBACK(proc4);
 	int /*long*/ setNeedsDisplayInRectProc = OS.setNeedsDisplayInRect_CALLBACK(proc3);
+	int /*long*/ expansionFrameWithFrameProc = OS.expansionFrameWithFrameProc_CALLBACK (proc4);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -2157,6 +2158,7 @@ void initClasses () {
 	OS.class_addMethod (cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod (cls, OS.sel_image, proc2, "@:");
 	OS.class_addMethod (cls, OS.sel_setImage_, proc3, "@:@");
+	OS.class_addMethod (cls, OS.sel_expansionFrameWithFrame_inView_, expansionFrameWithFrameProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTTableHeaderView";
@@ -4726,6 +4728,14 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.expandItem_expandChildren(id, sel, arg0, arg1 != 0);
 	} else if (sel == OS.sel_collapseItem_collapseChildren_) {
 		widget.collapseItem_collapseChildren(id, sel, arg0, arg1 != 0);
+	} else if (sel == OS.sel_expansionFrameWithFrame_inView_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		rect = widget.expansionFrameWithFrame_inView(id, sel, rect, arg1);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRect.sizeof);
+		OS.memmove (result, rect, NSRect.sizeof);
+		return result;
 	}
 	return 0;
 }

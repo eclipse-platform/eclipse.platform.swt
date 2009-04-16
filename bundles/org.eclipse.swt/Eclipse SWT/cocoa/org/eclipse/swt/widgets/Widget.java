@@ -611,6 +611,10 @@ void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	OS.objc_msgSendSuper(super_struct, sel, item, children ? 1 : 0);
 }
 
+NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
+	return cellRect;
+}
+
 boolean filters (int eventType) {
 	return display.filters (eventType);
 }
@@ -1719,6 +1723,7 @@ void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
+
 
 
 }

@@ -55,6 +55,12 @@ public NSRect drawingRectForBounds(NSRect theRect) {
 	return result;
 }
 
+public NSRect expansionFrameWithFrame(NSRect cellFrame, NSView view) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_expansionFrameWithFrame_inView_, cellFrame, view != null ? view.id : 0);
+	return result;
+}
+
 public NSFont font() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;

@@ -534,3 +534,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(hitTestForEvent_1inRect_1ofView_1CALLBACK)
 	return (jintLong)hitTestForEvent_1inRect_1ofViewProc;
 }
 #endif
+
+#ifndef NO_expansionFrameWithFrameProc_1CALLBACK
+static jintLong expansionFrameWithFrameProc_1CALLBACK;
+static NSRect expansionFrameWithFrameProc(id obj, SEL sel, NSRect cellFrame, NSView* view)
+{
+	NSRect* ptr = ((NSRect* (*)(id, SEL, NSRect*, NSView*))expansionFrameWithFrameProc_1CALLBACK)(obj, sel, &cellFrame, view);
+	NSRect result = *ptr;
+	free(ptr);
+	return result;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(expansionFrameWithFrameProc_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	expansionFrameWithFrameProc_1CALLBACK = func;
+	return (jintLong)expansionFrameWithFrameProc;
+}
+#endif

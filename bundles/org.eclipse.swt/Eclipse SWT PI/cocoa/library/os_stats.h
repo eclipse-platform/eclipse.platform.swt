@@ -317,6 +317,7 @@ typedef enum {
 	drawInteriorWithFrame_1inView_1CALLBACK_FUNC,
 	drawRect_1CALLBACK_FUNC,
 	drawWithFrame_1inView_1CALLBACK_FUNC,
+	expansionFrameWithFrameProc_1CALLBACK_FUNC,
 	firstRectForCharacterRange_1CALLBACK_FUNC,
 	getpid_FUNC,
 	highlightSelectionInClipRect_1CALLBACK_FUNC,

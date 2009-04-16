@@ -1123,6 +1123,10 @@ void drawRect(int id, int sel, NSRect rect) {
 		if (setScrollWidth (items, true)) view.setNeedsDisplay(true);
 	}
 }
+NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
+	if (toolTipText == null) return cellRect;
+	return new NSRect();
+}
 
 Widget findTooltip (NSPoint pt) {
 	NSTableView widget = (NSTableView)view;
