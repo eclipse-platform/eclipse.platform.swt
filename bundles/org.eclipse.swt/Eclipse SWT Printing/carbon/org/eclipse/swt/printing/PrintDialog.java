@@ -29,10 +29,7 @@ import org.eclipse.swt.internal.carbon.OS;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class PrintDialog extends Dialog {
-	PrinterData printerData;
-	int scope = PrinterData.ALL_PAGES;
-	int startPage = 1, endPage = 1;
-	boolean printToFile = false;
+	PrinterData printerData = new PrinterData();
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -133,14 +130,17 @@ public PrinterData open() {
 			if (OS.PMCreatePageFormat(buffer) == OS.noErr) {
 				int pageFormat = buffer[0];
 				OS.PMSessionDefaultPageFormat(printSession, pageFormat);
-				OS.PMSessionSetDestination(printSession, printSettings, (short) (printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
-				if (scope == PrinterData.PAGE_RANGE) {
-					OS.PMSetFirstPage(printSettings, startPage, false);
-					OS.PMSetLastPage(printSettings, endPage, false);
-					OS.PMSetPageRange(printSettings, startPage, endPage);
+				OS.PMSessionSetDestination(printSession, printSettings, (short) (printerData.printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
+				if (printerData.scope == PrinterData.PAGE_RANGE) {
+					OS.PMSetFirstPage(printSettings, printerData.startPage, false);
+					OS.PMSetLastPage(printSettings, printerData.endPage, false);
+					OS.PMSetPageRange(printSettings, printerData.startPage, printerData.endPage);
 				} else {
 					OS.PMSetPageRange(printSettings, 1, OS.kPMPrintAllPages);
 				}
+				OS.PMSetCopies(printSettings, printerData.copyCount, false);
+				OS.PMSetCollate(printSettings, printerData.collate);
+				OS.PMSetOrientation(pageFormat, (short)(printerData.orientation == PrinterData.LANDSCAPE ? OS.kPMLandscape : OS.kPMPortrait), false);
 				boolean[] accepted = new boolean [1];
 				if (OS.VERSION >= 0x1050) {
 					int printDialogOptions = OS.kPMShowDefaultInlineItems | OS.kPMShowPageAttributesPDE;
@@ -170,12 +170,12 @@ public PrinterData open() {
 						OS.CFRelease(fileName);
 					}
 					OS.PMGetCopies(printSettings, buffer);
-					data.copyCount = buffer[0];						
+					data.copyCount = buffer[0];
 					OS.PMGetFirstPage(printSettings, buffer);
 					data.startPage = buffer[0];
 					OS.PMGetLastPage(printSettings, buffer);
 					data.endPage = buffer[0];
-					OS.PMGetPageRange(printSettings, null, buffer);
+					//OS.PMGetPageRange(printSettings, null, buffer);
 					if (data.startPage == 1 && data.endPage == OS.kPMPrintAllPages) {
 						data.scope = PrinterData.ALL_PAGES;
 					} else {
@@ -184,6 +184,9 @@ public PrinterData open() {
 					boolean[] collate = new boolean[1];
 					OS.PMGetCollate(printSettings, collate);
 					data.collate = collate[0];
+					short[] orientation = new short[1];
+					OS.PMGetOrientation(pageFormat, orientation);
+					data.orientation = orientation[0] == OS.kPMLandscape ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 					
 					/* Serialize settings */
 					int[] flatSettings = new int[1];
@@ -198,11 +201,7 @@ public PrinterData open() {
 					offset = Printer.packData(flatFormat[0], otherData, offset);
 					OS.DisposeHandle(flatSettings[0]);
 					OS.DisposeHandle(flatFormat[0]);
-					
-					scope = data.scope;
-					startPage = data.startPage;
-					endPage = data.endPage;
-					printToFile = data.printToFile;
+					printerData = data;
 					return data;
 				}
 				OS.PMRelease(pageFormat);
@@ -230,7 +229,7 @@ public PrinterData open() {
  * @return the scope setting that the user selected
  */
 public int getScope() {
-	return scope;
+	return printerData.scope;
 }
 
 /**
@@ -249,7 +248,7 @@ public int getScope() {
  * @param scope the scope setting when the dialog is opened
  */
 public void setScope(int scope) {
-	this.scope = scope;
+	printerData.scope = scope;
 }
 
 /**
@@ -263,7 +262,7 @@ public void setScope(int scope) {
  * @return the start page setting that the user selected
  */
 public int getStartPage() {
-	return startPage;
+	return printerData.startPage;
 }
 
 /**
@@ -277,7 +276,7 @@ public int getStartPage() {
  * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
-	this.startPage = startPage;
+	printerData.startPage = startPage;
 }
 
 /**
@@ -291,7 +290,7 @@ public void setStartPage(int startPage) {
  * @return the end page setting that the user selected
  */
 public int getEndPage() {
-	return endPage;
+	return printerData.endPage;
 }
 
 /**
@@ -305,7 +304,7 @@ public int getEndPage() {
  * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
-	this.endPage = endPage;
+	printerData.endPage = endPage;
 }
 
 /**
@@ -315,7 +314,7 @@ public void setEndPage(int endPage) {
  * @return the 'Print to file' setting that the user selected
  */
 public boolean getPrintToFile() {
-	return printToFile;
+	return printerData.printToFile;
 }
 
 /**
@@ -325,7 +324,7 @@ public boolean getPrintToFile() {
  * @param printToFile the 'Print to file' setting when the dialog is opened
  */
 public void setPrintToFile(boolean printToFile) {
-	this.printToFile = printToFile;
+	printerData.printToFile = printToFile;
 }
 
 protected void checkSubclass() {

@@ -49,7 +49,7 @@ XULRUNNER_LIBS = $(XULRUNNER_SDK)/lib/libxpcomglue.a $(XULRUNNER_SDK)/../../../p
 XULRUNNERCFLAGS = $(CFLAGS) -Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include -DXULRUNNER
 XULRUNNERLFLAGS = $(LFLAGS)
 
-all: $(SWT_LIB) $(SWTPI_LIB) $(COCOA_LIB) $(AGL_LIB) $(XULRUNNER_LIB)
+all: $(SWT_LIB) $(SWTPI_LIB) $(COCOA_LIB) #$(AGL_LIB) $(XULRUNNER_LIB)
 
 .c.o:
 	cc $(CFLAGS) $*.c

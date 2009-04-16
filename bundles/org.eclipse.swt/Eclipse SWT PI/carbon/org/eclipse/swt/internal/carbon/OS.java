@@ -765,6 +765,8 @@ public class OS extends C {
 	public static final int kPMDestinationFile = 2;
 	public static final int kPMDestinationPreview = 4;
 	public static final int kPMDestinationPrinter = 1;
+	public static final int kPMLandscape = 2;
+	public static final int kPMPortrait = 1;
 	public static final int kPMPrintAllPages = 2147483647;
 	public static final int kPMShowDefaultInlineItems = 1 << 15;
 	public static final int kPMShowPageAttributesPDE = 1 << 8;
@@ -4132,6 +4134,11 @@ public static final native int PMGetJobNameCFString(int printSettings, int[] nam
  */
 public static final native int PMGetLastPage(int printSettings, int[] last);
 /**
+ * @param pageFormat cast=(PMPageFormat)
+ * @param orientation cast=(PMOrientation *)
+ */
+public static final native int PMGetOrientation(int pageFormat, short[] orientation);
+/**
  * @param printSettings cast=(PMPrintSettings)
  * @param minPage cast=(UInt32 *)
  * @param maxPage cast=(UInt32 *)
@@ -4266,6 +4273,12 @@ public static final native int PMSessionValidatePrintSettings(int printSession, 
 public static final native int PMSetCollate(int printSettings, boolean collate);
 /**
  * @param printSettings cast=(PMPrintSettings)
+ * @param copies cast=(UInt32)
+ * @param lock cast=(Boolean)
+ */
+public static final native int PMSetCopies(int printSettings, int copies, boolean lock);
+/**
+ * @param printSettings cast=(PMPrintSettings)
  * @param first cast=(UInt32)
  * @param lock cast=(Boolean)
  */
@@ -4281,6 +4294,12 @@ public static final native int PMSetJobNameCFString(int printSettings, int name)
  * @param lock cast=(Boolean)
  */
 public static final native int PMSetLastPage(int printSettings, int last, boolean lock);
+/**
+ * @param pageFormat cast=(PMPageFormat)
+ * @param orientation cast=(PMOrientation)
+ * @param lock cast=(Boolean)
+ */
+public static final native void PMSetOrientation(int pageFormat, short orientation, boolean lock);
 /**
  * @param printSettings cast=(PMPrintSettings)
  * @param minPage cast=(UInt32)

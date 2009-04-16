@@ -10285,6 +10285,22 @@ fail:
 }
 #endif
 
+#ifndef NO_PMGetOrientation
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetOrientation)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PMGetOrientation_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)PMGetOrientation((PMPageFormat)arg0, (PMOrientation *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, PMGetOrientation_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PMGetPageRange
 JNIEXPORT jint JNICALL OS_NATIVE(PMGetPageRange)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -10666,6 +10682,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMSetCollate)
 }
 #endif
 
+#ifndef NO_PMSetCopies
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetCopies)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PMSetCopies_FUNC);
+	rc = (jint)PMSetCopies((PMPrintSettings)arg0, (UInt32)arg1, (Boolean)arg2);
+	OS_NATIVE_EXIT(env, that, PMSetCopies_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PMSetFirstPage
 JNIEXPORT jint JNICALL OS_NATIVE(PMSetFirstPage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
@@ -10699,6 +10727,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMSetLastPage)
 	rc = (jint)PMSetLastPage((PMPrintSettings)arg0, (UInt32)arg1, (Boolean)arg2);
 	OS_NATIVE_EXIT(env, that, PMSetLastPage_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_PMSetOrientation
+JNIEXPORT void JNICALL OS_NATIVE(PMSetOrientation)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jboolean arg2)
+{
+	OS_NATIVE_ENTER(env, that, PMSetOrientation_FUNC);
+	PMSetOrientation((PMPageFormat)arg0, (PMOrientation)arg1, (Boolean)arg2);
+	OS_NATIVE_EXIT(env, that, PMSetOrientation_FUNC);
 }
 #endif
 

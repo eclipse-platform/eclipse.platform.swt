@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 982;
-int OS_nativeFunctionCallCount[982];
+int OS_nativeFunctionCount = 985;
+int OS_nativeFunctionCallCount[985];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -728,6 +728,7 @@ char * OS_nativeFunctionNames[] = {
 	"PMGetFirstPage",
 	"PMGetJobNameCFString",
 	"PMGetLastPage",
+	"PMGetOrientation",
 	"PMGetPageRange",
 	"PMGetResolution",
 	"PMPrinterGetOutputResolution",
@@ -754,9 +755,11 @@ char * OS_nativeFunctionNames[] = {
 	"PMSessionValidatePageFormat",
 	"PMSessionValidatePrintSettings",
 	"PMSetCollate",
+	"PMSetCopies",
 	"PMSetFirstPage",
 	"PMSetJobNameCFString",
 	"PMSetLastPage",
+	"PMSetOrientation",
 	"PMSetPageRange",
 	"PMShowPrintDialogWithOptions",
 	"PMUnflattenPageFormat",
