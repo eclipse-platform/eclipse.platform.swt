@@ -390,6 +390,8 @@ public class OS extends C {
 	public static final int CBXS_HOT = 2;
 	public static final int CBXS_PRESSED = 3;
 	public static final int CBXS_DISABLED = 4;
+	public static final int CCHDEVICENAME = 32;
+	public static final int CCHFORMNAME = 32;
 	public static final int CCHILDREN_SCROLLBAR = 5;
 	public static final int CCM_FIRST = 0x2000;
 	public static final int CCM_SETBKCOLOR = 0x2001;
@@ -537,6 +539,9 @@ public class OS extends C {
 	public static final int DLGC_WANTCHARS = 0x80;
 	public static final int DLGC_WANTTAB = 0x2;
 	public static final int DM_SETDEFID = 0x401;
+	public static final int DM_ORIENTATION = 0x00000001;
+	public static final short DMORIENT_PORTRAIT = 1;
+	public static final short DMORIENT_LANDSCAPE = 2;
 	public static final int DSS_DISABLED = 0x20;
 	public static final int DSTINVERT = 0x550009;
 	public static final int DST_BITMAP = 0x4;
@@ -651,6 +656,7 @@ public class OS extends C {
 	public static final int EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
 //	public static final int EVENT_OBJECT_SELECTION = 0x8006;
 	public static final int EVENT_OBJECT_SELECTIONWITHIN = 0x8009;
+//	public static final int EVENT_OBJECT_STATECHANGE = 0x800A;
 	public static final int EVENT_OBJECT_VALUECHANGE = 0x800E;
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
@@ -1267,6 +1273,7 @@ public class OS extends C {
 	public static final int PD_PAGENUMS = 0x2;
 	public static final int PD_PRINTTOFILE = 0x20;
 	public static final int PD_RETURNDC = 0x100;
+	public static final int PD_RETURNDEFAULT = 0x00000400;
 	public static final int PD_SELECTION = 0x1;
 	public static final int PD_USEDEVMODECOPIESANDCOLLATE = 0x40000;
 	public static final int PT_CLOSEFIGURE = 1;
@@ -2141,6 +2148,8 @@ public static final native int CHOOSEFONT_sizeof ();
 public static final native int COMBOBOXINFO_sizeof ();
 public static final native int COMPOSITIONFORM_sizeof ();
 public static final native int CREATESTRUCT_sizeof ();
+public static final native int DEVMODEA_sizeof ();
+public static final native int DEVMODEW_sizeof ();
 public static final native int DIBSECTION_sizeof ();
 public static final native int DLLVERSIONINFO_sizeof ();
 public static final native int DOCHOSTUIINFO_sizeof ();
@@ -2896,6 +2905,22 @@ public static final void MoveMemory (TCHAR Destination, int /*long*/ Source, int
 	} else {
 		byte [] Destination1 = Destination == null ? null : Destination.bytes;
 		MoveMemory (Destination1, Source, Length);
+	}
+}
+
+public static final void MoveMemory (int /*long*/ Destination, DEVMODE Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory (Destination, (DEVMODEW)Source, Length);
+	} else {
+		MoveMemory (Destination, (DEVMODEA)Source, Length);
+	}
+}
+
+public static final void MoveMemory (DEVMODE Destination, int /*long*/ Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory ((DEVMODEW)Destination, Source, Length);
+	} else {
+		MoveMemory ((DEVMODEA)Destination, Source, Length);
 	}
 }
 
@@ -4924,6 +4949,16 @@ public static final native void MoveMemory (int /*long*/ Destination, int /*long
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
+public static final native void MoveMemory (int /*long*/ Destination, DEVMODEW Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (int /*long*/ Destination, DEVMODEA Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
 public static final native void MoveMemory (int /*long*/ Destination, DOCHOSTUIINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID)
@@ -5000,6 +5035,16 @@ public static final native void MoveMemory (BITMAPINFOHEADER Destination, byte [
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
 public static final native void MoveMemory (BITMAPINFOHEADER Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (DEVMODEW Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (DEVMODEA Destination, int /*long*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)

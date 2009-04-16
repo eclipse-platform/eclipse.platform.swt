@@ -179,6 +179,42 @@ void setCREATESTRUCTFields(JNIEnv *env, jobject lpObject, CREATESTRUCT *lpStruct
 #define CREATESTRUCT_sizeof() 0
 #endif
 
+#ifndef NO_DEVMODE
+void cacheDEVMODEFields(JNIEnv *env, jobject lpObject);
+DEVMODE *getDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct);
+void setDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct);
+#define DEVMODE_sizeof() sizeof(DEVMODE)
+#else
+#define cacheDEVMODEFields(a,b)
+#define getDEVMODEFields(a,b,c) NULL
+#define setDEVMODEFields(a,b,c)
+#define DEVMODE_sizeof() 0
+#endif
+
+#ifndef NO_DEVMODEA
+void cacheDEVMODEAFields(JNIEnv *env, jobject lpObject);
+DEVMODEA *getDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct);
+void setDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct);
+#define DEVMODEA_sizeof() sizeof(DEVMODEA)
+#else
+#define cacheDEVMODEAFields(a,b)
+#define getDEVMODEAFields(a,b,c) NULL
+#define setDEVMODEAFields(a,b,c)
+#define DEVMODEA_sizeof() 0
+#endif
+
+#ifndef NO_DEVMODEW
+void cacheDEVMODEWFields(JNIEnv *env, jobject lpObject);
+DEVMODEW *getDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct);
+void setDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct);
+#define DEVMODEW_sizeof() sizeof(DEVMODEW)
+#else
+#define cacheDEVMODEWFields(a,b)
+#define getDEVMODEWFields(a,b,c) NULL
+#define setDEVMODEWFields(a,b,c)
+#define DEVMODEW_sizeof() 0
+#endif
+
 #ifndef NO_DIBSECTION
 void cacheDIBSECTIONFields(JNIEnv *env, jobject lpObject);
 DIBSECTION *getDIBSECTIONFields(JNIEnv *env, jobject lpObject, DIBSECTION *lpStruct);

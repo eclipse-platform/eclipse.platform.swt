@@ -752,6 +752,352 @@ void setCREATESTRUCTFields(JNIEnv *env, jobject lpObject, CREATESTRUCT *lpStruct
 }
 #endif
 
+#ifndef NO_DEVMODE
+typedef struct DEVMODE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dmSpecVersion, dmDriverVersion, dmSize, dmDriverExtra, dmFields, dmOrientation, dmPaperSize, dmPaperLength, dmPaperWidth, dmScale, dmCopies, dmDefaultSource, dmPrintQuality, dmColor, dmDuplex, dmYResolution, dmTTOption, dmCollate, dmLogPixels, dmBitsPerPel, dmPelsWidth, dmPelsHeight, dmNup, dmDisplayFrequency, dmICMMethod, dmICMIntent, dmMediaType, dmDitherType, dmReserved1, dmReserved2, dmPanningWidth, dmPanningHeight;
+} DEVMODE_FID_CACHE;
+
+DEVMODE_FID_CACHE DEVMODEFc;
+
+void cacheDEVMODEFields(JNIEnv *env, jobject lpObject)
+{
+	if (DEVMODEFc.cached) return;
+	DEVMODEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DEVMODEFc.dmSpecVersion = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmSpecVersion", "S");
+	DEVMODEFc.dmDriverVersion = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDriverVersion", "S");
+	DEVMODEFc.dmSize = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmSize", "S");
+	DEVMODEFc.dmDriverExtra = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDriverExtra", "S");
+	DEVMODEFc.dmFields = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmFields", "I");
+	DEVMODEFc.dmOrientation = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmOrientation", "S");
+	DEVMODEFc.dmPaperSize = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPaperSize", "S");
+	DEVMODEFc.dmPaperLength = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPaperLength", "S");
+	DEVMODEFc.dmPaperWidth = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPaperWidth", "S");
+	DEVMODEFc.dmScale = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmScale", "S");
+	DEVMODEFc.dmCopies = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmCopies", "S");
+	DEVMODEFc.dmDefaultSource = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDefaultSource", "S");
+	DEVMODEFc.dmPrintQuality = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPrintQuality", "S");
+	DEVMODEFc.dmColor = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmColor", "S");
+	DEVMODEFc.dmDuplex = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDuplex", "S");
+	DEVMODEFc.dmYResolution = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmYResolution", "S");
+	DEVMODEFc.dmTTOption = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmTTOption", "S");
+	DEVMODEFc.dmCollate = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmCollate", "S");
+	DEVMODEFc.dmLogPixels = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmLogPixels", "S");
+	DEVMODEFc.dmBitsPerPel = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmBitsPerPel", "I");
+	DEVMODEFc.dmPelsWidth = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPelsWidth", "I");
+	DEVMODEFc.dmPelsHeight = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPelsHeight", "I");
+	DEVMODEFc.dmNup = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmNup", "I");
+	DEVMODEFc.dmDisplayFrequency = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDisplayFrequency", "I");
+	DEVMODEFc.dmICMMethod = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmICMMethod", "I");
+	DEVMODEFc.dmICMIntent = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmICMIntent", "I");
+	DEVMODEFc.dmMediaType = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmMediaType", "I");
+	DEVMODEFc.dmDitherType = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmDitherType", "I");
+	DEVMODEFc.dmReserved1 = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmReserved1", "I");
+	DEVMODEFc.dmReserved2 = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmReserved2", "I");
+	DEVMODEFc.dmPanningWidth = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPanningWidth", "I");
+	DEVMODEFc.dmPanningHeight = (*env)->GetFieldID(env, DEVMODEFc.clazz, "dmPanningHeight", "I");
+	DEVMODEFc.cached = 1;
+}
+
+DEVMODE *getDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct)
+{
+	if (!DEVMODEFc.cached) cacheDEVMODEFields(env, lpObject);
+	lpStruct->dmSpecVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSpecVersion);
+	lpStruct->dmDriverVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverVersion);
+	lpStruct->dmSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSize);
+	lpStruct->dmDriverExtra = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverExtra);
+	lpStruct->dmFields = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmFields);
+	lpStruct->dmOrientation = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmOrientation);
+	lpStruct->dmPaperSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperSize);
+	lpStruct->dmPaperLength = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperLength);
+	lpStruct->dmPaperWidth = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperWidth);
+	lpStruct->dmScale = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmScale);
+	lpStruct->dmCopies = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCopies);
+	lpStruct->dmDefaultSource = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDefaultSource);
+	lpStruct->dmPrintQuality = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPrintQuality);
+	lpStruct->dmColor = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmColor);
+	lpStruct->dmDuplex = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDuplex);
+	lpStruct->dmYResolution = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmYResolution);
+	lpStruct->dmTTOption = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmTTOption);
+	lpStruct->dmCollate = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCollate);
+	lpStruct->dmLogPixels = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmLogPixels);
+	lpStruct->dmBitsPerPel = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel);
+	lpStruct->dmPelsWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsWidth);
+	lpStruct->dmPelsHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsHeight);
+	lpStruct->dmNup = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmNup);
+	lpStruct->dmDisplayFrequency = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency);
+	lpStruct->dmICMMethod = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMMethod);
+	lpStruct->dmICMIntent = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMIntent);
+	lpStruct->dmMediaType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmMediaType);
+	lpStruct->dmDitherType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDitherType);
+	lpStruct->dmReserved1 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved1);
+	lpStruct->dmReserved2 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved2);
+	lpStruct->dmPanningWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningWidth);
+	lpStruct->dmPanningHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningHeight);
+	return lpStruct;
+}
+
+void setDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct)
+{
+	if (!DEVMODEFc.cached) cacheDEVMODEFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSpecVersion, (jshort)lpStruct->dmSpecVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverVersion, (jshort)lpStruct->dmDriverVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSize, (jshort)lpStruct->dmSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverExtra, (jshort)lpStruct->dmDriverExtra);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmFields, (jint)lpStruct->dmFields);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmOrientation, (jshort)lpStruct->dmOrientation);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperSize, (jshort)lpStruct->dmPaperSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperLength, (jshort)lpStruct->dmPaperLength);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperWidth, (jshort)lpStruct->dmPaperWidth);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmScale, (jshort)lpStruct->dmScale);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCopies, (jshort)lpStruct->dmCopies);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDefaultSource, (jshort)lpStruct->dmDefaultSource);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPrintQuality, (jshort)lpStruct->dmPrintQuality);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmColor, (jshort)lpStruct->dmColor);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDuplex, (jshort)lpStruct->dmDuplex);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmYResolution, (jshort)lpStruct->dmYResolution);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmTTOption, (jshort)lpStruct->dmTTOption);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCollate, (jshort)lpStruct->dmCollate);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmLogPixels, (jshort)lpStruct->dmLogPixels);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel, (jint)lpStruct->dmBitsPerPel);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsWidth, (jint)lpStruct->dmPelsWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsHeight, (jint)lpStruct->dmPelsHeight);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmNup, (jint)lpStruct->dmNup);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency, (jint)lpStruct->dmDisplayFrequency);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMMethod, (jint)lpStruct->dmICMMethod);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMIntent, (jint)lpStruct->dmICMIntent);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmMediaType, (jint)lpStruct->dmMediaType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDitherType, (jint)lpStruct->dmDitherType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved1, (jint)lpStruct->dmReserved1);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved2, (jint)lpStruct->dmReserved2);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningWidth, (jint)lpStruct->dmPanningWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningHeight, (jint)lpStruct->dmPanningHeight);
+}
+#endif
+
+#ifndef NO_DEVMODEA
+typedef struct DEVMODEA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dmDeviceName, dmFormName;
+} DEVMODEA_FID_CACHE;
+
+DEVMODEA_FID_CACHE DEVMODEAFc;
+
+void cacheDEVMODEAFields(JNIEnv *env, jobject lpObject)
+{
+	if (DEVMODEAFc.cached) return;
+	cacheDEVMODEFields(env, lpObject);
+	DEVMODEAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DEVMODEAFc.dmDeviceName = (*env)->GetFieldID(env, DEVMODEAFc.clazz, "dmDeviceName", "[B");
+	DEVMODEAFc.dmFormName = (*env)->GetFieldID(env, DEVMODEAFc.clazz, "dmFormName", "[B");
+	DEVMODEAFc.cached = 1;
+}
+
+DEVMODEA *getDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct)
+{
+	if (!DEVMODEAFc.cached) cacheDEVMODEAFields(env, lpObject);
+	lpStruct->dmSpecVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSpecVersion);
+	lpStruct->dmDriverVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverVersion);
+	lpStruct->dmSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSize);
+	lpStruct->dmDriverExtra = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverExtra);
+	lpStruct->dmFields = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmFields);
+	lpStruct->dmOrientation = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmOrientation);
+	lpStruct->dmPaperSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperSize);
+	lpStruct->dmPaperLength = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperLength);
+	lpStruct->dmPaperWidth = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperWidth);
+	lpStruct->dmScale = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmScale);
+	lpStruct->dmCopies = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCopies);
+	lpStruct->dmDefaultSource = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDefaultSource);
+	lpStruct->dmPrintQuality = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPrintQuality);
+	lpStruct->dmColor = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmColor);
+	lpStruct->dmDuplex = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDuplex);
+	lpStruct->dmYResolution = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmYResolution);
+	lpStruct->dmTTOption = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmTTOption);
+	lpStruct->dmCollate = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCollate);
+	lpStruct->dmLogPixels = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmLogPixels);
+	lpStruct->dmBitsPerPel = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel);
+	lpStruct->dmPelsWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsWidth);
+	lpStruct->dmPelsHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsHeight);
+	lpStruct->dmNup = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmNup);
+	lpStruct->dmDisplayFrequency = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency);
+	lpStruct->dmICMMethod = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMMethod);
+	lpStruct->dmICMIntent = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMIntent);
+	lpStruct->dmMediaType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmMediaType);
+	lpStruct->dmDitherType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDitherType);
+	lpStruct->dmReserved1 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved1);
+	lpStruct->dmReserved2 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved2);
+	lpStruct->dmPanningWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningWidth);
+	lpStruct->dmPanningHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningHeight);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmDeviceName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName), (jbyte *)lpStruct->dmDeviceName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmFormName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName), (jbyte *)lpStruct->dmFormName);
+	}
+	return lpStruct;
+}
+
+void setDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct)
+{
+	if (!DEVMODEAFc.cached) cacheDEVMODEAFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSpecVersion, (jshort)lpStruct->dmSpecVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverVersion, (jshort)lpStruct->dmDriverVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSize, (jshort)lpStruct->dmSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverExtra, (jshort)lpStruct->dmDriverExtra);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmFields, (jint)lpStruct->dmFields);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmOrientation, (jshort)lpStruct->dmOrientation);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperSize, (jshort)lpStruct->dmPaperSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperLength, (jshort)lpStruct->dmPaperLength);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperWidth, (jshort)lpStruct->dmPaperWidth);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmScale, (jshort)lpStruct->dmScale);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCopies, (jshort)lpStruct->dmCopies);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDefaultSource, (jshort)lpStruct->dmDefaultSource);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPrintQuality, (jshort)lpStruct->dmPrintQuality);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmColor, (jshort)lpStruct->dmColor);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDuplex, (jshort)lpStruct->dmDuplex);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmYResolution, (jshort)lpStruct->dmYResolution);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmTTOption, (jshort)lpStruct->dmTTOption);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCollate, (jshort)lpStruct->dmCollate);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmLogPixels, (jshort)lpStruct->dmLogPixels);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel, (jint)lpStruct->dmBitsPerPel);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsWidth, (jint)lpStruct->dmPelsWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsHeight, (jint)lpStruct->dmPelsHeight);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmNup, (jint)lpStruct->dmNup);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency, (jint)lpStruct->dmDisplayFrequency);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMMethod, (jint)lpStruct->dmICMMethod);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMIntent, (jint)lpStruct->dmICMIntent);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmMediaType, (jint)lpStruct->dmMediaType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDitherType, (jint)lpStruct->dmDitherType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved1, (jint)lpStruct->dmReserved1);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved2, (jint)lpStruct->dmReserved2);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningWidth, (jint)lpStruct->dmPanningWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningHeight, (jint)lpStruct->dmPanningHeight);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmDeviceName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName), (jbyte *)lpStruct->dmDeviceName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DEVMODEAFc.dmFormName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName), (jbyte *)lpStruct->dmFormName);
+	}
+}
+#endif
+
+#ifndef NO_DEVMODEW
+typedef struct DEVMODEW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dmDeviceName, dmFormName;
+} DEVMODEW_FID_CACHE;
+
+DEVMODEW_FID_CACHE DEVMODEWFc;
+
+void cacheDEVMODEWFields(JNIEnv *env, jobject lpObject)
+{
+	if (DEVMODEWFc.cached) return;
+	cacheDEVMODEFields(env, lpObject);
+	DEVMODEWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DEVMODEWFc.dmDeviceName = (*env)->GetFieldID(env, DEVMODEWFc.clazz, "dmDeviceName", "[C");
+	DEVMODEWFc.dmFormName = (*env)->GetFieldID(env, DEVMODEWFc.clazz, "dmFormName", "[C");
+	DEVMODEWFc.cached = 1;
+}
+
+DEVMODEW *getDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct)
+{
+	if (!DEVMODEWFc.cached) cacheDEVMODEWFields(env, lpObject);
+	lpStruct->dmSpecVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSpecVersion);
+	lpStruct->dmDriverVersion = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverVersion);
+	lpStruct->dmSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmSize);
+	lpStruct->dmDriverExtra = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDriverExtra);
+	lpStruct->dmFields = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmFields);
+	lpStruct->dmOrientation = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmOrientation);
+	lpStruct->dmPaperSize = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperSize);
+	lpStruct->dmPaperLength = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperLength);
+	lpStruct->dmPaperWidth = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPaperWidth);
+	lpStruct->dmScale = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmScale);
+	lpStruct->dmCopies = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCopies);
+	lpStruct->dmDefaultSource = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDefaultSource);
+	lpStruct->dmPrintQuality = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmPrintQuality);
+	lpStruct->dmColor = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmColor);
+	lpStruct->dmDuplex = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmDuplex);
+	lpStruct->dmYResolution = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmYResolution);
+	lpStruct->dmTTOption = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmTTOption);
+	lpStruct->dmCollate = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmCollate);
+	lpStruct->dmLogPixels = (*env)->GetShortField(env, lpObject, DEVMODEFc.dmLogPixels);
+	lpStruct->dmBitsPerPel = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel);
+	lpStruct->dmPelsWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsWidth);
+	lpStruct->dmPelsHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPelsHeight);
+	lpStruct->dmNup = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmNup);
+	lpStruct->dmDisplayFrequency = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency);
+	lpStruct->dmICMMethod = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMMethod);
+	lpStruct->dmICMIntent = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmICMIntent);
+	lpStruct->dmMediaType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmMediaType);
+	lpStruct->dmDitherType = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmDitherType);
+	lpStruct->dmReserved1 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved1);
+	lpStruct->dmReserved2 = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmReserved2);
+	lpStruct->dmPanningWidth = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningWidth);
+	lpStruct->dmPanningHeight = (*env)->GetIntField(env, lpObject, DEVMODEFc.dmPanningHeight);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmDeviceName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName) / sizeof(jchar), (jchar *)lpStruct->dmDeviceName);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmFormName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName) / sizeof(jchar), (jchar *)lpStruct->dmFormName);
+	}
+	return lpStruct;
+}
+
+void setDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct)
+{
+	if (!DEVMODEWFc.cached) cacheDEVMODEWFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSpecVersion, (jshort)lpStruct->dmSpecVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverVersion, (jshort)lpStruct->dmDriverVersion);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmSize, (jshort)lpStruct->dmSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDriverExtra, (jshort)lpStruct->dmDriverExtra);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmFields, (jint)lpStruct->dmFields);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmOrientation, (jshort)lpStruct->dmOrientation);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperSize, (jshort)lpStruct->dmPaperSize);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperLength, (jshort)lpStruct->dmPaperLength);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPaperWidth, (jshort)lpStruct->dmPaperWidth);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmScale, (jshort)lpStruct->dmScale);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCopies, (jshort)lpStruct->dmCopies);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDefaultSource, (jshort)lpStruct->dmDefaultSource);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmPrintQuality, (jshort)lpStruct->dmPrintQuality);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmColor, (jshort)lpStruct->dmColor);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmDuplex, (jshort)lpStruct->dmDuplex);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmYResolution, (jshort)lpStruct->dmYResolution);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmTTOption, (jshort)lpStruct->dmTTOption);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmCollate, (jshort)lpStruct->dmCollate);
+	(*env)->SetShortField(env, lpObject, DEVMODEFc.dmLogPixels, (jshort)lpStruct->dmLogPixels);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmBitsPerPel, (jint)lpStruct->dmBitsPerPel);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsWidth, (jint)lpStruct->dmPelsWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPelsHeight, (jint)lpStruct->dmPelsHeight);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmNup, (jint)lpStruct->dmNup);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDisplayFrequency, (jint)lpStruct->dmDisplayFrequency);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMMethod, (jint)lpStruct->dmICMMethod);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmICMIntent, (jint)lpStruct->dmICMIntent);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmMediaType, (jint)lpStruct->dmMediaType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmDitherType, (jint)lpStruct->dmDitherType);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved1, (jint)lpStruct->dmReserved1);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmReserved2, (jint)lpStruct->dmReserved2);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningWidth, (jint)lpStruct->dmPanningWidth);
+	(*env)->SetIntField(env, lpObject, DEVMODEFc.dmPanningHeight, (jint)lpStruct->dmPanningHeight);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmDeviceName);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmDeviceName) / sizeof(jchar), (jchar *)lpStruct->dmDeviceName);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, DEVMODEWFc.dmFormName);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->dmFormName) / sizeof(jchar), (jchar *)lpStruct->dmFormName);
+	}
+}
+#endif
+
 #ifndef NO_DIBSECTION
 typedef struct DIBSECTION_FID_CACHE {
 	int cached;

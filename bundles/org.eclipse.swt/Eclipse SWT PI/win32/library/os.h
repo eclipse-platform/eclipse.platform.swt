@@ -59,6 +59,9 @@
 #define NO_BUTTON_IMAGELIST
 #define NO_CHOOSEFONT
 #define NO_COMBOBOXINFO
+#define NO_DEVMODE
+#define NO_DEVMODEA
+#define NO_DEVMODEW
 #define NO_DOCINFO
 #define NO_DWM_BLURBEHIND
 #define NO_EMR
@@ -371,6 +374,8 @@
 #define NO_MessageBoxA
 #define NO_ModifyWorldTransform
 #define NO_MonitorFromWindow
+#define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEA_2I
+#define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEW_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II

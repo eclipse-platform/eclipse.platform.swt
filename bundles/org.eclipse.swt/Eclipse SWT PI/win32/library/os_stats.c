@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 965;
-int OS_nativeFunctionCallCount[965];
+int OS_nativeFunctionCount = 971;
+int OS_nativeFunctionCallCount[971];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -133,6 +133,8 @@ char * OS_nativeFunctionNames[] = {
 	"CreateStreamOnHGlobal",
 	"CreateWindowExA",
 	"CreateWindowExW",
+	"DEVMODEA_1sizeof",
+	"DEVMODEW_1sizeof",
 	"DIBSECTION_1sizeof",
 	"DLLVERSIONINFO_1sizeof",
 	"DOCHOSTUIINFO_1sizeof",
@@ -650,6 +652,16 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__JJI",
 #endif
 #ifndef JNI64
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEA_2I",
+#else
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODEA_2I",
+#endif
+#ifndef JNI64
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEW_2I",
+#else
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODEW_2I",
+#endif
+#ifndef JNI64
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I",
 #else
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I",
@@ -805,6 +817,16 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2JI",
 #endif
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI",
+#ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2JI",
+#endif
+#ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEW_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEW_2JI",
+#endif
 #ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II",
 #else

@@ -141,6 +141,8 @@ typedef enum {
 	CreateStreamOnHGlobal_FUNC,
 	CreateWindowExA_FUNC,
 	CreateWindowExW_FUNC,
+	DEVMODEA_1sizeof_FUNC,
+	DEVMODEW_1sizeof_FUNC,
 	DIBSECTION_1sizeof_FUNC,
 	DLLVERSIONINFO_1sizeof_FUNC,
 	DOCHOSTUIINFO_1sizeof_FUNC,
@@ -658,6 +660,16 @@ typedef enum {
 	MoveMemory__JJI_FUNC,
 #endif
 #ifndef JNI64
+	MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEA_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODEA_2I_FUNC,
+#endif
+#ifndef JNI64
+	MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEW_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODEW_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I_FUNC,
 #else
 	MoveMemory__JLorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I_FUNC,
@@ -813,6 +825,16 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2JI_FUNC,
 #endif
 	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI_FUNC,
+#ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2JI_FUNC,
+#endif
+#ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEW_2JI_FUNC,
+#endif
 #ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II_FUNC,
 #else
