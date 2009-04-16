@@ -109,6 +109,14 @@ public void setDelegate(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
 }
 
+public void setMainMenu(NSMenu aMenu) {
+	OS.objc_msgSend(this.id, OS.sel_setMainMenu_, aMenu != null ? aMenu.id : 0);
+}
+
+public void setServicesMenu(NSMenu aMenu) {
+	OS.objc_msgSend(this.id, OS.sel_setServicesMenu_, aMenu != null ? aMenu.id : 0);
+}
+
 public static NSApplication sharedApplication() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSApplication, OS.sel_sharedApplication);
 	return result != 0 ? new NSApplication(result) : null;

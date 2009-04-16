@@ -28,6 +28,11 @@ public void addItem(NSMenuItem newItem) {
 	OS.objc_msgSend(this.id, OS.sel_addItem_, newItem != null ? newItem.id : 0);
 }
 
+public NSMenuItem addItemWithTitle(NSString aString, int /*long*/ aSelector, NSString charCode) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_addItemWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
+	return result != 0 ? new NSMenuItem(result) : null;
+}
+
 public void cancelTracking() {
 	OS.objc_msgSend(this.id, OS.sel_cancelTracking);
 }
@@ -77,6 +82,10 @@ public void setAutoenablesItems(boolean flag) {
 
 public void setDelegate(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
+}
+
+public void setSubmenu(NSMenu aMenu, NSMenuItem anItem) {
+	OS.objc_msgSend(this.id, OS.sel_setSubmenu_forItem_, aMenu != null ? aMenu.id : 0, anItem != null ? anItem.id : 0);
 }
 
 public void setTitle(NSString aString) {

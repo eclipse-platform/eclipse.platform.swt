@@ -785,6 +785,67 @@ void createDisplay (DeviceData data) {
 	}
 }
 
+void createMainMenu () {
+	NSString appName = getAppName();
+	NSString emptyStr = NSString.stringWith("");
+	NSMenu mainMenu = (NSMenu)new NSMenu().alloc();
+	mainMenu.initWithTitle(emptyStr);
+	
+	NSMenuItem menuItem;
+	NSMenu appleMenu;
+	NSString format = NSString.stringWith("%@ %@"), title;
+	
+	NSMenuItem appItem = menuItem = mainMenu.addItemWithTitle(emptyStr, 0, emptyStr);
+	appleMenu = (NSMenu)new NSMenu().alloc();
+	appleMenu.initWithTitle(emptyStr);	
+	OS.objc_msgSend(application.id, OS.sel_registerName("setAppleMenu:"), appleMenu.id);
+	
+	title = new NSString(OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format.id, NSString.stringWith(SWT.getMessage("About")).id, appName.id));
+	menuItem = appleMenu.addItemWithTitle(title, OS.sel_orderFrontStandardAboutPanel_, emptyStr);
+	menuItem.setTarget(applicationDelegate);
+	
+	appleMenu.addItem(NSMenuItem.separatorItem());
+	
+	title = NSString.stringWith(SWT.getMessage("Preferences..."));
+	menuItem = appleMenu.addItemWithTitle(title, 0, NSString.stringWith(","));
+	
+	appleMenu.addItem(NSMenuItem.separatorItem());
+	
+	title = NSString.stringWith(SWT.getMessage("Services"));
+	menuItem = appleMenu.addItemWithTitle(title, 0, emptyStr);
+	NSMenu servicesMenu = (NSMenu)new NSMenu().alloc();
+	servicesMenu.initWithTitle(emptyStr);
+	appleMenu.setSubmenu(servicesMenu, menuItem);
+	servicesMenu.release();	
+	application.setServicesMenu(servicesMenu);
+	
+	appleMenu.addItem(NSMenuItem.separatorItem());
+	
+	title = new NSString(OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format.id, NSString.stringWith(SWT.getMessage("Hide")).id, appName.id));
+	menuItem = appleMenu.addItemWithTitle(title, OS.sel_hide_, NSString.stringWith("h"));
+	menuItem.setTarget(applicationDelegate);
+	
+	title = NSString.stringWith(SWT.getMessage("Hide Others"));
+	menuItem = appleMenu.addItemWithTitle(title, OS.sel_hideOtherApplications_, NSString.stringWith("h"));
+	menuItem.setKeyEquivalentModifierMask(OS.NSCommandKeyMask | OS.NSAlternateKeyMask);
+	menuItem.setTarget(applicationDelegate);
+	
+	title = NSString.stringWith(SWT.getMessage("Show All"));
+	menuItem = appleMenu.addItemWithTitle(title, OS.sel_unhideAllApplications_, emptyStr);
+	menuItem.setTarget(applicationDelegate);
+	
+	appleMenu.addItem(NSMenuItem.separatorItem());
+	
+	title = new NSString(OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format.id, NSString.stringWith(SWT.getMessage("Quit")).id, appName.id));
+	menuItem = appleMenu.addItemWithTitle(title, OS.sel_quitRequested_, NSString.stringWith("q"));
+	menuItem.setTarget(applicationDelegate);
+	
+	mainMenu.setSubmenu(appleMenu, appItem);
+	appleMenu.release();
+	application.setMainMenu(mainMenu);
+	mainMenu.release();
+}
+
 int /*long*/ cursorSetProc (int /*long*/ id, int /*long*/ sel) {
 	if (lockCursor) {
 		if (currentControl != null) {
@@ -4167,23 +4228,27 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 	id applicationDelegate = display.applicationDelegate;
 	NSApplication application = display.application;
 	if (sel == OS.sel_applicationWillFinishLaunching_) {
-		NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
-		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-		NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
 		boolean loaded = false;
-		if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+//		NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
+//		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
+//		NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+//		if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+//		if (!loaded) {
+//			NSString resourcePath = bundle.resourcePath();
+//			path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
+//			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+//		}
+//		if (!loaded) {
+//			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
+//			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+//		}
+//		if (!loaded) {
+//			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
+//			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+//		}
 		if (!loaded) {
-			NSString resourcePath = bundle.resourcePath();
-			path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
-			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		}
-		if (!loaded) {
-			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
-			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		}
-		if (!loaded) {
-			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
-			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+			display.createMainMenu();
+			return 0;
 		}
 		//replace %@ with application name
 		NSMenu mainmenu = application.mainMenu();
@@ -4206,10 +4271,11 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 				NSMenuItem quitItem = sm.itemAtIndex(quitIndex);
 				quitItem.setAction(OS.sel_quitRequested_);
 			}
-		}		
+		}
 	} else if (sel == OS.sel_terminate_) {
 		// Do nothing here -- without a definition of sel_terminate we get a warning dumped to the console.
 	} else if (sel == OS.sel_orderFrontStandardAboutPanel_) {
+//		application.orderFrontStandardAboutPanel(application);
 	} else if (sel == OS.sel_hideOtherApplications_) {
 		application.hideOtherApplications(application);
 	} else if (sel == OS.sel_hide_) {

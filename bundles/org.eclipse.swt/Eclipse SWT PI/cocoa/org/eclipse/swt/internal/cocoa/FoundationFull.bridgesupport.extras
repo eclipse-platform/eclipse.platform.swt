@@ -853,6 +853,10 @@
 			<arg name="length" swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSString"></retval>
 		</method>
+		<method class_method="true" selector="stringWithFormat:" swt_gen="true">
+			<arg name="stringWithFormat" swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSString"></retval>
+		</method>
 		<method class_method="true" selector="stringWithUTF8String:" swt_gen="true">
 			<arg name="nullTerminatedCString" swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSString"></retval>

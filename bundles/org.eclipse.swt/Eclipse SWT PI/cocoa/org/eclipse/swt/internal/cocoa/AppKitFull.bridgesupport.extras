@@ -527,6 +527,14 @@
 			<arg name="anObject" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setMainMenu:" swt_gen="true">
+			<arg name="aMenu" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setServicesMenu:" swt_gen="true">
+			<arg name="aMenu" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="sharedApplication" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1723,6 +1731,10 @@
 			<arg name="delta" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="imageNamed:" swt_gen="true">
+			<arg name="name" swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSImage"></retval>
+		</method>
 		<method selector="initByReferencingFile:" swt_gen="true">
 			<arg name="fileName" swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSImage"></retval>
@@ -1950,6 +1962,12 @@
 			<arg name="newItem" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="addItemWithTitle:action:keyEquivalent:" swt_gen="true">
+			<arg name="aString" swt_gen="true"></arg>
+			<arg name="aSelector" swt_gen="true"></arg>
+			<arg name="charCode" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="cancelTracking" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1997,6 +2015,11 @@
 		</method>
 		<method selector="setDelegate:" swt_gen="true">
 			<arg name="anObject" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSubmenu:forItem:" swt_gen="true">
+			<arg name="aMenu" swt_gen="true"></arg>
+			<arg name="anItem" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setTitle:" swt_gen="true">
@@ -3324,6 +3347,11 @@
 			<arg name="tc" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setIndicatorImage:inTableColumn:" swt_gen="true">
+			<arg name="anImage" swt_gen="true"></arg>
+			<arg name="tc" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setIntercellSpacing:" swt_gen="true">
 			<arg name="aSize" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4297,6 +4325,9 @@
 	</informal_protocol>
 	<informal_protocol name="NSApplicationNotifications" swt_gen="mixed">
 		<method selector="applicationDidBecomeActive:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
+		<method selector="applicationDidFinishLaunching:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>
 		<method selector="applicationDidResignActive:" swt_gen="true">

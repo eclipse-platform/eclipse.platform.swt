@@ -214,6 +214,10 @@ public void setHighlightedTableColumn(NSTableColumn tc) {
 	OS.objc_msgSend(this.id, OS.sel_setHighlightedTableColumn_, tc != null ? tc.id : 0);
 }
 
+public void setIndicatorImage(NSImage anImage, NSTableColumn tc) {
+	OS.objc_msgSend(this.id, OS.sel_setIndicatorImage_inTableColumn_, anImage != null ? anImage.id : 0, tc != null ? tc.id : 0);
+}
+
 public void setIntercellSpacing(NSSize aSize) {
 	OS.objc_msgSend(this.id, OS.sel_setIntercellSpacing_, aSize);
 }

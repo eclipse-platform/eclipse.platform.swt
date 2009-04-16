@@ -46,6 +46,11 @@ public void drawInRect(NSRect rect, NSRect fromRect, int /*long*/ op, float /*do
 	OS.objc_msgSend(this.id, OS.sel_drawInRect_fromRect_operation_fraction_, rect, fromRect, op, delta);
 }
 
+public static NSImage imageNamed(NSString name) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSImage, OS.sel_imageNamed_, name != null ? name.id : 0);
+	return result != 0 ? new NSImage(result) : null;
+}
+
 public NSImage initByReferencingFile(NSString fileName) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initByReferencingFile_, fileName != null ? fileName.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
