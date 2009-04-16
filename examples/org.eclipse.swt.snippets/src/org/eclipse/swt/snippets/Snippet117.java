@@ -26,7 +26,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	final Text t = new Text(shell, SWT.BORDER | SWT.MULTI);
-    t.setText ("here is some text to be selected");
+	t.setText ("here is some text to be selected");
 	Menu bar = new Menu (shell, SWT.BAR);
 	shell.setMenuBar (bar);
 	MenuItem editItem = new MenuItem (bar, SWT.CASCADE);
