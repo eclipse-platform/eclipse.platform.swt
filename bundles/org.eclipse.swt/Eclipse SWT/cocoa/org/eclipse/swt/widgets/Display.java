@@ -4229,23 +4229,23 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 	NSApplication application = display.application;
 	if (sel == OS.sel_applicationWillFinishLaunching_) {
 		boolean loaded = false;
-//		NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
-//		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-//		NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
-//		if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-//		if (!loaded) {
-//			NSString resourcePath = bundle.resourcePath();
-//			path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
-//			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-//		}
-//		if (!loaded) {
-//			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
-//			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-//		}
-//		if (!loaded) {
-//			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
-//			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-//		}
+		NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
+		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
+		NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+		if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+		if (!loaded) {
+			NSString resourcePath = bundle.resourcePath();
+			path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
+			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+		}
+		if (!loaded) {
+			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
+			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+		}
+		if (!loaded) {
+			path = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
+			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+		}
 		if (!loaded) {
 			display.createMainMenu();
 			return 0;
