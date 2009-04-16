@@ -29,9 +29,13 @@ fi
 case $OS in
 	"SunOS")
 		SWT_OS=solaris
+		PROC=`uname -i`
 		MAKEFILE=make_solaris.mak
 		if uname -p > /dev/null 2>&1; then
 			MODEL=`uname -p`
+		fi
+		if [ "${MODEL}" = "i386"]; then
+			MAKEFILE=make_solaris_x86.mak
 		fi
 		;;
 	"FreeBSD")
