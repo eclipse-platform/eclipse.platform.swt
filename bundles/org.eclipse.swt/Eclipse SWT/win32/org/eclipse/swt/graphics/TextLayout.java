@@ -3043,6 +3043,7 @@ boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
  */
 void shape (final int /*long*/ hdc, final StyleItem run) {
 	if (run.tab || run.lineBreak) return;
+	if (run.glyphs != 0) return;
 	final int[] buffer = new int[1];
 	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
@@ -3063,10 +3064,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	boolean shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
 	if (!shapeSucceed) {
 		int /*long*/ hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
-		int /*long*/ ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
-		int /*long*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
-		int /*long*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
-		int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
+		int /*long*/ newFont = 0;
 		/*
 		* Bug in Uniscribe. In some version of Uniscribe, ScriptStringAnalyse crashes
 		* when the character array is too long. The fix is to limit the size of character
@@ -3084,42 +3082,84 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 				if (count == sampleChars.length) break;
 			}
 		}
-		if (OS.ScriptStringAnalyse(metaFileDc, sampleChars, count, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
-			OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
-			OS.ScriptStringFree(ssa);
-		}
-		OS.HeapFree(hHeap, 0, ssa);
-		OS.SelectObject(metaFileDc, oldMetaFont);
-		int /*long*/ metaFile = OS.CloseEnhMetaFile(metaFileDc);
-		final EMREXTCREATEFONTINDIRECTW emr = new EMREXTCREATEFONTINDIRECTW();
-		class MetaFileEnumProc {
-			int /*long*/ metaFileEnumProc (int /*long*/ hDC, int /*long*/ table, int /*long*/ record, int /*long*/ nObj, int /*long*/ lpData) {
-				OS.MoveMemory(emr.emr, record, EMR.sizeof);
-				switch (emr.emr.iType) {
-					case OS.EMR_EXTCREATEFONTINDIRECTW:
-						OS.MoveMemory(emr, record, EMREXTCREATEFONTINDIRECTW.sizeof);
-						break;
-					case OS.EMR_EXTTEXTOUTW:
-						return 0;
-				}
-				return 1;
+		if (count > 0) {
+			int /*long*/ ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
+			int /*long*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
+			int /*long*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
+			int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
+			if (OS.ScriptStringAnalyse(metaFileDc, sampleChars, count, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
+				OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
+				OS.ScriptStringFree(ssa);
 			}
-		};
-		MetaFileEnumProc object = new MetaFileEnumProc();
-		/* Avoid compiler warnings */
-		boolean compilerWarningWorkaround = false;
-		if (compilerWarningWorkaround) object.metaFileEnumProc(0, 0, 0, 0, 0);
-		Callback callback = new Callback(object, "metaFileEnumProc", 5);
-		int /*long*/ address = callback.getAddress();
-		if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.EnumEnhMetaFile(0, metaFile, address, 0, null);
-		OS.DeleteEnhMetaFile(metaFile);
-		callback.dispose();
-
-		int /*long*/ newFont = OS.CreateFontIndirectW(emr.elfw.elfLogFont);
-		OS.SelectObject(hdc, newFont);
-		if (shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp)) {
-			run.fallbackFont = newFont;
+			OS.HeapFree(hHeap, 0, ssa);
+			OS.SelectObject(metaFileDc, oldMetaFont);
+			int /*long*/ metaFile = OS.CloseEnhMetaFile(metaFileDc);
+			final EMREXTCREATEFONTINDIRECTW emr = new EMREXTCREATEFONTINDIRECTW();
+			class MetaFileEnumProc {
+				int /*long*/ metaFileEnumProc (int /*long*/ hDC, int /*long*/ table, int /*long*/ record, int /*long*/ nObj, int /*long*/ lpData) {
+					OS.MoveMemory(emr.emr, record, EMR.sizeof);
+					switch (emr.emr.iType) {
+						case OS.EMR_EXTCREATEFONTINDIRECTW:
+							OS.MoveMemory(emr, record, EMREXTCREATEFONTINDIRECTW.sizeof);
+							break;
+						case OS.EMR_EXTTEXTOUTW:
+							return 0;
+					}
+					return 1;
+				}
+			};
+			MetaFileEnumProc object = new MetaFileEnumProc();
+			/* Avoid compiler warnings */
+			boolean compilerWarningWorkaround = false;
+			if (compilerWarningWorkaround) object.metaFileEnumProc(0, 0, 0, 0, 0);
+			Callback callback = new Callback(object, "metaFileEnumProc", 5);
+			int /*long*/ address = callback.getAddress();
+			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+			OS.EnumEnhMetaFile(0, metaFile, address, 0, null);
+			OS.DeleteEnhMetaFile(metaFile);
+			callback.dispose();
+			newFont = OS.CreateFontIndirectW(emr.elfw.elfLogFont);
+		} else {
+			/*
+			* The run is composed only by white spaces, this happens when a run is split
+			* by a visual style. The font fallback for the script can not be determined
+			* using only white spaces. The solution is to use the font fallback of the 
+			* previous or next run of the same script.    
+			*/
+			int index = 0;
+			while (index < allRuns.length - 1) {
+				if (allRuns[index] == run) {
+					if (index > 0) {
+						StyleItem pRun = allRuns[index - 1];
+						if (pRun.fallbackFont != 0 && pRun.analysis.eScript == run.analysis.eScript) {
+							LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+							OS.GetObject(pRun.fallbackFont, LOGFONT.sizeof, logFont);
+							newFont = OS.CreateFontIndirect(logFont);
+						}
+					}
+					if (newFont == 0) {
+						if (index + 1 < allRuns.length - 1) {
+							StyleItem nRun = allRuns[index + 1];
+							if (nRun.analysis.eScript == run.analysis.eScript) {
+								shape(hdc, nRun);
+								if (nRun.fallbackFont != 0) {
+									LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+									OS.GetObject(nRun.fallbackFont, LOGFONT.sizeof, logFont);
+									newFont = OS.CreateFontIndirect(logFont);
+								}
+							}
+						}
+					}
+					break;
+				}
+				index++;
+			}
+		}
+		if (newFont != 0) {
+			OS.SelectObject(hdc, newFont);
+			if (shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp)) {
+				run.fallbackFont = newFont;
+			}
 		}
 		if (!shapeSucceed) {
 			if (!sp.fComplex) {
@@ -3155,7 +3195,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			}
 		}
 		if (!shapeSucceed) OS.SelectObject(hdc, hFont);
-		if (newFont != run.fallbackFont) OS.DeleteObject(newFont);
+		if (newFont != 0 && newFont != run.fallbackFont) OS.DeleteObject(newFont);
 	}
 	
 	if (!shapeSucceed) {
