@@ -281,6 +281,8 @@ public class OS extends C {
 	public static final int GTK_ORIENTATION_VERTICAL = 0x1;
 	public static final int GTK_PACK_END = 1;
 	public static final int GTK_PACK_START = 0;
+	public static final int GTK_PAGE_ORIENTATION_PORTRAIT = 0;
+	public static final int GTK_PAGE_ORIENTATION_LANDSCAPE = 1;
 	public static final int GTK_POLICY_ALWAYS = 0x0;
 	public static final int GTK_POLICY_AUTOMATIC = 0x1;
 	public static final int GTK_POLICY_NEVER = 0x2;

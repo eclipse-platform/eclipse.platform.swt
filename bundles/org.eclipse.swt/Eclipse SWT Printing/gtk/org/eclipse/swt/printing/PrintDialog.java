@@ -31,10 +31,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class PrintDialog extends Dialog {
-	PrinterData printerData;
-	int scope = PrinterData.ALL_PAGES;
-	int startPage = 1, endPage = 1;
-	boolean printToFile = false;
+	PrinterData printerData = new PrinterData();
 
 	int /*long*/ handle;
 	int index;
@@ -165,7 +162,7 @@ protected void checkSubclass() {
  * @return the scope setting that the user selected
  */
 public int getScope() {
-	return scope;
+	return printerData.scope;
 }
 
 /**
@@ -184,7 +181,7 @@ public int getScope() {
  * @param scope the scope setting when the dialog is opened
  */
 public void setScope(int scope) {
-	this.scope = scope;
+	printerData.scope = scope;
 }
 
 /**
@@ -198,7 +195,7 @@ public void setScope(int scope) {
  * @return the start page setting that the user selected
  */
 public int getStartPage() {
-	return startPage;
+	return printerData.startPage;
 }
 
 /**
@@ -212,7 +209,7 @@ public int getStartPage() {
  * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
-	this.startPage = startPage;
+	printerData.startPage = startPage;
 }
 
 /**
@@ -226,7 +223,7 @@ public void setStartPage(int startPage) {
  * @return the end page setting that the user selected
  */
 public int getEndPage() {
-	return endPage;
+	return printerData.endPage;
 }
 
 /**
@@ -240,7 +237,7 @@ public int getEndPage() {
  * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
-	this.endPage = endPage;
+	printerData.endPage = endPage;
 }
 
 /**
@@ -250,7 +247,7 @@ public void setEndPage(int endPage) {
  * @return the 'Print to file' setting that the user selected
  */
 public boolean getPrintToFile() {
-	return printToFile;
+	return printerData.printToFile;
 }
 
 /**
@@ -260,7 +257,7 @@ public boolean getPrintToFile() {
  * @param printToFile the 'Print to file' setting when the dialog is opened
  */
 public void setPrintToFile(boolean printToFile) {
-	this.printToFile = printToFile;
+	printerData.printToFile = printToFile;
 }
 
 /**
@@ -295,27 +292,30 @@ public PrinterData open() {
 		int /*long*/ settings = OS.gtk_print_settings_new();
 		int /*long*/ page_setup = OS.gtk_page_setup_new();
 		
-		if (printerData != null) {
-			if (printerData.otherData != null) {
-				Printer.restore(printerData.otherData, settings, page_setup);
-			}
-			/* Set values of settings from PrinterData. */
-			Printer.setScope(settings, printerData.scope, printerData.startPage, printerData.endPage);
-			//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
-			if (printerData.printToFile) {
-				byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
-				OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
-			}
+		if (printerData.otherData != null) {
+			Printer.restore(printerData.otherData, settings, page_setup);
+		}
+		/* Set values of settings from PrinterData. */
+		Printer.setScope(settings, printerData.scope, printerData.startPage, printerData.endPage);
+		//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
+		if (printerData.printToFile && printerData.fileName != null) {
+			byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
+			OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
+		}
+		if (printerData.driver != null && printerData.name != null && printerData.fileName != null) {
 			if (printerData.driver.equals("GtkPrintBackendFile") && printerData.name.equals("Print to File")) { //$NON-NLS-1$ //$NON-NLS-2$
 				byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
 				OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
 			}
-			OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
-			OS.gtk_print_settings_set_collate(settings, printerData.collate);	
 		}
+		OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
+		OS.gtk_print_settings_set_collate(settings, printerData.collate);
+		int orientation = printerData.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
+		OS.gtk_print_settings_set_orientation(settings, orientation);
+		OS.gtk_page_setup_set_orientation(page_setup, orientation);
 		
-		Printer.setScope(settings, scope, startPage, endPage);
-		if (printToFile) {
+		Printer.setScope(settings, printerData.scope, printerData.startPage, printerData.endPage);
+		if (printerData.printToFile) {
 			byte [] buffer = Converter.wcsToMbcs (null, "Print to File", true); //$NON-NLS-1$
 			OS.gtk_print_settings_set_printer(settings, buffer);
 		}
@@ -357,10 +357,10 @@ public PrinterData open() {
 				int print_pages = OS.gtk_print_settings_get_print_pages(settings);
 				switch (print_pages) {
 					case OS.GTK_PRINT_PAGES_ALL:
-						scope = PrinterData.ALL_PAGES;
+						data.scope = PrinterData.ALL_PAGES;
 						break;
 					case OS.GTK_PRINT_PAGES_RANGES:
-						scope = PrinterData.PAGE_RANGE;
+						data.scope = PrinterData.PAGE_RANGE;
 						int[] num_ranges = new int[1];
 						int /*long*/ page_ranges = OS.gtk_print_settings_get_page_ranges(settings, num_ranges);
 						int [] pageRange = new int[2];
@@ -372,18 +372,18 @@ public PrinterData open() {
 							max = Math.max(max, pageRange[1] + 1);
 						}
 						OS.g_free(page_ranges);
-						startPage = min == Integer.MAX_VALUE ? 1 : min;
-						endPage = max == 0 ? 1 : max;
+						data.startPage = min == Integer.MAX_VALUE ? 1 : min;
+						data.endPage = max == 0 ? 1 : max;
 						break;
 					case OS.GTK_PRINT_PAGES_CURRENT:
 						//TODO: Disabled in dialog (see above). This code will not run. (see gtk bug 344519)
-						scope = PrinterData.SELECTION;
-						startPage = endPage = OS.gtk_print_unix_dialog_get_current_page(handle);
+						data.scope = PrinterData.SELECTION;
+						data.startPage = data.endPage = OS.gtk_print_unix_dialog_get_current_page(handle);
 						break;
 				}
 				
-				printToFile = data.name.equals("Print to File"); //$NON-NLS-1$
-				if (printToFile) {
+				data.printToFile = data.name.equals("Print to File"); //$NON-NLS-1$
+				if (data.printToFile) {
 					int /*long*/ address = OS.gtk_print_settings_get(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI);
 					int length = OS.strlen (address);
 					byte [] buffer = new byte [length];
@@ -391,12 +391,9 @@ public PrinterData open() {
 					data.fileName = new String (Converter.mbcsToWcs (null, buffer));
 				}
 
-				data.scope = scope;
-				data.startPage = startPage;
-				data.endPage = endPage;
-				data.printToFile = printToFile;
 				data.copyCount = OS.gtk_print_settings_get_n_copies(settings);
 				data.collate = OS.gtk_print_settings_get_collate(settings);
+				data.orientation = OS.gtk_page_setup_get_orientation(page_setup) == OS.GTK_PAGE_ORIENTATION_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 
 				/* Save other print_settings data as key/value pairs in otherData. */
 				Callback printSettingsCallback = new Callback(this, "GtkPrintSettingsFunc", 3); //$NON-NLS-1$
@@ -425,6 +422,7 @@ public PrinterData open() {
 				store("paper_size_is_custom", OS.gtk_paper_size_is_custom(paper_size)); //$NON-NLS-1$
 				data.otherData = settingsData;
 				OS.g_object_unref(settings);
+				printerData = data;
 			}
 		}
 		display.setData (REMOVE_IDLE_PROC_KEY, null);
