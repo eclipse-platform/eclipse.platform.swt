@@ -158,8 +158,27 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 			String data = copyRtfText.getText();
 			if (data.length() > 0) {
 				status.setText("");
-				data = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i " + data + "}";
-				clipboard.setContents(new Object[] {data}, new Transfer[] {RTFTransfer.getInstance()});
+				StringBuffer buffer = new StringBuffer();
+				buffer.append("{\\rtf1\\ansi\\uc1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i ");
+				for (int i = 0; i < data.length(); i++) {
+					char ch = data.charAt(i);
+					if (ch > 0xFF) {
+						buffer.append("\\u");
+						buffer.append(Integer.toString((short) ch));
+						buffer.append('?');
+					} else {
+						if (ch == '}' || ch == '{' || ch == '\\') {
+							buffer.append('\\');
+						}
+						buffer.append(ch);
+						if (ch == '\n') buffer.append("\\par ");
+						if (ch == '\r' && (i - 1 == data.length() || data.charAt(i + 1) != '\n')) {
+							buffer.append("\\par ");
+						}
+					}
+				}
+				buffer.append("}");
+				clipboard.setContents(new Object[] {buffer.toString()}, new Transfer[] {RTFTransfer.getInstance()});
 			} else {
 				status.setText("nothing to copy");
 			}
