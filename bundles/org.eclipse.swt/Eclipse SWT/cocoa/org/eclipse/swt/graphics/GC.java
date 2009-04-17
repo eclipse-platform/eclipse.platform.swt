@@ -448,11 +448,13 @@ public void copyArea(Image image, int x, int y) {
 			srcRect.origin.y = pt.y;
 			srcRect.size.width = size.width;
 			srcRect.size.height = size.height;
-			image.handle.lockFocus();
-			NSGraphicsContext context = NSGraphicsContext.currentContext();
+			NSBitmapImageRep imageRep = image.getRepresentation();
+			NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
+			NSGraphicsContext.static_saveGraphicsState();
+			NSGraphicsContext.setCurrentContext(context);
 			int /*long*/ contextID = OS.objc_msgSend(NSApplication.sharedApplication().id, OS.sel_contextID);
 			OS.CGContextCopyWindowContentsToRect(context.graphicsPort(), destRect, contextID, window.windowNumber(), srcRect);
-			image.handle.unlockFocus();
+			NSGraphicsContext.static_restoreGraphicsState();
 			return;
 		}
 		if (handle.isDrawingToScreen()) {
