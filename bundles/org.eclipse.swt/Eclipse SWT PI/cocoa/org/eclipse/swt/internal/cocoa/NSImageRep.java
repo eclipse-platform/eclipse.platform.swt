@@ -33,6 +33,10 @@ public NSString colorSpaceName() {
 	return result != 0 ? new NSString(result) : null;
 }
 
+public boolean drawInRect(NSRect rect) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_drawInRect_, rect);
+}
+
 public boolean hasAlpha() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_hasAlpha);
 }

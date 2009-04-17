@@ -917,6 +917,10 @@ void initNative(String filename) {
 		}
 		
 		NSImageRep nativeRep = nativeImage.bestRepresentationForDevice(null);
+		if (!nativeRep.isKindOfClass(OS.class_NSBitmapImageRep)) {
+			return;
+		}
+
 		width = (int)/*64*/nativeRep.pixelsWide();
 		height = (int)/*64*/nativeRep.pixelsHigh();
 		
@@ -931,33 +935,44 @@ void initNative(String filename) {
 		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 		handle.addRepresentation(rep);
 		rep.release();
-
-		nativeImage.setSize(size);
-		rep.setAlpha(false);
-		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
-		NSGraphicsContext.static_saveGraphicsState();
-		NSGraphicsContext.setCurrentContext(context);
 		NSRect rect = new NSRect();
 		rect.width = width;
 		rect.height = height;
-		nativeImage.drawInRect(rect, rect, OS.NSCompositeCopy, 1);
- 		NSGraphicsContext.static_restoreGraphicsState();
- 		rep.setAlpha(hasAlpha);
+
+		/* Compute the pixels */
+		int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+		int /*long*/ ctx = OS.CGBitmapContextCreate(rep.bitmapData(), width, height, 8, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+		OS.CGColorSpaceRelease(colorspace);
+		NSGraphicsContext.static_saveGraphicsState();
+		NSGraphicsContext.setCurrentContext(NSGraphicsContext.graphicsContextWithGraphicsPort(ctx, false));
+		if (hasAlpha) OS.objc_msgSend(nativeRep.id, OS.sel_setAlpha_, 0);
+		nativeRep.drawInRect(rect);
+		if (hasAlpha) OS.objc_msgSend(nativeRep.id, OS.sel_setAlpha_, 1);
+		NSGraphicsContext.static_restoreGraphicsState();
+		OS.CGContextRelease(ctx);
 		
 		if (hasAlpha) {
-			// Compute any alpha by using CGImageBitmapContext.
+			/* Compute the alpha values */
 			int /*long*/ bitmapBytesPerRow = width;
 			int /*long*/ bitmapByteCount = bitmapBytesPerRow * height;
 			int /*long*/ alphaBitmapData = OS.malloc(bitmapByteCount);
 			int /*long*/ alphaBitmapCtx = OS.CGBitmapContextCreate(alphaBitmapData, width, height, 8, bitmapBytesPerRow, 0, OS.kCGImageAlphaOnly);
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(NSGraphicsContext.graphicsContextWithGraphicsPort(alphaBitmapCtx, false));
-			nativeImage.drawInRect(rect, new NSRect(), OS.NSCompositeCopy, 1.0f);
+			nativeRep.drawInRect(rect);
 			NSGraphicsContext.static_restoreGraphicsState();
 			byte[] alphaData = new byte[(int)/*64*/bitmapByteCount];
 			OS.memmove(alphaData, alphaBitmapData, bitmapByteCount);
 			OS.free(alphaBitmapData);
 			OS.CGContextRelease(alphaBitmapCtx);
+			
+			/* Merge the alpha values with the pixels */
+			byte[] srcData = new byte[height * bpr];
+			OS.memmove(srcData, rep.bitmapData(), srcData.length);
+			for (int a = 0, p = 0; a < alphaData.length; a++, p += 4) {
+				srcData[p] = alphaData[a];
+			}
+			OS.memmove(rep.bitmapData(), srcData, srcData.length);
 			
 			// If the alpha has only 0 or 255 (-1) for alpha values, compute the transparent pixel color instead
 			// of a continuous alpha range.

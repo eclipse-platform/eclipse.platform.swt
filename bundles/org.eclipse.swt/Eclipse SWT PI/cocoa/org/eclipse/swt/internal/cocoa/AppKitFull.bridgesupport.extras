@@ -1790,6 +1790,10 @@
 		<method selector="colorSpaceName" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="drawInRect:" swt_gen="true">
+			<arg name="rect" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="hasAlpha" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
