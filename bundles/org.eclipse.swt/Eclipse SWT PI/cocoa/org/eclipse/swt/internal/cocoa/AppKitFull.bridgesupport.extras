@@ -2537,6 +2537,14 @@
 		</method>
 	</class>
 	<class name="NSPrintPanel" swt_gen="mixed">
+		<method selector="beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:" swt_gen="true">
+			<arg name="printInfo" swt_gen="true"></arg>
+			<arg name="docWindow" swt_gen="true"></arg>
+			<arg name="delegate" swt_gen="true"></arg>
+			<arg name="didEndSelector" swt_gen="true"></arg>
+			<arg name="contextInfo" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="options" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>

@@ -79,6 +79,7 @@ public DirectoryDialog (Shell parent) {
  */
 public DirectoryDialog (Shell parent, int style) {
 	super (parent, checkStyle (parent, style));
+	if (parent != null && (style & SWT.SHEET) != 0) this.style |= SWT.SHEET;
 	checkSubclass ();
 }
 
@@ -126,7 +127,14 @@ public String open () {
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	panel.setCanChooseFiles(false);
 	panel.setCanChooseDirectories(true);
+	NSApplication application = NSApplication.sharedApplication();
+	if (parent != null && (style & SWT.PRIMARY_MODAL) != 0) {
+		application.beginSheet(panel, parent.window, null, 0, 0);
+	}
 	int /*long*/ response = panel.runModal();
+	if (parent != null && (style & SWT.PRIMARY_MODAL) != 0) {
+		application.endSheet(panel, 0);
+	}
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		directoryPath = filterPath = filename.getString();

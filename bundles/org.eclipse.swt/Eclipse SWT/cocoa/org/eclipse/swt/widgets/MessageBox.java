@@ -39,7 +39,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public  class MessageBox extends Dialog {
 	String message = "";
-	
+	int returnCode;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -83,6 +83,7 @@ public MessageBox (Shell parent) {
  */
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (parent, checkStyle (style)));
+	if (parent != null && (style & SWT.SHEET) != 0) this.style |= SWT.SHEET;
 	checkSubclass ();
 }
 
@@ -188,7 +189,29 @@ public int open () {
 	alert.window().setTitle(title);
 	NSString message = NSString.stringWith(this.message != null ? this.message : "");
 	alert.setMessageText(message);
-	int response = (int)/*64*/alert.runModal();
+	int response = 0;
+	int /*long*/ jniRef = 0;
+	SWTPanelDelegate delegate = null;
+	if ((style & SWT.SHEET) != 0) {
+		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
+		jniRef = OS.NewGlobalRef(this);
+		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
+		alert.beginSheetModalForWindow(parent.window, delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
+		if ((style & SWT.APPLICATION_MODAL) != 0) {
+			response = (int)/*64*/alert.runModal();
+		} else {
+			this.returnCode = 0;
+			NSWindow window = alert.window();
+			NSApplication application = NSApplication.sharedApplication();
+			while (window.isVisible()) application.run();
+			response = this.returnCode;
+		}
+	} else {
+		response = (int)/*64*/alert.runModal();
+	}
+	if (delegate != null) delegate.release();
+	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 	alert.release();
 	switch (bits) {
 		case SWT.OK:
@@ -261,6 +284,15 @@ public int open () {
 			break;
 	}
 	return SWT.CANCEL;
+}
+
+void panelDidEnd_returnCode_contextInfo(int /*long*/ id, int /*long*/ sel, int /*long*/ alert, int /*long*/ returnCode, int /*long*/ contextInfo) {
+	this.returnCode = (int)/*64*/returnCode;
+	NSApplication application = NSApplication.sharedApplication();
+	application.endSheet(new NSAlert(alert).window(), returnCode);
+	if ((style & SWT.PRIMARY_MODAL) != 0) {
+		application.stop(null);
+	}
 }
 
 /**

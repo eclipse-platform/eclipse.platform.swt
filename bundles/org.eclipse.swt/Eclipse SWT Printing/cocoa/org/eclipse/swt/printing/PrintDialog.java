@@ -13,6 +13,7 @@ package org.eclipse.swt.printing;
 import org.eclipse.swt.*;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -30,6 +31,12 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class PrintDialog extends Dialog {
 	PrinterData printerData = new PrinterData();
+	boolean sheet;
+	int returnCode;
+	
+	// the following Callbacks are never freed
+	static Callback dialogCallback5;
+	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -82,6 +89,7 @@ public PrintDialog (Shell parent) {
  */
 public PrintDialog (Shell parent, int style) {
 	super (parent, style);
+	sheet = parent != null && (style & SWT.SHEET) != 0;
 	checkSubclass ();
 }
 
@@ -135,7 +143,25 @@ public PrinterData open() {
 		dict.setValue(NSNumber.numberWithInt(printerData.endPage), OS.NSPrintLastPage);
 	}
 	panel.setOptions(OS.NSPrintPanelShowsPageSetupAccessory | panel.options());
-	if (panel.runModalWithPrintInfo(printInfo) != OS.NSCancelButton) {
+	int response;
+	if (sheet) {
+		initClasses();
+		SWTPrintPanelDelegate delegate = (SWTPrintPanelDelegate)new SWTPrintPanelDelegate().alloc().init();
+		int /*long*/ jniRef = OS.NewGlobalRef(this);
+		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.object_setInstanceVariable(delegate.id, SWT_OBJECT, jniRef);
+		returnCode = -1;
+		Shell parent = getParent();
+		panel.beginSheetWithPrintInfo(printInfo, parent.view.window(), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
+		NSApplication application = NSApplication.sharedApplication();
+		while (returnCode == -1) application.run();
+		if (delegate != null) delegate.release();
+		if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
+		response = returnCode;
+	} else {
+		response = (int)/*64*/panel.runModalWithPrintInfo(printInfo);
+	}
+	if (response != OS.NSCancelButton) {
 		NSPrinter printer = printInfo.printer();
 		NSString str = printer.name();
 		data = new PrinterData(Printer.DRIVER, str.getString());
@@ -178,6 +204,61 @@ public PrinterData open() {
  */
 public int getScope() {
 	return printerData.scope;
+}
+
+/**
+ * Returns the receiver's style information.
+ * <p>
+ * Note that, the value which is returned by this method <em>may
+ * not match</em> the value which was provided to the constructor
+ * when the receiver was created. 
+ * </p>
+ *
+ * @return the style bits
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getStyle () {
+	int style = super.getStyle ();
+	if (sheet) style |= SWT.SHEET;
+	return style;
+}
+
+static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+	int /*long*/ [] jniRef = new int /*long*/ [1];
+	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
+	if (jniRef[0] == 0) return 0;
+	if (sel == OS.sel_panelDidEnd_returnCode_contextInfo_) {
+		PrintDialog dialog = (PrintDialog)OS.JNIGetObject(jniRef[0]);
+		if (dialog == null) return 0;
+		dialog.panelDidEnd_returnCode_contextInfo(id, sel, arg0, arg1, arg2);
+	}
+	return 0;
+}
+
+void initClasses () {
+	String className = "SWTPrintPanelDelegate";
+	if (OS.objc_lookUpClass (className) != 0) return;
+	
+	dialogCallback5 = new Callback(getClass(), "dialogProc", 5);
+	int /*long*/ dialogProc5 = dialogCallback5.getAddress();
+	if (dialogProc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);	
+	
+	byte[] types = {'*','\0'};
+	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
+	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_panelDidEnd_returnCode_contextInfo_, dialogProc5, "@:@i@");
+	OS.objc_registerClassPair(cls);
+}
+
+void panelDidEnd_returnCode_contextInfo(int /*long*/ id, int /*long*/ sel, int /*long*/ alert, int /*long*/ returnCode, int /*long*/ contextInfo) {
+	this.returnCode = (int)/*64*/returnCode;
+	NSApplication application = NSApplication.sharedApplication();
+	application.stop(null);
 }
 
 /**

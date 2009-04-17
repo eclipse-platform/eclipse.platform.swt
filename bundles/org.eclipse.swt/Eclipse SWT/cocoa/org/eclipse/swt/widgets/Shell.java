@@ -259,7 +259,7 @@ Shell (Display display, Shell parent, int style, int /*long*/handle, boolean emb
 	if (parent != null && parent.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);	
 	}
-	this.style = checkStyle (style);
+	this.style = checkStyle (parent, style);
 	this.parent = parent;
 	this.display = display;
 	if (handle != 0) {
@@ -393,10 +393,20 @@ public static Shell cocoa_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
-static int checkStyle (int style) {
+static int checkStyle (Shell parent, int style) {
 	style = Decorations.checkStyle (style);
 	style &= ~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
+	if ((style & SWT.SHEET) != 0) {
+		style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX);
+		if (parent == null) {
+			style &= ~SWT.SHEET;
+			style |= SWT.SHELL_TRIM;
+		}
+		if ((style & mask) == 0) {
+			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
+		}
+	}
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
 	if ((style & SWT.APPLICATION_MODAL) != 0) return bits | SWT.APPLICATION_MODAL;
@@ -570,8 +580,13 @@ void deregister () {
 void destroyWidget () {
 	NSWindow window = this.window;
 	Display display = this.display;
+	boolean sheet = (style & (SWT.SHEET)) != 0;
 	releaseHandle ();
 	if (window != null) {
+		if (sheet) {
+			NSApplication application = NSApplication.sharedApplication();
+			application.endSheet(window, 0);
+		}
 		window.close();
 	}
 	//If another shell is not going to become active, clear the menu bar.
@@ -1494,14 +1509,22 @@ void setWindowVisible (boolean visible, boolean key) {
 		if (isDisposed ()) return;
 		topView ().setHidden (false);
 		invalidateVisibleRegion();
-		// If the parent window is miniaturized, the window will be shown
-		// when its parent is shown.
-		boolean parentMinimized = parent != null && ((Shell)parent).window.isMiniaturized();
-		if (!parentMinimized) {
-			if (key) {
-				makeKeyAndOrderFront ();
-			} else {
-				window.orderFront (null);
+		if ((style & (SWT.SHEET)) != 0) {
+			NSApplication application = NSApplication.sharedApplication();
+			application.beginSheet(window, ((Shell)parent).window, null, 0, 0);
+			if (OS.VERSION <= 0x1060 && window.respondsToSelector(OS.sel__setNeedsToUseHeartBeatWindow_)) {
+				OS.objc_msgSend(window.id, OS.sel__setNeedsToUseHeartBeatWindow_, 0);
+			}
+		} else {
+			// If the parent window is miniaturized, the window will be shown
+			// when its parent is shown.
+			boolean parentMinimized = parent != null && ((Shell)parent).window.isMiniaturized();
+			if (!parentMinimized) {
+				if (key) {
+					makeKeyAndOrderFront ();
+				} else {
+					window.orderFront (null);
+				}
 			}
 		}
 		updateParent (visible);
@@ -1522,7 +1545,12 @@ void setWindowVisible (boolean visible, boolean key) {
 		}
 	} else {
 		updateParent (visible);
-		window.orderOut (null);
+		if ((style & (SWT.SHEET)) != 0) {
+			NSApplication application = NSApplication.sharedApplication();
+			application.endSheet(window, 0);
+		} else {
+			window.orderOut (null);
+		}
 		topView ().setHidden (true);
 		invalidateVisibleRegion();
 		sendEvent (SWT.Hide);

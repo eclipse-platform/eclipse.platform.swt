@@ -44,6 +44,7 @@ public class OS extends C {
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
 	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
 	public static final int /*long*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");
+	public static final int /*long*/ sel_panelDidEnd_returnCode_contextInfo_ = sel_registerName("panelDidEnd:returnCode:contextInfo:");
 	
 	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
 
@@ -52,6 +53,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_contextID = OS.sel_registerName("contextID");
 
 	public static final int /*long*/ sel__drawThemeProgressArea_ = OS.sel_registerName("_drawThemeProgressArea:");
+	
+	public static final int /*long*/ sel__setNeedsToUseHeartBeatWindow_ = OS.sel_registerName("_setNeedsToUseHeartBeatWindow:");
 
 	public static final int /*long*/ class_WebPanelAuthenticationHandler = OS.objc_getClass("WebPanelAuthenticationHandler");
 	public static final int /*long*/ sel_sharedHandler = sel_registerName("sharedHandler");
@@ -720,6 +723,7 @@ public static final int /*long*/ sel_beginEditing = sel_registerName("beginEditi
 public static final int /*long*/ sel_beginPageInRect_atPlacement_ = sel_registerName("beginPageInRect:atPlacement:");
 public static final int /*long*/ sel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_ = sel_registerName("beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:");
 public static final int /*long*/ sel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_ = sel_registerName("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:");
+public static final int /*long*/ sel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_ = sel_registerName("beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:");
 public static final int /*long*/ sel_bestRepresentationForDevice_ = sel_registerName("bestRepresentationForDevice:");
 public static final int /*long*/ sel_bezierPath = sel_registerName("bezierPath");
 public static final int /*long*/ sel_bezierPathByFlatteningPath = sel_registerName("bezierPathByFlatteningPath");
