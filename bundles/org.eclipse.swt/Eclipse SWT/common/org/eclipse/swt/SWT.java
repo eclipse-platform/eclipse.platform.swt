@@ -1234,6 +1234,23 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int ON_TOP = 1 << 14;
+	
+	/**
+	 * Style constant for tool window behavior (value is 1&lt;&lt;28).
+	 * <p>
+	 * A sheet window is a window intended to be used as a temporary modal
+	 * dialog that is attached to a parent window. It is typically used to
+	 * prompt the user before proceeding. The window trim, positioning and
+	 * general look of a sheet window is platform specific.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p><p><b>Used By:</b><ul>
+	 * <li><code>Dialog</code> and subclasses</li>
+	 * <li><code>Shell</code> and subclasses</li>
+	 * </ul></p>
+	 * 
+	 * @since 3.5
+	 */
+	public static final int SHEET = 1 << 28;
 
 	/**
 	 * Trim style convenience constant for the most common top level shell appearance

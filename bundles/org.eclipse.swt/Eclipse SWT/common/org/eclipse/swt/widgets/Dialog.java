@@ -166,7 +166,14 @@ void checkParent (Shell parent) {
 }
 
 static int checkStyle (Shell parent, int style) {
-	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) == 0) {
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & SWT.SHEET) != 0) {
+		style &= ~SWT.SHEET;
+		if ((style & mask) == 0) {
+			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
+		}
+	}
+	if ((style & mask) == 0) {
 		style |= SWT.APPLICATION_MODAL;
 	}
 	style &= ~SWT.MIRRORED;
