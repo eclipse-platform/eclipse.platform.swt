@@ -1004,6 +1004,14 @@ int /*long*/ webView_identifierForInitialRequest_fromDataSource(int /*long*/ sen
 }
 
 int /*long*/ webView_resource_willSendRequest_redirectResponse_fromDataSource(int /*long*/ sender, int /*long*/ identifier, int /*long*/ request, int /*long*/ redirectResponse, int /*long*/ dataSource) {
+	NSURLRequest nsRequest = new NSURLRequest (request);
+	NSURL url = nsRequest.URL ();
+	if (url.isFileURL ()) {
+		NSMutableURLRequest newRequest = new NSMutableURLRequest (nsRequest.mutableCopy ());
+		newRequest.autorelease ();
+		newRequest.setCachePolicy (OS.NSURLRequestReloadIgnoringLocalCacheData);
+		return newRequest.id;
+	}
 	return request;
 }
 

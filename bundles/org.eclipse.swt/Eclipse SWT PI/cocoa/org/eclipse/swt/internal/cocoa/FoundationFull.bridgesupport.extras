@@ -32,6 +32,7 @@
 	<enum name="NSOrderedSame" swt_gen="true"></enum>
 	<enum name="NSURLCredentialPersistenceForSession" swt_gen="true"></enum>
 	<enum name="NSURLErrorBadURL" swt_gen="true"></enum>
+	<enum name="NSURLRequestReloadIgnoringLocalCacheData" swt_gen="true"></enum>
 	<enum name="NSUTF8StringEncoding" swt_gen="true"></enum>
 	<function name="NSEqualRects" swt_gen="true">
 		<arg name="aRect" swt_gen="true"></arg>
@@ -530,6 +531,10 @@
 		</method>
 	</class>
 	<class name="NSMutableURLRequest" swt_gen="mixed" swt_superclass="NSURLRequest">
+		<method selector="setCachePolicy:" swt_gen="true">
+			<arg name="policy" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setURL:" swt_gen="true">
 			<arg name="URL" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -909,6 +914,9 @@
 		<method class_method="true" selector="fileURLWithPath:" swt_gen="true">
 			<arg name="path" swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSURL"></retval>
+		</method>
+		<method selector="isFileURL" swt_gen="true">
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSURLAuthenticationChallenge" swt_gen="mixed">

@@ -1430,6 +1430,14 @@ int identifierForInitialRequest(int request, int dataSource) {
 }
 
 int willSendRequest(int identifier, int request, int redirectResponse, int dataSource) {
+	int url = Cocoa.objc_msgSend (request, Cocoa.S_URL);
+	boolean isFileURL = Cocoa.objc_msgSend (url, Cocoa.S_isFileURL) != 0;
+	if (isFileURL) {
+		int newRequest = Cocoa.objc_msgSend (request, Cocoa.S_mutableCopy);
+		Cocoa.objc_msgSend (newRequest, Cocoa.S_autorelease);
+		Cocoa.objc_msgSend (newRequest, Cocoa.S_setCachePolicy, Cocoa.NSURLRequestReloadIgnoringLocalCacheData);
+		return newRequest;
+	}
 	return request;
 }
 

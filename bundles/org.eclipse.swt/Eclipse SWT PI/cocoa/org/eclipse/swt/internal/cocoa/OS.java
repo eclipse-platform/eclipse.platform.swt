@@ -1102,6 +1102,7 @@ public static final int /*long*/ sel_isEqual_ = sel_registerName("isEqual:");
 public static final int /*long*/ sel_isEqualTo_ = sel_registerName("isEqualTo:");
 public static final int /*long*/ sel_isEqualToString_ = sel_registerName("isEqualToString:");
 public static final int /*long*/ sel_isFilePackageAtPath_ = sel_registerName("isFilePackageAtPath:");
+public static final int /*long*/ sel_isFileURL = sel_registerName("isFileURL");
 public static final int /*long*/ sel_isFlipped = sel_registerName("isFlipped");
 public static final int /*long*/ sel_isHidden = sel_registerName("isHidden");
 public static final int /*long*/ sel_isHiddenOrHasHiddenAncestor = sel_registerName("isHiddenOrHasHiddenAncestor");
@@ -1436,6 +1437,7 @@ public static final int /*long*/ sel_setBordered_ = sel_registerName("setBordere
 public static final int /*long*/ sel_setBoxType_ = sel_registerName("setBoxType:");
 public static final int /*long*/ sel_setButtonType_ = sel_registerName("setButtonType:");
 public static final int /*long*/ sel_setCacheMode_ = sel_registerName("setCacheMode:");
+public static final int /*long*/ sel_setCachePolicy_ = sel_registerName("setCachePolicy:");
 public static final int /*long*/ sel_setCanChooseDirectories_ = sel_registerName("setCanChooseDirectories:");
 public static final int /*long*/ sel_setCanChooseFiles_ = sel_registerName("setCanChooseFiles:");
 public static final int /*long*/ sel_setCanCreateDirectories_ = sel_registerName("setCanCreateDirectories:");
@@ -2009,6 +2011,7 @@ public static final int NSNotFound = 2147483647;
 public static final int NSOrderedSame = 0;
 public static final int NSURLCredentialPersistenceForSession = 1;
 public static final int NSURLErrorBadURL = -1000;
+public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 public static final int NSUTF8StringEncoding = 4;
 
 /** Globals */

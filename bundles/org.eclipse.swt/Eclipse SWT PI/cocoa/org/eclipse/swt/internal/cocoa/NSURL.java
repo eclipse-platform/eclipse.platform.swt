@@ -48,4 +48,8 @@ public static NSURL fileURLWithPath(NSString path) {
 	return result != 0 ? new NSURL(result) : null;
 }
 
+public boolean isFileURL() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isFileURL);
+}
+
 }

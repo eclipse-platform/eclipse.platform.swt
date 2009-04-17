@@ -88,12 +88,14 @@ public static final int S_initialRequest = Cocoa.sel_registerName("initialReques
 public static final int S_initWithFrame_frameName_groupName = Cocoa.sel_registerName("initWithFrame:frameName:groupName:"); //$NON-NLS-1$
 public static final int S_initWithProc = Cocoa.sel_registerName("initWithProc:user_data:"); //$NON-NLS-1$
 public static final int S_intValue = Cocoa.sel_registerName("intValue"); //$NON-NLS-1$
+public static final int S_isFileURL = Cocoa.sel_registerName("isFileURL"); //$NON-NLS-1$
 public static final int S_isKindOfClass = Cocoa.sel_registerName("isKindOfClass:"); //$NON-NLS-1$
 public static final int S_isSessionOnly = Cocoa.sel_registerName("isSessionOnly"); //$NON-NLS-1$
 public static final int S_loadHTMLStringbaseURL = Cocoa.sel_registerName("loadHTMLString:baseURL:"); //$NON-NLS-1$
 public static final int S_loadRequest = Cocoa.sel_registerName("loadRequest:"); //$NON-NLS-1$
 public static final int S_length = Cocoa.sel_registerName("length"); //$NON-NLS-1$
 public static final int S_mainFrame = Cocoa.sel_registerName("mainFrame"); //$NON-NLS-1$
+public static final int S_mutableCopy = Cocoa.sel_registerName("mutableCopy"); //$NON-NLS-1$
 public static final int S_name = Cocoa.sel_registerName("name"); //$NON-NLS-1$
 public static final int S_numberWithBool = Cocoa.sel_registerName("numberWithBool:"); //$NON-NLS-1$
 public static final int S_numberWithDouble = Cocoa.sel_registerName("numberWithDouble:"); //$NON-NLS-1$
@@ -119,6 +121,7 @@ public static final int S_request = Cocoa.sel_registerName("request"); //$NON-NL
 public static final int S_retainCount = Cocoa.sel_registerName("retainCount"); //$NON-NLS-1$
 public static final int S_sender = Cocoa.sel_registerName("sender"); //$NON-NLS-1$
 public static final int S_setApplicationNameForUserAgent = Cocoa.sel_registerName("setApplicationNameForUserAgent:"); //$NON-NLS-1$
+public static final int S_setCachePolicy = Cocoa.sel_registerName("setCachePolicy:"); //$NON-NLS-1$
 public static final int S_setCookie = Cocoa.sel_registerName("setCookie:"); //$NON-NLS-1$
 public static final int S_setDestinationAllowOverwrite = Cocoa.sel_registerName("setDestination:allowOverwrite:"); //$NON-NLS-1$
 public static final int S_setDownloadDelegate = Cocoa.sel_registerName("setDownloadDelegate:"); //$NON-NLS-1$
@@ -224,6 +227,7 @@ public static final int NSClosePathBezierPathElement = 3;
 public static final int NSOrderedSame = 0;
 
 public static final int NSURLCredentialPersistenceForSession = 1;
+public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 
 /* WebKit */
 /** @param outView cast=(HIViewRef *) */
