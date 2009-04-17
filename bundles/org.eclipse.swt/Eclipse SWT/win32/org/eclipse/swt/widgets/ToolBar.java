@@ -816,7 +816,7 @@ void setDropDownItems (boolean set) {
 	* the bit afterwards.
 	* 
 	* NOTE:  This work around only runs when the tool bar contains
-	* both text and images.
+	* only images.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		boolean hasText = false, hasImage = false;
