@@ -3464,8 +3464,6 @@ public boolean getBidiColoring() {
 	return bidiColoring;
 }
 /**
- * TEMPORARY CODE - API SUBJECT TO CHANGE
- * 
  * Returns whether the widget is in block selection mode.
  *
  * @return true if widget is in block selection mode, false otherwise
@@ -3496,6 +3494,36 @@ Rectangle getBlockSelectonPosition() {
 		right = blockXAnchor;
 	}
 	return new Rectangle (left - horizontalScrollOffset, firstLine, right - horizontalScrollOffset, lastLine);
+}
+/** 
+ * Returns the block selection bounds. The bounds is 
+ * relative to the upper left corner of the document.
+ * 
+ * @return the block selection bounds
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public Rectangle getBlockSelectionBounds() {
+	Rectangle rect;
+	if (blockSelection && blockXLocation != -1) {
+		rect = getBlockSelectionRectangle();
+	} else {
+		Point startPoint = getPointAtOffset(selection.x);
+		Point endPoint = getPointAtOffset(selection.y);
+		int height = getLineHeight(selection.y);
+		rect = new Rectangle(startPoint.x, startPoint.y, endPoint.x - startPoint.x, endPoint.y + height - startPoint.y);
+		if (selection.x == selection.y) {
+			rect.width = getCaretWidth();
+		}
+	}
+	rect.x += horizontalScrollOffset;
+	rect.y += getVerticalScrollOffset();
+	return rect;
 }
 Rectangle getBlockSelectionRectangle() {
 	Rectangle rect = getBlockSelectonPosition();
@@ -4544,8 +4572,6 @@ public Point getSelectionRange() {
 	return new Point(selection.x, selection.y - selection.x);
 }
 /**
- * TEMPORARY CODE - API SUBJECT TO CHANGE
- * 
  * Returns the ranges of text that are inside the block selection rectangle.
  * <p>
  * The ranges array contains start and length pairs. When the receiver is not
@@ -7501,11 +7527,10 @@ public void setBackground(Color color) {
 	super.redraw();
 }
 /**
- * TEMPORARY CODE - API SUBJECT TO CHANGE
- * 
  * Sets the block selection mode.
  *
  * @param blockSelection true=enable block selection, false=disable block selection
+ * 
  * @since 3.5
  */
 public void setBlockSelection(boolean blockSelection) {
@@ -7528,6 +7553,71 @@ public void setBlockSelection(boolean blockSelection) {
 	} else {
 		clearBlockSelection(false, false);
 	}
+}
+/**
+ * Sets the block selection bounds. The bounds is 
+ * relative to the upper left corner of the document.
+ *  
+ * @param rect the new bounds for the block selection
+ * 
+ * @see #setBlockSelectionBounds(int, int, int, int)
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when point is null</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setBlockSelectionBounds(Rectangle rect) {
+	checkWidget();
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	setBlockSelectionBounds(rect.x, rect.y, rect.width, rect.height);
+}
+/**
+ * Sets the block selection bounds. The bounds is 
+ * relative to the upper left corner of the document.
+ * 
+ * @param x the new x coordinate for the block selection
+ * @param y the new y coordinate for the block selection
+ * @param width the new width for the block selection
+ * @param height the new height for the block selection
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setBlockSelectionBounds(int x, int y, int width, int height) {
+	checkWidget();
+	int verticalScrollOffset = getVerticalScrollOffset();
+	if (!blockSelection) {
+		x -= horizontalScrollOffset;
+		y -= verticalScrollOffset; 
+		int start = getOffsetAtPoint(x, y, null);
+		int end = getOffsetAtPoint(x+width-1, y+height-1, null);
+		setSelection(start, end - start, false, false);
+		setCaretLocation();
+		return;
+	}
+	int minY = topMargin;
+	int minX = leftMargin;
+	int maxY = renderer.getHeight() - bottomMargin;
+	int maxX = renderer.getWidth() - rightMargin;
+	int anchorX = Math.max(minX, Math.min(maxX, x)) - horizontalScrollOffset;
+	int anchorY = Math.max(minY, Math.min(maxY, y)) - verticalScrollOffset;
+	int locationX = Math.max(minX, Math.min(maxX, x + width)) - horizontalScrollOffset;
+	int locationY = Math.max(minY, Math.min(maxY, y + height - 1)) - verticalScrollOffset;
+	if (isFixedLineHeight() && renderer.fixedPitch) {
+		int avg = renderer.averageCharWidth; 
+		anchorX = ((anchorX - leftMargin + horizontalScrollOffset) / avg * avg) - horizontalScrollOffset + leftMargin;
+		locationX = ((locationX + avg / 2 - leftMargin + horizontalScrollOffset) / avg * avg) - horizontalScrollOffset + leftMargin;
+	}
+	setBlockSelectionLocation(anchorX, anchorY, locationX, locationY, false);
 }
 void setBlockSelectionLocation (int x, int y, boolean sendEvent) {
 	int verticalScrollOffset = getVerticalScrollOffset();
