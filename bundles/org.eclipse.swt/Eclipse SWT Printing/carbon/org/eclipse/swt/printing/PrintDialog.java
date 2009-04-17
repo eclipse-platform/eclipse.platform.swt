@@ -140,7 +140,7 @@ public PrinterData open() {
 				}
 				OS.PMSetCopies(printSettings, printerData.copyCount, false);
 				OS.PMSetCollate(printSettings, printerData.collate);
-				OS.PMSetOrientation(pageFormat, (short)(printerData.orientation == PrinterData.LANDSCAPE ? OS.kPMLandscape : OS.kPMPortrait), false);
+				OS.PMSetOrientation(pageFormat, printerData.orientation == PrinterData.LANDSCAPE ? OS.kPMLandscape : OS.kPMPortrait, false);
 				boolean[] accepted = new boolean [1];
 				if (OS.VERSION >= 0x1050) {
 					int printDialogOptions = OS.kPMShowDefaultInlineItems | OS.kPMShowPageAttributesPDE;
