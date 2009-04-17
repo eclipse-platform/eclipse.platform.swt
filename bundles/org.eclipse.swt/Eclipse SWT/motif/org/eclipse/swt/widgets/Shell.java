@@ -118,7 +118,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, focusProxy;
-	boolean reparented, realized, moved, resized, opened, modified;
+	boolean reparented, realized, moved, resized, opened, modified, center;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
 
@@ -257,7 +257,8 @@ Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 	if (parent != null && parent.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);	
 	}
-	this.style = checkStyle (style);
+	this.center = parent != null && (style & SWT.SHEET) != 0;
+	this.style = checkStyle (parent, style);
 	this.parent = parent;
 	this.display = display;
 	if (handle != 0) {
@@ -346,11 +347,18 @@ public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
-static int checkStyle (int style) {
+static int checkStyle (Shell parent, int style) {
 	style = Decorations.checkStyle (style);
 	style &= ~SWT.TRANSPARENT;
 	if ((style & SWT.ON_TOP) != 0) style &= ~SWT.SHELL_TRIM;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
+	if ((style & SWT.SHEET) != 0) {
+		style &= ~SWT.SHEET;
+		style |= parent == null ? SWT.SHELL_TRIM : SWT.DIALOG_TRIM;
+		if ((style & mask) == 0) {
+			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
+		}
+	}
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
 	if ((style & SWT.APPLICATION_MODAL) != 0) return bits | SWT.APPLICATION_MODAL;
@@ -553,6 +561,25 @@ void bringToTop (boolean force) {
 	int shellWindow = OS.XtWindow (shellHandle);
 	if (shellWindow != 0) OS.XRaiseWindow (xDisplay, shellWindow);
 	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
+}
+void center () {
+	if (parent == null) return;
+	Rectangle rect = getBounds ();
+	Rectangle parentRect = display.map (parent, null, parent.getClientArea());
+	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
+	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
+	Rectangle monitorRect = parent.getMonitor ().getClientArea();
+	if (x + rect.width > monitorRect.x + monitorRect.width) {
+		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
+	} else {
+		x = Math.max (x, monitorRect.x);
+	}
+	if (y + rect.height > monitorRect.y + monitorRect.height) {
+		y = Math.max (monitorRect.y, monitorRect.y + monitorRect.height - rect.height);
+	} else {
+		y = Math.max (y, monitorRect.y);
+	}
+	setLocation (x, y);
 }
 void checkOpen () {
 	if (!opened) resized = false;
@@ -1741,6 +1768,10 @@ public void setVisible (boolean visible) {
 
 	/* Show the shell */
 	if (visible) {
+		if (center && !moved) {
+			center ();
+			if (isDisposed ()) return;
+		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 
