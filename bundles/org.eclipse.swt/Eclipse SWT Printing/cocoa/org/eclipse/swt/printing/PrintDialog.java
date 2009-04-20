@@ -144,7 +144,7 @@ public PrinterData open() {
 	}
 	panel.setOptions(OS.NSPrintPanelShowsPageSetupAccessory | panel.options());
 	int response;
-	if (sheet) {
+	if ((getStyle () & SWT.SHEET) != 0) {
 		initClasses();
 		SWTPrintPanelDelegate delegate = (SWTPrintPanelDelegate)new SWTPrintPanelDelegate().alloc().init();
 		int /*long*/ jniRef = OS.NewGlobalRef(this);
