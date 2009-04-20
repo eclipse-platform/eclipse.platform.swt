@@ -151,6 +151,10 @@ public boolean isMiniaturized() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isMiniaturized);
 }
 
+public boolean isSheet() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isSheet);
+}
+
 public boolean isVisible() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isVisible);
 }
@@ -255,6 +259,10 @@ public void setDocumentEdited(boolean flag) {
 
 public void setFrame(NSRect frameRect, boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setFrame_display_, frameRect, flag);
+}
+
+public void setFrame(NSRect frameRect, boolean displayFlag, boolean animateFlag) {
+	OS.objc_msgSend(this.id, OS.sel_setFrame_display_animate_, frameRect, displayFlag, animateFlag);
 }
 
 public void setHasShadow(boolean hasShadow) {

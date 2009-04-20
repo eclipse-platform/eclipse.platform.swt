@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 467;
-int OS_nativeFunctionCallCount[467];
+int OS_nativeFunctionCount = 468;
+int OS_nativeFunctionCallCount[468];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -679,6 +679,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Z",
 #else
 	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Z",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2ZZ",
+#else
+	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2ZZ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2",

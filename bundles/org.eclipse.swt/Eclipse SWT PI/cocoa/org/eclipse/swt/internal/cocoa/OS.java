@@ -1129,6 +1129,7 @@ public static final int /*long*/ sel_isPlanar = sel_registerName("isPlanar");
 public static final int /*long*/ sel_isRowSelected_ = sel_registerName("isRowSelected:");
 public static final int /*long*/ sel_isRunning = sel_registerName("isRunning");
 public static final int /*long*/ sel_isSessionOnly = sel_registerName("isSessionOnly");
+public static final int /*long*/ sel_isSheet = sel_registerName("isSheet");
 public static final int /*long*/ sel_isVisible = sel_registerName("isVisible");
 public static final int /*long*/ sel_isZoomed = sel_registerName("isZoomed");
 public static final int /*long*/ sel_itemArray = sel_registerName("itemArray");
@@ -1505,6 +1506,7 @@ public static final int /*long*/ sel_setFont_ = sel_registerName("setFont:");
 public static final int /*long*/ sel_setFormatter_ = sel_registerName("setFormatter:");
 public static final int /*long*/ sel_setFrame_ = sel_registerName("setFrame:");
 public static final int /*long*/ sel_setFrame_display_ = sel_registerName("setFrame:display:");
+public static final int /*long*/ sel_setFrame_display_animate_ = sel_registerName("setFrame:display:animate:");
 public static final int /*long*/ sel_setFrameLoadDelegate_ = sel_registerName("setFrameLoadDelegate:");
 public static final int /*long*/ sel_setFrameOrigin_ = sel_registerName("setFrameOrigin:");
 public static final int /*long*/ sel_setFrameSize_ = sel_registerName("setFrameSize:");
@@ -2980,6 +2982,11 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
  * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, boolean arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, boolean arg1, boolean arg2);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

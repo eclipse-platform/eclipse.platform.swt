@@ -923,6 +923,10 @@
 			<arg name="aPosition" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setKeyEquivalent:" swt_gen="true">
+			<arg name="charCode" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setState:" swt_gen="true">
 			<arg name="value" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4103,6 +4107,9 @@
 		<method selector="isMiniaturized" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="isSheet" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="isVisible" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4197,6 +4204,12 @@
 		<method selector="setFrame:display:" swt_gen="true">
 			<arg name="frameRect" swt_gen="true"></arg>
 			<arg name="flag" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setFrame:display:animate:" swt_gen="true">
+			<arg name="frameRect" swt_gen="true"></arg>
+			<arg name="displayFlag" swt_gen="true"></arg>
+			<arg name="animateFlag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setHasShadow:" swt_gen="true">

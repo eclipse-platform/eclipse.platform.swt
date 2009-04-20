@@ -52,6 +52,10 @@ public void setImagePosition(int /*long*/ aPosition) {
 	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, aPosition);
 }
 
+public void setKeyEquivalent(NSString charCode) {
+	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalent_, charCode != null ? charCode.id : 0);
+}
+
 public void setState(int /*long*/ value) {
 	OS.objc_msgSend(this.id, OS.sel_setState_, value);
 }

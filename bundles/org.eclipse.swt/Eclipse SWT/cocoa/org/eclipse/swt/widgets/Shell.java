@@ -1228,6 +1228,8 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	// Embedded Shells are not resizable.
 	if (window == null) return;
 	if (fullScreen) setFullScreen (false);
+	boolean sheet = window.isSheet();
+	if (sheet && move && !resize) return;
 	int screenHeight = (int) display.getPrimaryFrame().height;
 	NSRect frame = window.frame();
 	if (!move) {
@@ -1242,11 +1244,21 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		width = (int)frame.width;
 		height = (int)frame.height;
 	}
-	frame.x = x;
-	frame.y = screenHeight - (int)(y + height);
-	frame.width = width;
-	frame.height = height;
-	window.setFrame(frame, isVisible());
+	if (sheet) {
+		y = screenHeight - (int)(frame.y + frame.height);
+		NSRect parentRect = parent.getShell().window.frame();
+		frame.width = width;
+		frame.height = height;
+		frame.x = parentRect.x + (parentRect.width - frame.width) / 2;
+		frame.y = screenHeight - (int)(y + frame.height);
+		window.setFrame(frame, isVisible(), true);
+	} else {
+		frame.x = x;
+		frame.y = screenHeight - (int)(y + height);
+		frame.width = width;
+		frame.height = height;
+		window.setFrame(frame, isVisible());
+	}
 }
 
 void setClipRegion (float /*double*/ x, float /*double*/ y) {
