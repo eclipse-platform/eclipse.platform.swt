@@ -4134,12 +4134,12 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 	NSEvent nsEvent = new NSEvent(event);
 	NSWindow window = nsEvent.window ();
 	int type = (int)/*64*/nsEvent.type ();
-	boolean beep = false;
+	boolean down = false;
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
 		case OS.NSOtherMouseDown:
-			beep = true;
+			down = true;
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
@@ -4157,12 +4157,13 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 				if (shell != null) {
 					Shell modalShell = shell.getModalShell ();
 					if (modalShell != null) {
-						if (beep) {
+						if (down) {
 							if (!application.isActive()) {
 								application.activateIgnoringOtherApps(true);
-							} else {
-								beep ();
 							}
+							NSRect rect = window.contentRectForFrameRect(window.frame());
+							NSPoint pt = window.convertBaseToScreen(nsEvent.locationInWindow());
+							if (OS.NSPointInRect(pt, rect)) beep ();
 						}
 						return;
 					}
