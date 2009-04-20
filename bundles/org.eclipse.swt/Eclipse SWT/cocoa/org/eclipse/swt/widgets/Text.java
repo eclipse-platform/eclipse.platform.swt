@@ -847,9 +847,19 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-	NSTextView widget = (NSTextView)view;
 	Font font = this.font != null ? this.font : defaultFont();
-	return (int)Math.ceil(widget.layoutManager().defaultLineHeightForFont(font.handle));
+	if ((style & SWT.SINGLE) != 0) {
+		NSDictionary dict = NSDictionary.dictionaryWithObject(font.handle, OS.NSFontAttributeName);
+		NSString str = NSString.stringWith(" ");
+		NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
+		dict.release();
+		NSSize size = attribStr.size();
+		attribStr.release();
+		return (int) size.height;
+	} else {
+		NSTextView widget = (NSTextView)view;
+		return (int)Math.ceil(widget.layoutManager().defaultLineHeightForFont(font.handle));
+	}
 }
 
 /**
