@@ -103,9 +103,11 @@ public class DropTarget extends Widget {
 	// not visible.
 	boolean registered = false;
 	
+	int deleteAtom, nullAtom;
+	
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
-	static int DELETE_TYPE = Transfer.registerType("DELETE\0"); //$NON-NLS-1$
-	static int NULL_TYPE = Transfer.registerType("NULL\0"); //$NON-NLS-1$
+	static byte [] DELETE = Converter.wcsToMbcs (null, "DELETE", true); //$NON-NLS-1$
+	static byte [] NULL = Converter.wcsToMbcs (null, "NULL", true); //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
 	
 	static Callback DropProc;
@@ -162,6 +164,9 @@ public DropTarget(Control control, int style) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
 	control.setData(DND.DROP_TARGET_KEY, this);
+	int xDisplay = Display.getDefault().xDisplay;
+	deleteAtom = OS.XmInternAtom (xDisplay, DELETE, false);
+	nullAtom = OS.XmInternAtom (xDisplay, NULL, false);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -858,7 +863,7 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 	
 	int[] type = new int[1];
 	OS.memmove(type, pType, 4);
-	if (type[0] == NULL_TYPE) {
+	if (type[0] == nullAtom) {
 		return;
 	}
 	
@@ -908,7 +913,7 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 	
 	//notify source of action taken
 	if ((selectedOperation & DND.DROP_MOVE) == DND.DROP_MOVE) {
-		int[] args = new int[]{control.handle, DELETE_TYPE};
+		int[] args = new int[]{control.handle, deleteAtom};
 		OS.XmDropTransferAdd(dropTransferObject, args, args.length / 2);
 	}
 }
