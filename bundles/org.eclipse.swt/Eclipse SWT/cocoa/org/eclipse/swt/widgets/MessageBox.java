@@ -161,6 +161,7 @@ public int open () {
 			alert.addButtonWithTitle(title);
 			title = NSString.stringWith(SWT.getMessage("SWT_No"));
 			alert.addButtonWithTitle(title);
+//			no.setKeyEquivalent(NSString.stringWith("\033"));
 			break;
 		case SWT.YES | SWT.NO | SWT.CANCEL:				
 			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
