@@ -1721,10 +1721,10 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 		case OS.NSMouseMoved:
 			NSView[] hitView = new NSView[1];
 			Control control = display.findControl (false, hitView);
+			if (control != null && (!control.isActive() || !control.isEnabled())) control = null;
 			if (type == OS.NSMouseMoved) {
 				Control trimControl = control;
 				if (trimControl != null && trimControl.isTrim (hitView[0])) trimControl = null;
-				if (trimControl != null && (!trimControl.isActive() || !trimControl.isEnabled())) trimControl = null;
 				display.checkEnterExit (trimControl, nsEvent, false);
 				if (trimControl != null) trimControl.sendMouseEvent (nsEvent, type, false);
 			}
