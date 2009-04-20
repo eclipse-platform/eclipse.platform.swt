@@ -527,7 +527,7 @@ void createHandle () {
 		if (parent != null) screen = parent.getShell().window.screen();
 		if (screen == null) screen = primaryScreen;
 		window = window.initWithContentRect(new NSRect(), styleMask, OS.NSBackingStoreBuffered, false, screen);
-		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & SWT.TOOL) != 0) {
+		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & (SWT.TOOL | SWT.SHEET)) != 0) {
 			window.setHasShadow (true);
 		}
 		if ((style & SWT.NO_TRIM) == 0) {
