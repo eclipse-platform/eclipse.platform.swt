@@ -337,10 +337,7 @@ boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
 
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (startOffset == -1) {
-		Event event = new Event ();
-		event.detail = SWT.COMPOSITION_SELECTION;
-		sendEvent (SWT.ImeComposition, event);
-		startOffset = event.start;
+		return false;
 	}
 	NSString str = new NSString (string);
 	if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
