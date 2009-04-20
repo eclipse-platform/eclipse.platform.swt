@@ -36,7 +36,7 @@ import org.eclipse.swt.*;
  * palette using a color that is not in the palette is platform specific.
  * Some platforms will match to the nearest color while other will draw
  * the color itself. This happens because the allocated image might use
- * a direct palette on platforms that do not support indexed palette.    
+ * a direct palette on platforms that do not support indexed palette.
  * </p>
  * 
  * <p>
