@@ -104,6 +104,8 @@ typedef enum {
 	GetCurrentProcess_FUNC,
 	GetDblTime_FUNC,
 	GetRegionBounds_FUNC,
+	GetThemeMetric_FUNC,
+	HIThemeDrawFocusRect_FUNC,
 	JNIGetObject_FUNC,
 	LMGetKbdType_FUNC,
 	LineTo_FUNC,

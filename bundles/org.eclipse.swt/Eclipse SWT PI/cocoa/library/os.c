@@ -1058,6 +1058,52 @@ fail:
 }
 #endif
 
+#ifndef NO_GetThemeMetric
+JNIEXPORT void JNICALL OS_NATIVE(GetThemeMetric)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, GetThemeMetric_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	GetThemeMetric(arg0, (SInt32 *)lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, GetThemeMetric)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jint, SInt32 *))fp)(arg0, (SInt32 *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetThemeMetric_FUNC);
+}
+#endif
+
+#ifndef NO_HIThemeDrawFocusRect
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawFocusRect)
+	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jintLong arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawFocusRect_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+/*
+	rc = (jint)HIThemeDrawFocusRect(lparg0, arg1, (CGContextRef)arg2, arg3);
+*/
+	{
+		LOAD_FUNCTION(fp, HIThemeDrawFocusRect)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(CGRect *, jboolean, CGContextRef, jint))fp)(lparg0, arg1, (CGContextRef)arg2, arg3);
+		}
+	}
+fail:
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawFocusRect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LMGetKbdType
 JNIEXPORT jbyte JNICALL OS_NATIVE(LMGetKbdType)
 	(JNIEnv *env, jclass that)

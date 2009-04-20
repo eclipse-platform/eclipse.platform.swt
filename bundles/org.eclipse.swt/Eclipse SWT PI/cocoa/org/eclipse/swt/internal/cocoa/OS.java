@@ -31,7 +31,9 @@ public class OS extends C {
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
 	public static final int shiftKey = 1 << 9;
-
+	public static final int kThemeMetricFocusRectOutset = 7;
+	public static final int kHIThemeOrientationNormal = 0;
+	
 	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
 	public static final int /*long*/ sel_sendCancelSelection = sel_registerName("sendCancelSelection");
 	public static final int /*long*/ sel_sendSelection = sel_registerName("sendSelection");
@@ -117,6 +119,16 @@ public static final native int /*long*/ kTISPropertyUnicodeKeyLayoutData();
  * @param unicodeString cast=(UniChar *)
  */
 public static final native int UCKeyTranslate (int /*long*/ keyLayoutPtr, short virtualKeyCode, short keyAction, int modifierKeyState, int keyboardType, int keyTranslateOptions, int[] deadKeyState, int maxStringLength, int[] actualStringLength, char[] unicodeString);
+/**
+ * @method flags=dynamic
+ * @param metric cast=(SInt32 *)
+*/
+public static final native void GetThemeMetric(int themeConstant, int[] metric);
+/**
+ * @method flags=dynamic
+ * @param inContext cast=(CGContextRef)
+*/
+public static final native int HIThemeDrawFocusRect(CGRect inRect, boolean inHasFocus, int /*long*/ inContext, int inOrientation);
 
 public static final int kUCKeyActionDown = 0;
 public static final int kUCKeyActionUp = 1;

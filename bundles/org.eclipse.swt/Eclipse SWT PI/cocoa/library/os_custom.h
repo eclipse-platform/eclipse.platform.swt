@@ -41,5 +41,7 @@
 #define FSPathMakeRef_LIB "com.apple.CoreServices"
 #define CGContextCopyWindowContentsToRect_LIB "com.apple.CoreGraphics"
 #define LMGetKbdType_LIB "com.apple.Carbon"
+#define GetThemeMetric_LIB "com.apple.Carbon"
+#define HIThemeDrawFocusRect_LIB "com.apple.Carbon"
 #define AcquireRootMenu_LIB "com.apple.Carbon"
 #define CancelMenuTracking_LIB "com.apple.Carbon"

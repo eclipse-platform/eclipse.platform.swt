@@ -975,14 +975,18 @@ public void drawFocus(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM);
 	try {
-		//	int[] metric = new int[1];
-		//	OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
-		//	CGRect rect = new CGRect ();
-		//	rect.x = x + metric[0];
-		//	rect.y = y + metric[0];
-		//	rect.width = width - metric[0] * 2;
-		//	rect.height = height - metric[0] * 2;
-		//	OS.HIThemeDrawFocusRect(rect, true, handle, OS.kHIThemeOrientationNormal);
+		int[] metric = new int[1];
+		OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
+		CGRect rect = new CGRect();
+//		rect.origin.x = x; //- metric[0];
+//		rect.origin.y = y; //- metric[0];
+//		rect.size.width = width; // + metric[0] * 2;
+//		rect.size.height = height; //+ metric[0] * 2;
+		rect.origin.x = x + metric[0];
+		rect.origin.y = y + metric[0];
+		rect.size.width = width - metric[0] * 2;
+		rect.size.height = height - metric[0] * 2;
+		OS.HIThemeDrawFocusRect(rect, true, handle.graphicsPort(), OS.kHIThemeOrientationNormal);
 	} finally {
 		uncheckGC(pool);
 	}
