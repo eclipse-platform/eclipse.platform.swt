@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.eclipse.swt; singleton:=true
 Bundle-Version: 3.5.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Localization: plugin
-DynamicImport-Package: org.mozilla.xpcom
-DynamicImport-Package: org.eclipse.swt.accessibility2
+DynamicImport-Package: org.eclipse.swt.accessibility2, org.mozilla.xpcom
 Export-Package: 
  org.eclipse.swt,
  org.eclipse.swt.accessibility,
