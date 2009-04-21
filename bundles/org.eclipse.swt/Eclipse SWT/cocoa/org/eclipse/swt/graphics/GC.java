@@ -979,10 +979,6 @@ public void drawFocus(int x, int y, int width, int height) {
 		int[] metric = new int[1];
 		OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
 		CGRect rect = new CGRect();
-//		rect.origin.x = x; //- metric[0];
-//		rect.origin.y = y; //- metric[0];
-//		rect.size.width = width; // + metric[0] * 2;
-//		rect.size.height = height; //+ metric[0] * 2;
 		rect.origin.x = x + metric[0];
 		rect.origin.y = y + metric[0];
 		rect.size.width = width - metric[0] * 2;
