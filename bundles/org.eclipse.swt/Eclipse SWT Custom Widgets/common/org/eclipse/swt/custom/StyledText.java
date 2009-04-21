@@ -2759,7 +2759,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 			} else {
 				if (isFixedLineHeight() && renderer.fixedPitch) {
 					int avg = renderer.averageCharWidth; 
-					x = ((x + horizontalScrollOffset) / avg * avg) - horizontalScrollOffset + leftMargin;
+					x = ((x + avg / 2 - leftMargin + horizontalScrollOffset) / avg * avg) + leftMargin - horizontalScrollOffset;
 				}
 				setBlockSelectionLocation(x, y, true);
 				return;
@@ -7606,15 +7606,15 @@ public void setBlockSelectionBounds(int x, int y, int width, int height) {
 	int minY = topMargin;
 	int minX = leftMargin;
 	int maxY = renderer.getHeight() - bottomMargin;
-	int maxX = renderer.getWidth() - rightMargin;
+	int maxX = Math.max(clientAreaWidth, renderer.getWidth()) - rightMargin;
 	int anchorX = Math.max(minX, Math.min(maxX, x)) - horizontalScrollOffset;
 	int anchorY = Math.max(minY, Math.min(maxY, y)) - verticalScrollOffset;
 	int locationX = Math.max(minX, Math.min(maxX, x + width)) - horizontalScrollOffset;
 	int locationY = Math.max(minY, Math.min(maxY, y + height - 1)) - verticalScrollOffset;
 	if (isFixedLineHeight() && renderer.fixedPitch) {
 		int avg = renderer.averageCharWidth; 
-		anchorX = ((anchorX - leftMargin + horizontalScrollOffset) / avg * avg) - horizontalScrollOffset + leftMargin;
-		locationX = ((locationX + avg / 2 - leftMargin + horizontalScrollOffset) / avg * avg) - horizontalScrollOffset + leftMargin;
+		anchorX = ((anchorX - leftMargin + horizontalScrollOffset) / avg * avg) + leftMargin - horizontalScrollOffset;
+		locationX = ((locationX + avg / 2 - leftMargin + horizontalScrollOffset) / avg * avg) + leftMargin - horizontalScrollOffset;
 	}
 	setBlockSelectionLocation(anchorX, anchorY, locationX, locationY, false);
 }
