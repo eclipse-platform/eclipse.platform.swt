@@ -86,6 +86,10 @@ public NSRect imageRectForBounds(NSRect theRect) {
 	return result;
 }
 
+public boolean isEnabled() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isEnabled);
+}
+
 public boolean isHighlighted() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isHighlighted);
 }

@@ -55,6 +55,10 @@ public NSFont font() {
 	return result != 0 ? new NSFont(result) : null;
 }
 
+public boolean isEnabled() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isEnabled);
+}
+
 public boolean sendAction(int /*long*/ theAction, id theTarget) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_sendAction_to_, theAction, theTarget != null ? theTarget.id : 0);
 }

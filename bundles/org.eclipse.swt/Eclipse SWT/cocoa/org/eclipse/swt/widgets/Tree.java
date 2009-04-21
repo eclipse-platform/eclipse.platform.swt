@@ -1949,14 +1949,18 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 	Image image = index == 0 ? item.image : (item.images == null ? null : item.images [index]);
 	textCell.setImage (image != null ? image.handle : null);
 	NSColor color;
-	if (widget.isRowSelected (rowIndex)) {
-		color = NSColor.selectedControlTextColor();
+	if (widget.isEnabled()) {
+		if (widget.isRowSelected (rowIndex)) {
+			color = NSColor.selectedControlTextColor();
+		} else {
+			Color foreground = item.cellForeground != null ? item.cellForeground [index] : null;
+			if (foreground == null) foreground = item.foreground;
+			if (foreground == null) foreground = this.foreground;
+			if (foreground == null) foreground = defaultForeground();
+			color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+		}
 	} else {
-		Color foreground = item.cellForeground != null ? item.cellForeground [index] : null;
-		if (foreground == null) foreground = item.foreground;
-		if (foreground == null) foreground = this.foreground;
-		if (foreground == null) foreground = defaultForeground();
-		color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+		color = NSColor.disabledControlTextColor();
 	}
 	int alignment = OS.NSLeftTextAlignment;
 	if (columnCount > 0) {
