@@ -1124,7 +1124,7 @@ void drawRect(int id, int sel, NSRect rect) {
 	}
 }
 NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
-	if (toolTipText == null) return cellRect;
+	if (toolTipText == null) return super.expansionFrameWithFrame_inView(id, sel, cellRect, view);
 	return new NSRect();
 }
 

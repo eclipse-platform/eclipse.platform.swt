@@ -612,7 +612,12 @@ void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
-	return cellRect;
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSRect result = new NSRect();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, cellRect, view);
+	return result;
 }
 
 boolean filters (int eventType) {
