@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 class ShellTab extends Tab {	
 	/* Style widgets added to the "Style" groups, and "Other" group */
 	Button noParentButton, parentButton;
-	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton;
+	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton, sheetButton;
 	Button createButton, closeAllButton;
 	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
 	Button imageButton;
@@ -76,6 +76,7 @@ class ShellTab extends Tab {
 		if (resizeButton.getSelection()) style |= SWT.RESIZE;
 		if (onTopButton.getSelection()) style |= SWT.ON_TOP;
 		if (toolButton.getSelection()) style |= SWT.TOOL;
+		if (sheetButton.getSelection()) style |= SWT.SHEET;
 		if (modelessButton.getSelection()) style |= SWT.MODELESS;
 		if (primaryModalButton.getSelection()) style |= SWT.PRIMARY_MODAL;
 		if (applicationModalButton.getSelection()) style |= SWT.APPLICATION_MODAL;
@@ -180,6 +181,8 @@ class ShellTab extends Tab {
 		onTopButton.setText ("SWT.ON_TOP");
 		toolButton = new Button (styleGroup, SWT.CHECK);
 		toolButton.setText ("SWT.TOOL");
+		sheetButton = new Button (styleGroup, SWT.CHECK);
+		sheetButton.setText ("SWT.SHEET");
 	
 		/* Create the modal style buttons */
 		modelessButton = new Button (modalStyleGroup, SWT.RADIO);

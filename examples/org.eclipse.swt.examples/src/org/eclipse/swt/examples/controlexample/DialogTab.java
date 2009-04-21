@@ -33,6 +33,7 @@ class DialogTab extends Tab {
 	Button iconErrorButton, iconInformationButton, iconQuestionButton;
 	Button iconWarningButton, iconWorkingButton, noIconButton;
 	Button primaryModalButton, applicationModalButton, systemModalButton;
+	Button sheetButton;
 	Button saveButton, openButton, multiButton;
 
 	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc", "*"};
@@ -111,6 +112,7 @@ class DialogTab extends Tab {
 		if (primaryModalButton.getEnabled () && primaryModalButton.getSelection ()) style |= SWT.PRIMARY_MODAL;
 		if (applicationModalButton.getEnabled () && applicationModalButton.getSelection ()) style |= SWT.APPLICATION_MODAL;
 		if (systemModalButton.getEnabled () && systemModalButton.getSelection ()) style |= SWT.SYSTEM_MODAL;
+		if (sheetButton.getSelection ()) style |= SWT.SHEET;
 		if (saveButton.getEnabled () && saveButton.getSelection ()) style |= SWT.SAVE;
 		if (openButton.getEnabled () && openButton.getSelection ()) style |= SWT.OPEN;
 		if (multiButton.getEnabled () && multiButton.getSelection ()) style |= SWT.MULTI;
@@ -338,6 +340,16 @@ class DialogTab extends Tab {
 		systemModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		systemModalButton.setText ("SWT.SYSTEM_MODAL");
 	
+		/* Create a group for other style controls */
+		Group otherStyleGroup = new Group (controlGroup, SWT.NONE);
+		otherStyleGroup.setLayout (new GridLayout ());
+		otherStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		otherStyleGroup.setText (ControlExample.getResourceString("Other_Styles"));
+	
+		/* Create the other style buttons */
+		sheetButton = new Button(otherStyleGroup, SWT.CHECK);
+		sheetButton.setText("SWT.SHEET");
+
 		/* Create a group for the file dialog style controls */
 		Group fileDialogStyleGroup = new Group (controlGroup, SWT.NONE);
 		fileDialogStyleGroup.setLayout (new GridLayout ());
