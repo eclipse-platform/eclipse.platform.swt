@@ -760,6 +760,7 @@ public static final int /*long*/ sel_bytes = sel_registerName("bytes");
 public static final int /*long*/ sel_bytesPerPlane = sel_registerName("bytesPerPlane");
 public static final int /*long*/ sel_bytesPerRow = sel_registerName("bytesPerRow");
 public static final int /*long*/ sel_calendarDate = sel_registerName("calendarDate");
+public static final int /*long*/ sel_canBecomeKeyView = sel_registerName("canBecomeKeyView");
 public static final int /*long*/ sel_canBecomeKeyWindow = sel_registerName("canBecomeKeyWindow");
 public static final int /*long*/ sel_canDragRowsWithIndexes_atPoint_ = sel_registerName("canDragRowsWithIndexes:atPoint:");
 public static final int /*long*/ sel_canGoBack = sel_registerName("canGoBack");

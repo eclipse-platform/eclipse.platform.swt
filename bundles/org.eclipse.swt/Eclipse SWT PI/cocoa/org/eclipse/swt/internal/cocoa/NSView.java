@@ -54,6 +54,10 @@ public NSRect bounds() {
 	return result;
 }
 
+public boolean canBecomeKeyView() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_canBecomeKeyView);
+}
+
 public NSPoint convertPoint_fromView_(NSPoint aPoint, NSView aView) {
 	NSPoint result = new NSPoint();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_convertPoint_fromView_, aPoint, aView != null ? aView.id : 0);
