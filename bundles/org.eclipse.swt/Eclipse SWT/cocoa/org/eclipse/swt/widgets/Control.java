@@ -2086,7 +2086,8 @@ int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEv
 		if (x != event.x || y != event.y) {
 			menu.setLocation (event.x, event.y);
 		}
-		return menu.nsMenu.id;
+		menu.setVisible(true);
+		return 0;
 	}
 	return super.menuForEvent (id, sel, theEvent);
 }
