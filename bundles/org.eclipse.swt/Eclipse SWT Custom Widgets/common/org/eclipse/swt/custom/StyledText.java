@@ -795,7 +795,6 @@ public class StyledText extends Canvas {
 				write("\\u");
 				write(Integer.toString((short) ch));
 				write('?');						// ANSI representation (1 byte long, \\uc1)
-				write(' ');						// control word delimiter
 				start = index + 1;
 			} else if (ch == '}' || ch == '{' || ch == '\\') {
 				// write the sub string from the last escaped character 
