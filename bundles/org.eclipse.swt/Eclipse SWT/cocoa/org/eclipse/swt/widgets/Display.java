@@ -777,6 +777,7 @@ void createDisplay (DeviceData data) {
 			OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 			OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
 			OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
+			OS.class_addMethod(cls, OS.sel_finishLaunching, proc2, "@:");
 			OS.objc_registerClassPair(cls);
 		}
 		applicationClass = OS.object_setClass(application.id, cls);
@@ -4203,6 +4204,18 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
 	if (display == null) return 0;
 	if (sel == OS.sel_isRunning) {
 		return display.isDisposed() ? 0 : 1;
+	}
+	if (sel == OS.sel_finishLaunching) {
+		/* 
+		* [NSApplication finishLaunching] cannot run multiple times otherwise
+		* multiple main menus are added.
+		*/
+		if (launched) return 0;
+		launched = true;
+		objc_super super_struct = new objc_super();
+		super_struct.receiver = id;
+		super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+		OS.objc_msgSendSuper(super_struct, sel);
 	}
 	return 0;
 }
