@@ -106,6 +106,9 @@
 		<arg name="c" swt_gen="true"></arg>
 		<arg name="limit" swt_gen="true"></arg>
 	</function>
+	<function name="CGContextStrokePath" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+	</function>
 	<function name="CGContextTranslateCTM" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>
 		<arg name="tx" swt_gen="true"></arg>

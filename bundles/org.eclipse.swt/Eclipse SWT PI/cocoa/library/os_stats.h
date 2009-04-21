@@ -53,6 +53,7 @@ typedef enum {
 	CGContextSetLineJoin_FUNC,
 	CGContextSetLineWidth_FUNC,
 	CGContextSetMiterLimit_FUNC,
+	CGContextStrokePath_FUNC,
 	CGContextTranslateCTM_FUNC,
 	CGDataProviderCreateWithData_FUNC,
 	CGDataProviderRelease_FUNC,

@@ -2640,6 +2640,10 @@ public static final native void CGContextSetLineWidth(int /*long*/ c, float /*do
 public static final native void CGContextSetMiterLimit(int /*long*/ c, float /*double*/ limit);
 /**
  * @param c cast=(CGContextRef)
+ */
+public static final native void CGContextStrokePath(int /*long*/ c);
+/**
+ * @param c cast=(CGContextRef)
  * @param tx cast=(CGFloat)
  * @param ty cast=(CGFloat)
  */

@@ -373,6 +373,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
 }
 #endif
 
+#ifndef NO_CGContextStrokePath
+JNIEXPORT void JNICALL OS_NATIVE(CGContextStrokePath)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGContextStrokePath_FUNC);
+	CGContextStrokePath((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextStrokePath_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextTranslateCTM
 JNIEXPORT void JNICALL OS_NATIVE(CGContextTranslateCTM)
 	(JNIEnv *env, jclass that, jintLong arg0, jfloatDouble arg1, jfloatDouble arg2)

@@ -686,7 +686,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
-int /*long*/ createCGPathRef(NSBezierPath nsPath) {
+static int /*long*/ createCGPathRef(NSBezierPath nsPath) {
 	int /*long*/ count = nsPath.elementCount();
 	if (count > 0) {
 		int /*long*/ cgPath = OS.CGPathCreateMutable();

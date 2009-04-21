@@ -403,12 +403,50 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		//	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
-		//TODO outline
-		NSPoint point = new NSPoint();
-		point.x = x;
-		point.y = y;
-		return handle.containsPoint(point);
+		//TODO - see windows
+		if (outline) {
+			int /*long*/ pixel = OS.malloc(4);
+			if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int[] buffer = new int[]{0xFFFFFFFF};
+			OS.memmove(pixel, buffer, 4);
+			int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+			int /*long*/ context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+			OS.CGColorSpaceRelease(colorspace);
+			if (context == 0) {
+				OS.free(pixel);
+				SWT.error(SWT.ERROR_NO_HANDLES);
+			}
+			GCData data = gc.data;
+			int capStyle = 0;
+			switch (data.lineCap) {
+				case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
+				case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
+				case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
+			}
+			OS.CGContextSetLineCap(context, capStyle);
+			int joinStyle = 0;
+			switch (data.lineJoin) {
+				case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
+				case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
+				case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
+			}
+			OS.CGContextSetLineJoin(context, joinStyle);
+			OS.CGContextSetLineWidth(context, data.lineWidth);
+			OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
+			int /*long*/ path = GC.createCGPathRef(handle);
+			OS.CGContextAddPath(context, path);
+			OS.CGPathRelease(path);
+			OS.CGContextStrokePath(context);
+			OS.CGContextRelease(context);
+			OS.memmove(buffer, pixel, 4);
+			OS.malloc(pixel);	
+			return buffer[0] != 0xFFFFFFFF;			
+		} else {
+			NSPoint point = new NSPoint();
+			point.x = x;
+			point.y = y;
+			return handle.containsPoint(point);
+		}
 	} finally {
 		if (pool != null) pool.release();
 	}

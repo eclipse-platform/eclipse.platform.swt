@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 468;
-int OS_nativeFunctionCallCount[468];
+int OS_nativeFunctionCount = 469;
+int OS_nativeFunctionCallCount[469];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -45,6 +45,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSetLineJoin",
 	"CGContextSetLineWidth",
 	"CGContextSetMiterLimit",
+	"CGContextStrokePath",
 	"CGContextTranslateCTM",
 	"CGDataProviderCreateWithData",
 	"CGDataProviderRelease",
