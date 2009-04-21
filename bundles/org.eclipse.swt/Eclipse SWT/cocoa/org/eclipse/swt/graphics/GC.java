@@ -714,6 +714,7 @@ int /*long*/ createCGPathRef(NSBezierPath nsPath) {
 					 break;
 			}
 		}
+		OS.free(points);
 		return cgPath;
 	}
 	return 0;
