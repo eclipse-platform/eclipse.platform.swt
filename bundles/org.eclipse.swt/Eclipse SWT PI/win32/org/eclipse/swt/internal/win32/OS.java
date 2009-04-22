@@ -538,7 +538,11 @@ public class OS extends C {
 	public static final int DLGC_WANTARROWS = 0x1;
 	public static final int DLGC_WANTCHARS = 0x80;
 	public static final int DLGC_WANTTAB = 0x2;
+	public static final short DMCOLLATE_FALSE = 0;
+	public static final short DMCOLLATE_TRUE = 1;
 	public static final int DM_SETDEFID = 0x401;
+	public static final int DM_COLLATE = 0x00008000;
+	public static final int DM_COPIES = 0x00000100;
 	public static final int DM_ORIENTATION = 0x00000001;
 	public static final short DMORIENT_PORTRAIT = 1;
 	public static final short DMORIENT_LANDSCAPE = 2;
