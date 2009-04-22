@@ -77,7 +77,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
-MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
+MOZILLALIBS = -shared --version-script=mozilla_exports -Bsymbolic
 MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO__1XPCOMGlueStartup \
 	-DNO_JS_1EvaluateUCScriptForPrincipals \
