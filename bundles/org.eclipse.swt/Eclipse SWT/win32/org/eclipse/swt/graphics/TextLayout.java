@@ -386,7 +386,7 @@ void computeRuns (GC gc) {
 		descent = Math.max(descent, run.descent);
 		if (run.lineBreak || i == allRuns.length - 1) {
 			/* Update the run metrics if the last run is a hard break. */
-			if (lineRunCount == 1 && i == allRuns.length - 1) {
+			if (lineRunCount == 1 && (i == allRuns.length - 1 || !run.softBreak)) {
 				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 				OS.SelectObject(srcHdc, getItemFont(run));
 				OS.GetTextMetrics(srcHdc, lptm);
