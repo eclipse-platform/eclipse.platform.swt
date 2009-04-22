@@ -2637,8 +2637,10 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 		if (OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			if (hooks (SWT.PaintItem)) {
 				GdkRectangle rect = new GdkRectangle ();
+				GdkRectangle clipRect = new GdkRectangle ();
 				int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 				OS.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect);
+				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, clipRect);
 				OS.gtk_tree_path_free (path);
 				if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (handle) == columnHandle) {
 					int [] buffer = new int [1];
@@ -2672,8 +2674,11 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 					gc.setForeground (foreground);
 				}
 				gc.setFont (item.getFont (columnIndex));
-				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
-				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
+				if ((style & SWT.MIRRORED) != 0) {
+					rect.x = getClientWidth () - rect.width - rect.x;
+					clipRect.x = getClientWidth () - clipRect.width - clipRect.x;
+				}
+				gc.setClipping (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
 				Event event = new Event ();
 				event.item = item;
 				event.index = columnIndex;
