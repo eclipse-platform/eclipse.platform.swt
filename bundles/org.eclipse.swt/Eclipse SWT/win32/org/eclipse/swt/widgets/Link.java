@@ -608,9 +608,9 @@ public void removeSelectionListener (SelectionListener listener) {
  * selected, the text field of the selection event contains either the
  * text of the hyperlink or the value of its HREF, if one was specified.
  * In the rare case of identical hyperlinks within the same string, the
- * HREF tag can be used to distinguish between them.  The string may
+ * HREF attribute can be used to distinguish between them.  The string may
  * include the mnemonic character and line delimiters. The only delimiter
- * the HREF tag supports is the quotation mark (").
+ * the HREF attribute supports is the quotation mark (").
  * </p>
  * 
  * @param string the new text
