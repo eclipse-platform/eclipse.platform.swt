@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -270,17 +270,17 @@ public PrinterData open() {
 	if (devmodeData != null && devmodeData.length != 0) {
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
 		OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
+		if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
 		pd.hDevMode = lpInitData;
 	}
 	
-	/* Initialize the DEVMODE struct's orientation field from the printerData. */
+	/* Initialize the DEVMODE struct's fields from the printerData. */
 	int /*long*/ hMem = pd.hDevMode;
 	int /*long*/ ptr = OS.GlobalLock(hMem);
 	DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
 	OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 	devmode.dmFields |= OS.DM_ORIENTATION;
-	devmode.dmOrientation = printerData.orientation == PrinterData.PORTRAIT ?
-			OS.DMORIENT_PORTRAIT : OS.DMORIENT_LANDSCAPE;
+	devmode.dmOrientation = printerData.orientation == PrinterData.PORTRAIT ? OS.DMORIENT_PORTRAIT : OS.DMORIENT_LANDSCAPE;
 	OS.MoveMemory(ptr, devmode, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 	OS.GlobalUnlock(hMem);
 
@@ -332,6 +332,7 @@ public PrinterData open() {
 		TCHAR buffer = new TCHAR(0, size);
 		OS.MoveMemory(buffer, ptr, size);	
 		OS.GlobalUnlock(hMem);
+		if (pd.hDevNames != 0) OS.GlobalFree(pd.hDevNames);
 
 		int driverOffset = offsets[0];
 		int i = 0;
@@ -384,6 +385,7 @@ public PrinterData open() {
 			data.orientation = dmOrientation == OS.DMORIENT_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 		}
 		OS.GlobalUnlock(hMem);
+		if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
 		if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 		printerData = data;
 	}
