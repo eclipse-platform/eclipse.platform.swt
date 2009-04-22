@@ -14,6 +14,8 @@
 
 cd `dirname $0`
 
+MAKE_TYPE=make
+
 if [ "${JAVA_HOME}" = "" ]; then
 	echo "Please set JAVA_HOME to point at a JRE."
 fi
@@ -34,8 +36,9 @@ case $OS in
 		if uname -p > /dev/null 2>&1; then
 			MODEL=`uname -p`
 		fi
-		if [ "${MODEL}" = "i386"]; then
+		if [ ${MODEL} = 'i386' ]; then
 			MAKEFILE=make_solaris_x86.mak
+			MAKE_TYPE=gmake
 		fi
 		;;
 	"FreeBSD")
@@ -147,7 +150,7 @@ if [ "x${OUTPUT_DIR}" = "x" ]; then
 fi
 
 if [ "x${1}" = "xclean" ]; then
-	make -f $MAKEFILE clean
+	${MAKE_TYPE} -f $MAKEFILE clean
 else
-	make -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
 fi
