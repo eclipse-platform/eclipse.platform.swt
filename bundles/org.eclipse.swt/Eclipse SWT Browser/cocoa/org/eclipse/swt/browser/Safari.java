@@ -1035,7 +1035,7 @@ int /*long*/ webView_createWebViewWithRequest(int /*long*/ sender, int /*long*/ 
 	if (browser != null && !browser.isDisposed()) {
 		result = ((Safari)browser.webBrowser).webView;
 		if (request != 0) {
-			WebFrame mainFrame = webView.mainFrame();
+			WebFrame mainFrame = result.mainFrame();
 			mainFrame.loadRequest(new NSURLRequest(request));
 		}
 	}
