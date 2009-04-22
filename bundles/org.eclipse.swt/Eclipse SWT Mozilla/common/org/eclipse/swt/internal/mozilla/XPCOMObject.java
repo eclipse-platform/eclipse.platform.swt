@@ -15,28 +15,35 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
 public class XPCOMObject {
-
-	private int /*long*/ ppVtable;
+	static boolean IsSolaris;
+	static {
+		String osName = System.getProperty ("os.name").toLowerCase (); //$NON-NLS-1$
+		IsSolaris = osName.startsWith ("sunos") || osName.startsWith("solaris"); //$NON-NLS-1$
+	}
 	
+	private int /*long*/ ppVtable;
+
 	static private final int MAX_ARG_COUNT = 12;
 	static private final int MAX_VTABLE_LENGTH = 80;
-	static private Callback[][] Callbacks = new Callback[MAX_VTABLE_LENGTH][MAX_ARG_COUNT];
+	static final int OS_OFFSET = IsSolaris ? 2 : 0;
+	static private Callback[][] Callbacks = new Callback[MAX_VTABLE_LENGTH + OS_OFFSET][MAX_ARG_COUNT];
 	static private Hashtable ObjectMap = new Hashtable ();
 	
+	
 public XPCOMObject (int[] argCounts) {
-	int /*long*/[] callbackAddresses = new int /*long*/[argCounts.length];
+	int /*long*/[] callbackAddresses = new int /*long*/[argCounts.length + OS_OFFSET];
 	synchronized (Callbacks) {
-		for (int i = 0, length = argCounts.length; i < length; i++){
-			if ((Callbacks[i][argCounts[i]]) == null) {
-				Callbacks[i][argCounts[i]] = new Callback (getClass (), "callback"+i, argCounts[i] + 1, true, XPCOM.NS_ERROR_FAILURE); //$NON-NLS-1$
+		for (int i = 0, length = argCounts.length; i < length; i++) {
+			if ((Callbacks[i + OS_OFFSET][argCounts[i]]) == null) {
+				Callbacks[i + OS_OFFSET][argCounts[i]] = new Callback (getClass (), "callback"+i, argCounts[i] + 1, true, XPCOM.NS_ERROR_FAILURE); //$NON-NLS-1$
 			}
-			callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress ();
-			if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			callbackAddresses[i + OS_OFFSET] = Callbacks[i + OS_OFFSET][argCounts[i]].getAddress ();
+			if (callbackAddresses[i + OS_OFFSET] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		}
 	}
 
-	int /*long*/ pVtable = C.malloc (C.PTR_SIZEOF * argCounts.length);
-	XPCOM.memmove (pVtable, callbackAddresses, C.PTR_SIZEOF * argCounts.length);
+	int /*long*/ pVtable = C.malloc (C.PTR_SIZEOF * (argCounts.length + OS_OFFSET));
+	XPCOM.memmove (pVtable, callbackAddresses, C.PTR_SIZEOF * (argCounts.length + OS_OFFSET));
 	ppVtable = C.malloc (C.PTR_SIZEOF);
 	XPCOM.memmove (ppVtable, new int /*long*/[] {pVtable}, C.PTR_SIZEOF);
 	ObjectMap.put (new LONG (ppVtable), this);
