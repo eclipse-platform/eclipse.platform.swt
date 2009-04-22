@@ -158,9 +158,7 @@ public class Display extends Device {
 	Callback cursorSetCallback;
 
 	// the following Callbacks are never freed
-	static Callback applicationDelegateCallback3;
-	static Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
-	static Callback windowDelegateCallback6;
+	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowDelegateCallback6;
 	static Callback dialogCallback3, dialogCallback4, dialogCallback5;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
 	static Callback fieldEditorCallback3, fieldEditorCallback4;
@@ -781,6 +779,25 @@ void createDisplay (DeviceData data) {
 			OS.objc_registerClassPair(cls);
 		}
 		applicationClass = OS.object_setClass(application.id, cls);
+		
+		className = "SWTApplicationDelegate";
+		if (OS.objc_lookUpClass (className) == 0) {
+			int /*long*/ appProc3 = applicationCallback3.getAddress();
+			if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+			cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+			OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_quitRequested_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
+			OS.objc_registerClassPair(cls);
+		}	
+		applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
+		application.setDelegate(applicationDelegate);
 	} else {
 		isEmbedded = true;
 	}
@@ -1809,8 +1826,6 @@ protected void init () {
 	initFonts ();
 	
 	if (!isEmbedded) {
-		initApplicationDelegate();
-		
 		/*
 		 * Feature in Cocoa:  NSApplication.finishLaunching() adds an apple menu to the menu bar that isn't accessible via NSMenu.
 		 * If Display objects are created and disposed of multiple times in a single process, another apple menu is added to the menu bar.
@@ -1852,29 +1867,6 @@ protected void init () {
 	
 	isPainting = (NSMutableArray)new NSMutableArray().alloc();
 	isPainting = isPainting.initWithCapacity(12);
-}
-
-void initApplicationDelegate() {
-	String className = "SWTApplicationDelegate";
-	if (OS.objc_lookUpClass (className) == 0) {
-		Class clazz = getClass ();
-		applicationDelegateCallback3 = new Callback(clazz, "applicationDelegateProc", 3);
-		int /*long*/ appProc3 = applicationDelegateCallback3.getAddress();
-		if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-		OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_quitRequested_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
-		OS.objc_registerClassPair(cls);
-	}	
-	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
-	application.setDelegate(applicationDelegate);
 }
 
 void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, int /*long*/ drawRectProc, int /*long*/ hitTestProc, int /*long*/ needsDisplayInRectProc) {
@@ -1958,19 +1950,19 @@ void initClasses () {
 	dialogCallback5 = new Callback(clazz, "dialogProc", 5);
 	int /*long*/ dialogProc5 = dialogCallback5.getAddress();
 	if (dialogProc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
-	windowDelegateCallback3 = new Callback(clazz, "windowDelegateProc", 3);
-	int /*long*/ proc3 = windowDelegateCallback3.getAddress();
+	windowCallback3 = new Callback(clazz, "windowProc", 3);
+	int /*long*/ proc3 = windowCallback3.getAddress();
 	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback2 = new Callback(clazz, "windowDelegateProc", 2);
-	int /*long*/ proc2 = windowDelegateCallback2.getAddress();
+	windowCallback2 = new Callback(clazz, "windowProc", 2);
+	int /*long*/ proc2 = windowCallback2.getAddress();
 	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback4 = new Callback(clazz, "windowDelegateProc", 4);
-	int /*long*/ proc4 = windowDelegateCallback4.getAddress();
+	windowCallback4 = new Callback(clazz, "windowProc", 4);
+	int /*long*/ proc4 = windowCallback4.getAddress();
 	if (proc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback5 = new Callback(clazz, "windowDelegateProc", 5);
-	int /*long*/ proc5 = windowDelegateCallback5.getAddress();
+	windowCallback5 = new Callback(clazz, "windowProc", 5);
+	int /*long*/ proc5 = windowCallback5.getAddress();
 	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback6 = new Callback(clazz, "windowDelegateProc", 6);
+	windowDelegateCallback6 = new Callback(clazz, "windowProc", 6);
 	int /*long*/ proc6 = windowDelegateCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	fieldEditorCallback3 = new Callback(clazz, "fieldEditorProc", 3);
@@ -4090,6 +4082,37 @@ Control findControl (boolean checkTrim, NSView[] hitView) {
 	return control;
 }
 
+void finishLaunching (int /*long*/ id, int /*long*/ sel) {
+	/* 
+	* [NSApplication finishLaunching] cannot run multiple times otherwise
+	* multiple main menus are added.
+	*/
+	if (launched) return;
+	launched = true;
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel);
+}
+
+void applicationDidBecomeActive (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	Control control = getFocusControl();
+	if (control != null && !control.isDisposed()) {
+		focusControl = control;
+		control.sendFocusEvent(SWT.FocusIn, false);
+	}
+	checkEnterExit(findControl(true), null, false);
+}
+
+void applicationDidResignActive (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	Control control = focusControl;
+	if (control != null && !control.isDisposed()) {
+		focusControl = null;
+		control.sendFocusEvent(SWT.FocusOut, false);
+	}
+	checkEnterExit(null, null, false);
+}
+
 int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel, int /*long*/ mask, int /*long*/ expiration, int /*long*/ mode, int /*long*/ dequeue) {
 	if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) runDeferredEvents();
 	objc_super super_struct = new objc_super();
@@ -4197,97 +4220,71 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 	sendEvent = false;
 }
 
-// #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
+void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	boolean loaded = false;
+	NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
+	NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
+	NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+	if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+	if (!loaded) {
+		NSString resourcePath = bundle.resourcePath();
+		path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
+		loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+	}
+	if (!loaded) {
+		path = NSString.stringWith(System.getProperty("java.home") + "/../Resources/English.lproj/DefaultApp.nib");
+		loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
+	}
+	if (!loaded) {
+		createMainMenu();
+	}
+	//replace %@ with application name
+	NSMenu mainmenu = application.mainMenu();
+	NSMenuItem appitem = mainmenu.itemAtIndex(0);
+	if (appitem != null) {
+		NSString name = getAppName();
+		NSString match = NSString.stringWith("%@");
+		appitem.setTitle(name);
+		NSMenu sm = appitem.submenu();
+		NSArray ia = sm.itemArray();
+		for(int i = 0; i < ia.count(); i++) {
+			NSMenuItem ni = new NSMenuItem(ia.objectAtIndex(i));
+			NSString title = ni.title().stringByReplacingOccurrencesOfString(match, name);
+			ni.setTitle(title);
+		}
+
+		int /*long*/ quitIndex = sm.indexOfItemWithTarget(applicationDelegate, OS.sel_terminate_);
+		
+		if (quitIndex != -1) {
+			NSMenuItem quitItem = sm.itemAtIndex(quitIndex);
+			quitItem.setAction(OS.sel_quitRequested_);
+		}
+	}
+}
+
 static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
 	//TODO optimize getting the display
 	Display display = getCurrent ();
 	if (display == null) return 0;
 	if (sel == OS.sel_isRunning) {
+		// #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
 		return display.isDisposed() ? 0 : 1;
 	}
 	if (sel == OS.sel_finishLaunching) {
-		/* 
-		* [NSApplication finishLaunching] cannot run multiple times otherwise
-		* multiple main menus are added.
-		*/
-		if (launched) return 0;
-		launched = true;
-		objc_super super_struct = new objc_super();
-		super_struct.receiver = id;
-		super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-		OS.objc_msgSendSuper(super_struct, sel);
+		display.finishLaunching (id, sel);
 	}
 	return 0;
 }
 
-static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	//TODO optimize getting the display
 	Display display = getCurrent ();
 	if (display == null) return 0;
-	if (sel == OS.sel_sendEvent_) {
-		display.applicationSendEvent (id, sel, event);
-		return 0;
-	}
-	return 0;
-}
-
-static int /*long*/ applicationProc(int /*long*/ id, int /*long*/sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
-	//TODO optimize getting the display
-	Display display = getCurrent ();
-	if (display == null) return 0;
-	if (sel == OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_) {
-		return display.applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
-	}
-	return 0;
-}
-
-static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	//TODO optimize getting the display
-	Display display = getCurrent ();
-	if (display == null) return 0;
-	id applicationDelegate = display.applicationDelegate;
 	NSApplication application = display.application;
-	if (sel == OS.sel_applicationWillFinishLaunching_) {
-		boolean loaded = false;
-		NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
-		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-		NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
-		if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		if (!loaded) {
-			NSString resourcePath = bundle.resourcePath();
-			path = resourcePath != null ? resourcePath.stringByAppendingString(NSString.stringWith("/English.lproj/DefaultApp.nib")) : null;
-			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		}
-		if (!loaded) {
-			path = NSString.stringWith(System.getProperty("java.home") + "/../Resources/English.lproj/DefaultApp.nib");
-			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		}
-		if (!loaded) {
-			display.createMainMenu();
-			return 0;
-		}
-		//replace %@ with application name
-		NSMenu mainmenu = application.mainMenu();
-		NSMenuItem appitem = mainmenu.itemAtIndex(0);
-		if (appitem != null) {
-			NSString name = getAppName();
-			NSString match = NSString.stringWith("%@");
-			appitem.setTitle(name);
-			NSMenu sm = appitem.submenu();
-			NSArray ia = sm.itemArray();
-			for(int i = 0; i < ia.count(); i++) {
-				NSMenuItem ni = new NSMenuItem(ia.objectAtIndex(i));
-				NSString title = ni.title().stringByReplacingOccurrencesOfString(match, name);
-				ni.setTitle(title);
-			}
-
-			int /*long*/ quitIndex = sm.indexOfItemWithTarget(applicationDelegate, OS.sel_terminate_);
-			
-			if (quitIndex != -1) {
-				NSMenuItem quitItem = sm.itemAtIndex(quitIndex);
-				quitItem.setAction(OS.sel_quitRequested_);
-			}
-		}
+	if (sel == OS.sel_sendEvent_) {
+		display.applicationSendEvent (id, sel, arg0);
+	} else if (sel == OS.sel_applicationWillFinishLaunching_) {
+		display.applicationWillFinishLaunching(id, sel, arg0);
 	} else if (sel == OS.sel_terminate_) {
 		// Do nothing here -- without a definition of sel_terminate we get a warning dumped to the console.
 	} else if (sel == OS.sel_orderFrontStandardAboutPanel_) {
@@ -4307,21 +4304,21 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 			}
 		}
 	} else if (sel == OS.sel_applicationDidBecomeActive_) {
-		Control control = display.getFocusControl();
-		if (control != null && !control.isDisposed()) {
-			display.focusControl = control;
-			control.sendFocusEvent(SWT.FocusIn, false);
-		}
-		display.checkEnterExit(display.findControl(true), null, false);
+		display.applicationDidBecomeActive(id, sel, arg0);
 	} else if (sel == OS.sel_applicationDidResignActive_) {
-		Control control = display.focusControl;
-		if (control != null && !control.isDisposed()) {
-			display.focusControl = null;
-			control.sendFocusEvent(SWT.FocusOut, false);
-		}
-		display.checkEnterExit(null, null, false);
+		display.applicationDidResignActive(id, sel, arg0);
 	}
- 	return 0;
+	return 0;
+}
+
+static int /*long*/ applicationProc(int /*long*/ id, int /*long*/sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+	//TODO optimize getting the display
+	Display display = getCurrent ();
+	if (display == null) return 0;
+	if (sel == OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_) {
+		return display.applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
+	}
+	return 0;
 }
 
 static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
@@ -4440,7 +4437,7 @@ static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*lon
 	return 0;
 }
 
-static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
+static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 	/*
 	* Feature in Cocoa.  In Cocoa, the default button animation is done
 	* in a separate thread that calls drawRect() and isOpaque() from
@@ -4529,7 +4526,7 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	return 0;
 }
 
-static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	/*
 	* Feature in Cocoa.  In Cocoa, the default button animation is done
 	* in a separate thread that calls drawRect() and isOpaque() from
@@ -4725,7 +4722,7 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	return 0;
 }
 
-static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
@@ -4770,7 +4767,7 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	return 0;
 }
 
-static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
 	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
@@ -4809,7 +4806,7 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	return 0;
 }
 
-static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_willDisplayCell_forTableColumn_row_) {
