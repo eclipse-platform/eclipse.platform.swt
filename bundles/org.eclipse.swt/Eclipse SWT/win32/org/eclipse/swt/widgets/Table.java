@@ -751,7 +751,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 	* null.
 	*/
 	TableItem item = _getItem ((int)/*64*/nmcd.dwItemSpec);
-	if (item == null) return null;
+	if (item == null || item.isDisposed ()) return null;
 	int /*long*/ hFont = item.fontHandle (nmcd.iSubItem);
 	if (hFont != -1) OS.SelectObject (hDC, hFont);
 	if (ignoreCustomDraw || (nmcd.left == nmcd.right)) {
