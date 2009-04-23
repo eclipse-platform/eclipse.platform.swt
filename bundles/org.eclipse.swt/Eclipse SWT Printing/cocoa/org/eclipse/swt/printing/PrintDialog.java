@@ -181,7 +181,9 @@ public PrinterData open() {
 			data.endPage = new NSNumber(dict.objectForKey(OS.NSPrintLastPage)).intValue();
 		}
 		data.collate = new NSNumber(dict.objectForKey(OS.NSPrintMustCollate)).intValue() != 0;
+		data.collate = false; //TODO: Only set to false if the printer does the collate internally (most printers do)
 		data.copyCount = new NSNumber(dict.objectForKey(OS.NSPrintCopies)).intValue();
+		data.copyCount = 1; //TODO: Only set to 1 if the printer does the copy internally (most printers do)
 		data.orientation = printInfo.orientation() == OS.NSLandscapeOrientation ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 		NSData nsData = NSKeyedArchiver.archivedDataWithRootObject(printInfo);
 		data.otherData = new byte[(int)/*64*/nsData.length()];
