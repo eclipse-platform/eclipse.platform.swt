@@ -281,6 +281,14 @@ public PrinterData open() {
 	OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 	devmode.dmFields |= OS.DM_ORIENTATION;
 	devmode.dmOrientation = printerData.orientation == PrinterData.PORTRAIT ? OS.DMORIENT_PORTRAIT : OS.DMORIENT_LANDSCAPE;
+	if (printerData.copyCount != 1) {
+		devmode.dmFields |= OS.DM_COPIES;
+		devmode.dmCopies = (short)printerData.copyCount;
+	}
+	if (printerData.collate != false) {
+		devmode.dmFields |= OS.DM_COLLATE;
+		devmode.dmCollate = OS.DMCOLLATE_TRUE;
+	}
 	OS.MoveMemory(ptr, devmode, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 	OS.GlobalUnlock(hMem);
 
