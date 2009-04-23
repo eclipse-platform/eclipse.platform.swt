@@ -237,25 +237,6 @@ static void restore(byte [] data, int /*long*/ settings, int /*long*/ page_setup
 	OS.gtk_paper_size_free(paper_size);
 }
 
-static void setScope(int /*long*/ settings, int scope, int startPage, int endPage) {
-	switch (scope) {
-	case PrinterData.ALL_PAGES:
-		OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
-		break;
-	case PrinterData.PAGE_RANGE:
-		OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_RANGES);
-		int [] pageRange = new int[2];
-		pageRange[0] = startPage - 1;
-		pageRange[1] = endPage - 1;
-		OS.gtk_print_settings_set_page_ranges(settings, pageRange, 1);
-		break;
-	case PrinterData.SELECTION:
-		//TODO: Not correctly implemented. May need new API. For now, set to ALL. (see gtk bug 344519)
-		OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
-		break;
-	}
-}
-
 static DeviceData checkNull (PrinterData data) {
 	if (data == null) data = new PrinterData();
 	if (data.driver == null || data.name == null) {
@@ -735,7 +716,6 @@ protected void init() {
 	}
 	
 	/* Set values of print_settings and page_setup from PrinterData. */
-	setScope(settings, data.scope, data.startPage, data.endPage);
 	//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
 	if (data.printToFile && data.fileName != null) {
 		byte [] buffer = Converter.wcsToMbcs (null, data.fileName, true);

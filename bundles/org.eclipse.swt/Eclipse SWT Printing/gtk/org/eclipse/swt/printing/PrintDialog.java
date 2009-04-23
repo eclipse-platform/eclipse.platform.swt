@@ -295,18 +295,39 @@ public PrinterData open() {
 		if (printerData.otherData != null) {
 			Printer.restore(printerData.otherData, settings, page_setup);
 		}
-		/* Set values of settings from PrinterData. */
-		Printer.setScope(settings, printerData.scope, printerData.startPage, printerData.endPage);
-		//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
-		if (printerData.printToFile && printerData.fileName != null) {
-			byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
-			OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
+		/* Set values of print_settings and page_setup from PrinterData. */
+		switch (printerData.scope) {
+			case PrinterData.ALL_PAGES:
+				OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
+				break;
+			case PrinterData.PAGE_RANGE:
+				OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_RANGES);
+				int [] pageRange = new int[2];
+				pageRange[0] = printerData.startPage - 1;
+				pageRange[1] = printerData.endPage - 1;
+				OS.gtk_print_settings_set_page_ranges(settings, pageRange, 1);
+				break;
+			case PrinterData.SELECTION:
+				//TODO: Not correctly implemented. May need new API. For now, set to ALL. (see gtk bug 344519)
+				OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
+				break;
 		}
-		if (printerData.driver != null && printerData.name != null && printerData.fileName != null) {
-			if (printerData.driver.equals("GtkPrintBackendFile") && printerData.name.equals("Print to File")) { //$NON-NLS-1$ //$NON-NLS-2$
+		if (printerData.fileName != null) {
+			//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
+			if (printerData.printToFile) {
 				byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
 				OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
 			}
+			if (printerData.driver != null && printerData.name != null) {
+				if (printerData.driver.equals("GtkPrintBackendFile") && printerData.name.equals("Print to File")) { //$NON-NLS-1$ //$NON-NLS-2$
+					byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
+					OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
+				}
+			}
+		}
+		if (printerData.printToFile) {
+			byte [] buffer = Converter.wcsToMbcs (null, "Print to File", true); //$NON-NLS-1$
+			OS.gtk_print_settings_set_printer(settings, buffer);
 		}
 		OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
 		OS.gtk_print_settings_set_collate(settings, printerData.collate);
@@ -314,11 +335,6 @@ public PrinterData open() {
 		OS.gtk_print_settings_set_orientation(settings, orientation);
 		OS.gtk_page_setup_set_orientation(page_setup, orientation);
 		
-		Printer.setScope(settings, printerData.scope, printerData.startPage, printerData.endPage);
-		if (printerData.printToFile) {
-			byte [] buffer = Converter.wcsToMbcs (null, "Print to File", true); //$NON-NLS-1$
-			OS.gtk_print_settings_set_printer(settings, buffer);
-		}
 		OS.gtk_print_unix_dialog_set_settings(handle, settings);
 		OS.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
 		OS.g_object_unref(settings);
