@@ -2050,6 +2050,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_firstRectForCharacterRange_, firstRectForCharacterRangeProc, "@:{NSRange}");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	//NSTextInput protocol end
+	OS.class_addMethod(cls, OS.sel_canBecomeKeyView, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
@@ -2368,6 +2369,7 @@ void initClasses () {
 	className = "SWTView";
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_canBecomeKeyView, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
@@ -4477,6 +4479,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.isOpaque(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_isFlipped) {
 		return widget.isFlipped(id, sel) ? 1 : 0;
+	} else if (sel == OS.sel_canBecomeKeyView) {
+		return widget.canBecomeKeyView(id,sel) ? 1 : 0;
 	} else if (sel == OS.sel_unmarkText) {
 		//TODO not called?
 	} else if (sel == OS.sel_validAttributesForMarkedText) {

@@ -358,6 +358,10 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
+boolean canBecomeKeyView(int /*long*/ id, int /*long*/ sel) {
+	return true;
+}
+
 static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
 	int mask = int0 | int1 | int2 | int3 | int4 | int5;
 	if ((style & mask) == 0) style |= int0;
