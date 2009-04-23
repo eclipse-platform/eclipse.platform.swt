@@ -50,7 +50,7 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthrea
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -static-libgcc
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -G 
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
@@ -68,16 +68,13 @@ MOZILLACFLAGS = -O \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	$(NATIVE_STATS) \
 	-DMOZILLA_STRICT_API=1 \
-	-fno-rtti \
-	-fno-exceptions \
-	-Wall \
-	-Wno-non-virtual-dtor \
-	-fPIC \
+	-KPIC \
+	+w \
 	-I. \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
-MOZILLALIBS = -shared --version-script=mozilla_exports -Bsymbolic
+MOZILLALIBS =  -G
 MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO__1XPCOMGlueStartup \
 	-DNO_JS_1EvaluateUCScriptForPrincipals \
@@ -106,15 +103,15 @@ XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomx
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
-CFLAGS = -O -Wall \
+CFLAGS = -O  +w \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/linux \
-		-fPIC \
+		-KPIC \
 		${SWT_PTR_CFLAGS}
-LIBS = -shared -fPIC -static-libgcc
+LIBS = -G -KPIC 
 
 ifndef NO_STRIP
 	AWT_LIBS := $(AWT_LIBS) -s
