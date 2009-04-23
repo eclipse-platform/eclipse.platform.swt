@@ -208,6 +208,14 @@ protected void create(DeviceData deviceData) {
 			printer.retain();
 			printInfo.setPrinter(printer);
 		}
+		printInfo.setOrientation(data.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation);
+		NSMutableDictionary dict = printInfo.dictionary();	
+		dict.setValue(NSNumber.numberWithBool(data.collate), OS.NSPrintMustCollate);
+		dict.setValue(NSNumber.numberWithInt(data.copyCount), OS.NSPrintCopies);
+		if (data.printToFile) {
+			dict.setValue(OS.NSPrintSaveJob, OS.NSPrintJobDisposition);
+			if (data.fileName != null) dict.setValue(NSString.stringWith(data.fileName), OS.NSPrintSavePath);
+		}
 		/*
 		* Bug in Cocoa.  For some reason, the output still goes to the printer when
 		* the user chooses the preview button.  The fix is to reset the job disposition.

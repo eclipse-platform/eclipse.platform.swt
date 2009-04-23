@@ -134,8 +134,13 @@ public PrinterData open() {
 	NSPrintInfo printInfo = new NSPrintInfo(NSPrintInfo.sharedPrintInfo().copy());
 	printInfo.setOrientation(printerData.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation);
 	NSMutableDictionary dict = printInfo.dictionary();	
+	dict.setValue(NSNumber.numberWithBool(printerData.collate), OS.NSPrintMustCollate);
+	dict.setValue(NSNumber.numberWithInt(printerData.copyCount), OS.NSPrintCopies);
 	if (printerData.printToFile) {
 		dict.setValue(OS.NSPrintSaveJob, OS.NSPrintJobDisposition);
+	}
+	if (printerData.fileName != null && printerData.fileName.length() > 0) {
+		dict.setValue(NSString.stringWith(printerData.fileName), OS.NSPrintSavePath);
 	}
 	dict.setValue(NSNumber.numberWithBool(printerData.scope == PrinterData.ALL_PAGES), OS.NSPrintAllPages);
 	if (printerData.scope == PrinterData.PAGE_RANGE) {
