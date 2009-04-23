@@ -112,7 +112,7 @@ static int /*long*/ GtkPrinterFunc_List (int /*long*/ printer, int /*long*/ user
 /**
  * Returns a <code>PrinterData</code> object representing
  * the default printer or <code>null</code> if there is no 
- * printer available on the System.
+ * default printer.
  *
  * @return the default printer data or null
  * 
@@ -734,7 +734,7 @@ protected void init() {
 		restore(data.otherData, settings, pageSetup);
 	}
 	
-	/* Set values of settings from PrinterData. */
+	/* Set values of print_settings and page_setup from PrinterData. */
 	setScope(settings, data.scope, data.startPage, data.endPage);
 	//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
 	if (data.printToFile && data.fileName != null) {
@@ -747,6 +747,9 @@ protected void init() {
 	}
 	OS.gtk_print_settings_set_n_copies(settings, data.copyCount);
 	OS.gtk_print_settings_set_collate(settings, data.collate);
+	int orientation = data.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
+	OS.gtk_page_setup_set_orientation(pageSetup, orientation);
+	OS.gtk_print_settings_set_orientation(settings, orientation);
 }
 
 /**
