@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2007 IBM Corporation and others.
+# Copyright (c) 2000, 2009 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
-# Makefile for creating SWT libraries for Linux GTK
+# Makefile for creating SWT libraries for Solaris GTK (x86)
 
 include make_common.mak
 
@@ -50,7 +50,7 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthrea
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -static-libgcc
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
@@ -59,7 +59,7 @@ GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-
 GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
 
 GLXCFLAGS = 
-GLXLIBS = -shared -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
+GLXLIBS = -L/usr/X11R6/lib -lGL -lGLU -lm
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
@@ -114,7 +114,7 @@ CFLAGS = -O -Wall \
 		-I$(JAVA_HOME)/include/linux \
 		-fPIC \
 		${SWT_PTR_CFLAGS}
-LIBS = -shared -fPIC
+LIBS = -shared -fPIC -static-libgcc
 
 ifndef NO_STRIP
 	AWT_LIBS := $(AWT_LIBS) -s
