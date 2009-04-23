@@ -3140,7 +3140,9 @@ void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
 	if (damageRgn != 0) {
 		double[] matrix = new double[6];
 		Cairo.cairo_get_matrix(cairo, matrix);
-		Cairo.cairo_set_matrix(cairo, identity());
+		double[] identity = new double[6];
+		Cairo.cairo_matrix_init_identity(identity);
+		Cairo.cairo_set_matrix(cairo, identity);
 		setCairoRegion(cairo, damageRgn);
 		Cairo.cairo_clip(cairo);
 		Cairo.cairo_set_matrix(cairo, matrix);
