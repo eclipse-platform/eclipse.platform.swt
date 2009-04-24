@@ -669,6 +669,7 @@ public static final int /*long*/ sel_ascender = sel_registerName("ascender");
 public static final int /*long*/ sel_attributedStringValue = sel_registerName("attributedStringValue");
 public static final int /*long*/ sel_attributedStringWithAttachment_ = sel_registerName("attributedStringWithAttachment:");
 public static final int /*long*/ sel_attributedSubstringFromRange_ = sel_registerName("attributedSubstringFromRange:");
+public static final int /*long*/ sel_attributedTitle = sel_registerName("attributedTitle");
 public static final int /*long*/ sel_attributesAtIndex_longestEffectiveRange_inRange_ = sel_registerName("attributesAtIndex:longestEffectiveRange:inRange:");
 public static final int /*long*/ sel_autorelease = sel_registerName("autorelease");
 public static final int /*long*/ sel_availableFontFamilies = sel_registerName("availableFontFamilies");

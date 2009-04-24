@@ -238,7 +238,12 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 }
 
 NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
-	return new NSSize();
+	NSSize result = new NSSize();
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper_stret(result, super_struct, sel);
+	return result;
 }
 
 boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
@@ -551,6 +556,9 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 }
 
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
+	NSRect rect = new NSRect();
+	OS.memmove(rect, cellFrame, NSRect.sizeof);
+	callSuper(id, sel, rect, view);
 }
 
 void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
@@ -1655,7 +1663,12 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*lo
 }
 
 NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
-	return cellFrame;
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSRect result = new NSRect();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, cellFrame);
+	return result;
 }
 
 String tooltipText () {

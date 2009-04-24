@@ -51,6 +51,7 @@ public class Button extends Control {
 	
 	static final int EXTRA_HEIGHT = 2;
 	static final int EXTRA_WIDTH = 6;
+	static final int IMAGE_GAP = 2;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -154,6 +155,16 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
+NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
+	NSSize size = super.cellSize(id, sel);
+	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
+		NSSize imageSize = image.handle.size();
+		size.width += imageSize.width + IMAGE_GAP;
+		size.height = Math.max(size.height, imageSize.height);
+	}
+	return size;
+}
+
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, 0);
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
@@ -196,28 +207,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 NSAttributedString createString() {
 	NSAttributedString attribStr = createString(text, null, foreground, style, true, true);
 	attribStr.autorelease();
-
-	if ((style & (SWT.RADIO|SWT.CHECK)) != 0 && image != null) {
-		NSFileWrapper wrapper = (NSFileWrapper) new NSFileWrapper().alloc().init();
-		wrapper.setIcon(image.handle);
-		wrapper.autorelease();
-		NSTextAttachment attach = (NSTextAttachment) new NSTextAttachment().alloc();
-		attach.initWithFileWrapper(wrapper);
-		attach.autorelease();
-		NSAttributedString imgString = (NSAttributedString) NSAttributedString.attributedStringWithAttachment(attach);
-		if (text != null) {		
-			NSMutableAttributedString mutable = (NSMutableAttributedString) new NSMutableAttributedString().alloc().init();
-			mutable.appendAttributedString(imgString);
-			NSRange range = new NSRange();
-			range.location = mutable.length();
-			range.length = 0;
-			mutable.replaceCharactersInRange(range, NSString.stringWith(" "));
-			mutable.appendAttributedString(attribStr);
-			mutable.autorelease();
-			return mutable;
-		}
-		return imgString;
-	}
 	return attribStr;
 }
 
@@ -230,11 +219,11 @@ void createHandle () {
 	* when set to small size. The fix to subclass the button cell
     * and offset the image drawing.
 	*/
-	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+//	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
 		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
 		widget.setCell (cell);
 		cell.release ();
-	}
+//	}
 	int type = OS.NSMomentaryLightButton;
 	if ((style & SWT.PUSH) != 0) {
 		if ((style & SWT.FLAT) != 0) {
@@ -298,6 +287,44 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 		rect.height += EXTRA_HEIGHT;
 	}
 	callSuper (id, sel, image, rect, view);
+}
+
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ viewid) {
+	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
+	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
+		NSSize imageSize = image.handle.size();
+		NSRect cellRect = new NSRect ();
+		OS.memmove (cellRect, cellFrame, NSRect.sizeof);
+		NSCell nsCell = new NSCell(id);
+		float /*double*/ x = 0;
+		float /*double*/ y = (imageSize.height - cellRect.height)/2f;
+		NSRect imageRect = nsCell.imageRectForBounds(cellRect);
+		NSSize stringSize = ((NSButton)view).attributedTitle().size();
+		switch (style & (SWT.LEFT|SWT.RIGHT|SWT.CENTER)) {
+			case SWT.LEFT:
+				x = imageRect.x + imageRect.width + IMAGE_GAP;
+				break;
+			case SWT.CENTER:
+				x = cellRect.x + imageRect.x + imageRect.width + ((cellRect.width-stringSize.width)/2f) - imageSize.width - IMAGE_GAP;
+				break;
+			case SWT.RIGHT:
+				x = cellRect.x + cellRect.width - stringSize.width - imageSize.width - IMAGE_GAP;
+				break;
+		}
+		NSRect destRect = new NSRect();
+		destRect.x = x;
+		destRect.y = y;
+		destRect.width = imageSize.width;
+		destRect.height = imageSize.height;
+		NSGraphicsContext.static_saveGraphicsState();
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.scaleXBy(1, -1);
+		transform.translateXBy(0, -imageSize.height);
+		transform.concat();
+		image.handle.drawInRect(destRect, new NSRect(), OS.NSCompositeSourceOver, 1);
+		NSGraphicsContext.static_restoreGraphicsState();
+	}
+
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
@@ -784,6 +811,17 @@ public void setText (String string) {
 	text = string;
 	((NSButton)view).setAttributedTitle(createString());
 	updateAlignment ();
+}
+
+NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+	NSRect rect = super.titleRectForBounds(id, sel, cellFrame);
+	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
+		NSSize imageSize = image.handle.size();
+		rect.x += imageSize.width + IMAGE_GAP; 
+		rect.width -= (imageSize.width + IMAGE_GAP);
+		rect.width = Math.max(0f, rect.width);
+	}
+	return rect;
 }
 
 int traversalCode (int key, NSEvent theEvent) {

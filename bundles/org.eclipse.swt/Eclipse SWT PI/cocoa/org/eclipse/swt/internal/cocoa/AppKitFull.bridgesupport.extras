@@ -895,6 +895,9 @@
 		</method>
 	</class>
 	<class name="NSButton" swt_gen="mixed" swt_superclass="NSControl">
+		<method selector="attributedTitle" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setAllowsMixedState:" swt_gen="true">
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>

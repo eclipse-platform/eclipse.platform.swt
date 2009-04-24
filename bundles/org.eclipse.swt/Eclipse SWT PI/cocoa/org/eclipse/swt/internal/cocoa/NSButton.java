@@ -24,6 +24,11 @@ public NSButton(id id) {
 	super(id);
 }
 
+public NSAttributedString attributedTitle() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributedTitle);
+	return result != 0 ? new NSAttributedString(result) : null;
+}
+
 public void setAllowsMixedState(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, flag);
 }
