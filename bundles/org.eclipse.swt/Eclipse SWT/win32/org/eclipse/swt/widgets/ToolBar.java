@@ -45,7 +45,7 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolBar extends Composite {
-	int lastFocusId;
+	int lastFocusId, lastArrowId;
 	ToolItem [] items;
 	boolean ignoreResize, ignoreMouse;
 	ImageList imageList, disabledImageList, hotImageList;
@@ -357,7 +357,7 @@ void createItem (ToolItem item, int index) {
 void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
-	lastFocusId = -1;
+	lastFocusId = lastArrowId = -1;
 }
 
 int defaultBackground () {
@@ -387,6 +387,7 @@ void destroyItem (ToolItem item) {
 	}
 	OS.SendMessage (handle, OS.TB_DELETEBUTTON, index, 0);
 	if (item.id == lastFocusId) lastFocusId = -1;
+	if (item.id == lastArrowId) lastArrowId = -1;
 	items [item.id] = null;
 	item.id = -1;
 	int count = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
@@ -1009,7 +1010,17 @@ String toolTipText (NMTTDISPINFO hdr) {
 		if (toolTipText != null) return ""; //$NON-NLS-1$
 		if (0 <= index && index < items.length) {
 			ToolItem item = items [index];
-			if (item != null) return item.toolTipText;
+			if (item != null) {	
+				/*
+				* But in Windows.  When the  arrow keys are used to change
+				* the hot item, for some reason, Windows displays the tool
+				* tip for the hot item in at (0, 0) on the screen rather
+				* than next to the current hot item.  This fix is to disallow
+				* tool tips while the user is traversing with the arrow keys.
+				*/
+				if (lastArrowId != -1) return "";
+				return item.toolTipText;
+			}
 		}
 	}
 	return super.toolTipText (hdr);
@@ -1200,6 +1211,11 @@ LRESULT WM_MOUSELEAVE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
+	if (OS.GetMessagePos () != display.lastMouse) lastArrowId = -1;
+	return super.WM_MOUSEMOVE (wParam, lParam);
+}
+
 LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When the toolbar window
@@ -1377,7 +1393,20 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				NMTBHOTITEM lpnmhi = new NMTBHOTITEM ();
 				OS.MoveMemory (lpnmhi, lParam, NMTBHOTITEM.sizeof);
 				switch (lpnmhi.dwFlags) {
-					case OS.HICF_ARROWKEYS:
+					case OS.HICF_MOUSE: {
+						/*
+						* But in Windows.  When the tool bar has focus, a mouse is
+						* in an item and hover help for that item is displayed and
+						* then the arrow keys are used to change the hot item,
+						* for some reason, Windows snaps the hot item back to the
+						* one that is under the mouse.  The fix is to disallow
+						* hot item changes when the user is traversing using the
+						* arrow keys.
+						*/
+						if (lastArrowId != -1) return LRESULT.ONE;
+						break;
+					}
+					case OS.HICF_ARROWKEYS:	{
 			        	RECT client = new RECT ();
 			        	OS.GetClientRect (handle, client);
 			        	int index = (int)/*64*/OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmhi.idNew, 0);
@@ -1386,7 +1415,11 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 						if (rect.right > client.right || rect.bottom > client.bottom) {
 							return LRESULT.ONE;
 						}
+						lastArrowId = lpnmhi.idNew;
 						break;
+					}
+					default:
+						lastArrowId = -1;
 				}
 			}
 			break;
