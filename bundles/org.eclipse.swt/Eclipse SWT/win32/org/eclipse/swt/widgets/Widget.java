@@ -1281,6 +1281,14 @@ boolean setKeyState (Event event, int type, int /*long*/ wParam, int /*long*/ lP
 	return setInputState (event, type);
 }
 
+boolean setTabGroupFocus () {
+	return setTabItemFocus ();
+}
+
+boolean setTabItemFocus () {
+	return false;
+}
+
 boolean SetWindowPos (int /*long*/ hWnd, int /*long*/ hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
 	if (OS.IsWinCE) {
 		/*

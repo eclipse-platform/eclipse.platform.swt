@@ -195,6 +195,19 @@ void click (boolean dropDown) {
 	}
 }
 
+Widget [] computeTabList () {
+	if (isTabGroup ()) {
+		if (getEnabled ()) {
+			if ((style & SWT.SEPARATOR) != 0) {
+				if (control != null) return control.computeTabList();
+			} else {
+				return new Widget [] {this};
+			}
+		}
+	}
+	return new Widget [0];
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -393,6 +406,23 @@ public int getWidth () {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
+}
+
+boolean isTabGroup () {
+	ToolItem [] tabList = parent._getTabItemList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
+	if ((style & SWT.SEPARATOR) != 0) return true;
+	int /*long*/ hwnd = parent.handle;
+	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+	if (index == 0) return true;
+	TBBUTTON lpButton = new TBBUTTON ();
+	int /*long*/ result = OS.SendMessage (hwnd, OS.TB_GETBUTTON, index - 1, lpButton);
+	if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+	return (parent.items [lpButton.idCommand].style & SWT.SEPARATOR) != 0;
 }
 
 void releaseWidget () {
@@ -732,6 +762,16 @@ public void setSelection (boolean selected) {
 			updateImages (false);
 		}
 	}
+}
+
+boolean setTabItemFocus () {
+	if (parent.setTabItemFocus ()) {
+		int /*long*/ hwnd = parent.handle;
+		int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+		OS.SendMessage (hwnd, OS.TB_SETHOTITEM, index, 0);
+		return true;
+	}
+	return false;
 }
 
 /**

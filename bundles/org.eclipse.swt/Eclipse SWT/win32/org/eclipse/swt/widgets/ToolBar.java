@@ -45,8 +45,9 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolBar extends Composite {
-	int lastFocusId, lastArrowId;
+	int lastFocusId, lastArrowId, lastHotId;
 	ToolItem [] items;
+	ToolItem [] tabItemList;
 	boolean ignoreResize, ignoreMouse;
 	ImageList imageList, disabledImageList, hotImageList;
 	static final int /*long*/ ToolBarProc;
@@ -254,6 +255,47 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 
+Widget computeTabGroup () {
+	ToolItem [] items = _getItems ();
+	if (tabItemList == null) {
+		int i = 0;
+		while (i < items.length && items [i].control == null) i++;
+		if (i == items.length) return super.computeTabGroup (); 
+	}
+	int index = (int)/*64*/OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
+	if (index == -1) index = lastHotId;
+	while (index >= 0) {
+		ToolItem item = getItem (index);
+		if (item.isTabGroup ()) return item;
+		index--;
+	}
+	return super.computeTabGroup ();
+}
+
+Widget [] computeTabList () {
+	ToolItem [] items = _getItems ();
+	if (tabItemList == null) {
+		int i = 0;
+		while (i < items.length && items [i].control == null) i++;
+		if (i == items.length) return super.computeTabList (); 
+	}
+	Widget result [] = {};
+	if (!isTabGroup () || !isEnabled () || !isVisible ()) return result;
+	ToolItem [] list = tabList != null ? _getTabItemList () : items;
+	for (int i=0; i<list.length; i++) {
+		ToolItem child = list [i];
+		Widget  [] childList = child.computeTabList ();
+		if (childList.length != 0) {
+			Widget [] newResult = new Widget [result.length + childList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (childList, 0, newResult, result.length, childList.length);
+			result = newResult;
+		}
+	}
+	if (result.length == 0) result = new Widget [] {this}; 
+	return result;
+}
+
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
@@ -357,7 +399,7 @@ void createItem (ToolItem item, int index) {
 void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
-	lastFocusId = lastArrowId = -1;
+	lastFocusId = lastArrowId = lastHotId = -1;
 }
 
 int defaultBackground () {
@@ -388,6 +430,7 @@ void destroyItem (ToolItem item) {
 	OS.SendMessage (handle, OS.TB_DELETEBUTTON, index, 0);
 	if (item.id == lastFocusId) lastFocusId = -1;
 	if (item.id == lastArrowId) lastArrowId = -1;
+	if (item.id == lastHotId) lastHotId = -1;
 	items [item.id] = null;
 	item.id = -1;
 	int count = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
@@ -532,6 +575,10 @@ public int getItemCount () {
  */
 public ToolItem [] getItems () {
 	checkWidget ();
+	return _getItems ();
+}
+
+ToolItem [] _getItems () {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	TBBUTTON lpButton = new TBBUTTON ();
 	ToolItem [] result = new ToolItem [count];
@@ -561,6 +608,24 @@ public int getRowCount () {
 		return (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	}
 	return (int)/*64*/OS.SendMessage (handle, OS.TB_GETROWS, 0, 0);
+}
+
+ToolItem [] _getTabItemList () {
+	if (tabItemList == null) return tabItemList;
+	int count = 0;
+	for (int i=0; i<tabItemList.length; i++) {
+		if (!tabItemList [i].isDisposed ()) count++;
+	}
+	if (count == tabItemList.length) return tabItemList;
+	ToolItem [] newList = new ToolItem [count];
+	int index = 0;
+	for (int i=0; i<tabItemList.length; i++) {
+		if (!tabItemList [i].isDisposed ()) {
+			newList [index++] = tabItemList [i];
+		}
+	}
+	tabItemList = newList;
+	return tabItemList;
 }
 
 /**
@@ -965,6 +1030,22 @@ void setRowCount (int count) {
 		SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 		ignoreResize = false;
 	}
+}
+
+/*public*/ void setTabItemList (ToolItem [] tabList) {
+	checkWidget ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			ToolItem item = tabList [i];
+			if (item == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (item.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		}
+		ToolItem [] newList = new ToolItem [tabList.length];
+		System.arraycopy (tabList, 0, newList, 0, tabList.length);
+		tabList = newList;
+	} 
+	this.tabItemList = tabList;
 }
 
 boolean setTabItemFocus () {
@@ -1420,6 +1501,9 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					}
 					default:
 						lastArrowId = -1;
+				}
+				if ((lpnmhi.dwFlags & OS.HICF_LEAVING) == 0) {
+					lastHotId = lpnmhi.idNew;
 				}
 			}
 			break;

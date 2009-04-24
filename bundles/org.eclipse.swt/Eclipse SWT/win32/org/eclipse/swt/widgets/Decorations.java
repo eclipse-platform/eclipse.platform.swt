@@ -331,7 +331,7 @@ int compare (ImageData data1, ImageData data2, int width, int height, int depth)
 	return value1 < value2 ? -1 : 1;
 }
 
-Control computeTabGroup () {
+Widget computeTabGroup () {
 	return this;
 }
 

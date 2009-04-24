@@ -790,6 +790,7 @@ public class OS extends C {
 	public static final int HHT_ONDIVIDER = 0x4;
 	public static final int HHT_ONDIVOPEN = 0x8;
 	public static final int HICF_ARROWKEYS = 0x2;
+	public static final int HICF_LEAVING = 0x20;
 	public static final int HICF_MOUSE = 0x1;
 	public static final int HINST_COMMCTRL = 0xffffffff;
 	public static final int HKEY_CLASSES_ROOT = 0x80000000;
