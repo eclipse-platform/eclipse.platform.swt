@@ -370,64 +370,6 @@ public static final native int /*long*/ objc_getClass(String className);
 public static final native int /*long*/ objc_getMetaClass(String name);
 public static final native int /*long*/ objc_getProtocol(String name);
 public static final native int /*long*/ objc_lookUpClass(String className);
-/** @method flags=cast */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel);
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0);
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSPoint arg0);
-/**
- * @method flags=cast
- * @param arg1 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1);
- /**
-  * @method flags=cast
-  * @param arg0 flags=struct
-  */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSSize arg0);
-/** @method flags=cast */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0);
-/**
- *  @method flags=cast
- *  @param arg0 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
-/**
- *  @method flags=cast
- *  @param arg1 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2);
-/**
- *  @method flags=cast
- *  @param arg0 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
-/**
- *  @method flags=cast
- *  @param arg1 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2);
-/** @method flags=cast */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
-/** @method flags=cast */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
-/** @method flags=cast */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
-
-/** @method flags=cast */
-public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
-/**
- * @method flags=cast 
- * @param arg0 flags=struct 
- */
-public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /** @param cls cast=(Class) */
 public static final native void objc_registerClassPair(int /*long*/ cls);
 /** @param obj cast=(id) */
@@ -2847,6 +2789,65 @@ public static final native boolean NSPointInRect(NSPoint aPoint, NSRect aRect);
 public static final native int /*long*/ NSSearchPathForDirectoriesInDomains(int /*long*/ directory, int /*long*/ domainMask, boolean expandTilde);
 public static final native int /*long*/ NSTemporaryDirectory();
 
+/** Super Sends */
+
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native boolean objc_msgSendSuper_bool(objc_super superId, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSPoint arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSSize arg0);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, boolean arg0);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, boolean arg1);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/** @method flags=cast */
+public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
+
 /** Sends */
 
 /** @method flags=cast */
@@ -3088,6 +3089,11 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
  * @param arg2 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, NSSize arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, boolean arg6);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2);
 /**
  * @method flags=cast
  * @param arg1 flags=struct

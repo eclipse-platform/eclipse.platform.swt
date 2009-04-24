@@ -24,6 +24,7 @@
 extern jint CPSSetProcessName(void *, jintLong);
 
 #define objc_msgSend_bool objc_msgSend
+#define objc_msgSendSuper_bool objc_msgSendSuper
 
 #ifndef __i386__
 #define objc_msgSend_fpret objc_msgSend

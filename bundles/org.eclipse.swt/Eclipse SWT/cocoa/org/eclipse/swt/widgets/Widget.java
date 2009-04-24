@@ -252,7 +252,7 @@ boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, NSRange range, int /
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	return OS.objc_msgSendSuper(super_struct, sel, range, arg1) != 0;
+	return OS.objc_msgSendSuper_bool(super_struct, sel, range, arg1);
 }
 
 int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel) {
@@ -466,7 +466,7 @@ void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*lon
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel, item, children ? 1 : 0);
+	OS.objc_msgSendSuper(super_struct, sel, item, children);
 }
 
 void copyToClipboard (char [] buffer) {
@@ -612,7 +612,7 @@ void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel, item, children ? 1 : 0);
+	OS.objc_msgSendSuper(super_struct, sel, item, children);
 }
 
 NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
@@ -1573,7 +1573,7 @@ void setNeedsDisplay (int /*long*/ id, int /*long*/ sel, boolean flag) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel, flag ? 1 : 0);
+	OS.objc_msgSendSuper(super_struct, sel, flag);
 }
 
 void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {

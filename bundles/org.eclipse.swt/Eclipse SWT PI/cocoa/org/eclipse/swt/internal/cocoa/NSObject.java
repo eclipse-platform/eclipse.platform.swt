@@ -29,8 +29,17 @@ public NSObject alloc() {
 	return this;
 }
 
+public id accessibilityAttributeValue(NSString attribute, id parameter) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_accessibilityAttributeValue_forParameter_, attribute != null ? attribute.id : 0, parameter != null ? parameter.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
 public boolean accessibilitySetOverrideValue(id value, NSString attribute) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_accessibilitySetOverrideValue_forAttribute_, value != null ? value.id : 0, attribute != null ? attribute.id : 0);
+}
+
+public void draggedImage(NSImage image, NSPoint screenPoint, int /*long*/ operation) {
+	OS.objc_msgSend(this.id, OS.sel_draggedImage_endedAt_operation_, image != null ? image.id : 0, screenPoint, operation);
 }
 
 public NSWindow draggingDestinationWindow() {

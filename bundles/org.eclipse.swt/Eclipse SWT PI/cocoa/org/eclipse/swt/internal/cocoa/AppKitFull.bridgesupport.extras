@@ -466,7 +466,7 @@
 			<arg name="returnCode" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="finishLaunching" swt_gen="true">
+		<method selector="finishLaunching" swt_gen="true" swt_gen_super_msgSend="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="hide:" swt_gen="true">
@@ -489,7 +489,7 @@
 		<method selector="mainMenu" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="nextEventMatchingMask:untilDate:inMode:dequeue:" swt_gen="true">
+		<method selector="nextEventMatchingMask:untilDate:inMode:dequeue:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="mask" swt_gen="true"></arg>
 			<arg name="expiration" swt_gen="true"></arg>
 			<arg name="mode" swt_gen="true"></arg>
@@ -515,7 +515,7 @@
 			<arg name="theWindow" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="sendEvent:" swt_gen="true">
+		<method selector="sendEvent:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="theEvent" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -940,7 +940,7 @@
 		</method>
 	</class>
 	<class name="NSButtonCell" swt_gen="mixed" swt_superclass="NSActionCell">
-		<method selector="drawImage:withFrame:inView:" swt_gen="true">
+		<method selector="drawImage:withFrame:inView:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="image" swt_gen="true"></arg>
 			<arg name="frame" swt_gen="true"></arg>
 			<arg name="controlView" swt_gen="true"></arg>
@@ -970,14 +970,14 @@
 		<method selector="attributedStringValue" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="cellSize" swt_gen="true">
+		<method selector="cellSize" swt_gen="true" swt_gen_super_msgSend="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="cellSizeForBounds:" swt_gen="true">
 			<arg name="aRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="drawInteriorWithFrame:inView:" swt_gen="true">
+		<method selector="drawInteriorWithFrame:inView:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="cellFrame" swt_gen="true"></arg>
 			<arg name="controlView" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -991,7 +991,7 @@
 			<arg name="theRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="expansionFrameWithFrame:inView:" swt_gen="true">
+		<method selector="expansionFrameWithFrame:inView:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="cellFrame" swt_gen="true"></arg>
 			<arg name="view" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2168,9 +2168,20 @@
 	<class name="NSNibOutletConnector" swt_superclass="NSNibConnector">
 	</class>
 	<class name="NSObject" swt_gen="mixed">
+		<method selector="accessibilityAttributeValue:forParameter:" swt_gen="true" swt_gen_super_msgSend="true">
+			<arg name="attribute" swt_gen="true"></arg>
+			<arg name="parameter" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="accessibilitySetOverrideValue:forAttribute:" swt_gen="true">
 			<arg name="value" swt_gen="true"></arg>
 			<arg name="attribute" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="draggedImage:endedAt:operation:" swt_gen="true" swt_gen_super_msgSend="true">
+			<arg name="image" swt_gen="true"></arg>
+			<arg name="screenPoint" swt_gen="true"></arg>
+			<arg name="operation" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="draggingDestinationWindow" swt_gen="true">
@@ -2274,7 +2285,7 @@
 			<arg name="item" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="expandItem:expandChildren:" swt_gen="true">
+		<method selector="expandItem:expandChildren:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="item" swt_gen="true"></arg>
 			<arg name="expandChildren" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2674,7 +2685,7 @@
 			<arg name="theEvent" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="mouseDown:" swt_gen="true">
+		<method selector="mouseDown:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="theEvent" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3241,7 +3252,7 @@
 			<arg name="row" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="dragImageForRowsWithIndexes:tableColumns:event:offset:" swt_gen="true">
+		<method selector="dragImageForRowsWithIndexes:tableColumns:event:offset:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="dragRows" swt_gen="true"></arg>
 			<arg name="tableColumns" swt_gen="true"></arg>
 			<arg name="dragEvent" swt_gen="true"></arg>
@@ -3630,7 +3641,7 @@
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="shouldChangeTextInRange:replacementString:" swt_gen="true">
+		<method selector="shouldChangeTextInRange:replacementString:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="affectedCharRange" swt_gen="true"></arg>
 			<arg name="replacementString" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3955,11 +3966,11 @@
 			<arg name="frameRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFrameOrigin:" swt_gen="true">
+		<method selector="setFrameOrigin:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="newOrigin" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFrameSize:" swt_gen="true">
+		<method selector="setFrameSize:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="newSize" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3967,11 +3978,11 @@
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setNeedsDisplay:" swt_gen="true">
+		<method selector="setNeedsDisplay:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setNeedsDisplayInRect:" swt_gen="true">
+		<method selector="setNeedsDisplayInRect:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="invalidRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4330,12 +4341,12 @@
 		<method selector="accessibilityAttributeValue:" swt_gen="true">
 			<arg name="attribute" swt_gen="true"></arg>
 		</method>
-		<method selector="accessibilityAttributeValue:forParameter:" swt_gen="true">
+		<method selector="accessibilityAttributeValue:forParameter:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="attribute" swt_gen="true"></arg>
 			<arg name="parameter" swt_gen="true"></arg>
 		</method>
 		<method selector="accessibilityFocusedUIElement" swt_gen="true"></method>
-		<method selector="accessibilityHitTest:" swt_gen="true">
+		<method selector="accessibilityHitTest:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="point" swt_gen="true"></arg>
 		</method>
 		<method selector="accessibilityIsAttributeSettable:" swt_gen="true">

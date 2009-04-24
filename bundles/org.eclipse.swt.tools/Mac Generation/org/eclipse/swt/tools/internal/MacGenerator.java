@@ -572,9 +572,13 @@ void generateMainClass() {
 	outln();
 	generateFunctions();
 	outln();
+	out("/** Super Sends */");
+	outln();
+	generateSends(true);
+	outln();
 	out("/** Sends */");
 	outln();
-	generateSends();
+	generateSends(false);
 	outln();
 	generateStructNatives();
 	
@@ -677,6 +681,7 @@ Document getDocument(String xmlPath) {
 public String[] getExtraAttributeNames(Node node) {
 	String name = node.getNodeName();
 	if (name.equals("method")) {
+		return new String[]{"swt_gen_super_msgSend"};
 	} else if (name.equals("function")) {
 		NamedNodeMap attribs = node.getAttributes();
 		if (attribs != null && attribs.getNamedItem("variadic") != null) {
@@ -862,6 +867,13 @@ boolean getGen(Node node) {
 	return gen != null && !gen.getNodeValue().equals("false");
 }
 
+boolean getGenSuper(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	if (attributes == null) return false;
+	Node gen = attributes.getNamedItem("swt_gen_super_msgSend");
+	return gen != null && !gen.getNodeValue().equals("false");
+}
+
 boolean isStatic(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	Node isStatic = attributes.getNamedItem("class_method");
@@ -1038,18 +1050,24 @@ void generateStructNatives() {
 	}
 }
 
-String buildSend(Node method, boolean tags, boolean only64) {
+String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
 	Node returnNode = getReturnNode(method.getChildNodes());
 	StringBuffer buffer = new StringBuffer();
 	buffer.append("public static final native "); 
 	if (returnNode != null && isStruct(returnNode)) {
-		buffer.append("void objc_msgSend_stret(");
+		buffer.append("void ");
+		buffer.append(superCall ? "objc_msgSendSuper_stret" : "objc_msgSend_stret");
+		buffer.append("(");
 		buffer.append(getJavaType(returnNode));
 		buffer.append(" result, ");
 	} else if (returnNode != null && isFloatingPoint(returnNode)) {
-		buffer.append("double objc_msgSend_fpret(");
+		buffer.append("double ");
+		buffer.append(superCall ? "objc_msgSendSuper_fpret" : "objc_msgSend_fpret");
+		buffer.append("(");
 	} else if (returnNode != null && isBoolean(returnNode)) {
-		buffer.append("boolean objc_msgSend_bool(");
+		buffer.append("boolean ");
+		buffer.append(superCall ? "objc_msgSendSuper_bool" : "objc_msgSend_bool");
+		buffer.append("(");
 	} else {
 		if (only64) {
 			buffer.append("long");
@@ -1060,15 +1078,29 @@ String buildSend(Node method, boolean tags, boolean only64) {
 				buffer.append("int");
 			}
 		}
-		buffer.append(" objc_msgSend(");
+		buffer.append(" ");
+		buffer.append(superCall ? "objc_msgSendSuper" : "objc_msgSend");
+		buffer.append("(");
 	}
-	if (only64) {
-		buffer.append("long id, long sel");
-	} else {		
-		if (tags) {
-			buffer.append("int /*long*/ id, int /*long*/ sel");
+	if (superCall) {
+		if (only64) {
+			buffer.append("objc_super superId, long sel");
 		} else {
-			buffer.append("int id, int sel");
+			if (tags) {
+				buffer.append("objc_super superId, int /*long*/ sel");
+			} else {
+				buffer.append("objc_super superId, int sel");
+			}
+		}
+	} else {
+		if (only64) {
+			buffer.append("long id, long sel");
+		} else {
+			if (tags) {
+				buffer.append("int /*long*/ id, int /*long*/ sel");
+			} else {
+				buffer.append("int id, int sel");
+			}
 		}
 	}
 	NodeList params = method.getChildNodes();
@@ -1098,7 +1130,7 @@ String buildSend(Node method, boolean tags, boolean only64) {
 	return buffer.toString();
 }
 
-void generateSends() {
+void generateSends(boolean superCall) {
 	TreeMap set = new TreeMap();
 	TreeMap set64 = new TreeMap();
 	for (int x = 0; x < xmls.length; x++) {
@@ -1111,9 +1143,9 @@ void generateSends() {
 				NodeList methods = node.getChildNodes();
 				for (int j = 0; j < methods.getLength(); j++) {
 					Node method = methods.item(j);
-					if ("method".equals(method.getNodeName()) && getGen(method)) {
-						String code = buildSend(method, false, false);
-						String code64 = buildSend(method, false, true);
+					if ("method".equals(method.getNodeName()) && getGen(method) && (!superCall || getGenSuper(method))) {
+						String code = buildSend(method, false, false, superCall);
+						String code64 = buildSend(method, false, true, superCall);
 						if (set.get(code) == null) {
 							set.put(code, method);
 						}
@@ -1130,7 +1162,7 @@ void generateSends() {
 	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
 		String key = (String)iterator.next();
 		Node method = (Node)set.get(key);
-		String tagCode = buildSend(method, false, true);
+		String tagCode = buildSend(method, false, true, superCall);
 		if (set64.get(tagCode) != null) {
 			tagsSet.put(key, method);
 			iterator.remove();
@@ -1141,7 +1173,7 @@ void generateSends() {
 	for (Iterator iterator = tagsSet.keySet().iterator(); iterator.hasNext();) {
 		String key = (String) iterator.next();
 		Node method = (Node)tagsSet.get(key);
-		all.put(buildSend(method, true, false), method);
+		all.put(buildSend(method, true, false, superCall), method);
 	}
 	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
 		String key = (String) iterator.next();
