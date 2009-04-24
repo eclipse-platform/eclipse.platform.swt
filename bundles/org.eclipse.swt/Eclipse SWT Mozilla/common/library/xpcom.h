@@ -23,12 +23,10 @@
 #include "nsXPCOMGlue.h"
 #include "xpcom_custom.h"
 
-#ifdef XULRUNNER
 #ifndef nsIScriptContext_h__
 #include "nsIScriptContext.h"
 #include "nsIScriptGlobalObject.h"
 #endif /* nsIScriptContext_h__ */
-#endif
 
 #ifdef _WIN32
 #define STDMETHODCALLTYPE __stdcall

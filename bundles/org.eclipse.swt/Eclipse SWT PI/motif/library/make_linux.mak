@@ -76,11 +76,6 @@ MOZILLACFLAGS = -O \
 MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
 MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO__1XPCOMGlueStartup \
-	-DNO_JS_1EvaluateUCScriptForPrincipals \
-	-DNO__1nsIScriptContext_1GetNativeContext \
-	-DNO__1nsIScriptGlobalObject_1GetScriptContext \
-	-DNO__1nsIScriptGlobalObject_1GetScriptGlobal \
-	-DNO__1nsIScriptGlobalObject_1EnsureScriptEnvironment \
 	-DNO__1XPCOMGlueLoadXULFunctions \
 	-DNO_memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I \
 	-DNO_nsDynamicFunctionLoad_1sizeof \
@@ -188,16 +183,16 @@ $(XULRUNNER_LIB): $(XULRUNNER_OBJECTS)
 	$(CXX) -o $(XULRUNNER_LIB) $(XULRUNNER_OBJECTS) $(MOZILLALIBS) ${XULRUNNER_LIBS}
 
 xpcomxul.o: xpcom.cpp
-	$(CXX) -o xpcomxul.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom.cpp
+	$(CXX) -o xpcomxul.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom.cpp
 
 xpcomxul_structs.o: xpcom_structs.cpp
-	$(CXX) -o xpcomxul_structs.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
+	$(CXX) -o xpcomxul_structs.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
 	
 xpcomxul_custom.o: xpcom_custom.cpp
-	$(CXX) -o xpcomxul_custom.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
+	$(CXX) -o xpcomxul_custom.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
 
 xpcomxul_stats.o: xpcom_stats.cpp
-	$(CXX) -o xpcomxul_stats.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
+	$(CXX) -o xpcomxul_stats.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
 
 
 #
