@@ -118,7 +118,7 @@ public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
 	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
-	boolean opened, moved, resized, fullScreen;
+	boolean opened, moved, resized, fullScreen, center;
 	Control lastActive;
 	Rectangle normalBounds;
 	boolean keyInputHappened;
@@ -259,6 +259,9 @@ Shell (Display display, Shell parent, int style, int /*long*/handle, boolean emb
 	if (parent != null && parent.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);	
 	}
+	if (!Display.getSheetEnabled ()) {
+		this.center = parent != null && (style & SWT.SHEET) != 0;
+	}
 	this.style = checkStyle (parent, style);
 	this.parent = parent;
 	this.display = display;
@@ -398,10 +401,15 @@ static int checkStyle (Shell parent, int style) {
 	style &= ~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	if ((style & SWT.SHEET) != 0) {
-		style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX);
-		if (parent == null) {
+		if (Display.getSheetEnabled ()) {
+			style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX);
+			if (parent == null) {
+				style &= ~SWT.SHEET;
+				style |= SWT.SHELL_TRIM;
+			}
+		} else {
 			style &= ~SWT.SHEET;
-			style |= SWT.SHELL_TRIM;
+			style |= parent == null ? SWT.SHELL_TRIM : SWT.DIALOG_TRIM;
 		}
 		if ((style & mask) == 0) {
 			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
@@ -466,6 +474,26 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 
 void checkOpen () {
 	if (!opened) resized = false;
+}
+
+void center () {
+	if (parent == null) return;
+	Rectangle rect = getBounds ();
+	Rectangle parentRect = display.map (parent, null, parent.getClientArea());
+	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
+	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
+	Rectangle monitorRect = parent.getMonitor ().getClientArea();
+	if (x + rect.width > monitorRect.x + monitorRect.width) {
+		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
+	} else {
+		x = Math.max (x, monitorRect.x);
+	}
+	if (y + rect.height > monitorRect.y + monitorRect.height) {
+		y = Math.max (monitorRect.y, monitorRect.y + monitorRect.height - rect.height);
+	} else {
+		y = Math.max (y, monitorRect.y);
+	}
+	setLocation (x, y);
 }
 
 /**
@@ -1517,6 +1545,10 @@ void setWindowVisible (boolean visible, boolean key) {
 	if (window != null && (window.isVisible() == visible)) return;
 	if (visible) {
 		display.clearPool ();
+		if (center && !moved) {
+			if (isDisposed ()) return;			
+			center ();
+		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		topView ().setHidden (false);

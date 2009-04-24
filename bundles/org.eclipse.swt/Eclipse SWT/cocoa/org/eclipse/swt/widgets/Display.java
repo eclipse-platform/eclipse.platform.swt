@@ -1539,6 +1539,10 @@ public Shell [] getShells () {
 	return newResult;
 }
 
+static boolean getSheetEnabled () {
+	return !"false".equals(System.getProperty("org.eclipse.swt.sheet"));
+}
+
 /**
  * Gets the synchronizer used by the display.
  *

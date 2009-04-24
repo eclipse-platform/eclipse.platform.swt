@@ -89,7 +89,9 @@ public FileDialog (Shell parent) {
  */
 public FileDialog (Shell parent, int style) {
 	super (parent, checkStyle (parent, style));
-	if (parent != null && (style & SWT.SHEET) != 0) this.style |= SWT.SHEET;
+	if (Display.getSheetEnabled ()) {
+		if (parent != null && (style & SWT.SHEET) != 0) this.style |= SWT.SHEET;
+	}
 	checkSubclass ();
 }
 

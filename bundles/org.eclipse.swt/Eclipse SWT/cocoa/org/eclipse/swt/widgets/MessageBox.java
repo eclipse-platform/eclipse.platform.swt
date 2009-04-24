@@ -83,7 +83,9 @@ public MessageBox (Shell parent) {
  */
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (parent, checkStyle (style)));
-	if (parent != null && (style & SWT.SHEET) != 0) this.style |= SWT.SHEET;
+	if (Display.getSheetEnabled ()) {
+		if (parent != null && (style & SWT.SHEET) != 0) this.style |= SWT.SHEET;
+	}
 	checkSubclass ();
 }
 
