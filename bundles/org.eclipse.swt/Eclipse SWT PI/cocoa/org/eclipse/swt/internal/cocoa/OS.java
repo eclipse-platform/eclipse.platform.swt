@@ -2844,6 +2844,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
  * @method flags=cast
  * @param arg0 flags=struct
  */
+public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, NSRect arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);

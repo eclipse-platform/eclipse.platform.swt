@@ -6454,6 +6454,41 @@ fail:
 }
 #endif
 
+#if (!defined(NO_objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2) && !defined(JNI64)) || (!defined(NO_objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2)(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jintLong arg2, jobject arg3)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2)(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jintLong arg2, jobject arg3)
+#endif
+{
+	NSRect _arg0, *lparg0=NULL;
+	struct objc_super _arg1, *lparg1=NULL;
+	NSRect _arg3, *lparg3=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#endif
+	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getobjc_superFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		*lparg0 = (*(NSRect (*)(struct objc_super *, jintLong, NSRect))objc_msgSendSuper_stret)(lparg1, arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSRect (*)(struct objc_super *, jintLong, NSRect))objc_msgSendSuper)(lparg1, arg2, *lparg3);
+	}
+fail:
+	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
+	if (arg1 && lparg1) setobjc_superFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2I) && !defined(JNI64)) || (!defined(NO_objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2I)(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jintLong arg2, jobject arg3, jintLong arg4)
