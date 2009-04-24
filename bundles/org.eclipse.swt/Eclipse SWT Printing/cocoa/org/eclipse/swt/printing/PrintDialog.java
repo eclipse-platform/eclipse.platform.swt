@@ -31,7 +31,6 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class PrintDialog extends Dialog {
 	PrinterData printerData = new PrinterData();
-	boolean sheet;
 	int returnCode;
 	
 	// the following Callbacks are never freed
@@ -88,9 +87,25 @@ public PrintDialog (Shell parent) {
  * @see Widget#getStyle
  */
 public PrintDialog (Shell parent, int style) {
-	super (parent, style);
-	sheet = parent != null && (style & SWT.SHEET) != 0;
+	super (parent, checkStyle(parent, style));
 	checkSubclass ();
+}
+
+static int checkStyle (Shell parent, int style) {
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & SWT.SHEET) != 0) {
+		if (getSheetEnabled ()) {
+			if (parent == null) {
+				style &= ~SWT.SHEET;
+			}
+		} else {
+			style &= ~SWT.SHEET;
+		}
+		if ((style & mask) == 0) {
+			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
+		}
+	}
+	return style;
 }
 
 /**
@@ -213,25 +228,8 @@ public int getScope() {
 	return printerData.scope;
 }
 
-/**
- * Returns the receiver's style information.
- * <p>
- * Note that, the value which is returned by this method <em>may
- * not match</em> the value which was provided to the constructor
- * when the receiver was created. 
- * </p>
- *
- * @return the style bits
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public int getStyle () {
-	int style = super.getStyle ();
-	if (sheet) style |= SWT.SHEET;
-	return style;
+static boolean getSheetEnabled () {
+	return !"false".equals(System.getProperty("org.eclipse.swt.sheet"));
 }
 
 static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
