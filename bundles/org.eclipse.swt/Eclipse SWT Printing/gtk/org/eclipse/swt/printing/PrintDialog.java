@@ -140,6 +140,9 @@ static int checkStyleBit (Shell parent, int style) {
 			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
 		}
 	}
+	if ((style & mask) == 0) {
+		style |= SWT.APPLICATION_MODAL;
+	}
 	style &= ~SWT.MIRRORED;
 	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
 		if (parent != null) {
