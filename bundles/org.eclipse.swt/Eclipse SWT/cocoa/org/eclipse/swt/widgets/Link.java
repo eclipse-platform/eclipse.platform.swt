@@ -188,7 +188,7 @@ void enableWidget (boolean enabled) {
 		if (foreground == null) {
 			nsColor = NSColor.textColor ();
 		} else {
-			nsColor = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+			nsColor = NSColor.colorWithDeviceRed (foreground [0], foreground [1], foreground [2], foreground[3]);
 		}
 	} else {
 		nsColor = NSColor.disabledControlTextColor();
@@ -417,8 +417,7 @@ void updateBackground () {
 	if (backgroundImage != null) {
 		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
 	} else if (background != null) {
-		float /*double*/ [] color = background.handle;
-		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
 	}
 	setBackground(nsColor);
 }

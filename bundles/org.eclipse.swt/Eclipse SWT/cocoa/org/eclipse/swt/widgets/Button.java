@@ -621,8 +621,7 @@ void updateBackground () {
 	if (backgroundImage != null) {
 		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
 	} else if (background != null) {
-		float /*double*/ [] color = background.handle;
-		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
 	} else {
 		return;	// TODO set to OS default
 	}

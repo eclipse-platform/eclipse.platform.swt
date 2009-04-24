@@ -56,7 +56,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	int drawCount;
 	Menu menu;
-	Color foreground, background;
+	float /*double*/ [] foreground, background;
 	Image backgroundImage;
 	Font font;
 	Cursor cursor;
@@ -823,14 +823,14 @@ NSView contentView () {
 	return view;
 }
 
-NSAttributedString createString (String string, Font font, Color foreground, int style, boolean enabled, boolean mnemonics) {
+NSAttributedString createString (String string, Font font, float /*double*/ [] foreground, int style, boolean enabled, boolean mnemonics) {
 	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
 	if (font == null) font = this.font != null ? this.font : defaultFont();
 	dict.setObject (font.handle, OS.NSFontAttributeName);
 	addTraits(dict, font);
 	if (enabled) {
 		if (foreground != null) {
-			NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], foreground.handle[3]);
+			NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], foreground[3]);
 			dict.setObject (color, OS.NSForegroundColorAttributeName);
 		}
 	} else {
@@ -1105,6 +1105,16 @@ void enableWidget (boolean enabled) {
 	updateCursorRects (isEnabled ());
 }
 
+boolean equals(float /*double*/ [] color1, float /*double*/ [] color2) {
+	if (color1 == color2) return true;
+	if (color1 == null) return color2 == null;
+	if (color2 == null) return color1 == null;	
+	for (int i = 0; i < color1.length; i++) {
+		if (color1 [i] != color2 [i]) return false;
+	}	
+	return true;
+}
+
 NSView eventView () {
 	if (!fetchedEventView) {
 		cachedEventView = (NSView)display.getData(Display.EVENT_VIEW_KEY);
@@ -1139,17 +1149,16 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 		return;
 	}
 
-	Color background = control.background;
+	float /*double*/ [] background = control.background;
 	float /*double*/ alpha;
-	if (background == null || background.isDisposed ()) {
-		background = control.defaultBackground ();
+	if (background == null) {
+		background = control.defaultBackground ().handle;
 		alpha = getThemeAlpha ();
 	} else {
-		alpha = background.handle[3];
+		alpha = background[3];
 	}
-	float /*double*/ [] color = background.handle;
 	context.saveGraphicsState ();
-	NSColor.colorWithDeviceRed (color [0], color [1], color [2], alpha).setFill ();
+	NSColor.colorWithDeviceRed (background [0], background [1], background [2], alpha).setFill ();
 	NSBezierPath.fillRect (rect);
 	context.restoreGraphicsState ();
 }
@@ -1301,7 +1310,7 @@ public Color getBackground () {
 }
 
 Color getBackgroundColor () {
-	return background != null ? background : defaultBackground ();
+	return background != null ? Color.cocoa_new (display, background) : defaultBackground ();
 }
 
 /**
@@ -1451,7 +1460,7 @@ public Color getForeground () {
 }
 
 Color getForegroundColor () {
-	return foreground != null ? foreground: defaultForeground ();
+	return foreground != null ? Color.cocoa_new (display, foreground) : defaultForeground ();
 }
 
 /**
@@ -2985,10 +2994,11 @@ public void setBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-//	if (equals (background, this.background)) return;
-	this.background = color;
+	float /*double*/ [] background = color != null ? color.handle : null;
+	if (equals (background, this.background)) return;
+	this.background = background;
 	updateBackground ();
-	view.setNeedsDisplay(true);
+	redrawWidget(view, true);
 }
 
 /**
@@ -3293,10 +3303,11 @@ public void setForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-//	if (equals (foreground, this.foreground)) return;
-	this.foreground = color;
-	setForeground (color != null ? color.handle : null);
-	view.setNeedsDisplay(true);
+	float /*double*/ [] foreground = color != null ? color.handle : null;
+	if (equals (foreground, this.foreground)) return;
+	this.foreground = foreground;
+	setForeground (foreground);
+	redrawWidget (view, false);
 }
 
 void setForeground (float /*double*/ [] color) {

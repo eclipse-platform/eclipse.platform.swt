@@ -2209,8 +2209,7 @@ void updateBackground () {
 	if (backgroundImage != null) {
 		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
 	} else if (background != null) {
-		float /*double*/ [] color = background.handle;
-		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
 	} 
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
@@ -2959,8 +2958,7 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 		} else {
 			Color foreground = item.cellForeground != null ? item.cellForeground [index] : null;
 			if (foreground == null) foreground = item.foreground;
-			if (foreground == null) foreground = this.foreground;
-			if (foreground == null) foreground = defaultForeground();
+			if (foreground == null) foreground = getForegroundColor();
 			color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
 		}
 	} else {
