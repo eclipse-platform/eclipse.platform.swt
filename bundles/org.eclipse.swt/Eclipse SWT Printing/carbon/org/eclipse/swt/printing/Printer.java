@@ -295,6 +295,9 @@ protected void create(DeviceData deviceData) {
 		OS.CFRelease(ptr);
 	}
 	
+	if (data.copyCount != 1) OS.PMSetCopies(printSettings, data.copyCount, false);
+	if (data.collate != false) OS.PMSetCollate(printSettings, data.collate);
+	if (data.orientation == PrinterData.LANDSCAPE) OS.PMSetOrientation(pageFormat, OS.kPMLandscape, false);
 	OS.PMSessionValidatePrintSettings(printSession, printSettings, null);
 	OS.PMSessionValidatePageFormat(printSession, pageFormat, null);	
 	
