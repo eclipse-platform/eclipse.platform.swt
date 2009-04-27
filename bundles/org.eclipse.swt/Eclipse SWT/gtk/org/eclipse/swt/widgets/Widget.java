@@ -1460,6 +1460,14 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 void setOrientation () {
 }
 
+boolean setTabGroupFocus (boolean next) {
+	return setTabItemFocus (next);
+}
+
+boolean setTabItemFocus (boolean next) {
+	return false;
+}
+
 int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	return 0;
 }

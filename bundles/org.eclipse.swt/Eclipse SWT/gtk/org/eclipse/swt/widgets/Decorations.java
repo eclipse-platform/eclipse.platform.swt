@@ -218,7 +218,7 @@ int compare (ImageData data1, ImageData data2) {
 	return data1.width > data2.width || data1.height > data2.height ? -1 : 1;
 }
 
-Control computeTabGroup () {
+Widget computeTabGroup () {
 	return this;
 }
 

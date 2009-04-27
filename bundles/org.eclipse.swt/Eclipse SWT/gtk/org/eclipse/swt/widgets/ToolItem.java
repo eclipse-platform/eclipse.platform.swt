@@ -266,6 +266,19 @@ void createWidget (int index) {
 	parent.relayout ();
 }
 
+Widget [] computeTabList () {
+	if (isTabGroup ()) {
+		if (getEnabled ()) {
+			if ((style & SWT.SEPARATOR) != 0) {
+				if (control != null) return control.computeTabList();
+			} else {
+				return new Widget [] {this};
+			}
+		}
+	}
+	return new Widget [0];
+}
+
 void deregister() {
 	super.deregister ();
 	if (labelHandle != 0) display.removeWidget (labelHandle);
@@ -666,6 +679,20 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+boolean isTabGroup () {
+	ToolItem [] tabList = parent._getTabItemList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
+	if ((style & SWT.SEPARATOR) != 0) return true;
+	int index = parent.indexOf (this);
+	if (index == 0) return true;
+	ToolItem previous = parent.getItem (index - 1);
+	return (previous.getStyle () & SWT.SEPARATOR) != 0;
+}
+
 void register () {
 	super.register ();
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
@@ -951,6 +978,10 @@ public void setSelection (boolean selected) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 	OS.gtk_toggle_button_set_active (handle, selected);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
+}
+
+boolean setTabItemFocus (boolean next) {
+	return setFocus ();
 }
 
 /**
