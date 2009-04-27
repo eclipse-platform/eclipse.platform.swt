@@ -164,6 +164,7 @@ public class StyledText extends Canvas {
 	boolean justify;
 	int indent;
 	int lineSpacing;
+	int alignmentMargin;
 	
 	//block selection
 	boolean blockSelection;
@@ -4217,7 +4218,7 @@ public int getLineIndex(int y) {
  */
 public int getLeftMargin() {
 	checkWidget();
-	return leftMargin;
+	return leftMargin - alignmentMargin;
 }
 /**
  * Returns the x, y location of the upper left corner of the character 
@@ -5942,8 +5943,8 @@ void handlePaint(Event event) {
 	if (bottomMargin > 0) {
 		drawBackground(gc, 0, clientAreaHeight - bottomMargin, clientAreaWidth, bottomMargin);
 	}
-	if (leftMargin > 0) {
-		drawBackground(gc, 0, 0, leftMargin, clientAreaHeight);
+	if (leftMargin - alignmentMargin > 0) {
+		drawBackground(gc, 0, 0, leftMargin - alignmentMargin, clientAreaHeight);
 	}
 	if (rightMargin > 0) {
 		drawBackground(gc, clientAreaWidth - rightMargin, 0, rightMargin, clientAreaHeight);
@@ -6004,6 +6005,7 @@ void handleResize(Event event) {
 	}
 	updateCaretVisibility();
 	claimBottomFreeSpace();
+	setAlignment();
 	//TODO FIX TOP INDEX DURING RESIZE
 //	if (oldHeight != clientAreaHeight || wordWrap) {
 //		calculateTopIndex(0);
@@ -6056,6 +6058,7 @@ void handleTextChanged(TextChangedEvent event) {
 	sendAccessibleTextChanged(lastTextChangeStart, lastTextChangeNewCharCount, lastTextChangeReplaceCharCount);
 	lastCharCount += lastTextChangeNewCharCount;
 	lastCharCount -= lastTextChangeReplaceCharCount;
+	setAlignment();
 }
 /**
  * Updates the screen to reflect a pending content change.
@@ -6112,6 +6115,7 @@ void handleTextSet(TextChangedEvent event) {
 	int newCharCount = getCharCount();
 	sendAccessibleTextChanged(0, newCharCount, lastCharCount);
 	lastCharCount = newCharCount;
+	setAlignment();
 }
 /**
  * Called when a traversal key is pressed.
@@ -7486,6 +7490,26 @@ int sendWordBoundaryEvent(int eventType, int movement, int offset, int newOffset
 	}
 	return newOffset;
 }
+void setAlignment() {
+	if ((getStyle() & SWT.SINGLE) == 0) return;
+	int alignment = renderer.getLineAlignment(0, this.alignment);
+	int newAlignmentMargin = 0;
+	if (alignment != SWT.LEFT) {
+		renderer.calculate(0, 1);
+		int width = renderer.getWidth() - alignmentMargin;
+		newAlignmentMargin = clientAreaWidth - width;
+		if (newAlignmentMargin < 0) newAlignmentMargin = 0;
+		if (alignment == SWT.CENTER) newAlignmentMargin /= 2;
+	}
+	if (alignmentMargin != newAlignmentMargin) {
+		leftMargin -= alignmentMargin;
+		leftMargin += newAlignmentMargin;
+		alignmentMargin = newAlignmentMargin;
+		resetCache(0, 1);
+		setCaretLocation();
+		super.redraw();
+	}
+}
 /**
  * Sets the alignment of the widget. The argument should be one of <code>SWT.LEFT</code>, 
  * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>. The alignment applies for all lines.
@@ -7512,6 +7536,7 @@ public void setAlignment(int alignment) {
 	this.alignment = alignment;
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
+	setAlignment();
 	super.redraw();
 }
 /**
@@ -8208,6 +8233,7 @@ public void setLineAlignment(int startLine, int lineCount, int alignment) {
 	if (startLine <= caretLine && caretLine < startLine + lineCount) {
 		setCaretLocation();
 	}
+	setAlignment();
 }
 /** 
  * Sets the background color of the specified lines.
@@ -8467,6 +8493,7 @@ public void setMargins (int leftMargin, int topMargin, int rightMargin, int bott
 	resetCache(0, content.getLineCount());
 	setScrollBars(true);
 	setCaretLocation();
+	setAlignment();
 	super.redraw();
 }
 /**
