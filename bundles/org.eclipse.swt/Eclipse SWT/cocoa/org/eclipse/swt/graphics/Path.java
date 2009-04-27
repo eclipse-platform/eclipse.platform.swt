@@ -439,7 +439,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 			OS.CGContextStrokePath(context);
 			OS.CGContextRelease(context);
 			OS.memmove(buffer, pixel, 4);
-			OS.malloc(pixel);	
+			OS.free(pixel);	
 			return buffer[0] != 0xFFFFFFFF;			
 		} else {
 			NSPoint point = new NSPoint();
