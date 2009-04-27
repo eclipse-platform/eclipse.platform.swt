@@ -2581,6 +2581,7 @@ public boolean post(Event event) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 
+		// TODO: Not sure if these calls have any effect on event posting.
 		if (!eventSourceDelaySet) {
 			OS.CGSetLocalEventsSuppressionInterval(0.0);
 	        OS.CGEnableEventStateCombining(1);
@@ -2626,30 +2627,17 @@ public boolean post(Event event) {
 				}
 
 				/**
-				 * Feature in Quartz. If the character doesn't map to any valid key, add the Unicode value to the
-				 * event as a string and post it via key 0.  That will override the keyCode and arrive unmodified in the host app.
+				 * Bug(?) in UCKeyTranslate:  If event.keyCode doesn't map to a valid SWT constant and event.characer is 0 we still need to post an event.
+				 * In Carbon, KeyTranslate eventually found a key that generated 0 but UCKeyTranslate never generates 0.
+				 * When that happens, post an event from key 127, which does nothing.
 				 */
-				boolean postUnicode = false;
-				
-				if (vKey == -1 && event.character != 0) {
-					vKey = 0;
-					postUnicode = true;
+				if (vKey == -1 && event.character == 0) {
+					vKey = 127;
 				}
 				
-				int /*long*/ eventRef = OS.CGEventCreateKeyboardEvent(0, vKey, type == SWT.KeyDown);
-				if (eventRef != 0) {
-					if (postUnicode) {
-						char eventString[] = new char[1];
-						eventString[0] = event.character;
-						OS.CGEventKeyboardSetUnicodeString(eventRef, eventString.length, eventString);
-					}
-					OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
-					OS.CFRelease(eventRef);
-					return true;
-				} else {
-					return false;
-				}
+				if (vKey == -1) return false;
 				
+				return OS.CGPostKeyboardEvent((short)0, vKey, type == SWT.KeyDown) == 0;
 			}
 			case SWT.MouseDown:
 			case SWT.MouseMove: 

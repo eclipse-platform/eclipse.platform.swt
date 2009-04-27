@@ -84,6 +84,7 @@ typedef enum {
 	CGPathMoveToPoint_FUNC,
 	CGPathRelease_FUNC,
 	CGPoint_1sizeof_FUNC,
+	CGPostKeyboardEvent_FUNC,
 	CGPostMouseEvent_FUNC,
 	CGPostScrollWheelEvent_FUNC,
 	CGRect_1sizeof_FUNC,

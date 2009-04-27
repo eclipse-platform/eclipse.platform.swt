@@ -2738,6 +2738,12 @@ public static final native void CGPathMoveToPoint(int /*long*/ path, int /*long*
  */
 public static final native void CGPathRelease(int /*long*/ path);
 /**
+ * @param keyChar cast=(CGCharCode)
+ * @param virtualKey cast=(CGKeyCode)
+ * @param keyDown cast=(boolean_t)
+ */
+public static final native int CGPostKeyboardEvent(short keyChar, short virtualKey, boolean keyDown);
+/**
  * @param mouseCursorPosition flags=struct
  * @param updateMouseCursorPosition cast=(boolean_t)
  * @param buttonCount cast=(CGButtonCount)

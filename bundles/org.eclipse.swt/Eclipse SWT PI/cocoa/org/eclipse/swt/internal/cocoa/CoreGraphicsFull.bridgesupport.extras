@@ -253,6 +253,12 @@
 	<function name="CGPathRelease" swt_gen="true">
 		<arg name="path" swt_gen="true"></arg>
 	</function>
+	<function name="CGPostKeyboardEvent" swt_gen="true">
+		<arg name="keyChar" swt_gen="true"></arg>
+		<arg name="virtualKey" swt_gen="true"></arg>
+		<arg name="keyDown" swt_gen="true" swt_java_type="boolean" swt_java_type64="boolean"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
 	<function name="CGPostMouseEvent" swt_gen="true" swt_variadic_count="4" swt_variadic_java_types="boolean,*">
 		<arg name="mouseCursorPosition" swt_gen="true"></arg>
 		<arg name="updateMouseCursorPosition" swt_gen="true" swt_java_type="boolean"></arg>
