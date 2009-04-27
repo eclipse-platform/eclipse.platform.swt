@@ -225,7 +225,8 @@ int /*long*/ applierFunc(int /*long*/ info, int /*long*/ elementPtr) {
 NSAutoreleasePool checkGC (int mask) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	if (data.flippedContext != null) {
+	if (data.flippedContext != null && !handle.isEqual(NSGraphicsContext.currentContext())) {
+		data.restoreContext = true;
 		NSGraphicsContext.static_saveGraphicsState();
 		NSGraphicsContext.setCurrentContext(handle);
 	}
@@ -1617,6 +1618,7 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT);
 	try {
+		handle.saveGraphicsState();
 		NSAttributedString str = createString(string, flags, true);
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 			NSSize size = str.size();
@@ -1632,7 +1634,6 @@ public void drawText (String string, int x, int y, int flags) {
 				bg.retain();
 			}
 			bg.setFill();
-			data.state &= ~FOREGROUND_FILL;
 			NSBezierPath.fillRect(rect);
 			str.drawInRect(rect);
 		} else {
@@ -1642,6 +1643,7 @@ public void drawText (String string, int x, int y, int flags) {
 			str.drawAtPoint(pt);
 		}
 		str.release();
+		handle.restoreGraphicsState();
 	} finally {
 		uncheckGC(pool);
 	}
@@ -3883,8 +3885,9 @@ public String toString () {
 }
 
 void uncheckGC(NSAutoreleasePool pool) {
-	if (data.flippedContext != null) {
+	if (data.flippedContext != null && data.restoreContext) {
 		NSGraphicsContext.static_restoreGraphicsState();
+		data.restoreContext = false;
 	}
 	NSView view = data.view;
 	if (view != null && data.paintRect == null) {

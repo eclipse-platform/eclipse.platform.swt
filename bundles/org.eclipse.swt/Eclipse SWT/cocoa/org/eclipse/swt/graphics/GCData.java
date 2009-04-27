@@ -58,4 +58,5 @@ public final class GCData {
 	public NSSize size;
 	public Thread thread;
 	public NSGraphicsContext flippedContext;
+	public boolean restoreContext;
 }
