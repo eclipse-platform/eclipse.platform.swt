@@ -207,18 +207,7 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 }
 
 boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	NSPoint clickPoint = new NSPoint();
-	OS.memmove(clickPoint, arg1, NSPoint.sizeof);
-	NSTableView table = (NSTableView)view;
-	int /*long*/ row = table.rowAtPoint(clickPoint);
-	if (!table.isRowSelected(row)) {
-		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
-		set = set.initWithIndex(row);
-		table.selectRowIndexes (set, false);
-		set.release();
-	}
-	
-	return ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect));
+	return (getSelectionCount() > 0 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect));
 }
 
 boolean checkData (TableItem item) {
