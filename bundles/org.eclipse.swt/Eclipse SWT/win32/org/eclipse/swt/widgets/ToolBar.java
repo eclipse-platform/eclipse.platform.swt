@@ -1228,7 +1228,7 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	* when the widget has focus.
 	*/
 	if (result != null) return result;
-	return new LRESULT (OS.DLGC_BUTTON);
+	return new LRESULT (OS.DLGC_BUTTON | OS.DLGC_WANTARROWS);
 }
 
 LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
