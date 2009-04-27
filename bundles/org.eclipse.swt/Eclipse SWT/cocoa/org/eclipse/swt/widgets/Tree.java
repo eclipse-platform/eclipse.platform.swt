@@ -254,11 +254,7 @@ int calculateWidth (TreeItem[] items, int index, GC gc, boolean recurse) {
 }
 
 NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = id;
-	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	NSSize size = new NSSize();
-	OS.objc_msgSendSuper_stret(size, super_struct, sel);
+	NSSize size = super.cellSize(id, sel);
 	NSImage image = new NSCell(id).image();
 	if (image != null) size.width += imageBounds.width + IMAGE_GAP;
 	return size;
