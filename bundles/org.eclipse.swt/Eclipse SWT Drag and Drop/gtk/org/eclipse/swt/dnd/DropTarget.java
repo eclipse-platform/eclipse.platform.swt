@@ -97,6 +97,7 @@ public class DropTarget extends Widget {
 	int drag_drop_handler;
 	
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
+	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
 	
 	static Callback Drag_Motion;
@@ -431,11 +432,16 @@ void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, int y, int time){
 	int oldKeyOperation = keyOperation;
 	
-	if (oldKeyOperation == -1) { //drag enter
+	/*
+	* Bug in GTK. GTK allows drag & drop on a shell even if a modal 
+	* dialog/window is opened on that shell. The fix is to check for 
+	* any active modal dialogs/shells before allowing the drop. 
+	*/
+	if ((oldKeyOperation == -1) || !((Boolean) control.getData(IS_ACTIVE)).booleanValue()) { //drag enter  
 		selectedDataType = null;
 		selectedOperation = DND.DROP_NONE;
 	}
-		
+	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;

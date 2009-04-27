@@ -132,6 +132,7 @@ String openChooserDialog () {
 	} else {
 		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
 	}
+	OS.gtk_window_set_modal (handle, true);
 	int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
@@ -224,6 +225,7 @@ String openClassicDialog () {
 			OS.g_list_free (pixbufs);
 		}
 	}
+	OS.gtk_window_set_modal (handle, true);
 	String answer = null;
 	if (filterPath != null) {
 		String path = filterPath;

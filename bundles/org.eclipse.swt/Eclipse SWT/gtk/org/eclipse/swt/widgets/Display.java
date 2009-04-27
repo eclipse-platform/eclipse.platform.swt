@@ -3626,7 +3626,7 @@ public void setData (String key, Object value) {
 		}
 	}
 	if (key.equals (SET_MODAL_DIALOG)) {
-		setModalDialog ((Dialog) data);
+		setModalDialog ((Dialog) value);
 		return;
 	}
 	if (key.equals (ADD_WIDGET_KEY)) {

@@ -348,8 +348,8 @@ public PrinterData open() {
 		OS.gtk_print_unix_dialog_set_settings(handle, settings);
 		OS.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
 		OS.g_object_unref(settings);
-		OS.g_object_unref(page_setup);
-
+		OS.g_object_unref(page_setup);		
+		OS.gtk_window_set_modal(handle, true);
 		PrinterData data = null;
 		//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).
 		Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();

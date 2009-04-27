@@ -147,6 +147,7 @@ public FontData open () {
 			OS.g_list_free (pixbufs);
 		}
 	}
+	OS.gtk_window_set_modal (handle, true);
 	if (fontData != null) {
 		Font font = new Font (display, fontData);
 		int /*long*/ fontName = OS.pango_font_description_to_string (font.handle);

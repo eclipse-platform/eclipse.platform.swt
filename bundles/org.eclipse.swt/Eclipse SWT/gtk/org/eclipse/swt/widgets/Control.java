@@ -54,6 +54,8 @@ public abstract class Control extends Widget implements Drawable {
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
+	
+	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 
 Control () {
 }
@@ -1011,6 +1013,11 @@ void setRelations () {
 public void setSize (int width, int height) {
 	checkWidget();
 	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true);
+}
+
+
+boolean isActive () {
+	return getShell ().getModalShell () == null && display.getModalDialog () == null;
 }
 
 /*
@@ -2226,6 +2233,11 @@ int getClientWidth () {
 public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
+}
+
+public Object getData(String key) {
+	if (key.equals(IS_ACTIVE)) return new Boolean(isActive ());
+	return super.getData(key);
 }
 
 /**

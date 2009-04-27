@@ -124,6 +124,7 @@ public RGB open () {
 			OS.g_list_free (pixbufs);
 		}
 	}
+	OS.gtk_window_set_modal (handle, true);
 	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
 	OS.memmove (dialog, handle);
 	GdkColor color = new GdkColor();
