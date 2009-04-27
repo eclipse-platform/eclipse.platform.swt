@@ -187,7 +187,11 @@ class DialogTab extends Tab {
 			textWidget.append ("getScope() = " + dialog.getScope() + Text.DELIMITER);
 			textWidget.append ("getStartPage() = " + dialog.getStartPage() + Text.DELIMITER);
 			textWidget.append ("getEndPage() = " + dialog.getEndPage() + Text.DELIMITER);
-			textWidget.append ("getPrintToFile() = " + dialog.getPrintToFile() + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append ("getPrintToFile() = " + dialog.getPrintToFile() + Text.DELIMITER);
+			textWidget.append ("result.fileName = " + result.fileName + Text.DELIMITER);
+			textWidget.append ("result.orientation = " + (result.orientation == PrinterData.LANDSCAPE ? "PrinterData.LANDSCAPE" : "PrinterData.PORTRAIT") + Text.DELIMITER);
+			textWidget.append ("result.copyCount = " + result.copyCount + Text.DELIMITER);
+			textWidget.append ("result.collate = " + result.collate + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 	
