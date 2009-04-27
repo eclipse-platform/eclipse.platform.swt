@@ -416,13 +416,10 @@ boolean isTabGroup () {
 		}
 	}
 	if ((style & SWT.SEPARATOR) != 0) return true;
-	int /*long*/ hwnd = parent.handle;
-	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+	int index = parent.indexOf (this);
 	if (index == 0) return true;
-	TBBUTTON lpButton = new TBBUTTON ();
-	int /*long*/ result = OS.SendMessage (hwnd, OS.TB_GETBUTTON, index - 1, lpButton);
-	if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-	return (parent.items [lpButton.idCommand].style & SWT.SEPARATOR) != 0;
+	ToolItem previous = parent.getItem (index - 1);
+	return (previous.getStyle () & SWT.SEPARATOR) != 0;
 }
 
 void releaseWidget () {

@@ -265,7 +265,7 @@ Widget computeTabGroup () {
 	int index = (int)/*64*/OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
 	if (index == -1) index = lastHotId;
 	while (index >= 0) {
-		ToolItem item = getItem (index);
+		ToolItem item = items [index];
 		if (item.isTabGroup ()) return item;
 		index--;
 	}
