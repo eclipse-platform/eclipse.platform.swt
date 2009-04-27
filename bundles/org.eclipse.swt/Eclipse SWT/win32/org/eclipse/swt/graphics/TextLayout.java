@@ -2173,6 +2173,10 @@ public int getOffset (int x, int y, int[] trailing) {
 		}
 	}
 	if (trailing != null) trailing[0] = 0;
+	if (lineRuns.length == 1) {
+		StyleItem run = lineRuns[0];
+		if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
+	}
 	return untranslateOffset(lineOffset[line + 1]);
 }
 
