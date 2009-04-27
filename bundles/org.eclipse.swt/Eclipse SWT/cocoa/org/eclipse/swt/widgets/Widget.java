@@ -1609,6 +1609,14 @@ void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	callSuper(id, sel, arg0);
 }
 
+boolean setTabGroupFocus () {
+	return setTabItemFocus ();
+}
+
+boolean setTabItemFocus () {
+	return false;
+}
+
 boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	return true;
 }

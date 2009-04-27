@@ -790,18 +790,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-Control computeTabGroup () {
+Widget computeTabGroup () {
 	if (isTabGroup()) return this;
 	return parent.computeTabGroup ();
 }
 
-Control[] computeTabList() {
+Widget[] computeTabList() {
 	if (isTabGroup()) {
 		if (getVisible() && getEnabled()) {
-			return new Control[] {this};
+			return new Widget[] {this};
 		}
 	}
-	return new Control[0];
+	return new Widget[0];
 }
 
 Control computeTabRoot () {
@@ -3610,10 +3610,6 @@ void setSmallSize () {
 	}
 }
 
-boolean setTabGroupFocus () {
-	return setTabItemFocus ();
-}
-
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
 	return forceFocus ();
@@ -4014,8 +4010,8 @@ boolean traverseEscape () {
 
 boolean traverseGroup (boolean next) {
 	Control root = computeTabRoot ();
-	Control group = computeTabGroup ();
-	Control [] list = root.computeTabList ();
+	Widget group = computeTabGroup ();
+	Widget [] list = root.computeTabList ();
 	int length = list.length;
 	int index = 0;
 	while (index < length) {
@@ -4031,8 +4027,8 @@ boolean traverseGroup (boolean next) {
 	if (index == length) return false;
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = ((index + offset + length) % length)) != start) {
-		Control control = list [index];
-		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+		Widget widget = list [index];
+		if (!widget.isDisposed () && widget.setTabGroupFocus ()) {
 			return true;
 		}
 	}
