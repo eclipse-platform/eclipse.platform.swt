@@ -40,6 +40,7 @@ public class Snippet267 {
 			browser = new Browser(shell, SWT.MOZILLA);
 		} catch (SWTError e) {
 			System.out.println("Could not instantiate Browser: " + e.getMessage());
+			display.dispose();
 			return;
 		}
 		browser.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1));

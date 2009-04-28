@@ -44,6 +44,7 @@ public static void main(String[] args) {
 		controlSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	} catch (SWTError e) {
 		System.out.println("Unable to open activeX control");
+		display.dispose();
 		return;
 	}
 	shell.open();

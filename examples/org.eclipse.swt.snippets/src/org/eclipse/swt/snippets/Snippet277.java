@@ -45,6 +45,7 @@ public class Snippet277 {
 			browser = new Browser (shell, SWT.MOZILLA);
 		} catch (SWTError e) {
 			System.out.println ("Could not instantiate Browser: " + e.getMessage ());
+			display.dispose();
 			return;
 		}
 		GridData data = new GridData (GridData.FILL_BOTH);

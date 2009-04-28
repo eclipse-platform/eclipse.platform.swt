@@ -39,6 +39,7 @@ public class Snippet265 {
 			addFileMenu(frame);
 		} catch (SWTError e) {
 			System.out.println("Unable to open activeX control");
+			display.dispose();
 			return;
 		}
 		shell.setSize(800, 600);

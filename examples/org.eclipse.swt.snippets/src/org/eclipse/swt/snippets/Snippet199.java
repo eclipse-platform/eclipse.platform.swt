@@ -57,6 +57,7 @@ public class Snippet199 {
 		controlSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	} catch (SWTError e) {
 		System.out.println("Unable to open activeX control");
+		display.dispose();
 		return;
 	}
 	shell.open();

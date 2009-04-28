@@ -45,6 +45,7 @@ public static void main(String[] args) {
 		auto = new OleAutomation(site);
 	} catch (SWTException ex) {
 		System.out.println("Unable to open type library for "+progID);
+		display.dispose();
 		return;
 	}
 		

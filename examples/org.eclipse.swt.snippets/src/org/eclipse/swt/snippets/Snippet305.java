@@ -66,6 +66,7 @@ public class Snippet305 {
 			controlSite.addEventListener(application, IID_AppEvents, SheetSelectionChange, listener);
 		} catch (SWTError e) {
 			System.out.println("Unable to open activeX control");
+			display.dispose();
 			return;
 		}
 		shell.setSize(800, 600);

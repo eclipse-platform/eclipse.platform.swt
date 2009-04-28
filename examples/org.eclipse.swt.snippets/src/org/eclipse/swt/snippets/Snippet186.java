@@ -49,6 +49,8 @@ public static void main (String [] args) {
 		automation = new OleAutomation(controlSite);
 		controlSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	} catch (SWTException ex) {
+		System.out.println("Unable to open activeX control");
+		display.dispose();
 		return;
 	}
 	

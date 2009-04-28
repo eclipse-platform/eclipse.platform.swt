@@ -30,6 +30,7 @@ public static void main (String [] args) {
 	PrinterData data = Printer.getDefaultPrinterData();
 	if (data == null) {
 		System.out.println("Warning: No default printer.");
+		display.dispose();
 		return;
 	}
 	Printer printer = new Printer(data);

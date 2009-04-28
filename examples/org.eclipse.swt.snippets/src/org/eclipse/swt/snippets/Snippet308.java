@@ -34,6 +34,7 @@ public class Snippet308 {
 			browser = new Browser(shell, SWT.NONE);
 		} catch (SWTError e) {
 			System.out.println("Could not instantiate Browser: " + e.getMessage());
+			display.dispose();
 			return;
 		}
 		browser.addProgressListener(new ProgressListener() {
