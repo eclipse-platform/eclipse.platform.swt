@@ -68,6 +68,7 @@ public class Snippet304 {
                 display.sleep();
             }
         }
+        display.dispose();
     }
 
     public static void postEvent(int keyCode, int type) {
