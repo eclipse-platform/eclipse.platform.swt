@@ -223,7 +223,7 @@ public static void main(String[] args) {
 	source.addDragListener(new DragSourceAdapter() {
 		public void dragSetData(DragSourceEvent event) {
 			MyType2 myType = new MyType2();
-			myType.fileName = "C:\\abc.txt";
+			myType.fileName = "abc.txt";
 			myType.fileLength = 1000;
 			myType.lastModified = 12312313;
 			myType.version = "version 2";

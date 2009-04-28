@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Program example snippet: invoke the system text editor on autoexec.bat
+ * Program example snippet: invoke the system text editor on a new file
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -24,7 +24,7 @@ public class Snippet30 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Program p = Program.findProgram (".txt");
-	if (p != null) p.execute ("c:\\autoexec.bat"); // Windows-specific filename
+	if (p != null) p.execute ("newfile");
 	display.dispose ();
 }
 
