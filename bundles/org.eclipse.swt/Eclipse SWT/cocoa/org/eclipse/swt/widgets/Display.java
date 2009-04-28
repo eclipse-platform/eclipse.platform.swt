@@ -175,6 +175,11 @@ public class Display extends Device {
 	Image errorImage, infoImage, warningImage;
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 	
+	/* System Colors */
+	float /*double*/ [][] colors;
+	float /*double*/ [] alternateSelectedControlTextColor, selectedControlTextColor;
+	float /*double*/ [] alternateSelectedControlColor, secondarySelectedControlColor;
+
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 
@@ -1609,10 +1614,17 @@ public Color getSystemColor (int id) {
 }
 
 Color getWidgetColor (int id) {
+	if (0 <= id && id < colors.length && colors [id] != null) {
+		return Color.cocoa_new (this, colors [id]);
+	}
+	return null;
+}
+
+float /*double*/ [] getWidgetColorRGB (int id) {
 	NSColor color = null;
 	switch (id) {
 		case SWT.COLOR_INFO_FOREGROUND: color = NSColor.blackColor (); break;
-		case SWT.COLOR_INFO_BACKGROUND: return Color.cocoa_new (this, new float /*double*/ [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
+		case SWT.COLOR_INFO_BACKGROUND: return new float /*double*/ [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1};
 		case SWT.COLOR_TITLE_FOREGROUND: color = NSColor.windowFrameTextColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.alternateSelectedControlColor(); break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: color = NSColor.selectedControlColor(); break;
@@ -1631,12 +1643,16 @@ Color getWidgetColor (int id) {
 		case SWT.COLOR_LIST_SELECTION_TEXT: color = NSColor.selectedTextColor(); break;
 		case SWT.COLOR_LIST_SELECTION: color = NSColor.selectedTextBackgroundColor(); break;
 	}
+	return getWidgetColorRGB (color);
+}
+
+float /*double*/ [] getWidgetColorRGB (NSColor color) {
 	if (color == null) return null;
 	color = color.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace());
 	if (color == null) return null;
 	float /*double*/[] components = new float /*double*/[(int)/*64*/color.numberOfComponents()];
 	color.getComponents(components);	
-	return Color.cocoa_new (this, new float /*double*/ []{components[0], components[1], components[2], components[3]});
+	return new float /*double*/ []{components[0], components[1], components[2], components[3]};
 }
 
 /**
@@ -1827,6 +1843,7 @@ boolean hasDefaultButton () {
 protected void init () {
 	super.init ();
 	initClasses ();
+	initColors ();
 	initFonts ();
 	
 	if (!isEmbedded) {
@@ -2426,6 +2443,34 @@ NSFont getFont (int /*long*/ cls, int /*long*/ sel) {
 	result.retain ();	
 	OS.objc_msgSend (widget, OS.sel_release);
 	return result;
+}
+
+void initColors () {
+	colors = new float[SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT + 1][];
+	colors[SWT.COLOR_INFO_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_FOREGROUND);
+	colors[SWT.COLOR_INFO_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_BACKGROUND);
+	colors[SWT.COLOR_TITLE_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_FOREGROUND);
+	colors[SWT.COLOR_TITLE_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_BACKGROUND);
+	colors[SWT.COLOR_TITLE_BACKGROUND_GRADIENT] = getWidgetColorRGB(SWT.COLOR_TITLE_BACKGROUND_GRADIENT);
+	colors[SWT.COLOR_TITLE_INACTIVE_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
+	colors[SWT.COLOR_TITLE_INACTIVE_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
+	colors[SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT] = getWidgetColorRGB(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT);
+	colors[SWT.COLOR_WIDGET_DARK_SHADOW] = getWidgetColorRGB(SWT.COLOR_WIDGET_DARK_SHADOW);
+	colors[SWT.COLOR_WIDGET_NORMAL_SHADOW] = getWidgetColorRGB(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+	colors[SWT.COLOR_WIDGET_LIGHT_SHADOW] = getWidgetColorRGB(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+	colors[SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW] = getWidgetColorRGB(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+	colors[SWT.COLOR_WIDGET_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_WIDGET_BACKGROUND);
+	colors[SWT.COLOR_WIDGET_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_WIDGET_FOREGROUND);
+	colors[SWT.COLOR_WIDGET_BORDER] = getWidgetColorRGB(SWT.COLOR_WIDGET_BORDER);
+	colors[SWT.COLOR_LIST_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_LIST_FOREGROUND);
+	colors[SWT.COLOR_LIST_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_LIST_BACKGROUND);
+	colors[SWT.COLOR_LIST_SELECTION_TEXT] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION_TEXT);
+	colors[SWT.COLOR_LIST_SELECTION] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION);
+
+	alternateSelectedControlColor = getWidgetColorRGB(NSColor.alternateSelectedControlColor());
+	alternateSelectedControlTextColor = getWidgetColorRGB(NSColor.alternateSelectedControlTextColor());
+	secondarySelectedControlColor = getWidgetColorRGB(NSColor.secondarySelectedControlColor());
+	selectedControlTextColor = getWidgetColorRGB(NSColor.selectedControlTextColor());
 }
 
 void initFonts () {
@@ -3432,6 +3477,7 @@ boolean runPopups () {
 boolean runSettings () {
 	if (!runSettings) return false;
 	runSettings = false;
+	initColors ();
 	sendEvent (SWT.Settings, null);
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {

@@ -854,31 +854,10 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	boolean drawSelection = isSelected;
 	boolean hasFocus = hooksErase && hasFocus ();
 
-	Color selectionBackground = null;
-	Color selectionForeground = null;
+	Color selectionBackground = null, selectionForeground = null;
 	if (isSelected && (hooksErase || hooksPaint)) {
-		NSColor nsSelectionForeground, nsSelectionBackground;
-		if (hasFocus) {
-			nsSelectionForeground = NSColor.alternateSelectedControlTextColor ();
-		} else {
-			nsSelectionForeground = NSColor.selectedControlTextColor ();
-		}
-		nsSelectionForeground = nsSelectionForeground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
-		nsSelectionBackground = cell.highlightColorWithFrame(rect, widget);
-		if (nsSelectionBackground == null) {
-			if (hasFocus) {
-				nsSelectionBackground = NSColor.alternateSelectedControlColor();
-			} else {
-				nsSelectionBackground = NSColor.selectedControlColor();
-			}
-		}
-		nsSelectionBackground = nsSelectionBackground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
-		float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
-		nsSelectionForeground.getComponents (components);	
-		selectionForeground = Color.cocoa_new (display, components);
-		components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
-		nsSelectionBackground.getComponents (components);	
-		selectionBackground = Color.cocoa_new (display, components);
+		selectionForeground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlTextColor : display.selectedControlTextColor);
+		selectionBackground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlColor : display.secondarySelectedControlColor);
 	}
 	
 	NSSize contentSize = cell.cellSize();
