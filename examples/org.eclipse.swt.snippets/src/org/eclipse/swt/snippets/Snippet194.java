@@ -59,14 +59,18 @@ public class Snippet194 {
 		loader.logicalScreenHeight = data[0].height;
 		loader.logicalScreenWidth = data[0].width;
 		loader.repeatCount = 0; // run forever
-		loader.save("swt.gif", SWT.IMAGE_GIF);
-
-		white.dispose();
-		red.dispose();
-		green.dispose();
-		blue.dispose();
-		font.dispose();
-		display.dispose();
+		try {
+			loader.save("swt.gif", SWT.IMAGE_GIF);
+		} catch (SWTException ex) {
+			System.out.println("Error saving GIF: " + ex);
+		} finally {
+			white.dispose();
+			red.dispose();
+			green.dispose();
+			blue.dispose();
+			font.dispose();
+			display.dispose();
+		}
 	}
 
 	ImageData newFrame(String letter, Color color, boolean transparent, int x, int y, int width, int height, int disposalMethod, int delayTime) {
