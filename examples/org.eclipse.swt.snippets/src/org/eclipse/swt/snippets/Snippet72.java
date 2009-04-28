@@ -26,13 +26,13 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.open ();
 	FileDialog dialog = new FileDialog (shell, SWT.SAVE);
-	String [] filterNames = new String [] {"Executable Files", "All Files (*)"};
-	String [] filterExtensions = new String [] {"*.sh;*.csh", "*"};
+	String [] filterNames = new String [] {"Image Files", "All Files (*)"};
+	String [] filterExtensions = new String [] {"*.gif;*.png;*.xpm;*.jpg;*.jpeg;*.tiff", "*"};
 	String filterPath = "/";
 	String platform = SWT.getPlatform();
 	if (platform.equals("win32") || platform.equals("wpf")) {
-		filterNames = new String [] {"Batch Files", "All Files (*.*)"};
-		filterExtensions = new String [] {"*.bat", "*.*"};
+		filterNames = new String [] {"Image Files", "All Files (*.*)"};
+		filterExtensions = new String [] {"*.gif;*.png;*.bmp;*.jpg;*.jpeg;*.tiff", "*.*"};
 		filterPath = "c:\\";
 	}
 	dialog.setFilterNames (filterNames);
