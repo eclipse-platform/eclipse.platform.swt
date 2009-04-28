@@ -75,6 +75,7 @@ public static void main (String [] args) {
 			composite.setLocation (location);
 		}
 	});
+	shell.setSize(600, 500);
 	shell.open ();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch ()) display.sleep ();
