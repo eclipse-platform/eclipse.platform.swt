@@ -50,7 +50,7 @@ public static void main(String[] args) {
 				event.type = SWT.MouseWheel;
 				event.detail = SWT.SCROLL_LINE;
 				event.count = -2;
-				display.post(event);
+				if (!display.isDisposed()) display.post(event);
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {}
