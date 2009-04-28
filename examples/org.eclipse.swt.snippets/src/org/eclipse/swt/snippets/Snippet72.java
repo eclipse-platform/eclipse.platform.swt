@@ -26,10 +26,19 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.open ();
 	FileDialog dialog = new FileDialog (shell, SWT.SAVE);
-	dialog.setFilterNames (new String [] {"Batch Files", "All Files (*.*)"});
-	dialog.setFilterExtensions (new String [] {"*.bat", "*.*"}); //Windows wild cards
-	dialog.setFilterPath ("c:\\"); //Windows path
-	dialog.setFileName ("fred.bat");
+	String [] filterNames = new String [] {"Executable Files", "All Files (*)"};
+	String [] filterExtensions = new String [] {"*.sh;*.csh", "*"};
+	String filterPath = "/";
+	String platform = SWT.getPlatform();
+	if (platform.equals("win32") || platform.equals("wpf")) {
+		filterNames = new String [] {"Batch Files", "All Files (*.*)"};
+		filterExtensions = new String [] {"*.bat", "*.*"};
+		filterPath = "c:\\";
+	}
+	dialog.setFilterNames (filterNames);
+	dialog.setFilterExtensions (filterExtensions);
+	dialog.setFilterPath (filterPath);
+	dialog.setFileName ("myfile");
 	System.out.println ("Save to: " + dialog.open ());
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
