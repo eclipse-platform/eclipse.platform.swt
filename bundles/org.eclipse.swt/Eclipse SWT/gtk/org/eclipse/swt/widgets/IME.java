@@ -362,7 +362,19 @@ int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 		OS.g_free (preeditString [0]);
 	}
 	if (chars != null) {
-		if (text.length() == 0) startOffset = -1;
+		if (text.length() == 0) {
+			/*
+			* Bug in GTK. In Solaris, the IME sends multiple
+			* preedit_changed signals with an empty text.
+			* This behavior is not correct for SWT and can 
+			* cause the editor to replace its current selection
+			* with an empty string. The fix is to ignore any 
+			* preedit_changed signals with an empty text when
+			* the preedit buffer is already empty.    
+			*/
+			if (chars.length == 0) return 0;
+			startOffset = -1;
+		}
 		int end = startOffset + text.length();
 		if (startOffset == -1) {
 			Event event = new Event ();
