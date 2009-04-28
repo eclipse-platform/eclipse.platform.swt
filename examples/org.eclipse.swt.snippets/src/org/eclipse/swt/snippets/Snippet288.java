@@ -71,8 +71,8 @@ public class Snippet288 {
 					image[i][j].dispose();
 				}
 			}
-			display.dispose ();
 		}
+		display.dispose ();
 	}
 
 	private static void loadAllImages(String directory, String[] filenames) throws SWTException {
