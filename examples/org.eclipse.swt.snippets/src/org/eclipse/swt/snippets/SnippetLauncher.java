@@ -18,7 +18,7 @@ public class SnippetLauncher {
 	public static void main (String [] args) {
 		File sourceDir = new File("src/org/eclipse/swt/snippets");
 		boolean hasSource = sourceDir.exists();
-		int count = 300;
+		int count = 500;
 		if (hasSource) {
 			File [] files = sourceDir.listFiles();
 			if (files.length > 0) count = files.length;
