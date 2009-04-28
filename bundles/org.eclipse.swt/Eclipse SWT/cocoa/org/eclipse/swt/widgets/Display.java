@@ -2446,7 +2446,7 @@ NSFont getFont (int /*long*/ cls, int /*long*/ sel) {
 }
 
 void initColors () {
-	colors = new float[SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT + 1][];
+	colors = new float /*double*/ [SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT + 1][];
 	colors[SWT.COLOR_INFO_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_FOREGROUND);
 	colors[SWT.COLOR_INFO_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_BACKGROUND);
 	colors[SWT.COLOR_TITLE_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_FOREGROUND);
