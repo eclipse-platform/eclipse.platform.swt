@@ -2363,9 +2363,10 @@ public boolean print (GC gc) {
 	
 	if (view.isFlipped()) {
 		gc.handle.saveGraphicsState();
+		NSGraphicsContext.setCurrentContext(gc.handle);
 		NSAffineTransform transform = NSAffineTransform.transform ();
+		transform.translateXBy (0, view.bounds().height);
 		transform.scaleXBy (1, -1);
-		transform.translateXBy (0, -(view.bounds().height + 2 * view.bounds().y));
 		transform.concat ();
 	}
 	
