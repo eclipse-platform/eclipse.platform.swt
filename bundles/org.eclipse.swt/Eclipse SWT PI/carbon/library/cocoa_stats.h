@@ -30,6 +30,7 @@ typedef enum {
 	HIWebViewCreate_FUNC,
 	HIWebViewGetWebView_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
+	NSSearchPathForDirectoriesInDomains_FUNC,
 	WebInitForCarbon_FUNC,
 	class_1getClassMethod_FUNC,
 	memcpy_FUNC,

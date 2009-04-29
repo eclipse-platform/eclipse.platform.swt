@@ -229,6 +229,11 @@ public static final int NSOrderedSame = 0;
 public static final int NSURLCredentialPersistenceForSession = 1;
 public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 
+public static final int NSAllDomainsMask = 0xffff;
+public static final int NSDesktopDirectory = 12;
+public static final int NSDocumentDirectory = 9;
+public static final int NSDownloadsDirectory = 15;
+
 /* WebKit */
 /** @param outView cast=(HIViewRef *) */
 public static final native int HIWebViewCreate(int[] outView);
@@ -379,6 +384,12 @@ public static final native int sel_registerName(byte[] selectorName);
 
 /** @method flags=const */
 public static final native int NSDeviceRGBColorSpace();
+/**
+ * @param directory cast=(NSSearchPathDirectory)
+ * @param domainMask cast=(NSSearchPathDomainMask)
+ * @param expandTilde cast=(BOOL)
+ */
+public static final native int NSSearchPathForDirectoriesInDomains(int directory, int domainMask, boolean expandTilde);
 
 /** @param src cast=(void *) */
 public static final native void memcpy(NSRect dest, int src, int size);

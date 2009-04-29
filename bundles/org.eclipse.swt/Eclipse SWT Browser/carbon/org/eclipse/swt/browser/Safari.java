@@ -1778,10 +1778,43 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 	range.length = length;
 	OS.CFStringGetCharacters(filename, range, buffer);
 	String name = new String(buffer);
-	FileDialog dialog = new FileDialog(browser.getShell(), SWT.SAVE);
-	dialog.setText(SWT.getMessage ("SWT_FileDownload")); //$NON-NLS-1$
-	dialog.setFileName(name);
-	String path = dialog.open();
+
+	/*
+	* Bug in Safari.  As of OSX 10.5.5, showing the file dialog here invokes this
+	* callback a second time when the file dialog runs the event loop, which
+	* always leads to a crash.  The workaround is to choose a location to save
+	* the file without showing the file dialog. 
+	*/
+	String path = null;
+	if (OS.VERSION >= 0x1055) {
+		int array = Cocoa.NSSearchPathForDirectoriesInDomains (Cocoa.NSDesktopDirectory, Cocoa.NSAllDomainsMask, true);
+		int count = Cocoa.objc_msgSend (array, Cocoa.S_count);
+		if (count == 0) { /* should never happen */
+			array = Cocoa.NSSearchPathForDirectoriesInDomains (Cocoa.NSDownloadsDirectory, Cocoa.NSAllDomainsMask, true);
+			count = Cocoa.objc_msgSend (array, Cocoa.S_count);
+			if (count == 0) {
+				array = Cocoa.NSSearchPathForDirectoriesInDomains (Cocoa.NSDocumentDirectory, Cocoa.NSAllDomainsMask, true);
+				count = Cocoa.objc_msgSend (array, Cocoa.S_count);
+				if (count == 0) {
+					Cocoa.objc_msgSend (download, Cocoa.S_cancel);
+					return;
+				}
+			}
+		}
+		int string = Cocoa.objc_msgSend (array, Cocoa.S_objectAtIndex, 0);
+		length = OS.CFStringGetLength (string);
+		buffer = new char[length];
+		range = new CFRange ();
+		range.length = length;
+		OS.CFStringGetCharacters (string, range, buffer);
+		path = new String (buffer) + '/' + name;
+	} else {
+		FileDialog dialog = new FileDialog(browser.getShell(), SWT.SAVE);
+		dialog.setText(SWT.getMessage ("SWT_FileDownload")); //$NON-NLS-1$
+		dialog.setFileName(name);
+		path = dialog.open();
+	}
+
 	if (path == null) {
 		/* cancel pressed */
 		Cocoa.objc_msgSend(download, Cocoa.S_cancel);

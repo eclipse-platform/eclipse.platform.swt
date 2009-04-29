@@ -79,6 +79,18 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(NSDeviceRGBColorSpace)
 }
 #endif
 
+#ifndef NO_NSSearchPathForDirectoriesInDomains
+JNIEXPORT jint JNICALL Cocoa_NATIVE(NSSearchPathForDirectoriesInDomains)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, NSSearchPathForDirectoriesInDomains_FUNC);
+	rc = (jint)NSSearchPathForDirectoriesInDomains((NSSearchPathDirectory)arg0, (NSSearchPathDomainMask)arg1, (BOOL)arg2);
+	Cocoa_NATIVE_EXIT(env, that, NSSearchPathForDirectoriesInDomains_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_WebInitForCarbon
 JNIEXPORT void JNICALL Cocoa_NATIVE(WebInitForCarbon)
 	(JNIEnv *env, jclass that)
