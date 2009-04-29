@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * Region snippet: Create non-rectangular shell from an image with transparency
+ * (ESC to close shell)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
