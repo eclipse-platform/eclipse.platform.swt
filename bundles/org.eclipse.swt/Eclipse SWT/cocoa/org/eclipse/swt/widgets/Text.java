@@ -852,7 +852,6 @@ public int getLineHeight () {
 		NSDictionary dict = NSDictionary.dictionaryWithObject(font.handle, OS.NSFontAttributeName);
 		NSString str = NSString.stringWith(" ");
 		NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
-		dict.release();
 		NSSize size = attribStr.size();
 		attribStr.release();
 		return (int) size.height;
