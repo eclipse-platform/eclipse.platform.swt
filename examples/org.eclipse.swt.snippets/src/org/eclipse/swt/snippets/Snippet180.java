@@ -12,6 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * Create a non-rectangular shell to simulate transparency
+ * (ESC to close shell)
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -50,6 +51,13 @@ public static void main(String[] args) {
 			Rectangle bounds = image.getBounds();
 			Point size = shell.getSize();
 			e.gc.drawImage(image, 0, 0, bounds.width, bounds.height, 10, 10, size.x-20, size.y-20);
+		}
+	});
+	shell.addListener(SWT.KeyDown, new Listener() {
+		public void handleEvent(Event e)  {
+			if (e.character == SWT.ESC) {
+				shell.dispose();
+			}
 		}
 	});
 	shell.open();
