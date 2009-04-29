@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.gtk.GdkVisual;
 import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.printing.PrinterData;
@@ -366,7 +367,9 @@ public Font getSystemFont () {
  * @return the platform specific GC handle
  */
 public int /*long*/ internal_new_GC(GCData data) {
-	int /*long*/ drawable = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, 1);
+	GdkVisual visual = new GdkVisual ();
+	OS.memmove (visual, OS.gdk_visual_get_system());
+	int /*long*/ drawable = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, visual.depth);
 	int /*long*/ gdkGC = OS.gdk_gc_new (drawable);
 	if (gdkGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {

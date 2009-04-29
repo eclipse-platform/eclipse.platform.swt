@@ -17,6 +17,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.accessibility.gtk.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -321,11 +322,11 @@ void printWidget (GC gc, int /*long*/ drawable, int depth, int x, int y) {
 	state &= ~OBSCURED;
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
-	printWindow (true, this, gc.handle, drawable, depth, window, x, y);
+	printWindow (true, this, gc, drawable, depth, window, x, y);
 	if (obscured) state |= OBSCURED;
 }
 
-void printWindow (boolean first, Control control, int /*long*/ gc, int /*long*/ drawable, int depth, int /*long*/ window, int x, int y) {
+void printWindow (boolean first, Control control, GC gc, int /*long*/ drawable, int depth, int /*long*/ window, int x, int y) {
 	if (OS.gdk_drawable_get_depth (window) != depth) return;
 	GdkRectangle rect = new GdkRectangle ();
 	int [] width = new int [1], height = new int [1];
@@ -365,7 +366,33 @@ void printWindow (boolean first, Control control, int /*long*/ gc, int /*long*/ 
 		destWidth = Math.min (cX [0] + width [0], pW [0]);
 		destHeight = Math.min (cY [0] + height [0], pH [0]);
 	}
-	OS.gdk_draw_drawable (drawable, gc, real_drawable [0], srcX, srcY, destX, destY, destWidth, destHeight);
+	GCData gcData = gc.getGCData();
+	int /*long*/ cairo = gcData.cairo;
+	if (cairo != 0) {
+		int /*long*/ xDisplay = OS.GDK_DISPLAY();
+		int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
+		int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(real_drawable [0]);
+		int /*long*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width [0], height [0]);
+		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_save(cairo);
+		Cairo.cairo_rectangle(cairo, destX , destY, destWidth, destHeight);
+		Cairo.cairo_clip(cairo);
+		Cairo.cairo_translate(cairo, destX, destY);
+		int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(surface);
+		if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_pattern_set_filter(pattern, Cairo.CAIRO_FILTER_BEST);
+		Cairo.cairo_set_source(cairo, pattern);
+		if (gcData.alpha != 0xFF) {
+			Cairo.cairo_paint_with_alpha(cairo, gcData.alpha / (float)0xFF);
+		} else {
+			Cairo.cairo_paint(cairo);
+		}
+		Cairo.cairo_restore(cairo);
+		Cairo.cairo_pattern_destroy(pattern);
+		Cairo.cairo_surface_destroy(surface);
+	} else {
+		OS.gdk_draw_drawable (drawable, gc.handle, real_drawable [0], srcX, srcY, destX, destY, destWidth, destHeight);
+	}
 	OS.gdk_window_end_paint (window);
 	int /*long*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) {
