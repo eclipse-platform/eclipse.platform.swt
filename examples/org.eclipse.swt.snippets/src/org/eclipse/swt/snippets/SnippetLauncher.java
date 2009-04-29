@@ -24,7 +24,7 @@ public class SnippetLauncher {
 			if (files.length > 0) count = files.length;
 		}
 		for (int i = 1; i < count; i++) {
-			if (i == 136 || i == 151 || i == 180 || i == 219) continue;
+			if (i == 132 || i == 133 || i == 292 || i == 318) continue; // avoid printing to printer
 			String className = "Snippet" + i;
 			Class clazz = null;
 			try {
