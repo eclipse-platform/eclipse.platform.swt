@@ -68,7 +68,7 @@ public static void main (String [] args) {
 	};
 	thread.start();
 	shell.open ();
-	while (!shell.isDisposed() || thread.isAlive()) {
+	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
