@@ -422,6 +422,7 @@ public class OS extends C {
 	public static final byte[] configure_event = ascii("configure-event");
 	public static final byte[] delete_event = ascii("delete-event");
 	public static final byte[] day_selected = ascii("day-selected");
+	public static final byte[] day_selected_double_click = ascii("day-selected-double-click");
 	public static final byte[] delete_range = ascii("delete-range");
 	public static final byte[] delete_text = ascii("delete-text");
 	public static final byte[] drag_data_delete = ascii("drag_data_delete");

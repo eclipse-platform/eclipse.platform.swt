@@ -482,6 +482,11 @@ int /*long*/ gtk_day_selected (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ gtk_day_selected_double_click (int /*long*/ widget) {
+	postEvent(SWT.DefaultSelection);
+	return 0;
+}
+
 int /*long*/ gtk_month_changed (int /*long*/ widget) {
 	sendSelectionEvent ();
 	return 0;
@@ -491,6 +496,7 @@ void hookEvents () {
 	super.hookEvents();
 	if ((style & SWT.CALENDAR) != 0) {
 		OS.g_signal_connect_closure (handle, OS.day_selected, display.closures [DAY_SELECTED], false);
+		OS.g_signal_connect_closure (handle, OS.day_selected_double_click, display.closures [DAY_SELECTED_DOUBLE_CLICK], false);
 		OS.g_signal_connect_closure (handle, OS.month_changed, display.closures [MONTH_CHANGED], false);
 	}
 }
@@ -566,6 +572,9 @@ void onKeyDown(Event event) {
 			// set the value of the current field to its maximum
 			fieldName = fieldNames[currentField];
 			setTextField(fieldName, calendar.getActualMaximum(fieldName), true, true);
+			break;
+		case SWT.CR:
+			postEvent(SWT.DefaultSelection);
 			break;
 		default:
 			switch (event.character) {

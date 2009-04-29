@@ -164,7 +164,8 @@ public abstract class Widget {
 	static final int STATUS_ICON_POPUP_MENU = 63;
 	static final int ROW_INSERTED = 64;
 	static final int ROW_DELETED = 65;
-	static final int LAST_SIGNAL = 66;
+	static final int DAY_SELECTED_DOUBLE_CLICK = 66;
+	static final int LAST_SIGNAL = 67;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -632,6 +633,10 @@ int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_day_selected (int /*long*/ widget) {
+	return 0;
+}
+
+int /*long*/ gtk_day_selected_double_click (int /*long*/ widget) {
 	return 0;
 }
 
@@ -1517,6 +1522,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
 		case DAY_SELECTED: return gtk_day_selected (handle);
+		case DAY_SELECTED_DOUBLE_CLICK: return gtk_day_selected_double_click (handle);
 		case HIDE: return gtk_hide (handle);
 		case GRAB_FOCUS: return gtk_grab_focus (handle);
 		case MAP: return gtk_map (handle);
