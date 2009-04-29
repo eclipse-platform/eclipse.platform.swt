@@ -327,8 +327,32 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection, listener);	
 }
 
+boolean sendKeyEvent (NSEvent nsEvent, int type) {
+	boolean result = super.sendKeyEvent (nsEvent, type);
+	if (!result) return result;
+	if (type != SWT.KeyDown) return result;
+	if ((style & SWT.CALENDAR) == 0) {
+		short keyCode = nsEvent.keyCode ();
+		switch (keyCode) {
+			case 76: /* KP Enter */
+			case 36: /* Return */
+				postEvent (SWT.DefaultSelection);
+		}
+	}
+	return result;
+}
+
 void sendSelection () {
-	postEvent (SWT.Selection);
+	NSEvent event = NSApplication.sharedApplication().currentEvent();
+	if (event != null && (style & SWT.CALENDAR) != 0) {
+		if (event.clickCount() == 2) {
+			postEvent (SWT.DefaultSelection);
+		} else if (event.type() == OS.NSLeftMouseUp) {
+			postEvent (SWT.Selection);
+		}
+	} else { // SWT.DATE or SWT.TIME
+		postEvent (SWT.Selection);
+	}
 }
 
 void updateBackground () {
