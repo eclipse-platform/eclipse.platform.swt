@@ -36,7 +36,7 @@ public class ImageTransfer extends ByteArrayTransfer {
 	
 	private static ImageTransfer _instance = new ImageTransfer();
 	
-	private static final String JPEG = "image/jpge"; //$NON-NLS-1$
+	private static final String JPEG = "image/jpeg"; //$NON-NLS-1$
 	private static final int JPEG_ID = registerType(JPEG);
 	private static final String PNG = "image/png"; //$NON-NLS-1$
 	private static final int PNG_ID = registerType(PNG);
