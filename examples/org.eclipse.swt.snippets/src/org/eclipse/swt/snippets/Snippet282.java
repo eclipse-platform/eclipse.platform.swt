@@ -38,8 +38,7 @@ public class Snippet282 {
 	    gd.minimumWidth = 600;
 	    imageButton.setLayoutData(gd);
 	    
-	    final Text imageText = new Text(shell, SWT.NONE);
-	    imageText.setText("");
+	    final Text imageText = new Text(shell, SWT.BORDER);
 	    imageText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
 		Composite buttons = new Composite(shell, SWT.NONE);
