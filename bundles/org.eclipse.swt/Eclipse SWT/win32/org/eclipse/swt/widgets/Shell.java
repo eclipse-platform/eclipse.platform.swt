@@ -1466,7 +1466,7 @@ public void setEnabled (boolean enabled) {
  * to switch to the full screen state, and if the argument is
  * <code>false</code> and the receiver was previously switched
  * into full screen state, causes the receiver to switch back
- * to either the maximmized or normal states.
+ * to either the maximized or normal states.
  * <p>
  * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
  * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
