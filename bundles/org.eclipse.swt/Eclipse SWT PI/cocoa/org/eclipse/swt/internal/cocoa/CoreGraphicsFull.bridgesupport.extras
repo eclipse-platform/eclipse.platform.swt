@@ -17,6 +17,7 @@
 		<field name="height" swt_gen="true"></field>
 	</struct>
 	<cftype name="CGMutablePathRef" swt_gen="true"></cftype>
+	<enum name="kCGBlendModeDifference" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitLocalKeyboardEvents" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitLocalMouseEvents" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitSystemDefinedEvents" swt_gen="true"></enum>
@@ -83,6 +84,15 @@
 	</function>
 	<function name="CGContextSaveGState" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>
+	</function>
+	<function name="CGContextScaleCTM" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="sx" swt_gen="true"></arg>
+		<arg name="sy" swt_gen="true"></arg>
+	</function>
+	<function name="CGContextSetBlendMode" swt_gen="true">
+		<arg name="context" swt_gen="true"></arg>
+		<arg name="mode" swt_gen="true"></arg>
 	</function>
 	<function name="CGContextSetLineCap" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>

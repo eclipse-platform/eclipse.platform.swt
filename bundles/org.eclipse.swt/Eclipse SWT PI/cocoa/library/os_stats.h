@@ -48,6 +48,8 @@ typedef enum {
 	CGContextReplacePathWithStrokedPath_FUNC,
 	CGContextRestoreGState_FUNC,
 	CGContextSaveGState_FUNC,
+	CGContextScaleCTM_FUNC,
+	CGContextSetBlendMode_FUNC,
 	CGContextSetLineCap_FUNC,
 	CGContextSetLineDash_FUNC,
 	CGContextSetLineJoin_FUNC,

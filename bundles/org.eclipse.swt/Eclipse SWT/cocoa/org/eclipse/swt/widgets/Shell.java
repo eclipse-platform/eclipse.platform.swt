@@ -1008,7 +1008,7 @@ void makeKeyAndOrderFront() {
 	* The fix is to be sure that the parent window is deminiaturized before
 	* making the child a key window. 
 	*/
-	if (parent !=  null) {
+	if (parent != null) {
 		Shell shell = (Shell) parent;
 		if (shell.window.isMiniaturized()) shell.window.deminiaturize(null);
 	}
@@ -1060,7 +1060,7 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) {
 		// if the parent shell is minimized, setting focus will cause it
 		// to become unminimized.
-		if (parent != null && !((Shell)parent).window.isMiniaturized()) {	
+		if (parent == null || !((Shell)parent).window.isMiniaturized()) {
 			setFocus ();
 		}
 	}

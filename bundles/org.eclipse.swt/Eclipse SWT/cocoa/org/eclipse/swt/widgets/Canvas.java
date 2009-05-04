@@ -154,14 +154,32 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if (caret.isShowing) {
 		Image image = caret.image;
 		if (image != null) {
-			NSRect fromRect = new NSRect ();
-			NSSize size = image.handle.size();
-			fromRect.width = size.width;
-			fromRect.height = size.height;
-			NSPoint point = new NSPoint();
-			point.x = caret.x;
-			point.y = caret.y;
-		 	image.handle.drawAtPoint(point, rect, OS.NSCompositeXOR, 1);
+			NSImage imageHandle = image.handle;
+			NSImageRep imageRep = imageHandle.bestRepresentationForDevice(null);
+			if (!imageRep.isKindOfClass(OS.class_NSBitmapImageRep)) return;
+			NSBitmapImageRep rep = new NSBitmapImageRep(imageRep);
+			CGRect destRect = new CGRect ();
+			destRect.origin.x = caret.x;
+			destRect.origin.y = caret.y;
+		 	NSSize size = imageHandle.size();
+			destRect.size.width = size.width;
+			destRect.size.height = size.height;
+		 	int /*long*/ data = rep.bitmapData();
+		 	int /*long*/ bpr = rep.bytesPerRow();
+			int alphaInfo = rep.hasAlpha() ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaNoneSkipFirst;
+		 	int /*long*/ provider = OS.CGDataProviderCreateWithData(0, data, bpr * (int)size.height, 0);
+			int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+			int /*long*/ cgImage = OS.CGImageCreate((int)size.width, (int)size.height, rep.bitsPerSample(), rep.bitsPerPixel(), bpr, colorspace, alphaInfo, provider, 0, true, 0);
+			OS.CGColorSpaceRelease(colorspace);
+			OS.CGDataProviderRelease(provider);
+			int /*long*/ ctx = context.graphicsPort();
+			OS.CGContextSaveGState(ctx);
+		 	OS.CGContextScaleCTM (ctx, 1, -1);
+		 	OS.CGContextTranslateCTM (ctx, 0, -(size.height + 2 * destRect.origin.y));
+			OS.CGContextSetBlendMode (ctx, OS.kCGBlendModeDifference);
+			OS.CGContextDrawImage (ctx, destRect, cgImage);
+			OS.CGContextRestoreGState(ctx);
+		 	OS.CGImageRelease(cgImage);			
 		} else {
 			context.saveGraphicsState();
 			context.setCompositingOperation(OS.NSCompositeXOR);

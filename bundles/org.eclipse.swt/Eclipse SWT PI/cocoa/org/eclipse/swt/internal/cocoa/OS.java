@@ -1948,6 +1948,7 @@ public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFRunLoopBeforeWaiting = 32;
 public static final int kCFStringEncodingUTF8 = 134217984;
+public static final int kCGBlendModeDifference = 10;
 public static final int kCGEventFilterMaskPermitLocalKeyboardEvents = 2;
 public static final int kCGEventFilterMaskPermitLocalMouseEvents = 1;
 public static final int kCGEventFilterMaskPermitSystemDefinedEvents = 4;
@@ -2562,6 +2563,17 @@ public static final native void CGContextRestoreGState(int /*long*/ c);
  * @param c cast=(CGContextRef)
  */
 public static final native void CGContextSaveGState(int /*long*/ c);
+/**
+ * @param c cast=(CGContextRef)
+ * @param sx cast=(CGFloat)
+ * @param sy cast=(CGFloat)
+ */
+public static final native void CGContextScaleCTM(int /*long*/ c, float /*double*/ sx, float /*double*/ sy);
+/**
+ * @param context cast=(CGContextRef)
+ * @param mode cast=(CGBlendMode)
+ */
+public static final native void CGContextSetBlendMode(int /*long*/ context, int mode);
 /**
  * @param c cast=(CGContextRef)
  * @param cap cast=(CGLineCap)

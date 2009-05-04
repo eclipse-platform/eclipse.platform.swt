@@ -319,6 +319,26 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSaveGState)
 }
 #endif
 
+#ifndef NO_CGContextScaleCTM
+JNIEXPORT void JNICALL OS_NATIVE(CGContextScaleCTM)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDouble arg1, jfloatDouble arg2)
+{
+	OS_NATIVE_ENTER(env, that, CGContextScaleCTM_FUNC);
+	CGContextScaleCTM((CGContextRef)arg0, (CGFloat)arg1, (CGFloat)arg2);
+	OS_NATIVE_EXIT(env, that, CGContextScaleCTM_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetBlendMode
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetBlendMode)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetBlendMode_FUNC);
+	CGContextSetBlendMode((CGContextRef)arg0, (CGBlendMode)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetBlendMode_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextSetLineCap
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineCap)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
