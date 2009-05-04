@@ -97,7 +97,7 @@
 #define gdk_display_get_default_LIB "libgdk-x11-2.0.so.0"
 #define gdk_display_supports_cursor_color_LIB "libgdk-x11-2.0.so.0"
 #define gdk_draw_pixbuf_LIB "libgdk-x11-2.0.so.0"
-#define gdk_pixbuf_save_to_buffer_LIB "libgdk-x11-2.0.so.0"
+#define gdk_pixbuf_save_to_bufferv_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_default_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_monitor_at_point_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_monitor_at_window_LIB "libgdk-x11-2.0.so.0"

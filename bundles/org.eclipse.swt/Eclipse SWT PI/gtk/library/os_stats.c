@@ -434,7 +434,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1pixbuf_1render_1pixmap_1and_1mask",
 	"_1gdk_1pixbuf_1render_1to_1drawable",
 	"_1gdk_1pixbuf_1render_1to_1drawable_1alpha",
-	"_1gdk_1pixbuf_1save_1to_1buffer",
+	"_1gdk_1pixbuf_1save_1to_1bufferv",
 	"_1gdk_1pixbuf_1scale",
 	"_1gdk_1pixbuf_1scale_1simple",
 	"_1gdk_1pixmap_1foreign_1new",

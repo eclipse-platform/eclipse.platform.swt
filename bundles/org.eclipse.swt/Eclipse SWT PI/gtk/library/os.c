@@ -4982,38 +4982,41 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1to_1drawable_1alpha)
 }
 #endif
 
-#ifndef NO__1gdk_1pixbuf_1save_1to_1buffer
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1save_1to_1buffer)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintArray arg2, jbyteArray arg3, jintLongArray arg4, jbyteArray arg5)
+#ifndef NO__1gdk_1pixbuf_1save_1to_1bufferv
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1save_1to_1bufferv)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLongArray arg2, jbyteArray arg3, jintLongArray arg4, jintLongArray arg5, jintLongArray arg6)
 {
 	jintLong *lparg1=NULL;
-	jint *lparg2=NULL;
+	jintLong *lparg2=NULL;
 	jbyte *lparg3=NULL;
 	jintLong *lparg4=NULL;
-	jbyte *lparg5=NULL;
+	jintLong *lparg5=NULL;
+	jintLong *lparg6=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1save_1to_1buffer_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1save_1to_1bufferv_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
 /*
-	rc = (jboolean)gdk_pixbuf_save_to_buffer((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (GError **)lparg4, (char *)lparg5);
+	rc = (jboolean)gdk_pixbuf_save_to_bufferv((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, lparg4, lparg5, (GError **)lparg6);
 */
 	{
-		LOAD_FUNCTION(fp, gdk_pixbuf_save_to_buffer)
+		LOAD_FUNCTION(fp, gdk_pixbuf_save_to_bufferv)
 		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkPixbuf *, gchar **, gsize *, const char *, GError **, char *))fp)((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (GError **)lparg4, (char *)lparg5);
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkPixbuf *, gchar **, gsize *, const char *, jintLong *, jintLong *, GError **))fp)((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, lparg4, lparg5, (GError **)lparg6);
 		}
 	}
 fail:
-	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntLongArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1save_1to_1buffer_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1save_1to_1bufferv_FUNC);
 	return rc;
 }
 #endif

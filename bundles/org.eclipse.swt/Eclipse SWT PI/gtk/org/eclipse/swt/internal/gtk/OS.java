@@ -4090,14 +4090,15 @@ public static final void gdk_pixbuf_render_pixmap_and_mask(int /*long*/ pixbuf, 
  * @param buffer cast=(gchar **)
  * @param buffer_size cast=(gsize *)
  * @param type cast=(const char *)
+ * @param option_keys=(char **)
+ * @param option_values=(char **)
  * @param error cast=(GError **)
- * @param terminate cast=(char *)
  */
-public static final native boolean _gdk_pixbuf_save_to_buffer(int /*long*/ pixbuf, int /*long*/ [] buffer, int [] buffer_size, byte [] type, int /*long*/ [] error, byte [] terminate);
-public static final boolean gdk_pixbuf_save_to_buffer(int /*long*/ pixbuf, int /*long*/ [] buffer, int [] buffer_size, byte [] type, int /*long*/ [] error, byte [] terminate) {
+public static final native boolean _gdk_pixbuf_save_to_bufferv(int /*long*/ pixbuf, int /*long*/ [] buffer, int /*long*/ [] buffer_size, byte [] type, int /*long*/ [] option_keys, int /*long*/ [] option_values, int /*long*/ [] error);
+public static final boolean gdk_pixbuf_save_to_bufferv(int /*long*/ pixbuf, int /*long*/ [] buffer, int /*long*/ [] buffer_size, byte [] type, int /*long*/ [] option_keys, int /*long*/ [] option_values, int /*long*/ [] error) {
 	lock.lock();
 	try {
-		return _gdk_pixbuf_save_to_buffer(pixbuf, buffer, buffer_size, type, error, terminate);
+		return _gdk_pixbuf_save_to_bufferv(pixbuf, buffer, buffer_size, type, option_keys, option_values, error);
 	} finally {
 		lock.unlock();
 	}

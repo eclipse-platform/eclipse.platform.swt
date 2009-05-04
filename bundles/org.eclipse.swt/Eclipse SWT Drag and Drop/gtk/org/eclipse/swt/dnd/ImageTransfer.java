@@ -111,13 +111,13 @@ public void javaToNative(Object object, TransferData transferData) {
 	if (transferData.type ==  XV_ID) typeStr = "xv";
 	byte[] type = Converter.wcsToMbcs(null, typeStr , true);
 	int /*long*/ [] buffer = new int /*long*/ [1];
-	int [] len = new int [1];
+	int /*long*/ [] len = new int /*long*/ [1];
 	if (type == null) return;
-	OS.gdk_pixbuf_save_to_buffer(pixbuf, buffer, len, type , null, null);		
+	OS.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
 	OS.g_object_unref(pixbuf);
 	image.dispose();
 	transferData.pValue = buffer[0];
-	transferData.length = (len[0] + 3) / 4 * 4;
+	transferData.length = (int)(len[0] + 3) / 4 * 4;
 	transferData.result = 1;
 	transferData.format = 32;
 }
