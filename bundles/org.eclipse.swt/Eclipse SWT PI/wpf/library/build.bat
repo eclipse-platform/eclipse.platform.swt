@@ -20,7 +20,7 @@ set JAVA_HOME=S:\swt-builddir\ibm-jdk1.4.1
 rem ****** 
 rem MS-SDK
 rem ******
-call "S:\PRODUCTS\PLATSDK\March2007VistaRTM\Bin\setenv.cmd" /vista
+call "S:\PRODUCTS\PLATSDK\March2007VistaRTM\Bin\setenv.cmd" /x86 /vista
 
 rem ****** 
 rem OUTPUT DIR
