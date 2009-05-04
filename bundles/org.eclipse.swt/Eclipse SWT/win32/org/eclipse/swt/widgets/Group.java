@@ -202,7 +202,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trim.x -= CLIENT_INSET;
 	trim.y -= tm.tmHeight + offsetY;
 	trim.width += CLIENT_INSET * 2;
-	trim.height += tm.tmHeight + CLIENT_INSET;
+	trim.height += tm.tmHeight + CLIENT_INSET + offsetY;
 	return trim;
 }
 
