@@ -6789,7 +6789,7 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 		doMouseLinkCursor();
 	}
 }
-void redrawLines(int startLine, int lineCount) {
+void redrawLines(int startLine, int lineCount, boolean bottomChanged) {
 	// do nothing if redraw range is completely invisible
 	int endLine = startLine + lineCount - 1;
 	int partialBottomIndex = getPartialBottomIndex();
@@ -6806,6 +6806,7 @@ void redrawLines(int startLine, int lineCount) {
 	}
 	int redrawTop = getLinePixel(startLine);
 	int redrawBottom = getLinePixel(endLine + 1);
+	if (bottomChanged) redrawBottom = clientAreaHeight - bottomMargin;
 	int redrawWidth = clientAreaWidth - leftMargin - rightMargin; 
 	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
 }
@@ -8228,7 +8229,7 @@ public void setLineAlignment(int startLine, int lineCount, int alignment) {
 
 	renderer.setLineAlignment(startLine, lineCount, alignment);
 	resetCache(startLine, lineCount);
-	redrawLines(startLine, lineCount);
+	redrawLines(startLine, lineCount, false);
 	int caretLine = getCaretLine();
 	if (startLine <= caretLine && caretLine < startLine + lineCount) {
 		setCaretLocation();
@@ -8281,7 +8282,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 	} else {
 		renderer.clearLineBackground(startLine, lineCount);
 	}
-	redrawLines(startLine, lineCount);
+	redrawLines(startLine, lineCount, false);
 }
 /**
  * Sets the bullet of the specified lines.
@@ -8321,10 +8322,11 @@ public void setLineBullet(int startLine, int lineCount, Bullet bullet) {
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-
+	int oldBottom = getLinePixel(startLine + lineCount);
 	renderer.setLineBullet(startLine, lineCount, bullet);
 	resetCache(startLine, lineCount);
-	redrawLines(startLine, lineCount);
+	int newBottom = getLinePixel(startLine + lineCount);
+	redrawLines(startLine, lineCount, oldBottom != newBottom);
 	int caretLine = getCaretLine();
 	if (startLine <= caretLine && caretLine < startLine + lineCount) {
 		setCaretLocation();
@@ -8374,10 +8376,11 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-
+	int oldBottom = getLinePixel(startLine + lineCount);
 	renderer.setLineIndent(startLine, lineCount, indent);
 	resetCache(startLine, lineCount);
-	redrawLines(startLine, lineCount);
+	int newBottom = getLinePixel(startLine + lineCount);
+	redrawLines(startLine, lineCount, oldBottom != newBottom);
 	int caretLine = getCaretLine();
 	if (startLine <= caretLine && caretLine < startLine + lineCount) {
 		setCaretLocation();
@@ -8425,7 +8428,7 @@ public void setLineJustify(int startLine, int lineCount, boolean justify) {
 
 	renderer.setLineJustify(startLine, lineCount, justify);
 	resetCache(startLine, lineCount);
-	redrawLines(startLine, lineCount);
+	redrawLines(startLine, lineCount, false);
 	int caretLine = getCaretLine();
 	if (startLine <= caretLine && caretLine < startLine + lineCount) {
 		setCaretLocation();
