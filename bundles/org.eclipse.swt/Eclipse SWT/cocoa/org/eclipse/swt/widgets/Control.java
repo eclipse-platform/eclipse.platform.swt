@@ -1254,6 +1254,7 @@ NSView focusView () {
  */
 public boolean forceFocus () {
 	checkWidget();
+	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible () || !isActive ()) return false;
@@ -1724,19 +1725,7 @@ boolean hasBorder () {
 }
 
 boolean hasFocus () {
-	NSWindow window = view.window();
-	if (window.isKeyWindow()) {
-		NSResponder nsResponder = window.firstResponder();
-		if (nsResponder.id == focusView().id) return true;
-		NSText fieldEditor = window.fieldEditor(false, null);
-		if (nsResponder.isKindOfClass(OS.class_NSTextView) && fieldEditor != null) {
-			id delegate = fieldEditor.delegate();
-			if (delegate != null) {
-				return delegate.id == focusView().id;
-			}
-		}
-	}
-	return false;
+	return display.getFocusControl() == this;
 }
 
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
@@ -1937,6 +1926,10 @@ boolean isFocusAncestor (Control control) {
  */
 public boolean isFocusControl () {
 	checkWidget();
+	Control focusControl = display.focusControl;
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return this == focusControl;
+	}
 	return hasFocus ();
 }
 
@@ -2885,14 +2878,17 @@ boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	return event.doit;
 }
 
-void sendFocusEvent (int type, boolean post) {
+void sendFocusEvent (int type) {
 	Display display = this.display;
 	Shell shell = getShell ();
-	if (post) {
-		postEvent (type);
-	} else {
-		sendEvent (type);
-	}
+
+	display.focusEvent = type;
+	display.focusControl = this;
+	sendEvent (type);
+	// widget could be disposed at this point
+	display.focusEvent = SWT.None;
+	display.focusControl = null;
+
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
@@ -3216,8 +3212,10 @@ public void setEnabled (boolean enabled) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	if (enabled) {
 		state &= ~DISABLED;
@@ -3675,8 +3673,10 @@ public void setVisible (boolean visible) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!visible) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	topView().setHidden(!visible);
 	invalidateVisibleRegion();

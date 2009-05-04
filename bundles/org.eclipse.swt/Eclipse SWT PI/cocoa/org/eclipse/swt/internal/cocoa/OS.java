@@ -678,6 +678,7 @@ public static final int /*long*/ sel_availableMembersOfFontFamily_ = sel_registe
 public static final int /*long*/ sel_availableTypeFromArray_ = sel_registerName("availableTypeFromArray:");
 public static final int /*long*/ sel_baselineOffsetInLayoutManager_glyphIndex_ = sel_registerName("baselineOffsetInLayoutManager:glyphIndex:");
 public static final int /*long*/ sel_becomeFirstResponder = sel_registerName("becomeFirstResponder");
+public static final int /*long*/ sel_becomeKeyWindow = sel_registerName("becomeKeyWindow");
 public static final int /*long*/ sel_beginDocument = sel_registerName("beginDocument");
 public static final int /*long*/ sel_beginEditing = sel_registerName("beginEditing");
 public static final int /*long*/ sel_beginPageInRect_atPlacement_ = sel_registerName("beginPageInRect:atPlacement:");

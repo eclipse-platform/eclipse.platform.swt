@@ -50,7 +50,7 @@ int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, in
 	return super.attributedSubstringFromRange(id, sel, range);
 }
 
-void sendFocusEvent(int type, boolean post) {
+void sendFocusEvent(int type) {
 	if (caret != null) {
 		if (type == SWT.FocusIn) {
 			caret.setFocus();	
@@ -58,7 +58,7 @@ void sendFocusEvent(int type, boolean post) {
 			caret.killFocus();
 		}
 	}
-	super.sendFocusEvent(type, post);
+	super.sendFocusEvent(type);
 }
 
 

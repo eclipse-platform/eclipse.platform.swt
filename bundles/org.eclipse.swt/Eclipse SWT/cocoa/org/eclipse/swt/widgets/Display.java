@@ -140,9 +140,11 @@ public class Display extends Device {
 	boolean isEmbedded;
 	static boolean launched = false;
 	
-	Control focusControl;
+	/* Focus */
+	Control focusControl, currentFocusControl;
+	int focusEvent;
 	
-	NSWindow screenWindow;
+	NSWindow screenWindow, keyWindow;
 
 	NSAutoreleasePool[] pools;
 	int poolCount, loopCount;
@@ -158,7 +160,7 @@ public class Display extends Device {
 	Callback cursorSetCallback;
 
 	// the following Callbacks are never freed
-	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowDelegateCallback6;
+	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	static Callback dialogCallback3, dialogCallback4, dialogCallback5;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
 	static Callback fieldEditorCallback3, fieldEditorCallback4;
@@ -559,6 +561,20 @@ void checkEnterExit (Control control, NSEvent nsEvent, boolean send) {
 		setCursor (control);
 	}
 	timerExec (control != null && !control.isDisposed() ? getToolTipTime () : -1, hoverTimer);
+}
+
+void checkFocus () {
+	Control oldControl = currentFocusControl;
+	Control newControl = getFocusControl ();
+	if (oldControl != newControl) {
+		if (oldControl != null && !oldControl.isDisposed ()) {
+			oldControl.sendFocusEvent (SWT.FocusOut);
+		}
+		currentFocusControl = newControl;
+		if (newControl != null && !newControl.isDisposed ()) {
+			newControl.sendFocusEvent (SWT.FocusIn);
+		}
+	}
 }
 
 /**
@@ -1067,15 +1083,11 @@ public static Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	NSArray windows = application.windows();
-	int count = (int)/*64*/windows.count();
-	for (int i = 0; i < count; i++) {
-		NSWindow win = new NSWindow(windows.objectAtIndex(i));
-		if (win.isKeyWindow()) {
-			Widget widget = getWidget(win.contentView());
-			if (widget instanceof Shell) {
-				return (Shell)widget;
-			}
+	NSWindow window = keyWindow != null ? keyWindow : application.keyWindow();
+	if (window != null) {
+		Widget widget = getWidget(window.contentView());
+		if (widget instanceof Shell) {
+			return (Shell)widget;
 		}
 	}
 	return null;
@@ -1343,11 +1355,14 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
-	NSWindow window = application.keyWindow();
-	return GetFocusControl(window);
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return focusControl;
+	}
+	NSWindow window = keyWindow != null ? keyWindow : application.keyWindow();
+	return _getFocusControl(window);
 }
 
-static Control GetFocusControl(NSWindow window) {
+Control _getFocusControl (NSWindow window) {
 	if (window != null) {
 		NSResponder responder = window.firstResponder();
 		if (responder != null && !responder.respondsToSelector(OS.sel_superview)) {
@@ -1983,8 +1998,8 @@ void initClasses () {
 	windowCallback5 = new Callback(clazz, "windowProc", 5);
 	int /*long*/ proc5 = windowCallback5.getAddress();
 	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback6 = new Callback(clazz, "windowProc", 6);
-	int /*long*/ proc6 = windowDelegateCallback6.getAddress();
+	windowCallback6 = new Callback(clazz, "windowProc", 6);
+	int /*long*/ proc6 = windowCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	fieldEditorCallback3 = new Callback(clazz, "fieldEditorProc", 3);
 	int /*long*/ fieldEditorProc3 = fieldEditorCallback3.getAddress();
@@ -2408,6 +2423,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_becomeKeyWindow, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_noResponderFor_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
@@ -4140,20 +4156,12 @@ void finishLaunching (int /*long*/ id, int /*long*/ sel) {
 }
 
 void applicationDidBecomeActive (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	Control control = getFocusControl();
-	if (control != null && !control.isDisposed()) {
-		focusControl = control;
-		control.sendFocusEvent(SWT.FocusIn, false);
-	}
+	checkFocus();
 	checkEnterExit(findControl(true), null, false);
 }
 
 void applicationDidResignActive (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	Control control = focusControl;
-	if (control != null && !control.isDisposed()) {
-		focusControl = null;
-		control.sendFocusEvent(SWT.FocusOut, false);
-	}
+	checkFocus();
 	checkEnterExit(null, null, false);
 }
 
@@ -4522,6 +4530,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.isFlipped(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_canBecomeKeyView) {
 		return widget.canBecomeKeyView(id,sel) ? 1 : 0;
+	} else if (sel == OS.sel_becomeKeyWindow) {
+		widget.becomeKeyWindow(id, sel);
 	} else if (sel == OS.sel_unmarkText) {
 		//TODO not called?
 	} else if (sel == OS.sel_validAttributesForMarkedText) {

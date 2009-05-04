@@ -4041,6 +4041,9 @@
 		<method selector="areCursorRectsEnabled" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="becomeKeyWindow" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="canBecomeKeyWindow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>

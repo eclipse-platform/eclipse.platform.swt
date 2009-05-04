@@ -298,6 +298,10 @@ boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
+void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+	callSuper(id, sel);
+}
+
 boolean resignFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean(id, sel);
 }

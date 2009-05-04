@@ -458,6 +458,14 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deiconify,typedListener);
 }
 
+void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+	Display display = this.display;
+	display.keyWindow = window;
+	super.becomeKeyWindow(id, sel);
+	display.checkFocus();
+	display.keyWindow = null;
+}
+
 void bringToTop (boolean force) {
 	if (getMinimized ()) return;
 	if (force) {
@@ -983,18 +991,10 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-boolean makeFirstResponder (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	if (display.focusControl == null) display.focusControl = display.getFocusControl ();
-	boolean result = super.makeFirstResponder(id, sel, notification);
-	if (result) {
-		Control newFocus = display.getFocusControl ();
-		if (newFocus != null && newFocus != display.focusControl) {
-			Control oldFocus = display.focusControl;
-			display.focusControl = newFocus;
-			if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut, false);
-			if (newFocus != null && !newFocus.isDisposed ()) newFocus.sendFocusEvent (SWT.FocusIn, false);
-		}
-	}
+boolean makeFirstResponder (int /*long*/ id, int /*long*/ sel, int /*long*/ responder) {
+	Display display = this.display;
+	boolean result = super.makeFirstResponder(id, sel, responder);
+	display.checkFocus();
 	return result;
 }
 
@@ -1699,14 +1699,6 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	Display display = this.display;
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
-	Control control = Display.GetFocusControl(window);
-	if (control != null && !control.isDisposed() && control != display.focusControl) {
-		display.focusControl = control;
-		control.sendFocusEvent(SWT.FocusIn, true);
-	}
-//	if (!isDisposed ()) {
-//		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
-//	}
 }
 
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
@@ -1731,27 +1723,7 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 
 void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	super.windowDidResignKey(id, sel, notification);
-//	Display display = this.display;
 	sendEvent (SWT.Deactivate);
-	if (isDisposed ()) return;
-	Control control = display.focusControl;
-	if (control != null && !control.isDisposed() && control.getShell() == this) {
-		display.focusControl = null;
-		control.sendFocusEvent(SWT.FocusOut, true);
-	}
-//	saveFocus ();
-//	if (savedFocus != null) {
-//		/*
-//		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
-//		* the control that has focus gets two kEventControlSetFocus
-//		* events indicating that focus was lost.  The fix is to ignore
-//		* both of these and send the focus lost event explicitly.
-//		*/
-//		display.ignoreFocus = true;
-//		OS.ClearKeyboardFocus (shellHandle);
-//		display.ignoreFocus = false;
-//		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, false);
-//	}
 }
 
 void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
