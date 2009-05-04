@@ -32,6 +32,12 @@
 
 	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/${full.name}" />
+		<antcall target="apitools.generation">
+			<param name="target.folder" value="${destination.temp.folder}/${full.name}"/>
+			<param name="projectLocation" value="${basedir}"/>
+			<param name="binary.folders" value="${build.result.folder}"/>
+			<param name="projectName" value="${full.name}"/>
+		</antcall>
 		<copy todir="${destination.temp.folder}/${full.name}">
 			<fileset dir="${basedir}" includes="plugin.properties,about.html,about_files/,META-INF/" />
 		</copy>
@@ -57,4 +63,11 @@
 	<target name="clean" depends="init">
 	</target>
 
+	<target name="apitools.generation" if="generateAPIDescription">
+		<apitooling.apigeneration
+			projectName="${projectName}"
+			project="${projectLocation}"
+			binary="${binary.folders}"
+			target="${target.folder}"/>
+	</target>
 </project>
