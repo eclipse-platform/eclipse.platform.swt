@@ -1514,6 +1514,7 @@ public static final int /*long*/ sel_setMaximumFractionDigits_ = sel_registerNam
 public static final int /*long*/ sel_setMaximumIntegerDigits_ = sel_registerName("setMaximumIntegerDigits:");
 public static final int /*long*/ sel_setMenu_ = sel_registerName("setMenu:");
 public static final int /*long*/ sel_setMenu_forSegment_ = sel_registerName("setMenu:forSegment:");
+public static final int /*long*/ sel_setMessage_ = sel_registerName("setMessage:");
 public static final int /*long*/ sel_setMessageText_ = sel_registerName("setMessageText:");
 public static final int /*long*/ sel_setMinSize_ = sel_registerName("setMinSize:");
 public static final int /*long*/ sel_setMinValue_ = sel_registerName("setMinValue:");

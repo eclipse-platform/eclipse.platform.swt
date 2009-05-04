@@ -127,6 +127,7 @@ public String open () {
 	panel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
+	panel.setMessage(NSString.stringWith(message != null ? message : ""));
 	panel.setCanChooseFiles(false);
 	panel.setCanChooseDirectories(true);
 	NSApplication application = NSApplication.sharedApplication();

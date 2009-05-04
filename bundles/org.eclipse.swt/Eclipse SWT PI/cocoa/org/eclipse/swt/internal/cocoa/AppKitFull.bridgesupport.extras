@@ -2794,6 +2794,10 @@
 			<arg name="path" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setMessage:" swt_gen="true">
+			<arg name="message" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setTitle:" swt_gen="true">
 			<arg name="title" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
