@@ -12,7 +12,7 @@ rem ****************************************************************************
 
 @echo off
 
-IF x.%SWT_BUILDDIR%==x. set SWT_BUILDDIR=j:\teamswt\swt-builddir
+IF x.%SWT_BUILDDIR%==x. set SWT_BUILDDIR=S:\swt-builddir
 
 IF x.%1==x.x86 GOTO X86
 IF x.%1==x.x86_64 GOTO X86_64
@@ -20,7 +20,7 @@ IF x.%1==x.ia64 GOTO IA64
 
 :X86
 
-IF x.%DEV_TOOLS%==x. set DEV_TOOLS=K:\dev\PRODUCTS
+IF x.%DEV_TOOLS%==x. set DEV_TOOLS=S:\PRODUCTS
 call %DEV_TOOLS%\msvc60\vc98\bin\vcvars32.bat
 IF x.%MSSDK%==x. set MSSDK=%DEV_TOOLS%\platsdk\feb2003
 call %MSSDK%\setenv /XP32 /RETAIL
