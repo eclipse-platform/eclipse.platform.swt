@@ -125,25 +125,47 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (hHint == SWT.DEFAULT) hHint = DEFAULT_HEIGHT;
 		}
 	}
-	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0;
-	if (fixWrap || frameHandle != 0) forceResize ();
-	int [] labelWidth = new int [1], labelHeight = new int [1];
-	if (fixWrap) {
-		OS.gtk_widget_get_size_request (labelHandle, labelWidth, labelHeight);
-		OS.gtk_widget_set_size_request (labelHandle, wHint, hHint);
-	}	
 	Point size; 
-	if (frameHandle != 0) {
-		int [] reqWidth = new int [1], reqHeight = new int [1];
-		OS.gtk_widget_get_size_request (handle, reqWidth, reqHeight);
-		OS.gtk_widget_set_size_request (handle, wHint, hHint);
-		size = computeNativeSize (frameHandle, -1, -1, changed);
-		OS.gtk_widget_set_size_request (handle, reqWidth [0], reqHeight [0]);
-	} else {
-		size = computeNativeSize (handle, wHint, hHint, changed);
-	}
+	/* 
+	* Feature in GTK. GTK has a predetermined maximum width for wrapping text. 
+	* The fix is to use pango layout directly instead of the label size request 
+	* to calculate its preferred size.
+	*/
+	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && (OS.GTK_WIDGET_FLAGS (labelHandle) & OS.GTK_VISIBLE) != 0;
 	if (fixWrap) {
-		OS.gtk_widget_set_size_request (labelHandle, labelWidth [0], labelHeight [0]);
+		int /*long*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
+		int pangoWidth = OS.pango_layout_get_width (labelLayout);
+		if (wHint != SWT.DEFAULT) {
+			OS.pango_layout_set_width (labelLayout, wHint * OS.PANGO_SCALE);
+		} else {
+			OS.pango_layout_set_width (labelLayout, -1);
+		}
+		int [] w = new int [1], h = new int [1];
+		OS.pango_layout_get_size (labelLayout, w, h);
+		OS.pango_layout_set_width (labelLayout, pangoWidth);
+		if (frameHandle != 0) {
+			int [] labelWidth = new int [1], labelHeight = new int [1];
+			OS.gtk_widget_get_size_request (labelHandle, labelWidth, labelHeight);
+			OS.gtk_widget_set_size_request (labelHandle, 1, 1);
+			size = computeNativeSize (frameHandle, -1, -1, changed);
+			OS.gtk_widget_set_size_request (labelHandle, labelWidth [0], labelHeight [0]);
+			size.x = size.x - 1;
+			size.y = size.y - 1;
+		} else { 
+			size = new Point (0,0);
+		}
+		size.x += wHint == SWT.DEFAULT ? OS.PANGO_PIXELS(w [0]) : wHint;
+		size.y += hHint == SWT.DEFAULT ? OS.PANGO_PIXELS(h [0]) : hHint;
+	} else {
+		if (frameHandle != 0) {
+			int [] reqWidth = new int [1], reqHeight = new int [1];
+			OS.gtk_widget_get_size_request (handle, reqWidth, reqHeight);
+			OS.gtk_widget_set_size_request (handle, wHint, hHint);
+			size = computeNativeSize (frameHandle, -1, -1, changed);
+			OS.gtk_widget_set_size_request (handle, reqWidth [0], reqHeight [0]);
+		} else {
+			size = computeNativeSize (handle, wHint, hHint, changed);
+		}
 	}
 	/*
 	* Feature in GTK.  Instead of using the font height to determine
