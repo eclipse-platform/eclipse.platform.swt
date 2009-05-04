@@ -1592,9 +1592,8 @@ void setWindowVisible (boolean visible, boolean key) {
 		if ((style & (SWT.SHEET)) != 0) {
 			NSApplication application = NSApplication.sharedApplication();
 			application.endSheet(window, 0);
-		} else {
-			window.orderOut (null);
 		}
+		window.orderOut (null);
 		topView ().setHidden (true);
 		invalidateVisibleRegion();
 		sendEvent (SWT.Hide);
