@@ -601,12 +601,11 @@ void onMouseClick(Event event) {
 	if (event.button != 1) return;
 	Point sel = text.getSelection();
 	for (int i = 0; i < fieldCount; i++) {
-		if (sel.x >= fieldIndices[i].x && sel.x <= fieldIndices[i].y) {
-			currentField = i;
+		if (fieldIndices[i].x <= sel.x && sel.x <= fieldIndices[i].y) {
+			selectField(i);
 			break;
 		}
 	}
-	selectField(currentField);
 }
 
 void onResize(Event event) {
