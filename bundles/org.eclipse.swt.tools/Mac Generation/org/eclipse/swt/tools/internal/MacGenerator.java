@@ -1224,6 +1224,7 @@ void generateCustomCallbacks() {
 				out(";");
 			}
 		}
+		outln();
 		out(" */");
 		outln();
 		out("public static final native int /*long*/ CALLBACK_");
