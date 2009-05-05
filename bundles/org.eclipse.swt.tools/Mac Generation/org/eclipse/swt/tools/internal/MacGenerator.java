@@ -1200,9 +1200,7 @@ void generateCustomCallbacks() {
 			if (method == null) continue;
 		}		
 		String nativeMth = key.replaceAll(":", "_");
-		out("/**");
-		outln();
-		out(" * @method callback_types=");
+		out("/** @method callback_types=");
 		Node returnNode = getReturnNode(method.getChildNodes());
 		out(returnNode == null ? "void" : getCType(returnNode));
 		out(";id;SEL;");
@@ -1224,7 +1222,6 @@ void generateCustomCallbacks() {
 				out(";");
 			}
 		}
-		outln();
 		out(" */");
 		outln();
 		out("public static final native int /*long*/ CALLBACK_");
