@@ -134,7 +134,7 @@ public class DragSource extends Widget {
 		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 
-		int /*long*/ draggedImage_endedAt_operationProc = OS.draggedImage_endedAt_operation_CALLBACK(proc5);
+		int /*long*/ draggedImage_endedAt_operationProc = OS.CALLBACK_draggedImage_endedAt_operation_(proc5);
 
 		// Add the NSDraggingSource callbacks
 		OS.class_addMethod(cls, OS.sel_draggingSourceOperationMaskForLocal_, proc3, "@:I");
@@ -255,7 +255,7 @@ public DragSource(Control control, int style) {
 		int /*long*/ procPtr = OS.class_getMethodImplementation(cls, OS.sel_draggingSourceOperationMaskForLocal_);
 		if (procPtr == proc3) return;
 
-		int /*long*/ draggedImage_endedAt_operationProc = OS.draggedImage_endedAt_operation_CALLBACK(proc5);
+		int /*long*/ draggedImage_endedAt_operationProc = OS.CALLBACK_draggedImage_endedAt_operation_(proc5);
 
 		// Add the NSDraggingSource overrides.
 		OS.class_addMethod(cls, OS.sel_draggingSourceOperationMaskForLocal_, proc3, "@:I");

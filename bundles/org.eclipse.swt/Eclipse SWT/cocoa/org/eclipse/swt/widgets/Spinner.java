@@ -240,7 +240,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-	textView.window().fieldEditor(false, textView).copy(null);
+	NSText fieldEditor = textView.currentEditor();
+	if (fieldEditor != null) {
+		fieldEditor.copy(null);
+	} else {
+		//TODO
+	}
 }
 
 void createHandle () {
@@ -282,7 +287,12 @@ void createHandle () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-	textView.window().fieldEditor(false, textView).cut(null);
+	NSText fieldEditor = textView.currentEditor();
+	if (fieldEditor != null) {
+		fieldEditor.cut(null);
+	} else {
+		//TODO
+	}
 }
 
 void enableWidget (boolean enabled) {
@@ -505,7 +515,12 @@ boolean isEventView (int /*long*/ id) {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-	textView.window().fieldEditor(false, textView).paste(null);
+	NSText fieldEditor = textView.currentEditor();
+	if (fieldEditor != null) {
+		fieldEditor.paste(null);
+	} else {
+		//TODO
+	}
 }
 
 void register () {
@@ -866,10 +881,8 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		NSRange selection = new NSRange();
 		selection.location = 0;
 		selection.length = string.length();
-		if (textView.window() != null) {
-			NSText fieldEditor = textView.window().fieldEditor(false, textView);
-			if (fieldEditor != null) fieldEditor.setSelectedRange(selection);
-		}
+		NSText fieldEditor = textView.currentEditor();
+		if (fieldEditor != null) fieldEditor.setSelectedRange(selection);
 		sendEvent (SWT.Modify);
 	}
 	if (notify) postEvent (SWT.Selection);
@@ -878,47 +891,6 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 void setSmallSize () {
 	textView.cell ().setControlSize (OS.NSSmallControlSize);
 	buttonView.cell ().setControlSize (OS.NSSmallControlSize);
-}
-
-char [] setText (String string, int /*long*/ start, int /*long*/ end, boolean notify) {
-	if (notify) {
-		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-			string = verifyText (string, (int)/*64*/start, (int)/*64*/end, null);
-			if (string == null) return null;
-		}
-	}
-
-	int /*long*/ charCount = textView.stringValue().length();
-	int /*long*/ length = string.length ();
-	if (textLimit != LIMIT) {
-		if (charCount - (end - start) + length > textLimit) {
-			length = textLimit - charCount + (end - start);
-		}
-	}
-	char [] text = new char [(int)/*64*/(charCount - (end - start) + length)];
-	NSRange range = new NSRange();
-	range.location = 0;
-	range.length = start;
-	char [] buffer = new char [(int)/*64*/range.length];
-	textView.stringValue().getCharacters(buffer, range);
-	System.arraycopy (buffer, 0, text, 0, (int)/*64*/range.length);
-	string.getChars (0, (int)/*64*/length, text, (int)/*64*/start);
-	range.location = end;
-	range.length = charCount - end;
-	buffer = new char [(int)/*64*/range.length];
-	textView.stringValue().getCharacters(buffer, range);
-	System.arraycopy (buffer, 0, text, (int)/*64*/(start + length), (int)/*64*/range.length);
-	
-	/* Copying the return value to buffer */
-	range.location = start;
-	range.length = end - start;
-	buffer = new char [(int)/*64*/range.length];
-	textView.stringValue().getCharacters(buffer, range);
-
-	NSString newText = NSString.stringWithCharacters(text, text.length);
-	textView.setStringValue(newText);
-	if (notify) sendEvent (SWT.Modify);
-	return buffer;
 }
 
 /**
@@ -1001,18 +973,20 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 		if (text != newText) {
 			int length = newText.length();
 			NSText fieldEditor = textView.currentEditor ();
-			NSRange selectedRange = fieldEditor.selectedRange();
-			if (textLimit != LIMIT) {
-				int /*long*/ charCount = fieldEditor.string().length();
-				if (charCount - selectedRange.length + length > textLimit) {
-					length = (int)/*64*/(textLimit - charCount + selectedRange.length);
+			if (fieldEditor != null) {
+				NSRange selectedRange = fieldEditor.selectedRange();
+				if (textLimit != LIMIT) {
+					int /*long*/ charCount = fieldEditor.string().length();
+					if (charCount - selectedRange.length + length > textLimit) {
+						length = (int)/*64*/(textLimit - charCount + selectedRange.length);
+					}
 				}
+				char [] buffer = new char [length];
+				newText.getChars (0, buffer.length, buffer, 0);
+				NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
+				fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
+				result = false;
 			}
-			char [] buffer = new char [length];
-			newText.getChars (0, buffer.length, buffer, 0);
-			NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-			fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
-			result = false;
 		}
 		if (!result) sendEvent (SWT.Modify);
 	}

@@ -241,66 +241,6 @@ public static final int kQDRegionToRectsMsgParse = 2;
 
 /** @method flags=no_gen */
 public static final native int /*long*/ isFlipped_CALLBACK();
-/** @method flags=no_gen */
-public static final native int /*long*/ drawRect_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ drawImage_withFrame_inView_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ drawInteriorWithFrame_inView_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ drawWithFrame_inView_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ imageRectForBounds_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ titleRectForBounds_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ hitTestForEvent_inRect_ofView_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ cellSize_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ setFrame_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ setFrameOrigin_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ setFrameSize_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ hitTest_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ webView_setFrame_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ markedRange_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ selectedRange_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ highlightSelectionInClipRect_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ attributedSubstringFromRange_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ setMarkedText_selectedRange_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ characterIndexForPoint_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ firstRectForCharacterRange_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ draggedImage_beganAt_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ draggedImage_endedAt_operation_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ accessibilityHitTest_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ dragSelectionWithEvent_offset_slideBack_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ shouldChangeTextInRange_replacementString_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ view_stringForToolTip_point_userData_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ canDragRowsWithIndexes_atPoint_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ setNeedsDisplayInRect_CALLBACK(int /*long*/ func);
-/** @method flags=no_gen */
-public static final native int /*long*/ expansionFrameWithFrameProc_CALLBACK(int /*long*/ func);
 
 /** Custom structure return */
 
@@ -399,6 +339,98 @@ public static final native int objc_super_sizeof();
 
 
 /** This section is auto generated */
+
+/** Custom callbacks */
+/**
+ * @method callback_types=id;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_accessibilityHitTest_(int /*long*/ func);
+/**
+ * @method callback_types=NSAttributedString*;id;SEL;NSRange;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_attributedSubstringFromRange_(int /*long*/ func);
+/**
+ * @method callback_types=BOOL;id;SEL;NSIndexSet*;NSPoint;,callback_flags=none;none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_canDragRowsWithIndexes_atPoint_(int /*long*/ func);
+/**
+ * @method callback_types=NSSize;id;SEL;,callback_flags=struct;none;none; */
+public static final native int /*long*/ CALLBACK_cellSize(int /*long*/ func);
+/**
+ * @method callback_types=NSUInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_characterIndexForPoint_(int /*long*/ func);
+/**
+ * @method callback_types=BOOL;id;SEL;NSEvent*;NSSize;BOOL;,callback_flags=none;none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_dragSelectionWithEvent_offset_slideBack_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSImage*;NSPoint;,callback_flags=none;none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_draggedImage_beganAt_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSImage*;NSPoint;NSDragOperation;,callback_flags=none;none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_draggedImage_endedAt_operation_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSImage*;NSRect;NSView*;,callback_flags=none;none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_drawImage_withFrame_inView_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_drawInteriorWithFrame_inView_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_drawRect_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_drawWithFrame_inView_(int /*long*/ func);
+/**
+ * @method callback_types=NSRect;id;SEL;NSRect;NSView*;,callback_flags=struct;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_expansionFrameWithFrame_inView_(int /*long*/ func);
+/**
+ * @method callback_types=NSRect;id;SEL;NSRange;,callback_flags=struct;none;none;struct; */
+public static final native int /*long*/ CALLBACK_firstRectForCharacterRange_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_highlightSelectionInClipRect_(int /*long*/ func);
+/**
+ * @method callback_types=NSView*;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_hitTest_(int /*long*/ func);
+/**
+ * @method callback_types=NSUInteger;id;SEL;NSEvent*;NSRect;NSView*;,callback_flags=none;none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_hitTestForEvent_inRect_ofView_(int /*long*/ func);
+/**
+ * @method callback_types=NSRect;id;SEL;NSRect;,callback_flags=struct;none;none;struct; */
+public static final native int /*long*/ CALLBACK_imageRectForBounds_(int /*long*/ func);
+/**
+ * @method callback_types=NSRange;id;SEL;,callback_flags=struct;none;none; */
+public static final native int /*long*/ CALLBACK_markedRange(int /*long*/ func);
+/**
+ * @method callback_types=NSRange;id;SEL;,callback_flags=struct;none;none; */
+public static final native int /*long*/ CALLBACK_selectedRange(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_setFrame_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_setFrameOrigin_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSSize;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_setFrameSize_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;id;NSRange;,callback_flags=none;none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_setMarkedText_selectedRange_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_setNeedsDisplayInRect_(int /*long*/ func);
+/**
+ * @method callback_types=BOOL;id;SEL;NSRange;NSString*;,callback_flags=none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_shouldChangeTextInRange_replacementString_(int /*long*/ func);
+/**
+ * @method callback_types=NSRange;id;SEL;NSTextView*;NSRange;NSRange;,callback_flags=struct;none;none;none;struct;struct; */
+public static final native int /*long*/ CALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_(int /*long*/ func);
+/**
+ * @method callback_types=NSRect;id;SEL;NSRect;,callback_flags=struct;none;none;struct; */
+public static final native int /*long*/ CALLBACK_titleRectForBounds_(int /*long*/ func);
+/**
+ * @method callback_types=NSString*;id;SEL;NSView*;NSToolTipTag;NSPoint;void*;,callback_flags=none;none;none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_view_stringForToolTip_point_userData_(int /*long*/ func);
+/**
+ * @method callback_types=void;id;SEL;WebView*;NSRect;,callback_flags=none;none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_webView_setFrame_(int /*long*/ func);
 
 /** Classes */
 public static final int /*long*/ class_DOMDocument = objc_getClass("DOMDocument");

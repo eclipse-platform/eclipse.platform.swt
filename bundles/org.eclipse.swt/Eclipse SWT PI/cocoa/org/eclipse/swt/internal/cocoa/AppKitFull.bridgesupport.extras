@@ -943,7 +943,7 @@
 		</method>
 	</class>
 	<class name="NSButtonCell" swt_gen="mixed" swt_superclass="NSActionCell">
-		<method selector="drawImage:withFrame:inView:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="drawImage:withFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="image" swt_gen="true"></arg>
 			<arg name="frame" swt_gen="true"></arg>
 			<arg name="controlView" swt_gen="true"></arg>
@@ -973,19 +973,19 @@
 		<method selector="attributedStringValue" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="cellSize" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="cellSize" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="cellSizeForBounds:" swt_gen="true">
 			<arg name="aRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="drawInteriorWithFrame:inView:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="drawInteriorWithFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="cellFrame" swt_gen="true"></arg>
 			<arg name="controlView" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="drawWithFrame:inView:" swt_gen="true">
+		<method selector="drawWithFrame:inView:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="cellFrame" swt_gen="true"></arg>
 			<arg name="controlView" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -994,7 +994,7 @@
 			<arg name="theRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="expansionFrameWithFrame:inView:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="expansionFrameWithFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="cellFrame" swt_gen="true"></arg>
 			<arg name="view" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -1007,7 +1007,7 @@
 			<arg name="controlView" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="hitTestForEvent:inRect:ofView:" swt_gen="true">
+		<method selector="hitTestForEvent:inRect:ofView:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="event" swt_gen="true"></arg>
 			<arg name="cellFrame" swt_gen="true"></arg>
 			<arg name="controlView" swt_gen="true"></arg>
@@ -1016,7 +1016,7 @@
 		<method selector="image" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="imageRectForBounds:" swt_gen="true">
+		<method selector="imageRectForBounds:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="theRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1088,7 +1088,7 @@
 		<method selector="title" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="titleRectForBounds:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="titleRectForBounds:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="theRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3228,7 +3228,7 @@
 		<method selector="allowsColumnReordering" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="canDragRowsWithIndexes:atPoint:" swt_gen="true">
+		<method selector="canDragRowsWithIndexes:atPoint:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="rowIndexes" swt_gen="true"></arg>
 			<arg name="mouseDownPoint" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3274,7 +3274,7 @@
 		<method selector="headerView" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="highlightSelectionInClipRect:" swt_gen="true">
+		<method selector="highlightSelectionInClipRect:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="clipRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3621,7 +3621,7 @@
 		<method selector="defaultParagraphStyle" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="dragSelectionWithEvent:offset:slideBack:" swt_gen="true">
+		<method selector="dragSelectionWithEvent:offset:slideBack:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="event" swt_gen="true"></arg>
 			<arg name="mouseOffset" swt_gen="true"></arg>
 			<arg name="slideBack" swt_gen="true"></arg>
@@ -3648,7 +3648,7 @@
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="shouldChangeTextInRange:replacementString:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="shouldChangeTextInRange:replacementString:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="affectedCharRange" swt_gen="true"></arg>
 			<arg name="replacementString" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3895,7 +3895,7 @@
 			<arg name="slideFlag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="drawRect:" swt_gen="true">
+		<method selector="drawRect:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="rect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3908,7 +3908,7 @@
 		<method selector="frame" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="hitTest:" swt_gen="true">
+		<method selector="hitTest:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="aPoint" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3969,15 +3969,15 @@
 			<arg name="focusRingType" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFrame:" swt_gen="true">
+		<method selector="setFrame:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="frameRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFrameOrigin:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="setFrameOrigin:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="newOrigin" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFrameSize:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="setFrameSize:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="newSize" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3989,7 +3989,7 @@
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setNeedsDisplayInRect:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="setNeedsDisplayInRect:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="invalidRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4356,7 +4356,7 @@
 			<arg name="parameter" swt_gen="true"></arg>
 		</method>
 		<method selector="accessibilityFocusedUIElement" swt_gen="true"></method>
-		<method selector="accessibilityHitTest:" swt_gen="true" swt_gen_super_msgSend="true">
+		<method selector="accessibilityHitTest:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="point" swt_gen="true"></arg>
 		</method>
 		<method selector="accessibilityIsAttributeSettable:" swt_gen="true">
@@ -4432,11 +4432,11 @@
 		<method selector="wantsPeriodicDraggingUpdates" swt_gen="true"></method>
 	</informal_protocol>
 	<informal_protocol name="NSDraggingSource" swt_gen="mixed">
-		<method selector="draggedImage:beganAt:" swt_gen="true">
+		<method selector="draggedImage:beganAt:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="image" swt_gen="true"></arg>
 			<arg name="screenPoint" swt_gen="true"></arg>
 		</method>
-		<method selector="draggedImage:endedAt:operation:" swt_gen="true">
+		<method selector="draggedImage:endedAt:operation:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="image" swt_gen="true"></arg>
 			<arg name="screenPoint" swt_gen="true"></arg>
 			<arg name="operation" swt_gen="true"></arg>
@@ -4644,7 +4644,7 @@
 			<arg name="link" swt_gen="true"></arg>
 			<arg name="charIndex" swt_gen="true"></arg>
 		</method>
-		<method selector="textView:willChangeSelectionFromCharacterRange:toCharacterRange:" swt_gen="true">
+		<method selector="textView:willChangeSelectionFromCharacterRange:toCharacterRange:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="textView" swt_gen="true"></arg>
 			<arg name="oldSelectedCharRange" swt_gen="true"></arg>
 			<arg name="newSelectedCharRange" swt_gen="true"></arg>
@@ -4654,7 +4654,7 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSToolTipOwner" swt_gen="true">
-		<method selector="view:stringForToolTip:point:userData:" swt_gen="true">
+		<method selector="view:stringForToolTip:point:userData:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="view" swt_gen="true"></arg>
 			<arg name="tag" swt_gen="true"></arg>
 			<arg name="point" swt_gen="true"></arg>
@@ -4709,25 +4709,25 @@
 	</informal_protocol>
 	<class name="NSSecureTextField" swt_gen="true" swt_superclass="NSTextField"></class>
 	<informal_protocol name="NSTextInput" swt_gen="true">
-		<method selector="markedRange" swt_gen="true"></method>
+		<method selector="markedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
 		<method selector="insertText:" swt_gen="true">
 			<arg name="aString" swt_gen="true"></arg>
 		</method>
 		<method selector="unmarkText" swt_gen="true"></method>
 		<method selector="hasMarkedText" swt_gen="true"></method>
 		<method selector="validAttributesForMarkedText" swt_gen="true"></method>
-		<method selector="characterIndexForPoint:" swt_gen="true">
+		<method selector="characterIndexForPoint:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="thePoint" swt_gen="true"></arg>
 		</method>
-		<method selector="attributedSubstringFromRange:" swt_gen="true">
+		<method selector="attributedSubstringFromRange:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="theRange" swt_gen="true"></arg>
 		</method>
-		<method selector="selectedRange" swt_gen="true"></method>
-		<method selector="setMarkedText:selectedRange:" swt_gen="true">
+		<method selector="selectedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
+		<method selector="setMarkedText:selectedRange:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="selRange" swt_gen="true"></arg>
 			<arg name="aString" swt_gen="true"></arg>
 		</method>
-		<method selector="firstRectForCharacterRange:" swt_gen="true">
+		<method selector="firstRectForCharacterRange:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="theRange" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>

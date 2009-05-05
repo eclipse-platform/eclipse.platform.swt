@@ -525,22 +525,21 @@ public void deselectAll () {
 
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	if ((style & SWT.READ_ONLY) == 0) {
-		NSText fieldEditor = view.window().fieldEditor(false, view);
-		NSRange selectedRange = fieldEditor.selectedRange();
-		
-		if (selectedRange.length > 0) {
-			NSPoint mouseLocation = NSEvent.mouseLocation();
-			NSTextView feAsTextView = new NSTextView(fieldEditor);
-			int /*long*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(mouseLocation);
-
-			if (charPosition != OS.NSNotFound && charPosition >= selectedRange.location && charPosition < (selectedRange.location + selectedRange.length)) {
-				if (super.dragDetect(x, y, filter, consume)) {
-					if (consume != null) consume[0] = true;
-					return true;
-				}
-			}	
+		NSText fieldEditor = ((NSControl)view).currentEditor();
+		if (fieldEditor != null) {
+			NSRange selectedRange = fieldEditor.selectedRange();
+			if (selectedRange.length > 0) {
+				NSPoint mouseLocation = NSEvent.mouseLocation();
+				NSTextView feAsTextView = new NSTextView(fieldEditor);
+				int /*long*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(mouseLocation);
+				if (charPosition != OS.NSNotFound && charPosition >= selectedRange.location && charPosition < (selectedRange.location + selectedRange.length)) {
+					if (super.dragDetect(x, y, filter, consume)) {
+						if (consume != null) consume[0] = true;
+						return true;
+					}
+				}	
+			}
 		}
-		
 		return false;
 	}
 	
@@ -917,8 +916,8 @@ void insertEditText (String string) {
 		char [] buffer = new char [length];
 		string.getChars (0, buffer.length, buffer, 0);
 		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-		NSText editor = ((NSTextField) view).currentEditor ();
-		editor.replaceCharactersInRange (editor.selectedRange (), nsstring);
+		NSText fieldEditor = ((NSTextField) view).currentEditor ();
+		fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
 		selectionRange = null;
 	} else {
 		String oldText = getText ();
@@ -1430,17 +1429,16 @@ public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) == 0) {
-		NSString str = new NSCell(((NSComboBox)view).cell()).title();
+		NSComboBox widget = (NSComboBox)view;
+		NSString str = new NSCell(widget.cell()).title();
 		int length = (int)/*64*/str.length();
 		int start = Math.min (Math.max (Math.min (selection.x, selection.y), 0), length);
 		int end = Math.min (Math.max (Math.max (selection.x, selection.y), 0), length);
 		selectionRange = new NSRange();
 		selectionRange.location = start;
 		selectionRange.length = end - start;
-		if (this == display.getFocusControl ()) {
-			NSText editor = view.window().fieldEditor(false, view);
-			editor.setSelectedRange(selectionRange);
-		}
+		NSText fieldEditor = widget.currentEditor();
+		if (fieldEditor != null) fieldEditor.setSelectedRange(selectionRange);
 	}
 }
 

@@ -76,6 +76,95 @@ public void generate(JNIMethod[] methods) {
 	}
 }
 
+boolean isStruct(String flagsStr) {
+	String[] flags = split(flagsStr, " ");
+	for (int i = 0; i < flags.length; i++) {
+		if (flags[i].equals(Flags.FLAG_STRUCT)) return true;
+	}
+	return false;
+}
+
+void generateCallback(JNIMethod method, String function, JNIParameter[] params, JNIType returnType) {
+	output("static jintLong ");
+	output(function);
+	outputln(";");
+	output("static ");
+	String[] types = split((String)method.getParam("callback_types"), ";");
+	String[] flags = split((String)method.getParam("callback_flags"), ";");
+	output(types[0]);
+	output(" ");
+	output("proc_");
+	output(function);
+	output("(");
+	boolean first = true;
+	for (int i = 1; i < types.length; i++) {
+		if (!first) output(", ");
+		output(types[i]);
+		output(" ");
+		output("arg");
+		output(String.valueOf(i - 1));
+		first = false;
+	}
+	outputln(") {");
+	
+	output("\t");
+	if (isStruct(flags[0])) {
+		output(types[0]);
+		output("* lprc = ");
+	} else if (!types[0].equals("void")) {
+		output("return ");
+	}
+	output("((");
+	output(types[0]);
+	if (isStruct(flags[0])) output("*");
+	output(" (*)(");
+	first = true;
+	for (int i = 1; i < types.length; i++) {
+		if (!first) output(", ");
+		first = false;
+		output(types[i]);
+		if (isStruct(flags[i])) output("*");
+	}
+	output("))");
+	output(function);
+	output(")(");
+	first = true;
+	for (int i = 1; i < types.length; i++) {
+		if (!first) output(", ");
+		first = false;
+		if (isStruct(flags[i])) output("&");
+		output("arg");
+		output(String.valueOf(i -1));
+	}
+	outputln(");");
+	if (isStruct(flags[0])) {
+		output("\t");
+		output(types[0]);
+		outputln(" rc;");
+		outputln("\tif (lprc) {");
+		outputln("\t\trc = *lprc;");
+		outputln("\t\tfree(lprc);");
+		outputln("\t} else {");
+		output("\t\tmemset(&rc, 0, sizeof(");
+		output(types[0]);
+		outputln("));");
+		outputln("\t}");
+		outputln("\treturn rc;");
+	}
+	outputln("}");
+	
+	output("static jintLong ");
+	output(method.getName());
+	outputln("(jintLong func) {");
+	output("\t");
+	output(function);
+	outputln(" = func;");
+	output("\treturn (jintLong)proc_");
+	output(function);
+	outputln(";");
+	outputln("}");
+}
+
 public void generate(JNIMethod method) {
 	if (method.getFlag(FLAG_NO_GEN)) return;
 	JNIType returnType = method.getReturnType(), returnType64 = method.getReturnType64();	
@@ -97,6 +186,9 @@ public void generate(JNIMethod method) {
 		output("extern \"C\" ");
 		generateFunctionPrototype(method, function, params, returnType, returnType64, true);
 		outputln(";");
+	}
+	if (function.startsWith("CALLBACK_")) {
+		generateCallback(method, function, params, returnType);
 	}
 	generateFunctionPrototype(method, function, params, returnType, returnType64, !sameFunction);
 	if (!function.equals(function64)) {

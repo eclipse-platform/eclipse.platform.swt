@@ -1193,8 +1193,8 @@ void insertEditText (String string) {
 		char [] buffer = new char [length];
 		string.getChars (0, buffer.length, buffer, 0);
 		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-		NSText editor = ((NSTextField) view).currentEditor ();
-		editor.replaceCharactersInRange (editor.selectedRange (), nsstring);
+		NSText fieldEditor = ((NSTextField) view).currentEditor ();
+		if (fieldEditor != null) fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
 		selectionRange = null;
 	} else {
 		String oldText = getText ();
@@ -1672,9 +1672,9 @@ public void setSelection (int start, int end) {
 		selectionRange = new NSRange ();
 		selectionRange.location = selStart;
 		selectionRange.length = selEnd - selStart;
-		if (this == display.getFocusControl ()) {
-			NSText editor = view.window ().fieldEditor (false, view);
-			editor.setSelectedRange (selectionRange);
+		NSText fieldEditor = ((NSControl)view).currentEditor();
+		if (fieldEditor != null) {
+			fieldEditor.setSelectedRange (selectionRange);
 		}
 	} else {
 		int length = (int)/*64*/((NSTextView) view).textStorage ().length ();

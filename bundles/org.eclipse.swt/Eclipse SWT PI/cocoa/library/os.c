@@ -62,6 +62,670 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(AcquireRootMenu)
 }
 #endif
 
+#ifndef NO_CALLBACK_1accessibilityHitTest_1
+static jintLong CALLBACK_1accessibilityHitTest_1;
+static id proc_CALLBACK_1accessibilityHitTest_1(id arg0, SEL arg1, NSPoint arg2) {
+	return ((id (*)(id, SEL, NSPoint*))CALLBACK_1accessibilityHitTest_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_accessibilityHitTest_(jintLong func) {
+	CALLBACK_1accessibilityHitTest_1 = func;
+	return (jintLong)proc_CALLBACK_1accessibilityHitTest_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1accessibilityHitTest_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1accessibilityHitTest_1_FUNC);
+	rc = (jintLong)CALLBACK_accessibilityHitTest_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1accessibilityHitTest_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1attributedSubstringFromRange_1
+static jintLong CALLBACK_1attributedSubstringFromRange_1;
+static NSAttributedString* proc_CALLBACK_1attributedSubstringFromRange_1(id arg0, SEL arg1, NSRange arg2) {
+	return ((NSAttributedString* (*)(id, SEL, NSRange*))CALLBACK_1attributedSubstringFromRange_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_attributedSubstringFromRange_(jintLong func) {
+	CALLBACK_1attributedSubstringFromRange_1 = func;
+	return (jintLong)proc_CALLBACK_1attributedSubstringFromRange_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1attributedSubstringFromRange_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1attributedSubstringFromRange_1_FUNC);
+	rc = (jintLong)CALLBACK_attributedSubstringFromRange_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1attributedSubstringFromRange_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1canDragRowsWithIndexes_1atPoint_1
+static jintLong CALLBACK_1canDragRowsWithIndexes_1atPoint_1;
+static BOOL proc_CALLBACK_1canDragRowsWithIndexes_1atPoint_1(id arg0, SEL arg1, NSIndexSet* arg2, NSPoint arg3) {
+	return ((BOOL (*)(id, SEL, NSIndexSet*, NSPoint*))CALLBACK_1canDragRowsWithIndexes_1atPoint_1)(arg0, arg1, arg2, &arg3);
+}
+static jintLong CALLBACK_canDragRowsWithIndexes_atPoint_(jintLong func) {
+	CALLBACK_1canDragRowsWithIndexes_1atPoint_1 = func;
+	return (jintLong)proc_CALLBACK_1canDragRowsWithIndexes_1atPoint_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1canDragRowsWithIndexes_1atPoint_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1canDragRowsWithIndexes_1atPoint_1_FUNC);
+	rc = (jintLong)CALLBACK_canDragRowsWithIndexes_atPoint_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1canDragRowsWithIndexes_1atPoint_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1cellSize
+static jintLong CALLBACK_1cellSize;
+static NSSize proc_CALLBACK_1cellSize(id arg0, SEL arg1) {
+	NSSize* lprc = ((NSSize* (*)(id, SEL))CALLBACK_1cellSize)(arg0, arg1);
+	NSSize rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSSize));
+	}
+	return rc;
+}
+static jintLong CALLBACK_cellSize(jintLong func) {
+	CALLBACK_1cellSize = func;
+	return (jintLong)proc_CALLBACK_1cellSize;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1cellSize)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1cellSize_FUNC);
+	rc = (jintLong)CALLBACK_cellSize(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1cellSize_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1characterIndexForPoint_1
+static jintLong CALLBACK_1characterIndexForPoint_1;
+static NSUInteger proc_CALLBACK_1characterIndexForPoint_1(id arg0, SEL arg1, NSPoint arg2) {
+	return ((NSUInteger (*)(id, SEL, NSPoint*))CALLBACK_1characterIndexForPoint_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_characterIndexForPoint_(jintLong func) {
+	CALLBACK_1characterIndexForPoint_1 = func;
+	return (jintLong)proc_CALLBACK_1characterIndexForPoint_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1characterIndexForPoint_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1characterIndexForPoint_1_FUNC);
+	rc = (jintLong)CALLBACK_characterIndexForPoint_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1characterIndexForPoint_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1
+static jintLong CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1;
+static BOOL proc_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1(id arg0, SEL arg1, NSEvent* arg2, NSSize arg3, BOOL arg4) {
+	return ((BOOL (*)(id, SEL, NSEvent*, NSSize*, BOOL))CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1)(arg0, arg1, arg2, &arg3, arg4);
+}
+static jintLong CALLBACK_dragSelectionWithEvent_offset_slideBack_(jintLong func) {
+	CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1 = func;
+	return (jintLong)proc_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1_FUNC);
+	rc = (jintLong)CALLBACK_dragSelectionWithEvent_offset_slideBack_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1draggedImage_1beganAt_1
+static jintLong CALLBACK_1draggedImage_1beganAt_1;
+static void proc_CALLBACK_1draggedImage_1beganAt_1(id arg0, SEL arg1, NSImage* arg2, NSPoint arg3) {
+	((void (*)(id, SEL, NSImage*, NSPoint*))CALLBACK_1draggedImage_1beganAt_1)(arg0, arg1, arg2, &arg3);
+}
+static jintLong CALLBACK_draggedImage_beganAt_(jintLong func) {
+	CALLBACK_1draggedImage_1beganAt_1 = func;
+	return (jintLong)proc_CALLBACK_1draggedImage_1beganAt_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1draggedImage_1beganAt_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1draggedImage_1beganAt_1_FUNC);
+	rc = (jintLong)CALLBACK_draggedImage_beganAt_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1draggedImage_1beganAt_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1draggedImage_1endedAt_1operation_1
+static jintLong CALLBACK_1draggedImage_1endedAt_1operation_1;
+static void proc_CALLBACK_1draggedImage_1endedAt_1operation_1(id arg0, SEL arg1, NSImage* arg2, NSPoint arg3, NSDragOperation arg4) {
+	((void (*)(id, SEL, NSImage*, NSPoint*, NSDragOperation))CALLBACK_1draggedImage_1endedAt_1operation_1)(arg0, arg1, arg2, &arg3, arg4);
+}
+static jintLong CALLBACK_draggedImage_endedAt_operation_(jintLong func) {
+	CALLBACK_1draggedImage_1endedAt_1operation_1 = func;
+	return (jintLong)proc_CALLBACK_1draggedImage_1endedAt_1operation_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1draggedImage_1endedAt_1operation_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1draggedImage_1endedAt_1operation_1_FUNC);
+	rc = (jintLong)CALLBACK_draggedImage_endedAt_operation_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1draggedImage_1endedAt_1operation_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1drawImage_1withFrame_1inView_1
+static jintLong CALLBACK_1drawImage_1withFrame_1inView_1;
+static void proc_CALLBACK_1drawImage_1withFrame_1inView_1(id arg0, SEL arg1, NSImage* arg2, NSRect arg3, NSView* arg4) {
+	((void (*)(id, SEL, NSImage*, NSRect*, NSView*))CALLBACK_1drawImage_1withFrame_1inView_1)(arg0, arg1, arg2, &arg3, arg4);
+}
+static jintLong CALLBACK_drawImage_withFrame_inView_(jintLong func) {
+	CALLBACK_1drawImage_1withFrame_1inView_1 = func;
+	return (jintLong)proc_CALLBACK_1drawImage_1withFrame_1inView_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawImage_1withFrame_1inView_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawImage_1withFrame_1inView_1_FUNC);
+	rc = (jintLong)CALLBACK_drawImage_withFrame_inView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawImage_1withFrame_1inView_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1drawInteriorWithFrame_1inView_1
+static jintLong CALLBACK_1drawInteriorWithFrame_1inView_1;
+static void proc_CALLBACK_1drawInteriorWithFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
+	((void (*)(id, SEL, NSRect*, NSView*))CALLBACK_1drawInteriorWithFrame_1inView_1)(arg0, arg1, &arg2, arg3);
+}
+static jintLong CALLBACK_drawInteriorWithFrame_inView_(jintLong func) {
+	CALLBACK_1drawInteriorWithFrame_1inView_1 = func;
+	return (jintLong)proc_CALLBACK_1drawInteriorWithFrame_1inView_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawInteriorWithFrame_1inView_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawInteriorWithFrame_1inView_1_FUNC);
+	rc = (jintLong)CALLBACK_drawInteriorWithFrame_inView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawInteriorWithFrame_1inView_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1drawRect_1
+static jintLong CALLBACK_1drawRect_1;
+static void proc_CALLBACK_1drawRect_1(id arg0, SEL arg1, NSRect arg2) {
+	((void (*)(id, SEL, NSRect*))CALLBACK_1drawRect_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_drawRect_(jintLong func) {
+	CALLBACK_1drawRect_1 = func;
+	return (jintLong)proc_CALLBACK_1drawRect_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawRect_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawRect_1_FUNC);
+	rc = (jintLong)CALLBACK_drawRect_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawRect_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1drawWithFrame_1inView_1
+static jintLong CALLBACK_1drawWithFrame_1inView_1;
+static void proc_CALLBACK_1drawWithFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
+	((void (*)(id, SEL, NSRect*, NSView*))CALLBACK_1drawWithFrame_1inView_1)(arg0, arg1, &arg2, arg3);
+}
+static jintLong CALLBACK_drawWithFrame_inView_(jintLong func) {
+	CALLBACK_1drawWithFrame_1inView_1 = func;
+	return (jintLong)proc_CALLBACK_1drawWithFrame_1inView_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawWithFrame_1inView_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawWithFrame_1inView_1_FUNC);
+	rc = (jintLong)CALLBACK_drawWithFrame_inView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawWithFrame_1inView_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1expansionFrameWithFrame_1inView_1
+static jintLong CALLBACK_1expansionFrameWithFrame_1inView_1;
+static NSRect proc_CALLBACK_1expansionFrameWithFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
+	NSRect* lprc = ((NSRect* (*)(id, SEL, NSRect*, NSView*))CALLBACK_1expansionFrameWithFrame_1inView_1)(arg0, arg1, &arg2, arg3);
+	NSRect rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRect));
+	}
+	return rc;
+}
+static jintLong CALLBACK_expansionFrameWithFrame_inView_(jintLong func) {
+	CALLBACK_1expansionFrameWithFrame_1inView_1 = func;
+	return (jintLong)proc_CALLBACK_1expansionFrameWithFrame_1inView_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1expansionFrameWithFrame_1inView_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1expansionFrameWithFrame_1inView_1_FUNC);
+	rc = (jintLong)CALLBACK_expansionFrameWithFrame_inView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1expansionFrameWithFrame_1inView_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1firstRectForCharacterRange_1
+static jintLong CALLBACK_1firstRectForCharacterRange_1;
+static NSRect proc_CALLBACK_1firstRectForCharacterRange_1(id arg0, SEL arg1, NSRange arg2) {
+	NSRect* lprc = ((NSRect* (*)(id, SEL, NSRange*))CALLBACK_1firstRectForCharacterRange_1)(arg0, arg1, &arg2);
+	NSRect rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRect));
+	}
+	return rc;
+}
+static jintLong CALLBACK_firstRectForCharacterRange_(jintLong func) {
+	CALLBACK_1firstRectForCharacterRange_1 = func;
+	return (jintLong)proc_CALLBACK_1firstRectForCharacterRange_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1firstRectForCharacterRange_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1firstRectForCharacterRange_1_FUNC);
+	rc = (jintLong)CALLBACK_firstRectForCharacterRange_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1firstRectForCharacterRange_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1highlightSelectionInClipRect_1
+static jintLong CALLBACK_1highlightSelectionInClipRect_1;
+static void proc_CALLBACK_1highlightSelectionInClipRect_1(id arg0, SEL arg1, NSRect arg2) {
+	((void (*)(id, SEL, NSRect*))CALLBACK_1highlightSelectionInClipRect_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_highlightSelectionInClipRect_(jintLong func) {
+	CALLBACK_1highlightSelectionInClipRect_1 = func;
+	return (jintLong)proc_CALLBACK_1highlightSelectionInClipRect_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1highlightSelectionInClipRect_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1highlightSelectionInClipRect_1_FUNC);
+	rc = (jintLong)CALLBACK_highlightSelectionInClipRect_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1highlightSelectionInClipRect_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1hitTestForEvent_1inRect_1ofView_1
+static jintLong CALLBACK_1hitTestForEvent_1inRect_1ofView_1;
+static NSUInteger proc_CALLBACK_1hitTestForEvent_1inRect_1ofView_1(id arg0, SEL arg1, NSEvent* arg2, NSRect arg3, NSView* arg4) {
+	return ((NSUInteger (*)(id, SEL, NSEvent*, NSRect*, NSView*))CALLBACK_1hitTestForEvent_1inRect_1ofView_1)(arg0, arg1, arg2, &arg3, arg4);
+}
+static jintLong CALLBACK_hitTestForEvent_inRect_ofView_(jintLong func) {
+	CALLBACK_1hitTestForEvent_1inRect_1ofView_1 = func;
+	return (jintLong)proc_CALLBACK_1hitTestForEvent_1inRect_1ofView_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1hitTestForEvent_1inRect_1ofView_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1hitTestForEvent_1inRect_1ofView_1_FUNC);
+	rc = (jintLong)CALLBACK_hitTestForEvent_inRect_ofView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1hitTestForEvent_1inRect_1ofView_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1hitTest_1
+static jintLong CALLBACK_1hitTest_1;
+static NSView* proc_CALLBACK_1hitTest_1(id arg0, SEL arg1, NSPoint arg2) {
+	return ((NSView* (*)(id, SEL, NSPoint*))CALLBACK_1hitTest_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_hitTest_(jintLong func) {
+	CALLBACK_1hitTest_1 = func;
+	return (jintLong)proc_CALLBACK_1hitTest_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1hitTest_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1hitTest_1_FUNC);
+	rc = (jintLong)CALLBACK_hitTest_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1hitTest_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1imageRectForBounds_1
+static jintLong CALLBACK_1imageRectForBounds_1;
+static NSRect proc_CALLBACK_1imageRectForBounds_1(id arg0, SEL arg1, NSRect arg2) {
+	NSRect* lprc = ((NSRect* (*)(id, SEL, NSRect*))CALLBACK_1imageRectForBounds_1)(arg0, arg1, &arg2);
+	NSRect rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRect));
+	}
+	return rc;
+}
+static jintLong CALLBACK_imageRectForBounds_(jintLong func) {
+	CALLBACK_1imageRectForBounds_1 = func;
+	return (jintLong)proc_CALLBACK_1imageRectForBounds_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1imageRectForBounds_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1imageRectForBounds_1_FUNC);
+	rc = (jintLong)CALLBACK_imageRectForBounds_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1imageRectForBounds_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1markedRange
+static jintLong CALLBACK_1markedRange;
+static NSRange proc_CALLBACK_1markedRange(id arg0, SEL arg1) {
+	NSRange* lprc = ((NSRange* (*)(id, SEL))CALLBACK_1markedRange)(arg0, arg1);
+	NSRange rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRange));
+	}
+	return rc;
+}
+static jintLong CALLBACK_markedRange(jintLong func) {
+	CALLBACK_1markedRange = func;
+	return (jintLong)proc_CALLBACK_1markedRange;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1markedRange)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1markedRange_FUNC);
+	rc = (jintLong)CALLBACK_markedRange(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1markedRange_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1selectedRange
+static jintLong CALLBACK_1selectedRange;
+static NSRange proc_CALLBACK_1selectedRange(id arg0, SEL arg1) {
+	NSRange* lprc = ((NSRange* (*)(id, SEL))CALLBACK_1selectedRange)(arg0, arg1);
+	NSRange rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRange));
+	}
+	return rc;
+}
+static jintLong CALLBACK_selectedRange(jintLong func) {
+	CALLBACK_1selectedRange = func;
+	return (jintLong)proc_CALLBACK_1selectedRange;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1selectedRange)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1selectedRange_FUNC);
+	rc = (jintLong)CALLBACK_selectedRange(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1selectedRange_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1setFrameOrigin_1
+static jintLong CALLBACK_1setFrameOrigin_1;
+static void proc_CALLBACK_1setFrameOrigin_1(id arg0, SEL arg1, NSPoint arg2) {
+	((void (*)(id, SEL, NSPoint*))CALLBACK_1setFrameOrigin_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_setFrameOrigin_(jintLong func) {
+	CALLBACK_1setFrameOrigin_1 = func;
+	return (jintLong)proc_CALLBACK_1setFrameOrigin_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1setFrameOrigin_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1setFrameOrigin_1_FUNC);
+	rc = (jintLong)CALLBACK_setFrameOrigin_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1setFrameOrigin_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1setFrameSize_1
+static jintLong CALLBACK_1setFrameSize_1;
+static void proc_CALLBACK_1setFrameSize_1(id arg0, SEL arg1, NSSize arg2) {
+	((void (*)(id, SEL, NSSize*))CALLBACK_1setFrameSize_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_setFrameSize_(jintLong func) {
+	CALLBACK_1setFrameSize_1 = func;
+	return (jintLong)proc_CALLBACK_1setFrameSize_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1setFrameSize_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1setFrameSize_1_FUNC);
+	rc = (jintLong)CALLBACK_setFrameSize_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1setFrameSize_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1setFrame_1
+static jintLong CALLBACK_1setFrame_1;
+static void proc_CALLBACK_1setFrame_1(id arg0, SEL arg1, NSRect arg2) {
+	((void (*)(id, SEL, NSRect*))CALLBACK_1setFrame_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_setFrame_(jintLong func) {
+	CALLBACK_1setFrame_1 = func;
+	return (jintLong)proc_CALLBACK_1setFrame_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1setFrame_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1setFrame_1_FUNC);
+	rc = (jintLong)CALLBACK_setFrame_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1setFrame_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1setMarkedText_1selectedRange_1
+static jintLong CALLBACK_1setMarkedText_1selectedRange_1;
+static void proc_CALLBACK_1setMarkedText_1selectedRange_1(id arg0, SEL arg1, id arg2, NSRange arg3) {
+	((void (*)(id, SEL, id, NSRange*))CALLBACK_1setMarkedText_1selectedRange_1)(arg0, arg1, arg2, &arg3);
+}
+static jintLong CALLBACK_setMarkedText_selectedRange_(jintLong func) {
+	CALLBACK_1setMarkedText_1selectedRange_1 = func;
+	return (jintLong)proc_CALLBACK_1setMarkedText_1selectedRange_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1setMarkedText_1selectedRange_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1setMarkedText_1selectedRange_1_FUNC);
+	rc = (jintLong)CALLBACK_setMarkedText_selectedRange_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1setMarkedText_1selectedRange_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1setNeedsDisplayInRect_1
+static jintLong CALLBACK_1setNeedsDisplayInRect_1;
+static void proc_CALLBACK_1setNeedsDisplayInRect_1(id arg0, SEL arg1, NSRect arg2) {
+	((void (*)(id, SEL, NSRect*))CALLBACK_1setNeedsDisplayInRect_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_setNeedsDisplayInRect_(jintLong func) {
+	CALLBACK_1setNeedsDisplayInRect_1 = func;
+	return (jintLong)proc_CALLBACK_1setNeedsDisplayInRect_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1setNeedsDisplayInRect_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1setNeedsDisplayInRect_1_FUNC);
+	rc = (jintLong)CALLBACK_setNeedsDisplayInRect_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1setNeedsDisplayInRect_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1shouldChangeTextInRange_1replacementString_1
+static jintLong CALLBACK_1shouldChangeTextInRange_1replacementString_1;
+static BOOL proc_CALLBACK_1shouldChangeTextInRange_1replacementString_1(id arg0, SEL arg1, NSRange arg2, NSString* arg3) {
+	return ((BOOL (*)(id, SEL, NSRange*, NSString*))CALLBACK_1shouldChangeTextInRange_1replacementString_1)(arg0, arg1, &arg2, arg3);
+}
+static jintLong CALLBACK_shouldChangeTextInRange_replacementString_(jintLong func) {
+	CALLBACK_1shouldChangeTextInRange_1replacementString_1 = func;
+	return (jintLong)proc_CALLBACK_1shouldChangeTextInRange_1replacementString_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1shouldChangeTextInRange_1replacementString_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1shouldChangeTextInRange_1replacementString_1_FUNC);
+	rc = (jintLong)CALLBACK_shouldChangeTextInRange_replacementString_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1shouldChangeTextInRange_1replacementString_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1
+static jintLong CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1;
+static NSRange proc_CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1(id arg0, SEL arg1, NSTextView* arg2, NSRange arg3, NSRange arg4) {
+	NSRange* lprc = ((NSRange* (*)(id, SEL, NSTextView*, NSRange*, NSRange*))CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1)(arg0, arg1, arg2, &arg3, &arg4);
+	NSRange rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRange));
+	}
+	return rc;
+}
+static jintLong CALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_(jintLong func) {
+	CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1 = func;
+	return (jintLong)proc_CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1_FUNC);
+	rc = (jintLong)CALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1titleRectForBounds_1
+static jintLong CALLBACK_1titleRectForBounds_1;
+static NSRect proc_CALLBACK_1titleRectForBounds_1(id arg0, SEL arg1, NSRect arg2) {
+	NSRect* lprc = ((NSRect* (*)(id, SEL, NSRect*))CALLBACK_1titleRectForBounds_1)(arg0, arg1, &arg2);
+	NSRect rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRect));
+	}
+	return rc;
+}
+static jintLong CALLBACK_titleRectForBounds_(jintLong func) {
+	CALLBACK_1titleRectForBounds_1 = func;
+	return (jintLong)proc_CALLBACK_1titleRectForBounds_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1titleRectForBounds_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1titleRectForBounds_1_FUNC);
+	rc = (jintLong)CALLBACK_titleRectForBounds_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1titleRectForBounds_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1view_1stringForToolTip_1point_1userData_1
+static jintLong CALLBACK_1view_1stringForToolTip_1point_1userData_1;
+static NSString* proc_CALLBACK_1view_1stringForToolTip_1point_1userData_1(id arg0, SEL arg1, NSView* arg2, NSToolTipTag arg3, NSPoint arg4, void* arg5) {
+	return ((NSString* (*)(id, SEL, NSView*, NSToolTipTag, NSPoint*, void*))CALLBACK_1view_1stringForToolTip_1point_1userData_1)(arg0, arg1, arg2, arg3, &arg4, arg5);
+}
+static jintLong CALLBACK_view_stringForToolTip_point_userData_(jintLong func) {
+	CALLBACK_1view_1stringForToolTip_1point_1userData_1 = func;
+	return (jintLong)proc_CALLBACK_1view_1stringForToolTip_1point_1userData_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1view_1stringForToolTip_1point_1userData_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1view_1stringForToolTip_1point_1userData_1_FUNC);
+	rc = (jintLong)CALLBACK_view_stringForToolTip_point_userData_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1view_1stringForToolTip_1point_1userData_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1webView_1setFrame_1
+static jintLong CALLBACK_1webView_1setFrame_1;
+static void proc_CALLBACK_1webView_1setFrame_1(id arg0, SEL arg1, WebView* arg2, NSRect arg3) {
+	((void (*)(id, SEL, WebView*, NSRect*))CALLBACK_1webView_1setFrame_1)(arg0, arg1, arg2, &arg3);
+}
+static jintLong CALLBACK_webView_setFrame_(jintLong func) {
+	CALLBACK_1webView_1setFrame_1 = func;
+	return (jintLong)proc_CALLBACK_1webView_1setFrame_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1webView_1setFrame_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1webView_1setFrame_1_FUNC);
+	rc = (jintLong)CALLBACK_webView_setFrame_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1webView_1setFrame_1_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFDataGetBytePtr
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFDataGetBytePtr)
 	(JNIEnv *env, jclass that, jintLong arg0)

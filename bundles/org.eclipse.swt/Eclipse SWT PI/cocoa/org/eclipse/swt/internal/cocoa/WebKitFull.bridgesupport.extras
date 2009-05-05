@@ -349,7 +349,7 @@
 			<arg name="sender" swt_gen="true"></arg>
 			<arg name="resultListener" swt_gen="true"></arg>
 		</method>
-		<method selector="webView:setFrame:" swt_gen="true">
+		<method selector="webView:setFrame:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="sender" swt_gen="true"></arg>
 			<arg name="frame" swt_gen="true"></arg>
 		</method>

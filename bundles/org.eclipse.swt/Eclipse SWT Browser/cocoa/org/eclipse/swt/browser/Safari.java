@@ -129,7 +129,7 @@ public void create (Composite parent, int style) {
 		Callback7 = new Callback(safariClass, "browserProc", 7); //$NON-NLS-1$
 		int /*long*/ proc7 = Callback7.getAddress();
 		if (proc7 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		int /*long*/ setFrameProc = OS.webView_setFrame_CALLBACK(proc4);
+		int /*long*/ setFrameProc = OS.CALLBACK_webView_setFrame_(proc4);
 		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		String className = "SWTWebViewDelegate"; //$NON-NLS-1$
