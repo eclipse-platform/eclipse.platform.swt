@@ -357,7 +357,7 @@ public ImageData getImageData () {
 		} catch (NumberFormatException e) {}
 	}
 	int length = fileName.length ();
-	if (length != 0 && fileName.charAt (0) == '\"') {
+	if (length > 1 && fileName.charAt (0) == '\"') {
 		if (fileName.charAt (length - 1) == '\"') {
 			fileName = fileName.substring (1, length - 1);
 		}
