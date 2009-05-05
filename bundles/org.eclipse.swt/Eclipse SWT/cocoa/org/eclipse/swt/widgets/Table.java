@@ -493,7 +493,6 @@ void createHandle () {
 		checkColumn = checkColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
 		checkColumn.headerCell().setTitle(str);
 		widget.addTableColumn (checkColumn);
-		checkColumn.setWidth(getCheckColumnWidth());
 		checkColumn.setResizingMask(OS.NSTableColumnNoResizing);
 		checkColumn.setEditable(false);
 		int /*long*/ cls = NSButton.cellClass (); /* use our custom cell class */
@@ -503,6 +502,7 @@ void createHandle () {
 		buttonCell.setButtonType (OS.NSSwitchButton);
 		buttonCell.setImagePosition (OS.NSImageOnly);
 		buttonCell.setAllowsMixedState (true);
+		checkColumn.setWidth(getCheckColumnWidth());
 	}
 
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
@@ -2602,6 +2602,7 @@ public void setSelection (TableItem [] items) {
 void setSmallSize () {
 	if (checkColumn == null) return;
 	checkColumn.dataCell ().setControlSize (OS.NSSmallControlSize);
+	checkColumn.setWidth (getCheckColumnWidth ());
 }
 
 /**
