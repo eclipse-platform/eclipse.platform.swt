@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1236,12 +1236,13 @@ public class SWT {
 	public static final int ON_TOP = 1 << 14;
 	
 	/**
-	 * Style constant for tool window behavior (value is 1&lt;&lt;28).
+	 * Style constant for sheet window behavior (value is 1&lt;&lt;28).
 	 * <p>
 	 * A sheet window is a window intended to be used as a temporary modal
 	 * dialog that is attached to a parent window. It is typically used to
 	 * prompt the user before proceeding. The window trim, positioning and
-	 * general look of a sheet window is platform specific.
+	 * general look of a sheet window is platform specific. For example,
+	 * on the Mac the window title will not be visible at all.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Dialog</code> and subclasses</li>
