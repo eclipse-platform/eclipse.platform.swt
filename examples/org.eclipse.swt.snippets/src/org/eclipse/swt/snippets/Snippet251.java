@@ -48,7 +48,7 @@ public static void main (String [] args) {
 				public void widgetSelected (SelectionEvent e) {
 					System.out.println ("Calendar date selected (MM/DD/YYYY) = " + (calendar.getMonth () + 1) + "/" + calendar.getDay () + "/" + calendar.getYear ());
 					System.out.println ("Date selected (MM/YYYY) = " + (date.getMonth () + 1) + "/" + date.getYear ());
-					System.out.println ("Time selected (HH:MM) = " + time.getHours () + ":" + time.getMinutes ());
+					System.out.println ("Time selected (HH:MM) = " + time.getHours () + ":" + (time.getMinutes () < 10 ? "0" : "") + time.getMinutes ());
 					dialog.close ();
 				}
 			});
