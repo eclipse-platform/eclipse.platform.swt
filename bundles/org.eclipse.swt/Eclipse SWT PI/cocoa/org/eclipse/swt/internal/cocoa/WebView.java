@@ -36,6 +36,14 @@ public static boolean canShowMIMEType(NSString MIMEType) {
 	return OS.objc_msgSend_bool(OS.class_WebView, OS.sel_canShowMIMEType_, MIMEType != null ? MIMEType.id : 0);
 }
 
+public void copy(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_copy_, sender != null ? sender.id : 0);
+}
+
+public void cut(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_cut_, sender != null ? sender.id : 0);
+}
+
 public boolean goBack() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_goBack);
 }
@@ -52,6 +60,10 @@ public WebView initWithFrame(NSRect frame, NSString frameName, NSString groupNam
 public WebFrame mainFrame() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_mainFrame);
 	return result != 0 ? new WebFrame(result) : null;
+}
+
+public void paste(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_paste_, sender != null ? sender.id : 0);
 }
 
 public void reload(id sender) {

@@ -1355,17 +1355,26 @@ void handleEvent(int /*long*/ evtId) {
 
 		Event keyEvent = new Event();
 		keyEvent.widget = browser;
-		if (DOMEVENT_KEYDOWN.equals(type)) {
-			keyEvent.type = SWT.KeyDown;
-		} else {
-			keyEvent.type = SWT.KeyUp;
-		}
-		keyEvent.keyCode = translateKey(keyCode);
+		int eventType = DOMEVENT_KEYDOWN.equals(type) ? SWT.KeyDown : SWT.KeyUp;
+		keyEvent.type = eventType;
+		int translatedKey = translateKey (keyCode);
+		keyEvent.keyCode = translatedKey;
 		keyEvent.character = (char)charCode;
-		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+		int stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+		keyEvent.stateMask = stateMask;
 		browser.notifyListeners(keyEvent.type, keyEvent);
 		if (!keyEvent.doit) {
 			event.preventDefault();
+		} else {
+			if (eventType == SWT.KeyDown && stateMask == SWT.COMMAND) {
+				if (translatedKey == 'v') {
+					webView.paste (webView);
+				} else if (translatedKey == 'c') {
+					webView.copy (webView);
+				} else if (translatedKey == 'x') {
+					webView.cut (webView);
+				}
+			}
 		}
 		return;
 	}

@@ -171,6 +171,14 @@
 			<arg name="MIMEType" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="copy:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="cut:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="goBack" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -184,6 +192,10 @@
 			<retval swt_gen="true" swt_java_type="WebView"></retval>
 		</method>
 		<method selector="mainFrame" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="paste:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="reload:" swt_gen="true">
