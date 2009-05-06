@@ -212,9 +212,6 @@ public class Accessible {
 			accessibleObject.release ();
 			accessibleObject = null;
 		}
-		accessibleListeners = null;
-		controlListeners = null;
-		textListeners = null;
 	}
 	/**
 	 * Removes the listener from the collection of listeners who will
