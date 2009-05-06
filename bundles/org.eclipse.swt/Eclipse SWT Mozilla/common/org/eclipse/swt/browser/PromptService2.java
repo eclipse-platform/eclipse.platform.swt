@@ -317,37 +317,35 @@ int Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText,
 		* User selected OK. User name and password are returned as PRUnichar values. Any default
 		* value that we override must be freed using the nsIMemory service.
 		*/
-		int cnt, size;
-		int /*long*/ ptr;
-		char[] buffer;
-		int /*long*/[] result2 = new int /*long*/[1];
 		if (valueLabel[0] != null) {
-			cnt = valueLabel[0].length ();
-			buffer = new char[cnt + 1];
+			int /*long*/[] result2 = new int /*long*/[1];
+			int rc = XPCOM.NS_GetServiceManager (result2);
+			if (rc != XPCOM.NS_OK) SWT.error (rc);
+			if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);
+
+			nsIServiceManager serviceManager = new nsIServiceManager (result2[0]);
+			result2[0] = 0;
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result2);
+			if (rc != XPCOM.NS_OK) SWT.error (rc);
+			if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);		
+			serviceManager.Release ();
+
+			nsIMemory memory = new nsIMemory (result2[0]);
+			result2[0] = 0;
+
+			int cnt = valueLabel[0].length ();
+			char[] buffer = new char[cnt + 1];
 			valueLabel[0].getChars (0, cnt, buffer, 0);
-			size = buffer.length * 2;
-			ptr = C.malloc (size);
+			int size = buffer.length * 2;
+			int /*long*/ ptr = memory.Alloc (size);
 			XPCOM.memmove (ptr, buffer, size);
 			XPCOM.memmove (aValue, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
 
 			if (valueAddr[0] != 0) {
-				int rc = XPCOM.NS_GetServiceManager (result2);
-				if (rc != XPCOM.NS_OK) SWT.error (rc);
-				if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);
-			
-				nsIServiceManager serviceManager = new nsIServiceManager (result2[0]);
-				result2[0] = 0;
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result2);
-				if (rc != XPCOM.NS_OK) SWT.error (rc);
-				if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);		
-				serviceManager.Release ();
-				
-				nsIMemory memory = new nsIMemory (result2[0]);
-				result2[0] = 0;
 				memory.Free (valueAddr[0]);
-				memory.Release ();
 			}
+			memory.Release ();
 		}
 	}
 	if (aCheckState != 0) XPCOM.memmove (aCheckState, check, 4);
