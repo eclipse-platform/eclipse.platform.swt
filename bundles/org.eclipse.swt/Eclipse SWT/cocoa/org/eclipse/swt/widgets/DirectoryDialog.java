@@ -125,7 +125,6 @@ public String open () {
 	NSOpenPanel panel = NSOpenPanel.openPanel();
 	panel.setCanCreateDirectories(true);
 	panel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
-	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	panel.setMessage(NSString.stringWith(message != null ? message : ""));
 	panel.setCanChooseFiles(false);
@@ -134,7 +133,8 @@ public String open () {
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.beginSheet(panel, parent.window, null, 0, 0);
 	}
-	int /*long*/ response = panel.runModal();
+	NSString dir = filterPath != null ? NSString.stringWith(filterPath) : null;
+	int /*long*/ response = panel.runModalForDirectory(dir, null);
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
 	}

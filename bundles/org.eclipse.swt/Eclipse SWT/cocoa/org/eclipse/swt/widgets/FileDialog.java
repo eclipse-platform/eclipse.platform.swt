@@ -216,7 +216,6 @@ public String open () {
 		panel = openPanel;
 	}
 	panel.setCanCreateDirectories(true);
-	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
 	int /*long*/ jniRef = 0;
 	SWTPanelDelegate delegate = null;
 	if (filterExtensions != null && filterExtensions.length != 0) {
@@ -251,7 +250,9 @@ public String open () {
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.beginSheet(panel, parent.window, null, 0, 0);
 	}
-	int /*long*/ response = panel.runModal();
+	NSString dir = filterPath != null ? NSString.stringWith(filterPath) : null;
+	NSString file = fileName != null ? NSString.stringWith(fileName) : null;
+	int /*long*/ response = panel.runModalForDirectory(dir, file);
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
 	}

@@ -33,6 +33,10 @@ public int /*long*/ runModal() {
 	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
+public int /*long*/ runModalForDirectory(NSString path, NSString name) {
+	return OS.objc_msgSend(this.id, OS.sel_runModalForDirectory_file_, path != null ? path.id : 0, name != null ? name.id : 0);
+}
+
 public static NSSavePanel savePanel() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_savePanel);
 	return result != 0 ? new NSSavePanel(result) : null;

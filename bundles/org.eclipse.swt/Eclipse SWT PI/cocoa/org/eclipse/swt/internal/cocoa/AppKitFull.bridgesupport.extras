@@ -2779,6 +2779,11 @@
 		<method selector="runModal" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="runModalForDirectory:file:" swt_gen="true">
+			<arg name="path" swt_gen="true"></arg>
+			<arg name="name" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="savePanel" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>

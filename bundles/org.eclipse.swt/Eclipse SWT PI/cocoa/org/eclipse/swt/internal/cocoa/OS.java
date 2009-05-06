@@ -1328,6 +1328,7 @@ public static final int /*long*/ sel_rowHeight = sel_registerName("rowHeight");
 public static final int /*long*/ sel_rowsInRect_ = sel_registerName("rowsInRect:");
 public static final int /*long*/ sel_run = sel_registerName("run");
 public static final int /*long*/ sel_runModal = sel_registerName("runModal");
+public static final int /*long*/ sel_runModalForDirectory_file_ = sel_registerName("runModalForDirectory:file:");
 public static final int /*long*/ sel_runModalForWindow_ = sel_registerName("runModalForWindow:");
 public static final int /*long*/ sel_runModalWithPrintInfo_ = sel_registerName("runModalWithPrintInfo:");
 public static final int /*long*/ sel_runMode_beforeDate_ = sel_registerName("runMode:beforeDate:");
