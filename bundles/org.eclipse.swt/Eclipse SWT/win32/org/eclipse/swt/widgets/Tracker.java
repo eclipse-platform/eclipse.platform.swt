@@ -128,6 +128,7 @@ public Tracker (Composite parent, int style) {
  * @see SWT#RIGHT
  * @see SWT#UP
  * @see SWT#DOWN
+ * @see SWT#RESIZE
  */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
