@@ -133,6 +133,9 @@ public Menu (Control parent) {
  * @see SWT#BAR
  * @see SWT#DROP_DOWN
  * @see SWT#POP_UP
+ * @see SWT#NO_RADIO_GROUP
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

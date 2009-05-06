@@ -70,6 +70,7 @@ public class Sash extends Control {
  *
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
+ * @see SWT#SMOOTH
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
