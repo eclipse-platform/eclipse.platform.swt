@@ -1314,7 +1314,7 @@ public void create (Composite parent, int style) {
 		browser.dispose ();
 		error (XPCOM.NS_ERROR_FAILURE);
 	}
-	rc = baseWindow.Create ();
+	rc = delegate.createBaseWindow (baseWindow);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (XPCOM.NS_ERROR_FAILURE);

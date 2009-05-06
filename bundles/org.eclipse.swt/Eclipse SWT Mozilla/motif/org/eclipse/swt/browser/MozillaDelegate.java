@@ -13,6 +13,7 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.GTK;
+import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
@@ -85,6 +86,10 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 }
 
 void addWindowSubclass () {
+}
+
+int createBaseWindow (nsIBaseWindow baseWindow) {
+	return baseWindow.Create ();
 }
 
 int getHandle() {

@@ -12,6 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -75,6 +76,10 @@ void addWindowSubclass () {
 		MozillaProc = OS.GetWindowLongPtr (hwndChild, OS.GWL_WNDPROC);
 	}
 	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, SubclassProc.getAddress ());
+}
+
+int createBaseWindow (nsIBaseWindow baseWindow) {
+	return baseWindow.Create ();
 }
 
 int /*long*/ getHandle () {

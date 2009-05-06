@@ -13,6 +13,8 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
@@ -73,6 +75,21 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 }
 
 void addWindowSubclass () {
+}
+
+int createBaseWindow (nsIBaseWindow baseWindow) {
+	/*
+	* Feature of Mozilla on OSX.  Mozilla replaces the OSX application menu whenever
+	* a browser's base window is created.  The workaround is to restore the previous
+	* menu after creating the base window. 
+	*/
+	NSApplication application = NSApplication.sharedApplication ();
+	NSMenu mainMenu = application.mainMenu ();
+	mainMenu.retain ();
+	int rc = baseWindow.Create ();
+	application.setMainMenu (mainMenu);
+	mainMenu.release ();
+	return rc;
 }
 
 int /*long*/ getHandle () {
