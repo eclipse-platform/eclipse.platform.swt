@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 class ShellTab extends Tab {	
 	/* Style widgets added to the "Style" groups, and "Other" group */
 	Button noParentButton, parentButton;
-	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton, sheetButton;
+	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton, sheetButton, shellTrimButton, dialogTrimButton;
 	Button createButton, closeAllButton;
 	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
 	Button imageButton;
@@ -183,6 +183,12 @@ class ShellTab extends Tab {
 		toolButton.setText ("SWT.TOOL");
 		sheetButton = new Button (styleGroup, SWT.CHECK);
 		sheetButton.setText ("SWT.SHEET");
+		Label separator = new Label(styleGroup, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separator.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, true, false));
+		shellTrimButton = new Button (styleGroup, SWT.CHECK);
+		shellTrimButton.setText ("SWT.SHELL_TRIM");
+		dialogTrimButton = new Button (styleGroup, SWT.CHECK);
+		dialogTrimButton.setText ("SWT.DIALOG_TRIM");
 	
 		/* Create the modal style buttons */
 		modelessButton = new Button (modalStyleGroup, SWT.RADIO);
@@ -233,6 +239,8 @@ class ShellTab extends Tab {
 		maxButton.addSelectionListener (decorationButtonListener);
 		borderButton.addSelectionListener (decorationButtonListener);
 		resizeButton.addSelectionListener (decorationButtonListener);
+		dialogTrimButton.addSelectionListener (decorationButtonListener);
+		shellTrimButton.addSelectionListener (decorationButtonListener);
 		applicationModalButton.addSelectionListener (decorationButtonListener);
 		systemModalButton.addSelectionListener (decorationButtonListener);
 	
@@ -248,12 +256,13 @@ class ShellTab extends Tab {
 	 * @param event org.eclipse.swt.events.SelectionEvent
 	 */
 	public void decorationButtonSelected(SelectionEvent event) {
-	
-		/* Make sure if the modal style is SWT.APPLICATION_MODAL or 
-		 * SWT.SYSTEM_MODAL the style SWT.CLOSE is also selected.
+		Button widget = (Button) event.widget;
+		
+		/*
+		 * Make sure that if the modal style is SWT.APPLICATION_MODAL 
+		 * or SWT.SYSTEM_MODAL the style SWT.CLOSE is also selected.
 		 * This is to make sure the user can close the shell.
 		 */
-		Button widget = (Button) event.widget;
 		if (widget == applicationModalButton || widget == systemModalButton) {
 			if (widget.getSelection()) {
 				closeButton.setSelection (true);
@@ -267,25 +276,53 @@ class ShellTab extends Tab {
 			}
 		}	
 		/*
-		 * Make sure if the No Trim button is selected then
-		 * all other decoration buttons are deselected.
+		 * Make sure that if the SWT.NO_TRIM button is selected
+		 * then all other decoration buttons are deselected.
 		 */
-		if (widget.getSelection() && widget != noTrimButton) {
-			noTrimButton.setSelection (false);
-			return;
-		}
-		if (widget.getSelection() && widget == noTrimButton) {
-			if (applicationModalButton.getSelection() || systemModalButton.getSelection()) {
+		if (widget.getSelection()) {
+			if (widget == noTrimButton) {
+				if (applicationModalButton.getSelection() || systemModalButton.getSelection()) {
+					noTrimButton.setSelection (false);
+					return;
+				}
+				closeButton.setSelection (false);
+				titleButton.setSelection (false);
+				minButton.setSelection (false);
+				maxButton.setSelection (false);
+				borderButton.setSelection (false);
+				resizeButton.setSelection (false);
+			} else {
 				noTrimButton.setSelection (false);
-				return;
 			}
-			closeButton.setSelection (false);
-			titleButton.setSelection (false);
-			minButton.setSelection (false);
-			maxButton.setSelection (false);
-			borderButton.setSelection (false);
-			resizeButton.setSelection (false);
-			return;
+		}
+		
+		/*
+		 * Make sure that the SWT.DIALOG_TRIM and SWT.SHELL_TRIM buttons
+		 * are consistent.
+		 */
+		if (widget == dialogTrimButton || widget == shellTrimButton) {
+			if (widget.getSelection() && widget == dialogTrimButton) {
+				shellTrimButton.setSelection(false);
+			} else {
+				dialogTrimButton.setSelection(false);
+			}
+			//SHELL_TRIM = CLOSE | TITLE | MIN | MAX | RESIZE;
+			//DIALOG_TRIM = TITLE | CLOSE | BORDER;
+			closeButton.setSelection (widget.getSelection ());
+			titleButton.setSelection (widget.getSelection ());
+			minButton.setSelection (widget == shellTrimButton && widget.getSelection( ));
+			maxButton.setSelection (widget == shellTrimButton && widget.getSelection ());
+			borderButton.setSelection (widget == dialogTrimButton && widget.getSelection ());
+			resizeButton.setSelection (widget == shellTrimButton && widget.getSelection ());
+		} else {
+			boolean title = titleButton.getSelection ();
+			boolean close = closeButton.getSelection ();
+			boolean min = minButton.getSelection ();
+			boolean max = maxButton.getSelection ();
+			boolean border = borderButton.getSelection ();
+			boolean resize = resizeButton.getSelection ();
+			dialogTrimButton.setSelection(title && close && border && !min && !max && !resize);
+			shellTrimButton.setSelection(title && close && min && max && resize && !border);
 		}
 	}
 	
