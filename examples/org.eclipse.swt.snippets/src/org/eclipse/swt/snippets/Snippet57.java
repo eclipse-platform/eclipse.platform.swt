@@ -22,15 +22,21 @@ import org.eclipse.swt.widgets.*;
 public class Snippet57 {
 
 public static void main (String [] args) {
-	Display display = new Display ();
+	final Display display = new Display ();
 	Shell shell = new Shell (display);
-	ProgressBar bar = new ProgressBar (shell, SWT.SMOOTH);
+	final ProgressBar bar = new ProgressBar (shell, SWT.SMOOTH);
 	bar.setBounds (10, 10, 200, 32);
 	shell.open ();
-	for (int i=0; i<=bar.getMaximum (); i++) {
-		try {Thread.sleep (100);} catch (Throwable th) {}
-		bar.setSelection (i);
-	}
+	
+	display.timerExec(100, new Runnable() {
+		int i = 0;
+		public void run() {
+			if (bar.isDisposed()) return;
+			bar.setSelection(i++);
+			if (i <= bar.getMaximum()) display.timerExec(100, this);
+		}
+	});
+
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
