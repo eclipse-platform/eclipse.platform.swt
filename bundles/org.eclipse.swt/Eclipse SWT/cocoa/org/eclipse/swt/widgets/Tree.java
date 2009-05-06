@@ -2864,7 +2864,10 @@ public void showSelection () {
 	checkItems ();
 	//TODO - optimize
 	TreeItem [] selection = getSelection ();
-	if (selection.length > 0) showItem (selection [0], true);
+	if (selection.length > 0) {
+		checkData(selection [0]);
+		showItem (selection [0], true);
+	}
 }
 
 void updateCursorRects (boolean enabled) {

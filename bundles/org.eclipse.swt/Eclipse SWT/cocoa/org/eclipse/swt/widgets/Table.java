@@ -2760,7 +2760,10 @@ public void showItem (TableItem item) {
 public void showSelection () {
 	checkWidget ();
 	int index = getSelectionIndex ();
-	if (index >= 0) showIndex (index);
+	if (index >= 0) {
+		checkData(_getItem(index));
+		showIndex (index);
+	}
 }
 
 void sendDoubleSelection() {
