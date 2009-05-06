@@ -76,6 +76,7 @@ public class ExpandBar extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
+ * @see SWT#V_SCROLL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

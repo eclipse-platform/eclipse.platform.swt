@@ -90,6 +90,9 @@ public class CoolBar extends Composite {
  * </ul>
  *
  * @see SWT
+ * @see SWT#FLAT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

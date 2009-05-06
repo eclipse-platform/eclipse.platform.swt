@@ -104,6 +104,8 @@ public class Button extends Control {
  * @see SWT#RADIO
  * @see SWT#TOGGLE
  * @see SWT#FLAT
+ * @see SWT#UP
+ * @see SWT#DOWN
  * @see SWT#LEFT
  * @see SWT#RIGHT
  * @see SWT#CENTER

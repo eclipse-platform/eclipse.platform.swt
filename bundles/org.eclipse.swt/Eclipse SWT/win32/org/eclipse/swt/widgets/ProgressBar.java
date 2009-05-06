@@ -104,6 +104,7 @@ public class ProgressBar extends Control {
  * @see SWT#SMOOTH
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
+ * @see SWT#INDETERMINATE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

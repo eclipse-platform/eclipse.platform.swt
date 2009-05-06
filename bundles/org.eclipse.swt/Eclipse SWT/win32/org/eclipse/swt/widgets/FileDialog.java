@@ -100,6 +100,10 @@ public FileDialog (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#SAVE
+ * @see SWT#OPEN
+ * @see SWT#MULTI
  */
 public FileDialog (Shell parent, int style) {
 	super (parent, checkStyle (parent, style));

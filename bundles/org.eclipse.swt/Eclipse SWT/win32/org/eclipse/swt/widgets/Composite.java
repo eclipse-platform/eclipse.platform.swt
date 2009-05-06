@@ -87,6 +87,8 @@ Composite () {
  * @see SWT#NO_MERGE_PAINTS
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_RADIO_GROUP
+ * @see SWT#EMBEDDED
+ * @see SWT#DOUBLE_BUFFERED
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {

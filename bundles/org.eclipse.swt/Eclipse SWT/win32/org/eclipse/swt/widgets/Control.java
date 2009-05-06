@@ -96,6 +96,8 @@ Control () {
  * </ul>
  *
  * @see SWT#BORDER
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
