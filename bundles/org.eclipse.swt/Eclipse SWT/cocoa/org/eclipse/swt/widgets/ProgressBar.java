@@ -269,6 +269,14 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget();
 	((NSProgressIndicator)view).setDoubleValue(value);
+	/*
+	* Feature in Cocoa.  The progress bar does
+	* not redraw right away when a value is
+	* changed.  This is not strictly incorrect
+	* but unexpected.  The fix is to force all
+	* outstanding redraws to be delivered.
+	*/
+	update(false);
 }
 
 /**
