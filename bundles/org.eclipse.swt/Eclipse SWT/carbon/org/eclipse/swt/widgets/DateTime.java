@@ -220,7 +220,6 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 	} else { /* SWT.CALENDAR */
-		// TODO: on Cocoa, can use NSDatePicker - otherwise, use emulated:
 		super.createHandle();
 	}
 }
