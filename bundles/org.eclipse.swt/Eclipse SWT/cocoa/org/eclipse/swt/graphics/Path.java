@@ -130,6 +130,7 @@ public Path (Device device, Path path, float flatness) {
 			float /*double*/ defaultFlatness = NSBezierPath.defaultFlatness();
 			NSBezierPath.setDefaultFlatness(flatness);
 			handle = path.handle.bezierPathByFlatteningPath();
+			handle.retain();
 			NSBezierPath.setDefaultFlatness(defaultFlatness);		
 		}
 		if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -220,6 +221,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 		path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 		path.transformUsingAffineTransform(transform);
 		handle.appendBezierPath(path);
+		if (Math.abs(arcAngle) >= 360) handle.closePath();
 	} finally { 
 		if (pool != null) pool.release();
 	}
