@@ -1919,6 +1919,37 @@ static void blit(int op,
 		}
 		return;
 	}
+	/*Fast 32 to 32 blit */
+	if (alphaMode == 0x10000 && stype == TYPE_GENERIC_32_MSB && dtype == TYPE_GENERIC_32_MSB) {
+		if (srcRedMask == 0xFF00 && srcGreenMask == 0xff0000 && srcBlueMask == 0xff000000 && destRedMask == 0xFF0000 && destGreenMask == 0xff00 && destBlueMask == 0xff) {
+			for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+				for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+					destData[dp] = srcData[sp + 3];
+					destData[dp + 1] = srcData[sp + 2];
+					destData[dp + 2] = srcData[sp + 1];
+					destData[dp + 3] = srcData[sp];
+					sp += (sfx >>> 16) * 4;
+				}
+			}
+			return;
+		}
+	}
+	/*Fast 24 to 32 blit */
+	if (alphaMode == 0x10000 && stype == TYPE_GENERIC_24 && dtype == TYPE_GENERIC_32_MSB) {
+		if (srcRedMask == 0xFF && srcGreenMask == 0xff00 && srcBlueMask == 0xff0000 && destRedMask == 0xFF0000 && destGreenMask == 0xff00 && destBlueMask == 0xff) {
+			for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+				for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+					destData[dp] = 0;
+					destData[dp + 1] = srcData[sp + 2];
+					destData[dp + 2] = srcData[sp + 1];
+					destData[dp + 3] = srcData[sp];
+					sp += (sfx >>> 16) * 3;
+				}
+			}
+			return;
+		}
+	}
+
 	/*** Comprehensive blit (apply transformations) ***/
 	final int srcRedShift = getChannelShift(srcRedMask);
 	final byte[] srcReds = ANY_TO_EIGHT[getChannelWidth(srcRedMask, srcRedShift)];
@@ -2729,6 +2760,32 @@ static void blit(int op,
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0) || (alphaMode == ALPHA_TRANSPARENT)) return;
 
+	/*** Fast blit (straight copy) ***/
+	if (srcX == 0 && srcY == 0 && destX == 0 && destY == 0 && destWidth == srcWidth && destHeight == srcHeight) {
+		if (destDepth == 24 && srcDepth == 8 && (op & BLIT_ALPHA) == 0 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
+			for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (destWidth * 3); y < destHeight; y++, sp += spad, dp += dpad) {
+				for (int x = 0; x < destWidth; x++) {
+					int index = srcData[sp++] & 0xff;
+					destData[dp++] = srcReds[index];
+					destData[dp++] = srcGreens[index];
+					destData[dp++] = srcBlues[index];
+				}
+			}
+			return;
+		}
+		if (destDepth == 32 && destOrder == MSB_FIRST && srcDepth == 8 && (op & BLIT_ALPHA) == 0 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
+			for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (destWidth * 4); y < destHeight; y++, sp += spad, dp += dpad) {
+				for (int x = 0; x < destWidth; x++) {
+					int index = srcData[sp++] & 0xff;
+					dp++;
+					destData[dp++] = srcReds[index];
+					destData[dp++] = srcGreens[index];
+					destData[dp++] = srcBlues[index];
+				}
+			}
+			return;
+		}
+	}
 	// these should be supplied as params later
 	final int destAlphaMask = 0;
 
