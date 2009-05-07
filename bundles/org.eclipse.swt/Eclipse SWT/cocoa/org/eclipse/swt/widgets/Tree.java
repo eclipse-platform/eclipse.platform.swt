@@ -261,7 +261,23 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 }
 
 boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	return (getSelectionCount() > 0 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect));
+	NSPoint clickPoint = new NSPoint();
+	OS.memmove(clickPoint, arg1, NSPoint.sizeof);
+	NSOutlineView tree = (NSOutlineView)view;
+	
+	// If the current row is not selected and the user is not attempting to modify the selection, select the row first.
+	int /*long*/ row = tree.rowAtPoint(clickPoint);
+	int /*long*/ modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
+	
+	if (!tree.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask | OS.NSControlKeyMask)) == 0) {
+		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+		set = set.initWithIndex(row);
+		tree.selectRowIndexes (set, false);
+		set.release();
+	}
+	
+	// The clicked row must be selected to initiate a drag.
+	return (tree.isRowSelected(row) && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect));
 }
 
 boolean checkData (TreeItem item) {
@@ -1833,6 +1849,13 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 				}
 			}
 		}
+	}
+	else if (id == view.id) {
+		// Bug/feature in Cocoa:  If the tree has a context menu we just set it visible instead of returning
+		// it from menuForEvent:.  This has the side effect, however, of sending control-click to the NSTableView,
+		// which is interpreted as a single click that clears the selection.  Fix is to ignore control-click,
+		NSEvent event = new NSEvent(theEvent);
+		if ((event.modifierFlags() & OS.NSControlKeyMask) != 0) return;
 	}
 	super.mouseDown(id, sel, theEvent);
 }
