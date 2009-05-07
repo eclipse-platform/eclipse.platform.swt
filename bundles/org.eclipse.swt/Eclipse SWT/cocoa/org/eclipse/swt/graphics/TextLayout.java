@@ -402,6 +402,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				OS.free(pRectCount);
 				for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
 					OS.memmove(rect, pArray, NSRect.sizeof);
+					fixRect(rect);
 					rect.x += pt.x;
 					rect.y += pt.y;
 					rect.height = Math.max(rect.height, ascent + descent);
@@ -483,6 +484,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								}
 								for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
 									OS.memmove(rect, pArray, NSRect.sizeof);
+									fixRect(rect);
 									float /*double*/ underlineX = pt.x + rect.x;
 									float /*double*/ underlineY = pt.y + rect.y + rect.height - baseline + 1;
 									NSBezierPath path = NSBezierPath.bezierPath();
@@ -566,6 +568,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								}
 								for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
 									OS.memmove(rect, pArray, NSRect.sizeof);
+									fixRect(rect);
 									rect.x += pt.x + 0.5f;
 									rect.y += pt.y + 0.5f;
 									rect.width -= 0.5f;
@@ -585,6 +588,17 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		gc.handle.restoreGraphicsState();
 	} finally {
 		gc.uncheckGC(pool);
+	}
+}
+
+void fixRect(NSRect rect) {
+	for (int j = 0; j < lineBounds.length; j++) {
+		NSRect line = lineBounds[j];
+		if (line.y <= rect.y && rect.y < line.y + line.height) {
+			if (rect.x + rect.width > line.x + line.width) {
+				rect.width = line.x + line.width - rect.x;
+			}
+		}
 	}
 }
 
@@ -713,6 +727,7 @@ public Rectangle getBounds(int start, int end) {
 		int top = 0x7FFFFFFF, bottom = 0;
 		for (int i = 0; i < rectCount[0]; i++, pArray += NSRect.sizeof) {
 			OS.memmove(rect, pArray, NSRect.sizeof);
+			fixRect(rect);
 			left = Math.min(left, (int)rect.x);
 			right = Math.max(right, (int)Math.ceil(rect.x + rect.width));
 			top = Math.min(top, (int)rect.y);
@@ -1021,6 +1036,7 @@ public Point getLocation(int offset, boolean trailing) {
 			if (rectCount[0] > 0) {
 				NSRect bounds = new NSRect();
 				OS.memmove(bounds, pArray, NSRect.sizeof);
+				fixRect(bounds);
 				point.x += bounds.width;
 			}
 		}
