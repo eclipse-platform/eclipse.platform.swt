@@ -2105,9 +2105,10 @@ public void cut() {
  * Otherwise, we've moved back into the widget so end autoscrolling.
  */
 void doAutoScroll(Event event) {
-	if (event.y > clientAreaHeight - bottomMargin) {
+	int caretLine = getCaretLine();
+	if (event.y > clientAreaHeight - bottomMargin && caretLine != content.getLineCount() - 1) {
 		doAutoScroll(SWT.DOWN, event.y - (clientAreaHeight - bottomMargin));
-	} else if (event.y < topMargin) {
+	} else if (event.y < topMargin && caretLine != 0) {
 		doAutoScroll(SWT.UP, topMargin - event.y);
 	} else if (event.x < leftMargin && !wordWrap) {
 		doAutoScroll(ST.COLUMN_PREVIOUS, leftMargin - event.x);
@@ -2192,7 +2193,6 @@ void doAutoScroll(int direction, int distance) {
 						doVisualNext();
 						setMouseWordSelectionAnchor();
 						doMouseSelection();
-						
 					}
 					display.timerExec(H_SCROLL_RATE, this);
 				}
@@ -2786,14 +2786,12 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	// Is the mouse within the left client area border or on 
 	// a different line? If not the autoscroll selection 
 	// could be incorrectly reset. Fixes 1GKM3XS
-	if (0 <= y && y < clientAreaHeight && 
-		(0 <= x && x < clientAreaWidth || wordWrap ||	
-		newCaretLine != content.getLineAtOffset(caretOffset))) {
-		if (newCaretOffset != caretOffset || newCaretAlignemnt != caretAlignment) {
-			setCaretOffset(newCaretOffset, newCaretAlignemnt);
-			if (select) doMouseSelection();
-			showCaret();
-		}
+	boolean vchange = 0 <= y && y < clientAreaHeight || newCaretLine == 0 || newCaretLine == content.getLineCount() - 1;
+	boolean hchange = 0 <= x && x < clientAreaWidth || wordWrap || newCaretLine != content.getLineAtOffset(caretOffset); 
+	if (vchange && hchange && (newCaretOffset != caretOffset || newCaretAlignemnt != caretAlignment)) {
+		setCaretOffset(newCaretOffset, newCaretAlignemnt);
+		if (select) doMouseSelection();
+		showCaret();
 	}
 	if (!select) {
 		setCaretOffset(newCaretOffset, newCaretAlignemnt);
