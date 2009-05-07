@@ -2035,10 +2035,10 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 			fixPrintWindow = !OS.EqualRect (rect2, rect1);
 		}
 		/*
-		* Bug in Windows. PrintWindow does not print portions
-		* of the receiver that are removed by regions set int a
-		* parent.  The fix is temporarily reparent the window to
-		* the desktop, call PrintWindow() then reparent the window
+		* Bug in Windows. PrintWindow() does not print portions
+		* of the receiver that are clipped out using SetWindowRgn()
+		* in a parent.  The fix is temporarily reparent the window
+		* to the desktop, call PrintWindow() then reparent the window
 		* back.
 		*/
 		if (!fixPrintWindow) {
