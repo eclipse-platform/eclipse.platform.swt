@@ -292,14 +292,10 @@ public final class GIFFileFormat extends FileFormat {
 	 */
 	byte[] readApplicationExtension() {
 		try {
-			// Read size of block = 0x0B.
-			inputStream.read();
-			// Read application identifier.
-			byte[] application = new byte[8];
-			inputStream.read(application);
-			// Read authentication code.
-			byte[] authentication = new byte[3];
-			inputStream.read(authentication);
+			// Read block data.
+			int blockSize = inputStream.read();
+			byte[] blockData = new byte[blockSize];
+			inputStream.read(blockData);
 			// Read application data.
 			byte[] data = new byte[0];
 			byte[] block = new byte[255];
@@ -313,18 +309,20 @@ public final class GIFFileFormat extends FileFormat {
 			}
 			// Look for the NETSCAPE 'repeat count' field for an animated GIF.
 			boolean netscape =
-				application[0] == 'N' &&
-				application[1] == 'E' &&
-				application[2] == 'T' &&
-				application[3] == 'S' &&
-				application[4] == 'C' &&
-				application[5] == 'A' &&
-				application[6] == 'P' &&
-				application[7] == 'E';
+				blockSize > 7 &&
+				blockData[0] == 'N' &&
+				blockData[1] == 'E' &&
+				blockData[2] == 'T' &&
+				blockData[3] == 'S' &&
+				blockData[4] == 'C' &&
+				blockData[5] == 'A' &&
+				blockData[6] == 'P' &&
+				blockData[7] == 'E';
 			boolean authentic =
-				authentication[0] == '2' &&
-				authentication[1] == '.' &&
-				authentication[2] == '0';
+				blockSize > 10 &&
+				blockData[8] == '2' &&
+				blockData[9] == '.' &&
+				blockData[10] == '0';
 			if (netscape && authentic && data[0] == 01) { //$NON-NLS-1$ //$NON-NLS-2$
 				repeatCount = (data[1] & 0xFF) | ((data[2] & 0xFF) << 8);
 				loader.repeatCount = repeatCount;
