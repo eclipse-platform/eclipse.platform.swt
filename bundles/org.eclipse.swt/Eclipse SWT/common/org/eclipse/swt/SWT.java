@@ -1242,7 +1242,8 @@ public class SWT {
 	 * dialog that is attached to a parent window. It is typically used to
 	 * prompt the user before proceeding. The window trim, positioning and
 	 * general look of a sheet window is platform specific. For example,
-	 * on the Mac the window title will not be visible at all.
+	 * on the Macintosh, at the time this documentation was written, the
+	 * window title is not visible.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Dialog</code> and subclasses</li>
