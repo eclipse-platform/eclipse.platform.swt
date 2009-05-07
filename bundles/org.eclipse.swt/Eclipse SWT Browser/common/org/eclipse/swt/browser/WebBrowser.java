@@ -324,9 +324,7 @@ public void createFunction (BrowserFunction function) {
 	buffer.append (function.name);
 	buffer.append (";} catch (e) {} };"); //$NON-NLS-1$
 	function.functionString = buffer.toString ();
-	if (!execute (function.functionString)) {
-		deregisterFunction (function);
-	}
+	execute (function.functionString);
 }
 
 void deregisterFunction (BrowserFunction function) {
