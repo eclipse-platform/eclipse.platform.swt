@@ -375,6 +375,7 @@ public class OS extends C {
 	public static final int GTK_WINDOW_POPUP = 0x1;
 	public static final int GTK_WINDOW_TOPLEVEL = 0x0;
 	public static final int GDK_WINDOW_TYPE_HINT_DIALOG = 1;
+	public static final int GDK_WINDOW_TYPE_HINT_TOOLTIP = 10;
 	public static final int GTK_WRAP_NONE = 0;
 	public static final int GTK_WRAP_WORD = 2;
 	public static final int GTK_WRAP_WORD_CHAR = 3;

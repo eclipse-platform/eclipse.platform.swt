@@ -261,6 +261,7 @@ void createHandle (int index) {
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		OS.gtk_widget_modify_bg (handle, OS.GTK_STATE_NORMAL, background.handle);
 		OS.gtk_widget_set_app_paintable (handle, true);
+		OS.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	} else {
 		handle = OS.gtk_tooltips_new ();
 		if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
