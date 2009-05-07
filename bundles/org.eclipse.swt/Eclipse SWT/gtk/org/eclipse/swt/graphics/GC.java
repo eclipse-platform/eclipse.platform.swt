@@ -1627,18 +1627,20 @@ public void drawText (String string, int x, int y, int flags) {
 		checkGC(FONT);
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 			checkGC(BACKGROUND);
-			int[] width = new int[1], height = new int[1];
-			OS.pango_layout_get_size(data.layout, width, height);
-			Cairo.cairo_rectangle(cairo, x, y, OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+			if (data.stringWidth == -1) {
+				computeStringSize();
+			}
+			Cairo.cairo_rectangle(cairo, x, y, data.stringWidth, data.stringHeight);
 			Cairo.cairo_fill(cairo);
 		}
 		checkGC(FOREGROUND);
 		if ((data.style & SWT.MIRRORED) != 0) {
 			Cairo.cairo_save(cairo);
-			int[] width = new int[1], height = new int[1];
-			OS.pango_layout_get_size(data.layout, width, height);
+			if (data.stringWidth == -1) {
+				computeStringSize();
+			}
 			Cairo.cairo_scale(cairo, -1f,  1);
-			Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
+			Cairo.cairo_translate(cairo, -2 * x - data.stringWidth, 0);
 		}
 		Cairo.cairo_move_to(cairo, x, y);
 		OS.pango_cairo_show_layout(cairo, data.layout);
@@ -1655,21 +1657,20 @@ public void drawText (String string, int x, int y, int flags) {
 		OS.gdk_draw_layout_with_colors(data.drawable, handle, x, y, data.layout, null, background);
 	} else {
 		int /*long*/ layout = data.layout;
-		int[] w = new int[1], h = new int[1];
-		OS.pango_layout_get_size(layout, w, h);
-		int width = OS.PANGO_PIXELS(w[0]);
-		int height = OS.PANGO_PIXELS(h[0]);
-		int /*long*/ pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
+		if (data.stringWidth == -1) {
+			computeStringSize();
+		}
+		int /*long*/ pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), data.stringWidth, data.stringHeight, -1);
 		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
 		if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		GdkColor black = new GdkColor();
 		OS.gdk_gc_set_foreground(gdkGC, black);
-		OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, width, height);
+		OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, data.stringWidth, data.stringHeight);
 		OS.gdk_gc_set_foreground(gdkGC, data.foreground);
 		OS.gdk_draw_layout_with_colors(pixmap, gdkGC, 0, 0, layout, null, background);
 		OS.g_object_unref(gdkGC);
-		OS.gdk_draw_drawable(data.drawable, handle, pixmap, 0, 0, x, y, width, height);
+		OS.gdk_draw_drawable(data.drawable, handle, pixmap, 0, 0, x, y, data.stringWidth, data.stringHeight);
 		OS.g_object_unref(pixmap);
 	}
 }
@@ -2843,6 +2844,13 @@ void initCairo() {
 	setCairoClip(data.damageRgn, data.clipRgn);
 }
 
+void computeStringSize() {
+	int[] width = new int[1], height = new int[1];
+	OS.pango_layout_get_size(data.layout, width, height);
+	data.stringHeight = OS.PANGO_PIXELS(height[0]);
+	data.stringWidth = OS.PANGO_PIXELS(width[0]);
+}
+
 /**
  * Returns <code>true</code> if the receiver has a clipping
  * region set into it, and <code>false</code> otherwise.
@@ -3999,10 +4007,10 @@ public Point textExtent(String string, int flags) {
 	}
 	setString(string, flags);
 	checkGC(FONT);
-	if (data.stringWidth != -1) return new Point(data.stringWidth, data.stringHeight);
-	int[] width = new int[1], height = new int[1];
-	OS.pango_layout_get_size(data.layout, width, height);
-	return new Point(data.stringWidth = OS.PANGO_PIXELS(width[0]), data.stringHeight = OS.PANGO_PIXELS(height[0]));
+	if (data.stringWidth != -1) {
+		computeStringSize();
+	}
+	return new Point(data.stringWidth, data.stringHeight);
 }
 
 /**
