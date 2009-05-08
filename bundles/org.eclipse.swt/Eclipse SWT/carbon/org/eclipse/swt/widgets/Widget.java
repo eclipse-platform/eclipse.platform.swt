@@ -396,7 +396,7 @@ void copyToClipboard (char [] buffer) {
 	OS.ClearCurrentScrap ();
 	int [] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
+	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUTF16External, 0, buffer.length * 2, buffer);
 }
 
 int createCIcon (Image image) {
@@ -702,10 +702,10 @@ String getClipboardText () {
 	int [] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
 	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) == OS.noErr) {
+	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUTF16External, size) == OS.noErr) {
 		if (size [0] != 0) {
 			char [] buffer = new char [size [0] / 2];
-			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) == OS.noErr) {
+			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUTF16External, size, buffer) == OS.noErr) {
 				result = new String (buffer);
 			}
 		}

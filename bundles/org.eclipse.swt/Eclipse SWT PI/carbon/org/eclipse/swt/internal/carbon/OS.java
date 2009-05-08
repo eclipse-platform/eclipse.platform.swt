@@ -772,7 +772,7 @@ public class OS extends C {
 	public static final int kPMShowPageAttributesPDE = 1 << 8;
 	public static final int kQDUseCGTextMetrics = (1 << 2);
 	public static final int kQDUseCGTextRendering = (1 << 1);
-	public static final int kScrapFlavorTypeUnicode = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
+	public static final int kScrapFlavorTypeUTF16External = ('u'<<24) + ('t'<<16) + ('1'<<8) + '6';
 	public static final int kScrapFlavorTypeText = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final boolean kScrollBarsSyncAlwaysActive = true;
 	public static final boolean kScrollBarsSyncWithFocus = false;
