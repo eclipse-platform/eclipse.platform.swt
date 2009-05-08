@@ -4272,6 +4272,10 @@
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setShowsResizeIndicator:" swt_gen="true">
+			<arg name="show" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setShowsToolbarButton:" swt_gen="true">
 			<arg name="show" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>

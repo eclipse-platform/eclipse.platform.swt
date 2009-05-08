@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 476;
-int OS_nativeFunctionCallCount[476];
+int OS_nativeFunctionCount = 477;
+int OS_nativeFunctionCallCount[477];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -316,6 +316,7 @@ char * OS_nativeFunctionNames[] = {
 	"SectRgn",
 	"SetFrontProcess",
 	"SetRect",
+	"SetSystemUIMode",
 	"SetThemeCursor",
 	"TISCopyCurrentKeyboardInputSource",
 	"TISGetInputSourceProperty",

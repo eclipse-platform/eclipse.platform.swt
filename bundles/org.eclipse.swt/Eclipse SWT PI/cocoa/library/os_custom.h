@@ -45,3 +45,4 @@
 #define HIThemeDrawFocusRect_LIB "com.apple.Carbon"
 #define AcquireRootMenu_LIB "com.apple.Carbon"
 #define CancelMenuTracking_LIB "com.apple.Carbon"
+#define SetSystemUIMode_LIB "com.apple.Carbon"

@@ -33,6 +33,9 @@ public class OS extends C {
 	public static final int shiftKey = 1 << 9;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kHIThemeOrientationNormal = 0;
+	public static final int kUIModeNormal = 0;
+	public static final int kUIModeContentHidden = 2;
+	public static final int kUIModeAllHidden = 3;
 	
 	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
 	public static final int /*long*/ sel_sendCancelSelection = sel_registerName("sendCancelSelection");
@@ -105,6 +108,12 @@ public static final native int /*long*/ TISCopyCurrentKeyboardInputSource();
 public static final native int /*long*/ TISGetInputSourceProperty (int /*long*/ inputSource, int /*long*/ propertyKey);
 /** @method flags=no_gen */
 public static final native int /*long*/ kTISPropertyUnicodeKeyLayoutData();
+/**
+ * @method flags=dynamic
+ * @param inMode cast=(UInt32)
+ * @param inOptions cast=(UInt32)
+ */
+public static final native int SetSystemUIMode(int inMode, int inOptions);
 /**
  * @method flags=dynamic
  * @param keyLayoutPtr cast=(const UCKeyboardLayout *)
@@ -1564,6 +1573,7 @@ public static final int /*long*/ sel_setServicesMenu_ = sel_registerName("setSer
 public static final int /*long*/ sel_setShouldAntialias_ = sel_registerName("setShouldAntialias:");
 public static final int /*long*/ sel_setShowsPrintPanel_ = sel_registerName("setShowsPrintPanel:");
 public static final int /*long*/ sel_setShowsProgressPanel_ = sel_registerName("setShowsProgressPanel:");
+public static final int /*long*/ sel_setShowsResizeIndicator_ = sel_registerName("setShowsResizeIndicator:");
 public static final int /*long*/ sel_setShowsToolbarButton_ = sel_registerName("setShowsToolbarButton:");
 public static final int /*long*/ sel_setSize_ = sel_registerName("setSize:");
 public static final int /*long*/ sel_setState_ = sel_registerName("setState:");

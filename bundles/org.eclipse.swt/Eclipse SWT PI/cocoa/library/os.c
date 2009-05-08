@@ -4116,6 +4116,26 @@ fail:
 }
 #endif
 
+#ifndef NO_SetSystemUIMode
+JNIEXPORT jint JNICALL OS_NATIVE(SetSystemUIMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetSystemUIMode_FUNC);
+/*
+	rc = (jint)SetSystemUIMode((UInt32)arg0, (UInt32)arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, SetSystemUIMode)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(UInt32, UInt32))fp)((UInt32)arg0, (UInt32)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, SetSystemUIMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetThemeCursor
 JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
 	(JNIEnv *env, jclass that, jint arg0)

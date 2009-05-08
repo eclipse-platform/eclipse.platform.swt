@@ -289,6 +289,10 @@ public void setReleasedWhenClosed(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setReleasedWhenClosed_, flag);
 }
 
+public void setShowsResizeIndicator(boolean show) {
+	OS.objc_msgSend(this.id, OS.sel_setShowsResizeIndicator_, show);
+}
+
 public void setShowsToolbarButton(boolean show) {
 	OS.objc_msgSend(this.id, OS.sel_setShowsToolbarButton_, show);
 }

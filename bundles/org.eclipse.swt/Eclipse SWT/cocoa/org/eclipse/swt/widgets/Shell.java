@@ -122,6 +122,8 @@ public class Shell extends Decorations {
 	Control lastActive;
 	Rectangle normalBounds;
 	boolean keyInputHappened;
+	NSRect currentFrame;
+	NSRect fullScreenFrame;
 	
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -1334,16 +1336,37 @@ public void setEnabled (boolean enabled) {
  */
 public void setFullScreen (boolean fullScreen) {
 	checkWidget ();
+	if (this.fullScreen == fullScreen) return;
 	this.fullScreen = fullScreen; 
-//reparents into a new shell.
-//	if (fullScreen) {
-//		NSScreen screen = window.screen();
-//		contentView().enterFullScreenMode(screen, null);
-//		System.out.println(contentView().window()+ " " + window);
-//	} else {
-//		contentView().exitFullScreenModeWithOptions(null);
-//		System.out.println("out: "+contentView().window()+ " " + window);
-//	}
+
+	if (fullScreen) {
+		currentFrame = window.frame();
+		window.setShowsResizeIndicator(false); //only hides resize indicator
+		if (window.respondsToSelector(OS.sel_setMovable_)) {
+			OS.objc_msgSend(window.id, OS.sel_setMovable_, 0);
+		}
+		
+		fullScreenFrame = NSScreen.mainScreen().frame();
+		if (getMonitor().equals(display.getPrimaryMonitor ())) {
+			if (menuBar != null) {
+				float /*double*/ menuBarHt = currentFrame.height - contentView().frame().height;
+				fullScreenFrame.height -= menuBarHt;
+				OS.SetSystemUIMode(OS.kUIModeContentHidden, 0);
+			} 
+			else {
+				OS.SetSystemUIMode(OS.kUIModeAllHidden, 0);
+			}
+		}
+		window.setFrame(fullScreenFrame, true);
+		window.contentView().setFrame(fullScreenFrame);
+	} else {
+		window.setShowsResizeIndicator(true);
+		if (window.respondsToSelector(OS.sel_setMovable_)) {
+			OS.objc_msgSend(window.id, OS.sel_setMovable_, 1);
+		}
+		OS.SetSystemUIMode(OS.kUIModeNormal, 0);
+		window.setFrame(currentFrame, true);
+	}
 }
 
 public void setMenuBar (Menu menu) {
@@ -1658,26 +1681,16 @@ void updateParent (boolean visible) {
 
 void updateSystemUIMode () {
 	if (!getMonitor ().equals (display.getPrimaryMonitor ())) return;
-	boolean isActive = false;
-	Shell activeShell = display.getActiveShell ();
-	Shell current = this;
-	while (current != null) {
-		if (current.equals (activeShell)) {
-			isActive = true;
-			break;
+	if (fullScreen) {
+		int mode = OS.kUIModeAllHidden;
+		if (menuBar != null) {
+			mode = OS.kUIModeContentHidden;
 		}
-		current = (Shell) current.parent;
+		OS.SetSystemUIMode (mode, 0);
+		window.setFrame(fullScreenFrame, true);
+	} else {
+		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
 	}
-	if (!isActive) return;
-//	if (fullScreen) {
-//		int mode = OS.kUIModeAllHidden;
-//		if (menuBar != null) {
-//			mode = OS.kUIModeContentHidden;
-//		}
-//		OS.SetSystemUIMode (mode, 0);
-//	} else {
-//		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
-//	}
 }
 
 int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {
@@ -1699,6 +1712,19 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	Display display = this.display;
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
+	if (isDisposed ()) return;
+	Shell parentShell = this;
+	while (parentShell.parent != null) {
+		parentShell = (Shell) parentShell.parent;
+		if (parentShell.fullScreen) {
+			break;
+		}
+	}
+	if (!parentShell.fullScreen || menuBar != null) {
+		updateSystemUIMode ();
+	} else {
+		parentShell.updateSystemUIMode ();
+	}
 }
 
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
@@ -1707,6 +1733,10 @@ void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification)
 }
 
 void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	if (fullScreen) {
+		window.setFrame(fullScreenFrame, true);
+		window.contentView().setFrame(fullScreenFrame);
+	}
 	if (fixResize ()) {
 		NSRect rect = window.frame ();
 		rect.x = rect.y = 0;

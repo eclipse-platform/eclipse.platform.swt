@@ -324,6 +324,7 @@ typedef enum {
 	SectRgn_FUNC,
 	SetFrontProcess_FUNC,
 	SetRect_FUNC,
+	SetSystemUIMode_FUNC,
 	SetThemeCursor_FUNC,
 	TISCopyCurrentKeyboardInputSource_FUNC,
 	TISGetInputSourceProperty_FUNC,
