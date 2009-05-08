@@ -4007,7 +4007,7 @@ public Point textExtent(String string, int flags) {
 	}
 	setString(string, flags);
 	checkGC(FONT);
-	if (data.stringWidth != -1) {
+	if (data.stringWidth == -1) {
 		computeStringSize();
 	}
 	return new Point(data.stringWidth, data.stringHeight);
