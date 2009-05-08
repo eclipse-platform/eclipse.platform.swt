@@ -162,10 +162,6 @@ int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint poi
 	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
-boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	return callSuperBoolean(id, sel, arg0);
-}
-
 boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean(id, sel);
 }

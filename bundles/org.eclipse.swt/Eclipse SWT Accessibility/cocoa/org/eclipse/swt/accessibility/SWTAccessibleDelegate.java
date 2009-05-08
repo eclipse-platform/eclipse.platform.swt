@@ -75,12 +75,10 @@ class SWTAccessibleDelegate extends NSObject {
 
 		OS.class_addMethod(cls, OS.sel_accessibilityAttributeValue_, proc3Args, "@:@");
 		OS.class_addMethod(cls, OS.sel_accessibilityHitTest_, proc3Args, "@:{NSPoint}");
-		OS.class_addMethod(cls, OS.sel_accessibilityIsAttributeSettable_, proc3Args, "@:@");
 		OS.class_addMethod(cls, OS.sel_accessibilityActionDescription_, proc3Args, "@:@");
 		OS.class_addMethod(cls, OS.sel_accessibilityPerformAction_, proc3Args, "@:@");
 
 		OS.class_addMethod(cls, OS.sel_accessibilityAttributeValue_forParameter_, proc4Args, "@:@@");
-		OS.class_addMethod(cls, OS.sel_accessibilitySetValue_forAttribute_, proc4Args, "@:@@");
 
 		OS.objc_registerClassPair(cls);
 	}
@@ -140,10 +138,6 @@ class SWTAccessibleDelegate extends NSObject {
 		return accessibleParent.internal_accessibilityIsIgnored(childID);
 	}
 
-	boolean accessibilityIsAttributeSettable(NSString attribute) {
-		return accessibleParent.internal_accessibilityIsAttributeSettable(attribute, childID);
-	}
-
 	// Returns the deepest descendant of the UIElement hierarchy that contains the point. You can assume the point has already been determined to lie within the receiver. Override this method to do deeper hit testing within a UIElement - e.g. a NSMatrix would test its cells. The point is bottom-left relative screen coordinates.
 	id accessibilityHitTest(NSPoint point) {
 		return accessibleParent.internal_accessibilityHitTest(point, childID);
@@ -160,11 +154,6 @@ class SWTAccessibleDelegate extends NSObject {
 	
 	id accessibilityActionDescription(NSString action) {
 		return accessibleParent.internal_accessibilityActionDescription(action, childID);
-	}
-	
-	
-	void accessibilitySetValue_forAttribute(id value, NSString attribute) {
-		// This shouldn't be called!
 	}
 	
 	static NSArray retainedAutoreleased(NSArray inObject) {
@@ -210,9 +199,6 @@ class SWTAccessibleDelegate extends NSObject {
 			OS.memmove(point, arg0, NSPoint.sizeof);
 			id retObject = swtAcc.accessibilityHitTest(point);
 			return (retObject == null ? 0 : retObject.id);
-		} else if (sel == OS.sel_accessibilityIsAttributeSettable_) {
-			NSString attribute = new NSString(arg0);
-			return (swtAcc.accessibilityIsAttributeSettable(attribute) ? 1 : 0);
 		} else if (sel == OS.sel_accessibilityActionDescription_) {
 			NSString action = new NSString(arg0);
 			id retObject = swtAcc.accessibilityActionDescription(action);
@@ -234,10 +220,6 @@ class SWTAccessibleDelegate extends NSObject {
 			id parameter = new id(arg1);
 			id retObject = swtAcc.accessibilityAttributeValue_forParameter(attribute, parameter);
 			return (retObject == null ? 0 : retObject.id);
-		} else if (sel == OS.sel_accessibilitySetValue_forAttribute_) {
-			id value = new id(arg0);
-			NSString attribute = new NSString(arg1);
-			swtAcc.accessibilitySetValue_forAttribute(value, attribute);
 		}
 
 		return 0;

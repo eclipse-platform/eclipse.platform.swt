@@ -189,20 +189,6 @@ int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*lon
 	return super.accessibilityParameterizedAttributeNames(id, sel);
 }
 
-
-boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-
-	// TODO: Carbon didn't support setting attributes, so for now Cocoa doesn't as well.
-	//	NSString attribute = new NSString(arg0);
-	//		
-	//	if (accessible != null) {
-	//		return accessible.accessibilityIsAttributeSettable(attribute, ACC.CHILDID_SELF);
-	//	}	
-	//
-	//	return super.accessibilityIsAttributeSettable(id, sel, arg0);
-	return false;
-}
-
 int /*long*/ accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 	id returnValue = null;
 

@@ -448,10 +448,6 @@ public class Accessible {
 		return new id(OS.NSAccessibilityUnignoredAncestor(childIDToOs(event.childID).id));
 	}
 
-	public boolean internal_accessibilityIsAttributeSettable(NSString attribute, int childID) {
-		return false;
-	}
-
 	// Return YES if the UIElement doesn't show up to the outside world - i.e. its parent should return the UIElement's children as its own - cutting the UIElement out. E.g. NSControls are ignored when they are single-celled.
 	public boolean internal_accessibilityIsIgnored(int childID) {
 		return false;

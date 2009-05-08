@@ -4347,7 +4347,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<informal_protocol name="NSAccessibility" swt_gen="true">
+	<informal_protocol name="NSAccessibility" swt_gen="mixed">
 		<method selector="accessibilityActionDescription:" swt_gen="true">
 			<arg name="action" swt_gen="true"></arg>
 		</method>
@@ -4364,17 +4364,10 @@
 		<method selector="accessibilityHitTest:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="point" swt_gen="true"></arg>
 		</method>
-		<method selector="accessibilityIsAttributeSettable:" swt_gen="true">
-			<arg name="attribute" swt_gen="true"></arg>
-		</method>
 		<method selector="accessibilityIsIgnored" swt_gen="true"></method>
 		<method selector="accessibilityParameterizedAttributeNames" swt_gen="true"></method>
 		<method selector="accessibilityPerformAction:" swt_gen="true">
 			<arg name="action" swt_gen="true"></arg>
-		</method>
-		<method selector="accessibilitySetValue:forAttribute:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
-			<arg name="attribute" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSAccessibilityAdditions" swt_gen="true">

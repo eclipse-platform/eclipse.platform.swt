@@ -1958,7 +1958,6 @@ void addAccessibilityMethods(int /*long*/ cls, int /*long*/ proc2, int /*long*/ 
 	OS.class_addMethod(cls, OS.sel_accessibilityFocusedUIElement, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_accessibilityIsIgnored, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_accessibilityAttributeValue_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_accessibilityIsAttributeSettable_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_accessibilityHitTest_, accessibilityHitTestProc, "@:{NSPoint}");
 	OS.class_addMethod(cls, OS.sel_accessibilityAttributeValue_forParameter_, proc4, "@:@@");	
 	OS.class_addMethod(cls, OS.sel_accessibilityPerformAction_, proc3, "@:@");	
@@ -4734,8 +4733,6 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.accessibilityHitTest(id, sel, point);
 	} else if (sel == OS.sel_accessibilityAttributeValue_) {
 		return widget.accessibilityAttributeValue(id, sel, arg0);
-	} else if (sel == OS.sel_accessibilityIsAttributeSettable_) {
-		return (widget.accessibilityIsAttributeSettable(id, sel, arg0) ? 1 : 0);
 	} else if (sel == OS.sel_accessibilityPerformAction_) {
 		widget.accessibilityPerformAction(id, sel, arg0);
 	} else if (sel == OS.sel_accessibilityActionDescription_) {
