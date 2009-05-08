@@ -890,7 +890,14 @@ private void onDispose(Event e) {
 }
 void onFocusIn(Event e) {
 	if (inDispose) return;
-	if (state != STATE_UIACTIVE) doVerb(OLE.OLEIVERB_SHOW);
+	if (state != STATE_UIACTIVE) {
+		int /*long*/[] ppvObject = new int /*long*/[1];
+		if (objIUnknown.QueryInterface(COM.IIDIOleInPlaceObject, ppvObject) == COM.S_OK) {
+			IOleInPlaceObject objIOleInPlaceObject = new IOleInPlaceObject(ppvObject[0]);
+			objIOleInPlaceObject.Release();
+			doVerb(OLE.OLEIVERB_SHOW);
+		}
+	}
 	if (objIOleInPlaceObject == null) return;
 	if (isFocusControl()) return;
 	int /*long*/[] phwnd = new int /*long*/[1];
