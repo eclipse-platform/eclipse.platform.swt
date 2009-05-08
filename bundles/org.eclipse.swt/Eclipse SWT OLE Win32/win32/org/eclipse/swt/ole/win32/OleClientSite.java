@@ -1240,7 +1240,7 @@ private boolean saveToStorageFile(File file) {
 			int length = newFile.length();
 			char[] buffer = new char[length + 1];
 			newFile.getChars(0, length, buffer, 0);
-			int lpszNewFile = COM.CoTaskMemAlloc(buffer.length * 2);
+			int /*long*/ lpszNewFile = COM.CoTaskMemAlloc(buffer.length * 2);
 			COM.MoveMemory(lpszNewFile, buffer, buffer.length * 2);
 			result = persistFile.Save(lpszNewFile, false);
 			COM.CoTaskMemFree(lpszNewFile);
