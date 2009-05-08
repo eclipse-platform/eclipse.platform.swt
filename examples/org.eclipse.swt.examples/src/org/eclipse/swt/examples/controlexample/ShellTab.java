@@ -41,8 +41,9 @@ class ShellTab extends Tab {
 	 */
 	void closeAllShells() {
 		for (int i = 0; i<shellCount; i++) {
-			if (shells[i] != null & !shells [i].isDisposed ()) {
+			if (shells [i] != null & !shells [i].isDisposed ()) {
 				shells [i].dispose();
+				shells [i] = null;
 			}
 		}
 		shellCount = 0;
@@ -89,9 +90,14 @@ class ShellTab extends Tab {
 			shells [shellCount] = new Shell (shell, style);
 		}
 		final Shell currentShell = shells [shellCount];
-		Button button = new Button(currentShell, SWT.PUSH);
+		final Button button = new Button(currentShell, SWT.CHECK);
 		button.setBounds(20, 20, 120, 30);
-		button.setText(ControlExample.getResourceString("Button"));
+		button.setText(ControlExample.getResourceString("FullScreen"));
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				currentShell.setFullScreen(button.getSelection());
+			}
+		});
 		Button close = new Button(currentShell, SWT.PUSH);
 		close.setBounds(160, 20, 120, 30);
 		close.setText(ControlExample.getResourceString("Close"));
@@ -247,7 +253,6 @@ class ShellTab extends Tab {
 		/* Set the default state */
 		noParentButton.setSelection (true);
 		modelessButton.setSelection (true);
-		backgroundImageButton.setSelection(false);
 	}
 	
 	/**
