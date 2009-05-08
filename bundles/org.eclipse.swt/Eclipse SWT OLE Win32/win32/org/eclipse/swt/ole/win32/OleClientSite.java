@@ -832,7 +832,7 @@ public boolean isDirty() {
 	int /*long*/[] address = new int /*long*/[1];
 	if (objIOleObject.QueryInterface(COM.IIDIPersistFile, address) != COM.S_OK)
 		return true;
-	IPersistStorage permStorage = new IPersistStorage(address[0]);
+	IPersistFile permStorage = new IPersistFile(address[0]);
 	// Are the contents of the permanent storage different from the file?
 	int result = permStorage.IsDirty();
 	permStorage.Release();
