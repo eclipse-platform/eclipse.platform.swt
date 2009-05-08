@@ -290,22 +290,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawRect_1)
 }
 #endif
 
-#ifndef NO_CALLBACK_1drawWithFrame_1inView_1
-static jintLong CALLBACK_1drawWithFrame_1inView_1;
-static void proc_CALLBACK_1drawWithFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
-	((void (*)(id, SEL, NSRect*, NSView*))CALLBACK_1drawWithFrame_1inView_1)(arg0, arg1, &arg2, arg3);
+#ifndef NO_CALLBACK_1drawWithExpansionFrame_1inView_1
+static jintLong CALLBACK_1drawWithExpansionFrame_1inView_1;
+static void proc_CALLBACK_1drawWithExpansionFrame_1inView_1(id arg0, SEL arg1, NSRect arg2, NSView* arg3) {
+	((void (*)(id, SEL, NSRect*, NSView*))CALLBACK_1drawWithExpansionFrame_1inView_1)(arg0, arg1, &arg2, arg3);
 }
-static jintLong CALLBACK_drawWithFrame_inView_(jintLong func) {
-	CALLBACK_1drawWithFrame_1inView_1 = func;
-	return (jintLong)proc_CALLBACK_1drawWithFrame_1inView_1;
+static jintLong CALLBACK_drawWithExpansionFrame_inView_(jintLong func) {
+	CALLBACK_1drawWithExpansionFrame_1inView_1 = func;
+	return (jintLong)proc_CALLBACK_1drawWithExpansionFrame_1inView_1;
 }
-JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawWithFrame_1inView_1)
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawWithExpansionFrame_1inView_1)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, CALLBACK_1drawWithFrame_1inView_1_FUNC);
-	rc = (jintLong)CALLBACK_drawWithFrame_inView_(arg0);
-	OS_NATIVE_EXIT(env, that, CALLBACK_1drawWithFrame_1inView_1_FUNC);
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawWithExpansionFrame_1inView_1_FUNC);
+	rc = (jintLong)CALLBACK_drawWithExpansionFrame_inView_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawWithExpansionFrame_1inView_1_FUNC);
 	return rc;
 }
 #endif

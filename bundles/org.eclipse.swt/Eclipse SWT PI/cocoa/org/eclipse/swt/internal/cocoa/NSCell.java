@@ -45,8 +45,8 @@ public void drawInteriorWithFrame(NSRect cellFrame, NSView controlView) {
 	OS.objc_msgSend(this.id, OS.sel_drawInteriorWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
 }
 
-public void drawWithFrame(NSRect cellFrame, NSView controlView) {
-	OS.objc_msgSend(this.id, OS.sel_drawWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
+public void drawWithExpansionFrame(NSRect cellFrame, NSView view) {
+	OS.objc_msgSend(this.id, OS.sel_drawWithExpansionFrame_inView_, cellFrame, view != null ? view.id : 0);
 }
 
 public NSRect drawingRectForBounds(NSRect theRect) {

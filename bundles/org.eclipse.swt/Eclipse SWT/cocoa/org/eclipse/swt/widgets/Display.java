@@ -2010,7 +2010,7 @@ void initClasses () {
 	int /*long*/ isFlippedProc = OS.isFlipped_CALLBACK();
 	int /*long*/ drawRectProc = OS.CALLBACK_drawRect_(proc3);
 	int /*long*/ drawInteriorWithFrameInViewProc = OS.CALLBACK_drawInteriorWithFrame_inView_ (proc4);
-	int /*long*/ drawWithFrameInViewProc = OS.CALLBACK_drawWithFrame_inView_ (proc4);
+	int /*long*/ drawWithExpansionFrameProc = OS.CALLBACK_drawWithExpansionFrame_inView_ (proc4);
 	int /*long*/ imageRectForBoundsProc = OS.CALLBACK_imageRectForBounds_ (proc3);
 	int /*long*/ titleRectForBoundsProc = OS.CALLBACK_titleRectForBounds_ (proc3);
 	int /*long*/ hitTestForEvent_inRect_ofViewProc = OS.CALLBACK_hitTestForEvent_inRect_ofView_ (proc5);
@@ -2152,7 +2152,7 @@ void initClasses () {
 	OS.class_addIvar (cls, SWT_ROW, size, (byte)align, types);
 	OS.class_addIvar (cls, SWT_COLUMN, size, (byte)align, types);
 	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
-	OS.class_addMethod (cls, OS.sel_drawWithFrame_inView_, drawWithFrameInViewProc, "@:{NSRect}@");
+	OS.class_addMethod (cls, OS.sel_drawWithExpansionFrame_inView_, drawWithExpansionFrameProc, "@:{NSRect}@");
 	OS.class_addMethod (cls, OS.sel_imageRectForBounds_, imageRectForBoundsProc, "@:{NSRect}");
 	OS.class_addMethod (cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
 	OS.class_addMethod (cls, OS.sel_hitTestForEvent_inRect_ofView_, hitTestForEvent_inRect_ofViewProc, "@:@{NSRect}@");
@@ -4791,9 +4791,13 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	} else if (sel == OS.sel_setMarkedText_selectedRange_) {
 		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
-		widget.drawInteriorWithFrame_inView (id, sel, arg0, arg1);
-	} else if (sel == OS.sel_drawWithFrame_inView_) {
-		widget.drawWithFrame_inView (id, sel, arg0, arg1);
+		NSRect rect = new NSRect ();
+		OS.memmove (rect, arg0, NSRect.sizeof);
+		widget.drawInteriorWithFrame_inView (id, sel, rect, arg1);
+	} else if (sel == OS.sel_drawWithExpansionFrame_inView_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		widget.drawWithExpansionFrame_inView (id, sel, rect, arg1);
 	} else if (sel == OS.sel_accessibilityAttributeValue_forParameter_) {
 		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_tableView_didClickTableColumn_) {

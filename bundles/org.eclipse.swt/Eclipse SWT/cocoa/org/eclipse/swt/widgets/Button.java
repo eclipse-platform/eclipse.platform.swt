@@ -289,12 +289,10 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	callSuper (id, sel, image, rect, view);
 }
 
-void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ viewid) {
-	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ viewid) {
+	super.drawInteriorWithFrame_inView(id, sel, cellRect, viewid);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
-		NSRect cellRect = new NSRect ();
-		OS.memmove (cellRect, cellFrame, NSRect.sizeof);
 		NSCell nsCell = new NSCell(id);
 		float /*double*/ x = 0;
 		float /*double*/ y = (imageSize.height - cellRect.height)/2f;

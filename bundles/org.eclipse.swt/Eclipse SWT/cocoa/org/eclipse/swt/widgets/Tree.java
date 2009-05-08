@@ -83,7 +83,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending;
+	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion;
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
@@ -257,6 +257,21 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	NSSize size = super.cellSize(id, sel);
 	NSImage image = new NSCell(id).image();
 	if (image != null) size.width += imageBounds.width + IMAGE_GAP;
+	if (hooks(SWT.MeasureItem)) {
+		int /*long*/ [] outValue = new int /*long*/ [1];
+		OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
+		TreeItem item = (TreeItem) display.getWidget (outValue [0]);
+		OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
+		int /*long*/ tableColumn = outValue[0];
+		int columnIndex = 0;
+		for (int i=0; i<columnCount; i++) {
+			if (columns [i].nsColumn.id == tableColumn) {
+				columnIndex = i;
+				break;
+			}
+		}
+		sendMeasureItem (item, columnIndex, size);
+	}
 	return size;
 }
 
@@ -874,9 +889,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return false;
 }
 
-void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
-	NSRect rect = new NSRect ();
-	OS.memmove (rect, cellFrame, NSRect.sizeof);
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rect, int /*long*/ view) {
 	boolean hooksErase = hooks (SWT.EraseItem);
 	boolean hooksPaint = hooks (SWT.PaintItem);
 	boolean hooksMeasure = hooks (SWT.MeasureItem);
@@ -913,9 +926,11 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		selectionBackground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlColor : display.secondarySelectedControlColor);
 	}
 	
-	NSSize contentSize = cell.cellSize();
-	NSSize spacing = widget.intercellSpacing();
+	NSSize contentSize = super.cellSize(id, OS.sel_cellSize);
+	NSImage image = cell.image();
+	if (image != null) contentSize.width += imageBounds.width + IMAGE_GAP;
 	int contentWidth = (int)Math.ceil (contentSize.width);
+	NSSize spacing = widget.intercellSpacing();
 	int itemHeight = (int)Math.ceil (widget.rowHeight() + spacing.height);
 	
 	NSRect cellRect = widget.rectOfColumn (nsColumnIndex);
@@ -930,35 +945,17 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		NSRect frameCell = widget.frameOfCellAtColumn(nsColumnIndex, rowIndex);
 		offsetX = rect.x - frameCell.x;
 		offsetY = rect.y - frameCell.y;
+		if (drawExpansion) {
+			offsetX -= 0.5f;
+			offsetY -= 0.5f;
+		}
 	}
+	int itemX = (int)(rect.x - offsetX), itemY = (int)(rect.y - offsetY);
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
 	
 	if (hooksMeasure) {
-		GCData data = new GCData ();
-		data.paintRect = widget.frame ();
-		GC gc = GC.cocoa_new (this, data);
-		gc.setFont (item.getFont (columnIndex));
-		Event event = new Event ();
-		event.item = item;
-		event.gc = gc;
-		event.index = columnIndex;
-		event.width = contentWidth;
-		event.height = itemHeight;
-		sendEvent (SWT.MeasureItem, event);
-		gc.dispose ();
-		if (isDisposed ()) return;
-		if (item.isDisposed ()) return;
-		if (itemHeight < event.height) {
-			widget.setRowHeight (event.height);
-		}
-		if (columnCount == 0 && columnIndex == 0 && contentWidth != event.width) {
-			item.width = event.width;
-			item.width += widget.indentationPerLevel () * (1 + widget.levelForItem (item.handle));
-			if (setScrollWidth (item)) {
-				widget.setNeedsDisplay(true);
-			}
-		}
-	}	
+		sendMeasureItem(item, columnIndex, contentSize);
+	}
 
 	Color userForeground = null;
 	if (hooksErase) {
@@ -978,7 +975,9 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			gc.setForeground (item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-		gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
+		if (!drawExpansion) {
+			gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
+		}
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
@@ -1041,8 +1040,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	}
 
 	if (drawForeground) {
-		NSImage image = cell.image();
-		if (image != null) {
+		if ((!drawExpansion || hooksMeasure) && image != null) {
 			NSRect destRect = new NSRect();
 			destRect.x = rect.x + IMAGE_GAP;
 			destRect.y = rect.y + (float)Math.ceil((rect.height - imageBounds.height) / 2);
@@ -1064,6 +1062,7 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			rect.width -= imageWidth;
 		}
 		cell.setHighlighted (false);
+		boolean callSuper = false;
 		if (userForeground != null) {
 			/*
 			* Bug in Cocoa.  For some reason, it is not possible to change the
@@ -1091,10 +1090,19 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 			} else {
 				NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
 				cell.setTextColor(nsColor);
-				callSuper (id, sel, rect, view);
+				callSuper = true;
 			}			
 		} else {
-			callSuper (id, sel, rect, view);
+			callSuper = true;
+		}
+		if (callSuper) {
+			NSAttributedString attrStr = cell.attributedStringValue();
+			NSSize size = attrStr.size();
+			if (rect.height > size.height) {
+				rect.y += (rect.height - size.height) / 2;
+				rect.height = size.height;
+			}
+			super.drawInteriorWithFrame_inView(id, sel, rect, view);
 		}
 	}
 
@@ -1104,19 +1112,20 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		transform.translateXBy(offsetX, offsetY);
 		transform.concat();
 
-		NSRect contentRect = cell.titleRectForBounds (rect);
 		GCData data = new GCData ();
 		data.paintRect = cellRect;
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
-		if (isSelected) {
+		if (drawSelection) {
 			gc.setForeground (selectionForeground);
 			gc.setBackground (selectionBackground);
 		} else {
 			gc.setForeground (userForeground != null ? userForeground : item.getForeground (columnIndex));
 			gc.setBackground (item.getBackground (columnIndex));
 		}
-		gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
+		if (!drawExpansion) {
+			gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
+		}
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
@@ -1124,8 +1133,8 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 		if (drawForeground) event.detail |= SWT.FOREGROUND;
 		if (drawBackground) event.detail |= SWT.BACKGROUND;
 		if (drawSelection) event.detail |= SWT.SELECTED;
-		event.x = (int)contentRect.x;
-		event.y = (int)contentRect.y;
+		event.x = itemX;
+		event.y = itemY;
 		event.width = contentWidth;
 		event.height = itemHeight;
 		sendEvent (SWT.PaintItem, event);
@@ -1135,17 +1144,10 @@ void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellF
 	}
 }
 
-void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
-	NSRect rect = new NSRect ();
-	OS.memmove (rect, cellFrame, NSRect.sizeof);
-	NSCell cell = new NSCell(id);
-	NSAttributedString attrStr = cell.attributedStringValue();
-	NSSize size = attrStr.size();
-	if (rect.height > size.height) {
-		rect.y += (rect.height - size.height) / 2;
-		rect.height = size.height;
-	}
-	callSuper (id, sel, rect, view);
+void drawWithExpansionFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {
+	drawExpansion = true;
+	super.drawWithExpansionFrame_inView(id, sel, cellFrame, view);
+	drawExpansion = false;
 }
 
 void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ itemID, boolean children) {
@@ -1166,9 +1168,35 @@ void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	setScrollWidth (false, item.items, true);
 }
 
-
 NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
-	if (toolTipText == null) return super.expansionFrameWithFrame_inView(id, sel, cellRect, view);
+	if (toolTipText == null) {
+		NSRect rect = super.expansionFrameWithFrame_inView(id, sel, cellRect, view);
+		NSCell cell = new NSCell(id);
+		if (rect.width != 0 && rect.height != 0) {
+			if (hooks(SWT.MeasureItem)) {
+				NSSize cellSize = cell.cellSize();
+				cellRect.width = cellSize.width;
+				return cellRect;
+			}
+		} else {
+			NSRect expansionRect;
+			if (hooks(SWT.MeasureItem)) {
+				expansionRect = cellRect;
+				NSSize cellSize = cell.cellSize();
+				expansionRect.width = cellSize.width;
+			} else {
+				expansionRect = cell.titleRectForBounds(cellRect);
+				NSSize cellSize = super.cellSize(id, OS.sel_cellSize);
+				expansionRect.width = cellSize.width;
+			}
+			NSRect contentRect = scrollView.contentView().bounds();
+			OS.NSIntersectionRect(contentRect, expansionRect, contentRect);
+			if (!OS.NSEqualRects(expansionRect, contentRect)) {
+				return expansionRect;
+			}
+		}
+		return rect;
+	}
 	return new NSRect();
 }
 
@@ -1928,16 +1956,14 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 			break;
 		}
 	}
-	NSOutlineView widget = (NSOutlineView)view;
-	int /*long*/ rowIndex = widget.rowForItem (item.handle);
 	NSTextFieldCell textCell = new NSTextFieldCell (cell);
 	OS.object_setInstanceVariable(cell, Display.SWT_ROW, itemID);
 	OS.object_setInstanceVariable(cell, Display.SWT_COLUMN, tableColumn);
 	Image image = index == 0 ? item.image : (item.images == null ? null : item.images [index]);
 	textCell.setImage (image != null ? image.handle : null);
 	NSColor color;
-	if (widget.isEnabled()) {
-		if (widget.isRowSelected (rowIndex)) {
+	if (textCell.isEnabled()) {
+		if (textCell.isHighlighted ()) {
 			color = NSColor.selectedControlTextColor();
 		} else {
 			Color foreground = item.cellForeground != null ? item.cellForeground [index] : null;
@@ -2307,6 +2333,41 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		}
 	}
 	return result;
+}
+
+void sendMeasureItem (TreeItem item, int columnIndex, NSSize size) {
+	NSOutlineView widget = (NSOutlineView)this.view;
+	int contentWidth = (int)Math.ceil (size.width);
+	NSSize spacing = widget.intercellSpacing();
+	int itemHeight = (int)Math.ceil (widget.rowHeight() + spacing.height);
+	GCData data = new GCData ();
+	data.paintRect = widget.frame ();
+	GC gc = GC.cocoa_new (this, data);
+	gc.setFont (item.getFont (columnIndex));
+	Event event = new Event ();
+	event.item = item;
+	event.gc = gc;
+	event.index = columnIndex;
+	event.width = contentWidth;
+	event.height = itemHeight;
+	sendEvent (SWT.MeasureItem, event);
+	gc.dispose ();
+	if (!isDisposed () && !item.isDisposed ()) {
+		size.width = event.width;
+		size.height = event.height;
+		if (itemHeight < event.height) {
+			widget.setRowHeight (event.height);
+		}
+		if (contentWidth != event.width) {
+			if (columnCount == 0 && columnIndex == 0) {
+				item.width = event.width;
+				item.width += widget.indentationPerLevel () * (1 + widget.levelForItem (item.handle));
+				if (setScrollWidth (item)) {
+					widget.setNeedsDisplay(true);
+				}
+			}
+		}
+	}
 }
 
 void selectItems (TreeItem[] items, boolean ignoreDisposed) {

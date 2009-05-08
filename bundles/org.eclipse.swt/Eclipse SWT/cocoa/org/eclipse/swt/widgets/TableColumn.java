@@ -200,10 +200,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
-	NSRect cellRect = new NSRect ();
-	OS.memmove (cellRect, cellFrame, NSRect.sizeof);
-
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
 	/*
 	 * Feature in Cocoa.  When the last column in a table does not reach the
 	 * rightmost edge of the table view, the cell that draws the rightmost-

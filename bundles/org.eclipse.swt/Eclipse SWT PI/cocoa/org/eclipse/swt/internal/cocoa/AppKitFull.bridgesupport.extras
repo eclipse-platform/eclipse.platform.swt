@@ -985,10 +985,15 @@
 			<arg name="controlView" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="drawWithFrame:inView:" swt_gen="true" swt_gen_custom_callback="true">
+		<method selector="drawWithExpansionFrame:inView:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="cellFrame" swt_gen="true"></arg>
-			<arg name="controlView" swt_gen="true"></arg>
+			<arg name="view" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="drawWithFrame:inView:" swt_gen_custom_callback="true">
+			<arg name="cellFrame"></arg>
+			<arg name="controlView"></arg>
+			<retval></retval>
 		</method>
 		<method selector="drawingRectForBounds:" swt_gen="true">
 			<arg name="theRect" swt_gen="true"></arg>

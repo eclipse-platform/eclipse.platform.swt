@@ -30,7 +30,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1drawImage_1withFrame_1inView_1",
 	"CALLBACK_1drawInteriorWithFrame_1inView_1",
 	"CALLBACK_1drawRect_1",
-	"CALLBACK_1drawWithFrame_1inView_1",
+	"CALLBACK_1drawWithExpansionFrame_1inView_1",
 	"CALLBACK_1expansionFrameWithFrame_1inView_1",
 	"CALLBACK_1firstRectForCharacterRange_1",
 	"CALLBACK_1highlightSelectionInClipRect_1",

@@ -364,7 +364,7 @@ public static final native int /*long*/ CALLBACK_drawInteriorWithFrame_inView_(i
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_drawRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
-public static final native int /*long*/ CALLBACK_drawWithFrame_inView_(int /*long*/ func);
+public static final native int /*long*/ CALLBACK_drawWithExpansionFrame_inView_(int /*long*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRect;NSView*;,callback_flags=struct;none;none;struct;none; */
 public static final native int /*long*/ CALLBACK_expansionFrameWithFrame_inView_(int /*long*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRange;,callback_flags=struct;none;none;struct; */
@@ -906,7 +906,7 @@ public static final int /*long*/ sel_drawInteriorWithFrame_inView_ = sel_registe
 public static final int /*long*/ sel_drawRect_ = sel_registerName("drawRect:");
 public static final int /*long*/ sel_drawSortIndicatorWithFrame_inView_ascending_priority_ = sel_registerName("drawSortIndicatorWithFrame:inView:ascending:priority:");
 public static final int /*long*/ sel_drawStatusBarBackgroundInRect_withHighlight_ = sel_registerName("drawStatusBarBackgroundInRect:withHighlight:");
-public static final int /*long*/ sel_drawWithFrame_inView_ = sel_registerName("drawWithFrame:inView:");
+public static final int /*long*/ sel_drawWithExpansionFrame_inView_ = sel_registerName("drawWithExpansionFrame:inView:");
 public static final int /*long*/ sel_drawingRectForBounds_ = sel_registerName("drawingRectForBounds:");
 public static final int /*long*/ sel_elementAtIndex_associatedPoints_ = sel_registerName("elementAtIndex:associatedPoints:");
 public static final int /*long*/ sel_elementCount = sel_registerName("elementCount");

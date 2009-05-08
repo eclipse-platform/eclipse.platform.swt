@@ -38,7 +38,7 @@ typedef enum {
 	CALLBACK_1drawImage_1withFrame_1inView_1_FUNC,
 	CALLBACK_1drawInteriorWithFrame_1inView_1_FUNC,
 	CALLBACK_1drawRect_1_FUNC,
-	CALLBACK_1drawWithFrame_1inView_1_FUNC,
+	CALLBACK_1drawWithExpansionFrame_1inView_1_FUNC,
 	CALLBACK_1expansionFrameWithFrame_1inView_1_FUNC,
 	CALLBACK_1firstRectForCharacterRange_1_FUNC,
 	CALLBACK_1highlightSelectionInClipRect_1_FUNC,

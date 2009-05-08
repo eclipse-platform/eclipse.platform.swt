@@ -555,13 +555,12 @@ void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
 }
 
-void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
-	NSRect rect = new NSRect();
-	OS.memmove(rect, cellFrame, NSRect.sizeof);
-	callSuper(id, sel, rect, view);
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {
+	callSuper(id, sel, cellFrame, view);
 }
 
-void drawWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
+void drawWithExpansionFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {
+	callSuper(id, sel, cellFrame, view);
 }
 
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
