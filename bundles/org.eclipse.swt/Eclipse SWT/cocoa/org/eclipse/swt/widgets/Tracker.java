@@ -349,14 +349,13 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
-	NSRect frame = window.frame();
 	NSGraphicsContext context = window.graphicsContext();
 	NSGraphicsContext.static_saveGraphicsState();
 	NSGraphicsContext.setCurrentContext(context);
 	NSAffineTransform transform = NSAffineTransform.transform();
 	context.saveGraphicsState();
 	transform.scaleXBy(1, -1);
-	transform.translateXBy(0, -frame.height);
+	transform.translateXBy(0, -display.getPrimaryFrame().height);
 	transform.concat();
 	Point parentOrigin;
 	if (parent != null) {
@@ -365,20 +364,29 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 		parentOrigin = new Point (0, 0);	
 	}
 	context.setCompositingOperation(erase ? OS.NSCompositeClear : OS.NSCompositeSourceOver);
+	NSRect rectFrame = new NSRect();
+	NSPoint globalPoint = new NSPoint();
+
 	for (int i=0; i<rects.length; i++) {
 		Rectangle rect = rects [i];
-		frame.x = rect.x + parentOrigin.x;
-		frame.y = rect.y + parentOrigin.y;
-		frame.width = rect.width;
-		frame.height = rect.height;
+		rectFrame.x = rect.x + parentOrigin.x;
+		rectFrame.y = rect.y + parentOrigin.y;
+		rectFrame.width = rect.width;
+		rectFrame.height = rect.height;
+		globalPoint.x = rectFrame.x;
+		globalPoint.y = rectFrame.y;
+		globalPoint = window.convertScreenToBase(globalPoint);
+		rectFrame.x = globalPoint.x;
+		rectFrame.y = globalPoint.y;
+		
 		if (erase) {
-			frame.width++;
-			frame.height++;
-			NSBezierPath.fillRect(frame);
+			rectFrame.width++;
+			rectFrame.height++;
+			NSBezierPath.fillRect(rectFrame);
 		} else {
-			frame.x += 0.5f;
-			frame.y += 0.5f;
-			NSBezierPath.strokeRect(frame);
+			rectFrame.x += 0.5f;
+			rectFrame.y += 0.5f;
+			NSBezierPath.strokeRect(rectFrame);
 		}
 	}
 	if (!erase) context.flushGraphics();
