@@ -6463,6 +6463,7 @@ boolean invokeBlockAction(int action) {
 			doBlockWord(true);
 			return true;
 		case ST.SELECT_ALL:
+			return false;
 		case ST.SELECT_PAGE_UP:
 		case ST.SELECT_PAGE_DOWN:
 		case ST.SELECT_TEXT_START:
@@ -7368,6 +7369,17 @@ void sendAccessibleTextChanged(int start, int newCharCount, int replaceCharCount
  */
 public void selectAll() {
 	checkWidget();
+	if (blockSelection) {
+		renderer.calculate(0, content.getLineCount());
+		setScrollBars(false);
+		int verticalScrollOffset = getVerticalScrollOffset();
+		int left = leftMargin - horizontalScrollOffset;
+		int top = topMargin - verticalScrollOffset;
+		int right = renderer.getWidth() - rightMargin - horizontalScrollOffset;
+		int bottom = renderer.getHeight() - bottomMargin - verticalScrollOffset;
+		setBlockSelectionLocation(left, top, right, bottom, false);
+		return;
+	}
 	setSelection(0, Math.max(getCharCount(),0));
 }
 /**
