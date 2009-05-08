@@ -90,6 +90,7 @@ class ShellTab extends Tab {
 			shells [shellCount] = new Shell (shell, style);
 		}
 		final Shell currentShell = shells [shellCount];
+		currentShell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		final Button button = new Button(currentShell, SWT.CHECK);
 		button.setBounds(20, 20, 120, 30);
 		button.setText(ControlExample.getResourceString("FullScreen"));
