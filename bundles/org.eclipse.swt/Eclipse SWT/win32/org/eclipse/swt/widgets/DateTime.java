@@ -32,7 +32,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * Note: Only one of the styles DATE, TIME, or CALENDAR may be specified,
  * and only one of the styles SHORT, MEDIUM, or LONG may be specified.
- * The DROP_DOWN style is only valid with the DATE style.
+ * The DROP_DOWN style is a <em>HINT</em>, and it is only valid with the DATE style.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
