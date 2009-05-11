@@ -1030,7 +1030,11 @@ public Accessible getAccessible () {
 
 /**
  * Returns the receiver's background color.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on some versions of Windows the background of a TabFolder,
+ * is a gradient rather than a solid color.
+ * </p>
  * @return the background color
  *
  * @exception SWTException <ul>
