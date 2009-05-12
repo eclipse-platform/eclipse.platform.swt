@@ -61,15 +61,6 @@ public static void main (String [] args) {
 	c.addListener (SWT.KeyDown, new Listener () {
 		public void handleEvent (Event e) {
 			System.out.println ("KEY");
-			for (int i=0; i<64; i++) {
-				Color c1 = red, c2 = blue;
-				if (c.isFocusControl ()) {
-					c1 = blue;  c2 = red;
-				}
-				c.setBackground (c1);
-				c.update ();
-				c.setBackground (c2);
-			}
 		}
 	});
 	Text t = new Text (shell, SWT.SINGLE | SWT.BORDER);
