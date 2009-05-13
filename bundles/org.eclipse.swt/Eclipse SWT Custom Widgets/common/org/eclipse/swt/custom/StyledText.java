@@ -5448,7 +5448,7 @@ void insertBlockSelectionText(char key, int action) {
 			}
 		}
 		if (outOfLine) {
-			if (line.length() > delta) {
+			if (line.length() >= delta) {
 				delta = line.length();
 				offset = lineEndOffset + length;
 			}
