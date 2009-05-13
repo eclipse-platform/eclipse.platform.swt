@@ -1802,8 +1802,6 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 					switch (firstChar) {
 						case '\t':
 						case 25:
-							window.firstResponder().keyDown(nsEvent);
-							break;
 						case OS.NSPageDownFunctionKey:
 						case OS.NSPageUpFunctionKey:
 							window.firstResponder().keyDown(nsEvent);
