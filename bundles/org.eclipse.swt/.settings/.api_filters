@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="org.eclipse.swt" version="2">
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Slider.java" type="org.eclipse.swt.widgets.Slider">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Slider"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TabItem.java" type="org.eclipse.swt.widgets.TabItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.TabItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ColorDialog.java" type="org.eclipse.swt.widgets.ColorDialog">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ColorDialog"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/ViewForm.java" type="org.eclipse.swt.custom.ViewForm">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.custom.ViewForm"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/IME.java" type="org.eclipse.swt.widgets.IME">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.IME"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ProgressBar.java" type="org.eclipse.swt.widgets.ProgressBar">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ProgressBar"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ScrollBar.java" type="org.eclipse.swt.widgets.ScrollBar">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ScrollBar"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Caret.java" type="org.eclipse.swt.widgets.Caret">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Caret"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Tracker.java" type="org.eclipse.swt.widgets.Tracker">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Tracker"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Control.java" type="org.eclipse.swt.widgets.Control">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Control"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/CBanner.java" type="org.eclipse.swt.custom.CBanner">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.custom.CBanner"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Decorations.java" type="org.eclipse.swt.widgets.Decorations">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Decorations"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/FileDialog.java" type="org.eclipse.swt.widgets.FileDialog">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.FileDialog"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Tree.java" type="org.eclipse.swt.widgets.Tree">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Tree"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/CTabItem.java" type="org.eclipse.swt.custom.CTabItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.custom.CTabItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TabFolder.java" type="org.eclipse.swt.widgets.TabFolder">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.TabFolder"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ExpandBar.java" type="org.eclipse.swt.widgets.ExpandBar">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ExpandBar"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Group.java" type="org.eclipse.swt.widgets.Group">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Group"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/CTabFolder.java" type="org.eclipse.swt.custom.CTabFolder">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.custom.CTabFolder"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ToolTip.java" type="org.eclipse.swt.widgets.ToolTip">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ToolTip"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Button.java" type="org.eclipse.swt.widgets.Button">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Button"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/DateTime.java" type="org.eclipse.swt.widgets.DateTime">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.DateTime"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Link.java" type="org.eclipse.swt.widgets.Link">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Link"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Drag and Drop/win32/org/eclipse/swt/dnd/DragSource.java" type="org.eclipse.swt.dnd.DragSource">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.dnd.DragSource"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/widgets/Tray.java" type="org.eclipse.swt.widgets.Tray">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Tray"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/StyledText.java" type="org.eclipse.swt.custom.StyledText">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.custom.StyledText"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Drag and Drop/win32/org/eclipse/swt/dnd/DropTarget.java" type="org.eclipse.swt.dnd.DropTarget">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.dnd.DropTarget"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/MessageBox.java" type="org.eclipse.swt.widgets.MessageBox">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.MessageBox"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Menu.java" type="org.eclipse.swt.widgets.Menu">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Menu"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/GCData.java" type="org.eclipse.swt.graphics.GCData">
+<filter id="1143996420">
+<message_arguments>
+<message_argument value="org.eclipse.swt.graphics.GCData"/>
+</message_arguments>
+</filter>
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.graphics.GCData"/>
+</message_arguments>
+</filter>
+<filter id="338755678">
+<message_arguments>
+<message_argument value="org.eclipse.swt.graphics.GCData"/>
+<message_argument value="hFont"/>
+</message_arguments>
+</filter>
+<filter id="1143996420">
+<message_arguments>
+<message_argument value="hGDIFont"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Scale.java" type="org.eclipse.swt.widgets.Scale">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Scale"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/CoolBar.java" type="org.eclipse.swt.widgets.CoolBar">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.CoolBar"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Drag and Drop/win32/org/eclipse/swt/dnd/Clipboard.java" type="org.eclipse.swt.dnd.Clipboard">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.dnd.Clipboard"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Printing/win32/org/eclipse/swt/printing/PrintDialog.java" type="org.eclipse.swt.printing.PrintDialog">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.printing.PrintDialog"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Label.java" type="org.eclipse.swt.widgets.Label">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Label"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Sash.java" type="org.eclipse.swt.widgets.Sash">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Sash"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Scrollable.java" type="org.eclipse.swt.widgets.Scrollable">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Scrollable"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
+<filter id="338944126">
+<message_arguments>
+<message_argument value="org.eclipse.swt.graphics.GC"/>
+<message_argument value="getGCData()"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TableColumn.java" type="org.eclipse.swt.widgets.TableColumn">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.TableColumn"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/CLabel.java" type="org.eclipse.swt.custom.CLabel">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.custom.CLabel"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Spinner.java" type="org.eclipse.swt.widgets.Spinner">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Spinner"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/CoolItem.java" type="org.eclipse.swt.widgets.CoolItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.CoolItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/Variant.java" type="org.eclipse.swt.ole.win32.Variant">
+<filter id="389242988">
+<message_arguments>
+<message_argument value="org.eclipse.swt.ole.win32.Variant"/>
+<message_argument value="sizeof"/>
+<message_argument value="16"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ToolItem.java" type="org.eclipse.swt.widgets.ToolItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ToolItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TrayItem.java" type="org.eclipse.swt.widgets.TrayItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.TrayItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Display.java" type="org.eclipse.swt.widgets.Display">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Display"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TableItem.java" type="org.eclipse.swt.widgets.TableItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.TableItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TreeItem.java" type="org.eclipse.swt.widgets.TreeItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.TreeItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/List.java" type="org.eclipse.swt.widgets.List">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.List"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/DirectoryDialog.java" type="org.eclipse.swt.widgets.DirectoryDialog">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.DirectoryDialog"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TreeColumn.java" type="org.eclipse.swt.widgets.TreeColumn">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.TreeColumn"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ToolBar.java" type="org.eclipse.swt.widgets.ToolBar">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ToolBar"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/MenuItem.java" type="org.eclipse.swt.widgets.MenuItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.MenuItem"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Browser/common/org/eclipse/swt/browser/Browser.java" type="org.eclipse.swt.browser.Browser">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.browser.Browser"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/FontDialog.java" type="org.eclipse.swt.widgets.FontDialog">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.FontDialog"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Table.java" type="org.eclipse.swt.widgets.Table">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Table"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Text.java" type="org.eclipse.swt.widgets.Text">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Text"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleControlSite.java" type="org.eclipse.swt.ole.win32.OleControlSite">
+<filter id="1227882500">
+<message_arguments>
+<message_argument value="OnUIDeactivate(int)"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Combo.java" type="org.eclipse.swt.widgets.Combo">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Combo"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ExpandItem.java" type="org.eclipse.swt.widgets.ExpandItem">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.ExpandItem"/>
+</message_arguments>
+</filter>
+</resource>
+</component>
