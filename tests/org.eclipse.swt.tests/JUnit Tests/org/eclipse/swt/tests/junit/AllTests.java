@@ -217,7 +217,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_ole_win32_OleParameterDescription.suite());
 	addTest(Test_org_eclipse_swt_ole_win32_Variant.suite());
 
-	if (!SWT.getPlatform().equals("cocoa")) {
 	addTest(Test_org_eclipse_swt_browser_Browser.suite());
 	addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());
 	addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
@@ -230,8 +229,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
 	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
-	}
-
 
 }
 }
