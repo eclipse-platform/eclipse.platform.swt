@@ -391,12 +391,27 @@ int accessibilityProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-void copyToClipboard (char [] buffer) {
-	if (buffer.length == 0) return;
+void copyToClipboard (char [] chars) {
+	if (chars.length == 0) return;
 	OS.ClearCurrentScrap ();
 	int [] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUTF16External, 0, buffer.length * 2, buffer);
+	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	if (cfstring == 0) return;
+	byte[] buffer = null;
+	try {
+		CFRange range = new CFRange();
+		range.length = chars.length;
+		int[] size = new int[1];
+		int numChars = OS.CFStringGetBytes(cfstring, range, OS.kCFStringEncodingUnicode, (byte)'?', true, null, 0, size);
+		if (numChars == 0) return;
+		buffer = new byte[size[0]];
+		numChars = OS.CFStringGetBytes(cfstring, range, OS.kCFStringEncodingUnicode, (byte)'?', true, buffer, size [0], size);
+		if (numChars == 0) return;
+	} finally {
+		OS.CFRelease(cfstring);
+	}
+	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUTF16External, 0, buffer.length, buffer);
 }
 
 int createCIcon (Image image) {
@@ -704,9 +719,21 @@ String getClipboardText () {
 	int [] size = new int [1];
 	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUTF16External, size) == OS.noErr) {
 		if (size [0] != 0) {
-			char [] buffer = new char [size [0] / 2];
+			byte [] buffer = new byte [size [0]];
 			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUTF16External, size, buffer) == OS.noErr) {
-				result = new String (buffer);
+				int encoding = OS.kCFStringEncodingUnicode;
+				int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+				if (cfstring != 0) {
+					int length = OS.CFStringGetLength(cfstring);
+					if (length != 0) {
+						char[] chars = new char[length];
+						CFRange range = new CFRange();
+						range.length = length;
+						OS.CFStringGetCharacters(cfstring, range, chars);
+						result = new String(chars);
+					}
+					OS.CFRelease(cfstring);
+				}
 			}
 		}
 	} else if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) == OS.noErr) {

@@ -64,8 +64,11 @@ public void javaToNative (Object object, TransferData transferData) {
 	char[] chars = new char[string.length()];
 	string.getChars (0, chars.length, chars, 0);
 	transferData.result = -1;
+	
 	switch (transferData.type) {
-		case UTF8ID: {
+		case UTF8ID: 
+		case UT16ID: {
+			int encoding = transferData.type == UTF8ID ? OS.kCFStringEncodingUTF8 : OS.kCFStringEncodingUnicode;
 			int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
 			if (cfstring == 0) return;
 			byte[] buffer = null;
@@ -73,22 +76,14 @@ public void javaToNative (Object object, TransferData transferData) {
 				CFRange range = new CFRange();
 				range.length = chars.length;
 				int[] size = new int[1];
-				int numChars = OS.CFStringGetBytes(cfstring, range, OS.kCFStringEncodingUTF8, (byte)'?', true, null, 0, size);
+				int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, null, 0, size);
 				if (numChars == 0) return;
 				buffer = new byte[size[0]];
-				numChars = OS.CFStringGetBytes(cfstring, range, OS.kCFStringEncodingUTF8, (byte)'?', true, buffer, size [0], size);
+				numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, buffer, size [0], size);
 				if (numChars == 0) return;
 			} finally {
 				OS.CFRelease(cfstring);
 			}
-			transferData.data = new byte[1][];
-			transferData.data[0] = buffer;
-			transferData.result = OS.noErr;
-			break;
-		}
-		case UT16ID: {
-			byte[] buffer = new byte[chars.length * 2];
-			OS.memmove(buffer, chars, buffer.length);
 			transferData.data = new byte[1][];
 			transferData.data[0] = buffer;
 			transferData.result = OS.noErr;
@@ -111,8 +106,10 @@ public Object nativeToJava(TransferData transferData){
 	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
 	byte[] buffer = transferData.data[0];
 	switch (transferData.type) {
-		case UTF8ID: {
-			int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, OS.kCFStringEncodingUTF8, true);
+		case UTF8ID: 
+		case UT16ID: {
+			int encoding = transferData.type == UTF8ID ? OS.kCFStringEncodingUTF8 : OS.kCFStringEncodingUnicode;
+			int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
 			if (cfstring == 0) return null;
 			try {
 				int length = OS.CFStringGetLength(cfstring);
@@ -125,11 +122,6 @@ public Object nativeToJava(TransferData transferData){
 			} finally {
 				OS.CFRelease(cfstring);
 			}
-		}
-		case UT16ID: {
-			char[] chars = new char[(buffer.length + 1) / 2];
-			OS.memmove(chars, buffer, buffer.length);
-			return new String(chars);
 		}
 	}
 	return null;
