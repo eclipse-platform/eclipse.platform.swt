@@ -51,6 +51,7 @@ public class Snippet282 {
 				dialog.setText("Open an image file or cancel");
 				String string = dialog.open ();
 				if (string != null) {
+					imageButton.setText("");
 					Image image = imageButton.getImage();
 					if (image != null) image.dispose();
 					image = new Image(display, string);
@@ -87,6 +88,7 @@ public class Snippet282 {
 					imageButton.setImage(image);
 				} else {
 					imageButton.setText("No image");
+					imageButton.setImage(null);
 				}
 				String text = (String)clipboard.getContents(TextTransfer.getInstance());
 				if (text != null) {
