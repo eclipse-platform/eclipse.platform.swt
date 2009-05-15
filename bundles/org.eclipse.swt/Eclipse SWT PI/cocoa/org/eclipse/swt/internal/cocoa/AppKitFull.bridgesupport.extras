@@ -1608,6 +1608,11 @@
 			<arg name="fam" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="convertFont:toHaveTrait:" swt_gen="true">
+			<arg name="fontObj" swt_gen="true"></arg>
+			<arg name="trait" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="fontWithFamily:traits:weight:size:" swt_gen="true">
 			<arg name="family" swt_gen="true"></arg>
 			<arg name="traits" swt_gen="true"></arg>

@@ -795,6 +795,7 @@ public static final int /*long*/ sel_controlShadowColor = sel_registerName("cont
 public static final int /*long*/ sel_controlSize = sel_registerName("controlSize");
 public static final int /*long*/ sel_controlTextColor = sel_registerName("controlTextColor");
 public static final int /*long*/ sel_convertBaseToScreen_ = sel_registerName("convertBaseToScreen:");
+public static final int /*long*/ sel_convertFont_toHaveTrait_ = sel_registerName("convertFont:toHaveTrait:");
 public static final int /*long*/ sel_convertPoint_fromView_ = sel_registerName("convertPoint:fromView:");
 public static final int /*long*/ sel_convertPoint_toView_ = sel_registerName("convertPoint:toView:");
 public static final int /*long*/ sel_convertPointFromBase_ = sel_registerName("convertPointFromBase:");
