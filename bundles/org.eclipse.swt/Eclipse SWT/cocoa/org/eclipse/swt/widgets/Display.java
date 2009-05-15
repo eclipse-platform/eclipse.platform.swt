@@ -281,7 +281,7 @@ public class Display extends Device {
 	Runnable timerList [];
 	NSTimer nsTimers [];
 	SWTWindowDelegate timerDelegate;
-	SWTApplicationDelegate applicationDelegate;
+	static SWTApplicationDelegate applicationDelegate;
 
 	/* Settings */
 	boolean runSettings;
@@ -816,9 +816,11 @@ void createDisplay (DeviceData data) {
 			OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
 			OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
 			OS.objc_registerClassPair(cls);
-		}	
-		applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
-		application.setDelegate(applicationDelegate);
+		}
+		if (applicationDelegate == null) {
+			applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
+			application.setDelegate(applicationDelegate);
+		}
 	} else {
 		isEmbedded = true;
 	}
@@ -3263,10 +3265,6 @@ void releaseDisplay () {
 			menubar.removeItemAtIndex(count - 1);
 			count--;
 		}
-
-		application.setDelegate(null);
-		applicationDelegate.release();
-		applicationDelegate = null;
 	}
 	
 	// The autorelease pool is cleaned up when we call NSApplication.terminate().
