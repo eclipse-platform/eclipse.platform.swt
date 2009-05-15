@@ -24,8 +24,9 @@ public class Snippet54 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setSize(400, 300);
 	final Sash sash = new Sash (shell, SWT.BORDER | SWT.VERTICAL);
-	sash.setBounds (10, 10, 32, 100);
+	sash.setBounds (180, 10, 32, 240);
 	sash.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			sash.setBounds (e.x, e.y, e.width, e.height);
