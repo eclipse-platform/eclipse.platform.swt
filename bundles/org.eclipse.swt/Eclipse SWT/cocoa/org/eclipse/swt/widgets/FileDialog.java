@@ -203,7 +203,7 @@ public String open () {
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
 		panel = savePanel;
-		if (overwrite) {
+		if (!overwrite) {
 			callback = new Callback(this, "_overwriteExistingFileCheck", 3);
 			int /*long*/ proc = callback.getAddress();
 			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -256,7 +256,7 @@ public String open () {
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
 	}
-	if (overwrite) {
+	if (!overwrite) {
 		if (method != 0) OS.method_setImplementation(method, methodImpl);
 		callback.dispose();
 	}
