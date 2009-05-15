@@ -195,6 +195,7 @@ protected void create(DeviceData deviceData) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		NSApplication.sharedApplication();
 		data = (PrinterData)deviceData;
 		if (data.otherData != null) {
 			NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);

@@ -456,6 +456,10 @@ void addPool (NSAutoreleasePool pool) {
 		System.arraycopy (pools, 0, temp, 0, poolCount);
 		pools = temp;
 	}
+	if (poolCount == 0) {
+		NSMutableDictionary dictionary = NSThread.currentThread().threadDictionary();
+		dictionary.setObject(NSNumber.numberWithInteger(pool.id), NSString.stringWith("SWT_NSAutoreleasePool"));
+	}
 	pools [poolCount++] = pool;
 }
 
@@ -681,7 +685,7 @@ void clearModal (Shell shell) {
 }
 
 void clearPool () {
-	if (sendEventCount == 0 && loopCount == poolCount - 1) {
+	if (sendEventCount == 0 && loopCount == poolCount - 1 && Callback.getEntryCount () == 0) {
 		removePool ();
 		addPool ();
 	}
@@ -923,15 +927,6 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
-
-	Runtime.getRuntime().addShutdownHook(new Thread() {
-		// Any top-level autorelease pool cannot be destroyed until the absolute end of the application.
-		// terminate is that absolute end of the app; it will also clean up any remaining pools.
-		public void run() {
-			NSApplication.sharedApplication().terminate(null);
-		}
-	});
-
 	application = null;
 }
 
@@ -1873,6 +1868,13 @@ protected void init () {
 		if (!Display.launched) {
 			application.finishLaunching();
 			Display.launched = true;
+			
+			/* only add the shutdown hook once */
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					NSApplication.sharedApplication().terminate(null);
+				}
+			});
 		}
 	}
 	
@@ -3080,7 +3082,7 @@ int /*long*/ observerProc (int /*long*/ observer, int /*long*/ activity, int /*l
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	if (sendEventCount == 0 && loopCount == poolCount - 1) removePool ();
+	if (sendEventCount == 0 && loopCount == poolCount - 1 && Callback.getEntryCount () == 0) removePool ();
 	addPool ();
 	loopCount++;
 	boolean events = false;
@@ -3102,7 +3104,7 @@ public boolean readAndDispatch () {
 	} finally {
 		removePool ();
 		loopCount--;
-		if (sendEventCount == 0 && loopCount == poolCount) addPool ();
+		if (sendEventCount == 0 && loopCount == poolCount && Callback.getEntryCount () == 0) addPool ();
 	}
 	return events;
 }
@@ -3382,6 +3384,10 @@ void removeMenu (Menu menu) {
 void removePool () {
 	NSAutoreleasePool pool = pools [poolCount - 1];
 	pools [--poolCount] = null;
+	if (poolCount == 0) {
+		NSMutableDictionary dictionary = NSThread.currentThread().threadDictionary();
+		dictionary.removeObjectForKey(NSString.stringWith("SWT_NSAutoreleasePool"));
+	}
 	pool.release ();
 }
 

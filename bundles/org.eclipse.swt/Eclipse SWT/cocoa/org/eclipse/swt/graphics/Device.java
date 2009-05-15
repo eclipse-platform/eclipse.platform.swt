@@ -113,16 +113,18 @@ public Device(DeviceData data) {
 			objects = new Object [128];
 			trackingLock = new Object ();
 		}
-		NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-		NSThread nsthread = NSThread.currentThread();
-		NSMutableDictionary dictionary = nsthread.threadDictionary();
-		NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
-		id obj = dictionary.objectForKey(key);
-		if (obj == null) {
-			NSNumber nsnumber = NSNumber.numberWithInteger(pool.id);
-			dictionary.setObject(nsnumber, key);
-		} else {
-			pool.release();
+		if (NSThread.isMainThread()) {
+			NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+			NSThread nsthread = NSThread.currentThread();
+			NSMutableDictionary dictionary = nsthread.threadDictionary();
+			NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
+			id obj = dictionary.objectForKey(key);
+			if (obj == null) {
+				NSNumber nsnumber = NSNumber.numberWithInteger(pool.id);
+				dictionary.setObject(nsnumber, key);
+			} else {
+				pool.release();
+			}
 		}
 		//check and create pool
 		create (data);
