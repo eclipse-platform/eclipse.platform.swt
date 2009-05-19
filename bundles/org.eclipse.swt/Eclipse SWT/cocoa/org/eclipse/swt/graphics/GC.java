@@ -1472,7 +1472,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		rect.y = y + data.drawYOffset;
 		rect.width = width;
 		rect.height = height;
-		path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
+		path.appendBezierPathWithRoundedRect(rect, arcWidth / 2f, arcHeight / 2f);
 		Pattern pattern = data.foregroundPattern;
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
@@ -2116,7 +2116,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		rect.y = y;
 		rect.width = width;
 		rect.height = height;
-		path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
+		path.appendBezierPathWithRoundedRect(rect, arcWidth / 2f, arcHeight / 2f);
 		Pattern pattern = data.backgroundPattern;
 		if (pattern != null && pattern.gradient != null) {
 			fillPattern(path, pattern);
