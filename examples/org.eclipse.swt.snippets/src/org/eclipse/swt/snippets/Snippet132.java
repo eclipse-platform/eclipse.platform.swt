@@ -41,7 +41,9 @@ public static void main (String [] args) {
 		Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 		Point dpi = printer.getDPI();
 		int leftMargin = dpi.x + trim.x; // one inch from left side of paper
+		if (leftMargin < 0) leftMargin = -trim.x;  // make sure to print on the printable area 
 		int topMargin = dpi.y / 2 + trim.y; // one-half inch from top edge of paper
+		if (topMargin < 0) topMargin = -trim.y;  // make sure to print on the printable area 
 		GC gc = new GC(printer);
 		if (printer.startPage()) {
 			gc.setBackground(white);
