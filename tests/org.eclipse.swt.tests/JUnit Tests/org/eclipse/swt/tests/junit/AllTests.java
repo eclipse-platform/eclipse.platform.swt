@@ -11,8 +11,6 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-
 import junit.framework.*;
 import junit.textui.*;
 
