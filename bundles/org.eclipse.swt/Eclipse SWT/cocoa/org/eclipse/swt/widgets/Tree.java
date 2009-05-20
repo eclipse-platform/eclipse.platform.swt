@@ -1054,7 +1054,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 			srcRect.width = size.width;
 			srcRect.height = size.height;
 			context.saveGraphicsState();
-			NSBezierPath.bezierPathWithRect(rect).setClip();
+			NSBezierPath.bezierPathWithRect(rect).addClip();
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.scaleXBy(1, -1);
 			transform.translateXBy(0, -(destRect.height + 2 * destRect.y));
