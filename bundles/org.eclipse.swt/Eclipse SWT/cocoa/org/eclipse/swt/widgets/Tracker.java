@@ -352,11 +352,7 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 	NSGraphicsContext context = window.graphicsContext();
 	NSGraphicsContext.static_saveGraphicsState();
 	NSGraphicsContext.setCurrentContext(context);
-	NSAffineTransform transform = NSAffineTransform.transform();
 	context.saveGraphicsState();
-	transform.scaleXBy(1, -1);
-	transform.translateXBy(0, -display.getPrimaryFrame().height);
-	transform.concat();
 	Point parentOrigin;
 	if (parent != null) {
 		parentOrigin = display.map (parent, null, 0, 0);
@@ -366,11 +362,11 @@ void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
 	context.setCompositingOperation(erase ? OS.NSCompositeClear : OS.NSCompositeSourceOver);
 	NSRect rectFrame = new NSRect();
 	NSPoint globalPoint = new NSPoint();
-
+	float /*double*/ screenHeight = display.getPrimaryFrame().height;
 	for (int i=0; i<rects.length; i++) {
 		Rectangle rect = rects [i];
 		rectFrame.x = rect.x + parentOrigin.x;
-		rectFrame.y = rect.y + parentOrigin.y;
+		rectFrame.y = screenHeight - (int)((rect.y + parentOrigin.y) + rect.height);
 		rectFrame.width = rect.width;
 		rectFrame.height = rect.height;
 		globalPoint.x = rectFrame.x;
