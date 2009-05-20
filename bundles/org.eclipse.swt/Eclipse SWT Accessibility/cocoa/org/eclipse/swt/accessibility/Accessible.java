@@ -759,7 +759,7 @@ public class Accessible {
 
 		// Invalid childID at this point means the application did not implement getFocus, so 
 		// let the default handler return the native focus.
-		boolean hasFocus = (this.control.view.window().firstResponder() == control.view);
+		boolean hasFocus = control.isFocusControl();
 		return NSNumber.numberWithBool(hasFocus);
 	}
 	
