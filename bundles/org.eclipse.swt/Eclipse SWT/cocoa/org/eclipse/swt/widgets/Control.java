@@ -1246,11 +1246,11 @@ public boolean forceFocus () {
 	if (!isEnabled () || !isVisible () || !isActive ()) return false;
 	if (isFocusControl ()) return true;
 	shell.setSavedFocus (null);
-	shell.bringToTop (false);
-	if (isDisposed ()) return false;
 	NSView focusView = focusView ();
 	if (!focusView.canBecomeKeyView()) return false;
 	boolean result = view.window ().makeFirstResponder (focusView);
+	if (isDisposed ()) return false;
+	shell.bringToTop (false);
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
 	return result;
