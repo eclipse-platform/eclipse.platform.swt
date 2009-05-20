@@ -3789,8 +3789,20 @@ void setMenuBar (Menu menu) {
 	if (menu != null) {
 		MenuItem[] items = menu.getItems();
 		for (int i = 0; i < items.length; i++) {
-			items[i].nsItem.setMenu(null);
-			menubar.addItem(items[i].nsItem);
+			MenuItem item = items[i];
+			NSMenuItem nsItem = item.nsItem;
+			nsItem.setMenu(null);
+			menubar.addItem(nsItem);
+			
+			/*
+			* Bug in Cocoa: Calling NSMenuItem.setEnabled() for menu item of a menu bar only
+			* works when the menu bar is the current menu bar.  The underline OS menu does get
+			* enabled/disable when that menu is set later on.  The fix is to toggle the
+			* item enabled state to force the underline menu to be updated.  
+			*/
+			boolean enabled = menu.getEnabled () && item.getEnabled ();
+			nsItem.setEnabled(!enabled);
+			nsItem.setEnabled(enabled);
 		}
 	}
 }
