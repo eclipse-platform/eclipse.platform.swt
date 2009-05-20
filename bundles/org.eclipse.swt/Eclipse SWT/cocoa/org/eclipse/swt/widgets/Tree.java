@@ -284,15 +284,18 @@ boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*
 	int /*long*/ row = tree.rowAtPoint(clickPoint);
 	int /*long*/ modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
 	
-	if (!tree.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask | OS.NSControlKeyMask)) == 0) {
-		NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
-		set = set.initWithIndex(row);
-		tree.selectRowIndexes (set, false);
-		set.release();
+	boolean drag = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
+	if (drag) {
+		if (!tree.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask | OS.NSControlKeyMask)) == 0) {
+			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
+			set = set.initWithIndex(row);
+			tree.selectRowIndexes (set, false);
+			set.release();
+		}
 	}
 	
 	// The clicked row must be selected to initiate a drag.
-	return (tree.isRowSelected(row) && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect));
+	return (tree.isRowSelected(row) && drag);
 }
 
 boolean checkData (TreeItem item) {
