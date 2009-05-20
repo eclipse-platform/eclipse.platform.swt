@@ -2069,6 +2069,7 @@ void initClasses () {
 	className = "SWTButtonCell";
 	cls = OS.objc_allocateClassPair (OS.class_NSButtonCell, className, 0);
 	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
 	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSFrame}@");
 	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
