@@ -6435,7 +6435,7 @@ boolean invokeBlockAction(int action) {
 		case ST.TEXT_END:
 		case ST.WINDOW_START:
 		case ST.WINDOW_END:
-			clearBlockSelection(true, blockXLocation != -1);
+			clearBlockSelection(false, false);
 			return false;
 		// Selection
 		case ST.SELECT_LINE_UP:
