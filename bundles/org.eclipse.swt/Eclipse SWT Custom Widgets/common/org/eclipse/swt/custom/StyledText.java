@@ -5384,6 +5384,24 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 		}
 	}
 	lines[lineCount++] = text.substring(start);
+	if (fillWithSpaces) {
+		int maxLength = 0;
+		for (int i = 0; i < lines.length; i++) {
+			int length = lines[i].length();
+			maxLength = Math.max(maxLength, length);
+		}
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			int length = line.length();
+			if (length < maxLength) {
+				int numSpaces = maxLength - length;;
+				StringBuffer buffer = new StringBuffer(length + numSpaces);
+				buffer.append(line);
+				for (int j = 0; j < numSpaces; j++) buffer.append(' ');
+				lines[i] = buffer.toString();
+			}
+		}
+	}
 	int firstLine, lastLine, left, right;
 	if (blockXLocation != -1) {
 		Rectangle rect = getBlockSelectonPosition();
