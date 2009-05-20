@@ -5420,14 +5420,17 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 		left = right = getPointAtOffset(caretOffset).x;
 	}
 	start = caretOffset;
+	int caretLine = getCaretLine();
 	int index = 0, lineIndex = firstLine;
 	while (lineIndex <= lastLine) {
 		String string = index < lineCount ? lines[index++] : "";
-		start = sendTextEvent(left, right, lineIndex, string, fillWithSpaces);
+		int lineStart = sendTextEvent(left, right, lineIndex, string, fillWithSpaces);
+		if (lineIndex == caretLine) start = lineStart;
 		lineIndex++;
 	}
 	while (index < lineCount) {
-		start = sendTextEvent(left, left, lineIndex, lines[index++], fillWithSpaces);
+		int lineStart = sendTextEvent(left, left, lineIndex, lines[index++], fillWithSpaces);
+		if (lineIndex == caretLine) start = lineStart;
 		lineIndex++;
 	}
 	return start;
