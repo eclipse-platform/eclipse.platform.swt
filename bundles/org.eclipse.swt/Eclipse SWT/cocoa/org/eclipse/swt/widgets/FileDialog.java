@@ -258,7 +258,7 @@ public String open () {
 	}
 	if (!overwrite) {
 		if (method != 0) OS.method_setImplementation(method, methodImpl);
-		callback.dispose();
+		if (callback != null) callback.dispose();
 	}
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
