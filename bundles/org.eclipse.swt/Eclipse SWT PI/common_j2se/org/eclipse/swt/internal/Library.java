@@ -201,8 +201,8 @@ public static void loadLibrary (String name, boolean mapName) {
 		}
 		libName1 = name + "-" + Platform.PLATFORM + "-" + version;  //$NON-NLS-1$ //$NON-NLS-2$
 		libName2 = name + "-" + Platform.PLATFORM;  //$NON-NLS-1$
-		mappedName1 = System.mapLibraryName (libName1);
-		mappedName2 = System.mapLibraryName (libName2);
+		mappedName1 = mapLibraryName (libName1);
+		mappedName2 = mapLibraryName (libName2);
 	} else {
 		libName1 = libName2 = mappedName1 = mappedName2 = name;
 	}
@@ -230,8 +230,8 @@ public static void loadLibrary (String name, boolean mapName) {
 		} else {
 			/* fall back to using the tmp directory */
 			if (IS_64) {
-				fileName1 = System.mapLibraryName (libName1 + SUFFIX_64);
-				fileName2 = System.mapLibraryName (libName2 + SUFFIX_64);
+				fileName1 = mapLibraryName (libName1 + SUFFIX_64);
+				fileName2 = mapLibraryName (libName2 + SUFFIX_64);
 			}
 		}
 		if (load (path + SEPARATOR + fileName1)) return;
@@ -246,6 +246,15 @@ public static void loadLibrary (String name, boolean mapName) {
 	
 	/* Failed to find the library */
 	throw new UnsatisfiedLinkError ("no " + libName1 + " or " + libName2 + " in swt.library.path, java.library.path or the jar file"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+}
+
+static String mapLibraryName (String libName) {
+	libName = System.mapLibraryName (libName);
+	String ext = ".dylib"; //$NON-NLS-1$
+	if (libName.endsWith(ext)) {
+		libName = libName.substring(0, libName.length() - ext.length()) + ".jnilib"; //$NON-NLS-1$
+	}
+	return libName;
 }
 
 }
