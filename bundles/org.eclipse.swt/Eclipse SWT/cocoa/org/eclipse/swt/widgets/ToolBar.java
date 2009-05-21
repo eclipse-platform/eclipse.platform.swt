@@ -159,7 +159,7 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
 		return NSNumber.numberWithBool(isEnabled()).id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityFocusedAttribute)) {
-		boolean focused = hasFocus();
+		boolean focused = (view.id == view.window().firstResponder().id);
 		return NSNumber.numberWithBool(focused).id;
 	}
 	
