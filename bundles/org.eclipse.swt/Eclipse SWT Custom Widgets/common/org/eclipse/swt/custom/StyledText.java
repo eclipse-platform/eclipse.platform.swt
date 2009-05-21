@@ -5676,7 +5676,7 @@ void handleCompositionChanged(Event event) {
 		caretDirection = SWT.NULL;
 	} else {
 		content.replaceTextRange(start, end - start, text);
-		setCaretOffset(ime.getCompositionOffset(), SWT.DEFAULT);
+		setCaretOffset(ime.getCaretOffset(), SWT.DEFAULT);
 		if (ime.getWideCaret()) {
 			start = ime.getCompositionOffset();
 			int lineIndex = getCaretLine();
