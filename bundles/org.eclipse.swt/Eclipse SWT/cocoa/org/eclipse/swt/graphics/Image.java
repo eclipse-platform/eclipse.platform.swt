@@ -243,6 +243,7 @@ public Image(Device device, Image srcImage, int flag) {
 		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.samplesPerPixel() == 4, srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, srcRep.bytesPerRow(), srcRep.bitsPerPixel());
 		handle.addRepresentation(rep);
 		rep.release();
+		handle.setCacheMode(OS.NSImageCacheNever);
 
 		int /*long*/ data = rep.bitmapData();
 		OS.memmove(data, srcRep.bitmapData(), width * height * 4);
@@ -782,6 +783,7 @@ void init(int width, int height) {
 	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
 	handle.addRepresentation(rep);
 	rep.release();
+	handle.setCacheMode(OS.NSImageCacheNever);
 }
 
 void init(ImageData image) {
@@ -895,6 +897,7 @@ void init(ImageData image) {
 	OS.memmove(rep.bitmapData(), buffer, dataSize);	
 	handle.addRepresentation(rep);
 	rep.release();
+	handle.setCacheMode(OS.NSImageCacheNever);
 }
 
 void initNative(String filename) {
@@ -935,6 +938,7 @@ void initNative(String filename) {
 		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 		handle.addRepresentation(rep);
 		rep.release();
+		handle.setCacheMode(OS.NSImageCacheNever);
 		NSRect rect = new NSRect();
 		rect.width = width;
 		rect.height = height;
@@ -1034,7 +1038,6 @@ public int /*long*/ internal_new_GC (GCData data) {
 		// Can't perform transforms on image reps with alpha.
 		imageRep.setAlpha(false);
 		
-		handle.setCacheMode(OS.NSImageCacheNever);
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
 		context = flippedContext;
