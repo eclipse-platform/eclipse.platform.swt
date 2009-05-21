@@ -249,6 +249,7 @@ public static void loadLibrary (String name, boolean mapName) {
 }
 
 static String mapLibraryName (String libName) {
+	/* SWT libraries in the Macintosh use the extension .jnilib but the some VMs map to .dylib. */
 	libName = System.mapLibraryName (libName);
 	String ext = ".dylib"; //$NON-NLS-1$
 	if (libName.endsWith(ext)) {
