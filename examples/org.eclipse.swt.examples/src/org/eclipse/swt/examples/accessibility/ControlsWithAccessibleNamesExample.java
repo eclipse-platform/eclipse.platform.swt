@@ -25,8 +25,9 @@ public class ControlsWithAccessibleNamesExample {
 	static Label label, overrideLabel, imageLabel, overrideImageLabel;
 	static Combo combo, overrideCombo;
 	static Spinner spinner, overrideSpinner;
-	static List list, overrideList;
 	static Text text, overrideText;
+	static Text multiLineText, overrideMultiLineText;
+	static List list, overrideList;
 	static Table table, overrideTable;
 	static Tree tree, overrideTree;
 	static Tree treeTable, overrideTreeTable;
@@ -41,16 +42,18 @@ public class ControlsWithAccessibleNamesExample {
 	static CCombo cCombo, overrideCCombo;
 	static CTabFolder cTabFolder, overrideCTabFolder;
 	static StyledText styledText, overrideStyledText;
+	static StyledText multiLineStyledText, overrideMultiLineStyledText;
 	static ProgressBar progressBar, overrideProgressBar;
 	static Sash sash, overrideSash;
 	static Scale scale, overrideScale;
 	static Slider slider, overrideSlider;
+	static Link link, overrideLink;
 	static Image smallImage, largeImage, transparentImage;
 		
 	public static void main(String[] args) {
 		display = new Display();
 		shell = new Shell(display);
-		shell.setLayout(new GridLayout(2, true));
+		shell.setLayout(new GridLayout(4, true));
 		shell.setText("Override Accessibility Test");
 		
 		largeImage = new Image(display, ControlsWithAccessibleNamesExample.class.getResourceAsStream("run_wiz.gif"));
@@ -59,6 +62,8 @@ public class ControlsWithAccessibleNamesExample {
 		ImageData mask = source.getTransparencyMask();
 		transparentImage = new Image(display, source, mask);
 		
+		new Label(shell, SWT.NONE).setText("Use Platform Name");
+		new Label(shell, SWT.NONE).setText("Override Platform Name");
 		new Label(shell, SWT.NONE).setText("Use Platform Name");
 		new Label(shell, SWT.NONE).setText("Override Platform Name");
 		
@@ -157,6 +162,24 @@ public class ControlsWithAccessibleNamesExample {
 		overrideSpinner.setData("name", "Spinner");
 		overrideSpinner.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 				
+//		Text text, overrideText;
+		text = new Text(shell, SWT.SINGLE | SWT.BORDER);
+		text.setText("Contents of single-line Text");
+		
+		overrideText = new Text(shell, SWT.SINGLE | SWT.BORDER);
+		overrideText.setText("Contents of single-line Text");
+		overrideText.setData("name", "Text");
+		overrideText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+		
+//		Text multiLineText, overrideMultiLineText;
+		multiLineText = new Text(shell, SWT.MULTI | SWT.BORDER);
+		multiLineText.setText("Contents of multi-line Text\nLine 2\nLine 3\nLine 4");
+		
+		overrideMultiLineText = new Text(shell, SWT.MULTI | SWT.BORDER);
+		overrideMultiLineText.setText("Contents of multi-line Text\nLine 2\nLine 3\nLine 4");
+		overrideMultiLineText.setData("name", "MultiLineText");
+		overrideMultiLineText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+
 //		List list, overrideList;
 		list = new List(shell, SWT.SINGLE | SWT.BORDER);
 		list.setItems(new String[] {"Item0", "Item1", "Item2"});
@@ -166,15 +189,6 @@ public class ControlsWithAccessibleNamesExample {
 		overrideList.setData("name", "List");
 		overrideList.setData("child", "List Item");
 		overrideList.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
-		
-//		Text text, overrideText;
-		text = new Text(shell, SWT.SINGLE | SWT.BORDER);
-		text.setText("Contents of Text");
-		
-		overrideText = new Text(shell, SWT.SINGLE | SWT.BORDER);
-		overrideText.setText("Contents of Text");
-		overrideText.setData("name", "Text");
-		overrideText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
 //		Table table, overrideTable;
 		table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
@@ -320,7 +334,6 @@ public class ControlsWithAccessibleNamesExample {
 	        coolItem.setSize(coolSize);
 		}
 		
-		// Note: currently, MSAA does not support coolbar
 		overrideCoolBar = new CoolBar(shell, SWT.FLAT);
 		for (int i = 0; i < 2; i++) {
 			CoolItem coolItem = new CoolItem(overrideCoolBar, SWT.PUSH);
@@ -350,14 +363,17 @@ public class ControlsWithAccessibleNamesExample {
 				e.gc.drawString("Canvas", 15, 25);
 			}
 		});
+		/* Set a caret into the canvas so that it will take focus. */
 		Caret caret = new Caret(canvas, SWT.NONE);
-		caret.setSize(2, 10);
+		caret.setBounds(15, 25, 2, 20);
 		canvas.setCaret (caret);
 		/* Hook key listener so canvas will take focus during traversal in. */
 		canvas.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
+				e.doit = true;
 			}
 			public void keyReleased(KeyEvent e) {
+				e.doit = true;
 			}
 		});
 		/* Hook traverse listener to make canvas give up focus during traversal out. */
@@ -373,14 +389,17 @@ public class ControlsWithAccessibleNamesExample {
 				e.gc.drawString("Canvas", 15, 25);
 			}
 		});
+		/* Set a caret into the canvas so that it will take focus. */
 		caret = new Caret(overrideCanvas, SWT.NONE);
-		caret.setSize(2, 10);
+		caret.setBounds(15, 25, 2, 20);
 		overrideCanvas.setCaret (caret);
 		/* Hook key listener so canvas will take focus during traversal in. */
 		overrideCanvas.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
+				e.doit = true;
 			}
 			public void keyReleased(KeyEvent e) {
+				e.doit = true;
 			}
 		});
 		/* Hook traverse listener to make canvas give up focus during traversal out. */
@@ -425,7 +444,7 @@ public class ControlsWithAccessibleNamesExample {
 			item.setText("TabItem &" + i);
 			item.setToolTipText("TabItem ToolTip" + i);
 			Text itemText = new Text(tabFolder, SWT.MULTI | SWT.BORDER);
-			itemText.setText("\nText for TabItem " + i + "\n\n\n");
+			itemText.setText("\nText for TabItem " + i + "\n\n");
 			item.setControl(itemText);
 		}
 		
@@ -435,7 +454,7 @@ public class ControlsWithAccessibleNamesExample {
 			item.setText("TabItem &" + i);
 			item.setToolTipText("TabItem ToolTip" + i);
 			Text itemText = new Text(overrideTabFolder, SWT.MULTI | SWT.BORDER);
-			itemText.setText("\nText for TabItem " + i + "\n\n\n");
+			itemText.setText("\nText for TabItem " + i + "\n\n");
 			item.setControl(itemText);
 		}
 		overrideTabFolder.setData("name", "TabFolder");
@@ -480,7 +499,7 @@ public class ControlsWithAccessibleNamesExample {
 			item.setText("CTabItem &" + i);
 			item.setToolTipText("TabItem ToolTip" + i);
 			Text itemText = new Text(cTabFolder, SWT.MULTI | SWT.BORDER);
-			itemText.setText("\nText for CTabItem " + i + "\n\n\n");
+			itemText.setText("\nText for CTabItem " + i + "\n\n");
 			item.setControl(itemText);
 		}
 		cTabFolder.setSelection(cTabFolder.getItem(0));
@@ -491,7 +510,7 @@ public class ControlsWithAccessibleNamesExample {
 			item.setText("CTabItem &" + i);
 			item.setToolTipText("TabItem ToolTip" + i);
 			Text itemText = new Text(overrideCTabFolder, SWT.MULTI | SWT.BORDER);
-			itemText.setText("\nText for CTabItem " + i + "\n\n\n");
+			itemText.setText("\nText for CTabItem " + i + "\n\n");
 			item.setControl(itemText);
 		}
 		overrideCTabFolder.setSelection(overrideCTabFolder.getItem(0));
@@ -501,12 +520,21 @@ public class ControlsWithAccessibleNamesExample {
 
 //		StyledText styledText, overrideStyledText;
 		styledText = new StyledText(shell, SWT.SINGLE | SWT.BORDER);
-		styledText.setText("Contents of StyledText");
+		styledText.setText("Contents of single-line StyledText");
 		
 		overrideStyledText = new StyledText(shell, SWT.SINGLE | SWT.BORDER);
-		overrideStyledText.setText("Contents of StyledText");
+		overrideStyledText.setText("Contents of single-line StyledText");
 		overrideStyledText.setData("name", "StyledText");
 		overrideStyledText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+	
+//		StyledText multiLineStyledText, overrideMultiLineStyledText;
+		multiLineStyledText = new StyledText(shell, SWT.MULTI | SWT.BORDER);
+		multiLineStyledText.setText("Contents of multi-line StyledText\nLine 2\nLine 3\nLine 4");
+		
+		overrideMultiLineStyledText = new StyledText(shell, SWT.MULTI | SWT.BORDER);
+		overrideMultiLineStyledText.setText("Contents of multi-line StyledText\nLine 2\nLine 3\nLine 4");
+		overrideMultiLineStyledText.setData("name", "MultiLineStyledText");
+		overrideMultiLineStyledText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 	
 //		Scale scale, overrideScale;
 		scale = new Scale(shell, SWT.NONE);
@@ -527,15 +555,17 @@ public class ControlsWithAccessibleNamesExample {
 		overrideSlider.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
 //		ProgressBar progressBar, overrideProgressBar;
-		progressBar = new ProgressBar(shell, SWT.NONE);
-		progressBar.setSelection(50);
-		progressBar.setToolTipText("ProgressBar ToolTip");
-
-		overrideProgressBar = new ProgressBar(shell, SWT.NONE);
-		overrideProgressBar.setSelection(50);
-		overrideProgressBar.setToolTipText("ProgressBar ToolTip");
-		overrideProgressBar.setData("name", "ProgressBar");
-		overrideProgressBar.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+		if (!SWT.getPlatform().equals("cocoa")) {
+			progressBar = new ProgressBar(shell, SWT.NONE);
+			progressBar.setSelection(50);
+			progressBar.setToolTipText("ProgressBar ToolTip");
+	
+			overrideProgressBar = new ProgressBar(shell, SWT.NONE);
+			overrideProgressBar.setSelection(50);
+			overrideProgressBar.setToolTipText("ProgressBar ToolTip");
+			overrideProgressBar.setData("name", "ProgressBar");
+			overrideProgressBar.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+		}
 
 //		Sash sash, overrideSash;
 		sash = new Sash(shell, SWT.BORDER);
@@ -545,6 +575,17 @@ public class ControlsWithAccessibleNamesExample {
 		overrideSash.setToolTipText("Sash ToolTip");
 		overrideSash.setData("name", "Sash");
 		overrideSash.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+
+//		Link link, overrideLink;
+		link = new Link(shell, SWT.NONE);
+		link.setText("<a>This is a link</a>");
+		link.setToolTipText("Link ToolTip");
+
+		overrideLink = new Link(shell, SWT.NONE);
+		overrideLink.setText("<a>This is a link</a>");
+		overrideLink.setToolTipText("Link ToolTip");
+		overrideLink.setData("name", "Link");
+		overrideLink.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
 		shell.pack();
 		shell.open();
