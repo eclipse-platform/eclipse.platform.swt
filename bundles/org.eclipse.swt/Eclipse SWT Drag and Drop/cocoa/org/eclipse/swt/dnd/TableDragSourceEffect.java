@@ -86,6 +86,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		NSImage nsImage = widget.dragImageForRowsWithIndexes(widget.selectedRowIndexes(), widget.tableColumns(), nsEvent, ptr);
 		OS.memmove(point, ptr, NSPoint.sizeof);
 		OS.free(ptr);
+		//TODO: Image representation wrong???
 		Image image = Image.cocoa_new(control.getDisplay(), SWT.BITMAP, nsImage);
 		dragSourceImage = image;
 		nsImage.retain();

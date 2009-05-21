@@ -349,7 +349,7 @@ public ImageData getImageData () {
 					int dataSize = height * bpr;
 					byte[] srcData = new byte[dataSize];
 					OS.memmove(srcData, imageRep.bitmapData(), dataSize);
-					//TODO check color info
+					//TODO: Image representation wrong???
 					PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
 					ImageData data = new ImageData(width, height, bpp, palette, 4, srcData);
 					data.bytesPerLine = bpr;
