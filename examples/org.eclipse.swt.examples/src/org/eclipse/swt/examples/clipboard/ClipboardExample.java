@@ -493,7 +493,6 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 				if (marginHeight > 0) {
 					gc.fillRectangle(0, rect.height, client.width, marginHeight);
 				}
-				gc.dispose();
 			}
 		}
 	});
