@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -316,7 +316,7 @@ class StyledTextTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Alignment", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Indent", "Orientation", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopPixel", "WordWrap"};
+		return new String[] {"Alignment", "BlockSelection", "BottomMargin", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Indent", "Justify", "LeftMargin", "LineSpacing", "Orientation", "RightMargin", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopMargin", "TopPixel", "WordWrap"};
 	}
 
 	
