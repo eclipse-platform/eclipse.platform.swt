@@ -187,6 +187,14 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/StyleRange.java" type="org.eclipse.swt.custom.StyleRange">
+<filter id="576725006">
+<message_arguments>
+<message_argument value="CloneableCompatibility"/>
+<message_argument value="StyleRange"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/StyledText.java" type="org.eclipse.swt.custom.StyledText">
 <filter id="336744520">
 <message_arguments>
@@ -421,11 +429,43 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageData.java" type="org.eclipse.swt.graphics.ImageData">
+<filter id="576725006">
+<message_arguments>
+<message_argument value="CloneableCompatibility"/>
+<message_argument value="ImageData"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageLoaderListener.java" type="org.eclipse.swt.graphics.ImageLoaderListener">
 <filter id="576720909">
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="ImageLoaderListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Point.java" type="org.eclipse.swt.graphics.Point">
+<filter id="576725006">
+<message_arguments>
+<message_argument value="SerializableCompatibility"/>
+<message_argument value="Point"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/graphics/RGB.java" type="org.eclipse.swt.graphics.RGB">
+<filter id="576725006">
+<message_arguments>
+<message_argument value="SerializableCompatibility"/>
+<message_argument value="RGB"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/graphics/Rectangle.java" type="org.eclipse.swt.graphics.Rectangle">
+<filter id="576725006">
+<message_arguments>
+<message_argument value="SerializableCompatibility"/>
+<message_argument value="Rectangle"/>
 </message_arguments>
 </filter>
 </resource>
