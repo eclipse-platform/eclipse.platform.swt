@@ -87,6 +87,14 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT Browser/common/org/eclipse/swt/browser/VisibilityWindowListener.java" type="org.eclipse.swt.browser.VisibilityWindowListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="VisibilityWindowListener"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/BidiSegmentListener.java" type="org.eclipse.swt.custom.BidiSegmentListener">
 <filter id="576720909">
 <message_arguments>
@@ -207,6 +215,14 @@
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="TextChangeListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/VerifyKeyListener.java" type="org.eclipse.swt.custom.VerifyKeyListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="VerifyKeyListener"/>
 </message_arguments>
 </filter>
 </resource>
@@ -365,6 +381,14 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/events/MouseListener.java" type="org.eclipse.swt.events.MouseListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="MouseListener"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/common/org/eclipse/swt/events/MouseMoveListener.java" type="org.eclipse.swt.events.MouseMoveListener">
 <filter id="576720909">
 <message_arguments>
@@ -426,6 +450,14 @@
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="TreeListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/events/VerifyListener.java" type="org.eclipse.swt.events.VerifyListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="VerifyListener"/>
 </message_arguments>
 </filter>
 </resource>
