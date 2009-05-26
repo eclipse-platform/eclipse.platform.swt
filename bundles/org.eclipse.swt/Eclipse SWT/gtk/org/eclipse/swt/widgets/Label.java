@@ -132,6 +132,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* to calculate its preferred size.
 	*/
 	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && (OS.GTK_WIDGET_FLAGS (labelHandle) & OS.GTK_VISIBLE) != 0;
+	if (fixWrap || frameHandle != 0) forceResize ();
 	if (fixWrap) {
 		int /*long*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
