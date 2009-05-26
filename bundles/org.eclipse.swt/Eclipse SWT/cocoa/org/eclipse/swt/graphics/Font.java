@@ -299,6 +299,7 @@ void init(String name, float height, int style, String nsName) {
 	} else {
 		NSString family = NSString.stringWith(name);
 		NSFont nsFont = NSFont.fontWithName(family, size);
+		if (nsFont == null) nsFont = NSFont.systemFontOfSize(size);
 		NSFontManager manager = NSFontManager.sharedFontManager();
 		if (nsFont != null) {
 			if ((style & (SWT.BOLD | SWT.ITALIC)) == 0) {

@@ -1619,6 +1619,16 @@ public void drawText (String string, int x, int y, int flags) {
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT);
 	try {
 		handle.saveGraphicsState();
+		boolean mode = true;
+		switch (data.textAntialias) {
+			case SWT.DEFAULT:
+				/* Printer is off by default */
+				if (!handle.isDrawingToScreen()) mode = false;
+				break;
+			case SWT.OFF: mode = false; break;
+			case SWT.ON: mode = true; break;
+		}
+		handle.setShouldAntialias(mode);
 		NSAttributedString str = createString(string, flags, true);
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 			NSSize size = str.size();
