@@ -5881,7 +5881,8 @@ void handleMouseDown(Event event) {
 				int max = blockSelection ? lineOffset + content.getLine(lineIndex).length() : content.getCharCount();
 				int start = Math.max(min, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
 				int end = Math.min(max, getWordNext(start, SWT.MOVEMENT_WORD_END));
-				setSelection(start, end - start, true, true);
+				setSelection(start, end - start, false, true);
+				sendSelectionEvent();
 			} else {
 				if (blockSelection) {
 					setBlockSelectionLocation(leftMargin, event.y, clientAreaWidth - rightMargin, event.y, true);
@@ -5890,7 +5891,8 @@ void handleMouseDown(Event event) {
 					if (lineIndex + 1 < content.getLineCount()) {
 						lineEnd = content.getOffsetAtLine(lineIndex + 1);
 					}
-					setSelection(lineOffset, lineEnd - lineOffset, true, false);
+					setSelection(lineOffset, lineEnd - lineOffset, false, false);
+					sendSelectionEvent();
 				}
 			}
 			doubleClickSelection = new Point(selection.x, selection.y);
