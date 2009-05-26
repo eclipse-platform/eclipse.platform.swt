@@ -51,6 +51,7 @@ public class Accessible {
 	Vector textListeners = new Vector ();
 	Object[] variants;
 	Control control;
+	static String ALTERNATE_ACCESSIBLE_CLASS_NAME = "org.eclipse.swt.accessibility2.Accessible2";
 
 	/**
 	 * @since 3.5
@@ -155,7 +156,6 @@ public class Accessible {
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
 	 */
-	static String ALTERNATE_ACCESSIBLE_CLASS_NAME = "org.eclipse.swt.accessibility2.Accessible2";
 	public static Accessible internal_new_Accessible(Control control) {
 		if (ALTERNATE_ACCESSIBLE_CLASS_NAME != null) {
 			try {
