@@ -267,8 +267,6 @@ public class Display extends Device {
 	static final byte[] SWT_IMAGE = {'S', 'W', 'T', '_', 'I', 'M', 'A', 'G', 'E', '\0'};
 	static final byte[] SWT_ROW = {'S', 'W', 'T', '_', 'R', 'O', 'W', '\0'};
 	static final byte[] SWT_COLUMN = {'S', 'W', 'T', '_', 'C', 'O', 'L', 'U', 'M', 'N', '\0'};
-	static final String EVENT_VIEW_KEY = "org.eclipse.swt.internal.eventView"; //$NON-NLS-1$
-	static final String PAINT_VIEW_KEY = "org.eclipse.swt.internal.paintView"; //$NON-NLS-1$
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -2097,6 +2095,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isFlipped, isFlippedProc, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_updateOpenGLContext_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2180,15 +2179,6 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSMenuItem, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.objc_registerClassPair(cls);
-
-	className = "SWTOpenGLView";
-	cls = OS.objc_allocateClassPair(OS.class_NSOpenGLView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
-	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
-	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTOutlineView";
@@ -4788,6 +4778,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return result;
 	} else if (sel == OS.sel_setObjectValue_) {
 		widget.setObjectValue(id, sel, arg0);
+	} else if (sel == OS.sel_updateOpenGLContext_) {
+		widget.updateOpenGLContext(id, sel, arg0);
 	}
 	return 0;
 }

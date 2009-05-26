@@ -83,6 +83,7 @@ public abstract class Widget {
 	/* Safari fixes */
 	static final int SAFARI_EVENTS_FIX = 1<<19;
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
 
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -1370,6 +1371,10 @@ public void setData (Object data) {
 public void setData (String key, Object value) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (GLCONTEXT_KEY.equals (key)) {
+		setOpenGLContext(value);
+		return;
+	}
 	int index = 1;
 	Object [] table = null;
 	if ((state & KEYED_DATA) != 0) {
@@ -1410,6 +1415,9 @@ public void setData (String key, Object value) {
 			}
 		}
 	}
+}
+
+void setOpenGLContext(Object value) {
 }
 
 void setFrameOrigin (int /*long*/ id, int /*long*/ sel, NSPoint point) {
@@ -1753,6 +1761,7 @@ int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-
+void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
 
 }

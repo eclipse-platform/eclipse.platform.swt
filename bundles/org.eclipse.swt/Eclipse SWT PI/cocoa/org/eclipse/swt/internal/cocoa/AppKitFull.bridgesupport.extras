@@ -142,6 +142,7 @@
 	<constant name="NSURLPboardType" swt_gen="true"></constant>
 	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
+	<constant name="NSViewGlobalFrameDidChangeNotification" swt_gen="true"></constant>
 	<enum name="NSAlertFirstButtonReturn" swt_gen="true"></enum>
 	<enum name="NSAlertSecondButtonReturn" swt_gen="true"></enum>
 	<enum name="NSAlertThirdButtonReturn" swt_gen="true"></enum>
@@ -2216,6 +2217,9 @@
 		<method class_method="true" selector="clearCurrentContext" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="clearDrawable" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="currentContext" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2225,9 +2229,19 @@
 		<method selector="initWithFormat:shareContext:" swt_gen="true">
 			<arg name="format" swt_gen="true"></arg>
 			<arg name="share" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
+			<retval swt_gen="true" swt_java_type="NSOpenGLContext"></retval>
 		</method>
 		<method selector="makeCurrentContext" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setView:" swt_gen="true">
+			<arg name="view" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="update" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="view" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -2243,26 +2257,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSOpenGLView" swt_gen="mixed" swt_superclass="NSView">
-		<method selector="clearGLContext" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="initWithFrame:pixelFormat:" swt_gen="true">
-			<arg name="frameRect" swt_gen="true"></arg>
-			<arg name="format" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="openGLContext" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setOpenGLContext:" swt_gen="true">
-			<arg name="context" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setPixelFormat:" swt_gen="true">
-			<arg name="pixelFormat" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
+	<class name="NSOpenGLView" swt_superclass="NSView">
 	</class>
 	<class name="NSOpenPanel" swt_gen="mixed" swt_superclass="NSSavePanel">
 		<method selector="filenames" swt_gen="true">

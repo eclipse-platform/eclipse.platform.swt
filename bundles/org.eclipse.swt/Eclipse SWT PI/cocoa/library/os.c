@@ -3902,6 +3902,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSUnderlineStyleAttributeName)
 }
 #endif
 
+#ifndef NO_NSViewGlobalFrameDidChangeNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSViewGlobalFrameDidChangeNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSViewGlobalFrameDidChangeNotification_FUNC);
+	rc = (jintLong)NSViewGlobalFrameDidChangeNotification;
+	OS_NATIVE_EXIT(env, that, NSViewGlobalFrameDidChangeNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NewGlobalRef
 JNIEXPORT jintLong JNICALL OS_NATIVE(NewGlobalRef)
 	(JNIEnv *env, jclass that, jobject arg0)

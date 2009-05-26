@@ -40,6 +40,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
+	NSOpenGLContext context;
 
 Canvas () {
 	/* Do nothing */
@@ -145,6 +146,11 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	} else {
 		gc.fillRectangle (x, y, width, height);
 	}
+}
+
+void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
+	if (context != null && context.view() == null) context.setView(view);
+	super.drawRect(id, sel, rect);
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
@@ -256,6 +262,11 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 		if (!ime.insertText (id, sel, string)) return false;
 	}
 	return super.insertText (id, sel, string);
+}
+
+boolean isOpaque (int /*long*/ id, int /*long*/ sel) {
+	if (context != null) return true;
+	return super.isOpaque(id, sel);
 }
 
 NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
@@ -457,6 +468,10 @@ public void setFont (Font font) {
 	super.setFont (font);
 }
 
+void setOpenGLContext(Object value) {
+	context = (NSOpenGLContext)value;
+}
+
 /**
  * Sets the receiver's IME.
  * 
@@ -488,6 +503,10 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {
 	if (ime != null) return ime.validAttributesForMarkedText (id, sel);
 	return super.validAttributesForMarkedText(id, sel);
+}
+
+void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	if (context != null) ((NSOpenGLContext)context).update();
 }
 
 }

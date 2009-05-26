@@ -313,6 +313,7 @@ typedef enum {
 	NSURLPboardType_FUNC,
 	NSUnderlineColorAttributeName_FUNC,
 	NSUnderlineStyleAttributeName_FUNC,
+	NSViewGlobalFrameDidChangeNotification_FUNC,
 	NewGlobalRef_FUNC,
 	NewRgn_FUNC,
 	OffsetRgn_FUNC,

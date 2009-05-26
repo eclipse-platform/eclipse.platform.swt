@@ -26,13 +26,11 @@ import org.eclipse.swt.opengl.GLData;
  */
 
 public class GLCanvas extends Canvas {
-	SWTOpenGLView glView;
+	NSOpenGLContext context;
 	NSOpenGLPixelFormat pixelFormat;
 	
 	static final int MAX_ATTRIBUTES = 32;
-	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
-	static final String EVENT_VIEW_KEY = "org.eclipse.swt.internal.eventView"; //$NON-NLS-1$
-	static final String PAINT_VIEW_KEY = "org.eclipse.swt.internal.paintView"; //$NON-NLS-1$
+	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
 
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
@@ -110,43 +108,31 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	
 	pixelFormat.initWithAttributes(attrib);
 	
-	glView = (SWTOpenGLView)new SWTOpenGLView().alloc();
-	if (glView == null) {		
+	NSOpenGLContext ctx = data.shareContext != null ? data.shareContext.context : null;
+	context = (NSOpenGLContext) new NSOpenGLContext().alloc();
+	if (context == null) {		
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	glView.initWithFrame(view.bounds(), pixelFormat);
-	
-	if (data.shareContext != null) {
-		NSOpenGLContext ctx = data.shareContext.glView.openGLContext();
-		NSOpenGLContext newContext = (NSOpenGLContext) new NSOpenGLContext().alloc();
-		newContext.initWithFormat(pixelFormat, ctx);
-		glView.setOpenGLContext(newContext);
-		newContext.release();
-	}
-	glView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-	view.addSubview(glView);
-	Display display = getDisplay();
-	display.setData(ADD_WIDGET_KEY, new Object[] {glView, this});
-	display.setData(EVENT_VIEW_KEY, glView);
-	display.setData(PAINT_VIEW_KEY, view);
+	context = context.initWithFormat(pixelFormat, ctx);
+	setData(GLCONTEXT_KEY, context);
+	NSNotificationCenter.defaultCenter().addObserver(view,  OS.sel_updateOpenGLContext_, OS.NSViewGlobalFrameDidChangeNotification, view);
 	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
+			
 				case SWT.Dispose:
-					event.display.setData(ADD_WIDGET_KEY, new Object[] {glView, null});
-					event.display.setData(EVENT_VIEW_KEY, null);
-					event.display.setData(PAINT_VIEW_KEY, null);
-
-					if (glView != null) {
-						glView.clearGLContext();
-						glView.release();
+					setData(GLCONTEXT_KEY, null);
+					NSNotificationCenter.defaultCenter().removeObserver(view);
+					
+					if (context != null) {
+						context.clearDrawable();
+						context.release();
 					}
-					glView = null;
+					context = null;
 					if (pixelFormat != null) pixelFormat.release();
 					pixelFormat = null;
 					break;
@@ -228,7 +214,8 @@ public GLData getGLData () {
  */
 public boolean isCurrent () {
 	checkWidget ();
-	return NSOpenGLContext.currentContext().id == glView.openGLContext().id;
+	NSOpenGLContext current = NSOpenGLContext.currentContext();
+	return current != null && current.id == context.id;
 }
 
 /**
@@ -242,7 +229,7 @@ public boolean isCurrent () {
  */
 public void setCurrent () {
 	checkWidget ();
-	glView.openGLContext().makeCurrentContext();
+	context.makeCurrentContext();
 }
 
 /**
@@ -255,6 +242,6 @@ public void setCurrent () {
  */
 public void swapBuffers () {
 	checkWidget ();
-	glView.openGLContext().flushBuffer();
+	context.flushBuffer();
 }
 }
