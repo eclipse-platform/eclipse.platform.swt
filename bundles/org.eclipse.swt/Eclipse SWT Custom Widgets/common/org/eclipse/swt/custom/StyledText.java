@@ -3546,6 +3546,11 @@ String getBlockSelectionText(String delimiter) {
 	for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
 		int start = getOffsetAtPoint(left, 0, lineIndex, null);
 		int end = getOffsetAtPoint(right, 0, lineIndex, null);
+		if (start > end) {
+			int temp = start;
+			start = end;
+			end = temp;
+		}
 		String text = content.getTextRange(start, end - start);
 		buffer.append(text);
 		if (lineIndex < lastLine) buffer.append(delimiter); 
@@ -4603,8 +4608,14 @@ public int[] getSelectionRanges() {
 		int index = 0;
 		for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
 			int start = getOffsetAtPoint(left, 0, lineIndex, null);
+			int end = getOffsetAtPoint(right, 0, lineIndex, null);
+			if (start > end) {
+				int temp = start;
+				start = end;
+				end = temp;
+			}
 			ranges[index++] = start;
-			ranges[index++] = getOffsetAtPoint(right, 0, lineIndex, null) - start;
+			ranges[index++] = end - start;
 		}
 		return ranges;
 	}
@@ -5463,6 +5474,11 @@ void insertBlockSelectionText(char key, int action) {
 			end = right < leftMargin ? lineOffset : lineEndOffset; 
 		} else {
 			end += trailing[0];
+		}
+		if (start > end) {
+			int temp = start;
+			start = end;
+			end = temp;
 		}
 		if (start == end && !outOfLine) {
 			switch (action) {
@@ -7488,6 +7504,11 @@ int sendTextEvent(int left, int right, int lineIndex, String text, boolean fillW
 	} else {
 		start = end = content.getCharCount();
 		buffer.append(content.getLineDelimiter());
+	}
+	if (start > end) {
+		int temp = start;
+		start = end;
+		end = temp;
 	}
 	if (fillWithSpaces) {
 		int spacesWidth = left - lineWidth + horizontalScrollOffset - leftMargin;
