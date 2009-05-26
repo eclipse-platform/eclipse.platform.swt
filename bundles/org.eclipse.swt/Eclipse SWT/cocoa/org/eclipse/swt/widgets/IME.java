@@ -485,6 +485,13 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 	event.end = end;
 	event.text = text = str.getString();
 	sendEvent (SWT.ImeComposition, event);
+	if (isDisposed ()) return false;
+	if (text.length () == 0) {
+		Shell s = parent.getShell ();
+		s.keyInputHappened = true;
+		startOffset = -1;
+		resetStyles ();
+	}
 	return true;
 }
 
