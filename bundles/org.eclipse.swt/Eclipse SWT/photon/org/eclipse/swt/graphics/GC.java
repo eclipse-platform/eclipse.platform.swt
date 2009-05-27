@@ -31,6 +31,14 @@ import org.eclipse.swt.*;
  * </p>
  * 
  * <p>
+ * The result of drawing on an image that was created with an indexed
+ * palette using a color that is not in the palette is platform specific.
+ * Some platforms will match to the nearest color while other will draw
+ * the color itself. This happens because the allocated image might use
+ * a direct palette on platforms that do not support indexed palette.
+ * </p>
+ * 
+ * <p>
  * Application code must explicitly invoke the <code>GC.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required. This is <em>particularly</em>
@@ -2231,6 +2239,7 @@ public Pattern getForegroundPattern() {
  * @see GCData
  * 
  * @since 3.2
+ * @noreference This method is not intended to be referenced by clients.
  */
 public GCData getGCData() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);

@@ -11,6 +11,7 @@
  * </code></pre>
  *
  * @see Transfer
+ * @since 3.4
  */public class URLTransfer extends ByteArrayTransfer {	static URLTransfer _instance = new URLTransfer();	static final String URL = OS.NSURLPboardType.getString();	static final int URL_ID = registerType(URL);private URLTransfer() {}/**
  * Returns the singleton instance of the URLTransfer class.
  *

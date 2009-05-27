@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.4
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class IME extends Widget {
 	Canvas parent;
@@ -249,7 +250,7 @@ void releaseWidget () {
  * above the IME, then the IME must be informed that the composition
  * offset has changed.
  *
- * @return the offset of the composition
+ * @param offset the offset of the composition
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

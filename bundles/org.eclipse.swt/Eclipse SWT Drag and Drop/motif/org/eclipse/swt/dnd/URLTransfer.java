@@ -25,6 +25,7 @@ import org.eclipse.swt.internal.motif.*;
  * </code></pre>
  *
  * @see Transfer
+ * @since 3.4
  */
 public class URLTransfer extends ByteArrayTransfer {
 

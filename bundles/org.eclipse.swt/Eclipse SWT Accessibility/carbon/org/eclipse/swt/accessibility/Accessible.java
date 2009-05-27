@@ -75,6 +75,9 @@ public class Accessible {
 	int axuielementref = 0;
 	int[] osChildIDCache = new int[0];
 	
+	/**
+	 * @since 3.5
+	 */
 	protected Accessible() {
 	}
 

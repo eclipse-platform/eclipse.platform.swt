@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class PrintDialog extends Dialog {
 	PrinterData printerData = new PrinterData();
@@ -99,8 +100,12 @@ public PrintDialog (Shell parent, int style) {
 /**
  * Sets the printer data that will be used when the dialog
  * is opened.
+ * <p>
+ * Setting the printer data to null is equivalent to
+ * resetting all data fields to their default values.
+ * </p>
  * 
- * @param data the data that will be used when the dialog is opened
+ * @param data the data that will be used when the dialog is opened or null to use default data
  * 
  * @since 3.4
  */
@@ -274,7 +279,8 @@ public void setPrintToFile(boolean printToFile) {
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
- * @return a printer data object describing the desired print job parameters
+ * @return a printer data object describing the desired print job parameters,
+ *         or null if the dialog was canceled, no printers were found, or an error occurred
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

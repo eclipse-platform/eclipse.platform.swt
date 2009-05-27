@@ -11,6 +11,7 @@
  * </code></pre>
  *
  * @see Transfer
+ * @since 3.4
  */public class URLTransfer extends ByteArrayTransfer {	static URLTransfer _instance = new URLTransfer();	static final String URL = "url "; //$NON-NLS-1$	static final int URL_ID = registerType(URL);	static final String URLN = "urln"; //$NON-NLS-1$	static final int URLN_ID = registerType(URLN);private URLTransfer() {}/**
  * Returns the singleton instance of the URLTransfer class.
  *

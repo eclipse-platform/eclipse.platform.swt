@@ -23,6 +23,7 @@ import org.eclipse.swt.*;
  * platforms, and should never be called from application code.
  * </p>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noinstantiate This class is not intended to be instantiated by clients.
  */
 public final class GCData {
 	public Device device;

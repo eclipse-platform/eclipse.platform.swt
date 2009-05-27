@@ -81,6 +81,7 @@ import org.eclipse.swt.graphics.*;
  * @see Scrollable#getVerticalBar
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ScrollBar extends Widget {
 	int handle;

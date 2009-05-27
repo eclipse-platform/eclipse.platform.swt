@@ -46,6 +46,9 @@ public class Accessible {
 	AccessibleObject accessibleObject;
 	Control control;
 	
+	/**
+	 * @since 3.5
+	 */
 	protected Accessible() {
 	}
 

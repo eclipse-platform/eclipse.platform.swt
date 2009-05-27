@@ -36,6 +36,7 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#sash">Sash snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Sash extends Control {
 	boolean dragging;
@@ -70,6 +71,7 @@ public class Sash extends Control {
  *
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
+ * @see SWT#SMOOTH
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

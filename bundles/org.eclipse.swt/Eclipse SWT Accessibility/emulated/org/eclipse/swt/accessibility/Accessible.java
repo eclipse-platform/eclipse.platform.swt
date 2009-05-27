@@ -39,6 +39,9 @@ import org.eclipse.swt.widgets.Control;
 public class Accessible {
 	Control control;
 
+	/**
+	 * @since 3.5
+	 */
 	protected Accessible() {
 	}
 
