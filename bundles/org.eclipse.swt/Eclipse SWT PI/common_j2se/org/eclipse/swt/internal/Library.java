@@ -41,8 +41,8 @@ public class Library {
 	/* 64-bit support */
 	static /*final*/ boolean IS_64 = 0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL;
 	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
-	static final String SWTDIR_32 = "swt-32";	//$NON-NLS-1$
-	static final String SWTDIR_64 = "swt-64";	//$NON-NLS-1$
+	static final String SWTDIR_32 = "swtlib-32";	//$NON-NLS-1$
+	static final String SWTDIR_64 = "swtlib-64";	//$NON-NLS-1$
 
 static {
 	SEPARATOR = System.getProperty("file.separator");
@@ -225,8 +225,14 @@ public static void loadLibrary (String name, boolean mapName) {
 	if (path == null) {
 		path = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
 		File dir = new File (path, IS_64 ? SWTDIR_64 : SWTDIR_32);
-		if ((dir.exists () && dir.isDirectory ()) || dir.mkdir ()) {
+		boolean make = false;
+		if ((dir.exists () && dir.isDirectory ()) || (make = dir.mkdir ())) {
 			path = dir.getAbsolutePath ();
+			if (make && !Platform.PLATFORM.equals ("win32")) { //$NON-NLS-1$
+				try {
+					Runtime.getRuntime ().exec (new String []{"chmod", "777", path}).waitFor(); //$NON-NLS-1$ //$NON-NLS-2$
+				} catch (Throwable e) {}
+			}
 		} else {
 			/* fall back to using the tmp directory */
 			if (IS_64) {
