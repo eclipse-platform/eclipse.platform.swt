@@ -23,7 +23,7 @@ public NativesGenerator() {
 }
 
 public void generateCopyright() {
-	generateMetaData("swt_copyright");
+	outputln(fixDelimiter(getMetaData().getCopyright()));
 }
 
 public void generateIncludes() {

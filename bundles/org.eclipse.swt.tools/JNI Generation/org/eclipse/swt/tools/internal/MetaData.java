@@ -13,6 +13,7 @@ package org.eclipse.swt.tools.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Calendar;
 
 public class MetaData {
 	
@@ -44,6 +45,21 @@ public MetaData(String mainClass) {
 
 public MetaData(Properties data) {
 	this.data = data;
+}
+
+public String getCopyright() {
+	String copyright = getMetaData("swt_copyright", null);
+	if (copyright == null) return "";
+	if (copyright.length() == 0) return "";
+	String end_year_tag = "%END_YEAR";
+	int index = copyright.indexOf(end_year_tag);
+	if (index != -1) {
+		String temp = copyright.substring(0, index);
+		temp += Calendar.getInstance().get(Calendar.YEAR);
+		temp += copyright.substring(index + end_year_tag.length());
+		copyright = temp;
+	}
+	return copyright;
 }
 
 public String getMetaData(String key, String defaultValue) {

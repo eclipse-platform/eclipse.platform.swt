@@ -21,7 +21,7 @@ public StatsGenerator(boolean header) {
 }
 
 public void generateCopyright() {
-	generateMetaData("swt_copyright");
+	outputln(fixDelimiter(getMetaData().getCopyright()));
 }
 
 public void generateIncludes() {

@@ -468,10 +468,7 @@ void generateClasses() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		this.out = new PrintStream(out);
 
-		String data = metaData.getMetaData("swt_copyright", null);
-		if (data != null && data.length() != 0) {
-			out(fixDelimiter(data));
-		}
+		out(fixDelimiter(metaData.getCopyright()));
 
 		String className = (String) iterator.next();
 		Object[] clazz = (Object[])classes.get(className);
