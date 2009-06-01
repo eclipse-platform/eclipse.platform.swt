@@ -357,7 +357,7 @@ public JNIClass[] getClasses() {
 	return classes;
 }
 
-public JNIClass[] getASTClasses() {
+JNIClass[] getASTClasses() {
 	if (classes != null) return classes;
 	if (mainClassName == null) return new JNIClass[0];
 	String root = new File(outputDir).getParent();
