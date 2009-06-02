@@ -31,7 +31,7 @@ AWT_OBJECTS   = swt_awt.o
 #NATIVE_STATS = -DNATIVE_STATS
 
 #SWT_DEBUG = -g
-CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -DATOMIC \
+CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA \
 	-I /System/Library/Frameworks/JavaVM.framework/Headers \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa -framework WebKit
