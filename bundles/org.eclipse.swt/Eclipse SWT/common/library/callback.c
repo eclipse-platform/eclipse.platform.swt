@@ -31,6 +31,15 @@ static jint JNI_VERSION = 0;
 static int counter = 0;
 #endif
 
+#ifdef ATOMIC
+#include <libkern/OSAtomic.h>
+#define ATOMIC_INC(value) OSAtomicIncrement32(&value);
+#define ATOMIC_DEC(value) OSAtomicDecrement32(&value);
+#else
+#define ATOMIC_INC(value) value++;
+#define ATOMIC_DEC(value) value--;
+#endif
+
 jintLong callback(int index, ...);
 
 #ifdef USE_ASSEMBLER
@@ -682,7 +691,7 @@ jintLong callback(int index, ...)
 	}
 
 	/* Call into the VM. */
-	callbackEntryCount++;
+	ATOMIC_INC(callbackEntryCount);
 	va_start(vl, index);
 	if (isArrayBased) {
 		int i;
@@ -714,7 +723,7 @@ jintLong callback(int index, ...)
 		}
 	}
 	va_end(vl);
-	callbackEntryCount--;
+	ATOMIC_DEC(callbackEntryCount);
 	
 done:
 	/* If an exception has occurred in Java, return the error result. */
