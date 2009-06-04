@@ -324,6 +324,14 @@ void createItem (MenuItem item, int index) {
 		nsItem.setSubmenu (emptyMenu);
 		emptyMenu.release();
 	}
+	if (display.menuBar == this) {
+		NSApplication application = display.application;
+		NSMenu menubar = application.mainMenu();
+		if (menubar != null) {
+			nsItem.setMenu(null);
+			menubar.insertItem(nsItem, index + 1);
+		}
+	}
 	//TODO - find a way to disable the menu instead of each item
 	if (!getEnabled ()) nsItem.setEnabled (false);
 }
@@ -350,6 +358,14 @@ void destroyItem (MenuItem item) {
 	items [itemCount] = null;
 	if (itemCount == 0) items = new MenuItem [4];
 	nsMenu.removeItem (item.nsItem);
+	if (display.menuBar == this) {
+		NSApplication application = display.application;
+		NSMenu menubar = application.mainMenu();
+		if (menubar != null) {
+			NSMenuItem nsItem = item.nsItem;
+			menubar.removeItem(nsItem);
+		}
+	}
 }
 
 void fixMenus (Decorations newParent) {
