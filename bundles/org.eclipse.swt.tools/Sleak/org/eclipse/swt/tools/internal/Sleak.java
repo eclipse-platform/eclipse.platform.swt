@@ -23,8 +23,6 @@ import java.io.*;
  * 
  */
 public class Sleak {
-	Display display;
-	Shell shell;
 	List list;
 	Canvas canvas;
 	Button start, stop, check;
@@ -41,7 +39,12 @@ public static void main (String [] args) {
 	data.tracking = true;
 	Display display = new Display (data);
 	Sleak sleak = new Sleak ();
-	sleak.open ();
+	Shell shell = new Shell(display);
+	shell.setText ("S-Leak");
+	Point size = shell.getSize ();
+	shell.setSize (size.x / 2, size.y / 2);
+	sleak.create (shell);
+	shell.open();
 	
 	// Launch your application here
 	// e.g.		
@@ -55,62 +58,57 @@ public static void main (String [] args) {
 //	button2.setImage(image);
 //	shell.open();
 	
-	while (!sleak.shell.isDisposed ()) {
+	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
 
-public void open () {
-	display = Display.getCurrent ();
-	shell = new Shell (display);
-	shell.setText ("S-Leak");
-	list = new List (shell, SWT.BORDER | SWT.V_SCROLL);
+public void create (Composite parent) {
+	list = new List (parent, SWT.BORDER | SWT.V_SCROLL);
 	list.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			refreshObject ();
 		}
 	});
-	text = new Text (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-	canvas = new Canvas (shell, SWT.BORDER);
+	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	canvas = new Canvas (parent, SWT.BORDER);
 	canvas.addListener (SWT.Paint, new Listener () {
 		public void handleEvent (Event event) {
 			paintCanvas (event);
 		}
 	});
-	check = new Button (shell, SWT.CHECK);
+	check = new Button (parent, SWT.CHECK);
 	check.setText ("Stack");
 	check.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			toggleStackTrace ();
 		}
 	});
-	start = new Button (shell, SWT.PUSH);
+	start = new Button (parent, SWT.PUSH);
 	start.setText ("Snap");
 	start.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			refreshAll ();
 		}
 	});
-	stop = new Button (shell, SWT.PUSH);
+	stop = new Button (parent, SWT.PUSH);
 	stop.setText ("Diff");
 	stop.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			refreshDifference ();
 		}
 	});
-	label = new Label (shell, SWT.BORDER);
+	label = new Label (parent, SWT.BORDER);
 	label.setText ("0 object(s)");
-	shell.addListener (SWT.Resize, new Listener () {
+	parent.addListener (SWT.Resize, new Listener () {
 		public void handleEvent (Event e) {
 			layout ();
 		}
 	});
 	check.setSelection (false);
 	text.setVisible (false);
-	Point size = shell.getSize ();
-	shell.setSize (size.x / 2, size.y / 2);
-	shell.open ();
+	layout();
 }
 
 void refreshLabel () {
@@ -147,8 +145,10 @@ void refreshLabel () {
 }
 
 void refreshDifference () {
+	Display display = canvas.getDisplay();
 	DeviceData info = display.getDeviceData ();
 	if (!info.tracking) {
+		Shell shell = canvas.getShell();
 		MessageBox dialog = new MessageBox (shell, SWT.ICON_WARNING | SWT.OK);
 		dialog.setText (shell.getText ());
 		dialog.setMessage ("Warning: Device is not tracking resource allocation");
@@ -292,7 +292,8 @@ void refreshAll () {
 }
 
 void layout () {
-	Rectangle rect = shell.getClientArea ();
+	Composite parent = canvas.getParent();
+	Rectangle rect = parent.getClientArea ();
 	int width = 0;
 	String [] items = list.getItems ();
 	GC gc = new GC (list);
