@@ -27,6 +27,7 @@ public class SpyView extends ViewPart {
 	private Listener keyFilter;
 	private Runnable timer;
 	private Control lastControl;
+	private Field field;
 	
 	static final int TIMEOUT = 100;
 
@@ -134,13 +135,18 @@ public class SpyView extends ViewPart {
 	}
 	
 	private String getOSHandle(Control control) {
-		String[] fieldNames = {"handle", "view"};
-		for (int i = 0; i < fieldNames.length; i++) {
-			try {
-				Field field = control.getClass().getField(fieldNames[i]);
-				if (field != null) return field.get(control).toString();
-			} catch (Throwable e) {}
+		if (field == null) {
+			String[] fieldNames = {"handle", "view"};
+			for (int i = 0; i < fieldNames.length; i++) {
+				try {
+					field = control.getClass().getField(fieldNames[i]);
+					if (field != null) break;
+				} catch (Throwable e) {}
+			}
 		}
+		try {
+			return field.get(control).toString();
+		} catch (Throwable e) {}
 		return "";
 	}
 	
