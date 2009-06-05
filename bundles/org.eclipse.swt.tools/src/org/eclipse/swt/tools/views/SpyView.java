@@ -48,7 +48,7 @@ public class SpyView extends ViewPart {
 						spyAction.run();
 					}
 				};
-				e.doit = false;
+				e.type = SWT.None;
 			}
 		};
 		parent.getDisplay().addFilter(SWT.KeyDown, keyFilter);
@@ -95,7 +95,7 @@ public class SpyView extends ViewPart {
 								parent = parent.getParent();
 							}
 							for (int i = parents.length - 1; i >= 0; i--) {
-								String prefix = "";
+								String prefix = "\t";
 								for (int j = 0; j < parents.length - i - 1; j++) {
 									prefix += "\t";
 								}
