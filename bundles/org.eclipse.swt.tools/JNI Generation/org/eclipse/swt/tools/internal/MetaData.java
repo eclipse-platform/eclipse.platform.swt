@@ -55,7 +55,8 @@ public String getCopyright() {
 	int index = copyright.indexOf(end_year_tag);
 	if (index != -1) {
 		String temp = copyright.substring(0, index);
-		temp += Calendar.getInstance().get(Calendar.YEAR);
+		//temp += Calendar.getInstance().get(Calendar.YEAR);
+		temp += "2010";
 		temp += copyright.substring(index + end_year_tag.length());
 		copyright = temp;
 	}

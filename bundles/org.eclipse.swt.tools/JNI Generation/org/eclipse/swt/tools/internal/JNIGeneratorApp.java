@@ -86,7 +86,7 @@ void generateSTATS_C(JNIClass[] classes) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
 		gen.generate();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -103,7 +103,7 @@ void generateSTATS_H(JNIClass[] classes) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
 		gen.generate();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -120,7 +120,7 @@ void generateSTRUCTS_H(JNIClass[] classes) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
 		gen.generate();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -138,7 +138,7 @@ void generateSTRUCTS_C(JNIClass[] classes) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
 		gen.generate();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -156,7 +156,7 @@ void generateSWT_C(JNIClass[] classes) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
 		gen.generate();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -179,7 +179,7 @@ void generateMetaData(JNIClass[] classes) {
 				System.out.println("Warning: Meta data output dir does not exist");
 				return;
 			}
-			if (out.size() > 0) output(out.toByteArray(), getMetaDataDir() + gen.getFileName());
+			if (out.size() > 0) JNIGenerator.output(out.toByteArray(), getMetaDataDir() + gen.getFileName());
 		}
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -244,32 +244,6 @@ public void generate(ProgressMonitor progress) {
 //	generateEmbededMetaData(classes);
 	if (progress != null) progress.setMessage("Done.");
 	this.progress = null;
-}
-
-boolean compare(InputStream is1, InputStream is2) throws IOException {
-	while (true) {
-		int c1 = is1.read();
-		int c2 = is2.read();
-		if (c1 != c2) return false;
-		if (c1 == -1) break;
-	}
-	return true;
-}
-
-void output(byte[] bytes, String fileName) throws IOException {
-	FileInputStream is = null;
-	try {
-		is = new FileInputStream(fileName);
-		if (compare(new ByteArrayInputStream(bytes), new BufferedInputStream(is))) return;
-	} catch (FileNotFoundException e) {
-	} finally {
-		try {
-			if (is != null) is.close();
-		} catch (IOException e) {}
-	}
-	FileOutputStream out = new FileOutputStream(fileName);
-	out.write(bytes);
-	out.close();
 }
 
 String getPackageName(String className) {

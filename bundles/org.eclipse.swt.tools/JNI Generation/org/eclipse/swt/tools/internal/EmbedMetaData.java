@@ -10,13 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Iterator;
@@ -57,32 +50,6 @@ public void generate(JNIClass clazz) {
 		e.printStackTrace();
 	}
 	inserts = null;
-}
-
-boolean compare(InputStream is1, InputStream is2) throws IOException {
-	while (true) {
-		int c1 = is1.read();
-		int c2 = is2.read();
-		if (c1 != c2) return false;
-		if (c1 == -1) break;
-	}
-	return true;
-}
-
-void output(byte[] bytes, String fileName) throws IOException {
-	FileInputStream is = null;
-	try {
-		is = new FileInputStream(fileName);
-		if (compare(new ByteArrayInputStream(bytes), new BufferedInputStream(is))) return;
-	} catch (FileNotFoundException e) {
-	} finally {
-		try {
-			if (is != null) is.close();
-		} catch (IOException e) {}
-	}
-	FileOutputStream out = new FileOutputStream(fileName);
-	out.write(bytes);
-	out.close();
 }
 
 public void generate(JNIField[] fields) {

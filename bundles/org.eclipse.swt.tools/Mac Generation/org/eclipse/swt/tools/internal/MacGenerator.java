@@ -495,7 +495,7 @@ void generateClasses() {
 		String fileName = outputDir + packageName.replace('.', '/') + "/" + className + ".java";
 		try {
 			out.flush();
-			if (out.size() > 0) output(out.toByteArray(), fileName);
+			if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 		} catch (Exception e) {
 			System.out.println("Problem");
 			e.printStackTrace(System.out);
@@ -587,7 +587,7 @@ void generateMainClass() {
 	out(footer);
 	try {
 		out.flush();
-		if (out.size() > 0) output(out.toByteArray(), fileName);
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -642,7 +642,7 @@ void saveExtraAttributes(String xmlPath, Document document) {
 		writer.setAttributeFilter(filter);
 		writer.setNodeFilter("swt_");
 		writer.print(document);
-		if (out.size() > 0) output(out.toByteArray(), fileName);
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -1661,38 +1661,7 @@ void generateVariadics(Node node) {
 	}
 }
 
-boolean compare(InputStream is1, InputStream is2) throws IOException {
-	while (true) {
-		int c1 = is1.read();
-		int c2 = is2.read();
-		if (c1 != c2) return false;
-		if (c1 == -1) break;
-	}
-	return true;
-}
-
-void output(byte[] bytes, String fileName) throws IOException {
-	FileInputStream is = null;
-	try {
-		is = new FileInputStream(fileName);
-		if (compare(new ByteArrayInputStream(bytes), new BufferedInputStream(is))) return;
-	} catch (FileNotFoundException e) {
-	} finally {
-		try {
-			if (is != null) is.close();
-		} catch (IOException e) {}
-	}
-	FileOutputStream out = new FileOutputStream(fileName);
-	out.write(bytes);
-	out.close();
-}
-
 public static void main(String[] args) {
-//	args = new String[]{
-//		"./Mac Generation/org/eclipse/swt/tools/internal/AppKitFull.bridgesupport",
-//		"./Mac Generation/org/eclipse/swt/tools/internal/FoundationFull.bridgesupport",
-//		"./Mac Generation/org/eclipse/swt/tools/internal/WebKitFull.bridgesupport",
-//	};
 	try {
 		MacGenerator gen = new MacGenerator();
 		gen.setXmls(args);

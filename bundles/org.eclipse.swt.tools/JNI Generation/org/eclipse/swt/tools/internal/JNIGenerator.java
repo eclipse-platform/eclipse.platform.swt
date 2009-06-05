@@ -32,6 +32,64 @@ public JNIGenerator() {
 	metaData = new MetaData(new Properties());
 }
 
+public static String skipCopyrights(InputStream is) throws IOException {
+	int state = 0;
+	StringBuffer copyrights = new StringBuffer();
+	while (state != 5) {
+		int c = is.read();
+		if (c == -1) return null;
+		switch (state) {
+			case 0:
+				if (!Character.isWhitespace((char)c)) state = 1;
+			case 1:
+				if (c == '/') state = 2;
+				else return null;
+				break;
+			case 2:
+				if (c == '*') state = 3;
+				else return null;
+				break;
+			case 3:
+				if (c == '*') state = 4;
+				break;
+			case 4:
+				if (c == '/') state = 5;
+				else state = 3;
+				break;
+		}
+		if (state > 0) copyrights.append((char)c);
+	}
+	return copyrights.toString();
+}
+
+public static boolean compare(InputStream is1, InputStream is2) throws IOException {
+	skipCopyrights(is1);
+	skipCopyrights(is2);
+	while (true) {
+		int c1 = is1.read();
+		int c2 = is2.read();
+		if (c1 != c2) return false;
+		if (c1 == -1) break;
+	}
+	return true;
+}
+
+public static void output(byte[] bytes, String fileName) throws IOException {
+	FileInputStream is = null;
+	try {
+		is = new FileInputStream(fileName);
+		if (compare(new ByteArrayInputStream(bytes), new BufferedInputStream(is))) return;
+	} catch (FileNotFoundException e) {
+	} finally {
+		try {
+			if (is != null) is.close();
+		} catch (IOException e) {}
+	}
+	FileOutputStream out = new FileOutputStream(fileName);
+	out.write(bytes);
+	out.close();
+}
+
 String fixDelimiter(String str) {
 	if (delimiter.equals("\n")) return str;
 	int index = 0, length = str.length();
