@@ -15,6 +15,14 @@
             id="org.eclipse.swt.tools.views.MacGeneratorView"
             name="%macViewName">
       </view>
+      <view
+            allowMultiple="false"
+            category="org.eclipse.swt.swt.tools"
+            class="org.eclipse.swt.tools.views.SpyView"
+            icon="icons/spy.gif"
+            id="org.eclipse.swt.tools.views.SpyView"
+            name="%spyViewName">
+      </view>
    </extension>
 
    <extension point="org.eclipse.ui.editors.templates">
