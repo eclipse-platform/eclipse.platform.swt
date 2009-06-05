@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.views;
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.tools.internal.*;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.internal.UIPlugin;
 import org.eclipse.ui.part.*;
 
 /**
@@ -59,6 +62,41 @@ public class SleakView extends ViewPart {
 	 */
 	public void setFocus() {
 		parent.setFocus();
+	}
+	
+	private boolean extractOptions (String fileName) {
+		FileOutputStream os = null;
+		InputStream is = null;
+		File file = new File(fileName);
+		try {
+			if (!file.exists ()) {
+				is = Class.forName("org.eclipse.ui.internal.UIPlugin").getResourceAsStream ("/.options"); //$NON-NLS-1$
+				if (is != null) {
+					int read;
+					byte [] buffer = new byte [4096];
+					os = new FileOutputStream (fileName);
+					while ((read = is.read (buffer)) != -1) {
+						os.write(buffer, 0, read);
+					}
+					os.close ();
+					is.close ();
+				}
+			}
+			return true;
+		} catch (Throwable e) {
+		} finally {
+			try {
+				if (os != null)
+					os.close();
+			} catch (IOException e1) {
+			}
+			try {
+				if (is != null)
+					is.close();
+			} catch (IOException e1) {
+			}
+		}
+		return false;
 	}
 
 }
