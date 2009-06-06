@@ -48,8 +48,8 @@ public class SpyView extends ViewPart {
 						spyAction.setChecked(true);
 						spyAction.run();
 					}
+					e.type = SWT.None;
 				};
-				e.type = SWT.None;
 			}
 		};
 		parent.getDisplay().addFilter(SWT.KeyDown, keyFilter);
