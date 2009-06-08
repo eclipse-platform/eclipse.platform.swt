@@ -49,6 +49,7 @@ public static void main(String[] args) {
 		if (!display.readAndDispatch())
 			display.sleep();
 	}
+	layout.dispose();
 	display.dispose();
 }
 }
