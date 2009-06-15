@@ -8,8 +8,17 @@
       SWT Tools Feature.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      /*******************************************************************************
+* Copyright (c) 2009 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
    </copyright>
 
    <license>
@@ -210,6 +219,11 @@ Agreement more than one year after the cause of action arose.
 Each party waives its rights to a jury trial in any resulting
 litigation.
    </license>
+
+   <url>
+      <discovery label="Generating the SWT JNI Code" url="http://eclipse.org/swt/jnigen.php"/>
+      <discovery label="Generating the SWT PI Code for Cocoa" url="http://eclipse.org/swt/macgen.php"/>
+   </url>
 
    <plugin
          id="org.eclipse.swt.tools"
