@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.swt.tools.feature_1.0.0.qualifier.jar" id="org.eclipse.swt.tools.feature" version="1.0.0.qualifier">
+      <category name="org.eclipse.swt.tools.category"/>
+   </feature>
+   <category-def name="org.eclipse.swt.tools.category" label="SWT Tools"/>
+</site>
