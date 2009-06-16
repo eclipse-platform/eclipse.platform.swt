@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
  
 /*
- * example snippet: DND between Swing and SWT
+ * example snippet: drag and drop text between SWT and Swing
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

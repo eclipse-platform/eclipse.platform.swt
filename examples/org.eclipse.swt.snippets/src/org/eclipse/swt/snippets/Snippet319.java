@@ -11,8 +11,8 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Drag and Drop example snippet: drag an object with a custom data transfer
- * type between SWT and AWT/Swing.
+ * Drag and Drop example snippet: drag and drop an object with a
+ * custom data transfer type from SWT to AWT/Swing
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
