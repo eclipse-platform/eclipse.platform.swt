@@ -81,8 +81,14 @@ public void go() {
 	/* Register the custom data flavour */
 	final DataFlavor flavor = new DataFlavor(MIME_TYPE, "MyType custom flavor");
 	/* 
-	 * Is there a better way to get the SystemFlavorMap?  If the
-	 * instanceof check below fails then the drop will not be accepted. 
+	 * Note that according to jre/lib/flavormap.properties, the preferred way to
+	 * augment the default system flavor map is to specify the AWT.DnD.flavorMapFileURL
+	 * property in an awt.properties file.
+	 * 
+	 * This snippet uses the alternate approach below in order to provide a simple
+	 * stand-alone snippet that demonstrates the functionality.  This implementation
+	 * works well, but if the instanceof check below fails for some reason when used
+	 * in a different context then the drop will not be accepted.
 	 */
 	FlavorMap map = SystemFlavorMap.getDefaultFlavorMap();
 	if (map instanceof SystemFlavorMap) {
