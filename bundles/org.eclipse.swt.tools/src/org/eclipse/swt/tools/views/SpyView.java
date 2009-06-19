@@ -157,7 +157,9 @@ public class SpyView extends ViewPart {
 	}
 	
 	public void dispose() {
-		Display.getCurrent().removeFilter(SWT.KeyDown, keyFilter);
+		if (keyFilter != null) {
+			Display.getCurrent().removeFilter(SWT.KeyDown, keyFilter);
+		}
 		super.dispose();
 	}
 
