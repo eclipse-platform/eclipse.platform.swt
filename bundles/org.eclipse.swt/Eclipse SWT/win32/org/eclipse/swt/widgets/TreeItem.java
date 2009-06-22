@@ -1494,8 +1494,6 @@ public void setFont (int index, Font font) {
  *
  * @param color the new color (or null)
  *
- * @since 2.0
- * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
