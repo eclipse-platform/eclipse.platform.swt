@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -72,6 +72,7 @@ public final class Converter {
 			if (OS.IsLinux) CodePage = "ISO-8859-1";
 			else if (OS.IsAIX) CodePage = "ISO8859-1";
 			else if (OS.IsSunOS) CodePage = "8859-1";
+			else if (OS.IsHPUX) CodePage = "iso88591";
 			else CodePage = "iso8859_1";
 		}
 		

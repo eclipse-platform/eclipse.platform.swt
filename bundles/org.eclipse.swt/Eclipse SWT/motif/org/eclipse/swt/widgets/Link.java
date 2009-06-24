@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,13 @@ import org.eclipse.swt.events.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Link extends Control {
 	String text;
@@ -77,11 +82,11 @@ public Link (Composite parent, int style) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -201,8 +206,7 @@ Rectangle [] getRectangles (int linkIndex) {
 }
 /**
  * Returns the receiver's text, which will be an empty
- * string if it has never been set or if the receiver is
- * a <code>SEPARATOR</code> label.
+ * string if it has never been set.
  *
  * @return the receiver's text
  *
@@ -230,7 +234,7 @@ void releaseWidget () {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -363,7 +367,7 @@ String parse (String string) {
 	}
 	if (start < length) {
 		int tmp = parseMnemonics (buffer, start, tagStart, result);
-		int mnemonic = parseMnemonics (buffer, linkStart, index, result);
+		int mnemonic = parseMnemonics (buffer, Math.max (tagStart, linkStart), length, result);
 		if (mnemonic == -1) mnemonic = tmp;
 		mnemonics [linkIndex] = mnemonic;
 	} else {
@@ -433,8 +437,9 @@ void setForegroundPixel (int pixel) {
  * selected, the text field of the selection event contains either the
  * text of the hyperlink or the value of its HREF, if one was specified.
  * In the rare case of identical hyperlinks within the same string, the
- * HREF tag can be used to distinguish between them.  The string may
- * include the mnemonic character and line delimiters.
+ * HREF attribute can be used to distinguish between them.  The string may
+ * include the mnemonic character and line delimiters. The only delimiter
+ * the HREF attribute supports is the quotation mark (").
  * </p>
  * 
  * @param string the new text
@@ -549,16 +554,11 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
-	XRectangle xrect = new XRectangle ();
-	xrect.x = (short) xEvent.x;
-	xrect.y = (short) xEvent.y;
-	xrect.width = (short) xEvent.width;
-	xrect.height = (short) xEvent.height;
 	int damageRgn = OS.XCreateRegion ();
-	OS.XUnionRectWithRegion (xrect, damageRgn, damageRgn);
-	GCData data = new GCData();
+	OS.XtAddExposureToRegion (call_data, damageRgn);
+	GCData data = new GCData ();
 	data.damageRgn = damageRgn;
-	GC gc = GC.motif_new(this, data);
+	GC gc = GC.motif_new (this, data);
 	OS.XSetRegion (xDisplay, gc.handle, damageRgn);
 	int selStart = selection.x;
 	int selEnd = selection.y;
@@ -578,21 +578,10 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 			Rectangle rect = rects [i];
 			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);					
 		}
-	}	
-	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
-		Event event = new Event ();
-		event.count = xEvent.count;
-		event.x = xEvent.x;
-		event.y = xEvent.y;
-		event.width = xEvent.width;
-		event.height = xEvent.height;
-		event.gc = GC.motif_new (this, data);
-		sendEvent (SWT.Paint, event);
-		event.gc = null;		
-	}	
+	}
 	gc.dispose ();
-	OS.XDestroyRegion(damageRgn);
-	return 0;
+	OS.XDestroyRegion (damageRgn);
+	return super.XExposure (w, client_data, call_data, continue_to_dispatch);
 }
 int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XFocusChange (w, client_data, call_data, continue_to_dispatch);

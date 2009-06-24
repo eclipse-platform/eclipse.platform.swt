@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,15 +27,21 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#table">Table, TableItem, TableColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class TableItem extends Item {
 	Table parent;
 	String [] strings;
 	Image [] images;
+	Font font;
+	Font [] cellFont;
 	boolean checked, grayed, cached;
-	int imageIndent, background = -1, foreground = -1, font = -1;
-	int [] cellBackground, cellForeground, cellFont;
+	int imageIndent, background = -1, foreground = -1; 
+	int [] cellBackground, cellForeground; 
 
 /**
  * Constructs a new instance of this class given its parent
@@ -88,10 +94,11 @@ public TableItem (Table parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -128,14 +135,22 @@ void clear () {
 	images = null;
 	imageIndent = 0;
 	checked = grayed = false;
-	background = foreground = font = -1;
-	cellBackground = cellForeground = cellFont = null;
+	font = null;
+	background = foreground = -1;
+	cellFont = null; 
+	cellBackground = cellForeground = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 }
 
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
+}
+
+int /*long*/ fontHandle (int index) {
+	if (cellFont != null && cellFont [index] != null) return cellFont [index].handle;
+	if (font != null) return font.handle;
+	return -1;
 }
 
 /**
@@ -190,9 +205,9 @@ public Color getBackground (int index) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @since 3.1
+ * @since 3.2
  */
-/*public*/ Rectangle getBounds () {
+public Rectangle getBounds () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
@@ -224,11 +239,11 @@ public Rectangle getBounds (int index) {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean full) {
-	return getBounds (row, column, getText, getImage, full, false, 0);
+RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText) {
+	return getBounds (row, column, getText, getImage, fullText, false, 0);
 }
 
-RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText, boolean fullImage, int hDC) {
+RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText, boolean fullImage, int /*long*/ hDC) {
 	if (!getText && !getImage) return new RECT ();
 	int columnCount = parent.getColumnCount ();
 	if (!(0 <= column && column < Math.max (1, columnCount))) {
@@ -236,20 +251,68 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	}
 	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
 	RECT rect = new RECT ();
-	int hwnd = parent.handle;
-	if (column == 0) {
-		if (getText && getImage) {
-			rect.left = OS.LVIR_SELECTBOUNDS;
+	int /*long*/ hwnd = parent.handle;
+	int bits = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	if (column == 0 && (bits & OS.LVS_EX_FULLROWSELECT) == 0) {
+		if (parent.explorerTheme) {
+			rect.left = OS.LVIR_ICON;
+			parent.ignoreCustomDraw = true;
+			int /*long*/ code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect);
+			parent.ignoreCustomDraw = false;
+			if (code == 0) return new RECT ();
+			if (getText) {
+				int width = 0;
+				int /*long*/ hFont = fontHandle (column);
+				if (hFont == -1 && hDC == 0) {
+					TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
+					width = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
+				} else {
+					TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
+					int /*long*/ textDC = hDC != 0 ? hDC : OS.GetDC (hwnd), oldFont = -1;
+					if (hDC == 0) {
+						if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+						oldFont = OS.SelectObject (textDC, hFont);
+					}
+					RECT textRect = new RECT ();
+					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
+					OS.DrawText (textDC, buffer, buffer.length (), textRect, flags);
+					width = textRect.right - textRect.left;
+					if (hDC == 0) {
+						if (oldFont != -1) OS.SelectObject (textDC, oldFont);
+						OS.ReleaseDC (hwnd, textDC);
+					}
+				}
+				if (!getImage) rect.left = rect.right;
+				rect.right += width + Table.INSET * 2;
+			}
 		} else {
-			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
-		}
-		if (OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect) == 0) {
-			return new RECT ();
+			if (getText) {
+				rect.left = OS.LVIR_SELECTBOUNDS;
+				parent.ignoreCustomDraw = true;
+				int /*long*/ code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
+				parent.ignoreCustomDraw = false;
+				if (code == 0) return new RECT ();
+				if (!getImage) {
+					RECT iconRect = new RECT ();
+					iconRect.left = OS.LVIR_ICON;
+					parent.ignoreCustomDraw = true;
+					code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, iconRect);
+					parent.ignoreCustomDraw = false;
+					if (code != 0) rect.left = iconRect.right;
+				}
+			} else {
+				rect.left = OS.LVIR_ICON;
+				parent.ignoreCustomDraw = true;
+				int /*long*/ code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
+				parent.ignoreCustomDraw = false;
+				if (code == 0) return new RECT ();
+			}
 		}
 		if (fullText || fullImage) {
 			RECT headerRect = new RECT ();
-			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+			int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
+			OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
 			if (getText && fullText) rect.right = headerRect.right;
 			if (getImage && fullImage) rect.left = headerRect.left;
 		}
@@ -260,21 +323,39 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 		* test for this case and adjust the rectangle to represent the area
 		* the table is actually drawing.
 		*/
-		boolean hasImage = images != null && images [column] != null;
+		boolean hasImage = (column == 0 && image != null) || (images != null && images [column] != null);
 		rect.top = column;
 		if (fullText || fullImage || hDC == 0) {
 			/*
-			* Bug in Windows.  Despite the fact that the documenation states
+			* Bug in Windows.  Despite the fact that the documentation states
 			* that LVIR_BOUNDS and LVIR_LABEL are identical when used with
 			* LVM_GETSUBITEMRECT, LVIR_BOUNDS can return a zero height.  The
 			* fix is to use LVIR_LABEL.
 			*/
 			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
-			if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) == 0) {
-				return new RECT ();
+			parent.ignoreCustomDraw = true;
+			int /*long*/ code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			parent.ignoreCustomDraw = false;
+			if (code == 0) return new RECT ();
+			/*
+			* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
+			* and zero for the column number gives the bounds of the first item
+			* without including the bounds of the icon.  This is undocumented.
+			* When called with values greater than zero, the icon bounds are
+			* included and this behavior is documented.  If the icon is needed
+			* in the bounds of the first item, the fix is to adjust the item
+			* bounds using the icon bounds.
+			*/
+			if (column == 0 && getText && getImage) {
+				RECT iconRect = new RECT ();
+				iconRect.left = OS.LVIR_ICON;
+				parent.ignoreCustomDraw = true;
+				code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect);
+				parent.ignoreCustomDraw = false;
+				if (code != 0) rect.left = iconRect.left;
 			}
 			if (hasImage) {
-				if (getText && !getImage) {
+				if (column != 0 && getText && !getImage) {
 					RECT iconRect = new RECT ();
 					iconRect.top = column;		
 					iconRect.left = OS.LVIR_ICON;
@@ -285,11 +366,19 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			} else {
 				if (getImage && !getText) rect.right = rect.left;
 			}
+			if (column == 0 && fullImage) {
+				RECT headerRect = new RECT ();
+				int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
+				OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+				rect.left = headerRect.left;
+			}
 		} else {
 			rect.left = OS.LVIR_ICON;
-			if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) == 0) {
-				return new RECT ();
-			}
+			parent.ignoreCustomDraw = true;
+			int /*long*/ code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			parent.ignoreCustomDraw = false;
+			if (code == 0) return new RECT ();
 			if (!hasImage) rect.right = rect.left;
 			if (getText) {
 				String string = column == 0 ? text : strings != null ? strings [column] : null;
@@ -352,7 +441,7 @@ public boolean getChecked () {
 public Font getFont () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
+	return font != null ? font : parent.getFont ();
 }
 
 /**
@@ -374,8 +463,8 @@ public Font getFont (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getFont ();
-	int hFont = (cellFont != null) ? cellFont [index] : font;
-	return hFont == -1 ? getFont () : Font.win32_new (display, hFont);
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 /**
@@ -560,9 +649,40 @@ public String getText (int index) {
 	return "";
 }
 
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * table.  An empty rectangle is returned if index exceeds
+ * the index of the table's last column.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Rectangle getTextBounds (int index) {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	RECT rect = getBounds (itemIndex, index, true, false, true);
+	rect.left += 2;
+	if (index != 0) rect.left += Table.INSET;
+	rect.left = Math.min (rect.left, rect.right);
+	rect.right = rect.right - Table.INSET;
+	int width = Math.max (0, rect.right - rect.left);
+	int height = Math.max (0, rect.bottom - rect.top);
+	return new Rectangle (rect.left, rect.top, width, height);
+}
+
 void redraw () {
-	if (parent.currentItem == this || parent.drawCount != 0) return;
-	int hwnd = parent.handle;
+	if (parent.currentItem == this || !parent.getDrawing ()) return;
+	int /*long*/ hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
@@ -570,8 +690,8 @@ void redraw () {
 }
 
 void redraw (int column, boolean drawText, boolean drawImage) {
-	if (parent.currentItem == this || parent.drawCount != 0) return;
-	int hwnd = parent.handle;
+	if (parent.currentItem == this || !parent.getDrawing ()) return;
+	int /*long*/ hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
@@ -588,7 +708,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;
 	images = null;
-	cellBackground = cellForeground = cellFont = null;
+	cellFont = null; 
+	cellBackground = cellForeground = null;
 }
 
 /**
@@ -615,7 +736,7 @@ public void setBackground (Color color) {
 	}
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (background == pixel) return;
@@ -651,7 +772,7 @@ public void setBackground (int index, Color color) {
 	if (0 > index || index > count - 1) return;
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (cellBackground == null) {
@@ -718,13 +839,11 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
-	if (this.font == hFont) return;
-	this.font = hFont;
+	Font oldFont = this.font;
+	if (oldFont == font) return;
+	this.font = font;
+	if (oldFont != null && oldFont.equals (font)) return;
+	if (font != null) parent.setCustomDraw (true);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	/*
 	* Bug in Windows.  Despite the fact that every item in the
@@ -740,7 +859,7 @@ public void setFont (Font font){
 	if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
 		int itemIndex = parent.indexOf (this);
 		if (itemIndex != -1) {
-			int hwnd = parent.handle;
+			int /*long*/ hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT;
 			lvItem.iItem = itemIndex;
@@ -779,19 +898,15 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	int hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
 	if (cellFont == null) {
-		cellFont = new int [count];
-		for (int i = 0; i < count; i++) {
-			cellFont [i] = -1;
-		}
+		if (font == null) return;
+		cellFont = new Font [count];
 	}
-	if (cellFont [index] == hFont) return;
-	cellFont [index] = hFont;
+	Font oldFont = cellFont [index];
+	if (oldFont == font) return;
+	cellFont [index] = font;
+	if (oldFont != null && oldFont.equals (font)) return;
+	if (font != null) parent.setCustomDraw (true);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (index == 0) {
 		/*
@@ -808,7 +923,7 @@ public void setFont (int index, Font font) {
 		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
 			int itemIndex = parent.indexOf (this);
 			if (itemIndex != -1) {
-				int hwnd = parent.handle;
+				int /*long*/ hwnd = parent.handle;
 				LVITEM lvItem = new LVITEM ();
 				lvItem.mask = OS.LVIF_TEXT;
 				lvItem.iItem = itemIndex;
@@ -846,7 +961,7 @@ public void setForeground (Color color){
 	}
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (foreground == pixel) return;
@@ -882,7 +997,7 @@ public void setForeground (int index, Color color){
 	if (0 > index || index > count - 1) return;
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (cellForeground == null) {
@@ -968,7 +1083,10 @@ public void setImage (int index, Image image) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	if (images == null && index != 0) images = new Image [count];
+	if (images == null && index != 0) {
+		images = new Image [count];
+		images [0] = image;
+	}
 	if (images != null) {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (images [index])) return;
@@ -979,7 +1097,7 @@ public void setImage (int index, Image image) {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	
 	/* Ensure that the image list is created */
-	parent.imageIndex (image);
+	parent.imageIndex (image, index);
 	
 	if (index == 0) parent.setScrollWidth (this, false);
 	boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
@@ -1014,7 +1132,7 @@ public void setImageIndent (int indent) {
 	} else {
 		int index = parent.indexOf (this);
 		if (index != -1) {
-			int hwnd = parent.handle;
+			int /*long*/ hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_INDENT;
 			lvItem.iItem = index;
@@ -1071,7 +1189,10 @@ public void setText (int index, String string) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	if (strings == null && index != 0) strings = new String [count];
+	if (strings == null && index != 0)  {
+		strings = new String [count];
+		strings [0] = text;
+	}
 	if (strings != null) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
@@ -1092,7 +1213,7 @@ public void setText (int index, String string) {
 		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
 			int itemIndex = parent.indexOf (this);
 			if (itemIndex != -1) {
-				int hwnd = parent.handle;
+				int /*long*/ hwnd = parent.handle;
 				LVITEM lvItem = new LVITEM ();
 				lvItem.mask = OS.LVIF_TEXT;
 				lvItem.iItem = itemIndex;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,9 +52,18 @@ import org.eclipse.swt.events.*;
  * of these changes are also possible.
  * </li>
  * </ul>
- * </p>
- * <p>
- * Note: The styles supported by this class must be treated
+ * </p><p>
+ * The <em>modality</em> of an instance may be specified using
+ * style bits. The modality style bits are used to determine
+ * whether input is blocked for other shells on the display.
+ * The <code>PRIMARY_MODAL</code> style allows an instance to block
+ * input to its parent. The <code>APPLICATION_MODAL</code> style
+ * allows an instance to block input to every other shell in the
+ * display. The <code>SYSTEM_MODAL</code> style allows an instance
+ * to block input to all shells, including shells belonging to
+ * different applications.
+ * </p><p>
+ * Note: The styles supported by this class are treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate
  * control over the appearance and behavior of decorations
@@ -65,9 +74,14 @@ import org.eclipse.swt.events.*;
  * more restrictive modality style that is supported. For
  * example, if <code>PRIMARY_MODAL</code> is not supported,
  * it would be upgraded to <code>APPLICATION_MODAL</code>.
+ * A modality style may also be "downgraded" to a less
+ * restrictive style. For example, most operating systems
+ * no longer support <code>SYSTEM_MODAL</code> because
+ * it can freeze up the desktop, so this is typically
+ * downgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
  * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
@@ -98,19 +112,22 @@ import org.eclipse.swt.events.*;
  *
  * @see Decorations
  * @see SWT
+ * @see <a href="http://www.eclipse.org/swt/snippets/#shell">Shell snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Shell extends Decorations {
 	int shellHandle, focusProxy;
-	boolean reparented, realized, moved, resized, opened;
+	boolean reparented, realized, moved, resized, opened, modified, center;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
-	Region region;
 
 	static final  int MAXIMUM_TRIM = 128;
 	static final  byte [] WM_DELETE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 	static final  byte [] _NET_WM_STATE = Converter.wcsToMbcs(null, "_NET_WM_STATE\0");
 	static final  byte [] _NET_WM_STATE_MAXIMIZED_VERT = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_VERT\0");
 	static final  byte [] _NET_WM_STATE_MAXIMIZED_HORZ = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_HORZ\0");
+	static final  byte [] _NET_WM_STATE_FULLSCREEN = Converter.wcsToMbcs(null, "_NET_WM_STATE_FULLSCREEN\0");
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -150,13 +167,16 @@ public Shell () {
  * @see SWT#MAX
  * @see SWT#RESIZE
  * @see SWT#TITLE
+ * @see SWT#TOOL
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (int style) {
 	this ((Display) null, style);
@@ -218,18 +238,21 @@ public Shell (Display display) {
  * @see SWT#MAX
  * @see SWT#RESIZE
  * @see SWT#TITLE
+ * @see SWT#TOOL
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (Display display, int style) {
-	this (display, null, style, 0);
+	this (display, null, style, 0, false);
 }
-Shell (Display display, Shell parent, int style, int handle) {
+Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -240,10 +263,18 @@ Shell (Display display, Shell parent, int style, int handle) {
 	if (parent != null && parent.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);	
 	}
-	this.style = checkStyle (style);
+	this.center = parent != null && (style & SWT.SHEET) != 0;
+	this.style = checkStyle (parent, style);
 	this.parent = parent;
 	this.display = display;
-	this.handle = handle;
+	if (handle != 0) {
+		if (embedded) {
+			this.handle = handle;
+		} else {
+			this.shellHandle = handle;
+			state |= FOREIGN_HANDLE;
+		}
+	}
 	createWidget (0);
 }
 /**
@@ -317,15 +348,24 @@ public Shell (Shell parent) {
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.display : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
-static int checkStyle (int style) {
+static int checkStyle (Shell parent, int style) {
 	style = Decorations.checkStyle (style);
+	style &= ~SWT.TRANSPARENT;
 	if ((style & SWT.ON_TOP) != 0) style &= ~SWT.SHELL_TRIM;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
+	if ((style & SWT.SHEET) != 0) {
+		style &= ~SWT.SHEET;
+		style |= parent == null ? SWT.SHELL_TRIM : SWT.DIALOG_TRIM;
+		if ((style & mask) == 0) {
+			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
+		}
+	}
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
 	if ((style & SWT.APPLICATION_MODAL) != 0) return bits | SWT.APPLICATION_MODAL;
@@ -334,7 +374,28 @@ static int checkStyle (int style) {
 }
 
 public static Shell motif_new (Display display, int handle) {
-	return new Shell (display, null, SWT.NO_TRIM, handle);
+	return new Shell (display, null, SWT.NO_TRIM, handle, true);
+}
+
+/**	 
+ * Invokes platform specific functionality to allocate a new shell
+ * that is not embedded.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Shell</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param display the display for the shell
+ * @param handle the handle for the shell
+ * @return a new shell object containing the specified display and handle
+ * 
+ * @since 3.3
+ */
+public static Shell internal_new (Display display, int handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
 /**
@@ -508,6 +569,25 @@ void bringToTop (boolean force) {
 	if (shellWindow != 0) OS.XRaiseWindow (xDisplay, shellWindow);
 	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 }
+void center () {
+	if (parent == null) return;
+	Rectangle rect = getBounds ();
+	Rectangle parentRect = display.map (parent, null, parent.getClientArea());
+	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
+	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
+	Rectangle monitorRect = parent.getMonitor ().getClientArea();
+	if (x + rect.width > monitorRect.x + monitorRect.width) {
+		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
+	} else {
+		x = Math.max (x, monitorRect.x);
+	}
+	if (y + rect.height > monitorRect.y + monitorRect.height) {
+		y = Math.max (monitorRect.y, monitorRect.y + monitorRect.height - rect.height);
+	} else {
+		y = Math.max (y, monitorRect.y);
+	}
+	setLocation (x, y);
+}
 void checkOpen () {
 	if (!opened) resized = false;
 }
@@ -546,7 +626,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	* border must be added back into the trim.
 	*/
 	int border = 0;
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 		int [] argList = {OS.XmNborderWidth, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		border = argList [1];
@@ -568,103 +648,118 @@ void createFocusProxy () {
 }
 void createHandle (int index) {
 	state |= CANVAS;
-	int decorations = 0;
-	if ((style & SWT.NO_TRIM) == 0) {
-		if ((style & SWT.MIN) != 0) decorations |= OS.MWM_DECOR_MINIMIZE;
-		if ((style & SWT.MAX) != 0) decorations |= OS.MWM_DECOR_MAXIMIZE;
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_RESIZEH;
-		if ((style & SWT.BORDER) != 0) decorations |= OS.MWM_DECOR_BORDER;
-		if ((style & SWT.MENU) != 0) decorations |= OS.MWM_DECOR_MENU;
-		if ((style & SWT.TITLE) != 0) decorations |= OS.MWM_DECOR_TITLE;
+	if (shellHandle == 0) {
+		int decorations = 0;
+		if ((style & SWT.NO_TRIM) == 0) {
+			if ((style & SWT.MIN) != 0) decorations |= OS.MWM_DECOR_MINIMIZE;
+			if ((style & SWT.MAX) != 0) decorations |= OS.MWM_DECOR_MAXIMIZE;
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_RESIZEH;
+			if ((style & SWT.BORDER) != 0) decorations |= OS.MWM_DECOR_BORDER;
+			if ((style & SWT.MENU) != 0) decorations |= OS.MWM_DECOR_MENU;
+			if ((style & SWT.TITLE) != 0) decorations |= OS.MWM_DECOR_TITLE;
+			/*
+			* Feature in Motif.  Under some Window Managers (Sawmill), in order
+			* to get any border at all from the window manager it is necessary
+			* to set MWM_DECOR_BORDER.  The fix is to force these bits when any
+			* kind of border is requested.
+			*/
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_BORDER;
+		}
+		
 		/*
-		* Feature in Motif.  Under some Window Managers (Sawmill), in order
-		* to get any border at all from the window manager it is necessary
-		* to set MWM_DECOR_BORDER.  The fix is to force these bits when any
-		* kind of border is requested.
+		* Note: Motif treats the modal values as hints to the Window Manager.
+		* For example, Enlightenment treats all modes except for SWT.MODELESS
+		* as SWT.APPLICATION_MODAL.  The Motif Window Manager honours all modes.
 		*/
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_BORDER;
-	}
-	
-	/*
-	* Note: Motif treats the modal values as hints to the Window Manager.
-	* For example, Enlightenment treats all modes except for SWT.MODELESS
-	* as SWT.APPLICATION_MODAL.  The Motif Window Manager honours all modes.
-	*/
-	int inputMode = OS.MWM_INPUT_MODELESS;
-	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.MWM_INPUT_PRIMARY_APPLICATION_MODAL;
-	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.MWM_INPUT_FULL_APPLICATION_MODAL;
-	if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.MWM_INPUT_SYSTEM_MODAL;
-	
-	/* 
-	* Bug in Motif.  For some reason, if the title string
-	* length is not a multiple of 4, Motif occasionally
-	* draws garbage after the last character in the title.
-	* The fix is to pad the title.
-	*/
-	byte [] buffer = {(byte)' ', 0, 0, 0};
-	int ptr = OS.XtMalloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
-	int [] argList1 = {
-		OS.XmNmwmInputMode, inputMode,
-		OS.XmNmwmDecorations, decorations,
-		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
-		OS.XmNtitle, ptr,
-	};
-	
-	/* 
-	* Feature in Motif.  On some Window Managers, when a top level
-	* shell is created with no decorations, the Window Manager does
-	* not reparent the window regardless of the XmNoverrideRedirect
-	* resource.  The fix is to treat the window as if it has been
-	* reparented by the Window Manager despite the fact that this
-	* has not really happened.
-	*/
-	int orientations = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-	if ((style & ~orientations) == SWT.NONE || (style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0) {
-		reparented = true;
-	} 
-	
-	/*
-	* Feature in Motif.  When a top level shell has no parent and is
-	* application modal, Motif does not honour the modality.  The fix
-	* is to create the shell as a child of a hidden shell handle, the
-	* same way that XmNoverrideRedirect shells without parents are
-	* created.
-	*/
-	byte [] appClass = display.appClass;
-	if (parent == null && (style & SWT.ON_TOP) == 0 && inputMode != OS.MWM_INPUT_FULL_APPLICATION_MODAL) {
-		int xDisplay = display.xDisplay;
-		int widgetClass = OS.applicationShellWidgetClass ();
-		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
+		int inputMode = OS.MWM_INPUT_MODELESS;
+		if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.MWM_INPUT_PRIMARY_APPLICATION_MODAL;
+		if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.MWM_INPUT_FULL_APPLICATION_MODAL;
+		if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.MWM_INPUT_SYSTEM_MODAL;
+		
+		/* 
+		* Bug in Motif.  For some reason, if the title string
+		* length is not a multiple of 4, Motif occasionally
+		* draws garbage after the last character in the title.
+		* The fix is to pad the title.
+		*/
+		byte [] buffer = {(byte)' ', 0, 0, 0};
+		int ptr = OS.XtMalloc (buffer.length);
+		OS.memmove (ptr, buffer, buffer.length);
+		int [] argList1 = {
+			OS.XmNmwmInputMode, inputMode,
+			OS.XmNmwmDecorations, decorations,
+			OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
+			OS.XmNtitle, ptr,
+		};
+		
+		/* 
+		* Feature in Motif.  On some Window Managers, when a top level
+		* shell is created with no decorations, the Window Manager does
+		* not reparent the window regardless of the XmNoverrideRedirect
+		* resource.  The fix is to treat the window as if it has been
+		* reparented by the Window Manager despite the fact that this
+		* has not really happened.
+		*/	
+		if (isUndecorated ()) {
+			reparented = true;
+		} 
+		
+		/*
+		* Feature in Motif.  When a top level shell has no parent and is
+		* application modal, Motif does not honour the modality.  The fix
+		* is to create the shell as a child of a hidden shell handle, the
+		* same way that XmNoverrideRedirect shells without parents are
+		* created.
+		*/
+		byte [] appClass = display.appClass;
+		if (parent == null && (style & SWT.ON_TOP) == 0 && inputMode != OS.MWM_INPUT_FULL_APPLICATION_MODAL) {
+			int xDisplay = display.xDisplay;
+			int widgetClass = OS.applicationShellWidgetClass ();
+			shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
+		} else {
+			int widgetClass = OS.transientShellWidgetClass ();
+//			if ((style & SWT.ON_TOP) != 0) {
+//				widgetClass = OS.OverrideShellWidgetClass ();
+//			}
+			int parentHandle = display.shellHandle;
+			if (parent != null) parentHandle = parent.handle;
+			shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
+		}
+		OS.XtFree (ptr);
+		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (handle != 0) {
+			OS.XtSetMappedWhenManaged (shellHandle, false);
+			OS.XtRealizeWidget (shellHandle);
+			OS.XtSetMappedWhenManaged (shellHandle, true);
+			int xDisplay = display.xDisplay;
+			int xWindow = OS.XtWindow (shellHandle);
+			if (xWindow == 0) error (SWT.ERROR_NO_HANDLES);
+			/*
+			* NOTE:  The embedded parent handle must be realized
+			* before embedding and cannot be realized here because
+			* the handle belongs to another thread.
+			*/
+			OS.XReparentWindow (xDisplay, xWindow, handle, 0, 0);
+			handle = 0;
+		}
+		
+		/* Create scrolled handle */
+		createHandle (index, shellHandle, true);
 	} else {
-		int widgetClass = OS.transientShellWidgetClass ();
-//		if ((style & SWT.ON_TOP) != 0) {
-//			widgetClass = OS.OverrideShellWidgetClass ();
-//		}
-		int parentHandle = display.shellHandle;
-		if (parent != null) parentHandle = parent.handle;
-		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
+		int [] buffer = new int [1];
+		int [] argList = {OS.XmNchildren, 0, OS.XmNnumChildren, 0};
+		OS.XtGetValues (shellHandle, argList, argList.length / 2);
+		if (argList [3] < 1) error (SWT.ERROR_NO_HANDLES);
+		OS.memmove (buffer, argList [1], 4);
+		scrolledHandle = buffer [0];
+		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		argList [1] = argList [3] = 0;
+		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+		if (argList [3] < 4) error (SWT.ERROR_NO_HANDLES);
+		OS.memmove (buffer, argList [1] + (argList [3] - 1) * 4, 4);
+		handle = buffer [0];
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	OS.XtFree (ptr);
-	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (handle != 0) {
-		OS.XtSetMappedWhenManaged (shellHandle, false);
-		OS.XtRealizeWidget (shellHandle);
-		OS.XtSetMappedWhenManaged (shellHandle, true);
-		int xDisplay = display.xDisplay;
-		int xWindow = OS.XtWindow (shellHandle);
-		if (xWindow == 0) error (SWT.ERROR_NO_HANDLES);
-		/*
-		* NOTE:  The embedded parent handle must be realized
-		* before embedding and cannot be realized here because
-		* the handle belongs to another thread.
-		*/
-		OS.XReparentWindow (xDisplay, xWindow, handle, 0, 0);
-		handle = 0;
-	}
-	
-	/* Create scrolled handle */
-	createHandle (index, shellHandle, true);
 
 	/*
 	* Feature in Motif.  There is no way to get the single pixel
@@ -673,7 +768,7 @@ void createHandle (int index) {
 	* or the main window handle fail.  The fix is to set the border
 	* on the client area.
 	*/
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 		int [] argList2 = {OS.XmNborderWidth, 1};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
@@ -780,13 +875,30 @@ Composite findDeferredControl () {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
 public void forceActive () {
 	checkWidget ();
 	bringToTop (true);
+}
+/**
+ * Returns the receiver's alpha value. The alpha value
+ * is between 0 (transparent) and 255 (opaque).
+ *
+ * @return the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getAlpha () {
+	checkWidget ();
+	return 255;
 }
 public int getBorderWidth () {
 	checkWidget();
@@ -853,7 +965,49 @@ void getBounds(Point location, Point size, Rectangle bounds) {
 		bounds.height = height;
 	}
 }
-
+/**
+ * Returns <code>true</code> if the receiver is currently
+ * in fullscreen state, and false otherwise. 
+ * <p>
+ *
+ * @return the fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public boolean getFullScreen () {
+	checkWidget();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow != 0) {
+		int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
+		if (property != 0) { 
+			int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atoms = new int[1];
+			OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atoms);
+			boolean result = false;
+			if (type [0] != OS.None) {
+				int fullScreen = OS.XInternAtom (xDisplay, _NET_WM_STATE_FULLSCREEN, true);
+				if (fullScreen != 0) {
+					int[] atom = new int[1];
+					for (int i=0; i<nitems [0]; i++) {
+						OS.memmove(atom, atoms [0] + i * 4, 4);
+						if (atom [0] == fullScreen) {
+							result = true;
+							break;
+						}
+					}
+				}
+			}
+			if (atoms [0] != 0) OS.XFree (atoms [0]);
+			return result;
+		}
+	}
+	return false;
+}
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -934,6 +1088,21 @@ public Point getMinimumSize () {
 	int height = Math.max (1, Math.max (0, argList [3]) + trimHeight ());
 	return new Point (width, height);
 }
+/**
+ * Gets the receiver's modified state.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return modified;
+}
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -949,6 +1118,7 @@ public Point getMinimumSize () {
  *
  */
 public Region getRegion () {
+	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
@@ -958,7 +1128,7 @@ public Shell getShell () {
 }
 /**
  * Returns an array containing all shells which are 
- * descendents of the receiver.
+ * descendants of the receiver.
  * <p>
  * @return the dialog shells
  *
@@ -1046,11 +1216,17 @@ boolean isModal () {
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
 }
+boolean isUndecorated () {
+	return
+		(style & (SWT.SHELL_TRIM | SWT.BORDER)) == SWT.NONE ||
+		(style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0;
+}
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
 }
 void manageChildren () {
+	if ((state & FOREIGN_HANDLE) != 0) return;
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	super.manageChildren ();
 	int width = 0, height = 0;
@@ -1084,7 +1260,7 @@ void manageChildren () {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#setActive
  * @see Shell#forceActive
  */
@@ -1094,6 +1270,12 @@ public void open () {
 	setVisible (true);
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+}
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
@@ -1131,7 +1313,6 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	lastActive = null;
-	region = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1178,7 +1359,7 @@ public void removeShellListener(ShellListener listener) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
@@ -1226,6 +1407,27 @@ void setActiveControl (Control control) {
 			activate [i].sendEvent (SWT.Activate);
 		}
 	}
+}
+/**
+ * Sets the receiver's alpha value which must be
+ * between 0 (transparent) and 255 (opaque).
+ * <p>
+ * This operation requires the operating system's advanced
+ * widgets subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * @param alpha the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setAlpha (int alpha) {
+	checkWidget ();
+	/* Not implemented */
 }
 /**
  * Sets the input method editor mode to the argument which 
@@ -1313,6 +1515,57 @@ public void setEnabled (boolean enabled) {
 		if (!restoreFocus ()) traverseGroup (false);
 	}
 }
+/**
+ * Sets the full screen state of the receiver.
+ * If the argument is <code>true</code> causes the receiver
+ * to switch to the full screen state, and if the argument is
+ * <code>false</code> and the receiver was previously switched
+ * into full screen state, causes the receiver to switch back
+ * to either the maximized or normal states.
+ * <p>
+ * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
+ * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
+ * vary by platform. Typically, the behavior will match the platform user's 
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * 
+ * @param fullScreen the new fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setFullScreen (boolean fullScreen) {
+	checkWidget();
+	if (!OS.XtIsRealized (handle)) realizeWidget ();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow == 0) return;
+	int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
+	if (property == 0) return;
+	int atom = OS.XInternAtom (xDisplay, _NET_WM_STATE_FULLSCREEN, true);
+	if (atom == 0) return;
+	XClientMessageEvent xEvent = new XClientMessageEvent ();
+	xEvent.type = OS.ClientMessage;
+	xEvent.send_event = 1;
+	xEvent.display = xDisplay;
+	xEvent.window = xWindow;
+	xEvent.message_type = property;
+	xEvent.format = 32;
+	xEvent.data [0] = fullScreen ? 1 : 0;
+	xEvent.data [1] = atom;
+	XWindowAttributes attributes = new XWindowAttributes ();
+	OS.XGetWindowAttributes (xDisplay, xWindow, attributes);
+	int rootWindow = OS.XRootWindowOfScreen (attributes.screen);
+	int event = OS.XtMalloc (XEvent.sizeof);
+	OS.memmove (event, xEvent, XClientMessageEvent.sizeof);
+	OS.XSendEvent (xDisplay, rootWindow, false, OS.SubstructureRedirectMask|OS.SubstructureNotifyMask, event);
+	OS.XSync (xDisplay, false);
+	OS.XtFree (event);
+}
 public void setMaximized (boolean maximized) {
 	checkWidget();
 	super.setMaximized (maximized);
@@ -1325,46 +1578,24 @@ public void setMaximized (boolean maximized) {
 	int hMaxAtom = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
 	int vMaxAtom = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
 	if (hMaxAtom == 0 || vMaxAtom == 0) return;
-	int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atomsPtr = new int[1];
-	OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atomsPtr);
-	if (type [0] == OS.None) return;
-	int[] atoms = new int [nitems [0]];
-	OS.memmove (atoms, atomsPtr [0], nitems [0] * 4);
-	
-	if (maximized) {
-		boolean hasHmax = false;
-		boolean hasVmax = false;
-		for (int i = 0; i < nitems [0]; i++) {
-			int atom = atoms [i];
-			if (atom == hMaxAtom) hasHmax = true;
-			if (atom == vMaxAtom) hasVmax = true;
-		}
-		if (!hasHmax) {
-			int[] temp = new int [atoms.length + 1];
-			System.arraycopy (atoms, 0, temp, 0, atoms.length);
-			temp [atoms.length] = hMaxAtom;
-			atoms = temp;
-		}
-		if (!hasVmax) {
-			int[] temp = new int [atoms.length + 1];
-			System.arraycopy (atoms, 0, temp, 0, atoms.length);
-			temp [atoms.length] = vMaxAtom;
-			atoms = temp;
-		}
-	} else {
-		int[] temp = new int [nitems [0]];
-		int index = 0;
-		for (int i = 0; i < nitems [0]; i++) {
-			int atom = atoms [i];
-			if (atom != hMaxAtom && atom != vMaxAtom) {
-				temp [index++] = atom;
-			}
-		}
-		atoms = new int [index];
-		System.arraycopy (temp, 0, atoms, 0, index);
-	}
-
-	OS.XChangeProperty (xDisplay, xWindow, property, OS.XA_ATOM, 32, OS.PropModeReplace, atoms, atoms.length);
+	XClientMessageEvent xEvent = new XClientMessageEvent ();
+	xEvent.type = OS.ClientMessage;
+	xEvent.send_event = 1;
+	xEvent.display = xDisplay;
+	xEvent.window = xWindow;
+	xEvent.message_type = property;
+	xEvent.format = 32;
+	xEvent.data [0] = maximized ? 1 : 0;
+	xEvent.data [1] = hMaxAtom;
+	xEvent.data [2] = vMaxAtom;
+	XWindowAttributes attributes = new XWindowAttributes ();
+	OS.XGetWindowAttributes (xDisplay, xWindow, attributes);
+	int rootWindow = OS.XRootWindowOfScreen (attributes.screen);
+	int event = OS.XtMalloc (XEvent.sizeof);
+	OS.memmove (event, xEvent, XClientMessageEvent.sizeof);
+	OS.XSendEvent (xDisplay, rootWindow, false, OS.SubstructureRedirectMask|OS.SubstructureNotifyMask, event);
+	OS.XSync (xDisplay, false);
+	OS.XtFree (event);
 }
 public void setMinimized (boolean minimized) {
 	checkWidget();
@@ -1458,6 +1689,23 @@ public void setMinimumSize (Point size) {
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setMinimumSize (size.x, size.y);	
 }
+/**
+ * Sets the receiver's modified state as specified by the argument.
+ *
+ * @param modified the new modified state for the receiver
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setModified (boolean modified) {
+	checkWidget ();
+	this.modified = modified;
+}
 void setParentTraversal () {
 	/* Do nothing - Child shells do not affect the traversal of their parent shell */
 }
@@ -1485,17 +1733,7 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (!OS.XtIsRealized (shellHandle)) realizeWidget ();
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) return;
-	if (region != null) {
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, region.handle, OS.ShapeSet);
-	} else {
-		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeBounding, 0, 0, 0, OS.ShapeSet);
-	}
-	this.region = region;
+	super.setRegion (region);
 }
 public void setText (String string) {
 	checkWidget();
@@ -1537,6 +1775,10 @@ public void setVisible (boolean visible) {
 
 	/* Show the shell */
 	if (visible) {
+		if (center && !moved) {
+			center ();
+			if (isDisposed ()) return;
+		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 
@@ -1768,10 +2010,16 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 					}
 					break;
 				case OS.FocusOut:
+					Display display = this.display;
 					if (display.postFocusOut) {
 						postEvent (SWT.Deactivate);
 					} else {
 						sendEvent (SWT.Deactivate);
+					}
+					Control focusedCombo = display.focusedCombo;
+					display.focusedCombo = null;
+					if (focusedCombo != null && focusedCombo != this && !focusedCombo.isDisposed ()) {
+						display.sendFocusEvent (focusedCombo, SWT.FocusOut);
 					}
 					break;
 			}

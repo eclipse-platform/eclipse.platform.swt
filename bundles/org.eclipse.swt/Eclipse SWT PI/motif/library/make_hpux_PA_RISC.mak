@@ -1,10 +1,10 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2005 IBM Corporation and others.
+# Copyright (c) 2000, 2007 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #     Kevin Cornell (Rational Software Corporation)
@@ -27,7 +27,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 SWT_PREFIX = swt
 WS_PREFIX = motif
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).sl
-SWT_OBJS = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
+SWT_OBJS = swt.o c.o c_stats.o callback.o os.o os_structs.o os_custom.o os_stats.o
 SWT_LIBS = -L$(MOTIF_HOME)/lib -L/usr/lib -G -lXm -lXt -lX11 -lc -ldld -lm -lXp -lXtst
 
 CDE_PREFIX = swt-cde

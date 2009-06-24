@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -15,9 +15,13 @@ package org.eclipse.swt.internal.carbon;
  
 public class ATSUUnhighlightData {
 	public int dataType; 
+	/** @field accessor=unhighlightData.backgroundColor.red */
 	public float red;
+	/** @field accessor=unhighlightData.backgroundColor.green */
 	public float green;
+	/** @field accessor=unhighlightData.backgroundColor.blue */
 	public float blue;
+	/** @field accessor=unhighlightData.backgroundColor.alpha */
 	public float alpha;
 	public static final int sizeof = 20;	
 }

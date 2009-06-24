@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,14 +14,17 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+
 /**
 * A PopupList is a list of selectable items that appears in its own shell positioned above
-* its parent shell.  It it used for selecting items when editing a Table cell (similar to the
+* its parent shell.  It is used for selecting items when editing a Table cell (similar to the
 * list that appears when you open a Combo box).
 *
-* The list will be positioned so that does not run off the screen and the largest number of items
+* The list will be positioned so that it does not run off the screen and the largest number of items
 * are visible.  It may appear above the current cursor location or below it depending how close you 
 * are to the edge of the screen.
+*
+* @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
 public class PopupList {
 	Shell  shell;
@@ -124,7 +127,7 @@ public int getMinimumWidth () {
 	return minimumWidth;
 }
 /**
-* Launches the Popup List, waits for an item to be selected and then closes PopupList.
+* Launches the Popup List, waits for an item to be selected and then closes the PopupList.
 *
 * @param rect the initial size and location of the PopupList; the dialog will be
 *        positioned so that it does not run off the screen and the largest number of items are visible
@@ -162,7 +165,7 @@ public String open (Rectangle rect) {
 	
 	// Make dialog as wide as the cell
 	listSize.x = rect.width;
-	// dialog width should not be les than minimumwidth
+	// dialog width should not be less than minimumWidth
 	if (listSize.x < minimumWidth)
 		listSize.x = minimumWidth;
 	

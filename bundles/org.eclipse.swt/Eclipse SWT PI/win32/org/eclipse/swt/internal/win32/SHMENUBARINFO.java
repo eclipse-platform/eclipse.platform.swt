@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,15 @@ package org.eclipse.swt.internal.win32;
 
 public class SHMENUBARINFO {
 	public int cbSize;
-	public int hwndParent;
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndParent;
 	public int dwFlags;
 	public int nToolBarId;
-	public int hInstRes;
+	/** @field cast=(HINSTANCE) */
+	public int /*long*/ hInstRes;
 	public int nBmpId;
 	public int cBmpImages;
-	public int hwndMB;
-	public static final int sizeof = OS.IsSP ? 36 : 32;
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndMB;
+	public static final int sizeof = OS.IsSP ? 36 : OS.SHMENUBARINFO_sizeof ();
 }

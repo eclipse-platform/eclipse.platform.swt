@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 /**
  * Instances of this class implement a simple
  * look up mechanism that maps an event type
- * to a listener.  Muliple listeners for the
+ * to a listener.  Multiple listeners for the
  * same event type are supported.
  */
 
@@ -25,10 +25,28 @@ class EventTable {
 	int [] types;
 	Listener [] listeners;
 	int level;
+	static final int GROW_SIZE = 4;
 	
+public Listener [] getListeners (int eventType) {
+	if (types == null) return new Listener [0];
+	int count = 0;
+	for (int i=0; i<types.length; i++) {
+		if (types [i] == eventType) count++;
+	}
+	if (count == 0) return new Listener [0];
+	Listener [] result = new Listener [count];
+	count = 0;
+	for (int i=0; i<types.length; i++) {
+		if (types [i] == eventType) {
+			result [count++] = listeners [i];
+		}
+	}
+	return result;
+}
+
 public void hook (int eventType, Listener listener) {
-	if (types == null) types = new int [4];
-	if (listeners == null) listeners = new Listener [4];
+	if (types == null) types = new int [GROW_SIZE];
+	if (listeners == null) listeners = new Listener [GROW_SIZE];
 	int length = types.length, index = length - 1;
 	while (index >= 0) {
 		if (types [index] != 0) break;
@@ -36,10 +54,10 @@ public void hook (int eventType, Listener listener) {
 	}
 	index++;
 	if (index == length) {
-		int [] newTypes = new int [length + 4];
+		int [] newTypes = new int [length + GROW_SIZE];
 		System.arraycopy (types, 0, newTypes, 0, length);
 		types = newTypes;
-		Listener [] newListeners = new Listener [length + 4];
+		Listener [] newListeners = new Listener [length + GROW_SIZE];
 		System.arraycopy (listeners, 0, newListeners, 0, length);
 		listeners = newListeners;
 	}

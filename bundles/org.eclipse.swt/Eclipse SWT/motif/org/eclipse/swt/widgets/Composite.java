@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -32,12 +33,19 @@ import org.eclipse.swt.graphics.*;
  * behavior is undefined if they are used with subclasses of <code>Composite</code> other
  * than <code>Canvas</code>.
  * </p><p>
+ * Note: The <code>CENTER</code> style, although undefined for composites, has the
+ * same value as <code>EMBEDDED</code> which is used to embed widgets from other
+ * widget toolkits into SWT.  On some operating systems (GTK, Motif), this may cause
+ * the children of this composite to be obscured.
+ * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
  * of other controls.
  * </p>
  *
  * @see Canvas
+ * @see <a href="http://www.eclipse.org/swt/snippets/#composite">Composite snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Composite extends Scrollable {
 	Layout layout;
@@ -80,10 +88,16 @@ Composite () {
  * @see SWT#NO_MERGE_PAINTS
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_RADIO_GROUP
+ * @see SWT#EMBEDDED
+ * @see SWT#DOUBLE_BUFFERED
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {
 	super (parent, style);
+}
+static int checkStyle (int style) {
+	style &= ~SWT.TRANSPARENT;
+	return style;
 }
 Control [] _getChildren () {
 	int [] argList = {OS.XmNchildren, 0, OS.XmNnumChildren, 0};
@@ -286,30 +300,68 @@ void deregister () {
 	if (focusHandle != 0) display.removeWidget (focusHandle);
 }
 void drawBackground (GC gc, int x, int y, int width, int height) {
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return;
-	int xGC = gc.handle;
-	XGCValues values = new XGCValues();
 	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	if (control.backgroundImage != null) {
-		OS.XGetGCValues (xDisplay, xGC, OS.GCFillStyle | OS.GCTile | OS.GCTileStipXOrigin | OS.GCTileStipYOrigin, values);
-		short [] root_x = new short [1], root_y = new short [1];
-		OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
-		short [] control_x = new short [1], control_y = new short [1];
-		OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
-		int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
-		OS.XSetFillStyle (xDisplay, xGC, OS.FillTiled);
-		OS.XSetTSOrigin (xDisplay, xGC, -tileX, -tileY);
-		OS.XSetTile (xDisplay, xGC, control.backgroundImage.pixmap);
-		gc.fillRectangle (x, y, width, height);
-		OS.XSetFillStyle (xDisplay, xGC, values.fill_style);
-		OS.XSetTSOrigin (xDisplay, xGC, values.ts_x_origin, values.ts_y_origin);
+	if (control != null) {
+		GCData data = gc.getGCData ();
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) {
+			Cairo.cairo_save (cairo);
+			if (control.backgroundImage != null) {
+				short [] root_x = new short [1], root_y = new short [1];
+				OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
+				short [] control_x = new short [1], control_y = new short [1];
+				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
+				int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
+				Cairo.cairo_translate (cairo, -tileX, -tileY);
+				x += tileX;
+				y += tileY;
+				int xDisplay = OS.XtDisplay (handle);
+				int xVisual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
+				int xDrawable = control.backgroundImage.pixmap;				
+				int [] unused = new int [1];  int [] w = new int [1];  int [] h = new int [1];
+			 	OS.XGetGeometry (xDisplay, xDrawable, unused, unused, unused, w, h, unused, unused);
+				int /*long*/ surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+				int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
+				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+				Cairo.cairo_set_source (cairo, pattern);
+				Cairo.cairo_surface_destroy (surface);
+				Cairo.cairo_pattern_destroy (pattern);
+			} else {
+				XColor color = getXColor (control.getBackgroundPixel ());
+				Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+			}			
+			Cairo.cairo_rectangle (cairo, x, y, width, height);
+			Cairo.cairo_fill (cairo);
+			Cairo.cairo_restore (cairo);
+		} else {
+			int xDisplay = OS.XtDisplay (handle);
+			if (xDisplay == 0) return;
+			int xGC = gc.handle;
+			XGCValues values = new XGCValues();
+			if (control.backgroundImage != null) {
+				OS.XGetGCValues (xDisplay, xGC, OS.GCFillStyle | OS.GCTile | OS.GCTileStipXOrigin | OS.GCTileStipYOrigin, values);
+				short [] root_x = new short [1], root_y = new short [1];
+				OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
+				short [] control_x = new short [1], control_y = new short [1];
+				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
+				int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
+				OS.XSetFillStyle (xDisplay, xGC, OS.FillTiled);
+				OS.XSetTSOrigin (xDisplay, xGC, -tileX, -tileY);
+				OS.XSetTile (xDisplay, xGC, control.backgroundImage.pixmap);
+				OS.XFillRectangle (data.display, data.drawable, xGC, x, y, width, height);
+				OS.XSetFillStyle (xDisplay, xGC, values.fill_style);
+				OS.XSetTSOrigin (xDisplay, xGC, values.ts_x_origin, values.ts_y_origin);
+			} else {
+				OS.XGetGCValues (xDisplay, xGC, OS.GCForeground, values);
+				OS.XSetForeground (xDisplay, xGC, control.getBackgroundPixel ());
+				OS.XFillRectangle (data.display, data.drawable, xGC, x, y, width, height);
+				OS.XSetForeground (xDisplay, xGC, values.foreground);
+			}
+		}
 	} else {
-		OS.XGetGCValues (xDisplay, xGC, OS.GCBackground, values);
-		gc.setBackground (control.getBackground ());
 		gc.fillRectangle (x, y, width, height);
-		OS.XSetBackground (xDisplay, xGC, values.background);
 	}
 }
 Composite findDeferredControl () {
@@ -379,13 +431,33 @@ boolean fowardKeyEvent (int event) {
 	display.setWarnings (warnings);
 	return true;
 }
+/**
+ * Returns the receiver's background drawing mode. This
+ * will be one of the following constants defined in class
+ * <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERTIT_FORCE</code>.
+ *
+ * @return the background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public int getBackgroundMode () {
 	checkWidget ();
 	return backgroundMode;
 }
 /**
  * Returns a (possibly empty) array containing the receiver's children.
- * Children are returned in the order that they are drawn.
+ * Children are returned in the order that they are drawn.  The topmost
+ * control appears at the beginning of the array.  Subsequent controls
+ * draw beneath this control and appear later in the array.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
@@ -550,7 +622,13 @@ boolean isTabGroup () {
  * <p>
  * This is equivalent to calling <code>layout(true)</code>.
  * </p>
- *
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -575,7 +653,14 @@ public void layout () {
  * will cascade down through all child widgets in the receiver's widget 
  * tree until a child is encountered that does not resize.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  *
@@ -605,7 +690,14 @@ public void layout (boolean changed) {
  * tree.  However, if a child is resized as a result of a call to layout, the 
  * resize event will invoke the layout of the child.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  * @param all <code>true</code> if all children in the receiver's widget tree should be laid out, and <code>false</code> otherwise
@@ -631,6 +723,12 @@ public void layout (boolean changed, boolean all) {
  * (potentially) optimize the work it is doing by assuming that none of the 
  * peers of the changed control have changed state since the last layout.
  * If an ancestor does not have a layout, skip it.
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  * 
  * @param changed a control that has had a state change which requires a recalculation of its size
  * 
@@ -929,6 +1027,23 @@ void sendClientEvent (int time, int message, int detail, int data1, int data2) {
 	OS.XtFree (event);
 	display.setWarnings (warnings);
 }
+/**
+ * Sets the background drawing mode to the argument which should
+ * be one of the following constants defined in class <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERIT_FORCE</code>.
+ *
+ * @param mode the new background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
@@ -1263,8 +1378,8 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	Image image = null;
 	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
 		Rectangle client = getClientArea ();
-		int width = Math.min (client.width, rect.x + rect.width);
-		int height = Math.min (client.height, rect.y + rect.height);
+		int width = Math.max (1, Math.min (client.width, rect.x + rect.width));
+		int height = Math.max (1, Math.min (client.height, rect.y + rect.height));
 		image = new Image (display, width, height);
 		paintGC = gc;
 		GCData imageGCData = new GCData ();
@@ -1277,7 +1392,7 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 			/* This code is intentionaly commented because it is too slow to copy bits from the screen */
 //			paintGC.copyArea(image, 0, 0);
 		} else {
-			gc.fillRectangle(0, 0, width, height);
+			drawBackground (gc, 0, 0, width, height);
 		}
 	}
 	Event event = new Event ();

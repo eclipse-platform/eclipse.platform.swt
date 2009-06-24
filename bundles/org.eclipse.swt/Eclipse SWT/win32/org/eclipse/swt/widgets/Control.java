@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
@@ -25,16 +26,20 @@ import org.eclipse.swt.accessibility.*;
  * <dd>BORDER</dd>
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
- * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
- *     DragDetect, MenuDetect</dd>
+ * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
  * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public abstract class Control extends Widget implements Drawable {
@@ -48,7 +53,7 @@ public abstract class Control extends Widget implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
@@ -56,6 +61,8 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	Accessible accessible;
 	Image backgroundImage;
+	Region region;
+	Font font;
 	int drawCount, foreground, background;
 
 /**
@@ -89,6 +96,8 @@ Control () {
  * </ul>
  *
  * @see SWT#BORDER
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -123,6 +132,34 @@ public void addControlListener(ControlListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when a drag gesture occurs, by sending it
+ * one of the messages defined in the <code>DragDetectListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #removeDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
 }
 
 /**
@@ -183,7 +220,18 @@ public void addHelpListener (HelpListener listener) {
  * be notified when keys are pressed and released on the system keyboard, by sending
  * it one of the messages defined in the <code>KeyListener</code>
  * interface.
- *
+ * <p>
+ * When a key listener is added to a control, the control
+ * will take part in widget traversal.  By default, all
+ * traversal keys (such as the tab key and so on) are
+ * delivered to the control.  In order for a control to take
+ * part in traversal, it should listen for traversal events.
+ * Otherwise, the user can traverse into a control but not
+ * out.  Note that native controls such as table and tree
+ * implement key traversal in the operating system.  It is
+ * not necessary to add traversal listeners for these controls,
+ * unless you want to override the default traversal.
+ * </p>
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -203,6 +251,34 @@ public void addKeyListener (KeyListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.KeyUp,typedListener);
 	addListener (SWT.KeyDown,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the platform-specific context menu trigger
+ * has occurred, by sending it one of the messages defined in
+ * the <code>MenuDetectListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #removeMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void addMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MenuDetect, typedListener);
 }
 
 /**
@@ -289,6 +365,34 @@ public void addMouseMoveListener (MouseMoveListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when the mouse wheel is scrolled, by sending
+ * it one of the messages defined in the
+ * <code>MouseWheelListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #removeMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void addMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MouseWheel, typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when the receiver needs to be painted, by sending it
  * one of the messages defined in the <code>PaintListener</code>
  * interface.
@@ -339,7 +443,7 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
-int borderHandle () {
+int /*long*/ borderHandle () {
 	return handle;
 }
 
@@ -376,7 +480,11 @@ void checkBuffered () {
 	style &= ~SWT.DOUBLE_BUFFERED;
 }
 
-boolean checkHandle (int hwnd) {
+void checkComposited () {
+	/* Do nothing */
+}
+
+boolean checkHandle (int /*long*/ hwnd) {
 	return hwnd == handle;
 }
 
@@ -464,7 +572,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-Control computeTabGroup () {
+Widget computeTabGroup () {
 	if (isTabGroup ()) return this;
 	return parent.computeTabGroup ();
 }
@@ -484,17 +592,17 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
-Control [] computeTabList () {
+Widget [] computeTabList () {
 	if (isTabGroup ()) {
 		if (getVisible () && getEnabled ()) {
-			return new Control [] {this};
+			return new Widget [] {this};
 		}
 	}
-	return new Control [0];
+	return new Widget [0];
 }
 
 void createHandle () {
-	int hwndParent = widgetParent ();
+	int /*long*/ hwndParent = widgetParent ();
 	handle = OS.CreateWindowEx (
 		widgetExtStyle (),
 		windowClass (),
@@ -508,21 +616,23 @@ void createHandle () {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_CHILD) != 0) {
-		OS.SetWindowLong (handle, OS.GWL_ID, handle);
+		OS.SetWindowLongPtr (handle, OS.GWLP_ID, handle);
 	}
 	if (OS.IsDBLocale && hwndParent != 0) {
-		int hIMC = OS.ImmGetContext (hwndParent);
+		int /*long*/ hIMC = OS.ImmGetContext (hwndParent);
 		OS.ImmAssociateContext (handle, hIMC);
 		OS.ImmReleaseContext (hwndParent, hIMC);
 	}
 }
 
 void createWidget () {
+	state |= DRAG_DETECT;
 	foreground = background = -1;
 	checkOrientation (parent);
 	createHandle ();
 	checkBackground ();
 	checkBuffered ();
+	checkComposited ();
 	register ();
 	subclass ();
 	setDefaultFont ();
@@ -538,7 +648,7 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_BTNFACE);
 }
 
-int defaultFont () {
+int /*long*/ defaultFont () {
 	return display.getSystemFont ().handle;
 }
 
@@ -551,24 +661,153 @@ void deregister () {
 }
 
 void destroyWidget () {
-	int hwnd = topHandle ();
+	int /*long*/ hwnd = topHandle ();
 	releaseHandle ();
 	if (hwnd != 0) {
 		OS.DestroyWindow (hwnd);
 	}
 }
 
-void drawBackground (int hDC) {
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *  
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (MouseEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
+	if (button != 1 || count != 1) return false;
+	boolean dragging = dragDetect (handle, x, y, false, null, null);
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	}
+	if (!dragging) {
+		/*
+		* Feature in Windows.  DragDetect() captures the mouse
+		* and tracks its movement until the user releases the
+		* left mouse button, presses the ESC key, or moves the
+		* mouse outside the drag rectangle.  If the user moves
+		* the mouse outside of the drag rectangle, DragDetect()
+		* returns true and a drag and drop operation can be
+		* started.  When the left mouse button is released or
+		* the ESC key is pressed, these events are consumed by
+		* DragDetect() so that application code that matches
+		* mouse down/up pairs or looks for the ESC key will not
+		* function properly.  The fix is to send the missing
+		* events when the drag has not started.
+		* 
+		* NOTE: For now, don't send a fake WM_KEYDOWN/WM_KEYUP
+		* events for the ESC key.  This would require computing
+		* wParam (the key) and lParam (the repeat count, scan code,
+		* extended-key flag, context code, previous key-state flag,
+		* and transition-state flag) which is non-trivial.
+		*/
+		if (button == 1 && OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
+			int wParam = 0;
+			if ((stateMask & SWT.CTRL) != 0) wParam |= OS.MK_CONTROL;
+			if ((stateMask & SWT.SHIFT) != 0) wParam |= OS.MK_SHIFT;
+			if ((stateMask & SWT.ALT) != 0) wParam |= OS.MK_ALT;
+			if ((stateMask & SWT.BUTTON1) != 0) wParam |= OS.MK_LBUTTON;
+			if ((stateMask & SWT.BUTTON2) != 0) wParam |= OS.MK_MBUTTON;
+			if ((stateMask & SWT.BUTTON3) != 0) wParam |= OS.MK_RBUTTON;
+			if ((stateMask & SWT.BUTTON4) != 0) wParam |= OS.MK_XBUTTON1;
+			if ((stateMask & SWT.BUTTON5) != 0) wParam |= OS.MK_XBUTTON2;
+			int /*long*/ lParam = OS.MAKELPARAM (x, y);
+			OS.SendMessage (handle, OS.WM_LBUTTONUP, wParam, lParam);
+		}
+		return false;
+	}
+	return sendDragEvent (button, stateMask, x, y);
+}
+
+void drawBackground (int /*long*/ hDC) {
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
 	drawBackground (hDC, rect);
 }
 
-void drawBackground (int hDC, RECT rect) {
+void drawBackground (int /*long*/ hDC, RECT rect) {
 	drawBackground (hDC, rect, -1);
 }
 
-void drawBackground (int hDC, RECT rect, int pixel) {
+void drawBackground (int /*long*/ hDC, RECT rect, int pixel) {
 	Control control = findBackgroundControl ();
 	if (control != null) {
 		if (control.backgroundImage != null) {
@@ -592,21 +831,25 @@ void drawBackground (int hDC, RECT rect, int pixel) {
 	fillBackground (hDC, pixel, rect);
 }
 
-void drawImageBackground (int hDC, int hwnd, int hBitmap, RECT rect) {
+void drawImageBackground (int /*long*/ hDC, int /*long*/ hwnd, int /*long*/ hBitmap, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (hwnd, rect2);
 	OS.MapWindowPoints (hwnd, handle, rect2, 2);
-	int hBrush = findBrush (hBitmap, OS.BS_PATTERN);
+	int /*long*/ hBrush = findBrush (hBitmap, OS.BS_PATTERN);
 	POINT lpPoint = new POINT ();
 	OS.GetWindowOrgEx (hDC, lpPoint);
 	OS.SetBrushOrgEx (hDC, -rect2.left - lpPoint.x, -rect2.top - lpPoint.y, lpPoint);
-	int hOldBrush = OS.SelectObject (hDC, hBrush);
+	int /*long*/ hOldBrush = OS.SelectObject (hDC, hBrush);
 	OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 	OS.SetBrushOrgEx (hDC, lpPoint.x, lpPoint.y, null);
 	OS.SelectObject (hDC, hOldBrush);
 }
 
-void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+void drawThemeBackground (int /*long*/ hDC, int /*long*/ hwnd, RECT rect) {
+	/* Do nothing */
+}
+
+void enableDrag (boolean enabled) {
 	/* Do nothing */
 }
 
@@ -614,8 +857,9 @@ void enableWidget (boolean enabled) {
 	OS.EnableWindow (handle, enabled);
 }
 
-void fillBackground (int hDC, int pixel, RECT rect) {
-	int hPalette = display.hPalette;
+void fillBackground (int /*long*/ hDC, int pixel, RECT rect) {
+	if (rect.left > rect.right || rect.top > rect.bottom) return;
+	int /*long*/ hPalette = display.hPalette;
 	if (hPalette != 0) {
 		OS.SelectPalette (hDC, hPalette, false);
 		OS.RealizePalette (hDC);
@@ -623,7 +867,8 @@ void fillBackground (int hDC, int pixel, RECT rect) {
 	OS.FillRect (hDC, rect, findBrush (pixel, OS.BS_SOLID));
 }
 
-void fillImageBackground (int hDC, Control control, RECT rect) {
+void fillImageBackground (int /*long*/ hDC, Control control, RECT rect) {
+	if (rect.left > rect.right || rect.top > rect.bottom) return;
 	if (control != null) {
 		Image image = control.backgroundImage;
 		if (image != null) {
@@ -632,7 +877,8 @@ void fillImageBackground (int hDC, Control control, RECT rect) {
 	}
 }
 
-void fillThemeBackground (int hDC, Control control, RECT rect) {
+void fillThemeBackground (int /*long*/ hDC, Control control, RECT rect) {
+	if (rect.left > rect.right || rect.top > rect.bottom) return;
 	if (control != null) {
 		control.drawThemeBackground (hDC, handle, rect);
 	}
@@ -643,7 +889,7 @@ Control findBackgroundControl () {
 	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
 }
 
-int findBrush (int value, int lbStyle) {
+int /*long*/ findBrush (int /*long*/ value, int lbStyle) {
 	return parent.findBrush (value, lbStyle);
 }
 
@@ -784,7 +1030,11 @@ public Accessible getAccessible () {
 
 /**
  * Returns the receiver's background color.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on some versions of Windows the background of a TabFolder,
+ * is a gradient rather than a solid color.
+ * </p>
  * @return the background color
  *
  * @exception SWTException <ul>
@@ -834,7 +1084,7 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget ();
-	int borderHandle = borderHandle ();
+	int /*long*/ borderHandle = borderHandle ();
 	int bits1 = OS.GetWindowLong (borderHandle, OS.GWL_EXSTYLE);
 	if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXEDGE);
 	if ((bits1 & OS.WS_EX_STATICEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
@@ -861,7 +1111,7 @@ public Rectangle getBounds () {
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
-	int hwndParent = parent == null ? 0 : parent.handle;
+	int /*long*/ hwndParent = parent == null ? 0 : parent.handle;
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
 	int width = rect.right - rect.left;
 	int height =  rect.bottom - rect.top;
@@ -870,7 +1120,7 @@ public Rectangle getBounds () {
 
 int getCodePage () {
 	if (OS.IsUnicode) return OS.CP_ACP;
-	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	int /*long*/ hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
 	int cs = logFont.lfCharSet & 0xFF;
@@ -884,11 +1134,11 @@ int getCodePage () {
 String getClipboardText () {
 	String string = "";
 	if (OS.OpenClipboard (0)) {
-		int hMem = OS.GetClipboardData (OS.IsUnicode ? OS.CF_UNICODETEXT : OS.CF_TEXT);
+		int /*long*/ hMem = OS.GetClipboardData (OS.IsUnicode ? OS.CF_UNICODETEXT : OS.CF_TEXT);
 		if (hMem != 0) {
 			/* Ensure byteCount is a multiple of 2 bytes on UNICODE platforms */
 			int byteCount = OS.GlobalSize (hMem) / TCHAR.sizeof * TCHAR.sizeof;
-			int ptr = OS.GlobalLock (hMem);
+			int /*long*/ ptr = OS.GlobalLock (hMem);
 			if (ptr != 0) {
 				/* Use the character encoding for the default locale */
 				TCHAR buffer = new TCHAR (0, byteCount / TCHAR.sizeof);
@@ -900,6 +1150,49 @@ String getClipboardText () {
 		OS.CloseClipboard ();
 	}
 	return string;
+}
+
+/**
+ * Returns the receiver's cursor, or null if it has not been set.
+ * <p>
+ * When the mouse pointer passes over a control its appearance
+ * is changed to match the control's cursor.
+ * </p>
+ *
+ * @return the receiver's cursor or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Cursor getCursor () {
+	checkWidget ();
+	return cursor;
+}
+
+/**
+ * Returns <code>true</code> if the receiver is detecting
+ * drag gestures, and  <code>false</code> otherwise. 
+ *
+ * @return the receiver's drag detect state
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
+}
+
+boolean getDrawing () {
+	return drawCount <= 0;
 }
 
 /**
@@ -933,8 +1226,9 @@ public boolean getEnabled () {
  * </ul>
  */
 public Font getFont () {
-	checkWidget ();	
-	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	checkWidget ();
+	if (font != null) return font;
+	int /*long*/ hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
 	return Font.win32_new (display, hFont);
 }
@@ -991,7 +1285,7 @@ public Point getLocation () {
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (topHandle (), rect);
-	int hwndParent = parent == null ? 0 : parent.handle;
+	int /*long*/ hwndParent = parent == null ? 0 : parent.handle;
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
 	return new Point (rect.left, rect.top);
 }
@@ -1021,6 +1315,11 @@ public Menu getMenu () {
  * 
  * @return the receiver's monitor
  * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.0
  */
 public Monitor getMonitor () {
@@ -1028,7 +1327,7 @@ public Monitor getMonitor () {
 	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		return display.getPrimaryMonitor ();
 	}
-	int hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
+	int /*long*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
 	MONITORINFO lpmi = new MONITORINFO ();
 	lpmi.cbSize = MONITORINFO.sizeof;
 	OS.GetMonitorInfo (hmonitor, lpmi);
@@ -1077,6 +1376,24 @@ Control [] getPath () {
 		control = control.parent;
 	}
 	return result;
+}
+
+/** 
+ * Returns the region that defines the shape of the control,
+ * or null if the control has the default shape.
+ *
+ * @return the region that defines the shape of the shell (or null)
+ *	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public Region getRegion () {
+	checkWidget ();
+	return region;
 }
 
 /**
@@ -1157,7 +1474,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	if (drawCount != 0) return (state & HIDDEN) == 0;
+	if (!getDrawing()) return (state & HIDDEN) == 0;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return (bits & OS.WS_VISIBLE) != 0;
 }
@@ -1176,7 +1493,7 @@ boolean hasFocus () {
 	* then this control is considered to have focus
 	* even though it does not have focus in Windows.
 	*/
-	int hwndFocus = OS.GetFocus ();
+	int /*long*/ hwndFocus = OS.GetFocus ();
 	while (hwndFocus != 0) {
 		if (hwndFocus == handle) return true;
 		if (display.getControl (hwndFocus) != null) {
@@ -1200,12 +1517,12 @@ boolean hasFocus () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC (GCData data) {
+public int /*long*/ internal_new_GC (GCData data) {
 	checkWidget();
-	int hwnd = handle;
+	int /*long*/ hwnd = handle;
 	if (data != null && data.hwnd != 0) hwnd = data.hwnd;
 	if (data != null) data.hwnd = hwnd;
-	int hDC = 0;
+	int /*long*/ hDC = 0;
 	if (data == null || data.ps == null) {
 		hDC = OS.GetDC (hwnd);
 	} else {
@@ -1229,11 +1546,14 @@ public int internal_new_GC (GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = display;
-		data.foreground = getForegroundPixel ();
+		int foreground = getForegroundPixel ();
+		if (foreground != OS.GetTextColor (hDC)) data.foreground = foreground;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
-		data.background = control.getBackgroundPixel ();
-		data.hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+		int background = control.getBackgroundPixel ();
+		if (background != OS.GetBkColor (hDC)) data.background = background;
+		data.font = font != null ? font : Font.win32_new (display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0));
+		data.uiState = (int)/*64*/OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
 	return hDC;
 }
@@ -1251,9 +1571,9 @@ public int internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int hDC, GCData data) {
+public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	checkWidget ();
-	int hwnd = handle;
+	int /*long*/ hwnd = handle;
 	if (data != null && data.hwnd != 0) {
 		hwnd = data.hwnd;
 	}
@@ -1265,9 +1585,12 @@ public void internal_dispose_GC (int hDC, GCData data) {
 }
 
 boolean isActive () {
-	Shell dialogShell = display.getModalDialogShell ();
-	if (dialogShell != null && dialogShell != getShell ()) {
-		return false;
+	Dialog dialog = display.getModalDialog ();
+	if (dialog != null) {
+		Shell dialogShell = dialog.parent;
+		if (dialogShell != null && !dialogShell.isDisposed ()) {
+			if (dialogShell != getShell ()) return false;
+		}
 	}
 	Shell shell = null;
 	Shell [] modalShells = display.modalShells;
@@ -1331,12 +1654,15 @@ public boolean isEnabled () {
  */
 public boolean isFocusControl () {
 	checkWidget ();
-	if (this == display.focusControl) return true;
+	Control focusControl = display.focusControl;
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return this == focusControl;
+	}
 	return hasFocus ();
 }
 
 boolean isFocusAncestor (Control control) {
-	while (control != null && control != this) {
+	while (control != null && control != this && !(control instanceof Shell)) {
 		control = control.parent;
 	}
 	return control == this;
@@ -1361,7 +1687,7 @@ public boolean isReparentable () {
 boolean isShowing () {
 	/*
 	* This is not complete.  Need to check if the
-	* widget is obscurred by a parent or sibling.
+	* widget is obscured by a parent or sibling.
 	*/
 	if (!isVisible ()) return false;
 	Control control = this;
@@ -1378,7 +1704,7 @@ boolean isShowing () {
 	*/
 //	if (!OS.IsWindowVisible (handle)) return false;
 //	int flags = OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS;
-//	int hDC = OS.GetDCEx (handle, 0, flags);
+//	int /*long*/ hDC = OS.GetDCEx (handle, 0, flags);
 //	int result = OS.GetClipBox (hDC, new RECT ());
 //	OS.ReleaseDC (handle, hDC);
 //	return result != OS.NULLREGION;
@@ -1404,7 +1730,7 @@ boolean isTabItem () {
 	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_TABSTOP) != 0) return false;
-	int code = OS.SendMessage (handle, OS.WM_GETDLGCODE, 0, 0);
+	int /*long*/ code = OS.SendMessage (handle, OS.WM_GETDLGCODE, 0, 0);
 	if ((code & OS.DLGC_STATIC) != 0) return false;
 	if ((code & OS.DLGC_WANTALLKEYS) != 0) return false;
 	if ((code & OS.DLGC_WANTARROWS) != 0) return false;
@@ -1432,7 +1758,7 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
-void mapEvent (int hwnd, Event event) {
+void mapEvent (int /*long*/ hwnd, Event event) {
 	if (hwnd != handle) {
 		POINT point = new POINT ();
 		point.x = event.x;
@@ -1481,11 +1807,11 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget ();
-	int topHandle = topHandle (), hwndAbove = OS.HWND_TOP;
+	int /*long*/ topHandle = topHandle (), hwndAbove = OS.HWND_TOP;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
-		int hwnd = control.topHandle ();
+		int /*long*/ hwnd = control.topHandle ();
 		if (hwnd == 0 || hwnd == topHandle) return;
 		hwndAbove = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
 		/*
@@ -1525,11 +1851,38 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget ();
-	int topHandle = topHandle (), hwndAbove = OS.HWND_BOTTOM;
+	int /*long*/ topHandle = topHandle (), hwndAbove = OS.HWND_BOTTOM;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
 		hwndAbove = control.topHandle ();
+	} else {
+		/*
+		* Bug in Windows.  When SetWindowPos() is called
+		* with HWND_BOTTOM on a dialog shell, the dialog
+		* and the parent are moved to the bottom of the
+		* desktop stack.  The fix is to move the dialog
+		* to the bottom of the dialog window stack by
+		* moving behind the first dialog child.
+		*/
+		Shell shell = getShell ();
+		if (this == shell && parent != null) {
+			/* 
+			* Bug in Windows.  For some reason, when GetWindow ()
+			* with GW_HWNDPREV is used to query the previous window
+			* in the z-order with the first child, Windows returns
+			* the first child instead of NULL.  The fix is to detect
+			* this case and do nothing because the control is already
+			* at the bottom.
+			*/
+			int /*long*/ hwndParent = parent.handle, hwnd = hwndParent;
+			hwndAbove = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
+			while (hwndAbove != 0 && hwndAbove != hwnd) {
+				if (OS.GetWindow (hwndAbove, OS.GW_OWNER) == hwndParent) break;
+				hwndAbove = OS.GetWindow (hwnd = hwndAbove, OS.GW_HWNDPREV);
+			}
+			if (hwndAbove == hwnd) return;
+		}
 	}
 	if (hwndAbove == 0 || hwndAbove == topHandle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
@@ -1588,6 +1941,188 @@ public void pack (boolean changed) {
 }
 
 /**
+ * Prints the receiver and all children.
+ * 
+ * @param gc the gc where the drawing occurs
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		int /*long*/ topHandle = topHandle ();
+		int /*long*/ hdc = gc.handle;
+		int state = 0;
+		int /*long*/ gdipGraphics = gc.getGCData().gdipGraphics;
+		if (gdipGraphics != 0) {
+			int /*long*/ clipRgn = 0;
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+			int /*long*/ rgn = Gdip.Region_new();
+			if (rgn == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			Gdip.Graphics_GetClip(gdipGraphics, rgn);
+			if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
+				clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
+			}
+			Gdip.Region_delete(rgn);
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+			float[] lpXform = null;
+			int /*long*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+			if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+			if (!Gdip.Matrix_IsIdentity(matrix)) {
+				lpXform = new float[6];
+				Gdip.Matrix_GetElements(matrix, lpXform);
+			}
+			Gdip.Matrix_delete(matrix);
+			hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+			state = OS.SaveDC(hdc);
+			if (lpXform != null) {
+				OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+				OS.SetWorldTransform(hdc, lpXform);
+			}
+			if (clipRgn != 0) {
+				OS.SelectClipRgn(hdc, clipRgn);
+				OS.DeleteObject(clipRgn);
+			}
+		}
+		if (OS.IsWinCE) {
+			OS.UpdateWindow (topHandle);
+		} else {
+			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (topHandle, null, 0, flags);
+		}
+		printWidget (topHandle, hdc, gc);
+		if (gdipGraphics != 0) {
+			OS.RestoreDC(hdc, state);
+			Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+		}
+		return true;
+	}
+	return false;
+}
+
+void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
+	/*
+	* Bug in Windows.  For some reason, PrintWindow()
+	* returns success but does nothing when it is called
+	* on a printer.  The fix is to just go directly to
+	* WM_PRINT in this case.
+	*/
+	boolean success = false;
+	if (!(OS.GetDeviceCaps(gc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
+		/*
+		* Bug in Windows.  When PrintWindow() will only draw that
+		* portion of a control that is not obscured by the shell.
+		* The fix is temporarily reparent the window to the desktop,
+		* call PrintWindow() then reparent the window back.
+		*/
+		int /*long*/ hwndParent = OS.GetParent (hwnd);
+		int /*long*/ hwndShell = hwndParent;
+		while (OS.GetParent (hwndShell) != 0) {
+			if (OS.GetWindow (hwndShell, OS.GW_OWNER) != 0) break;
+			hwndShell = OS.GetParent (hwndShell);
+		}
+		RECT rect1 = new RECT ();
+		OS.GetWindowRect (hwnd, rect1);
+		boolean fixPrintWindow = !OS.IsWindowVisible(hwnd);
+		if (!fixPrintWindow) {
+			RECT rect2 = new RECT ();
+			OS.GetWindowRect (hwndShell, rect2);
+			OS.IntersectRect (rect2, rect1, rect2);
+			fixPrintWindow = !OS.EqualRect (rect2, rect1);
+		}
+		/*
+		* Bug in Windows. PrintWindow() does not print portions
+		* of the receiver that are clipped out using SetWindowRgn()
+		* in a parent.  The fix is temporarily reparent the window
+		* to the desktop, call PrintWindow() then reparent the window
+		* back.
+		*/
+		if (!fixPrintWindow) {
+			int /*long*/ rgn = OS.CreateRectRgn(0, 0, 0, 0);
+			int /*long*/ parent = OS.GetParent(hwnd);
+			while (parent != hwndShell && !fixPrintWindow) {
+				if (OS.GetWindowRgn(parent, rgn) != 0) {
+					fixPrintWindow = true;
+				}
+				parent = OS.GetParent(parent);
+			}
+			OS.DeleteObject(rgn);
+		}
+		int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+		int /*long*/ hwndInsertAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
+		/*
+		* Bug in Windows.  For some reason, when GetWindow ()
+		* with GW_HWNDPREV is used to query the previous window
+		* in the z-order with the first child, Windows returns
+		* the first child instead of NULL.  The fix is to detect
+		* this case and move the control to the top.
+		*/
+		if (hwndInsertAfter == 0 || hwndInsertAfter == hwnd) {
+			hwndInsertAfter = OS.HWND_TOP;
+		}
+		if (fixPrintWindow) {
+			int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
+			int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+			int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+			int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+			int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+			}
+			SetWindowPos (hwnd, 0, x + width, y + height, 0, 0, flags);
+			OS.SetParent (hwnd, 0);
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
+			}
+		}
+		if ((bits & OS.WS_VISIBLE) == 0) {
+			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
+		}
+		success = OS.PrintWindow (hwnd, hdc, 0);
+		if ((bits & OS.WS_VISIBLE) == 0) {
+			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+		}
+		if (fixPrintWindow) {
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+			}
+			OS.SetParent (hwnd, hwndParent);
+			OS.MapWindowPoints (0, hwndParent, rect1, 2);
+			int flags = OS.SWP_NOSIZE | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
+			SetWindowPos (hwnd, hwndInsertAfter, rect1.left, rect1.top, rect1.right - rect1.left, rect1.bottom - rect1.top, flags);
+			if ((bits & OS.WS_VISIBLE) != 0) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
+			}
+		}
+	}
+	
+	/*
+	* Bug in Windows.  For some reason, PrintWindow() fails
+	* when it is called on a push button.  The fix is to
+	* detect the failure and use WM_PRINT instead.  Note
+	* that WM_PRINT cannot be used all the time because it
+	* fails for browser controls when the browser has focus.
+	*/
+	if (!success) {
+		int flags = OS.PRF_CLIENT | OS.PRF_NONCLIENT | OS.PRF_ERASEBKGND | OS.PRF_CHILDREN;
+		OS.SendMessage (hwnd, OS.WM_PRINT, hdc, flags);
+	}
+}
+
+/**
  * Causes the entire bounds of the receiver to be marked
  * as needing to be redrawn. The next time a paint request
  * is processed, the control will be completely painted,
@@ -1598,12 +2133,13 @@ public void pack (boolean changed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#DOUBLE_BUFFERED
  */
 public void redraw () {
 	checkWidget ();
@@ -1643,12 +2179,13 @@ void redraw (boolean all) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#DOUBLE_BUFFERED
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
@@ -1710,15 +2247,18 @@ void releaseWidget () {
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
+	backgroundImage = null;
 	menu = null;
 	cursor = null;
-	deregister ();
 	unsubclass ();
+	deregister ();
 	layoutData = null;
 	if (accessible != null) {
 		accessible.internal_dispose_Accessible ();
 	}
 	accessible = null;
+	region = null;
+	font = null;
 }
 
 /**
@@ -1744,6 +2284,32 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when a drag gesture occurs.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
 }
 
 /**
@@ -1818,6 +2384,33 @@ public void removeKeyListener(KeyListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.KeyUp, listener);
 	eventTable.unhook (SWT.KeyDown, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the platform-specific context menu trigger has
+ * occurred.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #addMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void removeMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MenuDetect, listener);
 }
 
 /**
@@ -1898,6 +2491,32 @@ public void removeMouseMoveListener(MouseMoveListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when the mouse wheel is scrolled.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #addMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void removeMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MouseWheel, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when the receiver needs to be painted.
  *
  * @param listener the listener which should no longer be notified
@@ -1945,7 +2564,9 @@ public void removeTraverseListener(TraverseListener listener) {
 }
 
 void showWidget (boolean visible) {
-	OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
+	int /*long*/ topHandle = topHandle ();
+	OS.ShowWindow (topHandle, visible ? OS.SW_SHOW : OS.SW_HIDE);
+	if (handle != topHandle) OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
 }
 
 boolean sendFocusEvent (int type) {
@@ -1990,6 +2611,14 @@ boolean sendFocusEvent (int type) {
 	return true;
 }
 
+void sendMove () {
+	sendEvent (SWT.Move);
+}
+
+void sendResize () {
+	sendEvent (SWT.Resize);
+}
+
 void setBackground () {
 	Control control = findBackgroundControl ();
 	if (control == null) control = this;
@@ -2006,7 +2635,10 @@ void setBackground () {
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2032,8 +2664,12 @@ public void setBackground (Color color) {
 /**
  * Sets the receiver's background image to the image specified
  * by the argument, or to the default system color for the control
- * if the argument is null.
- *
+ * if the argument is null.  The background image is tiled to fill
+ * the available space.
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2060,7 +2696,7 @@ public void setBackgroundImage (Image image) {
 	updateBackgroundImage ();
 }
 
-void setBackgroundImage (int hBitmap) {
+void setBackgroundImage (int /*long*/ hBitmap) {
 	if (OS.IsWinCE) {
 		OS.InvalidateRect (handle, null, true);
 	} else {
@@ -2112,17 +2748,21 @@ void setBounds (int x, int y, int width, int height, int flags) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
-	int topHandle = topHandle ();
+	if (findImageControl () != null) {
+		if (backgroundImage == null) flags |= OS.SWP_NOCOPYBITS;
+	} else {
+		if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				if (findThemeControl () != null) flags |= OS.SWP_NOCOPYBITS;
+			}
+		}
+	}
+	int /*long*/ topHandle = topHandle ();
 	if (defer && parent != null) {
 		forceResize ();
-		if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-			if (findImageControl () != null) flags |= OS.SWP_NOCOPYBITS;
-		}
-		WINDOWPOS [] lpwp = parent.lpwp;
-		if (lpwp == null) {
-			SetWindowPos (topHandle, 0, x, y, width, height, flags);
-		} else {
+		if (parent.lpwp != null) {
 			int index = 0;
+			WINDOWPOS [] lpwp = parent.lpwp;
 			while (index < lpwp.length) {
 				if (lpwp [index] == null) break;
 				index ++;
@@ -2140,10 +2780,10 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 			wp.cy = height;
 			wp.flags = flags;
 			lpwp [index] = wp;
+			return;
 		}
-	} else {
-		SetWindowPos (topHandle, 0, x, y, width, height, flags);
 	}
+	SetWindowPos (topHandle, 0, x, y, width, height, flags);
 }
 
 /**
@@ -2173,7 +2813,8 @@ public void setBounds (Rectangle rect) {
 /**
  * If the argument is <code>true</code>, causes the receiver to have
  * all mouse events delivered to it until the method is called with
- * <code>false</code> as the argument.
+ * <code>false</code> as the argument.  Note that on some platforms,
+ * a mouse button must currently be down for capture to be assigned.
  *
  * @param capture <code>true</code> to capture the mouse, and <code>false</code> to release it
  *
@@ -2194,7 +2835,7 @@ public void setCapture (boolean capture) {
 }
 
 void setCursor () {
-	int lParam = OS.HTCLIENT | (OS.WM_MOUSEMOVE << 16);
+	int /*long*/ lParam = OS.MAKELPARAM (OS.HTCLIENT, OS.WM_MOUSEMOVE);
 	OS.SendMessage (handle, OS.WM_SETCURSOR, handle, lParam);
 }
 
@@ -2222,15 +2863,15 @@ public void setCursor (Cursor cursor) {
 	if (cursor != null && cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
 	if (OS.IsWinCE) {
-		int hCursor = cursor != null ? cursor.handle : 0;
+		int /*long*/ hCursor = cursor != null ? cursor.handle : 0;
 		OS.SetCursor (hCursor);
 		return;
 	}
-	int hwndCursor = OS.GetCapture ();
+	int /*long*/ hwndCursor = OS.GetCapture ();
 	if (hwndCursor == 0) {
 		POINT pt = new POINT ();
 		if (!OS.GetCursorPos (pt)) return;
-		int hwnd = hwndCursor = OS.WindowFromPoint (pt);
+		int /*long*/ hwnd = hwndCursor = OS.WindowFromPoint (pt);
 		while (hwnd != 0 && hwnd != handle) {
 			hwnd = OS.GetParent (hwnd);
 		}
@@ -2242,8 +2883,32 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	int hFont = display.getSystemFont ().handle;
+	int /*long*/ hFont = display.getSystemFont ().handle;
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+}
+
+/**
+ * Sets the receiver's drag detect state. If the argument is
+ * <code>true</code>, the receiver will detect drag gestures,
+ * otherwise these gestures will be ignored.
+ *
+ * @param dragDetect the new drag detect state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;
+	} else {
+		state &= ~DRAG_DETECT;
+	}
+	enableDrag (dragDetect);
 }
 
 /**
@@ -2322,11 +2987,12 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget ();
-	int hFont = 0;
+	int /*long*/ hFont = 0;
 	if (font != null) { 
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		hFont = font.handle;
 	}
+	this.font = font;
 	if (hFont == 0) hFont = defaultFont ();
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 1);
 }
@@ -2335,7 +3001,9 @@ public void setFont (Font font) {
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2464,7 +3132,7 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
-boolean setRadioFocus () {
+boolean setRadioFocus (boolean tabbing) {
 	return false;
 }
 
@@ -2493,7 +3161,7 @@ boolean setRadioSelection (boolean value) {
  * </ul>
  * 
  * @see #redraw(int, int, int, int, boolean)
- * @see #update
+ * @see #update()
  */
 public void setRedraw (boolean redraw) {
 	checkWidget ();
@@ -2512,24 +3180,59 @@ public void setRedraw (boolean redraw) {
 	}
 	if (redraw) {
 		if (--drawCount == 0) {
-			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			int /*long*/ topHandle = topHandle ();
+			OS.SendMessage (topHandle, OS.WM_SETREDRAW, 1, 0);
+			if (handle != topHandle) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			if ((state & HIDDEN) != 0) {
 				state &= ~HIDDEN;
-				OS.ShowWindow (handle, OS.SW_HIDE);
+				OS.ShowWindow (topHandle, OS.SW_HIDE);
+				if (handle != topHandle) OS.ShowWindow (handle, OS.SW_HIDE);
 			} else {
 				if (OS.IsWinCE) {
-					OS.InvalidateRect (handle, null, true);
+					OS.InvalidateRect (topHandle, null, true);
+					if (handle != topHandle) OS.InvalidateRect (handle, null, true);
 				} else {
 					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (handle, null, 0, flags);
+					OS.RedrawWindow (topHandle, null, 0, flags);
 				}
 			}
 		}
 	} else {
 		if (drawCount++ == 0) {
-			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+			int /*long*/ topHandle = topHandle ();
+			OS.SendMessage (topHandle, OS.WM_SETREDRAW, 0, 0);
+			if (handle != topHandle) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 	}
+}
+
+/**
+ * Sets the shape of the control to the region specified
+ * by the argument.  When the argument is null, the
+ * default shape of the control is restored.
+ *
+ * @param region the region that defines the shape of the control (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
+ * </ul>  
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setRegion (Region region) {
+	checkWidget ();
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int /*long*/ hRegion = 0;
+	if (region != null) {
+		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.CombineRgn (hRegion, region.handle, hRegion, OS.RGN_OR);
+	}
+	OS.SetWindowRgn (handle, hRegion, true);
+	this.region = region;
 }
 
 boolean setSavedFocus () {
@@ -2582,10 +3285,6 @@ public void setSize (Point size) {
 	setSize (size.x, size.y);
 }
 
-boolean setTabGroupFocus () {
-	return setTabItemFocus ();
-}
-
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
 	return forceFocus ();
@@ -2593,8 +3292,17 @@ boolean setTabItemFocus () {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -2630,7 +3338,7 @@ void setToolTipText (Shell shell, String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		if (((state & HIDDEN) == 0) == visible) return;
 	} else {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -2656,7 +3364,7 @@ public void setVisible (boolean visible) {
 			fixFocus = isFocusAncestor (control);
 		}
 	}
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		state = visible ? state & ~HIDDEN : state | HIDDEN;
 	} else {
 		showWidget (visible);
@@ -2686,10 +3394,10 @@ void sort (int [] items) {
 }
 
 void subclass () {
-	int oldProc = windowProc ();
-	int newProc = display.windowProc;
+	int /*long*/ oldProc = windowProc ();
+	int /*long*/ newProc = display.windowProc;
 	if (oldProc == newProc) return;
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, newProc);
+	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, newProc);
 }
 
 /**
@@ -2784,7 +3492,7 @@ public Point toDisplay (Point point) {
 	return toDisplay (point.x, point.y);
 }
 
-int topHandle () {
+int /*long*/ topHandle () {
 	return handle;
 }
 
@@ -2801,15 +3509,15 @@ boolean translateMnemonic (Event event, Control control) {
 
 boolean translateMnemonic (MSG msg) {
 	if (msg.wParam < 0x20) return false;
-	int hwnd = msg.hwnd;
+	int /*long*/ hwnd = msg.hwnd;
 	if (OS.GetKeyState (OS.VK_MENU) >= 0) {
-		int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+		int /*long*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 		if ((code & OS.DLGC_WANTALLKEYS) != 0) return false;
 		if ((code & OS.DLGC_BUTTON) == 0) return false;
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
-		display.lastAscii = msg.wParam;
+		display.lastAscii = (int)/*64*/msg.wParam;
 		display.lastNull = display.lastDead = false;
 		Event event = new Event ();
 		event.detail = SWT.TRAVERSE_MNEMONIC;
@@ -2821,8 +3529,8 @@ boolean translateMnemonic (MSG msg) {
 }
 
 boolean translateTraversal (MSG msg) {
-	int hwnd = msg.hwnd;
-	int key = msg.wParam;
+	int /*long*/ hwnd = msg.hwnd;
+	int key = (int)/*64*/msg.wParam;
 	if (key == OS.VK_MENU) {
 		OS.SendMessage (hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 		return false;
@@ -2835,7 +3543,7 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_ESCAPE: {
 			all = true;
 			lastAscii = 27;
-			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			int /*long*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & OS.DLGC_WANTALLKEYS) != 0) {
 				/*
 				* Use DLGC_HASSETSEL to determine that the control
@@ -2852,7 +3560,7 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_RETURN: {
 			all = true;
 			lastAscii = '\r';
-			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			int /*long*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
 			detail = SWT.TRAVERSE_RETURN;
 			break;
@@ -2860,7 +3568,7 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_TAB: {
 			lastAscii = '\t';
 			boolean next = OS.GetKeyState (OS.VK_SHIFT) >= 0;
-			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			int /*long*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & (OS.DLGC_WANTTAB | OS.DLGC_WANTALLKEYS)) != 0) {
 				/*
 				* Use DLGC_HASSETSEL to determine that the control is a
@@ -2878,9 +3586,6 @@ boolean translateTraversal (MSG msg) {
 					doit = false;
 				}
 			}
-			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) next = !next;
-			}
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -2897,9 +3602,12 @@ boolean translateTraversal (MSG msg) {
 				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) return false;
 			}
 			lastVirtual = true;
-			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			int /*long*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & (OS.DLGC_WANTARROWS /*| OS.DLGC_WANTALLKEYS*/)) != 0) doit = false;
 			boolean next = key == OS.VK_DOWN || key == OS.VK_RIGHT;
+			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
+				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) next = !next;
+			}
 			detail = next ? SWT.TRAVERSE_ARROW_NEXT : SWT.TRAVERSE_ARROW_PREVIOUS;
 			break;
 		}
@@ -2908,7 +3616,7 @@ boolean translateTraversal (MSG msg) {
 			all = true;
 			lastVirtual = true;
 			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
-			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			int /*long*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & OS.DLGC_WANTALLKEYS) != 0) {
 				/*
 				* Use DLGC_HASSETSEL to determine that the control is a
@@ -2999,8 +3707,8 @@ boolean traverseEscape () {
 
 boolean traverseGroup (boolean next) {
 	Control root = computeTabRoot ();
-	Control group = computeTabGroup ();
-	Control [] list = root.computeTabList ();
+	Widget group = computeTabGroup ();
+	Widget [] list = root.computeTabList ();
 	int length = list.length;
 	int index = 0;
 	while (index < length) {
@@ -3016,8 +3724,8 @@ boolean traverseGroup (boolean next) {
 	if (index == length) return false;
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = ((index + offset + length) % length)) != start) {
-		Control control = list [index];
-		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+		Widget widget = list [index];
+		if (!widget.isDisposed () && widget.setTabGroupFocus ()) {
 			return true;
 		}
 	}
@@ -3067,21 +3775,27 @@ boolean traverseReturn () {
 }
 
 void unsubclass () {
-	int newProc = windowProc ();
-	int oldProc = display.windowProc;
+	int /*long*/ newProc = windowProc ();
+	int /*long*/ oldProc = display.windowProc;
 	if (oldProc == newProc) return;
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, newProc);
+	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, newProc);
 }
 
 /**
  * Forces all outstanding paint requests for the widget
- * to be processed before this method returns.
+ * to be processed before this method returns. If there
+ * are no outstanding paint request, this method does
+ * nothing.
+ * <p>
+ * Note: This method does not cause a redraw.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see #redraw()
  * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint
@@ -3159,7 +3873,7 @@ int widgetExtStyle () {
 	return bits;
 }
 
-int widgetParent () {
+int /*long*/ widgetParent () {
 	return parent.handle;
 }
 
@@ -3189,7 +3903,7 @@ int widgetStyle () {
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
- * Answers <code>true</code> if the parent is successfully changed.
+ * Returns <code>true</code> if the parent is successfully changed.
  *
  * @param parent the new parent for the control.
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
@@ -3216,7 +3930,7 @@ public boolean setParent (Composite parent) {
 		Menu [] menus = oldShell.findMenus (this);
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
-	int topHandle = topHandle ();
+	int /*long*/ topHandle = topHandle ();
 	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 	this.parent = parent;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
@@ -3226,13 +3940,14 @@ public boolean setParent (Composite parent) {
 
 abstract TCHAR windowClass ();
 
-abstract int windowProc ();
+abstract int /*long*/ windowProc ();
 
-int windowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	switch (msg) {
 		case OS.WM_ACTIVATE:			result = WM_ACTIVATE (wParam, lParam); break;
 		case OS.WM_CAPTURECHANGED:		result = WM_CAPTURECHANGED (wParam, lParam); break;
+		case OS.WM_CHANGEUISTATE:		result = WM_CHANGEUISTATE (wParam, lParam); break;
 		case OS.WM_CHAR:				result = WM_CHAR (wParam, lParam); break;
 		case OS.WM_CLEAR:				result = WM_CLEAR (wParam, lParam); break;
 		case OS.WM_CLOSE:				result = WM_CLOSE (wParam, lParam); break;
@@ -3259,6 +3974,8 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_HSCROLL:				result = WM_HSCROLL (wParam, lParam); break;
 		case OS.WM_IME_CHAR:			result = WM_IME_CHAR (wParam, lParam); break;
 		case OS.WM_IME_COMPOSITION:		result = WM_IME_COMPOSITION (wParam, lParam); break;
+		case OS.WM_IME_COMPOSITION_START:	result = WM_IME_COMPOSITION_START (wParam, lParam); break;
+		case OS.WM_IME_ENDCOMPOSITION:	result = WM_IME_ENDCOMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_INPUTLANGCHANGE:		result = WM_INPUTLANGCHANGE (wParam, lParam); break;
 		case OS.WM_HOTKEY:				result = WM_HOTKEY (wParam, lParam); break;		
@@ -3284,7 +4001,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
 		case OS.WM_NCHITTEST:			result = WM_NCHITTEST (wParam, lParam); break;
 		case OS.WM_NCLBUTTONDOWN:		result = WM_NCLBUTTONDOWN (wParam, lParam); break;
-		case OS.WM_NCPAINT:		result = WM_NCPAINT (wParam, lParam); break;
+		case OS.WM_NCPAINT:				result = WM_NCPAINT (wParam, lParam); break;
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
@@ -3324,27 +4041,32 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	return callWindowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_ACTIVATE (int wParam, int lParam) {
+LRESULT WM_ACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_CAPTURECHANGED (int wParam, int lParam) {
+LRESULT WM_CAPTURECHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmCaptureChanged (handle, wParam, lParam);
 }
 
-LRESULT WM_CHAR (int wParam, int lParam) {
+LRESULT WM_CHANGEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
+	if ((state & IGNORE_WM_CHANGEUISTATE) != 0) return LRESULT.ZERO;
+	return null;
+}
+
+LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmChar (handle, wParam, lParam);
 }
 
-LRESULT WM_CLEAR (int wParam, int lParam) {
+LRESULT WM_CLEAR (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_CLOSE (int wParam, int lParam) {
+LRESULT WM_CLOSE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_COMMAND (int wParam, int lParam) {
+LRESULT WM_COMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* When the WM_COMMAND message is sent from a
 	* menu, the HWND parameter in LPARAM is zero.
@@ -3352,7 +4074,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	if (lParam == 0) {
 		Decorations shell = menuShell ();
 		if (shell.isEnabled ()) {
-			int id = wParam & 0xFFFF;
+			int id = OS.LOWORD (wParam);
 			MenuItem item = display.getMenuItem (id);
 			if (item != null && item.isEnabled ()) {
 				return item.wmCommandChild (wParam, lParam);
@@ -3365,12 +4087,12 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return control.wmCommandChild (wParam, lParam);
 }
 
-LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
+LRESULT WM_CONTEXTMENU (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmContextMenu (handle, wParam, lParam);
 }
 
-LRESULT WM_CTLCOLOR (int wParam, int lParam) {
-	int hPalette = display.hPalette;
+LRESULT WM_CTLCOLOR (int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ hPalette = display.hPalette;
 	if (hPalette != 0) {
 		OS.SelectPalette (wParam, hPalette, false);
 		OS.RealizePalette (wParam);
@@ -3380,15 +4102,15 @@ LRESULT WM_CTLCOLOR (int wParam, int lParam) {
 	return control.wmColorChild (wParam, lParam);
 }
 
-LRESULT WM_CUT (int wParam, int lParam) {
+LRESULT WM_CUT (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_DESTROY (int wParam, int lParam) {
+LRESULT WM_DESTROY (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_DRAWITEM (int wParam, int lParam) {
+LRESULT WM_DRAWITEM (int /*long*/ wParam, int /*long*/ lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	if (struct.CtlType == OS.ODT_MENU) {
@@ -3401,15 +4123,15 @@ LRESULT WM_DRAWITEM (int wParam, int lParam) {
 	return control.wmDrawChild (wParam, lParam);
 }
 
-LRESULT WM_ENDSESSION (int wParam, int lParam) {
+LRESULT WM_ENDSESSION (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_ENTERIDLE (int wParam, int lParam) {
+LRESULT WM_ENTERIDLE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((state & DRAW_BACKGROUND) != 0) {
 		if (findImageControl () != null) return LRESULT.ONE;
 	}
@@ -3421,31 +4143,31 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_GETFONT (int wParam, int lParam) {
+LRESULT WM_GETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_GETOBJECT (int wParam, int lParam) {
+LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (accessible != null) {
-		int result = accessible.internal_WM_GETOBJECT (wParam, lParam);
+		int /*long*/ result = accessible.internal_WM_GETOBJECT (wParam, lParam);
 		if (result != 0) return new LRESULT (result);
 	}
 	return null;
 }
 
-LRESULT WM_GETMINMAXINFO (int wParam, int lParam) {
+LRESULT WM_GETMINMAXINFO (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_HOTKEY (int wParam, int lParam) {
+LRESULT WM_HOTKEY (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_HELP (int wParam, int lParam) {
+LRESULT WM_HELP (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsWinCE) return null;
 	HELPINFO lphi = new HELPINFO ();
 	OS.MoveMemory (lphi, lParam, HELPINFO.sizeof);
@@ -3462,7 +4184,7 @@ LRESULT WM_HELP (int wParam, int lParam) {
 				if (menu.hooks (SWT.Help)) widget = menu;
 			}
 			if (widget != null) {
-				int hwndShell = shell.handle;
+				int /*long*/ hwndShell = shell.handle;
 				OS.SendMessage (hwndShell, OS.WM_CANCELMODE, 0, 0);
 				widget.postEvent (SWT.Help);
 				return LRESULT.ONE;
@@ -3477,22 +4199,29 @@ LRESULT WM_HELP (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_HSCROLL (int wParam, int lParam) {
-	if (lParam == 0) return null;
+LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);
 }
 
-LRESULT WM_IME_CHAR (int wParam, int lParam) {
+LRESULT WM_IME_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmIMEChar (handle, wParam, lParam);
 }
 
-LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
+LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
+LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
+	return null;
+}
+
+LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+	return null;
+}
+
+LRESULT WM_INITMENUPOPUP (int /*long*/ wParam, int /*long*/ lParam) {
 	
 	/* Ignore WM_INITMENUPOPUP for an accelerator */
 	if (display.accelKeyHit) return null;
@@ -3504,7 +4233,7 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 	*/
 	Shell shell = getShell ();
 	Menu oldMenu = shell.activeMenu, newMenu = null;
-	if ((lParam >> 16) == 0) {
+	if (OS.HIWORD (lParam) == 0) {
 		newMenu = menuShell ().findMenu (wParam);
 		if (newMenu != null) newMenu.update ();
 	}	
@@ -3549,47 +4278,47 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
+LRESULT WM_INPUTLANGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmKeyDown (handle, wParam, lParam);
 }
 
-LRESULT WM_KEYUP (int wParam, int lParam) {
+LRESULT WM_KEYUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmKeyUp (handle, wParam, lParam);
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmKillFocus (handle, wParam, lParam);
 }
 
-LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
+LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmLButtonDblClk (handle, wParam, lParam);
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmLButtonDown (handle, wParam, lParam);
 }
 
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmLButtonUp (handle, wParam, lParam);
 }
 
-LRESULT WM_MBUTTONDBLCLK (int wParam, int lParam) {
+LRESULT WM_MBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmMButtonDblClk (handle, wParam, lParam);
 }
 
-LRESULT WM_MBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_MBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmMButtonDown (handle, wParam, lParam);
 }
 
-LRESULT WM_MBUTTONUP (int wParam, int lParam) {
+LRESULT WM_MBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmMButtonUp (handle, wParam, lParam);
 }
 
-LRESULT WM_MEASUREITEM (int wParam, int lParam) {
+LRESULT WM_MEASUREITEM (int /*long*/ wParam, int /*long*/ lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
 	if (struct.CtlType == OS.ODT_MENU) {
@@ -3597,13 +4326,13 @@ LRESULT WM_MEASUREITEM (int wParam, int lParam) {
 		if (item == null) return null;
 		return item.wmMeasureChild (wParam, lParam);
 	}
-	int hwnd = OS.GetDlgItem (handle, struct.CtlID);
+	int /*long*/ hwnd = OS.GetDlgItem (handle, struct.CtlID);
 	Control control = display.getControl (hwnd);
 	if (control == null) return null;
 	return control.wmMeasureChild (wParam, lParam);
 }
 
-LRESULT WM_MENUCHAR (int wParam, int lParam) {
+LRESULT WM_MENUCHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When the user types Alt+<key>
 	* and <key> does not match a mnemonic in the System
@@ -3612,18 +4341,18 @@ LRESULT WM_MENUCHAR (int wParam, int lParam) {
 	* for Alt+<key>.  The fix is to detect the case and
 	* stop Windows from beeping by closing the menu.
 	*/
-	int type = wParam >> 16;
+	int type = OS.HIWORD (wParam);
 	if (type == 0 || type == OS.MF_SYSMENU) {
 		display.mnemonicKeyHit = false;
-		return new LRESULT (OS.MNC_CLOSE << 16);
+		return new LRESULT (OS.MAKELRESULT (0, OS.MNC_CLOSE));
 	}
 	return null;
 }
 
-LRESULT WM_MENUSELECT (int wParam, int lParam) {
-	int code = wParam >> 16;
+LRESULT WM_MENUSELECT (int /*long*/ wParam, int /*long*/ lParam) {
+	int code = OS.HIWORD (wParam);
 	Shell shell = getShell ();
-	if (code == -1 && lParam == 0) {
+	if (code == 0xFFFF && lParam == 0) {
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
 			/*
@@ -3660,7 +4389,7 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 		MenuItem item = null;
 		Decorations menuShell = menuShell ();
 		if ((code & OS.MF_POPUP) != 0) {
-			int index = wParam & 0xFFFF;
+			int index = OS.LOWORD (wParam);
 			MENUITEMINFO info = new MENUITEMINFO ();
 			info.cbSize = MENUITEMINFO.sizeof;
 			info.fMask = OS.MIIM_SUBMENU;
@@ -3671,7 +4400,7 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 		} else {
 			Menu newMenu = menuShell.findMenu (lParam);
 			if (newMenu != null) {
-				int id = wParam & 0xFFFF;
+				int id = OS.LOWORD (wParam);
 				item = display.getMenuItem (id);
 			}
 			Menu oldMenu = shell.activeMenu;
@@ -3693,6 +4422,7 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 						ancestor.sendEvent (SWT.Hide);
 						if (ancestor.isDisposed ()) break;
 						ancestor = ancestor.getParentMenu ();
+						if (ancestor == null) break;
 					}
 					/*
 					* The shell and/or the item could be disposed when
@@ -3715,27 +4445,29 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
+LRESULT WM_MOUSEACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
+LRESULT WM_MOUSEHOVER (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmMouseHover (handle, wParam, lParam);
 }
 
-LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
+LRESULT WM_MOUSELEAVE (int /*long*/ wParam, int /*long*/ lParam) {
+	if (OS.COMCTL32_MAJOR >= 6) getShell ().fixToolTip ();
 	return wmMouseLeave (handle, wParam, lParam);
 }
 
-LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmMouseMove (handle, wParam, lParam);
 }
 
-LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
+LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmMouseWheel (handle, wParam, lParam);
 }
 
-LRESULT WM_MOVE (int wParam, int lParam) {
+LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {
+	state |= MOVE_OCCURRED;
 	if (findImageControl () != null) {
 		if (this != getShell ()) redrawChildren ();
 	} else {
@@ -3747,93 +4479,89 @@ LRESULT WM_MOVE (int wParam, int lParam) {
 			}
 		}
 	}
-	sendEvent (SWT.Move);
+	if ((state & MOVE_DEFERRED) == 0) sendEvent (SWT.Move);
 	// widget could be disposed at this point
 	return null;
 }
 
-LRESULT WM_NCACTIVATE (int wParam, int lParam) {
+LRESULT WM_NCACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_NCCALCSIZE (int wParam, int lParam) {
+LRESULT WM_NCCALCSIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_NCHITTEST (int wParam, int lParam) {
+LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
 	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isActive ()) return new LRESULT (OS.HTTRANSPARENT);
 	return null;
 }
 
-LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_NCLBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_NCPAINT (int wParam, int lParam) {
-	return null;
+LRESULT WM_NCPAINT (int /*long*/ wParam, int /*long*/ lParam) {
+	return wmNCPaint (handle, wParam, lParam);
 }
 
-LRESULT WM_NOTIFY (int wParam, int lParam) {
+LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-	int hwnd = hdr.hwndFrom;
-	if (hwnd == 0) return null;
-	Control control = display.getControl (hwnd);
-	if (control == null) return null;
-	return control.wmNotifyChild (wParam, lParam);
+	return wmNotify (hdr, wParam, lParam);
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
-	return super.wmPaint (handle, wParam, lParam);
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
+	return wmPaint (handle, wParam, lParam);
 }
 
-LRESULT WM_PALETTECHANGED (int wParam, int lParam) {
+LRESULT WM_PALETTECHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
+LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_PASTE (int wParam, int lParam) {
+LRESULT WM_PASTE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_PRINT (int wParam, int lParam) {
+LRESULT WM_PRINT (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmPrint (handle, wParam, lParam);
 }
 
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_QUERYENDSESSION (int wParam, int lParam) {
+LRESULT WM_QUERYENDSESSION (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_QUERYNEWPALETTE (int wParam, int lParam) {
+LRESULT WM_QUERYNEWPALETTE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_QUERYOPEN (int wParam, int lParam) {
+LRESULT WM_QUERYOPEN (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
+LRESULT WM_RBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmRButtonDblClk (handle, wParam, lParam);
 }
 
-LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_RBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmRButtonDown (handle, wParam, lParam);
 }
 
-LRESULT WM_RBUTTONUP (int wParam, int lParam) {
+LRESULT WM_RBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmRButtonUp (handle, wParam, lParam);
 }
 
-LRESULT WM_SETCURSOR (int wParam, int lParam) {
-	int hitTest = (short) (lParam & 0xFFFF);
+LRESULT WM_SETCURSOR (int /*long*/ wParam, int /*long*/ lParam) {
+	int hitTest = (short) OS.LOWORD (lParam);
  	if (hitTest == OS.HTCLIENT) {
 		Control control = display.getControl (wParam);
 		if (control == null) return null;
@@ -3846,61 +4574,64 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmSetFocus (handle, wParam, lParam);
 }
 
-LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
+LRESULT WM_SETTINGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_SETFONT (int wParam, int lParam) {
+LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_SETREDRAW (int wParam, int lParam) {
+LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
+LRESULT WM_SHOWWINDOW (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
-	sendEvent (SWT.Resize);
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+	state |= RESIZE_OCCURRED;
+	if ((state & RESIZE_DEFERRED) == 0) sendEvent (SWT.Resize);
 	// widget could be disposed at this point
 	return null;
 }
 
-LRESULT WM_SYSCHAR (int wParam, int lParam) {
+LRESULT WM_SYSCHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmSysChar (handle, wParam, lParam);
 }
 
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+LRESULT WM_SYSCOMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Check to see if the command is a system command or
 	* a user menu item that was added to the System menu.
 	* When a user item is added to the System menu,
 	* WM_SYSCOMMAND must always return zero.
+	* 
+	* NOTE: This is undocumented.
 	*/
 	if ((wParam & 0xF000) == 0) {
 		Decorations shell = menuShell ();
 		if (shell.isEnabled ()) {
-			MenuItem item = display.getMenuItem (wParam & 0xFFFF);
+			MenuItem item = display.getMenuItem (OS.LOWORD (wParam));
 			if (item != null) item.wmCommandChild (wParam, lParam);
 		}
 		return LRESULT.ZERO;
 	}
 
 	/* Process the System Command */
-	int cmd = wParam & 0xFFF0;
+	int cmd = (int)/*64*/wParam & 0xFFF0;
 	switch (cmd) {
 		case OS.SC_CLOSE:
-			int hwndShell = menuShell ().handle;
+			int /*long*/ hwndShell = menuShell ().handle;
 			int bits = OS.GetWindowLong (hwndShell, OS.GWL_STYLE);
 			if ((bits & OS.WS_SYSMENU) == 0) return LRESULT.ZERO;
 			break;
@@ -3950,7 +4681,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 						Decorations shell = menuShell ();
 						Menu menu = shell.getMenuBar ();
 						if (menu != null) {
-							char key = Display.mbcsToWcs (lParam);
+							char key = Display.mbcsToWcs ((int)/*64*/lParam);
 							if (key != 0) {
 								key = Character.toUpperCase (key);
 								MenuItem [] items = menu.getItems ();
@@ -3993,45 +4724,50 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
+LRESULT WM_SYSKEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmSysKeyDown (handle, wParam, lParam);
 }
 
-LRESULT WM_SYSKEYUP (int wParam, int lParam) {
+LRESULT WM_SYSKEYUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmSysKeyUp (handle, wParam, lParam);
 }
 
-LRESULT WM_TIMER (int wParam, int lParam) {
+LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_UNDO (int wParam, int lParam) {
+LRESULT WM_UNDO (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_VSCROLL (int wParam, int lParam) {
-	if (lParam == 0) return null;
+LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);
 }
 
-LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
-	return null;
+LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
+	try {
+		display.resizeCount++;
+		int /*long*/ code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
+		return code == 0 ? LRESULT.ZERO : new LRESULT (code);
+	} finally {
+		--display.resizeCount;
+	}
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  When WM_SETREDRAW is used to turn off drawing
 	* for a control and the control is moved or resized, Windows does
 	* not redraw the area where the control once was in the parent.
 	* The fix is to detect this case and redraw the area.
 	*/
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		Shell shell = getShell ();
 		if (shell != this) {
 			WINDOWPOS lpwp = new WINDOWPOS ();
@@ -4039,28 +4775,42 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 			if ((lpwp.flags & OS.SWP_NOMOVE) == 0 || (lpwp.flags & OS.SWP_NOSIZE) == 0) {
 				RECT rect = new RECT ();
 				OS.GetWindowRect (topHandle (), rect);
-				int hwndParent = parent == null ? 0 : parent.handle;
-				OS.MapWindowPoints (0, hwndParent, rect, 2);
-				OS.InvalidateRect (hwndParent, rect, true);
+				int width = rect.right - rect.left;
+				int height = rect.bottom - rect.top;
+				if (width != 0 && height != 0) {
+					int /*long*/ hwndParent = parent == null ? 0 : parent.handle;
+					OS.MapWindowPoints (0, hwndParent, rect, 2);
+					if (OS.IsWinCE) {
+						OS.InvalidateRect (hwndParent, rect, true);
+					} else {
+						int /*long*/ rgn1 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+						int /*long*/ rgn2 = OS.CreateRectRgn (lpwp.x, lpwp.y, lpwp.x + lpwp.cx, lpwp.y + lpwp.cy);
+						OS.CombineRgn (rgn1, rgn1, rgn2, OS.RGN_DIFF);
+						int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+						OS.RedrawWindow (hwndParent, null, rgn1, flags);
+						OS.DeleteObject (rgn1);
+						OS.DeleteObject (rgn2);
+					}
+				}
 			}
 		}
 	}
 	return null;
 }
 
-LRESULT WM_XBUTTONDBLCLK (int wParam, int lParam) {
+LRESULT WM_XBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmXButtonDblClk (handle, wParam, lParam);
 }
 
-LRESULT WM_XBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_XBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmXButtonDown (handle, wParam, lParam);
 }
 
-LRESULT WM_XBUTTONUP (int wParam, int lParam) {
+LRESULT WM_XBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmXButtonUp (handle, wParam, lParam);
 }
 
-LRESULT wmColorChild (int wParam, int lParam) {
+LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 	Control control = findBackgroundControl ();
 	if (control == null) {
 		if ((state & THEME_BACKGROUND) != 0) {
@@ -4087,15 +4837,15 @@ LRESULT wmColorChild (int wParam, int lParam) {
 	if (control.backgroundImage != null) {
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
-		int hwnd = control.handle;
-		int hBitmap = control.backgroundImage.handle;
+		int /*long*/ hwnd = control.handle;
+		int /*long*/ hBitmap = control.backgroundImage.handle;
 		OS.MapWindowPoints (handle, hwnd, rect, 2);
 		POINT lpPoint = new POINT ();
 		OS.GetWindowOrgEx (wParam, lpPoint);
 		OS.SetBrushOrgEx (wParam, -rect.left - lpPoint.x, -rect.top - lpPoint.y, lpPoint);
-		int hBrush = findBrush (hBitmap, OS.BS_PATTERN);
+		int /*long*/ hBrush = findBrush (hBitmap, OS.BS_PATTERN);
 		if ((state & DRAW_BACKGROUND) != 0) {
-			int hOldBrush = OS.SelectObject (wParam, hBrush);
+			int /*long*/ hOldBrush = OS.SelectObject (wParam, hBrush);
 			OS.MapWindowPoints (hwnd, handle, rect, 2);
 			OS.PatBlt (wParam, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 			OS.SelectObject (wParam, hOldBrush);
@@ -4103,34 +4853,40 @@ LRESULT wmColorChild (int wParam, int lParam) {
 		OS.SetBkMode (wParam, OS.TRANSPARENT);
 		return new LRESULT (hBrush);
 	}
-	int hBrush = findBrush (backPixel, OS.BS_SOLID);
+	int /*long*/ hBrush = findBrush (backPixel, OS.BS_SOLID);
 	if ((state & DRAW_BACKGROUND) != 0) {
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
-		int hOldBrush = OS.SelectObject (wParam, hBrush);
+		int /*long*/ hOldBrush = OS.SelectObject (wParam, hBrush);
 		OS.PatBlt (wParam, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 		OS.SelectObject (wParam, hOldBrush);
 	}
 	return new LRESULT (hBrush);
 }
 
-LRESULT wmCommandChild (int wParam, int lParam) {
+LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT wmDrawChild (int wParam, int lParam) {
+LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT wmMeasureChild (int wParam, int lParam) {
+LRESULT wmMeasureChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
+LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+	Control control = display.getControl (hdr.hwndFrom);
+	if (control == null) return null;
+	return control.wmNotifyChild (hdr, wParam, lParam);
+}
+
+LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT wmScrollChild (int wParam, int lParam) {
+LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 

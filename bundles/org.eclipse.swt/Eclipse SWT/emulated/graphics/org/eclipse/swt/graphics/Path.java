@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,14 @@ import org.eclipse.swt.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */
@@ -41,25 +49,103 @@ public class Path extends Resource {
 	
 /**
  * Constructs a new empty Path.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the path
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
  */
 public Path (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	SWT.error(SWT.ERROR_NO_GRAPHICS_LIBRARY);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
+}
+
+/**
+ * Constructs a new Path that is a copy of <code>path</code>. If
+ * <code>flatness</code> is less than or equal to zero, an unflatten
+ * copy of the path is created. Otherwise, it specifies the maximum
+ * error between the path and its flatten copy. Smaller numbers give
+ * better approximation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param path the path to make a copy
+ * @param flatness the flatness value
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the path has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, Path path, float flatness) {
+	super(device);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	flatness = Math.max(0, flatness);
+	SWT.error(SWT.ERROR_NO_GRAPHICS_LIBRARY);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	init();
+}
+
+/**
+ * Constructs a new Path with the specifed PathData.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param data the data for the path
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, PathData data) {
+	this(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(data);
 }
 
 /**
@@ -165,7 +251,7 @@ public void addString(String string, float x, float y, Font font) {
  * @param x the x coordinate of the point to test for containment
  * @param y the y coordinate of the point to test for containment
  * @param gc the GC to use when testing for containment
- * @param outline controls wether to check the outline or contained area of the path
+ * @param outline controls whether to check the outline or contained area of the path
  * @return <code>true</code> if the path contains the point and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
@@ -196,7 +282,21 @@ public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 
-public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
+/**
+ * Adds to the receiver a cubic bezier curve based on the parameters.
+ *
+ * @param cx1 the x coordinate of the first control point of the spline
+ * @param cy1 the y coordinate of the first control of the spline
+ * @param cx2 the x coordinate of the second control of the spline
+ * @param cy2 the y coordinate of the second control of the spline
+ * @param x the x coordinate of the end point of the spline
+ * @param y the y coordinate of the end point of the spline
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 
@@ -239,6 +339,22 @@ public void getCurrentPoint(float[] point) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+}
+
+/**
+ * Returns a device independent representation of the receiver.
+ * 
+ * @return the PathData for the receiver
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see PathData
+ */
+public PathData getPathData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return null;
 }
 
 /**
@@ -288,16 +404,35 @@ public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Path. Applications must dispose of all Paths that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
+void destroy() {
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
+}
+
+void init(PathData data) {
+	byte[] types = data.types;
+	float[] points = data.points;
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				moveTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_LINE_TO:
+				lineTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_QUAD_TO:
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_CLOSE:
+				close();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**

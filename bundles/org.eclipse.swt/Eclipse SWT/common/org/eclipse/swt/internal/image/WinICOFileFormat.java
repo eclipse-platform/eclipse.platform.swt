@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
 
-final class WinICOFileFormat extends FileFormat {
+public final class WinICOFileFormat extends FileFormat {
 	
 byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
 	// Destructively bit invert data in the given byte array.
@@ -131,6 +131,7 @@ ImageData loadIcon(int[] iconHeader) {
 	byte[] shapeData = bmpFormat.loadData(infoHeader);
 	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
 	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
+	if (height < 0) height = -height;
 	int depth = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	infoHeader[14] = 1;
 	infoHeader[15] = 0;

@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2009 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -14,8 +14,11 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class ThemeButtonDrawInfo {
+	/** @field cast=(ThemeDrawState) */
 	public int state;
+	/** @field cast=(ThemeButtonValue) */
 	public short value;
+	/** @field cast=(ThemeButtonAdornment) */
 	public short adornment;
-	public static final int sizof = 8;
+	public static final int sizeof = 8;
 }

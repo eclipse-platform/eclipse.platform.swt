@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -65,11 +65,11 @@ public class nsIComponentRegistrar extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aClass, aFile);
 	}
 
-	public int IsCIDRegistered(nsID aClass, boolean[] _retval) {
+	public int IsCIDRegistered(nsID aClass, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aClass, _retval);
 	}
 
-	public int IsContractIDRegistered(byte[] aContractID, boolean[] _retval) {
+	public int IsContractIDRegistered(byte[] aContractID, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aContractID, _retval);
 	}
 

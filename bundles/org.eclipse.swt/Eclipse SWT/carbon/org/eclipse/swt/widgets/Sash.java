@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -35,12 +35,24 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#sash">Sash snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Sash extends Control {
 	Cursor sizeCursor;
-	int lastX, lastY;
-	private final static int INCREMENT = 1;
-	private final static int PAGE_INCREMENT = 9;
+	boolean dragging;
+	int lastX, lastY, startX, startY;
+	static final int INCREMENT = 1;
+	static final int PAGE_INCREMENT = 9;
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXOrientationAttribute,
+		OS.kAXValueAttribute,
+		OS.kAXMaxValueAttribute,
+		OS.kAXMinValueAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -68,6 +80,7 @@ public class Sash extends Control {
  *
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
+ * @see SWT#SMOOTH
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -79,16 +92,16 @@ public Sash (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the x, y, width, and height fields of the event object are valid.
- * If the reciever is being dragged, the event object detail field contains the value <code>SWT.DRAG</code>.
+ * If the receiver is being dragged, the event object detail field contains the value <code>SWT.DRAG</code>.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -136,7 +149,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;
+	state |= GRAB | THEME_BACKGROUND;
 	int features = OS.kControlSupportsFocus;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
@@ -147,6 +160,70 @@ void createHandle () {
 
 void drawBackground (int control, int context) {
 	fillBackground (control, context, null);
+}
+
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.eventNotHandledErr;
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer = new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	String attributeName = new String(buffer);
+	if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+		String roleText = OS.kAXSplitterRole;
+		buffer = new char [roleText.length ()];
+		roleText.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (stringRef [0] != 0) {
+			if (attributeName.equals (OS.kAXRoleAttribute)) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+			} else { // kAXRoleDescriptionAttribute
+				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+				OS.CFRelease(stringRef2);
+			}
+			OS.CFRelease(stringRef [0]);
+			code = OS.noErr;
+		}
+	} else if (attributeName.equals (OS.kAXOrientationAttribute)) {
+		String orientation = (style & SWT.VERTICAL) != 0 ? OS.kAXVerticalOrientationValue : OS.kAXHorizontalOrientationValue;
+		buffer = new char [orientation.length ()];
+		orientation.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (stringRef [0] != 0) {
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+			OS.CFRelease(stringRef [0]);
+			code = OS.noErr;
+		}
+	} else if (attributeName.equals (OS.kAXValueAttribute)) {
+		Point location = getLocation();
+		int value = (style & SWT.VERTICAL) != 0 ? location.x : location.y;
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {value});
+		code = OS.noErr;
+	} else if (attributeName.equals (OS.kAXMaxValueAttribute)) {
+		Rect parentBounds = new Rect ();
+		OS.GetControlBounds (parent.handle, parentBounds);
+		int maxValue = (style & SWT.VERTICAL) != 0 ?
+				parentBounds.right - parentBounds.left :
+				parentBounds.bottom - parentBounds.top;
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {maxValue});
+		code = OS.noErr;
+	} else if (attributeName.equals (OS.kAXMinValueAttribute)) {
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {0});
+		code = OS.noErr;
+	}
+	if (accessible != null) {
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
+	}
+	return code;
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
@@ -164,100 +241,6 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	display.setCursor (sizeCursor.handle);
-	return OS.noErr;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	int startX = rect.left;
-	int startY = rect.top;			
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	OS.GetControlBounds (parent.handle, rect);
-	Event event = new Event ();
-	event.x = startX -= rect.left;
-	event.y = startY -= rect.top;
-	event.width = width;
-	event.height = height;
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return result;
-	if (!event.doit) return result;
-	
-	int offsetX, offsetY;
-	int window = OS.GetControlOwner (handle);
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		OS.HIViewConvertPoint (pt, 0, handle);
-		offsetX = (int) pt.x;
-		offsetY = (int) pt.y;		
-	} else {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		offsetX = pt.h - rect.left;
-		offsetY = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		offsetX -= rect.left;
-		offsetY -= rect.top;
-	}
-
-	int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
-	int [] outModifiers = new int [1];
-	short [] outResult = new short [1];
-	CGPoint pt = new CGPoint ();
-	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-	while (outResult [0] != OS.kMouseTrackingMouseUp) {
-		OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
-		switch (outResult [0]) {
-			case OS.kMouseTrackingMouseDown:
-			case OS.kMouseTrackingMouseUp:
-			case OS.kMouseTrackingMouseDragged: {
-				int x, y;
-				if (OS.HIVIEW) {
-					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-					pt.x = outPt.h - rect.left;
-					pt.y = outPt.v - rect.top;
-					OS.HIViewConvertPoint (pt, 0, parent.handle);
-					x = (int) pt.x;
-					y = (int) pt.y;
-				} else {
-					OS.GetControlBounds (parent.handle, rect);
-					x = outPt.h - rect.left;
-					y = outPt.v - rect.top;
-				}
-				int newX = startX, newY = startY;
-				if ((style & SWT.VERTICAL) != 0) {
-					int clientWidth = rect.right - rect.left;
-					newX = Math.min (Math.max (0, x - offsetX), clientWidth - width);
-				} else {
-					int clientHeight = rect.bottom - rect.top;
-					newY = Math.min (Math.max (0, y - offsetY), clientHeight - height);
-				}
-				event = new Event ();
-				event.x = newX;
-				event.y = newY;
-				event.width = width;
-				event.height = height;
-				sendEvent (SWT.Selection, event);
-				if (isDisposed ()) return result;
-				if (event.doit) {
-					setBounds (event.x, event.y, width, height);
-					if (isDisposed ()) return result;
-					if (!OS.HIVIEW) parent.update (true);
-				}
-				break;
-			}
-			default:
-				outResult [0] = OS.kMouseTrackingMouseUp;
-				break;
-		}
-	}
 	return OS.noErr;
 }
 
@@ -344,7 +327,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -365,6 +348,76 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
+}
+
+boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
+	boolean result = super.sendMouseEvent (type, button, count, detail, send, chord, x, y, modifiers);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	int controlX = rect.left;
+	int controlY = rect.top;
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	OS.GetControlBounds (parent.handle, rect);
+	int parentWidth = rect.right - rect.left;
+	int parentHeight = rect.bottom - rect.top;
+	switch (type) {
+		case SWT.MouseDown:
+			if (button != 1 || count != 1) break;
+			startX = x;
+			startY = y;
+			Event event = new Event ();
+			event.x = controlX;
+			event.y = controlY;
+			event.width = width;
+			event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (isDisposed ()) return result;
+			if (event.doit) {
+				lastX = event.x;
+				lastY = event.y;
+				dragging = true;
+				setBounds (event.x, event.y, width, height);
+			}
+			break;
+		case SWT.MouseUp:
+			if (!dragging) break;
+			dragging = false;
+			event = new Event ();
+			event.x = lastX;
+			event.y = lastY;
+			event.width = width;
+			event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (isDisposed ()) return result;
+			if (event.doit) {
+				setBounds (event.x, event.y, width, height);
+			}
+			break;
+		case SWT.MouseMove:
+			if (!dragging) break;
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, x + controlX - startX), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, y + controlY - startY), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return result;
+			event = new Event ();
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (isDisposed ()) return result;
+			if (event.doit) {
+				lastX = event.x;
+				lastY = event.y;
+				setBounds (event.x, event.y, width, height);
+			}
+			break;
+	}
+	return result;
 }
 
 int traversalCode (int key, int theEvent) {

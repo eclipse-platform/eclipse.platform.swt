@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,25 +11,28 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents
  * styled text.
- *<p>
+ * <p>
  * Instances of this class provide support for drawing, cursor
  * navigation, hit testing, text wrapping, alignment, tab expansion
  * line breaking, etc.  These are aspects required for rendering internationalized text.
- * </p>
- * 
- * <p>
+ * </p><p>
  * Application code must explicitly invoke the <code>TextLayout#dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
  * 
- *  @since 3.0
+ * @see <a href="http://www.eclipse.org/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample, StyledText tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
+ * @since 3.0
  */
 public final class TextLayout extends Resource {
 	Font font;
@@ -44,11 +47,12 @@ public final class TextLayout extends Resource {
 	int[] tabs;
 	int[] segments;
 	StyleItem[] styles;
+	int stylesCount;
 
 	StyleItem[] allRuns;
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
-	int mLangFontLink2;
+	int /*long*/ mLangFontLink2;
 	
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';	
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
@@ -60,40 +64,50 @@ public final class TextLayout extends Resource {
 		OS.IIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}\0".toCharArray(), IID_IMLangFontLink2);
 	}
 	
+	static final int MERGE_MAX = 512;
+	static final int TOO_MANY_RUNS = 1024;
+	
+	/* IME has a copy of these constants */
+	static final int UNDERLINE_IME_DOT = 1 << 16;
+	static final int UNDERLINE_IME_DASH = 2 << 16;
+	static final int UNDERLINE_IME_THICK = 3 << 16;
+	
 	class StyleItem {
 		TextStyle style;
 		int start, length;
-		boolean lineBreak, softBreak, tab;	
+		boolean lineBreak, softBreak, tab;
 		
 		/*Script cache and analysis */
 		SCRIPT_ANALYSIS analysis;
-		int psc = 0;
+		int /*long*/ psc = 0;
 		
 		/*Shape info (malloc when the run is shaped) */
-		int glyphs;
+		int /*long*/ glyphs;
 		int glyphCount;
-		int clusters;
-		int visAttrs;
+		int /*long*/ clusters;
+		int /*long*/ visAttrs;
 		
 		/*Place info (malloc when the run is placed) */
-		int advances;
-		int goffsets;
+		int /*long*/ advances;
+		int /*long*/ goffsets;
 		int width;
 		int ascent;
 		int descent;
 		int leading;
 		int x;
+		int underlinePos, underlineThickness;
+		int strikeoutPos, strikeoutThickness;
 
-		/* Justily info (malloc during computeRuns) */
-		int justify;
+		/* Justify info (malloc during computeRuns) */
+		int /*long*/ justify;
 
 		/* ScriptBreak */
-		int psla;
+		int /*long*/ psla;
 
-		int fallbackFont;
+		int /*long*/ fallbackFont;
 	
 	void free() {
-		int hHeap = OS.GetProcessHeap();
+		int /*long*/ hHeap = OS.GetProcessHeap();
 		if (psc != 0) {
 			OS.ScriptFreeCache (psc);
 			OS.HeapFree(hHeap, 0, psc);
@@ -129,10 +143,7 @@ public final class TextLayout extends Resource {
 			psla = 0;
 		}
 		if (fallbackFont != 0) {
-			if (mLangFontLink2 != 0) {
-				/* ReleaseFont() */
-				OS.VtblCall(8, mLangFontLink2, fallbackFont);
-			}
+			OS.DeleteObject(fallbackFont);
 			fallbackFont = 0;
 		}
 		width = ascent = descent = x = 0;
@@ -158,49 +169,56 @@ public final class TextLayout extends Resource {
  * @see #dispose()
  */
 public TextLayout (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	wrapWidth = ascent = descent = -1;
 	lineSpacing = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
+	stylesCount = 2;
 	text = ""; //$NON-NLS-1$
-	int[] ppv = new int[1];
+	int /*long*/[] ppv = new int /*long*/[1];
 	OS.OleInitialize(0);
 	if (OS.CoCreateInstance(CLSID_CMultiLanguage, 0, OS.CLSCTX_INPROC_SERVER, IID_IMLangFontLink2, ppv) == OS.S_OK) {
 		mLangFontLink2 = ppv[0];
 	}
-	if (device.tracking) device.new_Object(this);
+	init();
+}
+
+RECT addClipRect(StyleItem run, RECT clipRect, RECT rect, int selectionStart, int selectionEnd) {
+	if (rect != null) {
+		if (clipRect == null) {
+			clipRect = new RECT ();
+			OS.SetRect(clipRect, -1, rect.top, -1, rect.bottom);
+		}
+		boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0;
+		if (run.start <= selectionStart && selectionStart <= run.start + run.length) {
+			if (run.analysis.fRTL ^ isRTL) {
+				clipRect.right = rect.left;
+			} else {
+				clipRect.left = rect.left;
+			}
+		}
+		if (run.start <= selectionEnd && selectionEnd <= run.start + run.length) {
+			if (run.analysis.fRTL ^ isRTL) {
+				clipRect.left = rect.right;
+			} else {
+				clipRect.right = rect.right;
+			}
+		}
+	}
+	return clipRect;
 }
 
 void breakRun(StyleItem run) {
 	if (run.psla != 0) return;
 	char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
-	int hHeap = OS.GetProcessHeap();
-	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length); 
+	int /*long*/ hHeap = OS.GetProcessHeap();
+	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length);
+	if (run.psla == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.ScriptBreak(chars, chars.length, run.analysis, run.psla);
-}
-
-void checkItem (int hDC, StyleItem item) {
-	if (item.fallbackFont != 0) {
-		/*
-		* Feature in Windows. The fallback font returned by the MLang service
-		* can be disposed by some other client running in the same thread.
-		* For example, disposing a Browser widget internally releases all fonts
-		* in the MLang cache. The fix is to use GetObject() to detect if the 
-		* font was disposed and reshape the run.
-		*/
-		LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
-		if (OS.GetObject(item.fallbackFont, LOGFONT.sizeof, logFont) == 0) {
-			item.free();
-			OS.SelectObject(hDC, getItemFont(item));
-			shape(hDC, item);
-		}
-	}
 }
 
 void checkLayout () {
@@ -213,8 +231,8 @@ void checkLayout () {
 */
 void computeRuns (GC gc) {
 	if (runs != null) return;
-	int hDC = gc != null ? gc.handle : device.internal_new_GC(null);
-	int srcHdc = OS.CreateCompatibleDC(hDC);
+	int /*long*/ hDC = gc != null ? gc.handle : device.internal_new_GC(null);
+	int /*long*/ srcHdc = OS.CreateCompatibleDC(hDC);
 	allRuns = itemize();
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
@@ -226,42 +244,34 @@ void computeRuns (GC gc) {
 	int lineWidth = indent, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
-		if (run.length == 1) {
-			char ch = segmentsText.charAt(run.start);
-			switch (ch) {
-				case '\t': {
-					run.tab = true;
-					if (tabs == null) break;
-					int tabsLength = tabs.length, j;
-					for (j = 0; j < tabsLength; j++) {
-						if (tabs[j] > lineWidth) {
-							run.width = tabs[j] - lineWidth;
-							break;
-						}
-					}
-					if (j == tabsLength) {
-						int tabX = tabs[tabsLength-1];
-						int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
-						if (lastTabWidth > 0) {
-							while (tabX <= lineWidth) tabX += lastTabWidth;
-							run.width = tabX - lineWidth;
-						}
-					}
+		if (tabs != null && run.tab) {
+			int tabsLength = tabs.length, j;
+			for (j = 0; j < tabsLength; j++) {
+				if (tabs[j] > lineWidth) {
+					run.width = tabs[j] - lineWidth;
 					break;
 				}
-				case '\n': {
-					run.lineBreak = true;
-					break;
+			}
+			if (j == tabsLength) {
+				int tabX = tabs[tabsLength-1];
+				int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+				if (lastTabWidth > 0) {
+					while (tabX <= lineWidth) tabX += lastTabWidth;
+					run.width = tabX - lineWidth;
 				}
-				case '\r': {
-					run.lineBreak = true;
-					StyleItem next = allRuns[i + 1];
-					if (next.length != 0 && segmentsText.charAt(next.start) == '\n') {
-						run.length += 1;
-						next.free();
-						i++;
+			}
+			int length = run.length;
+			if (length > 1) {
+				int stop = j + length - 1;
+				if (stop < tabsLength) {
+					run.width += tabs[stop] - tabs[j];
+				} else {
+					if (j < tabsLength) {
+						run.width += tabs[tabsLength - 1] - tabs[j];
+						length -= (tabsLength - 1) - j;
 					}
-					break;
+					int lastTabWidth = tabsLength > 1 ? tabs[tabsLength-1] - tabs[tabsLength-2] : tabs[0];
+					run.width += lastTabWidth * (length - 1);
 				}
 			}
 		} 
@@ -304,7 +314,7 @@ void computeRuns (GC gc) {
 							if (!logAttr.fWhiteSpace) start = -1;
 						}
 					}
-				}		
+				}
 				if (start >= 0 || i == lineStart) break;
 				run = allRuns[--i];
 				start = run.length - 1;
@@ -312,9 +322,15 @@ void computeRuns (GC gc) {
 			if (start == 0 && i != lineStart && !run.tab) {
 				run = allRuns[--i];
 			} else 	if (start <= 0 && i == lineStart) {
-				i = firstIndice;
-				run = allRuns[i];
-				start = Math.max(1, firstStart);
+				if (lineWidth == wrapWidth && firstIndice > 0) {
+					i = firstIndice - 1;
+					run = allRuns[i];
+					start = run.length;
+				} else {
+					i = firstIndice;
+					run = allRuns[i];
+					start = Math.max(1, firstStart);
+				}
 			}
 			breakRun(run);
 			while (start < run.length) {
@@ -327,12 +343,14 @@ void computeRuns (GC gc) {
 				newRun.start = run.start + start;
 				newRun.length = run.length - start;
 				newRun.style = run.style;
-				newRun.analysis = run.analysis;
+				newRun.analysis = cloneScriptAnalysis(run.analysis);
 				run.free();
 				run.length = start;
 				OS.SelectObject(srcHdc, getItemFont(run));
+				run.analysis.fNoGlyphIndex = false;
 				shape (srcHdc, run);
 				OS.SelectObject(srcHdc, getItemFont(newRun));
+				newRun.analysis.fNoGlyphIndex = false;
 				shape (srcHdc, newRun);
 				StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
 				System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
@@ -368,7 +386,7 @@ void computeRuns (GC gc) {
 		descent = Math.max(descent, run.descent);
 		if (run.lineBreak || i == allRuns.length - 1) {
 			/* Update the run metrics if the last run is a hard break. */
-			if (lineRunCount == 1 && i == allRuns.length - 1) {
+			if (lineRunCount == 1 && (i == allRuns.length - 1 || !run.softBreak)) {
 				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 				OS.SelectObject(srcHdc, getItemFont(run));
 				OS.GetTextMetrics(srcHdc, lptm);
@@ -390,13 +408,14 @@ void computeRuns (GC gc) {
 						lineWidth += indent;
 					}
 				}
-				int hHeap = OS.GetProcessHeap();
+				int /*long*/ hHeap = OS.GetProcessHeap();
 				int newLineWidth = 0;
 				for (int j = 0; j < runs[line].length; j++) {
 					StyleItem item = runs[line][j];
 					int iDx = item.width * wrapWidth / lineWidth;
 					if (iDx != item.width) {
 						item.justify = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, item.glyphCount * 4);
+						if (item.justify == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 						OS.ScriptJustify(item.visAttrs, item.advances, item.glyphCount, iDx - item.width, 2, item.justify);
 						item.width = iDx;
 					}
@@ -406,8 +425,10 @@ void computeRuns (GC gc) {
 			}
 			this.lineWidth[line] = lineWidth;
 			
-			runs[line] = reorder(runs[line]);
 			StyleItem lastRun = runs[line][lineRunCount - 1];
+			int lastOffset = lastRun.start + lastRun.length;
+			runs[line] = reorder(runs[line], i == allRuns.length - 1);
+			lastRun = runs[line][lineRunCount - 1];
 			if (run.softBreak && run != lastRun) {
 				run.softBreak = run.lineBreak = false;
 				lastRun.softBreak = lastRun.lineBreak = true;
@@ -420,7 +441,7 @@ void computeRuns (GC gc) {
 			}
 			line++;
 			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
-			lineOffset[line] = lastRun.start + lastRun.length;
+			lineOffset[line] = lastOffset;
 			lineRunCount = lineWidth = 0;
 			ascent = Math.max(0, this.ascent);
 			descent = Math.max(0, this.descent);
@@ -430,12 +451,7 @@ void computeRuns (GC gc) {
 	if (gc == null) device.internal_dispose_GC(hDC, null);	
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the text layout. Applications must dispose of all allocated text layouts.
- */
-public void dispose () {
-	if (device == null) return;
+void destroy () {
 	freeRuns();
 	font = null;	
 	text = null;
@@ -452,8 +468,65 @@ public void dispose () {
 		mLangFontLink2 = 0;
 	}
 	OS.OleUninitialize();
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
+}
+
+SCRIPT_ANALYSIS cloneScriptAnalysis (SCRIPT_ANALYSIS src) {
+	SCRIPT_ANALYSIS dst = new SCRIPT_ANALYSIS();
+	dst.eScript = src.eScript;
+	dst.fRTL = src.fRTL;
+	dst.fLayoutRTL = src.fLayoutRTL;
+	dst.fLinkBefore = src.fLinkBefore;
+	dst.fLinkAfter = src.fLinkAfter;
+	dst.fLogicalOrder = src.fLogicalOrder;
+	dst.fNoGlyphIndex = src.fNoGlyphIndex;
+	dst.s = new SCRIPT_STATE();
+	dst.s.uBidiLevel = src.s.uBidiLevel; 
+	dst.s.fOverrideDirection = src.s.fOverrideDirection;
+	dst.s.fInhibitSymSwap = src.s.fInhibitSymSwap;
+	dst.s.fCharShape = src.s.fCharShape;
+	dst.s.fDigitSubstitute = src.s.fDigitSubstitute;
+	dst.s.fInhibitLigate = src.s.fInhibitLigate;
+	dst.s.fDisplayZWG = src.s.fDisplayZWG;
+	dst.s.fArabicNumContext = src.s.fArabicNumContext;
+	dst.s.fGcpClusters = src.s.fGcpClusters;
+	dst.s.fReserved = src.s.fReserved;
+	dst.s.fEngineReserved = src.s.fEngineReserved;
+	return dst;
+}
+
+int[] computePolyline(int left, int top, int right, int bottom) {
+	int height = bottom - top; // can be any number
+	int width = 2 * height; // must be even
+	int peaks = Compatibility.ceil(right - left, width);
+	if (peaks == 0 && right - left > 2) {
+		peaks = 1;
+	}
+	int length = ((2 * peaks) + 1) * 2;
+	if (length < 0) return new int[0];
+	
+	int[] coordinates = new int[length];
+	for (int i = 0; i < peaks; i++) {
+		int index = 4 * i;
+		coordinates[index] = left + (width * i);
+		coordinates[index+1] = bottom;
+		coordinates[index+2] = coordinates[index] + width / 2;
+		coordinates[index+3] = top;
+	}
+	coordinates[length-2] = left + (width * peaks);
+	coordinates[length-1] = bottom;
+	return coordinates;
+}
+
+int /*long*/ createGdipBrush(int pixel, int alpha) {
+	int argb = ((alpha & 0xFF) << 24) | ((pixel >> 16) & 0xFF) | (pixel & 0xFF00) | ((pixel & 0xFF) << 16);
+	int /*long*/ gdiColor = Gdip.Color_new(argb); 
+	int /*long*/ brush = Gdip.SolidBrush_new(gdiColor);
+	Gdip.Color_delete(gdiColor);
+	return brush;
+}
+
+int /*long*/ createGdipBrush(Color color, int alpha) {
+	return createGdipBrush(color.handle, alpha);
 }
 
 /**
@@ -495,6 +568,37 @@ public void draw (GC gc, int x, int y) {
  * </ul>
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ * <p>
+ * The parameter <code>flags</code> can include one of <code>SWT.DELIMITER_SELECTION</code>
+ * or <code>SWT.FULL_SELECTION</code> to specify the selection behavior on all lines except
+ * for the last line, and can also include <code>SWT.LAST_LINE_SELECTION</code> to extend
+ * the specified selection behavior to the last line.
+ * </p>
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ * @param flags drawing options
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	computeRuns(gc);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -502,46 +606,89 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
-	if (length == 0) return;
-	int hdc = gc.handle;
-	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	if (hasSelection) {
-		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
-		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
-		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
-		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
-		selectionStart = translateOffset(selectionStart);
-		selectionEnd = translateOffset(selectionEnd);
-	}
-	int foreground = OS.GetTextColor(hdc);
-	int state = OS.SaveDC(hdc);
-	RECT rect = new RECT();
-	int selBrush = 0, selPen = 0;
-	if (hasSelection) {
-		selBrush = OS.CreateSolidBrush(selectionBackground.handle);
-		selPen = OS.CreatePen(OS.BS_SOLID, 1, selectionForeground.handle);
-	}
-	int rop2 = 0;
-	if (OS.IsWinCE) {
-		rop2 = OS.SetROP2(hdc, OS.R2_COPYPEN);
-		OS.SetROP2(hdc, rop2);
-	} else {
-		rop2 = OS.GetROP2(hdc);
-	}
-	int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
-	OS.SetBkMode(hdc, OS.TRANSPARENT);
+	if (length == 0 && flags == 0) return;
+	int /*long*/ hdc = gc.handle;
 	Rectangle clip = gc.getClipping();
+	GCData data = gc.data;
+	int /*long*/ gdipGraphics = data.gdipGraphics;
+	int foreground = data.foreground;
+	int linkColor = OS.GetSysColor (OS.COLOR_HOTLIGHT);
+	int alpha = data.alpha;
+	boolean gdip = gdipGraphics != 0;
+	int /*long*/ gdipForeground = 0;
+	int /*long*/ gdipLinkColor = 0;
+	int state = 0;
+	if (gdip) {
+		gc.checkGC(GC.FOREGROUND);
+		gdipForeground = gc.getFgBrush();
+	} else {
+		state = OS.SaveDC(hdc);
+		if ((data.style & SWT.MIRRORED) != 0) {
+			OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
+		}
+	}
+	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+	int /*long*/ gdipSelBackground = 0, gdipSelForeground = 0, gdipFont = 0, lastHFont = 0;
+	int /*long*/ selBackground = 0;
+	int selForeground = 0;
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
+		int fgSel = selectionForeground != null ? selectionForeground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT); 
+		int bgSel = selectionBackground != null ? selectionBackground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHT); 
+		if (gdip) {
+			gdipSelBackground = createGdipBrush(bgSel, alpha);
+			gdipSelForeground = createGdipBrush(fgSel, alpha);
+		} else {
+			selBackground = OS.CreateSolidBrush(bgSel);
+			selForeground = fgSel;
+		}
+		if (hasSelection) {
+			selectionStart = translateOffset(Math.min(Math.max(0, selectionStart), length - 1));
+			selectionEnd = translateOffset(Math.min(Math.max(0, selectionEnd), length - 1));
+		}
+	}
+	RECT rect = new RECT();
+	OS.SetBkMode(hdc, OS.TRANSPARENT);
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndent(line);
 		int drawY = y + lineY[line];
+		StyleItem[] lineRuns = runs[line];
+		int lineHeight = lineY[line+1] - lineY[line] - lineSpacing;
+		
+		//Draw last line selection
+		if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
+			boolean extents = false;
+			if (line == runs.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
+				extents = true;
+			} else {
+				StyleItem run = lineRuns[lineRuns.length - 1];
+				if (run.lineBreak && !run.softBreak) {
+					if (selectionStart <= run.start && run.start <= selectionEnd) extents = true;
+				} else {
+					int endOffset = run.start + run.length - 1;
+					if (selectionStart <= endOffset && endOffset < selectionEnd && (flags & SWT.FULL_SELECTION) != 0) {
+						extents = true;
+					}
+				}
+			}
+			if (extents) {
+				int width;
+				if ((flags & SWT.FULL_SELECTION) != 0) {
+					width = OS.IsWin95 ? 0x7FFF : 0x6FFFFFF;
+				} else {
+					width = lineHeight / 3;
+				}
+				if (gdip) {
+					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidth[line], drawY, width, lineHeight);
+				} else {
+					OS.SelectObject(hdc, selBackground);
+					OS.PatBlt(hdc, drawX + lineWidth[line], drawY, width, lineHeight, OS.PATCOPY);
+				}
+			}
+		}
 		if (drawX > clip.x + clip.width) continue;
 		if (drawX + lineWidth[line] < clip.x) continue;
-		StyleItem[] lineRuns = runs[line];
-		int baseline = Math.max(0, this.ascent);
-		for (int i = 0; i < lineRuns.length; i++) {
-			baseline = Math.max(baseline, lineRuns[i].ascent);
-		}
-		int lineHeight = lineY[line+1] - lineY[line];
+		
+		//Draw the background of the runs in the line 
 		int alignmentX = drawX;
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
@@ -549,122 +696,794 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			if (drawX > clip.x + clip.width) break;
 			if (drawX + run.width >= clip.x) {
 				if (!run.lineBreak || run.softBreak) {
-					int end = run.start + run.length - 1;
-					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
-					if (fullSelection) {
-						OS.SelectObject(hdc, selBrush);
-						OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight - lineSpacing, dwRop);
+					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
+					if (gdip) {
+						drawRunBackgroundGDIP(run, gdipGraphics, rect, selectionStart, selectionEnd, alpha, gdipSelBackground, hasSelection);
 					} else {
-						if (run.style != null && run.style.background != null) {
-							int bg = run.style.background.handle;
-							int drawRunY = drawY + (baseline - run.ascent);
-							int hBrush = OS.CreateSolidBrush (bg);
-							int oldBrush = OS.SelectObject(hdc, hBrush);
-							OS.PatBlt(hdc, drawX, drawRunY, run.width, run.ascent + run.descent, dwRop);
-							OS.SelectObject(hdc, oldBrush);
-							OS.DeleteObject(hBrush);
-						}
-						boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
-						if (partialSelection) {
-							OS.SelectObject(hdc, selBrush);
-							int selStart = Math.max(selectionStart, run.start) - run.start;
-							int selEnd = Math.min(selectionEnd, end) - run.start;
-							int cChars = run.length;
-							int gGlyphs = run.glyphCount;
-							int[] piX = new int[1];
-							int advances = run.justify != 0 ? run.justify : run.advances;
-							OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-							int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-							rect.left = drawX + runX;
-							rect.top = drawY;
-							OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-							runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-							rect.right = drawX + runX;
-							rect.bottom = drawY + lineHeight - lineSpacing;
-							OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, dwRop);
-						}
+						drawRunBackground(run, hdc, rect, selectionStart, selectionEnd, selBackground, hasSelection);
 					}
 				}
 			}
 			drawX += run.width;
 		}
+		
+		//Draw the text, underline, strikeout, and border of the runs in the line
+		int baseline = Math.max(0, this.ascent);
+		int lineUnderlinePos = 0;
+		for (int i = 0; i < lineRuns.length; i++) {
+			baseline = Math.max(baseline, lineRuns[i].ascent);
+			lineUnderlinePos = Math.min(lineUnderlinePos, lineRuns[i].underlinePos);
+		}
+		RECT borderClip = null, underlineClip = null, strikeoutClip = null, pRect = null;
 		drawX = alignmentX;
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
+			TextStyle style = run.style;
+			boolean hasAdorners = style != null && (style.underline || style.strikeout || style.borderStyle != SWT.NONE);
 			if (run.length == 0) continue;
-			if (drawX > clip.x + clip.width) break;
-			if (drawX + run.width >= clip.x) {
-				if (!run.tab && (!run.lineBreak || run.softBreak) && !(run.style != null && run.style.metrics != null)) {
-					int end = run.start + run.length - 1;
-					int fg = foreground;
-					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
-					if (fullSelection) {
-						fg = selectionForeground.handle;
-					} else {
-						if (run.style != null && run.style.foreground != null) fg = run.style.foreground.handle;
-					}
-					OS.SetTextColor(hdc, fg);
-					checkItem(hdc, run);
-					OS.SelectObject(hdc, getItemFont(run));
-					int drawRunY = drawY + (baseline - run.ascent);
-					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-					if ((run.style != null) && (run.style.underline || run.style.strikeout)) {
-						int newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
-						int oldPen = OS.SelectObject(hdc, newPen);
-						if (run.style.underline) {
-							int underlineY = drawY + baseline + 1 - run.style.rise;
-							OS.MoveToEx(hdc, drawX, underlineY, 0);
-							OS.LineTo(hdc, drawX + run.width, underlineY);
-						}
-						if (run.style.strikeout) {
-							int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
-							OS.MoveToEx(hdc, drawX, strikeoutY, 0);
-							OS.LineTo(hdc, drawX + run.width, strikeoutY);	
-						}
-						OS.SelectObject(hdc, oldPen);
-						if (!hasSelection || fg != selectionForeground.handle) OS.DeleteObject(newPen);
-					}
-					boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
-					if (!fullSelection && partialSelection && fg != selectionForeground.handle) {
-						OS.SetTextColor(hdc, selectionForeground.handle);
-						int selStart = Math.max(selectionStart, run.start) - run.start;
-						int selEnd = Math.min(selectionEnd, end) - run.start;
-						int cChars = run.length;
-						int gGlyphs = run.glyphCount;
-						int[] piX = new int[1];
-						int advances = run.justify != 0 ? run.justify : run.advances;
-						OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-						int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-						rect.left = drawX + runX;
-						rect.top = drawY;
-						OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-						runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-						rect.right = drawX + runX;
-						rect.bottom = drawY + lineHeight;
-						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-						if ((run.style != null) && (run.style.underline || run.style.strikeout)) {							
-							int oldPen = OS.SelectObject(hdc, selPen);
-							if (run.style.underline) {
-								int underlineY = drawY + baseline + 1 - run.style.rise;
-								OS.MoveToEx(hdc, rect.left, underlineY, 0);
-								OS.LineTo(hdc, rect.right, underlineY);
+			if (drawX > clip.x + clip.width && !hasAdorners) break;
+			if (drawX + run.width >= clip.x || hasAdorners) {
+				boolean skipTab = run.tab && !hasAdorners;
+				if (!skipTab && (!run.lineBreak || run.softBreak) && !(style != null && style.metrics != null)) {
+					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
+					if (gdip) {
+						int /*long*/ hFont = getItemFont(run);
+						if (hFont != lastHFont) {
+							lastHFont = hFont;
+							if (gdipFont != 0) Gdip.Font_delete(gdipFont);
+							gdipFont = Gdip.Font_new(hdc, hFont);
+							if (gdipFont == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+							if (!Gdip.Font_IsAvailable(gdipFont)) {
+								Gdip.Font_delete(gdipFont);
+								gdipFont = 0;
 							}
-							if (run.style.strikeout) {
-								int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
-								OS.MoveToEx(hdc, rect.left, strikeoutY, 0);
-								OS.LineTo(hdc, rect.right, strikeoutY);	
-							}
-							OS.SelectObject(hdc, oldPen);
 						}
+						int /*long*/ gdipFg = gdipForeground;
+						if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+							if (gdipLinkColor == 0) gdipLinkColor = createGdipBrush(linkColor, alpha);
+							gdipFg = gdipLinkColor;
+						}
+						if (gdipFont != 0) {
+							pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, gdipFg, gdipSelForeground, selectionStart, selectionEnd, alpha);
+						} else {
+							int fg = style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ? linkColor : foreground;
+							pRect = drawRunTextGDIPRaster(gdipGraphics, run, rect, baseline, fg, selForeground, selectionStart, selectionEnd);
+						}
+						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, gdipFg, gdipSelForeground, underlineClip, pRect, selectionStart, selectionEnd, alpha);
+						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, gdipFg, gdipSelForeground, strikeoutClip, pRect, selectionStart, selectionEnd, alpha);
+						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, gdipFg, gdipSelForeground, borderClip, pRect, selectionStart, selectionEnd, alpha);
+					}  else {
+						int fg = style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ? linkColor : foreground;
+						pRect = drawRunText(hdc, run, rect, baseline, fg, selForeground, selectionStart, selectionEnd);
+						underlineClip = drawUnderline(hdc, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, fg, selForeground, underlineClip, pRect, selectionStart, selectionEnd);
+						strikeoutClip = drawStrikeout(hdc, x, drawY + baseline, lineRuns, i, fg, selForeground, strikeoutClip, pRect, selectionStart, selectionEnd);
+						borderClip = drawBorder(hdc, x, drawY, lineHeight, lineRuns, i, fg, selForeground, borderClip, pRect,  selectionStart, selectionEnd);
 					}
 				}
 			}
 			drawX += run.width;
 		}
 	}
+	if (gdipSelBackground != 0) Gdip.SolidBrush_delete(gdipSelBackground);
+	if (gdipSelForeground != 0) Gdip.SolidBrush_delete(gdipSelForeground);
+	if (gdipLinkColor != 0) Gdip.SolidBrush_delete(gdipLinkColor);
+	if (gdipFont != 0) Gdip.Font_delete(gdipFont);
+	if (state != 0)	OS.RestoreDC(hdc, state);
+	if (selBackground != 0) OS.DeleteObject (selBackground);
+}
+
+RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+	StyleItem run = line[index]; 
+	TextStyle style = run.style;
+	if (style == null) return null;
+	if (style.borderStyle == SWT.NONE) return null;
+	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
+	if (index + 1 >= line.length || !style.isAdherentBorder(line[index + 1].style)) {
+		int left = run.x;
+		int start = run.start;
+		int end = run.start + run.length - 1;
+		for (int i = index; i > 0 && style.isAdherentBorder(line[i - 1].style); i--) {
+			left = line[i - 1].x;
+			start = Math.min(start, line[i - 1].start);
+			end = Math.max(end, line[i - 1].start + line[i - 1].length - 1);
+		}
+		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
+		if (style.borderColor != null) {
+			color = style.borderColor.handle;
+			clipRect = null;
+		} else {
+			if (fullSelection) {
+				color = selectionColor;
+				clipRect = null;
+			} else {
+				if (style.foreground != null) {
+					color = style.foreground.handle;
+				}
+			}
+		}
+		int lineWidth = 1;
+		int lineStyle = OS.PS_SOLID;
+		switch (style.borderStyle) {
+			case SWT.BORDER_SOLID: break;
+			case SWT.BORDER_DASH: lineStyle = OS.PS_DASH; break;
+			case SWT.BORDER_DOT: lineStyle = OS.PS_DOT; break;
+		}
+		int /*long*/ oldBrush = OS.SelectObject(hdc, OS.GetStockObject(OS.NULL_BRUSH));
+		LOGBRUSH logBrush = new LOGBRUSH();
+		logBrush.lbStyle = OS.BS_SOLID;
+		logBrush.lbColor = /*64*/(int)color;
+		int /*long*/ newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
+		int /*long*/ oldPen = OS.SelectObject(hdc, newPen);
+		OS.Rectangle(hdc, x + left, y, x + run.x + run.width, y + lineHeight);
+		OS.SelectObject(hdc, oldPen);
+		OS.DeleteObject(newPen);
+		if (clipRect != null) {
+			int state = OS.SaveDC(hdc);
+			if (clipRect.left == -1) clipRect.left = 0;
+			if (clipRect.right == -1) clipRect.right = 0x7ffff;
+			OS.IntersectClipRect(hdc, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+			logBrush.lbColor = /*64*/(int)selectionColor;
+			int /*long*/ selPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
+			oldPen = OS.SelectObject(hdc, selPen);
+			OS.Rectangle(hdc, x + left, y, x + run.x + run.width, y + lineHeight);
+			OS.RestoreDC(hdc, state);
+			OS.SelectObject(hdc, oldPen);
+			OS.DeleteObject(selPen);
+		}
+		OS.SelectObject(hdc, oldBrush);
+		return null;
+	}
+	return clipRect;
+}
+
+RECT drawBorderGDIP(int /*long*/ graphics, int x, int y, int lineHeight, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect,  int selectionStart, int selectionEnd, int alpha) {
+	StyleItem run = line[index]; 
+	TextStyle style = run.style;
+	if (style == null) return null;
+	if (style.borderStyle == SWT.NONE) return null;
+	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
+	if (index + 1 >= line.length || !style.isAdherentBorder(line[index + 1].style)) {
+		int left = run.x;
+		int start = run.start;
+		int end = run.start + run.length - 1;
+		for (int i = index; i > 0 && style.isAdherentBorder(line[i - 1].style); i--) {
+			left = line[i - 1].x;
+			start = Math.min(start, line[i - 1].start);
+			end = Math.max(end, line[i - 1].start + line[i - 1].length - 1);
+		}
+		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
+		int /*long*/ brush = color;
+		if (style.borderColor != null) {
+			brush = createGdipBrush(style.borderColor, alpha);
+			clipRect = null;
+		} else {
+			if (fullSelection) {
+				brush = selectionColor;
+				clipRect = null;
+			} else {
+				if (style.foreground != null) {
+					brush = createGdipBrush(style.foreground, alpha);
+				}
+			}
+		}
+		int lineWidth = 1;
+		int lineStyle = Gdip.DashStyleSolid;
+		switch (style.borderStyle) {
+			case SWT.BORDER_SOLID: break;
+			case SWT.BORDER_DASH: lineStyle = Gdip.DashStyleDash; break;
+			case SWT.BORDER_DOT: lineStyle = Gdip.DashStyleDot; break;
+		}
+		int /*long*/ pen = Gdip.Pen_new(brush, lineWidth);
+		Gdip.Pen_SetDashStyle(pen, lineStyle);
+		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
+		if (clipRect != null) {
+			int gstate = Gdip.Graphics_Save(graphics);
+			if (clipRect.left == -1) clipRect.left = 0;
+			if (clipRect.right == -1) clipRect.right = 0x7ffff;
+			Rect gdipRect = new Rect();
+			gdipRect.X = clipRect.left;
+			gdipRect.Y = clipRect.top;
+			gdipRect.Width = clipRect.right - clipRect.left;
+			gdipRect.Height = clipRect.bottom - clipRect.top;
+			Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
+			Gdip.Graphics_DrawRectangle(graphics, pen, x + left, y, run.x + run.width - left - 1, lineHeight - 1);
+			Gdip.Graphics_Restore(graphics, gstate);
+			gstate = Gdip.Graphics_Save(graphics);
+			Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
+			int /*long*/ selPen = Gdip.Pen_new(selectionColor, lineWidth);
+			Gdip.Pen_SetDashStyle(selPen, lineStyle);
+			Gdip.Graphics_DrawRectangle(graphics, selPen, x + left, y, run.x + run.width - left - 1, lineHeight - 1);
+			Gdip.Pen_delete(selPen);
+			Gdip.Graphics_Restore(graphics, gstate);
+		} else {
+			Gdip.Graphics_DrawRectangle(graphics, pen, x + left, y, run.x + run.width - left - 1, lineHeight - 1);
+		}
+		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Pen_delete(pen);
+		if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
+		return null;
+	}
+	return clipRect;
+}
+
+void drawRunBackground(StyleItem run, int /*long*/ hdc, RECT rect, int selectionStart, int selectionEnd, int /*long*/ selBrush, boolean hasSelection) {
+	int end = run.start + run.length - 1;
+	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+	if (fullSelection) {
+		OS.SelectObject(hdc, selBrush);
+		OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+	} else {
+		if (run.style != null && run.style.background != null) {
+			int bg = run.style.background.handle;
+			int /*long*/ hBrush = OS.CreateSolidBrush (bg);
+			int /*long*/ oldBrush = OS.SelectObject(hdc, hBrush);
+			OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+			OS.SelectObject(hdc, oldBrush);
+			OS.DeleteObject(hBrush);
+		}
+		boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
+		if (partialSelection) {
+			getPartialSelection(run, selectionStart, selectionEnd, rect);
+			OS.SelectObject(hdc, selBrush);
+			OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+		}
+	}
+}
+
+void drawRunBackgroundGDIP(StyleItem run, int /*long*/ graphics, RECT rect, int selectionStart, int selectionEnd, int alpha, int /*long*/ selBrush, boolean hasSelection) {
+	int end = run.start + run.length - 1;
+	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+	if (fullSelection) {
+		Gdip.Graphics_FillRectangle(graphics, selBrush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	} else {
+		if (run.style != null && run.style.background != null) {
+			int /*long*/ brush = createGdipBrush(run.style.background, alpha);
+			Gdip.Graphics_FillRectangle(graphics, brush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+			Gdip.SolidBrush_delete(brush);
+		}
+		boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
+		if (partialSelection) {
+			getPartialSelection(run, selectionStart, selectionEnd, rect);
+			if (rect.left > rect.right) {
+				int tmp = rect.left;
+				rect.left = rect.right;
+				rect.right = tmp;
+			}
+			Gdip.Graphics_FillRectangle(graphics, selBrush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		}
+	}
+}
+
+RECT drawRunText(int /*long*/ hdc, StyleItem run, RECT rect, int baseline, int color, int selectionColor, int selectionStart, int selectionEnd) {
+	int end = run.start + run.length - 1;
+	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+	boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
+	int offset = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? -1 : 0;
+	int x = rect.left + offset;
+	int y = rect.top + (baseline - run.ascent);
+	int /*long*/ hFont = getItemFont(run);
+	OS.SelectObject(hdc, hFont);
+	if (fullSelection) {
+		color = selectionColor;
+	} else {
+		if (run.style != null && run.style.foreground != null) {
+			color = run.style.foreground.handle;
+		}
+	}
+	OS.SetTextColor(hdc, color);
+	OS.ScriptTextOut(hdc, run.psc, x, y, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
+	if (partialSelection) {
+		getPartialSelection(run, selectionStart, selectionEnd, rect);
+		OS.SetTextColor(hdc, selectionColor);
+		OS.ScriptTextOut(hdc, run.psc, x, y, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
+	}
+	return fullSelection || partialSelection ? rect : null;
+}
+
+RECT drawRunTextGDIP(int /*long*/ graphics, StyleItem run, RECT rect, int /*long*/ gdipFont, int baseline, int /*long*/ color, int /*long*/ selectionColor, int selectionStart, int selectionEnd, int alpha) {
+	int end = run.start + run.length - 1;
+	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+	boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
+	int drawY = rect.top + baseline;
+	int drawX = rect.left;
+	int /*long*/ brush = color;
+	if (fullSelection) {
+		brush = selectionColor;
+	} else {
+		if (run.style != null && run.style.foreground != null) {
+			brush = createGdipBrush(run.style.foreground, alpha);
+		}
+	}
+	int gstate = 0;
+	Rect gdipRect = null;
+	if (partialSelection) {
+		gdipRect = new Rect();
+		getPartialSelection(run, selectionStart, selectionEnd, rect);
+		gdipRect.X = rect.left;
+		gdipRect.Y = rect.top;
+		gdipRect.Width = rect.right - rect.left;
+		gdipRect.Height = rect.bottom - rect.top;
+		gstate = Gdip.Graphics_Save(graphics);
+		Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
+	}
+	int gstateMirrored = 0;
+	boolean isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
+	if (isMirrored) {
+		switch (Gdip.Brush_GetType(brush)) {
+			case Gdip.BrushTypeLinearGradient:
+				Gdip.LinearGradientBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+				Gdip.LinearGradientBrush_TranslateTransform(brush, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);	
+				break;			
+			case Gdip.BrushTypeTextureFill:
+				Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+				Gdip.TextureBrush_TranslateTransform(brush, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);	
+				break;			
+		}
+		gstateMirrored = Gdip.Graphics_Save(graphics);
+		Gdip.Graphics_ScaleTransform(graphics, -1, 1, Gdip.MatrixOrderPrepend);
+		Gdip.Graphics_TranslateTransform(graphics, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
+	}
+	int[] advances = new int[run.glyphCount];
+	float[] points = new float[run.glyphCount * 2];
+	OS.memmove(advances, run.justify != 0 ? run.justify : run.advances, run.glyphCount * 4);
+	int glyphX = drawX;
+	for (int h = 0, j = 0; h < advances.length; h++) {
+		points[j++] = glyphX;
+		points[j++] = drawY;
+		glyphX += advances[h];
+	}
+	Gdip.Graphics_DrawDriverString(graphics, run.glyphs, run.glyphCount, gdipFont, brush, points, 0, 0);
+	if (partialSelection) {
+		if (isMirrored) {
+			Gdip.Graphics_Restore(graphics, gstateMirrored);
+		}
+		Gdip.Graphics_Restore(graphics, gstate);
+		gstate = Gdip.Graphics_Save(graphics);
+		Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
+		if (isMirrored) {
+			gstateMirrored = Gdip.Graphics_Save(graphics);
+			Gdip.Graphics_ScaleTransform(graphics, -1, 1, Gdip.MatrixOrderPrepend);
+			Gdip.Graphics_TranslateTransform(graphics, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
+		}
+		Gdip.Graphics_DrawDriverString(graphics, run.glyphs, run.glyphCount, gdipFont, selectionColor, points, 0, 0);
+		Gdip.Graphics_Restore(graphics, gstate);
+	}
+	if (isMirrored) {
+		switch (Gdip.Brush_GetType(brush)) {
+			case Gdip.BrushTypeLinearGradient:
+				Gdip.LinearGradientBrush_ResetTransform(brush);
+				break;
+			case Gdip.BrushTypeTextureFill:
+				Gdip.TextureBrush_ResetTransform(brush);
+				break;
+		}
+		Gdip.Graphics_Restore(graphics, gstateMirrored);
+	}
+	if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
+	return fullSelection || partialSelection ? rect : null;
+}
+
+RECT drawRunTextGDIPRaster(int /*long*/ graphics, StyleItem run, RECT rect, int baseline, int color, int selectionColor, int selectionStart, int selectionEnd) {
+	int /*long*/ clipRgn = 0;
+	Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
+	int /*long*/ rgn = Gdip.Region_new();
+	if (rgn == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Gdip.Graphics_GetClip(graphics, rgn);
+	if (!Gdip.Region_IsInfinite(rgn, graphics)) {
+		clipRgn = Gdip.Region_GetHRGN(rgn, graphics);
+	}
+	Gdip.Region_delete(rgn);
+	Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
+	float[] lpXform = null;
+	int /*long*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+	if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Gdip.Graphics_GetTransform(graphics, matrix);
+	if (!Gdip.Matrix_IsIdentity(matrix)) {
+		lpXform = new float[6];
+		Gdip.Matrix_GetElements(matrix, lpXform);
+	}
+	Gdip.Matrix_delete(matrix);
+	int /*long*/ hdc = Gdip.Graphics_GetHDC(graphics);
+	int state = OS.SaveDC(hdc);
+	if (lpXform != null) {
+		OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+		OS.SetWorldTransform(hdc, lpXform);
+	}
+	if (clipRgn != 0) {
+		OS.SelectClipRgn(hdc, clipRgn);
+		OS.DeleteObject(clipRgn);
+	}
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
+	}
+	OS.SetBkMode(hdc, OS.TRANSPARENT);
+	RECT pRect = drawRunText(hdc, run, rect, baseline, color, selectionColor, selectionStart, selectionEnd);
 	OS.RestoreDC(hdc, state);
-	if (selBrush != 0) OS.DeleteObject (selBrush);
-	if (selPen != 0) OS.DeleteObject (selPen);
+	Gdip.Graphics_ReleaseHDC(graphics, hdc);
+	return pRect;
+}
+
+RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+	StyleItem run = line[index];
+	TextStyle style = run.style;
+	if (style == null) return null;
+	if (!style.strikeout) return null;
+	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
+	if (index + 1 >= line.length || !style.isAdherentStrikeout(line[index + 1].style)) {
+		int left = run.x;
+		int start = run.start;
+		int end = run.start + run.length - 1;
+		for (int i = index; i > 0 && style.isAdherentStrikeout(line[i - 1].style); i--) {
+			left = line[i - 1].x;
+			start = Math.min(start, line[i - 1].start);
+			end = Math.max(end, line[i - 1].start + line[i - 1].length - 1);
+		}
+		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
+		if (style.strikeoutColor != null) {
+			color = style.strikeoutColor.handle;
+			clipRect = null;
+		} else {
+			if (fullSelection) {
+				color = selectionColor;
+				clipRect = null;
+			} else {
+				if (style.foreground != null) {
+					color = style.foreground.handle;
+				}
+			}
+		}
+		RECT rect = new RECT();
+		OS.SetRect(rect, x + left, baseline - run.strikeoutPos, x + run.x + run.width, baseline - run.strikeoutPos + run.strikeoutThickness);
+		int /*long*/ brush = OS.CreateSolidBrush(color);
+		OS.FillRect(hdc, rect, brush);
+		OS.DeleteObject(brush);
+		if (clipRect != null) {
+			int /*long*/ selBrush = OS.CreateSolidBrush(selectionColor);
+			if (clipRect.left == -1) clipRect.left = 0;
+			if (clipRect.right == -1) clipRect.right = 0x7ffff;
+			OS.SetRect(clipRect, Math.max(rect.left, clipRect.left), rect.top, Math.min(rect.right, clipRect.right), rect.bottom);
+			OS.FillRect(hdc, clipRect, selBrush);
+			OS.DeleteObject(selBrush);
+		}
+		return null;
+	}
+	return clipRect;
+}
+
+RECT drawStrikeoutGDIP(int /*long*/ graphics, int x, int baseline, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha) {
+	StyleItem run = line[index];
+	TextStyle style = run.style;
+	if (style == null) return null;
+	if (!style.strikeout) return null;
+	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
+	if (index + 1 >= line.length || !style.isAdherentStrikeout(line[index + 1].style)) {
+		int left = run.x;
+		int start = run.start;
+		int end = run.start + run.length - 1;
+		for (int i = index; i > 0 && style.isAdherentStrikeout(line[i - 1].style); i--) {
+			left = line[i - 1].x;
+			start = Math.min(start, line[i - 1].start);
+			end = Math.max(end, line[i - 1].start + line[i - 1].length - 1);
+		}
+		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
+		int /*long*/ brush = color;
+		if (style.strikeoutColor != null) {
+			brush = createGdipBrush(style.strikeoutColor, alpha);
+			clipRect = null;
+		} else {
+			if (fullSelection) {
+				color = selectionColor;
+				clipRect = null;
+			} else {
+				if (style.foreground != null) {
+					brush = createGdipBrush(style.foreground, alpha);
+				}
+			}
+		}
+		if (clipRect != null) {
+			int gstate = Gdip.Graphics_Save(graphics);
+			if (clipRect.left == -1) clipRect.left = 0;
+			if (clipRect.right == -1) clipRect.right = 0x7ffff;
+			Rect gdipRect = new Rect();
+			gdipRect.X = clipRect.left;
+			gdipRect.Y = clipRect.top;
+			gdipRect.Width = clipRect.right - clipRect.left;
+			gdipRect.Height = clipRect.bottom - clipRect.top;
+			Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
+			Gdip.Graphics_FillRectangle(graphics, brush, x + left, baseline - run.strikeoutPos, run.x + run.width - left, run.strikeoutThickness);
+			Gdip.Graphics_Restore(graphics, gstate);
+			gstate = Gdip.Graphics_Save(graphics);
+			Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
+			Gdip.Graphics_FillRectangle(graphics, selectionColor, x + left, baseline - run.strikeoutPos, run.x + run.width - left, run.strikeoutThickness);
+			Gdip.Graphics_Restore(graphics, gstate);
+		} else {
+			Gdip.Graphics_FillRectangle(graphics, brush, x + left, baseline - run.strikeoutPos, run.x + run.width - left, run.strikeoutThickness);
+		}
+		if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
+		return null;
+	}
+	return clipRect;
+}
+
+RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+	StyleItem run = line[index];
+	TextStyle style = run.style;
+	if (style == null) return null;
+	if (!style.underline) return null;
+	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
+	if (index + 1 >= line.length || !style.isAdherentUnderline(line[index + 1].style)) {
+		int left = run.x;
+		int start = run.start;
+		int end = run.start + run.length - 1;
+		for (int i = index; i > 0 && style.isAdherentUnderline(line[i - 1].style); i--) {
+			left = line[i - 1].x;
+			start = Math.min(start, line[i - 1].start);
+			end = Math.max(end, line[i - 1].start + line[i - 1].length - 1);
+		}
+		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
+		if (style.underlineColor != null) {
+			color = style.underlineColor.handle;
+			clipRect = null;
+		} else {
+			if (fullSelection) {
+				color = selectionColor;
+				clipRect = null;
+			} else {
+				if (style.foreground != null) {
+					color = style.foreground.handle;
+				}
+			}
+		}
+		RECT rect = new RECT();
+		OS.SetRect(rect, x + left, baseline - lineUnderlinePos, x + run.x + run.width, baseline - lineUnderlinePos + run.underlineThickness);
+		if (clipRect != null) {
+			if (clipRect.left == -1) clipRect.left = 0;
+			if (clipRect.right == -1) clipRect.right = 0x7ffff;
+			OS.SetRect(clipRect, Math.max(rect.left, clipRect.left), rect.top, Math.min(rect.right, clipRect.right), rect.bottom);
+		}
+		switch (style.underlineStyle) {
+			case SWT.UNDERLINE_SQUIGGLE:
+			case SWT.UNDERLINE_ERROR: {
+				int squigglyThickness = 1;
+				int squigglyHeight = 2 * squigglyThickness;
+				int squigglyY = Math.min(rect.top - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
+				int[] points = computePolyline(rect.left, squigglyY, rect.right, squigglyY + squigglyHeight);
+				int /*long*/ pen = OS.CreatePen(OS.PS_SOLID, squigglyThickness, color);
+				int /*long*/ oldPen = OS.SelectObject(hdc, pen);
+				int state = OS.SaveDC(hdc);
+				OS.IntersectClipRect(hdc, rect.left, squigglyY, rect.right + 1, squigglyY + squigglyHeight + 1);
+				OS.Polyline(hdc, points, points.length / 2);
+				int length = points.length;
+				if (length >= 2 && squigglyThickness <= 1) {
+					OS.SetPixel (hdc, points[length - 2], points[length - 1], color);
+				}
+				OS.SelectObject(hdc, oldPen);
+				OS.DeleteObject(pen);
+				OS.RestoreDC(hdc, state);
+				if (clipRect != null) {
+					pen = OS.CreatePen(OS.PS_SOLID, squigglyThickness, selectionColor);
+					oldPen = OS.SelectObject(hdc, pen);
+					state = OS.SaveDC(hdc);
+					OS.IntersectClipRect(hdc, clipRect.left, squigglyY, clipRect.right + 1, squigglyY + squigglyHeight + 1);
+					OS.Polyline(hdc, points, points.length / 2);
+					if (length >= 2 && squigglyThickness <= 1) {
+						OS.SetPixel (hdc, points[length - 2], points[length - 1], selectionColor);
+					}
+					OS.SelectObject(hdc, oldPen);
+					OS.DeleteObject(pen);
+					OS.RestoreDC(hdc, state);
+				}
+				break;
+			}
+			case SWT.UNDERLINE_SINGLE:
+			case SWT.UNDERLINE_DOUBLE:
+			case SWT.UNDERLINE_LINK:
+			case UNDERLINE_IME_THICK:
+				if (style.underlineStyle == UNDERLINE_IME_THICK) {
+					rect.top -= run.underlineThickness;
+					if (clipRect != null) clipRect.top -= run.underlineThickness;
+				}
+				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom; 
+				if (bottom > lineBottom) {
+					OS.OffsetRect(rect, 0, lineBottom - bottom);
+					if (clipRect != null) OS.OffsetRect(clipRect, 0, lineBottom - bottom);
+				}
+				int /*long*/ brush = OS.CreateSolidBrush(color);
+				OS.FillRect(hdc, rect, brush);
+				if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+					OS.SetRect(rect, rect.left, rect.top + run.underlineThickness * 2, rect.right, rect.bottom + run.underlineThickness * 2);
+					OS.FillRect(hdc, rect, brush);
+				}
+				OS.DeleteObject(brush);
+				if (clipRect != null) {
+					int /*long*/ selBrush = OS.CreateSolidBrush(selectionColor);
+					OS.FillRect(hdc, clipRect, selBrush);
+					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+						OS.SetRect(clipRect, clipRect.left, rect.top, clipRect.right, rect.bottom);
+						OS.FillRect(hdc, clipRect, selBrush);
+					}
+					OS.DeleteObject(selBrush);
+				}
+				break;
+			case UNDERLINE_IME_DASH:
+			case UNDERLINE_IME_DOT: {
+				int penStyle = style.underlineStyle == UNDERLINE_IME_DASH ? OS.PS_DASH : OS.PS_DOT;
+				int /*long*/ pen = OS.CreatePen(penStyle, 1, color);
+				int /*long*/ oldPen = OS.SelectObject(hdc, pen);
+				OS.SetRect(rect, rect.left, baseline + run.descent, rect.right, baseline + run.descent + run.underlineThickness);
+				OS.MoveToEx(hdc, rect.left, rect.top, 0);
+				OS.LineTo(hdc, rect.right, rect.top);
+				OS.SelectObject(hdc, oldPen);
+				OS.DeleteObject(pen);
+				if (clipRect != null) {
+					pen = OS.CreatePen(penStyle, 1, selectionColor);
+					oldPen = OS.SelectObject(hdc, pen);
+					OS.SetRect(clipRect, clipRect.left, rect.top, clipRect.right, rect.bottom);
+					OS.MoveToEx(hdc, clipRect.left, clipRect.top, 0);
+					OS.LineTo(hdc, clipRect.right, clipRect.top);
+					OS.SelectObject(hdc, oldPen);
+					OS.DeleteObject(pen);
+				}
+				break;
+			}
+		}
+		return null;
+	}
+	return clipRect;
+}
+
+RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha) {
+	StyleItem run = line[index];
+	TextStyle style = run.style;
+	if (style == null) return null;
+	if (!style.underline) return null;
+	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
+	if (index + 1 >= line.length || !style.isAdherentUnderline(line[index + 1].style)) {
+		int left = run.x;
+		int start = run.start;
+		int end = run.start + run.length - 1;
+		for (int i = index; i > 0 && style.isAdherentUnderline(line[i - 1].style); i--) {
+			left = line[i - 1].x;
+			start = Math.min(start, line[i - 1].start);
+			end = Math.max(end, line[i - 1].start + line[i - 1].length - 1);
+		}
+		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
+		int /*long*/ brush = color;
+		if (style.underlineColor != null) {
+			brush = createGdipBrush(style.underlineColor, alpha);
+			clipRect = null;
+		} else {
+			if (fullSelection) {
+				brush = selectionColor;
+				clipRect = null;
+			} else {
+				if (style.foreground != null) {
+					brush = createGdipBrush(style.foreground, alpha);
+				}
+			}
+		}
+		RECT rect = new RECT();
+		OS.SetRect(rect, x + left, baseline - lineUnderlinePos, x + run.x + run.width, baseline - lineUnderlinePos + run.underlineThickness);
+		Rect gdipRect = null;
+		if (clipRect != null) {
+			if (clipRect.left == -1) clipRect.left = 0;
+			if (clipRect.right == -1) clipRect.right = 0x7ffff;
+			OS.SetRect(clipRect, Math.max(rect.left, clipRect.left), rect.top, Math.min(rect.right, clipRect.right), rect.bottom);
+			gdipRect = new Rect();
+			gdipRect.X = clipRect.left;
+			gdipRect.Y = clipRect.top;
+			gdipRect.Width = clipRect.right - clipRect.left;
+			gdipRect.Height = clipRect.bottom - clipRect.top;
+		}
+		int gstate = 0;
+		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
+		switch (style.underlineStyle) {
+			case SWT.UNDERLINE_SQUIGGLE:
+			case SWT.UNDERLINE_ERROR: {
+				int squigglyThickness = 1;
+				int squigglyHeight = 2 * squigglyThickness;
+				int squigglyY = Math.min(rect.top - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
+				int[] points = computePolyline(rect.left, squigglyY, rect.right, squigglyY + squigglyHeight);
+				int /*long*/ pen = Gdip.Pen_new(brush, squigglyThickness);
+				gstate = Gdip.Graphics_Save(graphics);
+				if (gdipRect != null) {
+					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
+				} else {
+					Rect r = new Rect();
+					r.X = rect.left;
+					r.Y = squigglyY;
+					r.Width = rect.right - rect.left;
+					r.Height = squigglyHeight + 1;
+					Gdip.Graphics_SetClip(graphics, r, Gdip.CombineModeIntersect);
+				}
+				Gdip.Graphics_DrawLines(graphics, pen, points, points.length / 2);
+				if (gdipRect != null) {
+					int /*long*/ selPen = Gdip.Pen_new(selectionColor, squigglyThickness);
+					Gdip.Graphics_Restore(graphics, gstate);
+					gstate = Gdip.Graphics_Save(graphics);
+					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
+					Gdip.Graphics_DrawLines(graphics, selPen, points, points.length / 2);
+					Gdip.Pen_delete(selPen);
+				}
+				Gdip.Graphics_Restore(graphics, gstate);
+				Gdip.Pen_delete(pen);
+				if (gstate != 0) Gdip.Graphics_Restore(graphics, gstate);
+				break;
+			}
+			case SWT.UNDERLINE_SINGLE:
+			case SWT.UNDERLINE_DOUBLE:
+			case SWT.UNDERLINE_LINK:
+			case UNDERLINE_IME_THICK:
+				if (style.underlineStyle == UNDERLINE_IME_THICK) {
+					rect.top -= run.underlineThickness;
+				}
+				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom; 
+				if (bottom > lineBottom) {
+					OS.OffsetRect(rect, 0, lineBottom - bottom);
+				}
+				if (gdipRect != null) {
+					gdipRect.Y = rect.top;
+					if (style.underlineStyle == UNDERLINE_IME_THICK) {
+						gdipRect.Height = run.underlineThickness * 2;
+					}
+					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+						gdipRect.Height = run.underlineThickness * 3;
+					}
+					gstate = Gdip.Graphics_Save(graphics);
+					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
+				}
+				Gdip.Graphics_FillRectangle(graphics, brush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+				if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+					Gdip.Graphics_FillRectangle(graphics, brush, rect.left, rect.top + run.underlineThickness * 2, rect.right - rect.left, rect.bottom - rect.top);
+				}
+				if (gdipRect != null) {
+					Gdip.Graphics_Restore(graphics, gstate);
+					gstate = Gdip.Graphics_Save(graphics);
+					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
+					Gdip.Graphics_FillRectangle(graphics, selectionColor, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+						Gdip.Graphics_FillRectangle(graphics, selectionColor, rect.left, rect.top + run.underlineThickness * 2, rect.right - rect.left, rect.bottom - rect.top);
+					}
+					Gdip.Graphics_Restore(graphics, gstate);
+				}
+				break;
+			case UNDERLINE_IME_DOT:
+			case UNDERLINE_IME_DASH: {
+				int /*long*/ pen = Gdip.Pen_new(brush, 1);
+				int dashStyle = style.underlineStyle == UNDERLINE_IME_DOT ? Gdip.DashStyleDot : Gdip.DashStyleDash;
+				Gdip.Pen_SetDashStyle(pen, dashStyle);
+				if (gdipRect != null) {
+					gstate = Gdip.Graphics_Save(graphics);
+					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
+				}
+				Gdip.Graphics_DrawLine(graphics, pen, rect.left, baseline + run.descent, run.width - run.length, baseline + run.descent);
+				if (gdipRect != null) {
+					Gdip.Graphics_Restore(graphics, gstate);
+					gstate = Gdip.Graphics_Save(graphics);
+					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
+					int /*long*/ selPen = Gdip.Pen_new(brush, 1);
+					Gdip.Pen_SetDashStyle(selPen, dashStyle);
+					Gdip.Graphics_DrawLine(graphics, selPen, rect.left, baseline + run.descent, run.width - run.length, baseline + run.descent);
+					Gdip.Graphics_Restore(graphics, gstate);
+					Gdip.Pen_delete(selPen);
+				}
+				Gdip.Pen_delete(pen);
+				break;
+			}
+		}
+		if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
+		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
+		return null;
+	}
+	return clipRect;
 }
 
 void freeRuns () {
@@ -714,13 +1533,18 @@ public int getAscent () {
 }
 
 /**
- * Returns the bounds of the receiver.
+ * Returns the bounds of the receiver. The width returned is either the
+ * width of the longest line or the width set using {@link TextLayout#setWidth(int)}.
+ * To obtain the text bounds of a line use {@link TextLayout#getLineBounds(int)}.
  * 
  * @return the bounds of the receiver
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see #setWidth(int)
+ * @see #getLineBounds(int)
  */
 public Rectangle getBounds () {
 	checkLayout();
@@ -762,12 +1586,10 @@ public Rectangle getBounds (int start, int end) {
 	end = translateOffset(end);
 	int left = 0x7fffffff, right = 0;
 	int top = 0x7fffffff, bottom = 0;
-	int lineIndex = 0;
 	boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	for (int i = 0; i < allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		int runEnd = run.start + run.length;
-		if (run.lineBreak) lineIndex++;
 		if (runEnd <= start) continue;
 		if (run.start > end) break;
 		int runLead = run.x;
@@ -779,7 +1601,7 @@ public Rectangle getBounds (int start, int end) {
 				cx = metrics.width * (start - run.start);
 			} else if (!run.tab) {
 				int[] piX = new int[1];
-				int advances = run.justify != 0 ? run.justify : run.advances;
+				int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(start - run.start, false, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				cx = isRTL ? run.width - piX[0] : piX[0];
 			}
@@ -796,7 +1618,7 @@ public Rectangle getBounds (int start, int end) {
 				cx = metrics.width * (end - run.start + 1);
 			} else if (!run.tab) {
 				int[] piX = new int[1];
-				int advances = run.justify != 0 ? run.justify : run.advances;
+				int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(end - run.start, true, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				cx = isRTL ? run.width - piX[0] : piX[0];
 			}
@@ -806,10 +1628,14 @@ public Rectangle getBounds (int start, int end) {
 				runTrail = run.x + cx;
 			}
 		}
+		int lineIndex = 0;
+		while (lineIndex < runs.length && lineOffset[lineIndex + 1] <= run.start) {
+			lineIndex++;
+		}
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
-		top = Math.min(top, lineY[run.lineBreak ? lineIndex - 1 : lineIndex]);
-		bottom = Math.max(bottom, lineY[run.lineBreak ? lineIndex : lineIndex + 1] - lineSpacing);
+		top = Math.min(top, lineY[lineIndex]);
+		bottom = Math.max(bottom, lineY[lineIndex + 1] - lineSpacing);
 	}
 	return new Rectangle(left, top, right - left, bottom - top);
 }
@@ -880,7 +1706,7 @@ public boolean getJustify () {
 	return justify;
 }
 
-int getItemFont (StyleItem item) {
+int /*long*/ getItemFont (StyleItem item) {
 	if (item.fallbackFont != 0) return item.fallbackFont;
 	if (item.style != null && item.style.font != null) {
 		return item.style.font.handle;
@@ -888,7 +1714,7 @@ int getItemFont (StyleItem item) {
 	if (this.font != null) {
 		return this.font.handle;
 	}
-	return device.systemFont;
+	return device.systemFont.handle;
 }
 
 /**
@@ -896,7 +1722,7 @@ int getItemFont (StyleItem item) {
  * embedding level is usually used to determine the directionality of a
  * character in bidirectional text.
  * 
- * @param offset the charecter offset
+ * @param offset the character offset
  * @return the embedding level
  * 
  * @exception IllegalArgumentException <ul>
@@ -1034,10 +1860,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	checkLayout();
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int hDC = device.internal_new_GC(null);
-	int srcHdc = OS.CreateCompatibleDC(hDC);
+	int /*long*/ hDC = device.internal_new_GC(null);
+	int /*long*/ srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
-	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont);
+	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont.handle);
 	OS.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
 	device.internal_dispose_GC(hDC, null);
@@ -1113,50 +1939,45 @@ public Point getLocation (int offset, boolean trailing) {
 		if (lineOffset[line + 1] > offset) break;
 	}
 	line = Math.min(line, runs.length - 1);
-	StyleItem[] lineRuns = runs[line];
-	Point result = null;
 	if (offset == length) {
-		result = new Point(lineWidth[line], lineY[line]);
-	} else {
-		int width = 0;
-		for (int i=0; i<lineRuns.length; i++) {
-			StyleItem run = lineRuns[i];
-			int end = run.start + run.length;
-			if (run.start <= offset && offset < end) {
-				if (run.style != null && run.style.metrics != null) {
-					GlyphMetrics metrics = run.style.metrics;
-					width += metrics.width * (offset - run.start + (trailing ? 1 : 0));
-					result = new Point(width, lineY[line]);
-				} else if (run.tab) {
-					if (trailing || (offset == length)) width += run.width;
-					result = new Point(width, lineY[line]);
-				} else {
-					int runOffset = offset - run.start;
-					int cChars = run.length;
-					int gGlyphs = run.glyphCount;
-					int[] piX = new int[1];
-					int advances = run.justify != 0 ? run.justify : run.advances;
-					OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-					if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-						result = new Point(width + (run.width - piX[0]), lineY[line]);
-					} else {
-						result = new Point(width + piX[0], lineY[line]);
-					}
-				}
-				break;
+		return new Point(getLineIndent(line) + lineWidth[line], lineY[line]);
+	}
+	int low = -1;
+	int high = allRuns.length;
+	while (high - low > 1) {
+		int index = ((high + low) / 2);
+		StyleItem run = allRuns[index];
+		if (run.start > offset) {
+			high = index;
+		} else if (run.start + run.length <= offset) {
+			low = index;
+		} else {
+			int width;
+			if (run.style != null && run.style.metrics != null) {
+				GlyphMetrics metrics = run.style.metrics;
+				width = metrics.width * (offset - run.start + (trailing ? 1 : 0));
+			} else if (run.tab) {
+				width = (trailing || (offset == length)) ? run.width : 0;
+			} else {
+				int runOffset = offset - run.start;
+				int cChars = run.length;
+				int gGlyphs = run.glyphCount;
+				int[] piX = new int[1];
+				int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
+				OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
+				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];   
 			}
-			width += run.width;
+			return new Point(run.x + width, lineY[line]);
 		}
 	}
-	if (result == null) result = new Point(0, 0);
-	result.x += getLineIndent(line);
-	return result;
+	return new Point(0, 0);
 }
 
 /**
  * Returns the next offset for the specified offset and movement
  * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
- * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
+ * <code>SWT.MOVEMENT_CLUSTER</code>, <code>SWT.MOVEMENT_WORD</code>,
+ * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
  * 
  * @param offset the start offset
  * @param movement the movement type 
@@ -1211,6 +2032,7 @@ int _getOffset(int offset, int movement, boolean forward) {
 						}
 						break;
 					}
+					case SWT.MOVEMENT_WORD_START:
 					case SWT.MOVEMENT_WORD: {
 						if (properties.fNeedsWordBreaking) {
 							if (!logAttr.fInvalid && logAttr.fWordStop) return untranslateOffset(offset);
@@ -1223,6 +2045,16 @@ int _getOffset(int offset, int movement, boolean forward) {
 										return untranslateOffset(offset);
 									}
 								}
+							}
+						}
+						break;
+					}
+					case SWT.MOVEMENT_WORD_END: {
+						if (offset > 0) {
+							boolean isLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
+							boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
+							if (!isLetterOrDigit && previousLetterOrDigit) {
+								return untranslateOffset(offset);
 							}
 						}
 						break;
@@ -1298,16 +2130,22 @@ public int getOffset (int x, int y, int[] trailing) {
 		if (lineY[line + 1] > y) break;
 	}
 	line = Math.min(line, runs.length - 1);
-	x -= getLineIndent(line);
 	StyleItem[] lineRuns = runs[line];
-	if (x >= lineWidth[line]) x = lineWidth[line] - 1;
-	if (x < 0) x = 0;
-	int width = 0;
-	for (int i = 0; i < lineRuns.length; i++) {
-		StyleItem run = lineRuns[i];
-		if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
-		if (width + run.width > x) {
-			int xRun = x - width;
+	int lineIndent = getLineIndent(line);
+	if (x >= lineIndent + lineWidth[line]) x = lineIndent + lineWidth[line] - 1;
+	if (x < lineIndent) x = lineIndent;
+	int low = -1;
+	int high = lineRuns.length;
+	while (high - low > 1) {
+		int index = ((high + low) / 2);
+		StyleItem run = lineRuns[index];
+		if (run.x > x) {
+			high = index;
+		} else if (run.x + run.width <= x) {
+			low = index;
+		} else {
+			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
+			int xRun = x - run.x;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
 				if (metrics.width > 0) {
@@ -1318,7 +2156,7 @@ public int getOffset (int x, int y, int[] trailing) {
 				}
 			}
 			if (run.tab) {
-				if (trailing != null) trailing[0] = x < (width + run.width / 2) ? 0 : 1;
+				if (trailing != null) trailing[0] = x < (run.x + run.width / 2) ? 0 : 1;
 				return untranslateOffset(run.start);
 			}
 			int cChars = run.length;
@@ -1328,14 +2166,17 @@ public int getOffset (int x, int y, int[] trailing) {
 			if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 				xRun = run.width - xRun;
 			}
-			int advances = run.justify != 0 ? run.justify : run.advances;
+			int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
 			OS.ScriptXtoCP(xRun, cChars, cGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piCP, piTrailing);
 			if (trailing != null) trailing[0] = piTrailing[0];
 			return untranslateOffset(run.start + piCP[0]);
 		}
-		width += run.width;
 	}
 	if (trailing != null) trailing[0] = 0;
+	if (lineRuns.length == 1) {
+		StyleItem run = lineRuns[0];
+		if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
+	}
 	return untranslateOffset(lineOffset[line + 1]);
 }
 
@@ -1353,10 +2194,28 @@ public int getOrientation () {
 	return orientation;
 }
 
+void getPartialSelection(StyleItem run, int selectionStart, int selectionEnd, RECT rect) {
+	int end = run.start + run.length - 1;
+	int selStart = Math.max(selectionStart, run.start) - run.start;
+	int selEnd = Math.min(selectionEnd, end) - run.start;
+	int cChars = run.length;
+	int gGlyphs = run.glyphCount;
+	int[] piX = new int[1];
+	int x = rect.left;
+	int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
+	OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
+	int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+	rect.left = x + runX;
+	OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
+	runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+	rect.right = x + runX;
+}
+
 /**
  * Returns the previous offset for the specified offset and movement
  * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
- * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
+ * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>,
+ * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
  * 
  * @param offset the start offset
  * @param movement the movement type 
@@ -1392,9 +2251,9 @@ public int getPreviousOffset (int offset, int movement) {
  */
 public int[] getRanges () {
 	checkLayout();
-	int[] result = new int[styles.length * 2];
+	int[] result = new int[stylesCount * 2];
 	int count = 0;
-	for (int i=0; i<styles.length - 1; i++) {
+	for (int i=0; i<stylesCount - 1; i++) {
 		if (styles[i].style != null) {
 			result[count++] = styles[i].start;
 			result[count++] = styles[i + 1].start - 1;
@@ -1481,7 +2340,7 @@ public TextStyle getStyle (int offset) {
 	checkLayout();
 	int length = text.length();
 	if (!(0 <= offset && offset < length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	for (int i=1; i<styles.length; i++) {
+	for (int i=1; i<stylesCount; i++) {
 		if (styles[i].start > offset) {
 			return styles[i - 1].style;
 		}
@@ -1504,9 +2363,9 @@ public TextStyle getStyle (int offset) {
  */
 public TextStyle[] getStyles () {
 	checkLayout();
-	TextStyle[] result = new TextStyle[styles.length];
+	TextStyle[] result = new TextStyle[stylesCount];
 	int count = 0;
-	for (int i=0; i<styles.length; i++) {
+	for (int i=0; i<stylesCount; i++) {
 		if (styles[i].style != null) {
 			result[count++] = styles[i].style;
 		}
@@ -1569,6 +2428,7 @@ public int getWidth () {
  * This method gets the dispose state for the text layout.
  * When a text layout has been disposed, it is an error to
  * invoke any other method using the text layout.
+ * </p>
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
  */
@@ -1589,10 +2449,14 @@ StyleItem[] itemize () {
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		scriptState.uBidiLevel = 1;
 		scriptState.fArabicNumContext = true;
+		SCRIPT_DIGITSUBSTITUTE psds = new SCRIPT_DIGITSUBSTITUTE();
+		OS.ScriptRecordDigitSubstitution(OS.LOCALE_USER_DEFAULT, psds);
+		OS.ScriptApplyDigitSubstitution(psds, scriptControl, scriptState);
 	}
 	
-	int hHeap = OS.GetProcessHeap();
-	int pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
+	int /*long*/ hHeap = OS.GetProcessHeap();
+	int /*long*/ pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
+	if (pItems == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] pcItems = new int[1];	
 	char[] chars = new char[length];
 	segmentsText.getChars(0, length, chars, 0); 
@@ -1607,11 +2471,20 @@ StyleItem[] itemize () {
 /* 
  *  Merge styles ranges and script items 
  */
-StyleItem[] merge (int items, int itemCount) {
+StyleItem[] merge (int /*long*/ items, int itemCount) {
+	if (styles.length > stylesCount) {
+		StyleItem[] newStyles = new StyleItem[stylesCount];
+		System.arraycopy(styles, 0, newStyles, 0, stylesCount);
+		styles = newStyles;
+	}
 	int count = 0, start = 0, end = segmentsText.length(), itemIndex = 0, styleIndex = 0;
-	StyleItem[] runs = new StyleItem[itemCount + styles.length];
+	StyleItem[] runs = new StyleItem[itemCount + stylesCount];
 	SCRIPT_ITEM scriptItem = new SCRIPT_ITEM();
+	int itemLimit = -1;
+	int nextItemIndex = 0;
 	boolean linkBefore = false;
+	boolean merge = itemCount > TOO_MANY_RUNS;
+	SCRIPT_PROPERTIES sp = new SCRIPT_PROPERTIES();
 	while (start < end) {
 		StyleItem item = new StyleItem();
 		item.start = start;
@@ -1619,25 +2492,67 @@ StyleItem[] merge (int items, int itemCount) {
 		runs[count++] = item;
 		OS.MoveMemory(scriptItem, items + itemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 		item.analysis = scriptItem.a;
+		scriptItem.a = new SCRIPT_ANALYSIS();
 		if (linkBefore) {
 			item.analysis.fLinkBefore = true;
 			linkBefore = false;
 		}
-		scriptItem.a = new SCRIPT_ANALYSIS();
-		OS.MoveMemory(scriptItem, items + (itemIndex + 1) * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
-		int itemLimit = scriptItem.iCharPos;
+		char ch = segmentsText.charAt(start);
+		switch (ch) {
+			case '\r':
+			case '\n':
+				item.lineBreak = true;
+				break;
+			case '\t':
+				item.tab = true;
+				break;
+		}
+		if (itemLimit == -1) {
+			nextItemIndex = itemIndex + 1;
+			OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
+			itemLimit = scriptItem.iCharPos;
+			if (nextItemIndex < itemCount && ch == '\r' && segmentsText.charAt(itemLimit) == '\n') {
+				nextItemIndex = itemIndex + 2;
+				OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
+				itemLimit = scriptItem.iCharPos;
+			}
+			if (nextItemIndex < itemCount && merge) {
+				if (!item.lineBreak) {
+					OS.MoveMemory(sp, device.scripts[item.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+					if (!sp.fComplex || item.tab) {
+						for (int i = 0; i < MERGE_MAX; i++) {
+							if (nextItemIndex == itemCount) break;
+							char c = segmentsText.charAt(itemLimit);
+							if (c == '\n' || c == '\r') break;
+							if (c == '\t' != item.tab) break;
+							OS.MoveMemory(sp, device.scripts[scriptItem.a.eScript], SCRIPT_PROPERTIES.sizeof);
+							if (!item.tab && sp.fComplex) break;
+							nextItemIndex++;
+							OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
+							itemLimit = scriptItem.iCharPos;
+						}
+					}
+				}
+			}
+		}
+		
 		int styleLimit = translateOffset(styles[styleIndex + 1].start);
 		if (styleLimit <= itemLimit) {
 			styleIndex++;
 			start = styleLimit;
-			if (start < itemLimit) {
-				item.analysis.fLinkAfter = true;
-				linkBefore = true;
+			if (start < itemLimit && 0 < start && start < end) {
+				char pChar = segmentsText.charAt(start - 1);
+				char tChar = segmentsText.charAt(start);
+				if (Compatibility.isLetter(pChar) && Compatibility.isLetter(tChar)) {
+					item.analysis.fLinkAfter = true;
+					linkBefore = true;
+				}
 			}
 		}
 		if (itemLimit <= styleLimit) {
-			itemIndex++;
+			itemIndex = nextItemIndex;
 			start = itemLimit;
+			itemLimit = -1;
 		}
 		item.length = start - item.start;
 	}
@@ -1657,7 +2572,7 @@ StyleItem[] merge (int items, int itemCount) {
 /* 
  *  Reorder the run 
  */
-StyleItem[] reorder (StyleItem[] runs) {
+StyleItem[] reorder (StyleItem[] runs, boolean terminate) {
 	int length = runs.length;
 	if (length <= 1) return runs;
 	byte[] bidiLevels = new byte[length];
@@ -1681,10 +2596,11 @@ StyleItem[] reorder (StyleItem[] runs) {
 		result[log2vis[i]] = runs[i];
 	}	
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-		for (int i = 0; i < (length - 1) / 2 ; i++) {
+		if (terminate) length--;
+		for (int i = 0; i < length / 2 ; i++) {
 			StyleItem tmp = result[i];
-			result[i] = result[length - i - 2];
-			result[length - i - 2] = tmp;
+			result[i] = result[length - i - 1];
+			result[length - i - 1] = tmp;
 		}
 	}
 	return result;
@@ -1698,7 +2614,7 @@ StyleItem[] reorder (StyleItem[] runs) {
  * The default alignment is <code>SWT.LEFT</code>.  Note that the receiver's
  * width must be set in order to use <code>SWT.RIGHT</code> or <code>SWT.CENTER</code>
  * alignment.
- *</p>
+ * </p>
  *
  * @param alignment the new alignment 
  *
@@ -1791,16 +2707,16 @@ public void setDescent(int descent) {
 public void setFont (Font font) {
 	checkLayout();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.font == font) return;
-	if (font != null && font.equals(this.font)) return;
-	freeRuns();
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals(font)) return;
+	freeRuns();
 }
 
 /**
  * Sets the indent of the receiver. This indent it applied of the first line of 
  * each paragraph.  
- * <p>
  *
  * @param indent new indent
  * 
@@ -1821,7 +2737,6 @@ public void setIndent (int indent) {
 /**
  * Sets the justification of the receiver. Note that the receiver's
  * width must be set in order to use justification. 
- * <p>
  *
  * @param justify new justify
  * 
@@ -1841,7 +2756,6 @@ public void setJustify (boolean justify) {
 /**
  * Sets the orientation of the receiver, which must be one
  * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
- * <p>
  *
  * @param orientation new orientation style
  * 
@@ -1865,11 +2779,12 @@ public void setOrientation (int orientation) {
  * override the default behaviour of the bidirectional algorithm.
  * Bidirectional reordering can happen within a text segment but not 
  * between two adjacent segments.
+ * <p>
  * Each text segment is determined by two consecutive offsets in the 
  * <code>segments</code> arrays. The first element of the array should 
  * always be zero and the last one should always be equals to length of
  * the text.
- * <p>
+ * </p>
  * 
  * @param segments the text segments offset
  * 
@@ -1935,7 +2850,7 @@ public void setStyle (TextStyle style, int start, int end) {
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
 	int low = -1;
-	int high = styles.length;
+	int high = stylesCount;
 	while (high - low > 1) {
 		int index = (high + low) / 2;
 		if (styles[index + 1].start > start) {
@@ -1944,7 +2859,7 @@ public void setStyle (TextStyle style, int start, int end) {
 			low = index;
 		}
 	}
-	if (0 <= high && high < styles.length) {
+	if (0 <= high && high < stylesCount) {
 		StyleItem item = styles[high];
 		if (item.start == start && styles[high + 1].start - 1 == end) {
 			if (style == null) {
@@ -1957,7 +2872,7 @@ public void setStyle (TextStyle style, int start, int end) {
 	freeRuns();
 	int modifyStart = high;
 	int modifyEnd = modifyStart;
-	while (modifyEnd < styles.length) {
+	while (modifyEnd < stylesCount) {
 		if (styles[modifyEnd + 1].start > end) break;
 		modifyEnd++;
 	}
@@ -1969,33 +2884,42 @@ public void setStyle (TextStyle style, int start, int end) {
 			return;
 		}
 		if (styleStart != start && styleEnd != end) {
-			StyleItem[] newStyles = new StyleItem[styles.length + 2];
-			System.arraycopy(styles, 0, newStyles, 0, modifyStart + 1);
+			int newLength = stylesCount + 2; 
+			if (newLength > styles.length) {
+				int newSize = Math.min(newLength + 1024, Math.max(64, newLength * 2));
+				StyleItem[] newStyles = new StyleItem[newSize];
+				System.arraycopy(styles, 0, newStyles, 0, stylesCount);
+				styles = newStyles;
+			}
+			System.arraycopy(styles, modifyEnd + 1, styles, modifyEnd + 3, stylesCount - modifyEnd - 1);
 			StyleItem item = new StyleItem();
 			item.start = start;
 			item.style = style;
-			newStyles[modifyStart + 1] = item;	
+			styles[modifyStart + 1] = item;	
 			item = new StyleItem();
 			item.start = end + 1;
 			item.style = styles[modifyStart].style;
-			newStyles[modifyStart + 2] = item;
-			System.arraycopy(styles, modifyEnd + 1, newStyles, modifyEnd + 3, styles.length - modifyEnd - 1);
-			styles = newStyles;
+			styles[modifyStart + 2] = item;
+			stylesCount = newLength;
 			return;
 		}
 	}
 	if (start == styles[modifyStart].start) modifyStart--;
 	if (end == styles[modifyEnd + 1].start - 1) modifyEnd++;
-	int newLength = styles.length + 1 - (modifyEnd - modifyStart - 1);
-	StyleItem[] newStyles = new StyleItem[newLength];
-	System.arraycopy(styles, 0, newStyles, 0, modifyStart + 1);	
+	int newLength = stylesCount + 1 - (modifyEnd - modifyStart - 1);
+	if (newLength > styles.length) {
+		int newSize = Math.min(newLength + 1024, Math.max(64, newLength * 2));
+		StyleItem[] newStyles = new StyleItem[newSize];
+		System.arraycopy(styles, 0, newStyles, 0, stylesCount);
+		styles = newStyles;
+	}
+	System.arraycopy(styles, modifyEnd, styles, modifyStart + 2, stylesCount - modifyEnd);
 	StyleItem item = new StyleItem();
 	item.start = start;
 	item.style = style;
-	newStyles[modifyStart + 1] = item;
-	styles[modifyEnd].start = end + 1;
-	System.arraycopy(styles, modifyEnd, newStyles, modifyStart + 2, styles.length - modifyEnd);
-	styles = newStyles;
+	styles[modifyStart + 1] = item;
+	styles[modifyStart + 2].start = end + 1;
+	stylesCount = newLength;
 }
 
 /**
@@ -2027,7 +2951,12 @@ public void setTabs (int[] tabs) {
 
 /**
  * Sets the receiver's text.
- *
+ *<p>
+ * Note: Setting the text also clears all the styles. This method 
+ * returns without doing anything if the new text is the same as 
+ * the current text.
+ * </p>
+ * 
  * @param text the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -2047,6 +2976,7 @@ public void setText (String text) {
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
 	styles[1].start = text.length();
+	stylesCount = 2;
 }
 
 /**
@@ -2073,10 +3003,25 @@ public void setWidth (int width) {
 	this.wrapWidth = width;
 }
 
-boolean shape (int hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs) {
+boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs, SCRIPT_PROPERTIES sp) {
+	boolean useCMAPcheck = !sp.fComplex && !run.analysis.fNoGlyphIndex;
+	if (useCMAPcheck) {
+		short[] glyphs = new short[chars.length];
+		if (OS.ScriptGetCMap(hdc, run.psc, chars, chars.length, 0, glyphs) != OS.S_OK) {
+			if (run.psc != 0) {
+				OS.ScriptFreeCache(run.psc);
+				glyphCount[0] = 0;
+				OS.MoveMemory(run.psc, new int /*long*/ [1], OS.PTR_SIZEOF);
+			}
+			return false;
+		}
+	}
 	int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, glyphCount);
 	run.glyphCount = glyphCount[0];
+	if (useCMAPcheck) return true;
+	
 	if (hr != OS.USP_E_SCRIPT_NOT_IN_FONT) {
+		if (run.analysis.fNoGlyphIndex) return true;
 		SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
 		fp.cBytes = SCRIPT_FONTPROPERTIES.sizeof;
 		OS.ScriptGetFontProperties(hdc, run.psc, fp);
@@ -2091,7 +3036,7 @@ boolean shape (int hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGl
 	if (run.psc != 0) {
 		OS.ScriptFreeCache(run.psc);
 		glyphCount[0] = 0;
-		OS.MoveMemory(run.psc, glyphCount, 4);
+		OS.MoveMemory(run.psc, new int /*long*/ [1], OS.PTR_SIZEOF);
 	}
 	run.glyphCount = 0;
 	return false;
@@ -2100,59 +3045,230 @@ boolean shape (int hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGl
 /* 
  * Generate glyphs for one Run.
  */
-void shape (final int hdc, final StyleItem run) {
-	int[] buffer = new int[1];
-	char[] chars = new char[run.length];
+void shape (final int /*long*/ hdc, final StyleItem run) {
+	if (run.tab || run.lineBreak) return;
+	if (run.glyphs != 0) return;
+	final int[] buffer = new int[1];
+	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
-	int maxGlyphs = (chars.length * 3 / 2) + 16;
-	int hHeap = OS.GetProcessHeap();
+	
+	final int maxGlyphs = (chars.length * 3 / 2) + 16;
+	int /*long*/ hHeap = OS.GetProcessHeap();
 	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
+	if (run.glyphs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.clusters = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
+	if (run.clusters == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.visAttrs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * SCRIPT_VISATTR_SIZEOF);
-	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, 4);
-	if (!shape(hdc, run, chars, buffer,  maxGlyphs)) {
-		if (mLangFontLink2 != 0) {
-			int[] dwCodePages = new int[1];
-			int[] cchCodePages = new int[1];
-			/* GetStrCodePages() */
-			OS.VtblCall(4, mLangFontLink2, chars, chars.length, 0, dwCodePages, cchCodePages);
-			int[] hNewFont = new int[1];
-			/* MapFont() */
-			if (OS.VtblCall(10, mLangFontLink2, hdc, dwCodePages[0], chars[0], hNewFont) == OS.S_OK) {
-				int hFont = OS.SelectObject(hdc, hNewFont[0]);
-				if (shape(hdc, run, chars, buffer, maxGlyphs)) {
-					run.fallbackFont = hNewFont[0];
+	if (run.visAttrs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.PTR_SIZEOF);
+	if (run.psc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	final short script = run.analysis.eScript;
+	final SCRIPT_PROPERTIES sp = new SCRIPT_PROPERTIES();
+	OS.MoveMemory(sp, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
+	boolean shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
+	if (!shapeSucceed) {
+		int /*long*/ hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
+		int /*long*/ newFont = 0;
+		/*
+		* Bug in Uniscribe. In some version of Uniscribe, ScriptStringAnalyse crashes
+		* when the character array is too long. The fix is to limit the size of character
+		* array to two. Note, limiting the array to only one character would cause surrogate 
+		* pairs to stop working.
+		*/
+		char[] sampleChars = new char[Math.min(chars.length, 2)];
+		SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
+		breakRun(run);
+		int count = 0;
+		for (int i = 0; i < chars.length; i++) {
+			OS.MoveMemory(logAttr, run.psla + (i * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
+			if (!logAttr.fWhiteSpace) {
+				sampleChars[count++] = chars[i];
+				if (count == sampleChars.length) break;
+			}
+		}
+		if (count > 0) {
+			int /*long*/ ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
+			int /*long*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
+			int /*long*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
+			int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
+			if (OS.ScriptStringAnalyse(metaFileDc, sampleChars, count, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
+				OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
+				OS.ScriptStringFree(ssa);
+			}
+			OS.HeapFree(hHeap, 0, ssa);
+			OS.SelectObject(metaFileDc, oldMetaFont);
+			int /*long*/ metaFile = OS.CloseEnhMetaFile(metaFileDc);
+			final EMREXTCREATEFONTINDIRECTW emr = new EMREXTCREATEFONTINDIRECTW();
+			class MetaFileEnumProc {
+				int /*long*/ metaFileEnumProc (int /*long*/ hDC, int /*long*/ table, int /*long*/ record, int /*long*/ nObj, int /*long*/ lpData) {
+					OS.MoveMemory(emr.emr, record, EMR.sizeof);
+					switch (emr.emr.iType) {
+						case OS.EMR_EXTCREATEFONTINDIRECTW:
+							OS.MoveMemory(emr, record, EMREXTCREATEFONTINDIRECTW.sizeof);
+							break;
+						case OS.EMR_EXTTEXTOUTW:
+							return 0;
+					}
+					return 1;
+				}
+			};
+			MetaFileEnumProc object = new MetaFileEnumProc();
+			/* Avoid compiler warnings */
+			boolean compilerWarningWorkaround = false;
+			if (compilerWarningWorkaround) object.metaFileEnumProc(0, 0, 0, 0, 0);
+			Callback callback = new Callback(object, "metaFileEnumProc", 5);
+			int /*long*/ address = callback.getAddress();
+			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+			OS.EnumEnhMetaFile(0, metaFile, address, 0, null);
+			OS.DeleteEnhMetaFile(metaFile);
+			callback.dispose();
+			newFont = OS.CreateFontIndirectW(emr.elfw.elfLogFont);
+		} else {
+			/*
+			* The run is composed only by white spaces, this happens when a run is split
+			* by a visual style. The font fallback for the script can not be determined
+			* using only white spaces. The solution is to use the font fallback of the 
+			* previous or next run of the same script.    
+			*/
+			int index = 0;
+			while (index < allRuns.length - 1) {
+				if (allRuns[index] == run) {
+					if (index > 0) {
+						StyleItem pRun = allRuns[index - 1];
+						if (pRun.fallbackFont != 0 && pRun.analysis.eScript == run.analysis.eScript) {
+							LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+							OS.GetObject(pRun.fallbackFont, LOGFONT.sizeof, logFont);
+							newFont = OS.CreateFontIndirect(logFont);
+						}
+					}
+					if (newFont == 0) {
+						if (index + 1 < allRuns.length - 1) {
+							StyleItem nRun = allRuns[index + 1];
+							if (nRun.analysis.eScript == run.analysis.eScript) {
+								shape(hdc, nRun);
+								if (nRun.fallbackFont != 0) {
+									LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+									OS.GetObject(nRun.fallbackFont, LOGFONT.sizeof, logFont);
+									newFont = OS.CreateFontIndirect(logFont);
+								}
+							}
+						}
+					}
+					break;
+				}
+				index++;
+			}
+		}
+		if (newFont != 0) {
+			OS.SelectObject(hdc, newFont);
+			if (shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp)) {
+				run.fallbackFont = newFont;
+			}
+		}
+		if (!shapeSucceed) {
+			if (!sp.fComplex) {
+				run.analysis.fNoGlyphIndex = true;
+				if (shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp)) {
+					run.fallbackFont = newFont;
 				} else {
-					/* ReleaseFont() */
-					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
-					OS.SelectObject(hdc, hFont);
-					OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
-					run.glyphCount = buffer[0];
+					run.analysis.fNoGlyphIndex = false;
 				}
 			}
 		}
+		if (!shapeSucceed) {
+			if (mLangFontLink2 != 0) {
+				int /*long*/[] hNewFont = new int /*long*/[1];
+				int[] dwCodePages = new int[1], cchCodePages = new int[1];
+				/* GetStrCodePages() */
+				OS.VtblCall(4, mLangFontLink2, chars, chars.length, 0, dwCodePages, cchCodePages);
+				/* MapFont() */
+				if (OS.VtblCall(10, mLangFontLink2, hdc, dwCodePages[0], chars[0], hNewFont) == OS.S_OK) {
+					LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+					OS.GetObject(hNewFont[0], LOGFONT.sizeof, logFont);
+					/* ReleaseFont() */
+					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
+					int /*long*/ mLangFont = OS.CreateFontIndirect(logFont);
+					int /*long*/ oldFont = OS.SelectObject(hdc, mLangFont);
+					if (shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp)) {
+						run.fallbackFont = mLangFont;
+					} else {
+						OS.SelectObject(hdc, oldFont);
+						OS.DeleteObject(mLangFont);
+					}
+				}
+			}
+		}
+		if (!shapeSucceed) OS.SelectObject(hdc, hFont);
+		if (newFont != 0 && newFont != run.fallbackFont) OS.DeleteObject(newFont);
+	}
+	
+	if (!shapeSucceed) {
+		/*
+		* Shape Failed.
+		* Give up and shape the run with the default font. 
+		* Missing glyphs typically will be represent as black boxes in the text. 
+		*/
+		OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
+		run.glyphCount = buffer[0];
 	}
 	int[] abc = new int[3];
 	run.advances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
+	if (run.advances == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.goffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
+	if (run.goffsets == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, run.advances, run.goffsets, abc);
-	if (run.style != null && run.style.metrics != null) {
-		GlyphMetrics metrics = run.style.metrics;
-		run.width = metrics.width * run.glyphCount;
-		run.ascent = metrics.ascent;
-		run.descent = metrics.descent;
-		run.leading = 0;
+	run.width = abc[0] + abc[1] + abc[2];
+	TextStyle style = run.style;
+	if (style != null) {
+		OUTLINETEXTMETRIC lotm = null;
+		if (style.underline || style.strikeout) {
+			lotm = OS.IsUnicode ? (OUTLINETEXTMETRIC)new OUTLINETEXTMETRICW() : new OUTLINETEXTMETRICA();
+			if (OS.GetOutlineTextMetrics(hdc, OUTLINETEXTMETRIC.sizeof, lotm) == 0) {
+				lotm = null;
+			}
+		}
+		if (style.metrics != null) {
+			GlyphMetrics metrics = style.metrics;
+			/*
+			 *  Bug in Windows, on a Japanese machine, Uniscribe returns glyphcount
+			 *  equals zero for FFFC (possibly other unicode code points), the fix
+			 *  is to make sure the glyph is at least one pixel wide.
+			 */
+			run.width = metrics.width * Math.max (1, run.glyphCount);
+			run.ascent = metrics.ascent;
+			run.descent = metrics.descent;
+			run.leading = 0;
+		} else {
+			TEXTMETRIC lptm = null;
+			if (lotm != null) {
+				lptm = OS.IsUnicode ? (TEXTMETRIC)((OUTLINETEXTMETRICW)lotm).otmTextMetrics : ((OUTLINETEXTMETRICA)lotm).otmTextMetrics;
+			} else {
+				lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+				OS.GetTextMetrics(hdc, lptm);
+			}
+			run.ascent = lptm.tmAscent;
+			run.descent = lptm.tmDescent;
+			run.leading = lptm.tmInternalLeading;
+		}
+		if (lotm != null) {
+			run.underlinePos = lotm.otmsUnderscorePosition;
+			run.underlineThickness = Math.max(1, lotm.otmsUnderscoreSize);
+			run.strikeoutPos = lotm.otmsStrikeoutPosition;
+			run.strikeoutThickness = Math.max(1, lotm.otmsStrikeoutSize);
+		} else {
+			run.underlinePos = 1;
+			run.underlineThickness = 1;
+			run.strikeoutPos = run.ascent / 2;
+			run.strikeoutThickness = 1;
+		}
+		run.ascent += style.rise;
+		run.descent -= style.rise;
 	} else {
-		run.width = abc[0] + abc[1] + abc[2];
 		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 		OS.GetTextMetrics(hdc, lptm);
 		run.ascent = lptm.tmAscent;
 		run.descent = lptm.tmDescent;
 		run.leading = lptm.tmInternalLeading;
-	}
-	if (run.style != null) {
-		run.ascent += run.style.rise;
-		run.descent -= +run.style.rise;
 	}
 }
 

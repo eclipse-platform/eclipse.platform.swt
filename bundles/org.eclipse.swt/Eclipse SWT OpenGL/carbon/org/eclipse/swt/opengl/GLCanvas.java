@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,10 @@ import org.eclipse.swt.internal.opengl.carbon.*;
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
  * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
+ * @see GLData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.2
  */
 
@@ -28,6 +30,7 @@ public class GLCanvas extends Canvas {
 	int context;
 	int pixelFormat;
 	static final int MAX_ATTRIBUTES = 32;
+	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
 
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
@@ -41,10 +44,6 @@ public class GLCanvas extends Canvas {
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null
  *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);
@@ -108,9 +107,8 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	//FIXME- share lists
-	//context = AGL.aglCreateContext (pixelFormat, share == null ? 0 : share.context);
-	context = AGL.aglCreateContext (pixelFormat, 0);
+	int share = data.shareContext != null ? data.shareContext.context : 0;
+	context = AGL.aglCreateContext (pixelFormat, share);
 	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
 	AGL.aglSetDrawable (context, port);
@@ -122,52 +120,47 @@ public GLCanvas (Composite parent, int style, GLData data) {
 				AGL.aglDestroyContext (context);
 				AGL.aglDestroyPixelFormat (pixelFormat);
 				break;
-			case SWT.Resize:
-			case SWT.Hide:
-			case SWT.Show:
-				getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						fixBounds();
-					}
-				});
-				break;
 			}
 		}
 	};
-	addListener (SWT.Resize, listener);
-	Shell shell = getShell();
-	shell.addListener(SWT.Resize, listener);
-	shell.addListener(SWT.Show, listener);
-	shell.addListener(SWT.Hide, listener);
-	Control c = this;
-	do {
-		c.addListener(SWT.Show, listener);
-		c.addListener(SWT.Hide, listener);
-		c = c.getParent();
-	} while (c != shell);
 	addListener (SWT.Dispose, listener);
+	setData (RESET_VISIBLE_REGION, new Runnable() {
+		public void run() {
+			if (isDisposed ()) return;
+			fixBounds ();
+		}
+	});
 }
 
 void fixBounds () {
-	GCData data = new GCData ();
-	int gc = internal_new_GC (data);
 	Rect bounds = new Rect ();
-	OS.GetRegionBounds (data.visibleRgn, bounds);
+	OS.GetControlBounds (handle, bounds);
+	int window = OS.GetControlOwner (handle);
+	int [] contentView = new int [1];
+	OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
+	bounds.left += (int) pt.x;
+	bounds.top += (int) pt.y;
+	bounds.right += (int) pt.x;
+	bounds.bottom += (int) pt.y;
+	int x = bounds.left;
+	int y = bounds.top;
 	int width = bounds.right - bounds.left;
 	int height = bounds.bottom - bounds.top;
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
-	OS.GetPortBounds (port, rect);
+	OS.GetPortBounds (port, bounds);
 	int [] glbounds = new int [4];
-	glbounds[0] = bounds.left;
-	glbounds[1] = rect.bottom - rect.top - bounds.top - height;
+	glbounds[0] = x;
+	glbounds[1] = bounds.bottom - bounds.top - y - height;
 	glbounds[2] = width;
 	glbounds[3] = height;
 	AGL.aglSetInteger (context, AGL.AGL_BUFFER_RECT, glbounds);
 	AGL.aglEnable (context, AGL.AGL_BUFFER_RECT);
+	GCData data = new GCData ();
+	int gc = internal_new_GC (data);
 	AGL.aglSetInteger (context, AGL.AGL_CLIP_REGION, data.visibleRgn);
-	AGL.aglUpdateContext (context);
+	AGL.aglEnable (context, AGL.AGL_CLIP_REGION);
 	internal_dispose_GC (gc, data);
 }
 
@@ -179,10 +172,6 @@ void fixBounds () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLData getGLData () {
 	checkWidget ();
@@ -229,10 +218,6 @@ public GLData getGLData () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public boolean isCurrent () {
 	checkWidget ();
@@ -247,10 +232,6 @@ public boolean isCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void setCurrent () {
 	checkWidget ();
@@ -266,10 +247,6 @@ public void setCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void swapBuffers () {
 	checkWidget ();

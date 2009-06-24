@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,6 @@ public class NONCLIENTMETRICSW extends NONCLIENTMETRICS {
 	public LOGFONTW lfMenuFont = new LOGFONTW ();
 	public LOGFONTW lfStatusFont = new LOGFONTW ();
 	public LOGFONTW lfMessageFont = new LOGFONTW ();
-	public static final int sizeof = 500;
+	public static final int sizeof = OS.NONCLIENTMETRICSW_sizeof ();
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,10 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#table">Table, TableItem, TableColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TableItem extends Item {
 	Table parent;
@@ -92,10 +96,11 @@ public TableItem (Table parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -122,30 +127,39 @@ static Table checkNull (Table control) {
 }
 
 int calculateWidth (int index, GC gc) {
-	if (index != 0 || (index == 0 && this.width == -1)) {
-		int width = 0;
-		Image image = getImage (index);
-		String text = getText (index);
-		if (image != null) width += image.getBounds ().width + parent.getGap ();
-		if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
-		if (parent.hooks (SWT.MeasureItem)) {
-			Event event = new Event ();
-			event.item = this;
-			event.index = index;
-			event.gc = gc;
-			Rectangle bounds = getBounds (index);
-			event.width = width;
-			event.height = bounds.height;
-			parent.sendEvent (SWT.MeasureItem, event);
-			if (parent.itemHeight == -1) {
-				parent.itemHeight = event.height;
-				OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
-			}
-			width = event.width;
-		}
-		if (index == 0) this.width = width;
+	if (index == 0 && width != -1) return width;
+	int width = 0;
+	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	Font font = null;
+	if (cellFont != null) font = cellFont[index];
+	if (font == null) font = this.font;
+	if (font == null) font = parent.getFont();
+	gc.setFont (font);
+	if (image != null) width += image.getBounds ().width + parent.getGap ();
+	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	boolean sendMeasure = true;
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		sendMeasure = cached;
 	}
-	return this.width;
+	if (sendMeasure && parent.hooks (SWT.MeasureItem)) {
+		Event event = new Event ();
+		event.item = this;
+		event.index = index;
+		event.gc = gc;
+		short [] height = new short [1];
+		OS.GetDataBrowserTableViewRowHeight (parent.handle, height);
+		event.width = width;
+		event.height = height[0];
+		parent.sendEvent (SWT.MeasureItem, event);
+		if (height[0] < event.height) {
+			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
+			redrawWidget (parent.handle, false);
+		}
+		width = event.width;
+	}
+	if (index == 0) this.width = width;
+	return width;
 }
 
 protected void checkSubclass () {
@@ -212,6 +226,47 @@ public Color getBackground (int index) {
 
 /**
  * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public Rectangle getBounds () {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	Rect rect = new Rect();
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	int id = parent.getId (itemIndex);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [0].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int x = rect.left, y = rect.top;
+	int width = 0;
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		x += bounds.width + parent.getGap ();
+	}
+	GC gc = new GC (parent);
+	Point extent = gc.stringExtent (text);
+	gc.dispose ();
+	width += extent.x;
+	if (parent.columnCount > 0) {
+		width = Math.min (width, rect.right - x);
+	}
+	int height = rect.bottom - rect.top;
+	return new Rectangle (x, y, width, height);
+}
+
+/**
+ * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
  *
  * @param index the index that specifies the column
@@ -229,7 +284,8 @@ public Rectangle getBounds (int index) {
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
-	int id = itemIndex + 1;
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	int id = parent.getId (itemIndex);
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
@@ -253,11 +309,6 @@ public Rectangle getBounds (int index) {
 		y = rect2.top;
 		width = rect.right - rect2.left + 1;
 		height = rect2.bottom - rect2.top + 1;
-	}
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -431,7 +482,8 @@ public Rectangle getImageBounds (int index) {
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
-	int id = itemIndex + 1;
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	int id = parent.getId (itemIndex);
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
@@ -447,11 +499,6 @@ public Rectangle getImageBounds (int index) {
 		width += bounds.width;
 	}
 	int height = rect.bottom - rect.top + 1;
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -524,12 +571,71 @@ public String getText (int index) {
 	return "";
 }
 
-void redraw (int propertyID) {
-	cached = true;
-	if (parent.currentItem == this) return;
-	if (parent.drawCount != 0 && propertyID != Table.CHECK_COLUMN_ID) return;
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * table.  An empty rectangle is returned if index exceeds
+ * the index of the table's last column.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Rectangle getTextBounds (int index) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	parent.checkItems (true);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
-	int [] id = new int [] {itemIndex + 1};
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	int id = parent.getId (itemIndex);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int imageWidth = 0;
+	int margin = parent.getInsetWidth () / 2;
+	Image image = getImage (index);
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		imageWidth = bounds.width + parent.getGap ();
+	}
+	int x, y, width, height;
+	if (OS.VERSION >= 0x1040) {
+		if (parent.getLinesVisible ()) {
+			rect.left += Table.GRID_WIDTH;
+			rect.top += Table.GRID_WIDTH;
+		}
+		x = rect.left + imageWidth + margin;
+		y = rect.top;
+		width = Math.max (0, rect.right - rect.left - imageWidth - margin * 2);
+		height = rect.bottom - rect.top;
+	} else {
+		Rect rect2 = new Rect();
+		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		x = rect2.left + imageWidth + margin;
+		y = rect2.top;
+		width = Math.max (0, rect.right - rect2.left + 1 - imageWidth - margin * 2);
+		height = rect2.bottom - rect2.top + 1;
+	}
+	return new Rectangle (x, y, width, height);
+}
+
+void redraw (int propertyID) {
+	if (parent.currentItem == this) return;
+	if (!getDrawing () && propertyID != Table.CHECK_COLUMN_ID) return;
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return;
+	int [] id = new int [] {parent.getId (itemIndex)};
 	OS.UpdateDataBrowserItems (parent.handle, OS.kDataBrowserNoItem, id.length, id, OS.kDataBrowserItemNoProperty, propertyID);
 	/*
 	* Bug in the Macintosh. When the height of the row is smaller than the
@@ -539,11 +645,9 @@ void redraw (int propertyID) {
 	*/
 	if (propertyID == Table.CHECK_COLUMN_ID) {
 		Rect rect = new Rect();
-		if (OS.GetDataBrowserItemPartBounds (parent.handle, itemIndex + 1, propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-			Rect controlRect = new Rect ();
-			if (!OS.HIVIEW) OS.GetControlBounds (parent.handle, controlRect);
-			int x = rect.left - controlRect.left;
-			int y = rect.top - controlRect.top - 1;
+		if (OS.GetDataBrowserItemPartBounds (parent.handle, parent.getId (itemIndex), propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			int x = rect.left;
+			int y = rect.top - 1;
 			int width = rect.right - rect.left;
 			int height = 1;
 			redrawWidget (parent.handle, x, y, width, height, false);
@@ -593,9 +697,11 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (background == color) return;
-	if (background != null && background.equals (color)) return;
+	Color oldColor = background;
+	if (oldColor == color) return;
 	background = color;
+	if (oldColor != null && oldColor.equals (color)) return;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -625,11 +731,14 @@ public void setBackground (int index, Color color) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellBackground == null) {
+		if (color == null) return;
 		cellBackground = new Color [count];
 	}
-	if (cellBackground [index] == color) return;
-	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
+	Color oldColor = cellBackground [index];
+	if (oldColor == color) return;
 	cellBackground [index] = color;
+	if (oldColor != null && oldColor.equals (color)) return;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -648,8 +757,19 @@ public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.checked == checked) return;
+	setChecked (checked, false);
+}
+
+void setChecked (boolean checked, boolean notify) {
 	this.checked = checked;
+	cached = true;
 	redraw (Table.CHECK_COLUMN_ID);
+	if (notify) {
+		Event event = new Event ();
+		event.item = this;
+		event.detail = SWT.CHECK;
+		parent.postEvent (SWT.Selection, event);
+	}
 }
 
 /**
@@ -674,9 +794,11 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (this.font == font) return;
-	if (this.font != null && this.font.equals (font)) return;
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals (font)) return;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -707,11 +829,14 @@ public void setFont (int index, Font font) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellFont == null) {
+		if (font == null) return;
 		cellFont = new Font [count];
 	}
-	if (cellFont [index] == font) return;
-	if (cellFont [index] != null && cellFont [index].equals (font)) return;
+	Font oldFont = cellFont [index];
+	if (oldFont == font) return;
 	cellFont [index] = font;
+	if (oldFont != null && oldFont.equals (font)) return;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -737,9 +862,11 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (foreground == color) return;
-	if (foreground != null && foreground.equals (color)) return;
+	Color oldColor = foreground;
+	if (oldColor == color) return;
 	foreground = color;
+	if (oldColor != null && oldColor.equals (color)) return;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -769,11 +896,14 @@ public void setForeground (int index, Color color){
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellForeground == null) {
+		if (color == null) return;
 		cellForeground = new Color [count];
 	}
-	if (cellForeground [index] == color) return;
-	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
+	Color oldColor = cellForeground [index];
+	if (oldColor == color) return;
 	cellForeground [index] = color;
+	if (oldColor != null && oldColor.equals (color)) return;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -793,6 +923,7 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
+	cached = true;
 	redraw (Table.CHECK_COLUMN_ID);
 }
 
@@ -857,6 +988,7 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;	
 	}
+	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
 	redraw (OS.kDataBrowserNoItem);
 }
@@ -882,8 +1014,8 @@ public void setImage (Image image) {
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
+	cached = true;
 	/* Image indent is not supported on the Macintosh */
-	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -936,6 +1068,7 @@ public void setText (int index, String string) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
+	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
 	redraw (OS.kDataBrowserNoItem);
 }

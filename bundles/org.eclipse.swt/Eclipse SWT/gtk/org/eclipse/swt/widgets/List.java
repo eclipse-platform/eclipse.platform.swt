@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.swt.events.*;
 /** 
  * Instances of this class represent a selectable user interface
  * object that displays a list of strings and issues notification
- * when a string selected.  A list may be single or multi select.
+ * when a string is selected.  A list may be single or multi select.
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -33,6 +33,11 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#list">List snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class List extends Scrollable {
 	int /*long*/ modelHandle;
@@ -146,7 +151,7 @@ public void add (String string, int index) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -154,7 +159,7 @@ public void add (String string, int index) {
  * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -214,6 +219,30 @@ void createHandle (int index) {
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+	/*
+	* Bug in GTK. When a treeview is the child of an override shell, 
+	* and if the user has ever invokes the interactive search field, 
+	* and the treeview is disposed on a focus out event, it segment
+	* faults. The fix is to disable the search field in an override 
+	* shell.
+	*/
+	if ((getShell ().style & SWT.ON_TOP) != 0) {
+		/*
+		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
+		* would prevent the user from being able to type in text to search the tree.
+		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
+		* search. This meant that even if FALSE was passed to enable_search, the user
+		* can still bring up the search pop up using the keybinding. GTK also introduced
+		* the notion of passing a -1 to gtk_set_search_column to disable searching
+		* (including the search key binding).  The fix is to use the right calls
+		* for the right version.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1);
+		} else {
+			OS.gtk_tree_view_set_enable_search (handle, false);
+		}
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -337,6 +366,25 @@ public void deselectAll () {
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+}
+
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	boolean selected = false;
+	if (filter) {
+		int /*long*/ [] path = new int /*long*/ [1];
+		if (OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
+			if (path [0] != 0) {
+				int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+				if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) selected = true;
+				OS.gtk_tree_path_free (path [0]);
+			}
+		} else {
+			return false;
+		}
+	}
+	boolean dragDetect = super.dragDetect (x, y, filter, consume);
+	if (dragDetect && selected && consume != null) consume [0] = true;
+	return dragDetect;
 }
 
 int /*long*/ eventWindow () {
@@ -750,6 +798,20 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
+int /*long*/ gtk_popup_menu (int /*long*/ widget) {
+	int /*long*/ result = super.gtk_popup_menu (widget);
+	/*
+	* Bug in GTK.  The context menu for the typeahead in GtkTreeViewer
+	* opens in the bottom right corner of the screen when Shift+F10
+	* is pressed and the typeahead window was not visible.  The fix is
+	* to prevent the context menu from opening by stopping the default
+	* handler.
+	* 
+	* NOTE: The bug only happens in GTK 2.6.5 and lower.
+	*/
+	return OS.GTK_VERSION < OS.VERSION (2, 6, 5) ? 1 : result;
+}
+
 int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long*/ column) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
@@ -821,7 +883,7 @@ public int indexOf (String string, int start) {
  * range are ignored.
  *
  * @param index the index of the item
- * @return the visibility state of the item at the index
+ * @return the selection state of the item at the index
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1001,7 +1063,7 @@ public void removeAll () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1219,16 +1281,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	OS.gtk_widget_modify_text (handle, 0, color);
-}
-
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to <code>remove</code>'ing the old item at the index, and then
- * <code>add</code>'ing the new item at that index.
+ * zero-relative index to the string argument.
  *
  * @param index the index for the item
  * @param string the new text for the item
@@ -1449,11 +1504,27 @@ public void setSelection (String [] items) {
 public void setTopIndex (int index) {
 	checkWidget();
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0))) return;
-	// FIXME - For some reason, sometimes the tree scrolls to the wrong place
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
+		/*
+		* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
+		* should vertically scroll the cell to the top if use_align is true and row_align is 0.
+		* However, prior to version 2.8 it does not scroll at all.  The fix is to determine
+		* the new location and use gtk_tree_view_scroll_to_point.
+		* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
+		* will have no effect. Therefore, it is still neccessary to call 
+		* gtk_tree_view_scroll_to_cell.
+		*/
+		OS.gtk_widget_realize (handle);
+		GdkRectangle cellRect = new GdkRectangle ();
+		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+		int[] tx = new int[1], ty = new int[1];
+		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+	}
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
@@ -1475,7 +1546,35 @@ public void showSelection () {
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	/*
+	* This code intentionally commented.
+	* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
+	* should scroll the minimum amount to show the cell if use_align is false.
+	* However, what actually happens is the cell is scrolled to the top.
+	* The fix is to determine the new location and use gtk_tree_view_scroll_to_point.
+	* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
+	* will have no effect. Therefore, it is still neccessary to 
+	* call gtk_tree_view_scroll_to_cell.
+	*/
+//	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	OS.gtk_widget_realize (handle);
+	GdkRectangle visibleRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
+	GdkRectangle cellRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+	int[] tx = new int[1], ty = new int[1];
+	OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	if (ty[0] < visibleRect.y ) {
+		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
+		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+	} else {
+		int height = Math.min (visibleRect.height, cellRect.height);
+		if (ty[0] + height > visibleRect.y + visibleRect.height) {
+			OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 1f, 0f);
+			ty[0] += cellRect.height - visibleRect.height;
+			OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+		}
+	}
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }

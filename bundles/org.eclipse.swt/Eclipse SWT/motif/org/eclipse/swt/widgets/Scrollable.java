@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,9 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Scrollable extends Control {
 	int scrolledHandle, formHandle;
@@ -140,6 +143,10 @@ void createWidget (int index) {
 	super.createWidget (index);
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
+}
+void destroyScrollBar (ScrollBar bar) {
+	setScrollBarVisible (bar, false);
+	if ((state & CANVAS) != 0) bar.destroyHandle ();
 }
 void deregister () {
 	super.deregister ();
@@ -346,11 +353,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	int [] argList3 = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
-	if (argList1 [1] != argList3 [1] || argList1 [3] != argList3 [3]) {
-		sendEvent (SWT.Resize);
-		return true;
-	}
-	return false;
+	return argList1 [1] != argList3 [1] || argList1 [3] != argList3 [3];
 }
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;

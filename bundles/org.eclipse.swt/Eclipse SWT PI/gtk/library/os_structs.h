@@ -1,17 +1,17 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
-* The contents of this file are made available under the terms
-* of the GNU Lesser General Public License (LGPL) Version 2.1 that
-* accompanies this distribution (lgpl-v21.txt).  The LGPL is also
-* available at http://www.gnu.org/licenses/lgpl.html.  If the version
-* of the LGPL at http://www.gnu.org is different to the version of
-* the LGPL accompanying this distribution and there is any conflict
-* between the two license versions, the terms of the LGPL accompanying
-* this distribution shall govern.
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * The contents of this file are made available under the terms
+ * of the GNU Lesser General Public License (LGPL) Version 2.1 that
+ * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
+ * available at http://www.gnu.org/licenses/lgpl.html.  If the version
+ * of the LGPL at http://www.gnu.org is different to the version of
+ * the LGPL accompanying this distribution and there is any conflict
+ * between the two license versions, the terms of the LGPL accompanying
+ * this distribution shall govern.
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "os.h"
 
@@ -445,6 +445,30 @@ void setGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpSt
 #define getGtkWidgetClassFields(a,b,c) NULL
 #define setGtkWidgetClassFields(a,b,c)
 #define GtkWidgetClass_sizeof() 0
+#endif
+
+#ifndef NO_PangoAttrColor
+void cachePangoAttrColorFields(JNIEnv *env, jobject lpObject);
+PangoAttrColor *getPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct);
+void setPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct);
+#define PangoAttrColor_sizeof() sizeof(PangoAttrColor)
+#else
+#define cachePangoAttrColorFields(a,b)
+#define getPangoAttrColorFields(a,b,c) NULL
+#define setPangoAttrColorFields(a,b,c)
+#define PangoAttrColor_sizeof() 0
+#endif
+
+#ifndef NO_PangoAttrInt
+void cachePangoAttrIntFields(JNIEnv *env, jobject lpObject);
+PangoAttrInt *getPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct);
+void setPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct);
+#define PangoAttrInt_sizeof() sizeof(PangoAttrInt)
+#else
+#define cachePangoAttrIntFields(a,b)
+#define getPangoAttrIntFields(a,b,c) NULL
+#define setPangoAttrIntFields(a,b,c)
+#define PangoAttrInt_sizeof() 0
 #endif
 
 #ifndef NO_PangoAttribute

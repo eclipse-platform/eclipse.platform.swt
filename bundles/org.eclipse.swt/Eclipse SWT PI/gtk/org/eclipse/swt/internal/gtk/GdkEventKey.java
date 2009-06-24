@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -8,19 +8,31 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventKey extends GdkEvent {
+	/** @field cast=(GdkWindow *) */
 	public int /*long*/ window;
+	/** @field cast=(gint8) */
 	public byte send_event;
+	/** @field cast=(guint32) */
 	public int time;
+	/** @field cast=(guint) */
 	public int state;
+	/** @field cast=(guint) */
 	public int keyval;
+	/** @field cast=(gint) */
 	public int length;
+	/** @field cast=(gchar *) */
 	public int /*long*/ string;
+	/** @field cast=(guint16) */
 	public short hardware_keycode;
-    public byte group;
+    /** @field cast=(guint8) */
+	public byte group;
    	public static final int sizeof = OS.GdkEventKey_sizeof();
 }

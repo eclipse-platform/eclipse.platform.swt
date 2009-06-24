@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,12 +13,17 @@ package org.eclipse.swt.internal.win32;
 public class ACTCTX {
 	public int cbSize;
 	public int dwFlags;
-	public int lpSource;
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpSource;
 	public short wProcessorArchitecture;
 	public short wLangId;
-	public int lpAssemblyDirectory;
-	public int lpResourceName;
-	public int lpApplicationName;
-	public int hModule;
-	public static final int sizeof = 32;
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpAssemblyDirectory;
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpResourceName;
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpApplicationName;
+	/** @field cast=(HMODULE) */
+	public int /*long*/ hModule;
+	public static final int sizeof = OS.ACTCTX_sizeof ();
 }

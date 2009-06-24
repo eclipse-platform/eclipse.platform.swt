@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,8 +24,11 @@ import java.util.*;
 
 /**
  * Instances of this class represent programs and
- * their assoicated file extensions in the operating
+ * their associated file extensions in the operating
  * system.
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#program">Program snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Program {
 	String name;
@@ -39,11 +42,13 @@ public final class Program {
 	 */
 	boolean gnomeExpectUri;
 
-	static final String SHELL_HANDLE_KEY = "org.eclipse.swt.internal.motif.shellHandle";
-	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" };
-	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" };
-	static final String DESKTOP_DATA = "Program_DESKTOP";
-	static final String ICON_THEME_DATA = "Program_GNOME_ICON_THEME";
+	static final String SHELL_HANDLE_KEY = "org.eclipse.swt.internal.motif.shellHandle"; //$NON-NLS-1$
+	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	static final String DESKTOP_DATA = "Program_DESKTOP"; //$NON-NLS-1$
+	static final String ICON_THEME_DATA = "Program_GNOME_ICON_THEME"; //$NON-NLS-1$
+	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
+	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_GNOME = 1;
 	static final int DESKTOP_GNOME_24 = 2;
@@ -695,13 +700,12 @@ static Program[] getPrograms(Display display) {
 }
 
 /**
- * Launches the executable associated with the file in
- * the operating system.  If the file is an executable,
- * then the executable is launched.  Note that a <code>Display</code>
- * must already exist to guarantee that this method returns
- * an appropriate result.
+ * Launches the operating system executable associated with the file or
+ * URL (http:// or https://).  If the file is an executable then the
+ * executable is launched.  Note that a <code>Display</code> must already
+ * exist to guarantee that this method returns an appropriate result.
  *
- * @param fileName the file or program name
+ * @param fileName the file or program name or URL (http:// or https://)
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
  * @exception IllegalArgumentException <ul>
@@ -716,29 +720,30 @@ public static boolean launch(String fileName) {
  *  API: When support for multiple displays is added, this method will
  *       become public and the original method above can be deprecated.
  */
-static boolean launch(Display display, String fileName) {
-	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
-	/* If the argument appears to be a data file (it has an extension) */
-	int index = fileName.lastIndexOf('.');
-	if (index > 0) {
-		switch(getDesktop(display)) {
-			case DESKTOP_GNOME_24:
-				if (gnome_24_launch(fileName)) return true;
-			default:
-				/* Find the associated program, if one is defined. */
-				String extension = fileName.substring(index);
-				Program program = Program.findProgram(display, extension); 
-				
-				/* If the associated program is defined and can be executed, return. */
-				if (program != null && program.execute(fileName)) return true;
-				break;
-		}
+static boolean launch (Display display, String fileName) {
+	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	switch (getDesktop (display)) {
+		case DESKTOP_GNOME_24:
+			if (gnome_24_launch (fileName)) return true;
+		default:
+			int index = fileName.lastIndexOf ('.');
+			if (index != -1) {
+				String extension = fileName.substring (index);
+				Program program = Program.findProgram (display, extension); 
+				if (program != null && program.execute (fileName)) return true;
+			}
+			String lowercaseName = fileName.toLowerCase ();
+			if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+				Program program = Program.findProgram (display, ".html"); //$NON-NLS-1$
+				if (program == null) {
+					program = Program.findProgram (display, ".htm"); //$NON-NLS-1$
+				}
+				if (program != null && program.execute (fileName)) return true;
+			}
+			break;
 	}
-	
-	/* Otherwise, the argument was the program itself. */
 	try {
-		Compatibility.exec(fileName);
+		Compatibility.exec (fileName);
 		return true;
 	} catch (IOException e) {
 		return false;
@@ -788,7 +793,7 @@ public boolean execute(String fileName) {
 
 /**
  * Returns the receiver's image data.  This is the icon
- * that is associated with the reciever in the operating
+ * that is associated with the receiver in the operating
  * system.
  *
  * @return the image data for the program, may be null
@@ -832,7 +837,7 @@ public int hashCode() {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the program
  */
 public String toString() {
 	return "Program {" + name + "}";

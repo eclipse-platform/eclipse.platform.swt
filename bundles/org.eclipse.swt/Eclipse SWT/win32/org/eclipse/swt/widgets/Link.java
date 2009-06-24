@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,8 +30,13 @@ import org.eclipse.swt.accessibility.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Link extends Control {
 	String text;
@@ -41,16 +46,44 @@ public class Link extends Control {
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
-	int focusIndex;
-	int font;
+	int focusIndex, mouseDownIndex;
+	int /*long*/ font;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
-	static final int LinkProc;
+	static final int /*long*/ LinkProc;
 	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
 		if (OS.COMCTL32_MAJOR >= 6) {
 			WNDCLASS lpWndClass = new WNDCLASS ();
 			OS.GetClassInfo (0, LinkClass, lpWndClass);
 			LinkProc = lpWndClass.lpfnWndProc;
+			/*
+			* Feature in Windows.  The SysLink window class
+			* does not include CS_DBLCLKS.  This means that these
+			* controls will not get double click messages such as
+			* WM_LBUTTONDBLCLK.  The fix is to register a new 
+			* window class with CS_DBLCLKS.
+			* 
+			* NOTE:  Screen readers look for the exact class name
+			* of the control in order to provide the correct kind
+			* of assistance.  Therefore, it is critical that the
+			* new window class have the same name.  It is possible
+			* to register a local window class with the same name
+			* as a global class.  Since bits that affect the class
+			* are being changed, it is possible that other native
+			* code, other than SWT, could create a control with
+			* this class name, and fail unexpectedly.
+			*/
+			int /*long*/ hInstance = OS.GetModuleHandle (null);
+			int /*long*/ hHeap = OS.GetProcessHeap ();
+			lpWndClass.hInstance = hInstance;
+			lpWndClass.style &= ~OS.CS_GLOBALCLASS;
+			lpWndClass.style |= OS.CS_DBLCLKS;
+			int byteCount = LinkClass.length () * TCHAR.sizeof;
+			int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (lpszClassName, LinkClass, byteCount);
+			lpWndClass.lpszClassName = lpszClassName;
+			OS.RegisterClass (lpWndClass);
+			OS.HeapFree (hHeap, 0, lpszClassName);
 		} else {
 			LinkProc = 0;
 		}
@@ -89,11 +122,11 @@ public Link (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -119,9 +152,25 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
-	if (LinkProc != 0) return OS.CallWindowProc (LinkProc, hwnd, msg, wParam, lParam);
+	if (LinkProc != 0) {
+		/*
+		* Feature in Windows.  By convention, native Windows controls
+		* check for a non-NULL wParam, assume that it is an HDC and
+		* paint using that device.  The SysLink control does not.
+		* The fix is to check for an HDC and use WM_PRINTCLIENT.
+		*/
+		switch (msg) {
+			case OS.WM_PAINT:
+				if (wParam != 0) {
+					OS.SendMessage (hwnd, OS.WM_PRINTCLIENT, wParam, 0);
+					return 0;
+				}
+				break;
+		}
+		return OS.CallWindowProc (LinkProc, hwnd, msg, wParam, lParam);
+	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
@@ -131,19 +180,26 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int width, height;
 	if (OS.COMCTL32_MAJOR >= 6) {
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		int oldFont = OS.SelectObject (hDC, newFont);
-		TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
-		RECT rect = new RECT ();
-		int flags = OS.DT_CALCRECT;
-		if (wHint != SWT.DEFAULT) {
-			flags |= OS.DT_WORDBREAK;
-			rect.right = wHint;
+		int /*long*/ hDC = OS.GetDC (handle);
+		int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		int /*long*/ oldFont = OS.SelectObject (hDC, newFont);
+		if (text.length () > 0) {
+			TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
+			RECT rect = new RECT ();
+			int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+			if (wHint != SWT.DEFAULT) {
+				flags |= OS.DT_WORDBREAK;
+				rect.right = wHint;
+			}
+			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			width = rect.right - rect.left;
+			height = rect.bottom;
+		} else {
+			TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW () : new TEXTMETRICA ();
+			OS.GetTextMetrics (hDC, lptm);
+			width = 0;
+			height = lptm.tmHeight;
 		}
-		OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-		width = rect.right - rect.left;
-		height = rect.bottom;
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 	} else {
@@ -175,13 +231,17 @@ void createHandle () {
 	state |= THEME_BACKGROUND;
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout = new TextLayout (display);
-		linkColor = new Color (display, LINK_FOREGROUND);
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+			linkColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_HOTLIGHT));
+		} else {
+			linkColor = new Color (display, LINK_FOREGROUND);
+		}
 		disabledColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_GRAYTEXT));
 		offsets = new Point [0];
 		ids = new String [0];
 		mnemonics = new int [0];
 		selection = new Point (-1, -1);
-		focusIndex = -1;
+		focusIndex = mouseDownIndex = -1;
 	}
 }
 
@@ -338,8 +398,7 @@ Rectangle [] getRectangles (int linkIndex) {
 
 /**
  * Returns the receiver's text, which will be an empty
- * string if it has never been set or if the receiver is
- * a <code>SEPARATOR</code> label.
+ * string if it has never been set.
  *
  * @return the receiver's text
  *
@@ -464,7 +523,7 @@ String parse (String string) {
 	}
 	if (start < length) {
 		int tmp = parseMnemonics (buffer, start, tagStart, result);
-		int mnemonic = parseMnemonics (buffer, linkStart, index, result);
+		int mnemonic = parseMnemonics (buffer, Math.max (tagStart, linkStart), length, result);
 		if (mnemonic == -1) mnemonic = tmp;
 		mnemonics [linkIndex] = mnemonic;
 	} else {
@@ -517,7 +576,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -549,8 +608,9 @@ public void removeSelectionListener (SelectionListener listener) {
  * selected, the text field of the selection event contains either the
  * text of the hyperlink or the value of its HREF, if one was specified.
  * In the rare case of identical hyperlinks within the same string, the
- * HREF tag can be used to distinguish between them.  The string may
- * include the mnemonic character and line delimiters.
+ * HREF attribute can be used to distinguish between them.  The string may
+ * include the mnemonic character and line delimiters. The only delimiter
+ * the HREF attribute supports is the quotation mark (").
  * </p>
  * 
  * @param string the new text
@@ -570,12 +630,19 @@ public void setText (String string) {
 	text = string;	
 	if (OS.COMCTL32_MAJOR >= 6) {
 		boolean enabled = OS.IsWindowEnabled (handle);
+		/*
+		* Bug in Windows.  For some reason, when SetWindowText()
+		* is used to set the text of a link control to the empty
+		* string, the old text remains.  The fix is to set the
+		* text to a space instead.
+		*/
+		if (string.length () == 0) string = " ";  //$NON-NLS-1$
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (handle, buffer);
-		parse (string);
+		parse (text);
 		enableWidget (enabled);
 	} else {
-		layout.setText (parse (string));	
+		layout.setText (parse (text));	
 		focusIndex = offsets.length > 0 ? 0 : -1;
 		selection.x = selection.y = -1;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -613,16 +680,16 @@ TCHAR windowClass () {
 	return OS.COMCTL32_MAJOR >= 6 ? LinkClass : display.windowClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return LinkProc != 0 ? LinkProc : display.windowProc;
 }
 
-LRESULT WM_CHAR (int wParam, int lParam) {
+LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (focusIndex == -1) return result;
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case ' ':
 			case SWT.CR:
 				Event event = new Event ();
@@ -645,7 +712,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 				break;
 		}
 	} else {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case ' ':
 			case SWT.CR:
 			case SWT.TAB:
@@ -655,7 +722,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 				* This allows the application to cancel an operation that is normally
 				* performed in WM_KEYDOWN from WM_CHAR.
 				*/
-				int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+				int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 				return new LRESULT (code);
 		}
 		
@@ -663,10 +730,11 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
-	int index, count, code = 0;
+	int index, count;
+	int /*long*/ code = 0;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		LITEM item = new LITEM ();
 		item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
@@ -697,20 +765,20 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETFONT (int wParam, int lParam) {
+LRESULT WM_GETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETFONT (wParam, lParam);
 	if (result != null) return result;
-	int code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
 	if (code != 0) return new LRESULT (code);
 	if (font == 0) font = defaultFont ();
 	return new LRESULT (font);
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	if (OS.COMCTL32_MAJOR >= 6) {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case OS.VK_SPACE:
 			case OS.VK_RETURN:
 			case OS.VK_TAB:
@@ -726,19 +794,19 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) redraw ();
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (focusIndex != -1) setFocus ();
-		int x = lParam & 0xFFFF;
-		int y = lParam >> 16;
+		int x = OS.GET_X_LPARAM (lParam);
+		int y = OS.GET_Y_LPARAM (lParam);
 		int offset = layout.getOffset (x, y, null);
 		int oldSelectionX = selection.x;
 		int oldSelectionY = selection.y;
@@ -759,9 +827,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				Rectangle rect = rects [i];
 				if (rect.contains (x, y)) {
 					if (j != focusIndex) {
-						focusIndex = j;						
 						redraw ();
 					}
+					focusIndex = mouseDownIndex = j;
 					return result;
 				}
 			}
@@ -770,32 +838,47 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
-		if (focusIndex == -1) return result;
-		int x = lParam & 0xFFFF;
-		int y = lParam >> 16;
-		Rectangle [] rects = getRectangles (focusIndex);
+		if (mouseDownIndex == -1) return result;
+		int x = OS.GET_X_LPARAM (lParam);
+		int y = OS.GET_Y_LPARAM (lParam);
+		Rectangle [] rects = getRectangles (mouseDownIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
 			if (rect.contains (x, y)) {
 				Event event = new Event ();
-				event.text = ids [focusIndex];
+				event.text = ids [mouseDownIndex];
 				sendEvent (SWT.Selection, event);
-				return result;
+				break;
 			}
 		}
 	}
+	mouseDownIndex = -1;
 	return result;
 }
 
-LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
+	if (result != null) return result;
+	
+	/*
+	* Feature in Windows. For WM_NCHITTEST, the Syslink window proc
+	* returns HTTRANSPARENT when mouse is over plain text. The fix is
+	* to always return HTCLIENT.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6) return new LRESULT (OS.HTCLIENT);
+	
+	return result;
+}
+
+LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
-		int x = lParam & 0xFFFF;
-		int y = lParam >> 16;
+		int x = OS.GET_X_LPARAM (lParam);
+		int y = OS.GET_Y_LPARAM (lParam);
 		if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
 			int oldSelection = selection.y;
 			selection.y = layout.getOffset (x, y, null);
@@ -826,7 +909,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		return super.WM_PAINT (wParam, lParam);
 	}
@@ -848,7 +931,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
 		RECT rect = new RECT ();
@@ -863,13 +946,13 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) redraw ();
 	return result;
 }
 
-LRESULT WM_SETFONT (int wParam, int lParam) {
+LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout.setFont (Font.win32_new (display, wParam));
 	}
@@ -877,7 +960,7 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	return super.WM_SETFONT (font = wParam, lParam);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
 		RECT rect = new RECT ();
@@ -888,21 +971,29 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmColorChild (int wParam, int lParam) {
+LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmColorChild (wParam, lParam);
+	/*
+	* Feature in Windows.  When a SysLink is disabled, it does
+	* not gray out the non-link portion of the text.  The fix
+	* is to set the text color to the system gray color.
+	*/
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if (!OS.IsWindowEnabled (handle)) {
-			int forePixel = OS.GetSysColor (OS.COLOR_GRAYTEXT);
-			OS.SetTextColor (wParam, forePixel);
+			OS.SetTextColor (wParam, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+			if (result == null) {
+				int backPixel = getBackgroundPixel ();
+				OS.SetBkColor (wParam, backPixel);
+				int /*long*/ hBrush = findBrush (backPixel, OS.BS_SOLID);
+				return new LRESULT (hBrush);
+			}
 		}
 	}
 	return result;
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR >= 6) {
-		NMHDR hdr = new NMHDR ();
-		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 		switch (hdr.code) {
 			case OS.NM_RETURN:
 			case OS.NM_CLICK:
@@ -914,6 +1005,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				break;
 		}
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,14 @@ import org.eclipse.swt.internal.win32.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */
@@ -39,32 +47,111 @@ public class Path extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 	PointF currentPoint = new PointF(), startPoint = new PointF();
 	
 /**
  * Constructs a new empty Path.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the path
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
  */
 public Path (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
-	device.checkGDIP();
+	super(device);
+	this.device.checkGDIP();
 	handle = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
+}
+
+/**
+ * Constructs a new Path that is a copy of <code>path</code>. If
+ * <code>flatness</code> is less than or equal to zero, an unflatten
+ * copy of the path is created. Otherwise, it specifies the maximum
+ * error between the path and its flatten copy. Smaller numbers give
+ * better approximation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param path the path to make a copy
+ * @param flatness the flatness value
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the path has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, Path path, float flatness) {
+	super(device);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	flatness = Math.max(0, flatness);
+	handle = Gdip.GraphicsPath_Clone(path.handle);
+	if (flatness != 0) Gdip.GraphicsPath_Flatten(handle, 0, flatness);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	init();
+}
+
+/**
+ * Constructs a new Path with the specifed PathData.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param data the data for the path
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, PathData data) {
+	this(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(data);
 }
 
 /**
@@ -110,13 +197,13 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	if (width == height) {
 		Gdip.GraphicsPath_AddArc(handle, x, y, width, height, -startAngle, -arcAngle);
 	} else {
-		int path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+		int /*long*/ path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
 		if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int matrix = Gdip.Matrix_new(width, 0, 0, height, x, y);
+		int /*long*/ matrix = Gdip.Matrix_new(width, 0, 0, height, x, y);
 		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Gdip.GraphicsPath_AddArc(path, 0, 0, 1, 1, -startAngle, -arcAngle);
 		Gdip.GraphicsPath_Transform(path, matrix);
-		Gdip.GraphicsPath_AddPath(handle, path, false);
+		Gdip.GraphicsPath_AddPath(handle, path, true);
 		Gdip.Matrix_delete(matrix);
 		Gdip.GraphicsPath_delete(path);
 	}
@@ -194,18 +281,17 @@ public void addString(String string, float x, float y, Font font) {
 	int length = string.length();
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
-	int hDC = device.internal_new_GC(null);
-	int gdipFont = GC.createGdipFont(hDC, font.handle);
+	int /*long*/ hDC = device.internal_new_GC(null);
+	int /*long*/ [] family = new int /*long*/ [1];
+	int /*long*/ gdipFont = GC.createGdipFont(hDC, font.handle, 0, device.fontCollection, family, null);
 	PointF point = new PointF();
 	point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 	point.Y = y;
-	int family = Gdip.FontFamily_new();
-	Gdip.Font_GetFamily(gdipFont, family);
 	int style = Gdip.Font_GetStyle(gdipFont);
 	float size = Gdip.Font_GetSize(gdipFont);
-	Gdip.GraphicsPath_AddString(handle, buffer, length, family, style, size, point, 0);
+	Gdip.GraphicsPath_AddString(handle, buffer, length, family[0], style, size, point, 0);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
-	Gdip.FontFamily_delete(family);
+	Gdip.FontFamily_delete(family[0]);
 	Gdip.Font_delete(gdipFont);
 	device.internal_dispose_GC(hDC, null);
 }
@@ -245,7 +331,7 @@ public void close() {
  * @param x the x coordinate of the point to test for containment
  * @param y the y coordinate of the point to test for containment
  * @param gc the GC to use when testing for containment
- * @param outline controls wether to check the outline or contained area of the path
+ * @param outline controls whether to check the outline or contained area of the path
  * @return <code>true</code> if the path contains the point and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
@@ -261,7 +347,8 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - should use GC transformation
-	gc.initGdip(outline, false);
+	gc.initGdip();
+	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	int mode = OS.GetPolyFillMode(gc.handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
 	Gdip.GraphicsPath_SetFillMode(handle, mode);
 	if (outline) {
@@ -291,18 +378,9 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Path. Applications must dispose of all Paths that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	Gdip.GraphicsPath_delete(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -426,6 +504,33 @@ public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.GraphicsPath_AddLine(handle, currentPoint.X, currentPoint.Y, x, y);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+}
+
+void init(PathData data) {
+	byte[] types = data.types;
+	float[] points = data.points;
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				moveTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_LINE_TO:
+				lineTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_QUAD_TO:
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_CLOSE:
+				close();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**

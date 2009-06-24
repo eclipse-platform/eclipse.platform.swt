@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -112,10 +112,7 @@ protected void layout(Composite composite, boolean flushCache) {
 		Sash[] newSashes = new Sash[controls.length - 1];
 		System.arraycopy(sashForm.sashes, 0, newSashes, 0, sashForm.sashes.length);
 		for (int i = sashForm.sashes.length; i < newSashes.length; i++) {
-			newSashes[i] = new Sash(sashForm, sashForm.sashStyle);
-			newSashes[i].setBackground(sashForm.background);
-			newSashes[i].setForeground(sashForm.foreground);
-			newSashes[i].addListener(SWT.Selection, sashForm.sashListener);
+			newSashes[i] = sashForm.createSash();
 		}
 		sashForm.sashes = newSashes;
 	}

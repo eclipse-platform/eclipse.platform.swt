@@ -1,21 +1,21 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_stats.h"
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 287;
-int OS_nativeFunctionCallCount[287];
+int OS_nativeFunctionCount = 279;
+int OS_nativeFunctionCallCount[279];
 char * OS_nativeFunctionNames[] = {
 	"PfDecomposeStemToID",
 	"PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III",
@@ -63,6 +63,7 @@ char * OS_nativeFunctionNames[] = {
 	"PgSetFont",
 	"PgSetGC",
 	"PgSetMultiClip",
+	"PgSetMultiClipTiles",
 	"PgSetPalette",
 	"PgSetRegion",
 	"PgSetStrokeCap",
@@ -72,6 +73,7 @@ char * OS_nativeFunctionNames[] = {
 	"PgSetStrokeWidth",
 	"PgSetTextColor",
 	"PgSetTextXORColor",
+	"PgSetTranslation",
 	"PgSetUserClip",
 	"PgShmemCreate",
 	"PgShmemDestroy",
@@ -174,6 +176,7 @@ char * OS_nativeFunctionNames[] = {
 	"PtFrameSize",
 	"PtGetAbsPosition",
 	"PtGetResources",
+	"PtGetVisibleTiles",
 	"PtGlobalFocusNext",
 	"PtGlobalFocusNextContainer",
 	"PtGlobalFocusPrev",
@@ -261,10 +264,6 @@ char * OS_nativeFunctionNames[] = {
 	"PtWindowGetState",
 	"PtWindowToBack",
 	"PtWindowToFront",
-	"free",
-	"getenv",
-	"malloc",
-	"memmove__III",
 	"memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I",
@@ -275,9 +274,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I",
-	"memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I",
-	"memmove__I_3BI",
-	"memmove__I_3II",
+	"memmove__ILorg_eclipse_swt_internal_photon_PtWebClient2Data_1t_2I",
 	"memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II",
 	"memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II",
 	"memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II",
@@ -296,13 +293,8 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_photon_PtWebMetaDataCallback_1t_2II",
 	"memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II",
 	"memmove__Lorg_eclipse_swt_internal_photon_PtWebWindowCallback_1t_2II",
-	"memmove___3BII",
 	"memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I",
-	"memmove___3III",
-	"memmove___3SII",
-	"memset",
 	"strdup",
-	"strlen",
 	"uname",
 };
 

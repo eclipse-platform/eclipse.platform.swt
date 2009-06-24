@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 
@@ -30,6 +31,10 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tree">Tree, TreeItem, TreeColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TreeItem extends Item {
 	Tree parent;
@@ -96,10 +101,11 @@ public TreeItem (Tree parent, int style) {
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -165,10 +171,11 @@ public TreeItem (TreeItem parentItem, int style) {
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -212,30 +219,39 @@ static int checkIndex (int index) {
 }
 
 int calculateWidth (int index, GC gc) {
-	if (index != 0 || (index == 0 && this.width == -1)) {
-		int width = 0;
-		Image image = getImage (index);
-		String text = getText (index);
-		if (image != null) width += image.getBounds ().width + parent.getGap ();
-		if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
-		if (parent.hooks (SWT.MeasureItem)) {
-			Event event = new Event ();
-			event.item = this;
-			event.index = index;
-			event.gc = gc;
-			Rectangle bounds = getBounds ();
-			event.width = width;
-			event.height = bounds.height;
-			parent.sendEvent (SWT.MeasureItem, event);
-			if (parent.itemHeight == -1) {
-				parent.itemHeight = event.height;
-				OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
-			}
-			width = event.width;
-		}
-		if (index == 0) this.width = width;
+	if (index == 0 && width != -1) return width;
+	int width = 0;
+	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	Font font = null;
+	if (cellFont != null) font = cellFont[index];
+	if (font == null) font = this.font;
+	if (font == null) font = parent.getFont();
+	gc.setFont (font);
+	if (image != null) width += image.getBounds ().width + parent.getGap ();
+	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	boolean sendMeasure = true;
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		sendMeasure = cached;
 	}
-	return this.width;
+	if (sendMeasure && parent.hooks (SWT.MeasureItem)) {
+		Event event = new Event ();
+		event.item = this;
+		event.index = index;
+		event.gc = gc;
+		short [] height = new short [1];
+		OS.GetDataBrowserTableViewRowHeight (parent.handle, height);
+		event.width = width;
+		event.height = height [0];
+		parent.sendEvent (SWT.MeasureItem, event);
+		if (height [0] < event.height) {
+			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
+			redrawWidget (parent.handle, false);
+		}
+		width = event.width;
+	}
+	if (index == 0) this.width = width;
+	return width;
 }
 
 protected void checkSubclass () {
@@ -258,11 +274,12 @@ void clear () {
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
- * value.  If the tree was created with the SWT.VIRTUAL style, these
- * attributes are requested again as needed.
+ * value.  If the tree was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param index the index of the item to clear
- * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ * @param all <code>true</code> if all child items of the indexed item should be
+ * cleared recursively, and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
@@ -287,11 +304,12 @@ public void clear (int index, boolean all) {
 
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
- * tree was created with the SWT.VIRTUAL style, these attributes
- * are requested again as needed.
+ * attributes of the items are set to their default values. If the
+ * tree was created with the <code>SWT.VIRTUAL</code> style, these
+ * attributes are requested again as needed.
  * 
- * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ * @param all <code>true</code> if all child items should be cleared
+ * recursively, and <code>false</code> otherwise
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -379,7 +397,7 @@ public Rectangle getBounds () {
 	int width = 0;
 	if (image != null) {
 		Rectangle bounds = image.getBounds ();
-		x += bounds.width + 2;
+		x += bounds.width + parent.getGap ();
 	}
 	GC gc = new GC (parent);
 	Point extent = gc.stringExtent (text);
@@ -389,11 +407,6 @@ public Rectangle getBounds () {
 		width = Math.min (width, rect.right - x);
 	}
 	int height = rect.bottom - rect.top;
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -441,11 +454,6 @@ public Rectangle getBounds (int index) {
 		y = rect2.top;
 		width = rect.right - rect2.left + 1;
 		height = rect2.bottom - rect2.top + 1;
-	}
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -576,7 +584,7 @@ public Color getForeground (int index) {
  * the <code>CHECK style, return false.
  * <p>
  *
- * @return the grayed state
+ * @return the grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -655,11 +663,6 @@ public Rectangle getImageBounds (int index) {
 		width += bounds.width;
 	}
 	int height = rect.bottom - rect.top + 1;
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -800,6 +803,62 @@ public String getText (int index) {
 }
 
 /**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Rectangle getTextBounds (int index) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect();
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int[] disclosure = new int [1];
+	OS.GetDataBrowserListViewDisclosureColumn (parent.handle, disclosure, new boolean [1]);
+	int imageWidth = 0;
+	int margin = index == 0 ? 0 : parent.getInsetWidth (columnId, false) / 2;
+	Image image = getImage (index);
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		imageWidth = bounds.width + parent.getGap ();
+	}
+	int x, y, width, height;
+	if (OS.VERSION >= 0x1040 && disclosure [0] != columnId) {
+		if (parent.getLinesVisible ()) {
+			rect.left += Tree.GRID_WIDTH;
+			rect.top += Tree.GRID_WIDTH;
+		}
+		x = rect.left + imageWidth + margin;
+		y = rect.top;
+		width = Math.max (0, rect.right - rect.left - imageWidth - margin * 2);;
+		height = rect.bottom - rect.top;
+	} else {
+		Rect rect2 = new Rect();
+		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		x = rect2.left + imageWidth + margin;
+		y = rect2.top;
+		width = Math.max (0, rect.right - rect2.left + 1 - imageWidth - margin * 2);
+		height = rect2.bottom - rect2.top + 1;
+	}
+	return new Rectangle (x, y, width, height);
+}
+
+/**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
  * argument, and returns the index of that item. If no item
@@ -809,8 +868,8 @@ public String getText (int index) {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -828,9 +887,8 @@ public int indexOf (TreeItem item) {
 }
 
 void redraw (int propertyID) {
-	cached = true;
 	if (parent.ignoreRedraw) return;
-	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
+	if (!getDrawing () && propertyID != Tree.CHECK_COLUMN_ID) return;
 	int parentHandle = parent.handle;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 	/*
@@ -839,6 +897,10 @@ void redraw (int propertyID) {
 	* much slower than updating the items array for a specific column.  The fix
 	* is to give the specific column ids instead.
 	*/
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (parent.handle, callbacks);
+	callbacks.v1_itemCompareCallback = 0;
+	OS.SetDataBrowserCallbacks (parent.handle, callbacks);
 	int [] ids = new int [] {id};
 	if (propertyID == OS.kDataBrowserNoItem) {
 		if ((parent.style & SWT.CHECK) != 0) {
@@ -854,6 +916,8 @@ void redraw (int propertyID) {
 	} else {
 		OS.UpdateDataBrowserItems (parentHandle, parentID, ids.length, ids, OS.kDataBrowserItemNoProperty, propertyID);
 	}
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	OS.SetDataBrowserCallbacks (parent.handle, callbacks);
 	/*
 	* Bug in the Macintosh. When the height of the row is smaller than the
 	* check box, the tail of the check mark draws outside of the item part
@@ -863,10 +927,8 @@ void redraw (int propertyID) {
 	if (propertyID == Tree.CHECK_COLUMN_ID) {
 		Rect rect = new Rect();
 		if (OS.GetDataBrowserItemPartBounds (parentHandle, id, propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-			Rect controlRect = new Rect ();
-			if (!OS.HIVIEW) OS.GetControlBounds (parentHandle, controlRect);
-			int x = rect.left - controlRect.left;
-			int y = rect.top - controlRect.top - 1;
+			int x = rect.left;
+			int y = rect.top - 1;
 			int width = rect.right - rect.left;
 			int height = 1;
 			redrawWidget (parentHandle, x, y, width, height, false);
@@ -941,9 +1003,10 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (background == color) return;
-	if (background != null && background.equals (color)) return;
+	Color oldColor = background;
+	if (oldColor == color) return;
 	background = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
@@ -975,13 +1038,16 @@ public void setBackground (int index, Color color) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellBackground == null) {
+		if (color == null) return;
 		cellBackground = new Color [count];
 	}
-	if (cellBackground [index] == color) return;
-	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
+	Color oldColor = cellBackground [index];
+	if (oldColor == color) return;
 	cellBackground [index] = color;
-	cached = true; 
-	redraw (OS.kDataBrowserNoItem);
+	if (oldColor != null && oldColor.equals (color)) return;
+	cached = true;
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 /**
@@ -999,9 +1065,19 @@ public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.checked == checked) return;
+	setChecked (checked, false);
+}
+
+void setChecked (boolean checked, boolean notify) {
 	this.checked = checked;
 	cached = true;
 	redraw (Tree.CHECK_COLUMN_ID);
+	if (notify) {
+		Event event = new Event ();
+		event.item = this;
+		event.detail = SWT.CHECK;
+		parent.postEvent (SWT.Selection, event);
+	}
 }
 
 /**
@@ -1017,6 +1093,7 @@ public void setChecked (boolean checked) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
+	if (expanded == getExpanded ()) return;
 	parent.ignoreExpand = true;
 	if (expanded) {
 		OS.OpenDataBrowserContainer (parent.handle, id);
@@ -1025,6 +1102,12 @@ public void setExpanded (boolean expanded) {
 	}
 	parent.ignoreExpand = false;
 	cached = true;
+	if (expanded) {
+		parent.setScrollWidth (false, childIds, false);
+	} else {
+		parent.setScrollWidth (true);
+		parent.fixScrollBar ();
+	}
 }
 
 /**
@@ -1049,9 +1132,10 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (this.font == font) return;
-	if (this.font != null && this.font.equals (font)) return;
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
@@ -1083,13 +1167,16 @@ public void setFont (int index, Font font) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellFont == null) {
+		if (font == null) return;
 		cellFont = new Font [count];
 	}
-	if (cellFont [index] == font) return;
-	if (cellFont [index] != null && cellFont [index].equals (font)) return;
+	Font oldFont = cellFont [index];
+	if (oldFont == font) return;
 	cellFont [index] = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-	redraw (OS.kDataBrowserNoItem);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 /**
@@ -1117,9 +1204,10 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (foreground == color) return;
-	if (foreground != null && foreground.equals (color)) return;
+	Color oldColor = this.foreground;
+	if (oldColor == color) return;
 	foreground = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
@@ -1151,20 +1239,23 @@ public void setForeground (int index, Color color){
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellForeground == null) {
+		if (color == null) return;
 		cellForeground = new Color [count];
 	}
-	if (cellForeground [index] == color) return;
-	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
+	Color oldColor = cellForeground [index];
+	if (oldColor == color) return;
 	cellForeground [index] = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	redraw (OS.kDataBrowserNoItem);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 /**
- * Sets the grayed state of the receiver.
- * <p>
+ * Sets the grayed state of the checkbox for this item.  This state change 
+ * only applies if the Tree was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state
+ * @param grayed the new grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1243,9 +1334,12 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;	
 	}
-	if (index == 0) parent.setScrollWidth (this);
 	cached = true;
-	redraw (OS.kDataBrowserNoItem);
+	if (index == 0) parent.setScrollWidth (this);
+	if (0 <= index && index < count) {
+		int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+		redraw (columnId);
+	}
 }
 
 public void setImage (Image image) {
@@ -1254,7 +1348,7 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the number of items contained in the receiver.
+ * Sets the number of child items contained in the receiver.
  *
  * @param count the number of items
  *
@@ -1325,9 +1419,12 @@ public void setText (int index, String string) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
-	if (index == 0) parent.setScrollWidth (this);
 	cached = true;
-	redraw (OS.kDataBrowserNoItem);
+	if (index == 0) parent.setScrollWidth (this);
+	if (0 <= index && index < count) {
+		int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+		redraw (columnId);
+	}
 }
 
 public void setText (String string) {

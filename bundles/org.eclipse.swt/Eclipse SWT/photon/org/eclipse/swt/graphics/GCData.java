@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,8 @@ import org.eclipse.swt.*;
  * within the packages provided by SWT. It is not available on all
  * platforms, and should never be called from application code.
  * </p>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noinstantiate This class is not intended to be instantiated by clients.
  */
 public final class GCData {
 	public Device device;
@@ -31,7 +33,7 @@ public final class GCData {
 	public int widget, topWidget;
 	public int foreground = -1;
 	public int background = -1;
-	public byte[] font;
+	public Font font;
 	public boolean xorMode;
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineCap = SWT.CAP_FLAT;

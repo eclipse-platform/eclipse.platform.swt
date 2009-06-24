@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,9 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * Support for showing a Busy Cursor during a long running process.
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#busyindicator">BusyIndicator snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class BusyIndicator {
 
@@ -38,8 +41,6 @@ public class BusyIndicator {
 * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
  * </ul>
- * 
- * @see #showWhile
  */
 
 public static void showWhile(Display display, Runnable runnable) {

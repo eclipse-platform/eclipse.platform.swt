@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.ole.win32;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
 
 final class OleEventSink
@@ -26,7 +27,7 @@ final class OleEventSink
 
 	private OleEventTable eventTable;
 	
-OleEventSink(OleControlSite widget, int iUnknown, GUID riid) {
+OleEventSink(OleControlSite widget, int /*long*/ iUnknown, GUID riid) {
 
 	this.widget = widget;
 	this.eventGuid = riid;
@@ -36,10 +37,10 @@ OleEventSink(OleControlSite widget, int iUnknown, GUID riid) {
 }
 
 void connect () {
-	int[] ppvObject = new int[1];
+	int /*long*/[] ppvObject = new int /*long*/[1];
 	if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 		IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
-		int[] ppCP = new int[1];
+		int /*long*/[] ppCP = new int /*long*/[1];
 		if (cpc.FindConnectionPoint(eventGuid, ppCP) == COM.S_OK) {
 			IConnectionPoint cp = new IConnectionPoint(ppCP[0]);
 			int[] pCookie = new int[1];
@@ -61,19 +62,19 @@ int AddRef() {
 }
 private void createCOMInterfaces() {
 	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 4, 8}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 		// method3 GetTypeInfoCount - not implemented
 		// method4 GetTypeInfo - not implemented
 		// method5 GetIDsOfNames - not implemented
-		public int method6(int[] args) {return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
+		public int /*long*/ method6(int /*long*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 	};
 }
 void disconnect() {
 	// disconnect event sink
 	if (eventCookie != 0 && objIUnknown != null) {
-		int[] ppvObject = new int[1];
+		int /*long*/[] ppvObject = new int /*long*/[1];
 		if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 			IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
 			if (cpc.FindConnectionPoint(eventGuid, ppvObject) == COM.S_OK) {
@@ -93,7 +94,7 @@ private void disposeCOMInterfaces() {
 	iDispatch = null;
 	
 }
-private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispParams, int pVarResult, int pExcepInfo, int pArgErr)
+private int Invoke(int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*long*/ pDispParams, int /*long*/ pVarResult, int /*long*/ pExcepInfo, int /*long*/ pArgErr)
 {
 	if (eventTable == null || !eventTable.hooks(dispIdMember)) return COM.S_OK;
 	
@@ -104,8 +105,8 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 		DISPPARAMS dispParams = new DISPPARAMS();
 		COM.MoveMemory(dispParams, pDispParams, DISPPARAMS.sizeof);
 		eventInfo = new Variant[dispParams.cArgs];
-		int size = Variant.sizeof;
-		int offset = (dispParams.cArgs - 1) * size;
+		int size = VARIANT.sizeof;
+		int /*long*/ offset = (dispParams.cArgs - 1) * size;
 		
 		for (int j = 0; j < dispParams.cArgs; j++){
 			eventInfo[j] = new Variant();
@@ -143,7 +144,7 @@ private void notifyListener (int eventType, OleEvent event) {
 	event.widget = widget;
 	eventTable.sendEvent (event);
 }
-private int QueryInterface(int riid, int ppvObject) {
+private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
@@ -152,12 +153,12 @@ private int QueryInterface(int riid, int ppvObject) {
 
 	if ( COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) ||
 			COM.IsEqualGUID(guid, eventGuid)) {
-		COM.MoveMemory(ppvObject, new int[] {iDispatch.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return OLE.S_OK;
 	}
 
-	COM.MoveMemory(ppvObject, new int[] {0}, 4);
+	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,21 +16,25 @@ public class REBARBANDINFO {
 	public int fStyle;
 	public int clrFore;
 	public int clrBack;
-	public int lpText;
+	/** @field cast=(LPTSTR) */
+	public int /*long*/ lpText;
 	public int cch;
 	public int iImage;
-	public int hwndChild;
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndChild;
 	public int cxMinChild;
 	public int cyMinChild;
 	public int cx;
-	public int hbmBack;
+	/** @field cast=(HBITMAP) */
+	public int /*long*/ hbmBack;
 	public int wID;
 	public int cyChild;  
 	public int cyMaxChild;
 	public int cyIntegral;
 	public int cxIdeal;
-	public int lParam;
+	public int /*long*/ lParam;
+	/** @field flags=no_wince */
 	public int cxHeader;
 	/* Note in WinCE.  The field cxHeader is not defined. */ 
-	public static final int sizeof = OS.IsWinCE ? 76 : 80;
+	public static final int sizeof = OS.REBARBANDINFO_sizeof ();
 }

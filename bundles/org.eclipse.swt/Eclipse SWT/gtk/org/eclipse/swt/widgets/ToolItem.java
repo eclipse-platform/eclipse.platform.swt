@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,10 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#toolbar">ToolBar, ToolItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolItem extends Item {
 	int /*long*/ boxHandle, arrowHandle, arrowBoxHandle, separatorHandle, labelHandle, imageHandle;
@@ -98,10 +102,11 @@ public ToolItem (ToolBar parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -121,14 +126,14 @@ public ToolItem (ToolBar parent, int style, int index) {
 	this.parent = parent;
 	int count = parent.getItemCount ();
 	if (!(0 <= index && index <= count)) {
-		error (SWT.ERROR_ITEM_NOT_ADDED);
+		error (SWT.ERROR_INVALID_RANGE);
 	}
 	createWidget (index);
 }
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -137,7 +142,7 @@ public ToolItem (ToolBar parent, int style, int index) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user,
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -262,6 +267,19 @@ void createWidget (int index) {
 	parent.relayout ();
 }
 
+Widget [] computeTabList () {
+	if (isTabGroup ()) {
+		if (getEnabled ()) {
+			if ((style & SWT.SEPARATOR) != 0) {
+				if (control != null) return control.computeTabList();
+			} else {
+				return new Widget [] {this};
+			}
+		}
+	}
+	return new Widget [0];
+}
+
 void deregister() {
 	super.deregister ();
 	if (labelHandle != 0) display.removeWidget (labelHandle);
@@ -320,12 +338,14 @@ public Rectangle getBounds () {
 		width = OS.GTK_WIDGET_WIDTH (topHandle);
 		height = OS.GTK_WIDGET_HEIGHT (topHandle);		
 	}
+	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
+	if ((style & SWT.SEPARATOR) != 0 && control != null) height = Math.max (height, 23);
 	return new Rectangle (x, y, width, height);
 }
 
 /**
  * Returns the control that is used to fill the bounds of
- * the item when the items is a <code>SEPARATOR</code>.
+ * the item when the item is a <code>SEPARATOR</code>.
  *
  * @return the control
  *
@@ -515,11 +535,12 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 					OS.gdk_event_get_coords (eventPtr, x_win, y_win);
 					int x = OS.GTK_WIDGET_X (arrowHandle) - OS.GTK_WIDGET_X (handle);
 					int width = OS.GTK_WIDGET_WIDTH (arrowHandle);
-					if ((((state & SWT.RIGHT_TO_LEFT) == 0) && x <= (int)x_win [0])
-						|| (((state & SWT.RIGHT_TO_LEFT) != 0) && (int)x_win [0] <= x + width)) {
+					if ((((parent.style & SWT.RIGHT_TO_LEFT) == 0) && x <= (int)x_win [0])
+						|| (((parent.style & SWT.RIGHT_TO_LEFT) != 0) && (int)x_win [0] <= x + width)) {
 						event.detail = SWT.ARROW;
 						int /*long*/ topHandle = topHandle ();
 						event.x = OS.GTK_WIDGET_X (topHandle);
+						if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - OS.GTK_WIDGET_WIDTH (topHandle) - event.x;
 						event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
 					}
 					break;
@@ -538,6 +559,7 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+	parent.gtk_enter_notify_event (widget, event);
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if (drawHotImage && imageHandle != 0) {
 		ImageList imageList = parent.imageList;
@@ -575,6 +597,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
+	parent.gtk_leave_notify_event (widget, event);
 	if (drawHotImage) {
 		drawHotImage = false;
 		if (imageHandle != 0 && image != null) {
@@ -657,6 +680,20 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+boolean isTabGroup () {
+	ToolItem [] tabList = parent._getTabItemList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
+	if ((style & SWT.SEPARATOR) != 0) return true;
+	int index = parent.indexOf (this);
+	if (index == 0) return true;
+	ToolItem previous = parent.getItem (index - 1);
+	return (previous.getStyle () & SWT.SEPARATOR) != 0;
+}
+
 void register () {
 	super.register ();
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
@@ -678,7 +715,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -714,6 +751,7 @@ void resizeControl () {
 		*/
 		Rectangle itemRect = getBounds ();
 		control.setSize (itemRect.width, itemRect.height);
+		OS.gtk_widget_set_size_request (handle, itemRect.width, itemRect.height);
 		Rectangle rect = control.getBounds ();
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
@@ -736,7 +774,7 @@ void selectRadio () {
 
 /**
  * Sets the control that is used to fill the bounds of
- * the item when the items is a <code>SEPARATOR</code>.
+ * the item when the item is a <code>SEPARATOR</code>.
  *
  * @param control the new control
  *
@@ -765,7 +803,7 @@ public void setControl (Control control) {
  * Sets the receiver's disabled image to the argument, which may be
  * null indicating that no disabled image should be displayed.
  * <p>
- * The disbled image is displayed when the receiver is disabled.
+ * The disabled image is displayed when the receiver is disabled.
  * </p>
  *
  * @param image the disabled image to display on the receiver (may be null)
@@ -837,9 +875,9 @@ void setFontDescription (int /*long*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	OS.gtk_widget_modify_fg (handle,  OS.GTK_STATE_NORMAL, color);
-	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
-	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle,  OS.GTK_STATE_NORMAL, color);
+	setForegroundColor (handle, color);
+	if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	if (imageHandle != 0) setForegroundColor (imageHandle, color);
 }
 
 /**
@@ -943,19 +981,23 @@ public void setSelection (boolean selected) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
+boolean setTabItemFocus (boolean next) {
+	return setFocus ();
+}
+
 /**
  * Sets the receiver's text. The string may include
  * the mnemonic character.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
  * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text
@@ -987,8 +1029,17 @@ public void setText (String string) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -1000,13 +1051,13 @@ public void setToolTipText (String string) {
 	checkWidget();
 	if (parent.toolTipText == null) {
 		Shell shell = parent._getShell ();
-		setToolTipText (shell, string, toolTipText);
+		setToolTipText (shell, string);
 	}
 	toolTipText = string;
 }
 
-void setToolTipText (Shell shell, String newString, String oldString) {
-	shell.setToolTipText (handle, newString, oldString);
+void setToolTipText (Shell shell, String newString) {
+	shell.setToolTipText (handle, newString);
 }
 
 /**
@@ -1023,7 +1074,9 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	OS.gtk_widget_set_size_request (handle, width, -1);
+	boolean isVertical = (parent.style & SWT.VERTICAL) != 0;
+	OS.gtk_widget_set_size_request (separatorHandle, width, isVertical ? 6 : 15);
+	OS.gtk_widget_set_size_request (handle, width, isVertical ? 6 : 15);
 	parent.relayout ();
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,19 +19,23 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
- *  <dl>
+ * <p><dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, CENTER</dd>
  * <dt><b>Events:</b></dt>
  * <dd> Move, Resize, Selection</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tree">Tree, TreeItem, TreeColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TreeColumn extends Item {
 	int /*long*/ labelHandle, imageHandle, buttonHandle;
@@ -92,13 +96,17 @@ public TreeColumn (Tree parent, int style) {
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
  * </p>
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -146,7 +154,7 @@ public void addControlListener(ControlListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -154,7 +162,7 @@ public void addControlListener(ControlListener listener) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -186,6 +194,7 @@ protected void checkSubclass () {
 
 void createWidget (int index) {
 	parent.createItem (this, index);
+	setOrientation ();
 	hookEvents ();
 	register ();
 	text = "";
@@ -280,6 +289,19 @@ public boolean getResizable () {
 	return OS.gtk_tree_view_column_get_resizable (handle);
 }
 
+/**
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public String getToolTipText () {
 	checkWidget();
 	return toolTipText;
@@ -309,14 +331,16 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 	* There is no API to get a double click on a table column.  Normally, when
 	* the mouse is double clicked, this is indicated by GDK_2BUTTON_PRESS
 	* but the table column sends the click signal on button release.  The fix is to
-	* test for doublc click by remembering the last click time and mouse button
+	* test for double click by remembering the last click time and mouse button
 	* and testing for the double click interval.
 	*/
 	boolean doubleClick = false;
+	boolean postEvent = true;
 	int /*long*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
+		OS.gdk_event_free (eventPtr);
 		switch (gdkEvent.type) {
 			case OS.GDK_BUTTON_RELEASE: {
 				int clickTime = display.getDoubleClickTime ();
@@ -326,11 +350,37 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 				}
 				lastTime = eventTime == 0 ? 1: eventTime;
 				lastButton = eventButton;
+				break;
+			}
+			case OS.GDK_MOTION_NOTIFY: {
+				/*
+				* Bug in GTK.  Dragging a column in a GtkTreeView causes a clicked 
+				* signal to be emitted even though the mouse button was never released.
+				* The fix to ignore the signal if the current GDK event is a motion notify.
+				* The GTK bug was fixed in version 2.6
+				*/
+				if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) postEvent = false;
+				break;
 			}
 		}
-		OS.gdk_event_free (eventPtr);
 	}
-	postEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
+	if (postEvent) postEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
+	return 0;
+}
+
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
+	switch (event.type) {
+		case OS.GDK_BUTTON_PRESS: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 3) {
+				parent.showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+			}
+			break;
+		}
+	}
 	return 0;
 }
 
@@ -356,7 +406,10 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.clicked, display.closures [CLICKED], false);
-	if (buttonHandle != 0) OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
+	if (buttonHandle != 0) {
+		OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
+		OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
+	}
 	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
 }
 
@@ -385,7 +438,7 @@ public void pack () {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		if (OS.gtk_tree_model_get_iter_first (parent.modelHandle, iter)) {
 			do {
-				width = Math.max (width, parent.calculateWidth (handle, iter));
+				width = Math.max (width, parent.calculateWidth (handle, iter, true));
 			} while (OS.gtk_tree_model_iter_next(parent.modelHandle, iter));
 		}
 		OS.g_free (iter);
@@ -441,7 +494,7 @@ public void removeControlListener (ControlListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -468,7 +521,10 @@ public void removeSelectionListener(SelectionListener listener) {
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
  * or <code>CENTER</code>.
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param alignment the new alignment 
  *
  * @exception SWTException <ul>
@@ -526,7 +582,7 @@ public void setImage (Image image) {
  * 
  * @see Tree#setColumnOrder(int[])
  * @see Tree#getColumnOrder()
- * @see TreeeColumn#getMoveable()
+ * @see TreeColumn#getMoveable()
  * @see SWT#Move
  * 
  * @since 3.2
@@ -534,6 +590,15 @@ public void setImage (Image image) {
 public void setMoveable (boolean moveable) {
 	checkWidget();
 	OS.gtk_tree_view_column_set_reorderable (handle, moveable);
+}
+
+void setOrientation() {
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (buttonHandle != 0) {
+			OS.gtk_widget_set_direction (buttonHandle, OS.GTK_TEXT_DIR_RTL);
+			OS.gtk_container_forall (buttonHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);	
+		}
+	}
 }
 
 /**
@@ -567,15 +632,37 @@ public void setText (String string) {
 	}
 }
 
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setToolTipText (String string) {
 	checkWidget();
 	Shell shell = parent._getShell ();
-	setToolTipText (shell, string, toolTipText);
+	setToolTipText (shell, string);
 	toolTipText = string;
 }
 
-void setToolTipText (Shell shell, String newString, String oldString) {
-	shell.setToolTipText (buttonHandle, newString, oldString);
+void setToolTipText (Shell shell, String newString) {
+	shell.setToolTipText (buttonHandle, newString);
 }
 
 /**
@@ -590,19 +677,21 @@ void setToolTipText (Shell shell, String newString, String oldString) {
  */
 public void setWidth (int width) {
 	checkWidget();
+	if (width < 0) return;
+	if (width == lastWidth) return;
 	if (width > 0) {
 		useFixedWidth = true;
-		/*
-		* Bug in GTK.  For some reason, calling gtk_tree_view_column_set_visible()
-		* when the parent is not realized fails to show the column. The fix is to
-		* ensure that the table has been realized.
-		*/
-		OS.gtk_widget_realize (parent.handle);
 		OS.gtk_tree_view_column_set_fixed_width (handle, width);
-		OS.gtk_tree_view_column_set_visible (handle, true);
-	} else {
-		OS.gtk_tree_view_column_set_visible (handle, false);
 	}
+	/*
+	 * Bug in GTK.  For some reason, calling gtk_tree_view_column_set_visible()
+	 * when the parent is not realized fails to show the column. The fix is to
+	 * ensure that the table has been realized.
+	 */
+	if (width != 0) OS.gtk_widget_realize (parent.handle);
+	OS.gtk_tree_view_column_set_visible (handle, width != 0);
+	lastWidth = width;
+	sendEvent (SWT.Resize);
 }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,8 @@ package org.eclipse.swt.accessibility;
 /**
  * Class ACC contains all the constants used in defining an
  * Accessible object.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */
@@ -49,6 +51,8 @@ public class ACC {
 	public static final int ROLE_PUSHBUTTON = 0x2b;
 	public static final int ROLE_CHECKBUTTON = 0x2c;
 	public static final int ROLE_RADIOBUTTON = 0x2d;
+	/** @since 3.5 */
+	public static final int ROLE_SPLITBUTTON = 0x3e;
 	public static final int ROLE_COMBOBOX = 0x2e;
 	public static final int ROLE_TEXT = 0x2a;
 	public static final int ROLE_TOOLBAR = 0x16;

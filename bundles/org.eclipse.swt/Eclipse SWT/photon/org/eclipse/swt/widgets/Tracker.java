@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,13 +34,18 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tracker">Tracker snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Tracker extends Widget {
 	Composite parent;
 	boolean tracking, stippled;
-	Rectangle [] rectangles, proportions;
+	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
-	int resizeCursor, clientCursor, clientBitmap;
+	int resizeCursor;
+	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 
 	/*
@@ -82,6 +87,7 @@ public class Tracker extends Widget {
  * @see SWT#RIGHT
  * @see SWT#UP
  * @see SWT#DOWN
+ * @see SWT#RESIZE
  */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
@@ -185,6 +191,7 @@ public void addKeyListener (KeyListener listener) {
 }
 
 Point adjustMoveCursor () {
+	if (bounds == null) return null;
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	/*
@@ -201,6 +208,7 @@ Point adjustMoveCursor () {
 }
 
 Point adjustResizeCursor () {
+	if (bounds == null) return null;
 	int newX, newY;
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
@@ -234,7 +242,7 @@ Point adjustResizeCursor () {
 	* If the client has not provided a custom cursor then determine
 	* the appropriate resize cursor.
 	*/
-	if (clientCursor == 0) {
+	if (clientCursor == null) {
 		int newCursor = 0;
 		switch (cursorOrientation) {
 			case SWT.UP:
@@ -293,6 +301,7 @@ public void close () {
 }
 
 Rectangle computeBounds () {
+	if (rectangles.length == 0) return null;
 	int xMin = rectangles [0].x;
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
@@ -313,21 +322,23 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	bounds = computeBounds ();
-	for (int i = 0; i < rects.length; i++) {
-		int x = 0, y = 0, width = 0, height = 0;
-		if (bounds.width != 0) {
-			x = (rects [i].x - bounds.x) * 100 / bounds.width;
-			width = rects [i].width * 100 / bounds.width;
-		} else {
-			width = 100;
+	if (bounds != null) {
+		for (int i = 0; i < rects.length; i++) {
+			int x = 0, y = 0, width = 0, height = 0;
+			if (bounds.width != 0) {
+				x = (rects [i].x - bounds.x) * 100 / bounds.width;
+				width = rects [i].width * 100 / bounds.width;
+			} else {
+				width = 100;
+			}
+			if (bounds.height != 0) {
+				y = (rects [i].y - bounds.y) * 100 / bounds.height;
+				height = rects [i].height * 100 / bounds.height;
+			} else {
+				height = 100;
+			}
+			result [i] = new Rectangle (x, y, width, height);			
 		}
-		if (bounds.height != 0) {
-			y = (rects [i].y - bounds.y) * 100 / bounds.height;
-			height = rects [i].height * 100 / bounds.height;
-		} else {
-			height = 100;
-		}
-		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
@@ -377,10 +388,8 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
-	int length = 0;
-	if (rectangles != null) length = rectangles.length;
-	Rectangle [] result = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	Rectangle [] result = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
 	}
@@ -403,6 +412,7 @@ public boolean getStippled () {
 }
 
 void moveRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
@@ -429,7 +439,6 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget();
-	if (rectangles == null) return false;
 	
 	int input_group = OS.PhInputGroup (0);
 	PhCursorInfo_t info = new PhCursorInfo_t ();
@@ -465,12 +474,11 @@ public boolean open () {
 		OS.PhInitDrag (rid, OS.Ph_DRAG_KEY_MOTION | OS.Ph_TRACK_DRAG, rect, null, input_group, null, null, null, null, null);
 	}
 
-	int oldX, oldY;
+	int oldX = info.pos_x, oldY = info.pos_y;
 	int size = PhEvent_t.sizeof + 1024;
 	int buffer = OS.malloc (size);
 	PhEvent_t phEvent = new PhEvent_t ();
 	Event event = new Event ();
-	Point cursorPos;
 	
 	// if exactly one of UP/DOWN is specified as a style then set the cursor
 	// orientation accordingly (the same is done for LEFT/RIGHT styles below)
@@ -485,6 +493,7 @@ public boolean open () {
 
 	update ();
 	drawRectangles (rectangles, stippled);
+	Point cursorPos = null;
 	if ((style & SWT.MENU) == 0) {
 		oldX = info.pos_x;
 		oldY = info.pos_y;
@@ -494,8 +503,10 @@ public boolean open () {
 		} else {
 			cursorPos = adjustMoveCursor ();
 		}
-		oldX = cursorPos.x;
-		oldY = cursorPos.y;
+		if (cursorPos != null) {
+			oldX = cursorPos.x;
+			oldY = cursorPos.y;
+		}
 	}
 	
 	tracking = true;
@@ -572,7 +583,10 @@ public boolean open () {
 								drawRectangles (rectangles, stippled);
 							}
 							cursorPos = adjustResizeCursor ();
-							newX = cursorPos.x; newY = cursorPos.y;
+							if (cursorPos != null) {
+								newX = cursorPos.x;
+								newY = cursorPos.y;
+							}
 						} else {
 							moveRectangles (newX - oldX, newY - oldY);
 							sendEvent (SWT.Move, event);
@@ -742,7 +756,10 @@ public boolean open () {
 								}
 								cursorPos = adjustMoveCursor ();
 							}
-							oldX = cursorPos.x;  oldY = cursorPos.y;
+							if (cursorPos != null) {
+								oldX = cursorPos.x;
+								oldY = cursorPos.y;
+							}
 						}
 					}
 					break;
@@ -777,8 +794,8 @@ public boolean open () {
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
-	display = null;
-	rectangles = null;
+	rectangles = proportions = null;
+	bounds = null;
 }
 
 /**
@@ -832,6 +849,7 @@ public void removeKeyListener(KeyListener listener) {
 }
 
 void resizeRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.
@@ -955,24 +973,17 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-	int type = 0;
-	int bitmap = 0;
-	if (cursor != null) {
-		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		type = cursor.type;
-		bitmap = cursor.bitmap;
-	}
-	clientCursor = type;
-	clientBitmap = bitmap;
+	if (cursor != null && cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	clientCursor = cursor;
 }
 
 void setCursor (int cursorHandle) {
 	if (cursorHandle == 0) return;
 	int type = 0;
 	int bitmap = 0;
-	if (clientCursor != 0) {
-		type = clientCursor;
-		bitmap = clientBitmap;
+	if (clientCursor != null) {
+		type = clientCursor.type;
+		bitmap = clientCursor.bitmap;
 	} else if (resizeCursor != 0) {
 		type = resizeCursor;
 	}
@@ -1011,9 +1022,8 @@ void setCursor (int cursorHandle) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int length = rectangles.length;
-	this.rectangles = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	this.rectangles = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
 		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);

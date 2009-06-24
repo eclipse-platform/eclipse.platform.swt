@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,6 +51,9 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * 
  * @see RowData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#rowlayout">RowLayout snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class RowLayout extends Layout {
 	
@@ -127,6 +130,17 @@ public final class RowLayout extends Layout {
 	 */
 	public boolean fill = false;
 
+	/**
+	 * center specifies whether the controls in a row should be
+	 * centered vertically in each cell for horizontal layouts,
+	 * or centered horizontally in each cell for vertical layouts.
+	 *
+	 * The default value is false.
+	 * 
+	 * @since 3.4
+	 */
+	public boolean center = false;
+	
 	/**
 	 * justify specifies whether the controls in a row should be
 	 * fully justified, with any extra space placed between the controls.
@@ -258,7 +272,7 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 	int [] wraps = null;
 	boolean wrapped = false;
 	Rectangle [] bounds = null;
-	if (move && (justify || fill)) {
+	if (move && (justify || fill || center)) {
 		bounds = new Rectangle [count];
 		wraps = new int [count];
 	}
@@ -272,17 +286,17 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		}
 		if (wrap && (i != 0) && (x + childWidth > width)) {
 			wrapped = true;
-			if (move && (justify || fill)) wraps [i - 1] = maxHeight;
+			if (move && (justify || fill || center)) wraps [i - 1] = maxHeight;
 			x = marginLeft + marginWidth;
 			y += spacing + maxHeight;
 			if (pack) maxHeight = 0;
 		}
-		if (pack || fill) {
+		if (pack || fill || center) {
 			maxHeight = Math.max (maxHeight, childHeight);
 		}
 		if (move) {
 			int childX = x + clientX, childY = y + clientY;
-			if (justify || fill) {
+			if (justify || fill || center) {
 				bounds [i] = new Rectangle (childX, childY, childWidth, childHeight);
 			} else {
 				child.setBounds (childX, childY, childWidth, childHeight);
@@ -293,13 +307,13 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 	}
 	maxX = Math.max (clientX + marginLeft + marginWidth, maxX - spacing);
 	if (!wrapped) maxX += marginRight + marginWidth;
-	if (move && (justify || fill)) {
+	if (move && (justify || fill || center)) {
 		int space = 0, margin = 0;
 		if (!wrapped) {
 			space = Math.max (0, (width - maxX) / (count + 1));
 			margin = Math.max (0, ((width - maxX) % (count + 1)) / 2);
 		} else {
-			if (fill || justify) {
+			if (fill || justify || center) {
 				int last = 0;
 				if (count > 0) wraps [count - 1] = maxHeight;
 				for (int i=0; i<count; i++) {
@@ -315,7 +329,13 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 						}
 						for (int j=last; j<=i; j++) {
 							if (justify) bounds [j].x += (space * (j - last + 1)) + margin;
-							if (fill) bounds [j].height = wraps [i];
+							if (fill) {
+								bounds [j].height = wraps [i];
+							} else {
+								if (center) {
+									bounds [j].y += Math.max (0, (wraps [i] - bounds [j].height) / 2);
+								}
+							}
 						}
 						last = i + 1;
 					}
@@ -325,7 +345,13 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		for (int i=0; i<count; i++) {
 			if (!wrapped) {
 				if (justify) bounds [i].x += (space * (i + 1)) + margin;
-				if (fill) bounds [i].height = maxHeight;
+				if (fill) {
+					bounds [i].height = maxHeight;
+				} else {
+					if (center) {
+						bounds [i].y += Math.max (0, (maxHeight - bounds [i].height) / 2);
+					}
+				}
 			}
 			children [i].setBounds (bounds [i]);
 		}
@@ -365,7 +391,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 	int [] wraps = null;
 	boolean wrapped = false;
 	Rectangle [] bounds = null;
-	if (move && (justify || fill)) {
+	if (move && (justify || fill || center)) {
 		bounds = new Rectangle [count];
 		wraps = new int [count];
 	}
@@ -379,17 +405,17 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		}
 		if (wrap && (i != 0) && (y + childHeight > height)) {
 			wrapped = true;
-			if (move && (justify || fill)) wraps [i - 1] = maxWidth;
+			if (move && (justify || fill || center)) wraps [i - 1] = maxWidth;
 			x += spacing + maxWidth;
 			y = marginTop + marginHeight;
 			if (pack) maxWidth = 0;
 		}
-		if (pack || fill) {
+		if (pack || fill || center) {
 			maxWidth = Math.max (maxWidth, childWidth);
 		}
 		if (move) {
 			int childX = x + clientX, childY = y + clientY;
-			if (justify || fill) {
+			if (justify || fill || center) {
 				bounds [i] = new Rectangle (childX, childY, childWidth, childHeight);
 			} else {
 				child.setBounds (childX, childY, childWidth, childHeight);
@@ -400,13 +426,13 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 	}
 	maxY = Math.max (clientY + marginTop + marginHeight, maxY - spacing);
 	if (!wrapped) maxY += marginBottom + marginHeight;
-	if (move && (justify || fill)) {
+	if (move && (justify || fill || center)) {
 		int space = 0, margin = 0;
 		if (!wrapped) {
 			space = Math.max (0, (height - maxY) / (count + 1));
 			margin = Math.max (0, ((height - maxY) % (count + 1)) / 2);
 		} else {
-			if (fill || justify) {
+			if (fill || justify || center) {
 				int last = 0;
 				if (count > 0) wraps [count - 1] = maxWidth;
 				for (int i=0; i<count; i++) {
@@ -422,7 +448,13 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 						}
 						for (int j=last; j<=i; j++) {
 							if (justify) bounds [j].y += (space * (j - last + 1)) + margin;
-							if (fill) bounds [j].width = wraps [i];
+							if (fill) {
+								bounds [j].width = wraps [i];
+							} else {
+								if (center) {
+									bounds [j].x += Math.max (0, (wraps [i] - bounds [j].width) / 2);
+								}
+							}
 						}
 						last = i + 1;
 					}
@@ -432,7 +464,14 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		for (int i=0; i<count; i++) {
 			if (!wrapped) {
 				if (justify) bounds [i].y += (space * (i + 1)) + margin;
-				if (fill) bounds [i].width = maxWidth;
+				if (fill) {
+					bounds [i].width = maxWidth;
+				} else {
+					if (center) {
+						bounds [i].x += Math.max (0, (maxWidth - bounds [i].width) / 2);
+					}
+				}
+
 			}
 			children [i].setBounds (bounds [i]);
 		}
@@ -444,7 +483,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the layout
  */
 public String toString () {
  	String string = getName ()+" {";

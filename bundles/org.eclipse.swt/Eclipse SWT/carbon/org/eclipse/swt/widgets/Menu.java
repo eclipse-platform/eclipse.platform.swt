@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.FontInfo;
+import org.eclipse.swt.internal.carbon.ATSFontMetrics;
 import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.MenuTrackingData;
@@ -37,6 +37,11 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#menu">Menu snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Menu extends Widget {
 	/**
@@ -53,7 +58,7 @@ public class Menu extends Widget {
 	short id;
 	int x, y, itemCount;
 //	int width, height;
-	boolean hasLocation, modified, closed;
+	boolean hasLocation, modified, closed, ignoreMatch;
 	MenuItem [] items;
 	MenuItem cascade, defaultItem, lastTarget;
 	Decorations parent;
@@ -62,6 +67,11 @@ public class Menu extends Widget {
  * Constructs a new instance of this class given its parent,
  * and sets the style for the instance so that the instance
  * will be a popup menu on the given parent's shell.
+ * <p>
+ * After constructing a menu, it can be set into its parent
+ * using <code>parent.setMenu(menu)</code>.  In this case, the parent may
+ * be any control in the same widget tree as the parent.
+ * </p>
  *
  * @param parent a control which will be the parent of the new instance (cannot be null)
  *
@@ -93,6 +103,9 @@ public Menu (Control parent) {
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
+ * </p><p>
+ * After constructing a menu or menuBar, it can be set into its parent
+ * using <code>parent.setMenu(menu)</code> or <code>parent.setMenuBar(menuBar)</code>.
  * </p>
  *
  * @param parent a decorations control which will be the parent of the new instance (cannot be null)
@@ -109,6 +122,9 @@ public Menu (Control parent) {
  * @see SWT#BAR
  * @see SWT#DROP_DOWN
  * @see SWT#POP_UP
+ * @see SWT#NO_RADIO_GROUP
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -123,6 +139,10 @@ public Menu (Decorations parent, int style) {
  * (which must be a <code>Menu</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentMenu
+ * using <code>parentMenu.setMenu(menu)</code>.
+ * </p>
  *
  * @param parentMenu a menu which will be the parent of the new instance (cannot be null)
  *
@@ -147,6 +167,10 @@ public Menu (Menu parentMenu) {
  * (which must be a <code>MenuItem</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent menu.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentItem
+ * using <code>parentItem.setMenu(menu)</code>.
+ * </p>
  *
  * @param parentItem a menu item which will be the parent of the new instance (cannot be null)
  *
@@ -187,29 +211,32 @@ static int checkStyle (int style) {
 
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	if (!visible) return;
-	int left = 0, top = 0;
-	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetGlobalMouse (where);
-	if (hasLocation) {
-		left = x;
-		top = y;
+	if (visible) {
+		org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+		if (hasLocation) {
+			where.h = (short) x;
+			where.v = (short) y;
+		} else {
+			OS.GetGlobalMouse (where);
+		}
+		/*
+		* Bug in the Macintosh.  When a menu is open with ContextualMenuSelect() the
+		* system will add other items before displaying it and remove the items before
+		* returning from the function.  If the menu is changed in kEventMenuOpening, the
+		* system will fail to remove those items.  The fix is to send SWT.Show before
+		* calling ContextualMenuSelect() instead of in kEventMenuOpening.
+		*/		
+		sendEvent (SWT.Show);
+		modified = false;
+		/*
+		* Feature in the Macintosh.  When the application FruitMenu is installed,
+		* the output parameters cannot be NULL or ContextualMenuSelect() crashes.
+		* The fix is to ensure they are not NULL.
+		*/
+		OS.ContextualMenuSelect (handle, where, false, OS.kCMHelpItemRemoveHelp, null, null, new int [1], new short [1], new short [1]);
 	} else {
-		left = where.h;
-		top = where.v;
+		OS.CancelMenuTracking (handle, true, 0);
 	}
-	/*
-	* Feature in the Macintosh.  PopUpMenuSelect() does not position
-	* the menu at the specified coordinates. The x coordinate is honoured,
-	* but the top of the menu is placed a few pixels above the y coordinate.
-	* This means that the first item in the menu will be under the mouse
-	* and will draw selected.  This is against the Macintosh User Guidelines.
-	* The fix is to offset the menu by one pixel in both directions when
-	* it coincides with the mouse location. 
-	*/
-	if (left == where.h) left++;
-	if (top == where.v) top++;
-	OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)-1);
 }
 
 /**
@@ -328,6 +355,10 @@ void destroyWidget () {
 	}
 }
 
+void fixMenus (Decorations newParent) {
+	this.parent = newParent;
+}
+
 /*public*/ Rectangle getBounds () {
 	checkWidget ();
 	if ((style & SWT.BAR) != 0) {
@@ -336,9 +367,9 @@ void destroyWidget () {
 		int height = OS.GetMBarHeight ();
 		int gdevice = OS.GetMainDevice ();
 		int [] ptr = new int [1];
-		OS.memcpy (ptr, gdevice, 4);
+		OS.memmove (ptr, gdevice, 4);
 		GDevice device = new GDevice ();
-		OS.memcpy (device, ptr [0], GDevice.sizeof);
+		OS.memmove (device, ptr [0], GDevice.sizeof);
 		return new Rectangle (0, 0, device.right - device.left, height);
 	}
 	OS.CalcMenuSize (handle);
@@ -583,6 +614,7 @@ void hookEvents () {
 		OS.kEventClassMenu, OS.kEventMenuMeasureItemWidth,
 		OS.kEventClassMenu, OS.kEventMenuOpening,
 		OS.kEventClassMenu, OS.kEventMenuTargetItem,
+		OS.kEventClassMenu, OS.kEventMenuMatchKey,
 	};
 	int menuTarget = OS.GetMenuEventTarget (handle);
 	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
@@ -613,12 +645,18 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 //		MenuItem item = items [i];
 //		item.x = item.y = item.width = item.height = 0;
 //	}
-	sendEvent (SWT.Hide);
-	if (!OS.HIVIEW) {
-		if (hooks (SWT.Hide)) {
-			getShell().update (true);
-		}
-	}
+	/*
+	* Feature in the Macintosh.  In order to populate the search field of
+	* the help menu, the events kEventMenuOpening, kEventMenuClosed and
+	* others are sent to sub menus even when the cascade item of the submenu
+	* is disabled.  Normally, the user can never get to these submenus.
+	* This means that application code does not expect SWT.Show and SWT.Hide
+	* events.  The fix is to avoid the events when the cascade item is
+	* disabled.
+	*/
+	boolean send = true;
+	if (cascade != null && !cascade.getEnabled ()) send = false;
+	if (send) sendEvent (SWT.Hide);
 	return OS.eventNotHandledErr;
 }
 
@@ -656,8 +694,9 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+	if (!(0 < index [0] && index [0] <= itemCount)) return result;
 	MenuItem item = items [index [0] - 1];
-	if (item.accelerator == 0) {
+	if (item.accelerator == 0 && !item.acceleratorSet) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
 			String accelText = item.text.substring (accelIndex + 1);
@@ -673,21 +712,26 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 				int modifierIndex = modifierIndex (accelText);
 				char [] buffer = new char [length - modifierIndex - 1];
 				accelText.getChars (modifierIndex + 1, length, buffer, 0);
-				int font = OS.kThemeMenuItemFont;
-				if (buffer.length > 1) font = OS.kThemeMenuItemCmdKeyFont;
+				int themeFont = OS.kThemeMenuItemFont;
+				if (buffer.length > 1) themeFont = OS.kThemeMenuItemCmdKeyFont;
 				byte [] family = new byte [256];
 				short [] size = new short [1];
 				byte [] style = new byte [1];
-				OS.GetThemeFont ((short) font, (short) OS.smSystemScript, family, size, style);
-				FontInfo info = new FontInfo ();
-				OS.FetchFontInfo (family[0], size[0], style[0], info);
+				OS.GetThemeFont ((short) themeFont, (short) OS.smSystemScript, family, size, style);
+				short id = OS.FMGetFontFamilyFromName (family);
+				int [] font = new int [1]; 
+				OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
+				int atsFont = OS.FMGetATSFontRefFromFont (font [0]);
+				ATSFontMetrics fontMetrics = new ATSFontMetrics ();
+				OS.ATSFontGetVerticalMetrics (atsFont, OS.kATSOptionFlagsDefault, fontMetrics);
+				OS.ATSFontGetHorizontalMetrics (atsFont, OS.kATSOptionFlagsDefault, fontMetrics);
 				int [] metric = new int [1];
 				OS.GetThemeMetric (OS.kThemeMetricMenuIconTrailingEdgeMargin, metric);
 				int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 				org.eclipse.swt.internal.carbon.Point size1 = new org.eclipse.swt.internal.carbon.Point ();
-				OS.GetThemeTextDimensions (str, (short) font, 0, false, size1, null);
-				rect.left = (short) (rect.right - Math.max (info.widMax, size1.h) - metric [0]);
-				OS.DrawThemeTextBox (str, (short) font, OS.kThemeStateActive, false, rect, (short) OS.teFlushLeft, context [0]);
+				OS.GetThemeTextDimensions (str, (short) themeFont, 0, false, size1, null);
+				rect.left = (short) (rect.right - Math.max ((int)(fontMetrics.maxAdvanceWidth * size[0]), size1.h) - metric [0]);
+				OS.DrawThemeTextBox (str, (short) themeFont, OS.kThemeStateActive, false, rect, (short) OS.teFlushLeft, context [0]);
 				OS.CFRelease (str);
 				
 				/* Draw the modifiers */
@@ -728,13 +772,36 @@ int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventMenuMatchKey (int nextHandler, int theEvent, int userData) {
+	if (ignoreMatch) return OS.eventNotHandledErr;
+	int [] menuIndex = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, menuIndex);
+	int [] eventRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamEventRef, OS.typeEventRef, null, 4, null, eventRef);
+	int options = OS.kMenuEventDontCheckSubmenus | OS.kMenuEventIncludeDisabledItems | OS.kMenuEventQueryOnly;
+	short [] index = new short [1];
+	ignoreMatch = true;
+	boolean isMenuKeyEvent = OS.IsMenuKeyEvent(menuIndex[0], eventRef[0], options, null, index);
+	ignoreMatch = false;
+	if (isMenuKeyEvent && 0 <= index [0] && index [0] < items.length) {
+		MenuItem item = items [index [0] - 1];
+		if (item.accelerator == 0) {
+			/* Tell Menu Manager we don't want command key matching */
+			return OS.menuItemNotFoundError;
+		}
+	}
+	/* Tell Menu Manager to use default command key matching algorithm */
+	return OS.eventNotHandledErr; 
+}
+
 int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+	if (!(0 < index [0] && index [0] <= itemCount)) return result;
 	MenuItem item = items [index [0] - 1];
-	if (item.accelerator == 0) {
+	if (item.accelerator == 0 && !item.acceleratorSet) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
 			String accelText = item.text.substring (accelIndex + 1);
@@ -763,11 +830,28 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuOpening (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	closed = false;
-	sendEvent (SWT.Show);
-	modified = false;
-	if (!OS.HIVIEW) {
-		if (hooks (SWT.Show)) {
-			getShell().update (true);
+	/*
+	* Bug in the Macintosh.  When a menu is open with ContextualMenuSelect() the
+	* system will add other items before displaying it and remove the items before
+	* returning from the function.  If the menu is changed in kEventMenuOpening, the
+	* system will fail to remove those items.  The fix is to send SWT.Show before
+	* calling ContextualMenuSelect() instead of in kEventMenuOpening.
+	*/	
+	if ((style & SWT.POP_UP) == 0) {
+		/*
+		* Feature in the Macintosh.  In order to populate the search field of
+		* the help menu, the events kEventMenuOpening, kEventMenuClosed and
+		* others are sent to sub menus even when the cascade item of the submenu
+		* is disabled.  Normally, the user can never get to these submenus.
+		* This means that application code does not expect SWT.Show and SWT.Hide
+		* events.  The fix is to avoid the events when the cascade item is
+		* disabled.
+		*/
+		boolean send = true;
+		if (cascade != null && !cascade.getEnabled ()) send = false;
+		if (send) {
+			sendEvent (SWT.Show);
+			modified = false;
 		}
 	}
 	return OS.eventNotHandledErr;
@@ -779,14 +863,9 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 	lastTarget = null;
 	short [] index = new short [1];
 	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index) == OS.noErr) {
-		if (index [0] > 0) lastTarget = items [index [0] - 1];
+		if (0 < index [0] && index [0] <= itemCount) lastTarget = items [index [0] - 1];
 		if (lastTarget != null) {
 			lastTarget.sendEvent (SWT.Arm);
-			if (!OS.HIVIEW) {
-				if (lastTarget.hooks (SWT.Arm)) {
-					getShell().update (true);
-				}
-			}
 		}
 	}
 	return OS.eventNotHandledErr;
@@ -802,7 +881,7 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -836,7 +915,9 @@ public int indexOf (MenuItem item) {
 public boolean isEnabled () {
 	checkWidget ();
 	Menu parentMenu = getParentMenu ();
-	if (parentMenu == null) return getEnabled ();
+	if (parentMenu == null) {
+		return getEnabled () && parent.isEnabled ();
+	}
 	return getEnabled () && parentMenu.isEnabled ();
 }
 

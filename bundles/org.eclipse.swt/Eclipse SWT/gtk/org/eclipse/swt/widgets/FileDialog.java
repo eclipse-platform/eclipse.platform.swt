@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,11 @@ import org.eclipse.swt.internal.gtk.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#filedialog">FileDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
@@ -38,6 +43,9 @@ public class FileDialog extends Dialog {
 	String fileName = "";
 	String[] fileNames = new String [0];
 	String fullPath = "";
+	int filterIndex = -1;
+	boolean overwrite = false;
+	boolean uriMode;
 	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
@@ -56,7 +64,7 @@ public class FileDialog extends Dialog {
  * </ul>
  */
 public FileDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -81,24 +89,38 @@ public FileDialog (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#SAVE
+ * @see SWT#OPEN
+ * @see SWT#MULTI
  */
 public FileDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 String computeResultChooserDialog () {
 	/* MULTI is only valid if the native dialog's action is Open */
 	fullPath = null;
 	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
-		int /*long*/ list = OS.gtk_file_chooser_get_filenames (handle);
+		int /*long*/ list = 0;
+		if (uriMode) {
+			list = OS.gtk_file_chooser_get_uris (handle);
+		} else {
+			list = OS.gtk_file_chooser_get_filenames (handle);
+		}
 		int listLength = OS.g_slist_length (list);
 		fileNames = new String [listLength];
 		int /*long*/ current = list;
 		int writePos = 0;
 		for (int i = 0; i < listLength; i++) {
 			int /*long*/ name = OS.g_slist_data (current);
-			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
-			OS.g_free (name);
+			int /*long*/ utf8Ptr = 0;
+			if (uriMode) {
+				utf8Ptr = name;
+			} else {
+				utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
+				OS.g_free (name);
+			}
 			if (utf8Ptr != 0) {
 				int /*long*/ [] items_written = new int /*long*/ [1];
 				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
@@ -121,22 +143,52 @@ String computeResultChooserDialog () {
 		}
 		OS.g_slist_free (list);
 	} else {
-		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
-		if (path != 0) {
-			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
-			OS.g_free (path);
-			if (utf8Ptr != 0) {
-				int /*long*/ [] items_written = new int /*long*/ [1];
-				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
-				OS.g_free (utf8Ptr);
-				if (utf16Ptr != 0) {
-					int clength = (int)/*64*/items_written [0];
-					char [] chars = new char [clength];
-					OS.memmove (chars, utf16Ptr, clength * 2);
-					OS.g_free (utf16Ptr);
-					fullPath = new String (chars);
-					fileNames = new String [1];
-					fileNames[0] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
+		int /*long*/ utf8Ptr = 0;
+		if (uriMode) {
+			utf8Ptr = OS.gtk_file_chooser_get_uri (handle);
+		} else {
+			int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
+			if (path != 0) {
+				utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
+				OS.g_free (path);
+			}
+		}
+		if (utf8Ptr != 0) {
+			int /*long*/ [] items_written = new int /*long*/ [1];
+			int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+			OS.g_free (utf8Ptr);
+			if (utf16Ptr != 0) {
+				int clength = (int)/*64*/items_written [0];
+				char [] chars = new char [clength];
+				OS.memmove (chars, utf16Ptr, clength * 2);
+				OS.g_free (utf16Ptr);
+				fullPath = new String (chars);
+				fileNames = new String [1];
+				fileNames[0] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
+			}
+		}
+	}
+	filterIndex = -1;
+	int /*long*/ filter = OS.gtk_file_chooser_get_filter (handle);
+	if (filter != 0) {
+		int /*long*/ filterNamePtr = OS.gtk_file_filter_get_name (filter);
+		if (filterNamePtr != 0) {
+			int length = OS.strlen (filterNamePtr);
+			byte[] buffer = new byte [length];
+			OS.memmove (buffer, filterNamePtr, length);
+			//OS.g_free (filterNamePtr); //GTK owns this pointer - do not free
+			String filterName = new String (Converter.mbcsToWcs (null, buffer));
+			for (int i = 0; i < filterExtensions.length; i++) {
+				if (filterNames.length > 0) {
+					if (filterNames[i].equals(filterName)) {
+						filterIndex = i;
+						break;
+					}
+				} else {
+					if (filterExtensions[i].equals(filterName)) {
+						filterIndex = i;
+						break;
+					}
 				}
 			}
 		}
@@ -149,6 +201,7 @@ String computeResultChooserDialog () {
 	return fullPath;
 }
 String computeResultClassicDialog () {
+	filterIndex = -1;
 	GtkFileSelection selection = new GtkFileSelection ();
 	OS.memmove (selection, handle);
 	int /*long*/ entry = selection.selection_entry;
@@ -262,6 +315,25 @@ public String [] getFilterExtensions () {
 	return filterExtensions;
 }
 /**
+ * Get the 0-based index of the file extension filter
+ * which was selected by the user, or -1 if no filter
+ * was selected.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @return index the file extension filter index
+ * 
+ * @see #getFilterExtensions
+ * @see #getFilterNames
+ * 
+ * @since 3.4
+ */
+public int getFilterIndex () {
+	return filterIndex;
+}
+/**
  * Returns the names that describe the filter extensions
  * which the dialog will use to filter the files it shows.
  *
@@ -281,6 +353,18 @@ public String [] getFilterNames () {
  */
 public String getFilterPath () {
 	return filterPath;
+}
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwrite () {
+	return overwrite;
 }
 /**
  * Makes the dialog visible and brings it to the front
@@ -308,23 +392,46 @@ String openChooserDialog () {
 		OS.GTK_FILE_CHOOSER_ACTION_SAVE :
 		OS.GTK_FILE_CHOOSER_ACTION_OPEN;
 	int /*long*/ shellHandle = parent.topHandle ();
-	handle = OS.gtk_file_chooser_dialog_new (
-		titleBytes,
-		shellHandle,
-		action,
-		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
-		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
-		0);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if (display.getDismissalAlignment() == SWT.RIGHT) {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+	} else {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+	}
+	OS.gtk_window_set_modal (handle, true);
 	int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
 		OS.g_list_free (pixbufs);
 	}
+	if (uriMode) {
+		OS.gtk_file_chooser_set_local_only (handle, false);
+	}
 	presetChooserDialog ();
+	display.addIdleProc ();
 	String answer = null;
-	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int signalId = 0;
+	int /*long*/ hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
+	}	
+	int response = OS.gtk_dialog_run (handle);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook (signalId, hookId);
+	}
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
+	if (response == OS.GTK_RESPONSE_OK) {
 		answer = computeResultChooserDialog ();
 	}
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }
@@ -340,11 +447,33 @@ String openClassicDialog () {
 			OS.g_list_free (pixbufs);
 		}
 	}
+	OS.gtk_window_set_modal (handle, true);
 	presetClassicDialog ();
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	display.addIdleProc ();
 	String answer = null;
-	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int signalId = 0;
+	int /*long*/ hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
+	}	
+	int response = OS.gtk_dialog_run (handle);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook (signalId, hookId);
+	}
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
+	if (response == OS.GTK_RESPONSE_OK) {
 		answer = computeResultClassicDialog ();
 	}
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }
@@ -355,33 +484,70 @@ void presetChooserDialog () {
 	}
 	if (filterPath == null) filterPath = "";
 	if (fileName == null) fileName = "";
-	if (filterPath.length () > 0) {
-		StringBuffer stringBuffer = new StringBuffer ();
-		/* filename must be a full path */
-		if (filterPath.charAt (0) != SEPARATOR) {
-			stringBuffer.append (SEPARATOR);
-		}
-		stringBuffer.append (filterPath);
-		if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
-			stringBuffer.append (SEPARATOR);
+	if ((style & SWT.SAVE) != 0) {
+		if (filterPath.length () > 0) {
+			if (uriMode) {
+				byte [] buffer = Converter.wcsToMbcs (null, filterPath, true);
+				OS.gtk_file_chooser_set_current_folder_uri (handle, buffer);
+			} else {
+				/* filename must be a full path */
+				byte [] buffer = Converter.wcsToMbcs (null, SEPARATOR + filterPath, true);
+				
+				/*
+				* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+				* when setting a file name that is not a true canonical path. 
+				* The fix is to use the canonical path.
+				*/
+				int /*long*/ ptr = OS.realpath (buffer, null);
+				OS.gtk_file_chooser_set_current_folder (handle, ptr);
+				OS.g_free (ptr);
+			}
 		}
 		if (fileName.length () > 0) {
-			stringBuffer.append (fileName);
-		} else {
-			/* go into the specified directory */
-			stringBuffer.append ('.');
+			byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
+			OS.gtk_file_chooser_set_current_name (handle, buffer);
 		}
-		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-		OS.gtk_file_chooser_set_filename (handle, buffer);
+	} else {
+		StringBuffer stringBuffer = new StringBuffer();
+		if (filterPath.length () > 0) {
+			if (!uriMode) {
+				/* filename must be a full path */
+				stringBuffer.append(SEPARATOR);
+			}
+			stringBuffer.append(filterPath);
+			stringBuffer.append(SEPARATOR);
+		}
+		if (fileName.length () > 0) {
+			stringBuffer.append(fileName);
+		}
+		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString(), true);
+		if (uriMode) {
+			OS.gtk_file_chooser_set_uri (handle, buffer);
+		} else {
+			/*
+			* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+			* when setting a file name that is not a true canonical path. 
+			* The fix is to use the canonical path.
+			*/
+			int /*long*/ ptr = OS.realpath (buffer, null);
+			if (ptr != 0) {
+				OS.gtk_file_chooser_set_filename (handle, ptr);
+				OS.g_free (ptr);
+			}
+		}
 	}
-	if ((style & SWT.SAVE) != 0 && fileName.length () > 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
-		OS.gtk_file_chooser_set_current_name (handle, buffer);
+	
+	/* Set overwrite mode */
+	if ((style & SWT.SAVE) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 8, 0)) {
+			OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
+		}
 	}
 
 	/* Set the extension filters */
 	if (filterNames == null) filterNames = new String [0];
 	if (filterExtensions == null) filterExtensions = new String [0];
+	int /*long*/ initialFilter = 0;
 	for (int i = 0; i < filterExtensions.length; i++) {
 		if (filterExtensions [i] != null) {
 			int /*long*/ filter = OS.gtk_file_filter_new ();
@@ -405,7 +571,13 @@ void presetChooserDialog () {
 			byte [] filterString = Converter.wcsToMbcs (null, current, true);
 			OS.gtk_file_filter_add_pattern (filter, filterString);
 			OS.gtk_file_chooser_add_filter (handle, filter);
+			if (i == filterIndex) {
+				initialFilter = filter;
+			}
 		}
+	}
+	if (initialFilter != 0) {
+		OS.gtk_file_chooser_set_filter(handle, initialFilter);
 	}
 	fullPath = null;
 	fileNames = new String [0];
@@ -462,21 +634,52 @@ public void setFileName (String string) {
  * which may be null.
  * <p>
  * The strings are platform specific. For example, on
- * Windows, an extension filter string is typically of
- * the form "*.extension", where "*.*" matches all files.
+ * some platforms, an extension filter string is typically
+ * of the form "*.extension", where "*.*" matches all files.
+ * For filters with multiple extensions, use semicolon as
+ * a separator, e.g. "*.jpg;*.png".
  * </p>
  *
  * @param extensions the file extension filter
+ * 
+ * @see #setFilterNames to specify the user-friendly
+ * names corresponding to the extensions
  */
 public void setFilterExtensions (String [] extensions) {
 	filterExtensions = extensions;
 }
 /**
- * Sets the the names that describe the filter extensions
+ * Set the 0-based index of the file extension filter
+ * which the dialog will use initially to filter the files
+ * it shows to the argument.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @param index the file extension filter index
+ * 
+ * @see #setFilterExtensions
+ * @see #setFilterNames
+ * 
+ * @since 3.4
+ */
+public void setFilterIndex (int index) {
+	filterIndex = index;
+}
+/**
+ * Sets the names that describe the filter extensions
  * which the dialog will use to filter the files it shows
  * to the argument, which may be null.
+ * <p>
+ * Each name is a user-friendly short description shown for
+ * its corresponding filter. The <code>names</code> array must
+ * be the same length as the <code>extensions</code> array.
+ * </p>
  *
- * @param names the list of filter names
+ * @param names the list of filter names, or null for no filter names
+ * 
+ * @see #setFilterExtensions
  */
 public void setFilterNames (String [] names) {
 	filterNames = names;
@@ -500,5 +703,29 @@ public void setFilterNames (String [] names) {
  */
 public void setFilterPath (String string) {
 	filterPath = string;
+}
+
+/**
+ * Sets the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public void setOverwrite (boolean overwrite) {
+	this.overwrite = overwrite;
+}
+/* Sets URI Mode.
+ * 
+ * When the FileDialog is in URI mode it returns
+ * a URI (instead of a file name) for the following
+ * methods: open() and getFilterPath().
+ * The input argment for setFilterPath() should also 
+ * be a URI.
+ */
+/*public*/ void setURIMode (boolean uriMode) {
+	this.uriMode = uriMode;
 }
 }

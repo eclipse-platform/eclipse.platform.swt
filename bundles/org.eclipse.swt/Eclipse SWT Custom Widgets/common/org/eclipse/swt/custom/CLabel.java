@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,10 @@ import org.eclipse.swt.accessibility.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class CLabel extends Canvas {
 
@@ -67,6 +71,7 @@ public class CLabel extends Canvas {
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	private Color background;
+	private Listener disposeListener;
 	
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -114,12 +119,6 @@ public CLabel(Composite parent, int style) {
 		}
 	});
 	
-	addDisposeListener(new DisposeListener(){
-		public void widgetDisposed(DisposeEvent event) {
-			onDispose(event);
-		}
-	});
-
 	addTraverseListener(new TraverseListener() {
 		public void keyTraversed(TraverseEvent event) {
 			if (event.detail == SWT.TRAVERSE_MNEMONIC) {
@@ -127,6 +126,12 @@ public CLabel(Composite parent, int style) {
 			}
 		}
 	});
+	
+	disposeListener = new Listener() {
+		public void handleEvent(Event event) {
+			onDispose(event);
+		}
+	};
 	
 	initAccessible();
 
@@ -305,7 +310,11 @@ private void initAccessible() {
 		}
 	});
 }
-void onDispose(DisposeEvent event) {
+void onDispose(Event event) {
+	removeListener(SWT.Dispose, disposeListener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = null;
@@ -719,6 +728,16 @@ public void setImage(Image image) {
 /**
  * Set the label's text.
  * The value <code>null</code> clears it.
+ * <p>
+ * Mnemonics are indicated by an '&amp;' that causes the next
+ * character to be the mnemonic.  When the user presses a
+ * key sequence that matches the mnemonic, focus is assigned
+ * to the control that follows the label. On most platforms,
+ * the mnemonic appears underlined but may be emphasised in a
+ * platform specific manner.  The mnemonic indicator character
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
+ * </p>
  * 
  * @param text the text to be displayed in the label or null
  * 
@@ -753,25 +772,39 @@ public void setToolTipText (String string) {
 protected String shortenText(GC gc, String t, int width) {
 	if (t == null) return null;
 	int w = gc.textExtent(ELLIPSIS, DRAW_FLAGS).x;
+	if (width<=w) return t;
 	int l = t.length();
-	int pivot = l/2;
-	int s = pivot;
-	int e = pivot+1;
-	while (s >= 0 && e < l) {
-		String s1 = t.substring(0, s);
-		String s2 = t.substring(e, l);
+	int max = l/2;
+	int min = 0;
+	int mid = (max+min)/2 - 1;
+	if (mid <= 0) return t;
+	TextLayout layout = new TextLayout (getDisplay());
+	layout.setText(t);
+	mid = validateOffset(layout, mid);
+	while (min < mid && mid < max) {
+		String s1 = t.substring(0, mid);
+		String s2 = t.substring(validateOffset(layout, l-mid), l);
 		int l1 = gc.textExtent(s1, DRAW_FLAGS).x;
 		int l2 = gc.textExtent(s2, DRAW_FLAGS).x;
-		if (l1+w+l2 < width) {
-			t = s1 + ELLIPSIS + s2;
-			break;
+		if (l1+w+l2 > width) {
+			max = mid;			
+			mid = validateOffset(layout, (max+min)/2);
+		} else if (l1+w+l2 < width) {
+			min = mid;
+			mid = validateOffset(layout, (max+min)/2);
+		} else {
+			min = max;
 		}
-		s--;
-		e++;
 	}
-	return t;
+	String result = mid == 0 ? t : t.substring(0, mid) + ELLIPSIS + t.substring(validateOffset(layout, l-mid), l);
+	layout.dispose();
+ 	return result;
 }
-
+int validateOffset(TextLayout layout, int offset) {
+	int nextOffset = layout.getNextOffset(offset, SWT.MOVEMENT_CLUSTER);
+	if (nextOffset != offset) return layout.getPreviousOffset(nextOffset, SWT.MOVEMENT_CLUSTER);
+	return offset;
+}
 private String[] splitString(String text) {
     String[] lines = new String[1];
     int start = 0, pos;

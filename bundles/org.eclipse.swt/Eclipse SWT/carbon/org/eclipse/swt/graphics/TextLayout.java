@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,19 +17,21 @@ import org.eclipse.swt.*;
 /**
  * <code>TextLayout</code> is a graphic object that represents
  * styled text.
- *<p>
+ * <p>
  * Instances of this class provide support for drawing, cursor
  * navigation, hit testing, text wrapping, alignment, tab expansion
  * line breaking, etc.  These are aspects required for rendering internationalized text.
- * </p>
- * 
- * <p>
+ * </p><p>
  * Application code must explicitly invoke the <code>TextLayout#dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
  * 
- *  @since 3.0
+ * @see <a href="http://www.eclipse.org/swt/snippets/#textlayout">TextLayout, TextStyle snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample, StyledText tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
+ * @since 3.0
  */
 public final class TextLayout extends Resource {
 	
@@ -38,7 +40,7 @@ public final class TextLayout extends Resource {
 		int start;
 		int atsuStyle;
 
-		void createStyle(Font defaultFont) {
+		void createStyle(Device device, Font defaultFont) {
 			if (atsuStyle != 0) return;
 			int[] buffer = new int[1];
 			OS.ATSUCreateStyle(buffer);
@@ -46,21 +48,48 @@ public final class TextLayout extends Resource {
 			if (atsuStyle == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
 			int length = 0, ptrLength = 0, index = 0;
 			Font font = null;
-			Color foreground = null;
+			RGBColor foreground = null;
+			GlyphMetrics metrics = null;
 			if (style != null) {
 				font = style.font;
-				foreground = style.foreground;
-				if (style.underline) {
+				if (style.foreground != null) {
+					float[] color = style.foreground.handle;
+					foreground = new RGBColor ();
+					foreground.red = (short) (color [0] * 0xffff);
+					foreground.green = (short) (color [1] * 0xffff);
+					foreground.blue = (short) (color [2] * 0xffff);
+				} else {
+					if (style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+						foreground = new RGBColor ();
+						foreground.red = (short) 0;
+						foreground.green = (short) 0x3333;
+						foreground.blue = (short) 0x9999;
+					}
+				}
+				metrics = style.metrics;
+				if (isUnderlineSupported(style)) {
 					length += 1;
 					ptrLength += 1;
+					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+						length += 1;
+						ptrLength += 2;
+					}
+					if (style.underlineColor != null) {
+						length += 1;
+						ptrLength += 4;
+					}
 				}
 				if (style.strikeout) {
 					length += 1;
 					ptrLength += 1;
+					if (style.strikeoutColor != null) {
+						length += 1;
+						ptrLength += 4;
+					}
 				}
-				if (style.metrics != null) {
-					length += 3;
-					ptrLength += 12;
+				if (metrics != null) {
+					length += 4;
+					ptrLength += 28;
 				}
 				if (style.rise != 0) {
 					length += 1;
@@ -72,15 +101,13 @@ public final class TextLayout extends Resource {
 			if (font != null) {
 				length += 2;
 				ptrLength += 8;
-				short[] realStyle = new short[1];
-				OS.FMGetFontFromFontFamilyInstance(font.id, font.style, buffer, realStyle);
-				synthesize = font.style != realStyle[0];
+				synthesize = font.style != 0;
 				if (synthesize) {
 					length += 2;
 					ptrLength += 2;
 				}
 			}
-			if (foreground != null) {
+			if (foreground != null && metrics == null) {
 				length += 1;
 				ptrLength += RGBColor.sizeof;
 			}
@@ -94,7 +121,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUFontTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 
@@ -102,7 +129,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUSizeTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 
@@ -111,7 +138,7 @@ public final class TextLayout extends Resource {
 					tags[index] = OS.kATSUQDItalicTag;
 					sizes[index] = 1;
 					values[index] = ptr1;
-					OS.memcpy(values[index], buffer1, sizes[index]);
+					OS.memmove(values[index], buffer1, sizes[index]);
 					ptr1 += sizes[index];
 					index++;	
 
@@ -119,36 +146,63 @@ public final class TextLayout extends Resource {
 					tags[index] = OS.kATSUQDBoldfaceTag;
 					sizes[index] = 1;
 					values[index] = ptr1;
-					OS.memcpy(values[index], buffer1, sizes[index]);
+					OS.memmove(values[index], buffer1, sizes[index]);
 					ptr1 += sizes[index];
 					index++;
 				}
 			}
-			if (style != null && style.underline) {
+			int underlineColor = 0, strikeoutColor = 0;;
+			if (isUnderlineSupported(style)) {
 				buffer1[0] = (byte)1;
 				tags[index] = OS.kATSUQDUnderlineTag;
 				sizes[index] = 1;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer1, sizes[index]);
+				OS.memmove(values[index], buffer1, sizes[index]);
 				ptr1 += sizes[index];
-				index++;				
+				index++;
+				if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+					short buffer2[] = {OS.kATSUStyleDoubleLineCount};
+					tags[index] = OS.kATSUStyleUnderlineCountOptionTag;
+					sizes[index] = 2;
+					values[index] = ptr1;
+					OS.memmove(values[index], buffer2, sizes[index]);
+					ptr1 += sizes[index];
+					index++;
+				}
+				if (style.underlineColor != null) {
+					buffer[0] = underlineColor = OS.CGColorCreate(device.colorspace, style.underlineColor.handle);
+					tags[index] = OS.kATSUStyleUnderlineColorOptionTag;
+					sizes[index] = 4;
+					values[index] = ptr1;
+					OS.memmove(values[index], buffer, sizes[index]);
+					ptr1 += sizes[index];
+					index++;
+				}
 			}
 			if (style != null && style.strikeout) {
 				buffer1[0] = (byte)1;
 				tags[index] = OS.kATSUStyleStrikeThroughTag;
 				sizes[index] = 1;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer1, sizes[index]);
+				OS.memmove(values[index], buffer1, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
+				if (style.strikeoutColor != null) {
+					buffer[0] = strikeoutColor = OS.CGColorCreate(device.colorspace, style.strikeoutColor.handle);
+					tags[index] = OS.kATSUStyleStrikeThroughColorOptionTag;
+					sizes[index] = 4;
+					values[index] = ptr1;
+					OS.memmove(values[index], buffer, sizes[index]);
+					ptr1 += sizes[index];
+					index++;
+				}
 			}
-			if (style != null && style.metrics != null) {
-				GlyphMetrics metrics = style.metrics; 
+			if (metrics != null) {
 				buffer[0] = OS.Long2Fix(metrics.ascent);
 				tags[index] = OS.kATSUAscentTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 				
@@ -156,7 +210,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUDescentTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 				
@@ -164,7 +218,15 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUImposeWidthTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+				
+				float[] ATSURGBAlphaColor = {0, 0, 0, 0};
+				tags[index] = OS.kATSURGBAlphaColorTag;
+				sizes[index] = 16;
+				values[index] = ptr1;
+				OS.memmove(values[index], ATSURGBAlphaColor, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
@@ -173,25 +235,22 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUCrossStreamShiftTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
-			if (foreground != null) {
-				RGBColor rgb = new RGBColor ();
-				float[] color = foreground.handle;
-				rgb.red = (short) (color [0] * 0xffff);
-				rgb.green = (short) (color [1] * 0xffff);
-				rgb.blue = (short) (color [2] * 0xffff);		
+			if (foreground != null && metrics == null) {
 				tags[index] = OS.kATSUColorTag;
 				sizes[index] = RGBColor.sizeof;
 				values[index] = ptr1;
-				OS.memcpy(values[index], rgb, sizes[index]);
+				OS.memmove(values[index], foreground, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
 			OS.ATSUSetAttributes(atsuStyle, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);	
+			if (underlineColor != 0) OS.CGColorRelease (underlineColor);
+			if (strikeoutColor != 0) OS.CGColorRelease (strikeoutColor);
 		}
 
 		void freeStyle() {
@@ -218,7 +277,12 @@ public final class TextLayout extends Resource {
 	int[] breaks, hardBreaks, lineX, lineWidth, lineHeight, lineAscent;
 
 	static final int TAB_COUNT = 32;
-	static final char ZWS = '\u200B';
+	int[] invalidOffsets;
+	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B';
+	
+	static final int UNDERLINE_IME_INPUT = 1 << 16;
+	static final int UNDERLINE_IME_TARGET_CONVERTED = 2 << 16;
+	static final int UNDERLINE_IME_CONVERTED = 3 << 16;
 	
 /**	 
  * Constructs a new instance of this class on the given device.
@@ -235,21 +299,21 @@ public final class TextLayout extends Resource {
  * @see #dispose()
  */
 public TextLayout (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;	
+	super(device);
 	int[] buffer = new int[1];
 	OS.ATSUCreateTextLayout(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	layout = buffer[0];
 	setLayoutControl(OS.kATSULineDirectionTag, OS.kATSULeftToRightBaseDirection, 1);
-	setLayoutControl(OS.kATSULineLayoutOptionsTag, OS.kATSLineLastNoJustification, 4);
-	OS.ATSUSetHighlightingMethod(layout, 1, new ATSUUnhighlightData());
+	int lineOptions = OS.kATSLineLastNoJustification | OS.kATSLineUseDeviceMetrics | OS.kATSLineKeepSpacesOutOfMargin;
+	setLayoutControl(OS.kATSULineLayoutOptionsTag, lineOptions, 4);
+	OS.ATSUSetHighlightingMethod(layout, OS.kRedrawHighlighting, new ATSUUnhighlightData());
 	ascent = descent = -1;
 	text = "";
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
+	init();
 }
 
 void checkLayout() {
@@ -258,9 +322,10 @@ void checkLayout() {
 
 void computeRuns() {
 	if (breaks != null) return;
-	int textLength = text.length();
+	String segmentsText = getSegmentsText();
+	int textLength = segmentsText.length();
 	char[] chars = new char[textLength + 1];
-	text.getChars(0, textLength, chars, 1);
+	segmentsText.getChars(0, textLength, chars, 1);
 	chars[0] = ZWS;
 	int breakCount = 1;
 	for (int i = 0; i < chars.length; i++) {
@@ -278,26 +343,35 @@ void computeRuns() {
 			hardBreaks[breakCount++] = i;
 		}
 	}
-	hardBreaks[breakCount] = translateOffset(textLength);
+	if (invalidOffsets != null) {
+		for (int i = 0; i < invalidOffsets.length; i++) {
+			invalidOffsets[i]++;
+		}
+	} else {
+		invalidOffsets = new int[0];
+	}
+
+	hardBreaks[breakCount] = chars.length;
 	int newTextPtr = OS.NewPtr(chars.length * 2);
-	OS.memcpy(newTextPtr, chars, chars.length * 2);
+	OS.memmove(newTextPtr, chars, chars.length * 2);
 	OS.ATSUSetTextPointerLocation(layout, newTextPtr, 0, chars.length, chars.length);
 	OS.ATSUSetTransientFontMatching(layout, true);
 	if (textPtr != 0) OS.DisposePtr(textPtr);
 	textPtr = newTextPtr;
 
 	int[] buffer = new int[1];
+	Font font = this.font != null ? this.font : device.systemFont;
 	for (int i = 0; i < styles.length - 1; i++) {
 		StyleItem run = styles[i];
-		run.createStyle(font);
-		//set the defaut font in the ZWS when text is empty fixes text metrics
+		run.createStyle(device, font);
+		//set the default font in the ZWS when text is empty fixes text metrics
 		int start = textLength != 0 ? translateOffset(run.start) : 0;
 		int runLength = translateOffset(styles[i + 1].start) - start;
 		OS.ATSUSetRunStyle(layout, run.atsuStyle, start, runLength);
 	}
 	int ptr = OS.NewPtr(12);
 	buffer = new int[]{OS.Long2Fix(indent), 0, 0};
-	OS.memcpy(ptr, buffer, 12);
+	OS.memmove(ptr, buffer, 12);
 	int[] tags = new int[]{OS.kATSUImposeWidthTag, OS.kATSUAscentTag, OS.kATSUDescentTag};
 	int[] sizes = new int[]{4, 4, 4};
 	int[] values = new int[]{ptr, ptr + 4, ptr + 8};
@@ -333,28 +407,28 @@ void computeRuns() {
 		if (ascent != -1) {
 			ptr = OS.NewPtr(4);
 			buffer[0] = OS.kATSUseLineHeight;
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			tags = new int[]{OS.kATSULineAscentTag};
 			sizes = new int[]{4};
 			values = new int[]{ptr};
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.ATSUGetLineControl(layout, start, OS.kATSULineAscentTag, 4, buffer, null);
 			buffer[0] = OS.Long2Fix(Math.max(ascent, OS.Fix2Long(buffer[0])));
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);
 		}
 		if (descent != -1) {
 			ptr = OS.NewPtr(4);
 			buffer[0] = OS.kATSUseLineHeight;
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			tags = new int[]{OS.kATSULineDescentTag};
 			sizes = new int[]{4};
 			values = new int[]{ptr};
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.ATSUGetLineControl(layout, start, OS.kATSULineDescentTag, 4, buffer, null);
 			buffer[0] = OS.Long2Fix(Math.max(descent, OS.Fix2Long(buffer[0])));
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);
 		}
@@ -371,12 +445,30 @@ void computeRuns() {
 	}
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the text layout. Applications must dispose of all allocated text layouts.
- */
-public void dispose() {
-	if (layout == 0) return;
+float[] computePolyline(int left, int top, int right, int bottom) {
+	int height = bottom - top; // can be any number
+	int width = 2 * height; // must be even
+	int peaks = Compatibility.ceil(right - left, width);
+	if (peaks == 0 && right - left > 2) {
+		peaks = 1;
+	}
+	int length = ((2 * peaks) + 1) * 2;
+	if (length < 0) return new float[0];
+	
+	float[] coordinates = new float[length];
+	for (int i = 0; i < peaks; i++) {
+		int index = 4 * i;
+		coordinates[index] = left + (width * i);
+		coordinates[index+1] = bottom;
+		coordinates[index+2] = coordinates[index] + width / 2;
+		coordinates[index+3] = top;
+	}
+	coordinates[length-2] = left + (width * peaks);
+	coordinates[length-1] = bottom;
+	return coordinates;
+}
+
+void destroy() {
 	freeRuns();
 	font = null;
 	text = null;
@@ -389,7 +481,6 @@ public void dispose() {
 	tabsPtr = 0;
 	if (indentStyle != 0) OS.ATSUDisposeStyle(indentStyle);
 	indentStyle = 0;
-	device = null;
 }
 
 /**
@@ -431,6 +522,37 @@ public void draw(GC gc, int x, int y) {
  * </ul>
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ * <p>
+ * The parameter <code>flags</code> can include one of <code>SWT.DELIMITER_SELECTION</code>
+ * or <code>SWT.FULL_SELECTION</code> to specify the selection behavior on all lines except
+ * for the last line, and can also include <code>SWT.LAST_LINE_SELECTION</code> to extend
+ * the specified selection behavior to the last line.
+ * </p>
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ * @param flags drawing options
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -438,35 +560,33 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = translateOffset(text.length());
-	if (length == 0) return;
+	if (length == 0 && flags == 0) return;
+	gc.checkGC(GC.FOREGROUND_FILL);
+	if (gc.data.updateClip) gc.setCGClipping();
+	OS.CGContextSaveGState(gc.handle);
 	setLayoutControl(OS.kATSUCGContextTag, gc.handle, 4);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	OS.CGContextSaveGState(gc.handle);
 	boolean restoreColor = false;
-	if (hasSelection && selectionBackground != null) {
-		if (OS.VERSION >= 0x1030) {
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
+		if (selectionBackground != null) {
 			restoreColor = true;
 			int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
 			setLayoutControl(OS.kATSULineHighlightCGColorTag, color, 4);
 			OS.CGColorRelease(color);
+		} else {
+			selectionBackground = device.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 		}
 	}
 	/* 
 	* Feature in ATSU. There is no API to set a background attribute
 	* of an ATSU style. Draw the background of styles ourselfs.
 	*/
-	Rectangle rect = null;
-	Region clipping = null, region = null;
+	int rgn = 0;
+	CGRect rect = null;
 	for (int j = 0; j < styles.length; j++) {
 		StyleItem run = styles[j];
-		if (run.style == null || run.style.background == null) continue;
-		OS.CGContextSetFillColor(gc.handle, run.style.background.handle);
-		if (clipping == null) {
-			region = new Region();
-			clipping = new Region();
-			gc.getClipping(clipping);
-			rect = clipping.getBounds();
-		}
+		TextStyle style = run.style;
+		if (style == null || style.background == null) continue;
 		int start = translateOffset(run.start);
 		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
@@ -477,10 +597,19 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				int highEnd = Math.min(lineEnd, end);
 				int highLen = highEnd - highStart + 1;
 				if (highLen > 0) {
-					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, region.handle);
-					region.intersect(clipping);
-					gc.setClipping(region);
-					gc.fillRectangle(rect);
+					OS.CGContextSaveGState(gc.handle);
+					if (rgn == 0) rgn = OS.NewRgn();
+					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, rgn);
+					int shape = OS.HIShapeCreateWithQDRgn(rgn);
+					OS.HIShapeReplacePathInCGContext(shape, gc.handle);
+					if (rect == null) rect = new CGRect();
+					OS.CGContextGetPathBoundingBox(gc.handle, rect);
+					OS.CGContextEOClip(gc.handle);
+					OS.CGContextSetFillColorSpace(gc.handle, device.colorspace);
+					OS.CGContextSetFillColor(gc.handle, style.background.handle);
+					OS.CGContextFillRect(gc.handle, rect);
+					OS.DisposeControl(shape);
+					OS.CGContextRestoreGState(gc.handle);
 				}
 			}
 			if (lineEnd > end) break;
@@ -488,18 +617,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			lineStart = lineBreak;
 		}
 	}
-	if (clipping != null) {
-		gc.setClipping(clipping);
-		OS.CGContextRestoreGState(gc.handle);
-		OS.CGContextSaveGState(gc.handle);
-		clipping.dispose();
-		region.dispose();
-	}
 
 	selectionStart = translateOffset(selectionStart);
 	selectionEnd = translateOffset(selectionEnd);
 	OS.CGContextScaleCTM(gc.handle, 1, -1);
-	OS.CGContextSetFillColor(gc.handle, gc.data.foreground);
 	int drawX = OS.Long2Fix(x);
 	int drawY = y;
 	for (int i=0, start=0; i<breaks.length; i++) {
@@ -509,6 +630,40 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			int fixYDraw = OS.Long2Fix(-(drawY + lineAscent[i]));
 			OS.ATSUDrawText(layout, start, lineLength, drawX, fixYDraw);
 			int end = start + lineLength - 1;
+			if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
+				boolean extent = false;
+				if (i == breaks.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
+					extent = true;
+				} else {
+					boolean hardBreak = false;
+					for (int j = 0; j < hardBreaks.length; j++) {
+						if (end + 1 == hardBreaks[j]) {
+							hardBreak = true;
+							break;
+						}
+					}
+					if (hardBreak) {
+						if (selectionStart <= end + 1 && end + 1 <= selectionEnd) extent = true;
+					} else {
+						if (selectionStart <= end + 1 && end + 1 < selectionEnd && (flags & SWT.FULL_SELECTION) != 0) {
+							extent = true;
+						}
+					}
+				}
+				if (extent) {
+					if (rect == null) rect = new CGRect();
+					rect.x = x + lineWidth[i];
+					rect.y = drawY;
+					rect.width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : lineHeight[i] / 3;
+					rect.height = lineHeight[i];
+					OS.CGContextSaveGState(gc.handle);
+					OS.CGContextTranslateCTM(gc.handle, 0, -(lineHeight[i] + 2 * drawY));
+					OS.CGContextSetFillColorSpace(gc.handle, device.colorspace);
+					OS.CGContextSetFillColor(gc.handle, selectionBackground.handle);
+					OS.CGContextFillRect(gc.handle, rect);
+					OS.CGContextRestoreGState(gc.handle);
+				}
+			}
 			if (hasSelection && !(selectionStart > end || start > selectionEnd)) {
 				int selStart = Math.max(selectionStart, start);
 				int selEnd = Math.min(selectionEnd, end);
@@ -520,6 +675,190 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	}
 	if (restoreColor) setLayoutControl(OS.kATSULineHighlightCGColorTag, 0, 4);
 	OS.CGContextRestoreGState(gc.handle);
+
+	for (int j = 0; j < styles.length; j++) {
+		StyleItem run = styles[j];
+		TextStyle style = run.style;
+		if (style == null) continue;
+		boolean drawUnderline = style.underline && !isUnderlineSupported(style);
+		drawUnderline = drawUnderline && (j + 1 == styles.length || !style.isAdherentUnderline(styles[j + 1].style)); 
+		boolean drawBorder = style.borderStyle != SWT.NONE;
+		drawBorder = drawBorder && (j + 1 == styles.length || !style.isAdherentBorder(styles[j + 1].style)); 
+		if (!drawUnderline && !drawBorder) continue;
+		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
+		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
+			int lineBreak = breaks[i];
+			int lineEnd = lineBreak - 1;
+			if (drawUnderline) {
+				int start = run.start;
+				for (int k = j; k > 0 && style.isAdherentUnderline(styles[k - 1].style); k--) {
+					start = styles[k - 1].start;
+				}
+				start = translateOffset(start);
+				if (!(start > lineEnd || end < lineStart)) {
+					int highStart = Math.max(lineStart, start);
+					int highEnd = Math.min(lineEnd, end);
+					int highLen = highEnd - highStart + 1;
+					if (highLen > 0) {
+						OS.CGContextSaveGState(gc.handle);
+						float underlineY = y + lineY;
+						float[] foreground = gc.data.foreground;
+						float lineWidth = 1;
+						float[] dashes = null;
+						int lineCap = OS.kCGLineCapButt;
+						int lineJoin = OS.kCGLineJoinMiter;
+						switch (style.underlineStyle) {
+							case SWT.UNDERLINE_ERROR:
+								lineWidth = 2;
+								dashes = new float[]{1, 3};
+								lineCap = OS.kCGLineCapRound;
+								lineJoin = OS.kCGLineJoinRound;
+								//FALLTHROUGH
+							case SWT.UNDERLINE_SQUIGGLE: 
+								if (style.underlineColor != null) {
+									foreground = style.underlineColor.handle;
+								} else {
+									if (style.foreground != null) {
+										foreground = style.foreground.handle;
+									}
+								}
+								underlineY += 2 * lineAscent [i] + lineWidth;
+								break;
+							case UNDERLINE_IME_INPUT:
+							case UNDERLINE_IME_TARGET_CONVERTED:
+							case UNDERLINE_IME_CONVERTED:
+								lineWidth = 1.5f;
+								foreground = style.underlineStyle == UNDERLINE_IME_CONVERTED ? new float[]{0.5f, 0.5f, 0.5f, 1} : new float[]{0, 0, 0, 1};
+								Font font = style.font;
+								if (font == null) font = this.font != null ? this.font : device.systemFont;
+								ATSFontMetrics metrics = new ATSFontMetrics();
+								OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+								underlineY += lineAscent [i] + lineHeight [i] + (metrics.descent * font.size);
+								break;
+						}
+						OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
+						OS.CGContextSetStrokeColor(gc.handle, foreground);
+						OS.CGContextSetLineWidth(gc.handle, lineWidth);
+						OS.CGContextSetLineCap(gc.handle, lineCap);
+						OS.CGContextSetLineJoin(gc.handle, lineJoin);
+						OS.CGContextSetLineDash(gc.handle, 0, dashes, dashes != null ? dashes.length : 0);
+						OS.CGContextTranslateCTM(gc.handle, 0.5f, 0.5f);
+						
+						int[] count = new int[1];
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, (short)OS.kATSUseDeviceOrigins, 0, 0, count);
+						int trapezoidsPtr = OS.malloc(count[0] * ATSTrapezoid.sizeof);
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, (short)OS.kATSUseDeviceOrigins, count[0], trapezoidsPtr, count);
+						ATSTrapezoid trapezoid = new ATSTrapezoid();
+						for (int k = 0; k < count[0]; k++) {
+							OS.memmove(trapezoid, trapezoidsPtr + (k * ATSTrapezoid.sizeof), ATSTrapezoid.sizeof);
+							float left, right;
+							if (trapezoid.upperLeft_x != trapezoid.lowerLeft_x) {
+								float ux = OS.Fix2Long(trapezoid.upperLeft_x);
+								float uy = OS.Fix2Long(trapezoid.upperLeft_y);
+								float lx = OS.Fix2Long(trapezoid.lowerLeft_x);
+								float ly = OS.Fix2Long(trapezoid.lowerLeft_y);
+								float a = (uy - ly) / (ux - lx);
+								float b = uy - ux * a;
+								left = (underlineY - b) / a;
+							} else {
+								left = OS.Fix2Long(trapezoid.upperLeft_x);
+							}
+							if (trapezoid.upperRight_x != trapezoid.lowerRight_x) {
+								float ux = OS.Fix2Long(trapezoid.upperRight_x);
+								float uy = OS.Fix2Long(trapezoid.upperRight_y);
+								float lx = OS.Fix2Long(trapezoid.lowerRight_x);
+								float ly = OS.Fix2Long(trapezoid.lowerRight_y);
+								float a = (uy - ly) / (ux - lx);
+								float b = uy - ux * a;
+								right = (underlineY - b) / a;
+							} else {
+								right = OS.Fix2Long(trapezoid.upperRight_x);
+							}
+							switch (style.underlineStyle) {
+								case UNDERLINE_IME_TARGET_CONVERTED:
+								case UNDERLINE_IME_CONVERTED:
+									left += 1;
+									right -= 1;
+							}
+							if (style.underlineStyle == SWT.UNDERLINE_SQUIGGLE) {
+								int lineBottom = y + lineY + lineHeight[i];
+								int squigglyThickness = 1;
+								int squigglyHeight = 2 * squigglyThickness;
+								float squigglyY = Math.min(OS.Fix2Long(trapezoid.upperLeft_y) - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
+								float[] points = computePolyline((int)left, (int)squigglyY, (int)right, (int)(squigglyY + squigglyHeight));
+								OS.CGContextBeginPath(gc.handle);
+								OS.CGContextAddLines(gc.handle, points, points.length / 2);
+							} else {
+								OS.CGContextMoveToPoint(gc.handle, left, OS.Fix2Long(trapezoid.upperLeft_y));
+								OS.CGContextAddLineToPoint(gc.handle, right, OS.Fix2Long(trapezoid.upperRight_y));
+							}
+						}
+						OS.free(trapezoidsPtr);
+						OS.CGContextStrokePath(gc.handle);
+						OS.CGContextRestoreGState(gc.handle);
+					}
+				}
+			}
+			
+			if (drawBorder) {
+				int start = run.start;
+				for (int k = j; k > 0 && style.isAdherentBorder(styles[k - 1].style); k--) {
+					start = styles[k - 1].start;
+				}
+				start = translateOffset(start);
+				if (!(start > lineEnd || end < lineStart)) {
+					int highStart = Math.max(lineStart, start);
+					int highEnd = Math.min(lineEnd, end);
+					int highLen = highEnd - highStart + 1;
+					if (highLen > 0) {
+						OS.CGContextSaveGState(gc.handle);
+						int[] count = new int[1];
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, (short)OS.kATSUseDeviceOrigins, 0, 0, count);
+						int trapezoidsPtr = OS.malloc(count[0] * ATSTrapezoid.sizeof);
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, (short)OS.kATSUseDeviceOrigins, count[0], trapezoidsPtr, count);
+						ATSTrapezoid trapezoid = new ATSTrapezoid();
+						for (int k = 0; k < count[0]; k++) {
+							OS.memmove(trapezoid, trapezoidsPtr + (k * ATSTrapezoid.sizeof), ATSTrapezoid.sizeof);
+							int upperY = y + lineY + 1;
+							int lowerY = y + lineY + lineHeight[i];
+							OS.CGContextMoveToPoint(gc.handle, OS.Fix2Long(trapezoid.lowerLeft_x), lowerY);
+							OS.CGContextAddLineToPoint(gc.handle, OS.Fix2Long(trapezoid.upperLeft_x), upperY);
+							OS.CGContextAddLineToPoint(gc.handle, OS.Fix2Long(trapezoid.upperRight_x) - 1, upperY);
+							OS.CGContextAddLineToPoint(gc.handle, OS.Fix2Long(trapezoid.lowerRight_x) - 1, lowerY);
+							OS.CGContextClosePath(gc.handle);
+						}
+						OS.free(trapezoidsPtr);
+						int width = 1;
+						OS.CGContextSetShouldAntialias(gc.handle, false);
+						OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapButt);
+						OS.CGContextSetLineJoin(gc.handle, OS.kCGLineJoinMiter);
+						OS.CGContextSetLineWidth(gc.handle, width);
+						float[] dashes = null;
+						switch (style.borderStyle) {
+							case SWT.BORDER_SOLID:	break;
+							case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+							case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+						}
+						OS.CGContextSetLineDash(gc.handle, 0, dashes, dashes != null ? dashes.length : 0);
+						float[] color = null;
+						if (style.borderColor != null) color = style.borderColor.handle;
+						if (color == null && style.foreground != null) color = style.foreground.handle;
+						if (color != null) {
+							OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
+							OS.CGContextSetStrokeColor(gc.handle, color);
+						}
+						OS.CGContextTranslateCTM (gc.handle, 0.5f, 0.5f);
+						OS.CGContextStrokePath(gc.handle);
+						OS.CGContextRestoreGState(gc.handle);
+					}
+				}
+			}
+			if (lineEnd > end) break;
+			lineY += lineHeight[i];
+			lineStart = lineBreak;
+		}
+	}
+	if (rgn != 0) OS.DisposeRgn(rgn);
 }
 
 void freeRuns() {
@@ -531,6 +870,7 @@ void freeRuns() {
 	if (indentStyle != 0) OS.ATSUDisposeStyle(indentStyle);
 	indentStyle = 0;
 	breaks = lineX = lineWidth = lineHeight = lineAscent = null;
+	invalidOffsets = null;
 }
 
 /** 
@@ -575,21 +915,39 @@ public int getAscent () {
 }
 
 /**
- * Returns the bounds of the receiver.
+ * Returns the bounds of the receiver. The width returned is either the
+ * width of the longest line or the width set using {@link TextLayout#setWidth(int)}.
+ * To obtain the text bounds of a line use {@link TextLayout#getLineBounds(int)}.
  * 
  * @return the bounds of the receiver
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see #setWidth(int)
+ * @see #getLineBounds(int)
  */
 public Rectangle getBounds() {
 	checkLayout();
 	computeRuns();
 	int width = 0, height = 0;
-	for (int i=0; i<breaks.length; i++) {
-		width = Math.max(width, lineWidth[i]);
-		height += lineHeight[i];
+	int length = text.length();
+	if (length == 0) {
+		Font font = this.font != null ? this.font : device.systemFont;
+		ATSFontMetrics metrics = new ATSFontMetrics();
+		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		int ascent = (int)(0.5f + metrics.ascent * font.size);
+		int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
+		ascent = Math.max(ascent, this.ascent);
+		descent = Math.max(descent, this.descent);
+		height = ascent + descent;
+	} else {
+		for (int i=0; i<breaks.length; i++) {
+			width = Math.max(width, lineWidth[i]);
+			height += lineHeight[i];
+		}
 	}
 	int[] buffer = new int[1];
 	OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
@@ -688,11 +1046,33 @@ public Font getFont () {
 	return font;
 }
 
+/**
+* Returns the receiver's indent.
+*
+* @return the receiver's indent
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.2
+*/
 public int getIndent () {
 	checkLayout();	
 	return indent;
 }
 
+/**
+* Returns the receiver's justification.
+*
+* @return the receiver's justification
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.2
+*/
 public boolean getJustify () {
 	checkLayout();
 	int[] buffer = new int[1];
@@ -705,7 +1085,7 @@ public boolean getJustify () {
  * embedding level is usually used to determine the directionality of a
  * character in bidirectional text.
  * 
- * @param offset the charecter offset
+ * @param offset the character offset
  * @return the embedding level
  * 
  * @exception IllegalArgumentException <ul>
@@ -797,7 +1177,8 @@ public Rectangle getLineBounds(int lineIndex) {
 	}
 	int lineX = this.lineX[lineIndex];
 	int lineWidth = this.lineWidth[lineIndex];
-	return new Rectangle(lineX, lineY, lineWidth, lineHeight[lineIndex] - spacing);
+	int lineHeight = this.lineHeight[lineIndex] - spacing;
+	return new Rectangle(lineX, lineY, lineWidth, lineHeight);
 }
 
 /**
@@ -836,13 +1217,15 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int length = text.length();
 	if (length == 0) {
-		Font font = this.font != null ? this.font : device.getSystemFont();
-		FontInfo info = new FontInfo();
-		OS.FetchFontInfo(font.id, font.size, font.style, info);
-		int ascent = info.ascent;
-		int descent = info.descent;
-		int leading = info.leading;
-		return FontMetrics.carbon_new(ascent, descent, 0, leading, ascent + leading + descent);
+		Font font = this.font != null ? this.font : device.systemFont;
+		ATSFontMetrics metrics = new ATSFontMetrics();
+		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		int ascent = (int)(0.5f + metrics.ascent * font.size);
+		int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
+		ascent = Math.max(ascent, this.ascent);
+		descent = Math.max(descent, this.descent);
+		return FontMetrics.carbon_new(ascent, descent, 0, 0, ascent + descent);
 	}
 	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];
 	int lineLength = breaks[lineIndex] - start;
@@ -897,7 +1280,8 @@ public Point getLocation(int offset, boolean trailing) {
 /**
  * Returns the next offset for the specified offset and movement
  * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
- * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
+ * <code>SWT.MOVEMENT_CLUSTER</code>, <code>SWT.MOVEMENT_WORD</code>,
+ * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
  * 
  * @param offset the start offset
  * @param movement the movement type 
@@ -923,30 +1307,74 @@ int _getOffset (int offset, int movement, boolean forward) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return 0;
 	offset = translateOffset(offset);
-	int[] newOffset = new int[1];
+	int newOffset;
 	int type = OS.kATSUByCharacter;
 	switch (movement) {
 		case SWT.MOVEMENT_CLUSTER: type = OS.kATSUByCharacterCluster; break;
 		case SWT.MOVEMENT_WORD: type = OS.kATSUByWord; break;
 	}
 	if (forward) {
-		OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
-		newOffset[0] = untranslateOffset(newOffset[0]);
-		if (movement == SWT.MOVEMENT_WORD) {
-			while (newOffset[0] < length && Compatibility.isWhitespace(text.charAt(newOffset[0]))) {
-				newOffset[0]++;
+		offset = _getNativeOffset(offset, type, forward);
+		newOffset = untranslateOffset(offset);
+		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_END) {
+			while (newOffset < length && 
+					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset)) &&
+					Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
+			}
+		}
+		if (movement == SWT.MOVEMENT_WORD_START) {
+			while (newOffset < length && 
+					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset)) &&
+					!Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
 			}
 		}
 	} else {
-		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
-		newOffset[0] = untranslateOffset(newOffset[0]);
-		if (movement == SWT.MOVEMENT_WORD) {
-			while (newOffset[0] > 0 && !Compatibility.isWhitespace(text.charAt(newOffset[0] - 1))) {
-				newOffset[0]--;
+		offset = _getNativeOffset(offset, type, forward);
+		newOffset = untranslateOffset(offset);
+		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_START) {
+			while (newOffset > 0 && 
+					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset)) && 
+					!Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
+			}
+		}
+		if (movement == SWT.MOVEMENT_WORD_END) {
+			while (newOffset > 0 && 
+					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset)) && 
+					Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
 			}
 		}
 	}
-	return newOffset[0];
+	return newOffset;
+}
+
+int _getNativeOffset(int offset, int movement, boolean forward) {
+	int[] buffer = new int [1];
+	boolean invalid = false;
+	do {
+		if (forward) {
+			OS.ATSUNextCursorPosition(layout, offset, movement, buffer);
+		} else {
+			OS.ATSUPreviousCursorPosition(layout, offset, movement, buffer);
+		}
+		if (buffer[0] == offset) return offset;
+		offset = buffer[0];
+		invalid = false;
+		for (int i = 0; i < invalidOffsets.length; i++) {
+			if (offset == invalidOffsets[i]) {
+				invalid = true;
+				break;
+			}
+		}
+	} while (invalid);
+	return offset;
 }
 
 /**
@@ -1027,7 +1455,12 @@ public int getOffset(int x, int y, int[] trailing) {
 			break;
 		}
 	}
-	return Math.min(untranslateOffset(offset[0]), length - 1);
+	offset[0] = untranslateOffset(offset[0]);
+	if (offset[0] > length - 1) {
+		offset[0] = length - 1;
+		if (trailing != null) trailing[0] = 1; 
+	}
+	return offset[0];
 }
 
 /**
@@ -1049,7 +1482,8 @@ public int getOrientation() {
 /**
  * Returns the previous offset for the specified offset and movement
  * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
- * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
+ * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>,
+ * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
  * 
  * @param offset the start offset
  * @param movement the movement type 
@@ -1068,6 +1502,20 @@ public int getPreviousOffset (int index, int movement) {
 	return _getOffset(index, movement, false);
 }
 
+/**
+ * Gets the ranges of text that are associated with a <code>TextStyle</code>.
+ *
+ * @return the ranges, an array of offsets representing the start and end of each
+ * text style. 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getStyles()
+ * 
+ * @since 3.2
+ */
 public int[] getRanges () {
 	checkLayout();
 	int[] result = new int[styles.length * 2];
@@ -1098,6 +1546,42 @@ public int[] getRanges () {
 public int[] getSegments() {
 	checkLayout();
 	return segments;
+}
+
+String getSegmentsText() {
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments <= 1) return text;
+	int length = text.length();
+	if (length == 0) return text;
+	if (nSegments == 2) {
+		if (segments[0] == 0 && segments[1] == length) return text;
+	}
+	invalidOffsets = new int[nSegments];
+	char[] oldChars = new char[length];
+	text.getChars(0, length, oldChars, 0);
+	char[] newChars = new char[length + nSegments];
+	int charCount = 0, segmentCount = 0;
+	char separator = getOrientation() == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
+			invalidOffsets[segmentCount] = charCount + segmentCount;
+			newChars[charCount + segmentCount++] = separator;
+		} else {
+			newChars[charCount + segmentCount] = oldChars[charCount++];
+		}
+	}
+	if (segmentCount < nSegments) {
+		invalidOffsets[segmentCount] = charCount + segmentCount;
+		segments[segmentCount] = charCount;
+		newChars[charCount + segmentCount++] = separator;
+	}
+	if (segmentCount != nSegments) {
+		int[] tmp = new int [segmentCount];
+		System.arraycopy(invalidOffsets, 0, tmp, 0, segmentCount);
+		invalidOffsets = tmp;
+	}
+	return new String(newChars, 0, Math.min(charCount + segmentCount, newChars.length));
 }
 
 /**
@@ -1140,6 +1624,19 @@ public TextStyle getStyle (int offset) {
 	return null;
 }
 
+/**
+ * Gets all styles of the receiver.
+ *
+ * @return the styles
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getRanges()
+ * 
+ * @since 3.2
+ */
 public TextStyle[] getStyles () {
 	checkLayout();
 	TextStyle[] result = new TextStyle[styles.length];
@@ -1203,6 +1700,17 @@ public int getWidth () {
 	return wrapWidth == 0 ? -1 : wrapWidth;
 }
 
+/*
+ * Returns true if the underline style is supported natively by ATSUI
+ */
+static boolean isUnderlineSupported (TextStyle style) {
+	if (style != null && style.underline) {
+		int uStyle = style.underlineStyle;
+		return uStyle == SWT.UNDERLINE_SINGLE || uStyle == SWT.UNDERLINE_DOUBLE || uStyle == SWT.UNDERLINE_LINK;
+	}
+	return false;
+}
+
 /**
  * Returns <code>true</code> if the text layout has been disposed,
  * and <code>false</code> otherwise.
@@ -1210,6 +1718,7 @@ public int getWidth () {
  * This method gets the dispose state for the text layout.
  * When a text layout has been disposed, it is an error to
  * invoke any other method using the text layout.
+ * </p>
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
  */
@@ -1225,7 +1734,7 @@ public boolean isDisposed () {
  * The default alignment is <code>SWT.LEFT</code>.  Note that the receiver's
  * width must be set in order to use <code>SWT.RIGHT</code> or <code>SWT.CENTER</code>
  * alignment.
- *</p>
+ * </p>
  *
  * @param alignment the new alignment 
  *
@@ -1309,11 +1818,11 @@ void setLayoutControl(int tag, int value, int size) {
 	if (size == 1) {
 		byte[] buffer = new byte[1];
 		buffer[0] = (byte) value;
-		OS.memcpy(ptr1, buffer, size);
+		OS.memmove(ptr1, buffer, size);
 	} else {
 		int[] buffer = new int[1];
 		buffer[0] = value;
-		OS.memcpy(ptr1, buffer, size);
+		OS.memmove(ptr1, buffer, size);
 	}
 	int[] tags = new int[]{tag};
 	int[] sizes = new int[]{size};
@@ -1341,12 +1850,25 @@ void setLayoutControl(int tag, int value, int size) {
 public void setFont (Font font) {
 	checkLayout ();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.font == font) return;
-	if (font != null && font.equals(this.font)) return;
-	freeRuns();
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals(font)) return;
+	freeRuns();
 }
 
+/**
+ * Sets the indent of the receiver. This indent it applied of the first line of 
+ * each paragraph.  
+ *
+ * @param indent new indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setIndent (int indent) {
 	checkLayout ();
 	if (indent < 0) return;
@@ -1355,6 +1877,18 @@ public void setIndent (int indent) {
 	this.indent = indent;
 }
 
+/**
+ * Sets the justification of the receiver. Note that the receiver's
+ * width must be set in order to use justification. 
+ *
+ * @param justify new justify
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setJustify (boolean justify) {
 	checkLayout ();
 	if (justify == getJustify()) return;
@@ -1365,7 +1899,6 @@ public void setJustify (boolean justify) {
 /**
  * Sets the orientation of the receiver, which must be one
  * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
- * <p>
  *
  * @param orientation new orientation style
  * 
@@ -1391,11 +1924,12 @@ public void setOrientation(int orientation) {
  * override the default behaviour of the bidirectional algorithm.
  * Bidirectional reordering can happen within a text segment but not 
  * between two adjacent segments.
+ * <p>
  * Each text segment is determined by two consecutive offsets in the 
  * <code>segments</code> arrays. The first element of the array should 
  * always be zero and the last one should always be equals to length of
  * the text.
- * <p>
+ * </p>
  * 
  * @param segments the text segments offset
  * 
@@ -1560,15 +2094,15 @@ public void setTabs(int[] tabs) {
 		int ptr = tabsPtr = OS.NewPtr(ATSUTab.sizeof * length), i, offset;
 		for (i=0, offset=ptr; i<tabs.length; i++, offset += ATSUTab.sizeof) {
 			tab.tabType = (short)OS.kATSULeftTab;
-			tab.tabPosition += OS.Long2Fix(tabs[i]);
-			OS.memcpy(offset, tab, ATSUTab.sizeof);
+			tab.tabPosition = OS.Long2Fix(tabs[i]);
+			OS.memmove(offset, tab, ATSUTab.sizeof);
 		}
 		int width = i - 2 >= 0 ? tabs[i - 1] - tabs[i - 2] : tabs[i - 1];
 		if (width > 0) {
 			for (; i<length; i++, offset += ATSUTab.sizeof) {
 				tab.tabType = (short)OS.kATSULeftTab;
 				tab.tabPosition += OS.Long2Fix(width);
-				OS.memcpy(offset, tab, ATSUTab.sizeof);
+				OS.memmove(offset, tab, ATSUTab.sizeof);
 			}
 		}
 		OS.ATSUSetTabArray(layout, ptr, i);
@@ -1577,7 +2111,12 @@ public void setTabs(int[] tabs) {
 
 /**
  * Sets the receiver's text.
- *
+ *<p>
+ * Note: Setting the text also clears all the styles. This method 
+ * returns without doing anything if the new text is the same as 
+ * the current text.
+ * </p>
+ * 
  * @param text the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -1637,15 +2176,29 @@ public String toString () {
 /*
  *  Translate a client offset to an internal offset
  */
-int translateOffset (int offset) {
-	return offset + 1;
+int translateOffset(int offset) {
+	offset++;
+	for (int i = 0; i < invalidOffsets.length; i++) {
+		if (offset < invalidOffsets[i]) break; 
+		offset++;
+	}
+	return offset;
 }
 
 /*
  *  Translate an internal offset to a client offset
  */
-int untranslateOffset (int offset) {
-	return Math.max(0, offset - 1);
+int untranslateOffset(int offset) {
+	for (int i = 0; i < invalidOffsets.length; i++) {
+		if (offset == invalidOffsets[i]) {
+			offset++;
+			continue;
+		}
+		if (offset < invalidOffsets[i]) {
+			return Math.max(0, offset - i - 1);
+		}
+	}
+	return Math.max(0, offset - invalidOffsets.length - 1);
 }
 
 }

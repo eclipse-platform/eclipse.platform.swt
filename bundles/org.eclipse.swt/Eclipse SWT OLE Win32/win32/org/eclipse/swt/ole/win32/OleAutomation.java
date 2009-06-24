@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,6 +78,9 @@ import org.eclipse.swt.internal.win32.*;
  *	automation.dispose();
  *
  * </pre></code>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public final class OleAutomation {
 	private IDispatch objIDispatch;
@@ -89,11 +92,13 @@ OleAutomation(IDispatch idispatch) {
 	objIDispatch = idispatch;
 	objIDispatch.AddRef();
 	
-	int[] ppv = new int[1];
+	int /*long*/[] ppv = new int /*long*/[1];
+	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
+	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
+	 */
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
 		objITypeInfo = new ITypeInfo(ppv[0]);
-		objITypeInfo.AddRef();
 	}
 }
 /**
@@ -110,11 +115,13 @@ OleAutomation(IDispatch idispatch) {
 	if (clientSite == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
 	objIDispatch = clientSite.getAutomationObject();
 
-	int[] ppv = new int[1];
+	int /*long*/[] ppv = new int /*long*/[1];
+	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
+	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
+	 */
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
 		objITypeInfo = new ITypeInfo(ppv[0]);
-		objITypeInfo.AddRef();
 	}
  }
 /**
@@ -136,9 +143,16 @@ public void dispose() {
 	objITypeInfo = null;
 
 }
-int getAddress() {	
+int /*long*/ getAddress() {	
 	return objIDispatch.getAddress();
 }
+/**
+ * Returns the fully qualified name of the Help file for the given member ID.
+ * 
+ * @param dispId the member ID whose Help file is being retrieved.
+ * @return a string representing the fully qualified name of a Help 
+ * file or null.
+ */
 public String getHelpFile(int dispId) {
 	if (objITypeInfo == null) return null;
 	String[] file = new String[1];
@@ -146,6 +160,12 @@ public String getHelpFile(int dispId) {
 	if (rc == OLE.S_OK) return file[0];
 	return null;	
 }
+/**
+ * Returns the documentation string for the given member ID.
+ * 
+ * @param dispId the member ID in which the documentation is being retrieved.
+ * @return the documentation string if it exists; otherwise return null.
+ */
 public String getDocumentation(int dispId) {
 	if (objITypeInfo == null) return null;
 	String[] doc = new String[1];
@@ -153,9 +173,15 @@ public String getDocumentation(int dispId) {
 	if (rc == OLE.S_OK) return doc[0];
 	return null;
 }
+/**
+ * Returns the property description of a variable at the given index.
+ * 
+ * @param index the index of a variable whose property is being retrieved.
+ * @return an OlePropertyDescription for a variable at the given index.
+ */
 public OlePropertyDescription getPropertyDescription(int index) {
 	if (objITypeInfo == null) return null;
-	int[] ppVarDesc = new int[1];
+	int /*long*/[] ppVarDesc = new int /*long*/[1];
 	int rc = objITypeInfo.GetVarDesc(index, ppVarDesc);
 	if (rc != OLE.S_OK) return null;
 	VARDESC vardesc = new VARDESC();
@@ -167,7 +193,7 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	data.type = vardesc.elemdescVar_tdesc_vt;
 	if (data.type == OLE.VT_PTR) {
 		short[] vt = new short[1];
-		COM.MoveMemory(vt, vardesc.elemdescVar_tdesc_union + 4, 2);
+		COM.MoveMemory(vt, vardesc.elemdescVar_tdesc_union + OS.PTR_SIZEOF, 2);
 		data.type = vt[0];
 	}
 	data.flags = vardesc.wVarFlags;
@@ -178,9 +204,15 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	objITypeInfo.ReleaseVarDesc(ppVarDesc[0]);
 	return data;
 }
+/**
+ * Returns the description of a function at the given index.
+ * 
+ * @param index the index of a function whose property is being retrieved.
+ * @return an OleFunctionDescription for a function at the given index.
+ */
 public OleFunctionDescription getFunctionDescription(int index) {
 	if (objITypeInfo == null) return null;
-	int[] ppFuncDesc = new int[1];
+	int /*long*/[] ppFuncDesc = new int /*long*/[1];
 	int rc = objITypeInfo.GetFuncDesc(index, ppFuncDesc);
 	if (rc != OLE.S_OK) return null;
 	FUNCDESC funcdesc = new FUNCDESC();
@@ -207,34 +239,42 @@ public OleFunctionDescription getFunctionDescription(int index) {
 		if (names.length > i + 1) {
 			data.args[i].name = names[i + 1];
 		}
+		//TODO 0- use structures
 		short[] vt = new short[1];	
-		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * 16 + 4, 2);				
+		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + OS.PTR_SIZEOF, 2);				
 		if (vt[0] == OLE.VT_PTR) {
-			int[] pTypedesc = new int[1];
-			COM.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * 16, 4);
+			int /*long*/ [] pTypedesc = new int /*long*/ [1];
+			COM.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof(), OS.PTR_SIZEOF);
 			short[] vt2 = new short[1];
-			COM.MoveMemory(vt2, pTypedesc[0] + 4, 2);
+			COM.MoveMemory(vt2, pTypedesc[0] + OS.PTR_SIZEOF, 2);
 			vt[0] = (short)(vt2[0] | COM.VT_BYREF);
 		}
 		data.args[i].type = vt[0];
 		short[] wParamFlags = new short[1];
-		COM.MoveMemory(wParamFlags, funcdesc.lprgelemdescParam + i * 16 + 12, 2);
+		COM.MoveMemory(wParamFlags, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + COM.TYPEDESC_sizeof () + OS.PTR_SIZEOF, 2);
 		data.args[i].flags = wParamFlags[0];	
 	}
 	
 	data.returnType = funcdesc.elemdescFunc_tdesc_vt;
 	if (data.returnType == OLE.VT_PTR) {
 		short[] vt = new short[1];
-		COM.MoveMemory(vt, funcdesc.elemdescFunc_tdesc_union + 4, 2);
+		COM.MoveMemory(vt, funcdesc.elemdescFunc_tdesc_union + OS.PTR_SIZEOF, 2);
 		data.returnType = vt[0];
 	}
 
 	objITypeInfo.ReleaseFuncDesc(ppFuncDesc[0]);
 	return data;
 }
+/**
+ * Returns the type info of the current object referenced by the automation.
+ * The type info contains information about the object such as the function descriptions,
+ * the member descriptions and attributes of the type.
+ * 
+ * @return the type info of the receiver
+ */
 public TYPEATTR getTypeInfoAttributes() {
 	if (objITypeInfo == null) return null;
-	int[] ppTypeAttr = new int[1];
+	int /*long*/ [] ppTypeAttr = new int /*long*/ [1];
 	int rc = objITypeInfo.GetTypeAttr(ppTypeAttr);
 	if (rc != OLE.S_OK) return null;
 	TYPEATTR typeattr = new TYPEATTR();
@@ -242,6 +282,12 @@ public TYPEATTR getTypeInfoAttributes() {
 	objITypeInfo.ReleaseTypeAttr(ppTypeAttr[0]);
 	return typeattr;
 }
+/**
+ * Returns the name of the given member ID.
+ * 
+ * @param dispId the member ID in which the name is being retrieved.
+ * @return the name if it exists; otherwise return null.
+ */
 public String getName(int dispId) {
 	if (objITypeInfo == null) return null;
 	String[] name = new String[1];
@@ -249,6 +295,13 @@ public String getName(int dispId) {
 	if (rc == OLE.S_OK) return name[0];
 	return null;
 }
+/**
+ * Returns the name of a function and parameter names for the specified function ID.
+ * 
+ * @param dispId the function ID in which the name and parameters are being retrieved.
+ * @param maxSize the maximum number of names to retrieve.
+ * @return an array of name containing the function name and the parameter names
+ */
 public String[] getNames(int dispId, int maxSize) {
 	if (objITypeInfo == null) return new String[0];
 	String[] names = new String[maxSize];
@@ -407,11 +460,11 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 	// store arguments in rgvarg
 	if (rgvarg != null && rgvarg.length > 0) {
 		pDispParams.cArgs = rgvarg.length;
-		pDispParams.rgvarg = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, Variant.sizeof * rgvarg.length);
+		pDispParams.rgvarg = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, VARIANT.sizeof * rgvarg.length);
 		int offset = 0;
 		for (int i = rgvarg.length - 1; i >= 0 ; i--) {
 			rgvarg[i].getData(pDispParams.rgvarg + offset);
-			offset += Variant.sizeof;
+			offset += VARIANT.sizeof;
 		}
 	}
 
@@ -429,8 +482,8 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 	// invoke the method
 	EXCEPINFO excepInfo = new EXCEPINFO();
 	int[] pArgErr = new int[1];
-	int pVarResultAddress = 0;
-	if (pVarResult != null)	pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
+	int /*long*/ pVarResultAddress = 0;
+	if (pVarResult != null)	pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 	int result = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, wFlags, pDispParams, pVarResultAddress, excepInfo, pArgErr);
 
 	if (pVarResultAddress != 0){
@@ -447,7 +500,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 		int offset = 0;
 		for (int i = 0, length = rgvarg.length; i < length; i++){
 			COM.VariantClear(pDispParams.rgvarg + offset);
-			offset += Variant.sizeof;
+			offset += VARIANT.sizeof;
 		}
 		OS.GlobalFree(pDispParams.rgvarg);
 	}
@@ -466,7 +519,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
  * @param dispIdMember the ID of the method as specified by the IDL of the ActiveX Control; the
  *        value for the ID can be obtained using OleAutomation.getIDsOfNames
  *
- * @exception SWTException <ul>
+ * @exception org.eclipse.swt.SWTException <ul>
  *		<li>ERROR_ACTION_NOT_PERFORMED when method invocation fails
  *	</ul>
  */
@@ -487,7 +540,7 @@ public void invokeNoReply(int dispIdMember) {
  * @param rgvarg an array of arguments for the method.  All arguments are considered to be
  *        read only unless the Variant is a By Reference Variant type.
  *
- * @exception SWTException <ul>
+ * @exception org.eclipse.swt.SWTException <ul>
  *		<li>ERROR_ACTION_NOT_PERFORMED when method invocation fails
  *	</ul>
  */
@@ -515,7 +568,7 @@ public void invokeNoReply(int dispIdMember, Variant[] rgvarg) {
  *        all arguments must have an identifier - identifiers can be obtained using 
  *        OleAutomation.getIDsOfNames
  *
- * @exception SWTException <ul>
+ * @exception org.eclipse.swt.SWTException <ul>
  *		<li>ERROR_ACTION_NOT_PERFORMED when method invocation fails
  *	</ul>
  */

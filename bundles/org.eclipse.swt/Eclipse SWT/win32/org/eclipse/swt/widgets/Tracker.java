@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,15 +35,22 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tracker">Tracker snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Tracker extends Widget {
 	Control parent;
 	boolean tracking, cancelled, stippled;
-	Rectangle [] rectangles, proportions;
+	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
-	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
+	int /*long*/ resizeCursor;
+	Cursor clientCursor;
+	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
-	int oldProc, oldX, oldY;
+	int /*long*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
+	int oldX, oldY;
 
 	/*
 	* The following values mirror step sizes on Windows
@@ -121,6 +128,7 @@ public Tracker (Composite parent, int style) {
  * @see SWT#RIGHT
  * @see SWT#UP
  * @see SWT#DOWN
+ * @see SWT#RESIZE
  */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
@@ -187,6 +195,7 @@ public void addKeyListener (KeyListener listener) {
 }
 
 Point adjustMoveCursor () {
+	if (bounds == null) return null;
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	POINT pt = new POINT ();
@@ -202,6 +211,7 @@ Point adjustMoveCursor () {
 }
 
 Point adjustResizeCursor () {
+	if (bounds == null) return null;
 	int newX, newY;
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
@@ -234,8 +244,8 @@ Point adjustResizeCursor () {
 	* If the client has not provided a custom cursor then determine
 	* the appropriate resize cursor.
 	*/
-	if (clientCursor == 0) {
-		int newCursor = 0;
+	if (clientCursor == null) {
+		int /*long*/ newCursor = 0;
 		switch (cursorOrientation) {
 			case SWT.UP:
 				newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
@@ -297,6 +307,7 @@ public void close () {
 }
 
 Rectangle computeBounds () {
+	if (rectangles.length == 0) return null;
 	int xMin = rectangles [0].x;
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
@@ -317,21 +328,23 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	bounds = computeBounds ();
-	for (int i = 0; i < rects.length; i++) {
-		int x = 0, y = 0, width = 0, height = 0;
-		if (bounds.width != 0) {
-			x = (rects [i].x - bounds.x) * 100 / bounds.width;
-			width = rects [i].width * 100 / bounds.width;
-		} else {
-			width = 100;
+	if (bounds != null) {
+		for (int i = 0; i < rects.length; i++) {
+			int x = 0, y = 0, width = 0, height = 0;
+			if (bounds.width != 0) {
+				x = (rects [i].x - bounds.x) * 100 / bounds.width;
+				width = rects [i].width * 100 / bounds.width;
+			} else {
+				width = 100;
+			}
+			if (bounds.height != 0) {
+				y = (rects [i].y - bounds.y) * 100 / bounds.height;
+				height = rects [i].height * 100 / bounds.height;
+			} else {
+				height = 100;
+			}
+			result [i] = new Rectangle (x, y, width, height);			
 		}
-		if (bounds.height != 0) {
-			y = (rects [i].y - bounds.y) * 100 / bounds.height;
-			height = rects [i].height * 100 / bounds.height;
-		} else {
-			height = 100;
-		}
-		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
@@ -340,11 +353,24 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * Draw the rectangles displayed by the tracker.
  */
 void drawRectangles (Rectangle [] rects, boolean stippled) {
+	if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		RECT rect1 = new RECT();
+		int bandWidth = stippled ? 3 : 1;
+		for (int i = 0; i < rects.length; i++) {
+			Rectangle rect = rects[i];
+			rect1.left = rect.x - bandWidth;
+			rect1.top = rect.y - bandWidth;
+			rect1.right = rect.x + rect.width + bandWidth * 2;
+			rect1.bottom = rect.y + rect.height + bandWidth * 2;
+			OS.RedrawWindow (hwndOpaque, rect1, 0, OS.RDW_INVALIDATE);
+		}
+		return;
+	}
 	int bandWidth = 1;
-	int hwndTrack = OS.GetDesktopWindow ();
+	int /*long*/ hwndTrack = OS.GetDesktopWindow ();
 	if (parent != null) hwndTrack = parent.handle;
-	int hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
-	int hBitmap = 0, hBrush = 0, oldBrush = 0;
+	int /*long*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
+	int /*long*/ hBitmap = 0, hBrush = 0, oldBrush = 0;
 	if (stippled) {
 		bandWidth = 3;
 		byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
@@ -381,10 +407,8 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
-	int length = 0;
-	if (rectangles != null) length = rectangles.length;
-	Rectangle [] result = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	Rectangle [] result = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
 	}
@@ -407,6 +431,7 @@ public boolean getStippled () {
 }
 
 void moveRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
@@ -433,7 +458,6 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget ();
-	if (rectangles == null) return false;
 	cancelled = false;
 	tracking = true;
 
@@ -456,33 +480,56 @@ public boolean open () {
 	* in order to get all mouse/keyboard events that occur
 	* outside of our visible windows (ie.- over the desktop).
 	*/
-	int hwndTransparent = 0;
 	Callback newProc = null;
 	boolean mouseDown = OS.GetKeyState(OS.VK_LBUTTON) < 0;
-	if (!mouseDown) {
+	boolean isVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
+	if ((parent == null && isVista) || !mouseDown) {
 		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
 		hwndTransparent = OS.CreateWindowEx (
-			OS.WS_EX_TRANSPARENT,
+			isVista ? OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE : OS.WS_EX_TRANSPARENT,
 			display.windowClass,
 			null,
-			OS.WS_POPUP | OS.WS_VISIBLE,
+			OS.WS_POPUP,
 			0, 0,
 			width, height,
 			0,
 			0,
 			OS.GetModuleHandle (null),
 			null);
-		oldProc = OS.GetWindowLong (hwndTransparent, OS.GWL_WNDPROC);
+		if (isVista) {
+			OS.SetLayeredWindowAttributes (hwndTransparent, 0xFFFFFF, (byte)0x01, OS.LWA_ALPHA);
+		}
+		OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
-		int newProcAddress = newProc.getAddress ();
+		int /*long*/ newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, newProcAddress);
+		if (isVista) {
+			hwndOpaque = OS.CreateWindowEx (
+				OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+				display.windowClass,
+				null,
+				OS.WS_POPUP,
+				0, 0,
+				width, height,
+				hwndTransparent,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			oldOpaqueProc = OS.GetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC);
+			OS.SetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC, newProcAddress);
+		} else {
+			hwndOpaque = hwndTransparent;
+		}
+		oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
+		OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
+		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+		OS.ShowWindow (hwndOpaque, OS.SW_SHOWNOACTIVATE);
 	}
 
 	update ();
 	drawRectangles (rectangles, stippled);
-	Point cursorPos;
+	Point cursorPos = null;
 	if (mouseDown) {
 		POINT pt = new POINT ();
 		OS.GetCursorPos (pt);
@@ -494,65 +541,83 @@ public boolean open () {
 			cursorPos = adjustMoveCursor ();
 		}
 	}
-	oldX = cursorPos.x;
-	oldY = cursorPos.y;
+	if (cursorPos != null) {
+		oldX = cursorPos.x;
+		oldY = cursorPos.y;
+	}
 
-	/* Tracker behaves like a Dialog with its own OS event loop. */
-	MSG msg = new MSG ();
-	while (tracking && !cancelled) {
-		if (parent != null && parent.isDisposed ()) break;
-		OS.GetMessage (msg, 0, 0, 0);
-		OS.TranslateMessage (msg);
-		switch (msg.message) {
-			case OS.WM_LBUTTONUP:
-			case OS.WM_MOUSEMOVE:
-				wmMouse (msg.message, msg.wParam, msg.lParam);
-				break;
-			case OS.WM_IME_CHAR: wmIMEChar (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_CHAR: wmChar (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_KEYDOWN: wmKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_KEYUP: wmKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_SYSCHAR: wmSysChar (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYDOWN: wmSysKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYUP: wmSysKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
+	try {
+		/* Tracker behaves like a Dialog with its own OS event loop. */
+		MSG msg = new MSG ();
+		while (tracking && !cancelled) {
+			if (parent != null && parent.isDisposed ()) break;
+			OS.GetMessage (msg, 0, 0, 0);
+			OS.TranslateMessage (msg);
+			switch (msg.message) {
+				case OS.WM_LBUTTONUP:
+				case OS.WM_MOUSEMOVE:
+					wmMouse (msg.message, msg.wParam, msg.lParam);
+					break;
+				case OS.WM_IME_CHAR: wmIMEChar (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_CHAR: wmChar (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_KEYDOWN: wmKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_KEYUP: wmKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_SYSCHAR: wmSysChar (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_SYSKEYDOWN: wmSysKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_SYSKEYUP: wmSysKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
+			}
+			if (OS.WM_KEYFIRST <= msg.message && msg.message <= OS.WM_KEYLAST) continue;
+			if (OS.WM_MOUSEFIRST <= msg.message && msg.message <= OS.WM_MOUSELAST) continue;
+			if (!(parent == null && isVista)) {
+				if (msg.message == OS.WM_PAINT) {
+					update ();
+					drawRectangles (rectangles, stippled);
+				}
+			}
+			OS.DispatchMessage (msg);
+			if (!(parent == null && isVista)) {
+				if (msg.message == OS.WM_PAINT) {
+					drawRectangles (rectangles, stippled);
+				}
+			}
 		}
-		if (OS.WM_KEYFIRST <= msg.message && msg.message <= OS.WM_KEYLAST) continue;
-		if (OS.WM_MOUSEFIRST <= msg.message && msg.message <= OS.WM_MOUSELAST) continue;
-		if (msg.message == OS.WM_PAINT) {
+		if (mouseDown) OS.ReleaseCapture ();
+		if (!isDisposed()) {
 			update ();
 			drawRectangles (rectangles, stippled);
 		}
-		OS.DispatchMessage (msg);
-		if (msg.message == OS.WM_PAINT) {
-			drawRectangles (rectangles, stippled);
+	} finally {
+		/*
+		* Cleanup: If a transparent window was created in order to capture events then
+		* destroy it and its callback object now.
+		*/
+		if (hwndTransparent != 0) {
+			OS.DestroyWindow (hwndTransparent);
+			hwndTransparent = 0;
 		}
-	}
-	if (mouseDown) OS.ReleaseCapture ();
-	if (!isDisposed()) {
-		update ();
-		drawRectangles (rectangles, stippled);
-	}
-	/*
-	* Cleanup: If a transparent window was created in order to capture events then
-	* destroy it and its callback object now.
-	*/
-	if (hwndTransparent != 0) {
-		OS.DestroyWindow (hwndTransparent);
-	}
-	if (newProc != null) {
-		newProc.dispose ();
-		oldProc = 0;
-	}
-	/*
-	* Cleanup: If this tracker was resizing then the last cursor that it created
-	* needs to be destroyed.
-	*/
-	if (resizeCursor != 0) {
-		OS.DestroyCursor (resizeCursor);
-		resizeCursor = 0;
+		hwndOpaque = 0;
+		if (newProc != null) {
+			newProc.dispose ();
+			oldTransparentProc = oldOpaqueProc = 0;
+		}
+		/*
+		* Cleanup: If this tracker was resizing then the last cursor that it created
+		* needs to be destroyed.
+		*/
+		if (resizeCursor != 0) {
+			OS.DestroyCursor (resizeCursor);
+			resizeCursor = 0;
+		}
 	}
 	tracking = false;
 	return !cancelled;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	parent = null;
+	rectangles = proportions = null;
+	bounds = null;
 }
 
 /**
@@ -606,6 +671,7 @@ public void removeKeyListener(KeyListener listener) {
 }
 
 void resizeRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.
@@ -729,10 +795,9 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor(Cursor newCursor) {
 	checkWidget();
-	clientCursor = 0;
+	clientCursor = newCursor;
 	if (newCursor != null) {
-		clientCursor = newCursor.handle;
-		if (inEvent) OS.SetCursor (clientCursor);
+		if (inEvent) OS.SetCursor (clientCursor.handle);
 	}
 }
 
@@ -753,9 +818,8 @@ public void setCursor(Cursor newCursor) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget ();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int length = rectangles.length;
-	this.rectangles = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	this.rectangles = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
 		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);
@@ -778,8 +842,8 @@ public void setStippled (boolean stippled) {
 	this.stippled = stippled;
 }
 
-int transparentProc (int hwnd, int msg, int wParam, int lParam) {
-	switch (msg) {
+int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
+	switch ((int)/*64*/msg) {
 		/*
 		* We typically do not want to answer that the transparent window is
 		* transparent to hits since doing so negates the effect of having it
@@ -793,19 +857,61 @@ int transparentProc (int hwnd, int msg, int wParam, int lParam) {
 			if (inEvent) return OS.HTTRANSPARENT;
 			break;
 		case OS.WM_SETCURSOR:
-			if (clientCursor != 0) {
-				OS.SetCursor (clientCursor);
-				return 1;
+			if (hwndOpaque == hwnd) {
+				if (clientCursor != null) {
+					OS.SetCursor (clientCursor.handle);
+					return 1;
+				}
+				if (resizeCursor != 0) {
+					OS.SetCursor (resizeCursor);
+					return 1;
+				}
 			}
-			if (resizeCursor != 0) {
-				OS.SetCursor (resizeCursor);
-				return 1;
+			break;
+		case OS.WM_PAINT:
+			boolean isVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
+			if (parent == null && isVista && hwndOpaque == hwnd) {
+				PAINTSTRUCT ps = new PAINTSTRUCT();
+				int /*long*/ hDC = OS.BeginPaint (hwnd, ps);
+				int /*long*/ hBitmap = 0, hBrush = 0, oldBrush = 0;			
+				int /*long*/ transparentBrush = OS.CreateSolidBrush(0xFFFFFF);
+				oldBrush = OS.SelectObject (hDC, transparentBrush);
+				OS.PatBlt (hDC, ps.left, ps.top, ps.right - ps.left, ps.bottom - ps.top, OS.PATCOPY);
+				OS.SelectObject (hDC, oldBrush);
+				OS.DeleteObject (transparentBrush);
+				int bandWidth = 1;
+				if (stippled) {
+					bandWidth = 3;
+					byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
+					hBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
+					hBrush = OS.CreatePatternBrush (hBitmap);
+					oldBrush = OS.SelectObject (hDC, hBrush);
+					OS.SetBkColor (hDC, 0xF0F0F0);
+				} else {
+					oldBrush = OS.SelectObject (hDC, OS.GetStockObject(OS.BLACK_BRUSH));
+				}
+				Rectangle[] rects = this.rectangles;
+				for (int i=0; i<rects.length; i++) {
+					Rectangle rect = rects [i];
+					OS.PatBlt (hDC, rect.x, rect.y, rect.width, bandWidth, OS.PATCOPY);
+					OS.PatBlt (hDC, rect.x, rect.y + bandWidth, bandWidth, rect.height - (bandWidth * 2), OS.PATCOPY);
+					OS.PatBlt (hDC, rect.x + rect.width - bandWidth, rect.y + bandWidth, bandWidth, rect.height - (bandWidth * 2), OS.PATCOPY);
+					OS.PatBlt (hDC, rect.x, rect.y + rect.height - bandWidth, rect.width, bandWidth, OS.PATCOPY);
+				}
+				OS.SelectObject (hDC, oldBrush);
+				if (stippled) {
+					OS.DeleteObject (hBrush);
+					OS.DeleteObject (hBitmap);
+				}
+				OS.EndPaint (hwnd, ps);
+				return 0;
 			}
 	}
-	return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
+	return OS.CallWindowProc (hwnd == hwndTransparent ? oldTransparentProc : oldOpaqueProc, hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
 void update () {
+	if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) return;
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		Shell shell = parent.getShell ();
@@ -815,13 +921,13 @@ void update () {
 	}
 }
 
-LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
+LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
 	int stepSize = OS.GetKeyState (OS.VK_CONTROL) < 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_ESCAPE:
 			cancelled = true;
 			tracking = false;
@@ -941,13 +1047,15 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			}
 			cursorPos = adjustMoveCursor ();
 		}
-		oldX = cursorPos.x;
-		oldY = cursorPos.y;
+		if (cursorPos != null) {
+			oldX = cursorPos.x;
+			oldY = cursorPos.y;
+		}
 	}
 	return result;
 }
 
-LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
+LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmSysKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	cancelled = true;			
@@ -955,11 +1063,11 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmMouse (int message, int wParam, int lParam) {
+LRESULT wmMouse (int message, int /*long*/ wParam, int /*long*/ lParam) {
 	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
 	int newPos = OS.GetMessagePos ();
-	int newX = (short) (newPos & 0xFFFF);
-	int newY = (short) (newPos >> 16);	
+	int newX = OS.GET_X_LPARAM (newPos);
+	int newY = OS.GET_Y_LPARAM (newPos);
 	if (newX != oldX || newY != oldY) {
 		Rectangle [] oldRectangles = rectangles;
 		boolean oldStippled = stippled;
@@ -1019,7 +1127,10 @@ LRESULT wmMouse (int message, int wParam, int lParam) {
 				drawRectangles (rectangles, stippled);
 			}
 			Point cursorPos = adjustResizeCursor ();
-			newX = cursorPos.x;  newY = cursorPos.y;
+			if (cursorPos != null) {
+				newX = cursorPos.x;
+				newY = cursorPos.y;
+			}
 		} else {
 			if (isMirrored) {
 				moveRectangles (oldX - newX, newY - oldY); 

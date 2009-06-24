@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,9 @@ import org.eclipse.swt.internal.image.*;
  * <li>load interlaced GIF/PNG images</li>
  * <li>load progressive JPEG images</li>
  * </ul>
+ *
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ImageAnalyzer</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
  
 public class ImageLoader {
@@ -116,9 +119,9 @@ void reset() {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
- *    <li>ERROR_IO - if an input/output error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
  */
 public ImageData[] load(InputStream stream) {
@@ -141,8 +144,8 @@ public ImageData[] load(InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  */
@@ -189,9 +192,9 @@ public ImageData[] load(String filename) {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE if the image data contains invalid data</li>
- *    <li>ERROR_IO if an IO error occurs while writing to the stream</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT if the image data cannot be saved to the requested format</li>
+ *    <li>ERROR_IO - if an IO error occurs while writing to the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
  * </ul>
  */
 public void save(OutputStream stream, int format) {
@@ -224,9 +227,9 @@ public void save(OutputStream stream, int format) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE if the image data contains invalid data</li>
- *    <li>ERROR_IO if an IO error occurs while writing to the file</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT if the image data cannot be saved to the requested format</li>
+ *    <li>ERROR_IO - if an IO error occurs while writing to the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
  * </ul>
  */
 public void save(String filename, int format) {
@@ -238,6 +241,10 @@ public void save(String filename, int format) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
 	save(stream, format);
+	try {
+		stream.close();
+	} catch (IOException e) {
+	}
 }
 
 /**	 

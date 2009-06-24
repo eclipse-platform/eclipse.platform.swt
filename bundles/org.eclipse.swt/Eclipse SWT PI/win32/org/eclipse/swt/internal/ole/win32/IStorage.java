@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IStorage extends IUnknown
 {
-public IStorage(int address) {
+public IStorage(int /*long*/ address) {
 	super(address);
 }
 public int Commit(int grfCommitFlag) {
@@ -22,7 +22,7 @@ public int CopyTo(
 	int ciidExclude,     //Number of elements in rgiidExclude
   	GUID rgiidExclude,   //Array of interface identifiers (IIDs)
   	String[] snbExclude, //Points to a block of stream names in the storage object
-	int pstgDest         //Points to destination storage object
+	int /*long*/ pstgDest         //Points to destination storage object
   ){
 	// we only support snbExclude = null
 	if (snbExclude != null) {
@@ -35,7 +35,7 @@ public int CreateStorage(
 	int grfMode,     //Access mode for the new storage object  
 	int reserved1,   //Reserved; must be zero
 	int reserved2,   //Reserved; must be zero
-	int[] ppStg      //Pointer to new storage object
+	int /*long*/[] ppStg      //Pointer to new storage object
 ){
 	
 	// create a null terminated array of char
@@ -51,7 +51,7 @@ public int CreateStream(
 	int grfMode,     //Access mode for the new stream  
 	int reserved1,   //Reserved; must be zero  
 	int reserved2,   //Reserved; must be zero  
-	int[] ppStm      //Pointer to new stream object
+	int /*long*/[] ppStm      //Pointer to new stream object
 ){
   
 	// create a null terminated array of char
@@ -73,9 +73,9 @@ public int DestroyElement(String pwcsName) {
 }
 public int EnumElements( 
 	int reserved1, //Reserved; must be zero
-	int reserved2, //Reserved; must be NULL
+	int /*long*/ reserved2, //Reserved; must be NULL
 	int reserved3, //Reserved; must be zero
-	int[] ppenum   //Pointer to output variable that
+	int /*long*/[] ppenum   //Pointer to output variable that
 				   // receives the IEnumSTATSTG interface 
 ){
 	return COM.VtblCall(11, address, reserved1, reserved2, reserved3, ppenum);
@@ -83,11 +83,11 @@ public int EnumElements(
 public int OpenStorage(
 	String pwcsName,     //Pointer to the name of the                           
 	                     // storage object to open
-	int pstgPriority,    //Must be NULL.
+	int /*long*/ pstgPriority,    //Must be NULL.
 	int grfMode,         //Access mode for the new storage object
 	String snbExclude[], //Must be NULL.
 	int reserved,        //Reserved; must be zero
-	int[] ppStg          //Pointer to opened storage object
+	int /*long*/[] ppStg          //Pointer to opened storage object
 ){
 
 	// create a null terminated array of char
@@ -104,10 +104,10 @@ public int OpenStorage(
 }
 public int OpenStream(
 	String pwcsName, //Pointer to name of stream to open
-	int reserved1,   //Reserved; must be NULL  
+	int /*long*/ reserved1,   //Reserved; must be NULL  
 	int grfMode,     //Access mode for the new stream  
 	int reserved2,   //Reserved; must be zero
-	int[] ppStm      //Pointer to output variable
+	int /*long*/[] ppStm      //Pointer to output variable
 	                 // that receives the IStream interface pointer
 ) {
   

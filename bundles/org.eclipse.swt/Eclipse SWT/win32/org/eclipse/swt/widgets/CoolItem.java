@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,9 @@ import org.eclipse.swt.events.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class CoolItem extends Item {
@@ -90,10 +93,11 @@ public CoolItem (CoolBar parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index at which to store the receiver in its parent
+ * @param index the zero-relative index at which to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -112,7 +116,7 @@ public CoolItem (CoolBar parent, int style, int index) {
 
 /**
  * Adds the listener to the collection of listeners that will
- * be notified when the control is selected, by sending it one
+ * be notified when the control is selected by the user, by sending it one
  * of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -124,7 +128,7 @@ public CoolItem (CoolBar parent, int style, int index) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -214,7 +218,7 @@ public Rectangle getBounds () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Rectangle (0, 0, 0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -238,7 +242,7 @@ Rectangle getClientArea () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Rectangle (0, 0, 0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	RECT insetRect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, insetRect);
 	RECT rect = new RECT ();
@@ -326,8 +330,8 @@ public void setControl (Control control) {
 		this.control = null;
 	}
 	Control oldControl = this.control, newControl = control;
-	int hwnd = parent.handle;
-	int hwndChild = newControl != null ? control.topHandle () : 0;
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hwndChild = newControl != null ? control.topHandle () : 0;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILD;
@@ -340,7 +344,7 @@ public void setControl (Control control) {
 	* moves the new child to the top of the Z-order.  The fix is
 	* to save and restore the visibility and Z-order.
 	*/	
-	int hwndAbove = 0;
+	int /*long*/ hwndAbove = 0;
 	if (newControl != null) {
 		hwndAbove = OS.GetWindow (hwndChild, OS.GW_HWNDPREV);
 	}		
@@ -371,7 +375,7 @@ public Point getPreferredSize () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Point (0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
@@ -401,7 +405,7 @@ public void setPreferredSize (int width, int height) {
 	width = Math.max (0, width);
 	height = Math.max (0, height);
 	ideal = true;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	int cxIdeal, cyMaxChild;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		cxIdeal = Math.max (0, height - parent.getMargin (index));
@@ -461,7 +465,7 @@ public Point getSize() {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) new Point (0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -503,7 +507,7 @@ public void setSize (int width, int height) {
 	if (index == -1) return;
 	width = Math.max (0, width);
 	height = Math.max (0, height);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	int cx, cyChild, cxIdeal;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		cx = height;
@@ -582,7 +586,7 @@ public Point getMinimumSize () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Point (0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
@@ -614,7 +618,7 @@ public void setMinimumSize (int width, int height) {
 	width = Math.max (0, width);
 	height = Math.max (0, height);
 	minimum = true;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	int cxMinChild, cyMinChild;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		cxMinChild = height;
@@ -660,7 +664,7 @@ public void setMinimumSize (Point size) {
 
 boolean getWrap() {
 	int index = parent.indexOf (this);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
@@ -670,7 +674,7 @@ boolean getWrap() {
 
 void setWrap(boolean wrap) {
 	int index = parent.indexOf (this);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
@@ -685,7 +689,7 @@ void setWrap(boolean wrap) {
 
 /**
  * Removes the listener from the collection of listeners that
- * will be notified when the control is selected.
+ * will be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *

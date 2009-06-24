@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -80,7 +80,7 @@ import org.eclipse.swt.events.*;
  * downgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
  * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
@@ -111,17 +111,24 @@ import org.eclipse.swt.events.*;
  *
  * @see Decorations
  * @see SWT
+ * @see <a href="http://www.eclipse.org/swt/snippets/#shell">Shell snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Shell extends Decorations {
 	Menu activeMenu;
-	int hIMC, hwndMDIClient, toolTipHandle, lpstrTip;
+	ToolTip [] toolTips;
+	int /*long*/ hIMC, hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
-	int [] brushes;
-	boolean showWithParent;
+	int /*long*/ [] brushes;
+	boolean showWithParent, fullScreen, wasMaximized, modified, center;
+	String toolTitle, balloonTitle;
+	int /*long*/ toolIcon, balloonIcon;
+	int /*long*/ windowProc;
 	Control lastActive;
 	SHACTIVATEINFO psai;
-	Region region;
-	static final int DialogProc;
+	static /*final*/ int /*long*/ ToolTipProc;
+	static final int /*long*/ DialogProc;
 	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
 	final static int [] SYSTEM_COLORS = {
 		OS.COLOR_BTNFACE,
@@ -178,13 +185,16 @@ public Shell () {
  * @see SWT#MAX
  * @see SWT#RESIZE
  * @see SWT#TITLE
+ * @see SWT#TOOL
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (int style) {
 	this ((Display) null, style);
@@ -248,19 +258,22 @@ public Shell (Display display) {
  * @see SWT#MAX
  * @see SWT#RESIZE
  * @see SWT#TITLE
+ * @see SWT#TOOL
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (Display display, int style) {
-	this (display, null, style, 0);
+	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, int handle) {
+Shell (Display display, Shell parent, int style, int /*long*/ handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -271,10 +284,14 @@ Shell (Display display, Shell parent, int style, int handle) {
 	if (parent != null && parent.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);	
 	}
-	this.style = checkStyle (style);
+	this.center = parent != null && (style & SWT.SHEET) != 0;
+	this.style = checkStyle (parent, style);
 	this.parent = parent;
 	this.display = display;
 	this.handle = handle;
+	if (handle != 0 && !embedded) {
+		state |= FOREIGN_HANDLE;
+	}
 	createWidget ();
 }
 
@@ -350,13 +367,15 @@ public Shell (Shell parent) {
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.display : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
 /**	 
- * Invokes platform specific functionality to allocate a new shell.
+ * Invokes platform specific functionality to allocate a new shell
+ * that is embedded.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
  * API for <code>Shell</code>. It is marked public only so that it
@@ -369,13 +388,42 @@ public Shell (Shell parent, int style) {
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
  */
-public static Shell win32_new (Display display, int handle) {
-	return new Shell (display, null, SWT.NO_TRIM, handle);
+public static Shell win32_new (Display display, int /*long*/ handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
-static int checkStyle (int style) {
+/**	 
+ * Invokes platform specific functionality to allocate a new shell
+ * that is not embedded.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Shell</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param display the display for the shell
+ * @param handle the handle for the shell
+ * @return a new shell object containing the specified display and handle
+ * 
+ * @since 3.3
+ */
+public static Shell internal_new (Display display, int /*long*/ handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, false);
+}
+
+static int checkStyle (Shell parent, int style) {
 	style = Decorations.checkStyle (style);
+	style &= ~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
+	if ((style & SWT.SHEET) != 0) {
+		style &= ~SWT.SHEET;
+		style |= parent == null ? SWT.SHELL_TRIM : SWT.DIALOG_TRIM;
+		if ((style & mask) == 0) {
+			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
+		}
+	}
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
 	if ((style & SWT.APPLICATION_MODAL) != 0) return bits | SWT.APPLICATION_MODAL;
@@ -413,8 +461,22 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Deactivate, typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ balloonTipHandle () {
+	if (balloonTipHandle == 0) createBalloonTipHandle ();
+	return balloonTipHandle;
+}
+
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
+	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
+		return OS.CallWindowProc (ToolTipProc, hwnd, msg, wParam, lParam);
+	}
+	if (hwndMDIClient != 0) {
+		return OS.DefFrameProc (hwnd, hwndMDIClient, msg, wParam, lParam);
+	}
+	if (windowProc != 0) {
+		return OS.CallWindowProc (windowProc, hwnd, msg, wParam, lParam);
+	}
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
 		if ((style & trim) == 0) return OS.DefWindowProc (hwnd, msg, wParam, lParam);
@@ -427,10 +489,27 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		}
 		return OS.CallWindowProc (DialogProc, hwnd, msg, wParam, lParam);
 	}
-	if (hwndMDIClient != 0) {
-		return OS.DefFrameProc (hwnd, hwndMDIClient, msg, wParam, lParam);
-	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+}
+
+void center () {
+	if (parent == null) return;
+	Rectangle rect = getBounds ();
+	Rectangle parentRect = display.map (parent, null, parent.getClientArea());
+	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
+	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
+	Rectangle monitorRect = parent.getMonitor ().getClientArea();
+	if (x + rect.width > monitorRect.x + monitorRect.width) {
+		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
+	} else {
+		x = Math.max (x, monitorRect.x);
+	}
+	if (y + rect.height > monitorRect.y + monitorRect.height) {
+		y = Math.max (monitorRect.y, monitorRect.y + monitorRect.height - rect.height);
+	} else {
+		y = Math.max (y, monitorRect.y);
+	}
+	setLocation (x, y);
 }
 
 /**
@@ -453,8 +532,35 @@ public void close () {
 	closeWidget ();
 }
 
+void createBalloonTipHandle () {
+	balloonTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		OS.TTS_ALWAYSTIP | OS.TTS_NOPREFIX | OS.TTS_BALLOON,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		handle,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (balloonTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (ToolTipProc == 0) {
+		ToolTipProc = OS.GetWindowLongPtr (balloonTipHandle, OS.GWLP_WNDPROC);
+	}
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (balloonTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	display.addControl (balloonTipHandle, this);
+	OS.SetWindowLongPtr (balloonTipHandle, OS.GWLP_WNDPROC, display.windowProc);
+}
+
 void createHandle () {
-	boolean embedded = handle != 0;
+	boolean embedded = handle != 0 && (state & FOREIGN_HANDLE) == 0;
 	
 	/*
 	* On Windows 98 and NT, setting a window to be the
@@ -468,7 +574,15 @@ void createHandle () {
 	* The following code is intentionally commented.
 	*/
 //	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;
-	super.createHandle ();
+	if (handle == 0 || embedded) {
+		super.createHandle ();
+	} else {
+		state |= CANVAS;
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			state |= THEME_BACKGROUND;
+		}
+		windowProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
+	}
 	
 	/*
 	* The following code is intentionally commented.
@@ -493,7 +607,7 @@ void createHandle () {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		int flags = OS.SWP_DRAWFRAME | OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
 		SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
-		if (OS.IsWinCE) setMaximized (true);
+		if (OS.IsWinCE) _setMaximized (true);
 		if (OS.IsPPC) {
 			psai = new SHACTIVATEINFO ();
 			psai.cbSize = SHACTIVATEINFO.sizeof;
@@ -503,6 +617,79 @@ void createHandle () {
 		hIMC = OS.ImmCreateContext ();
 		if (hIMC != 0) OS.ImmAssociateContext (handle, hIMC);
 	}
+}
+
+void createToolTip (ToolTip toolTip) {
+	int id = 0;
+	if (toolTips == null) toolTips = new ToolTip [4];
+	while (id < toolTips.length && toolTips [id] != null) id++;
+	if (id == toolTips.length) {
+		ToolTip [] newToolTips = new ToolTip [toolTips.length + 4];
+		System.arraycopy (toolTips, 0, newToolTips, 0, toolTips.length);
+		toolTips = newToolTips;
+	}
+	toolTips [id] = toolTip;
+	toolTip.id = id + Display.ID_START;
+	if (OS.IsWinCE) return;
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	lpti.hwnd = handle;
+	lpti.uId = toolTip.id;
+	lpti.uFlags = OS.TTF_TRACK;
+	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
+	OS.SendMessage (toolTip.hwndToolTip (), OS.TTM_ADDTOOL, 0, lpti);
+}
+
+void createToolTipHandle () {
+	toolTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		OS.TTS_ALWAYSTIP | OS.TTS_NOPREFIX,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		handle,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (ToolTipProc == 0) {
+		ToolTipProc = OS.GetWindowLongPtr (toolTipHandle, OS.GWLP_WNDPROC);
+	}
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	display.addControl (toolTipHandle, this);
+	OS.SetWindowLongPtr (toolTipHandle, OS.GWLP_WNDPROC, display.windowProc);
+}
+
+void deregister () {
+	super.deregister ();
+	if (toolTipHandle != 0) display.removeControl (toolTipHandle);
+	if (balloonTipHandle != 0) display.removeControl (balloonTipHandle);
+}
+
+void destroyToolTip (ToolTip toolTip) {
+	if (toolTips == null) return;
+	toolTips [toolTip.id - Display.ID_START] = null;
+	if (OS.IsWinCE) return;
+	if (balloonTipHandle != 0) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		lpti.uId = toolTip.id;
+		lpti.hwnd = handle;
+		OS.SendMessage (balloonTipHandle, OS.TTM_DELTOOL, 0, lpti);
+	}
+	toolTip.id = -1;
+}
+
+void destroyWidget () {
+	fixActiveShell ();
+	super.destroyWidget ();
 }
 
 public void dispose () {
@@ -537,7 +724,7 @@ void enableWidget (boolean enabled) {
 	}
 }
 
-int findBrush (int value, int lbStyle) {
+int /*long*/ findBrush (int /*long*/ value, int lbStyle) {
 	if (lbStyle == OS.BS_SOLID) {
 		for (int i=0; i<SYSTEM_COLORS.length; i++) {
 			if (value == OS.GetSysColor (SYSTEM_COLORS [i])) {
@@ -545,10 +732,10 @@ int findBrush (int value, int lbStyle) {
 			}
 		}
 	}
-	if (brushes == null) brushes = new int [BRUSHES_SIZE];
+	if (brushes == null) brushes = new int /*long*/ [BRUSHES_SIZE];
 	LOGBRUSH logBrush = new LOGBRUSH ();
 	for (int i=0; i<brushes.length; i++) {
-		int hBrush = brushes [i];
+		int /*long*/ hBrush = brushes [i];
 		if (hBrush == 0) break;
 		OS.GetObject (hBrush, LOGBRUSH.sizeof, logBrush);
 		switch (logBrush.lbStyle) {
@@ -565,12 +752,12 @@ int findBrush (int value, int lbStyle) {
 		}
 	}
 	int length = brushes.length;
-	int hBrush = brushes [--length];
+	int /*long*/ hBrush = brushes [--length];
 	if (hBrush != 0) OS.DeleteObject (hBrush);
 	System.arraycopy (brushes, 0, brushes, 1, length);
 	switch (lbStyle) {
 		case OS.BS_SOLID:
-			hBrush = OS.CreateSolidBrush (value);
+			hBrush = OS.CreateSolidBrush ((int)/*64*/value);
 			break;
 		case OS.BS_PATTERN:
 			hBrush = OS.CreatePatternBrush (value);
@@ -591,6 +778,30 @@ Control findThemeControl () {
 	return null;
 }
 
+ToolTip findToolTip (int id) {
+	if (toolTips == null) return null;
+	id = id - Display.ID_START;
+	return 0 <= id && id < toolTips.length ? toolTips [id] : null;
+}
+
+void fixActiveShell () {
+	/*
+	* Feature in Windows.  When the active shell is disposed
+	* or hidden, Windows normally makes the parent shell active
+	* and assigns focus.  This does not happen when the parent
+	* shell is disabled.  Instead, Windows assigns focus to the
+	* next shell on the desktop (possibly a shell in another
+	* application).  The fix is to activate the disabled parent
+	* shell before disposing or hiding the active shell.
+	*/
+	int /*long*/ hwndParent = OS.GetParent (handle);
+	if (hwndParent != 0 && handle == OS.GetActiveWindow ()) {
+		if (!OS.IsWindowEnabled (hwndParent) && OS.IsWindowVisible (hwndParent)) {
+			OS.SetActiveWindow (hwndParent);
+		}
+	}
+}
+
 void fixShell (Shell newShell, Control control) {
 	if (this == newShell) return;
 	if (control == lastActive) setActiveControl (null);
@@ -598,6 +809,31 @@ void fixShell (Shell newShell, Control control) {
 	if (toolTipText != null) {
 		control.setToolTipText (this, null);
 		control.setToolTipText (newShell, toolTipText);
+	}
+}
+
+void fixToolTip () {
+	/*
+	* Bug in Windows.  On XP, when a tooltip is
+	* hidden due to a time out or mouse press,
+	* the tooltip remains active although no
+	* longer visible and won't show again until
+	* another tooltip becomes active.  If there
+	* is only one tooltip in the window,  it will
+	* never show again.  The fix is to remove the
+	* current tooltip and add it again every time
+	* the mouse leaves the control.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if (toolTipHandle == 0) return;
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		if (OS.SendMessage (toolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+			if ((lpti.uFlags & OS.TTF_IDISHWND) != 0) {
+				OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
+				OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+			}
+		}
 	}
 }
 
@@ -618,7 +854,7 @@ void fixShell (Shell newShell, Control control) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
@@ -630,6 +866,30 @@ public void forceActive () {
 
 void forceResize () {
 	/* Do nothing */
+}
+
+/**
+ * Returns the receiver's alpha value. The alpha value
+ * is between 0 (transparent) and 255 (opaque).
+ *
+ * @return the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getAlpha () {
+	checkWidget ();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		byte [] pbAlpha = new byte [1];
+		if (OS.GetLayeredWindowAttributes (handle, null, pbAlpha, null)) {
+			return pbAlpha [0] & 0xFF;
+		}
+	}
+	return 0xFF;
 }
 
 public Rectangle getBounds () {
@@ -644,9 +904,52 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
+ToolTip getCurrentToolTip () {
+	if (toolTipHandle != 0) {
+		ToolTip tip = getCurrentToolTip (toolTipHandle);
+		if (tip != null) return tip;
+	}
+	if (balloonTipHandle != 0) {
+		ToolTip tip = getCurrentToolTip (balloonTipHandle);
+		if (tip != null) return tip;
+	}
+	return null;
+}
+
+ToolTip getCurrentToolTip (int /*long*/ hwndToolTip) {
+	if (hwndToolTip == 0) return null;
+	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) return findToolTip ((int)/*64*/lpti.uId);
+		}
+	}
+	return null;
+}
+
 public boolean getEnabled () {
 	checkWidget ();
 	return (state & DISABLED) == 0;
+}
+
+/**
+ * Returns <code>true</code> if the receiver is currently
+ * in fullscreen state, and false otherwise. 
+ * <p>
+ *
+ * @return the fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public boolean getFullScreen () {
+	checkWidget();
+	return fullScreen;
 }
 
 /**
@@ -669,7 +972,7 @@ public boolean getEnabled () {
 public int getImeInputMode () {
 	checkWidget ();
 	if (!OS.IsDBLocale) return 0;
-	int hIMC = OS.ImmGetContext (handle);
+	int /*long*/ hIMC = OS.ImmGetContext (handle);
 	int [] lpfdwConversion = new int [1], lpfdwSentence = new int [1];
 	boolean open = OS.ImmGetOpenStatus (hIMC);
 	if (open) open = OS.ImmGetConversionStatus (hIMC, lpfdwConversion, lpfdwSentence);
@@ -693,6 +996,11 @@ public Point getLocation () {
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	return new Point (rect.left, rect.top);
+}
+
+public boolean getMaximized () {
+	checkWidget ();
+	return !fullScreen && super.getMaximized ();
 }
 
 /**
@@ -732,6 +1040,22 @@ public Point getMinimumSize () {
 	return new Point (width,  height);
 }
 
+/**
+ * Gets the receiver's modified state.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return modified;
+}
+
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -747,6 +1071,7 @@ public Point getMinimumSize () {
  *
  */
 public Region getRegion () {
+	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
@@ -770,7 +1095,7 @@ public Point getSize () {
 
 /**
  * Returns an array containing all shells which are 
- * descendents of the receiver.
+ * descendants of the receiver.
  * <p>
  * @return the dialog shells
  *
@@ -818,7 +1143,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-int hwndMDIClient () {
+int /*long*/ hwndMDIClient () {
 	if (hwndMDIClient == 0) {
 		int widgetStyle = OS.MDIS_ALLCHILDSTYLES | OS.WS_CHILD | OS.WS_CLIPCHILDREN | OS.WS_CLIPSIBLINGS;
 		hwndMDIClient = OS.CreateWindowEx (
@@ -853,19 +1178,22 @@ int hwndMDIClient () {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#setActive
  * @see Shell#forceActive
  */
 public void open () {
 	checkWidget ();
-	bringToTop ();
-	if (isDisposed ()) return;
+	STARTUPINFO lpStartUpInfo = Display.lpStartupInfo;
+	if (lpStartUpInfo == null || (lpStartUpInfo.dwFlags & OS.STARTF_USESHOWWINDOW) == 0) {
+		bringToTop ();
+		if (isDisposed ()) return;
+	}
 	/*
 	* Feature on WinCE PPC.  A new application becomes
 	* the foreground application only if it has at least
 	* one visible window before the event loop is started.
-	* The workaround is to explicitely force the shell to
+	* The workaround is to explicitly force the shell to
 	* be the foreground window.
 	*/
 	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
@@ -892,6 +1220,19 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
+}
+
+void register () {
+	super.register ();
+	if (toolTipHandle != 0) display.addControl (toolTipHandle, this);
+	if (balloonTipHandle != 0) display.addControl (balloonTipHandle, this);
+}
+
 void releaseBrushes () {
 	if (brushes != null) {
 		for (int i=0; i<brushes.length; i++) {
@@ -909,6 +1250,15 @@ void releaseChildren (boolean destroy) {
 			shell.release (false);
 		}
 	}
+	if (toolTips != null) {
+		for (int i=0; i<toolTips.length; i++) {
+			ToolTip toolTip = toolTips [i];
+			if (toolTip != null && !toolTip.isDisposed ()) {
+				toolTip.release (false);
+			}
+		}
+	}
+	toolTips = null;
 	super.releaseChildren (destroy);
 }
 
@@ -927,16 +1277,16 @@ void releaseWidget () {
 	activeMenu = null;
 	display.clearModal (this);
 	if (lpstrTip != 0) {
-		int hHeap = OS.GetProcessHeap ();
+		int /*long*/ hHeap = OS.GetProcessHeap ();
 		OS.HeapFree (hHeap, 0, lpstrTip);
 	}
 	lpstrTip = 0;
-	toolTipHandle = 0;
+	toolTipHandle = balloonTipHandle = 0;
 	if (OS.IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
 	lastActive = null;
-	region = null;
+	toolTitle = balloonTitle = null;
 }
 
 void removeMenu (Menu menu) {
@@ -972,9 +1322,9 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deactivate, listener);
 }
 
-LRESULT selectPalette (int hPalette) {
-	int hDC = OS.GetDC (handle);
-	int hOld = OS.SelectPalette (hDC, hPalette, false);
+LRESULT selectPalette (int /*long*/ hPalette) {
+	int /*long*/ hDC = OS.GetDC (handle);
+	int /*long*/ hOld = OS.SelectPalette (hDC, hPalette, false);
 	int result = OS.RealizePalette (hDC);
 	if (result > 0) {
 		OS.InvalidateRect (handle, null, true);
@@ -984,6 +1334,11 @@ LRESULT selectPalette (int hPalette) {
 	}
 	OS.ReleaseDC (handle, hDC);
 	return (result > 0) ? LRESULT.ONE : LRESULT.ZERO;
+}
+
+boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lParam, Event event) {
+	if (!isEnabled () || !isActive ()) return false;
+	return super.sendKeyEvent (type, msg, wParam, lParam, event);
 }
 
 /**
@@ -1003,13 +1358,13 @@ LRESULT selectPalette (int hPalette) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
 public void setActive () {
 	checkWidget ();
-	if(!isVisible()) return;
+	if (!isVisible ()) return;
 	bringToTop ();
 	// widget could be disposed at this point
 }
@@ -1051,7 +1406,53 @@ void setActiveControl (Control control) {
 	}
 }
 
+/**
+ * Sets the receiver's alpha value which must be
+ * between 0 (transparent) and 255 (opaque).
+ * <p>
+ * This operation requires the operating system's advanced
+ * widgets subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * @param alpha the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setAlpha (int alpha) {
+	checkWidget ();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		alpha &= 0xFF;
+		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+		if (alpha == 0xFF) {
+			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits & ~OS.WS_EX_LAYERED);
+			int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_FRAME | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (handle, null, 0, flags);
+		} else {
+			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits | OS.WS_EX_LAYERED);
+			OS.SetLayeredWindowAttributes (handle, 0, (byte)alpha, OS.LWA_ALPHA);
+		}
+	}
+}
+
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	if (fullScreen) setFullScreen (false);
+	/*
+	* Bug in Windows.  When a window has alpha and
+	* SetWindowPos() is called with SWP_DRAWFRAME,
+	* the contents of the window are copied rather
+	* than allowing the windows underneath to draw.
+	* This causes pixel corruption.  The fix is to
+	* clear the SWP_DRAWFRAME bits.
+	*/
+	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE); 
+	if ((bits & OS.WS_EX_LAYERED) != 0) {
+		flags &= ~OS.SWP_DRAWFRAME;
+	}
 	super.setBounds (x, y, width, height, flags, false);
 }
 
@@ -1062,6 +1463,54 @@ public void setEnabled (boolean enabled) {
 	if (enabled && handle == OS.GetActiveWindow ()) {
 		if (!restoreFocus ()) traverseGroup (true);
 	}
+}
+
+/**
+ * Sets the full screen state of the receiver.
+ * If the argument is <code>true</code> causes the receiver
+ * to switch to the full screen state, and if the argument is
+ * <code>false</code> and the receiver was previously switched
+ * into full screen state, causes the receiver to switch back
+ * to either the maximized or normal states.
+ * <p>
+ * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
+ * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
+ * vary by platform. Typically, the behavior will match the platform user's 
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * 
+ * @param fullScreen the new fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setFullScreen (boolean fullScreen) {
+	checkWidget();
+	if (this.fullScreen == fullScreen) return;
+	int stateFlags = fullScreen ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
+	int styleFlags = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int mask = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & mask) != 0) {
+		if (fullScreen) {
+			styleFlags = styleFlags & ~OS.WS_CAPTION;
+		} else {
+			styleFlags = styleFlags | OS.WS_CAPTION;
+		}
+	}
+	if (fullScreen) wasMaximized = getMaximized ();
+	boolean visible = isVisible ();
+	OS.SetWindowLong (handle, OS.GWL_STYLE, styleFlags);
+	if (wasMaximized) {
+		OS.ShowWindow (handle, OS.SW_HIDE);
+		stateFlags = OS.SW_SHOWMAXIMIZED;
+	}
+	if (visible) OS.ShowWindow (handle, stateFlags);
+	OS.UpdateWindow (handle);
+	this.fullScreen = fullScreen;
 }
 
 /**
@@ -1083,8 +1532,8 @@ public void setEnabled (boolean enabled) {
 public void setImeInputMode (int mode) {
 	checkWidget ();
 	if (!OS.IsDBLocale) return;
-	boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;
-	int hIMC = OS.ImmGetContext (handle);
+	boolean imeOn = mode != SWT.NONE;
+	int /*long*/ hIMC = OS.ImmGetContext (handle);
 	OS.ImmSetOpenStatus (hIMC, imeOn);
 	if (imeOn) {
 		int [] lpfdwConversion = new int [1], lpfdwSentence = new int [1];
@@ -1100,7 +1549,7 @@ public void setImeInputMode (int mode) {
 					oldBits = OS.IME_CMODE_KATAKANA;
 				}
 			}
-			if ((mode & SWT.DBCS) != 0) {
+			if ((mode & (SWT.DBCS | SWT.NATIVE)) != 0) {
 				newBits |= OS.IME_CMODE_FULLSHAPE;
 			} else {
 				oldBits |= OS.IME_CMODE_FULLSHAPE;
@@ -1110,7 +1559,8 @@ public void setImeInputMode (int mode) {
 			} else {
 				oldBits |= OS.IME_CMODE_ROMAN;
 			}
-			lpfdwConversion [0] |= newBits;  lpfdwConversion [0] &= ~oldBits;
+			lpfdwConversion [0] |= newBits;
+			lpfdwConversion [0] &= ~oldBits;
 			OS.ImmSetConversionStatus (hIMC, lpfdwConversion [0], lpfdwSentence [0]);
 		}
 	}
@@ -1181,8 +1631,26 @@ public void setMinimumSize (Point size) {
 	setMinimumSize (size.x, size.y);
 }
 
+/**
+ * Sets the receiver's modified state as specified by the argument.
+ *
+ * @param modified the new modified state for the receiver
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setModified (boolean modified) {
+	checkWidget ();
+	this.modified = modified;
+}
+
 void setItemEnabled (int cmd, boolean enabled) {
-	int hMenu = OS.GetSystemMenu (handle, false);
+	int /*long*/ hMenu = OS.GetSystemMenu (handle, false);
 	if (hMenu == 0) return;
 	int flags = OS.MF_ENABLED;
 	if (!enabled) flags = OS.MF_DISABLED | OS.MF_GRAYED;
@@ -1216,52 +1684,25 @@ void setParent () {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	int hRegion = 0;
-	if (region != null) {
-		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.CombineRgn (hRegion, region.handle, hRegion, OS.RGN_OR);
-	}
-	OS.SetWindowRgn (handle, hRegion, true);
-	this.region = region;
+	super.setRegion (region);
 }
 
-void setToolTipText (int hwnd, String text) {
+void setToolTipText (int /*long*/ hwnd, String text) {
 	if (OS.IsWinCE) return;
-	if (toolTipHandle == 0) {
-		toolTipHandle = OS.CreateWindowEx (
-			0,
-			new TCHAR (0, OS.TOOLTIPS_CLASS, true),
-			null,
-			OS.TTS_ALWAYSTIP,
-			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-			handle,
-			0,
-			OS.GetModuleHandle (null),
-			null);
-		if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);	
-		/*
-		* Feature in Windows.  Despite the fact that the
-		* tool tip text contains \r\n, the tooltip will
-		* not honour the new line unless TTM_SETMAXTIPWIDTH
-		* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
-		* a large value.
-		*/
-		OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	}
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
-	lpti.uId = hwnd;
 	lpti.hwnd = handle;
+	lpti.uId = hwnd;
+	int /*long*/ hwndToolTip = toolTipHandle ();
 	if (text == null) {
-		OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
+		OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
 	} else {
-		if (OS.SendMessage (toolTipHandle, OS.TTM_GETTOOLINFO, 0, lpti) != 0) {
-			OS.SendMessage (toolTipHandle, OS.TTM_UPDATE, 0, 0);
+		if (OS.SendMessage (hwndToolTip, OS.TTM_GETTOOLINFO, 0, lpti) != 0) {
+			OS.SendMessage (hwndToolTip, OS.TTM_UPDATE, 0, 0);
 		} else {
 			lpti.uFlags = OS.TTF_IDISHWND | OS.TTF_SUBCLASS;
 			lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-			OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+			OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
 		}
 	}
 }
@@ -1274,7 +1715,7 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, byte [] buffer) {
 	* shell trimmings.
 	*/
 	if (!hasCursor ()) return;
-	int hHeap = OS.GetProcessHeap ();
+	int /*long*/ hHeap = OS.GetProcessHeap ();
 	if (lpstrTip != 0) OS.HeapFree (hHeap, 0, lpstrTip);
 	int byteCount = buffer.length;
 	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
@@ -1290,7 +1731,7 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, char [] buffer) {
 	* shell trimmings.
 	*/
 	if (!hasCursor ()) return;
-	int hHeap = OS.GetProcessHeap ();
+	int /*long*/ hHeap = OS.GetProcessHeap ();
 	if (lpstrTip != 0) OS.HeapFree (hHeap, 0, lpstrTip);
 	int byteCount = buffer.length * 2;
 	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
@@ -1298,14 +1739,51 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, char [] buffer) {
 	lpnmtdi.lpszText = lpstrTip;
 }
 
+void setToolTipTitle (int /*long*/ hwndToolTip, String text, int icon) {
+	/*
+	* Bug in Windows.  For some reason, when TTM_SETTITLE
+	* is used to set the title of a tool tip, Windows leaks
+	* GDI objects.  This happens even when TTM_SETTITLE is
+	* called with TTI_NONE and NULL.  The documentation
+	* states that Windows copies the icon and that the 
+	* programmer must free the copy but does not provide
+	* API to get the icon.  For example, when TTM_SETTITLE
+	* is called with ICON_ERROR, when TTM_GETTITLE is used
+	* to query the title and the icon, the uTitleBitmap
+	* field in the TTGETTITLE struct is zero.  The fix
+	* is to remember these values, only set them when then
+	* change and leak less.
+	* 
+	* NOTE:  This only happens on Vista.
+	*/
+	if (hwndToolTip != toolTipHandle && hwndToolTip != balloonTipHandle) {
+		return;
+	}
+	if (hwndToolTip == toolTipHandle) {
+		if (text == toolTitle || (toolTitle != null && toolTitle.equals (text))) {
+			if (icon == toolIcon) return;
+		}
+		toolTitle = text;
+		toolIcon = icon;
+	} else {
+		if (hwndToolTip == balloonTipHandle) {
+			if (text == balloonTitle || (balloonTitle != null && balloonTitle.equals (text))) {
+				if (icon == toolIcon) return;
+			}
+			balloonTitle = text;
+			balloonIcon = icon;
+		}
+	}
+	if (text != null) {
+		TCHAR pszTitle = new TCHAR (getCodePage (), text, true);
+		OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
+	} else {
+		OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+	}
+}
+
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (drawCount != 0) {
-		if (((state & HIDDEN) == 0) == visible) return;
-	} else {
-		if (visible == OS.IsWindowVisible (handle)) return;
-	}
-	
 	/*
 	* Feature in Windows.  When ShowWindow() is called used to hide
 	* a window, Windows attempts to give focus to the parent. If the
@@ -1319,12 +1797,15 @@ public void setVisible (boolean visible) {
 	if ((style & mask) != 0) {
 		if (visible) {
 			display.setModalShell (this);
+			if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+				display.setModalDialog (null);
+			}
 			Control control = display._getFocusControl ();
 			if (control != null && !control.isActive ()) {
 				bringToTop ();
 				if (isDisposed ()) return;
 			}
-			int hwndShell = OS.GetActiveWindow ();
+			int /*long*/ hwndShell = OS.GetActiveWindow ();
 			if (hwndShell == 0) {
 				if (parent != null) hwndShell = parent.handle;
 			}
@@ -1348,13 +1829,55 @@ public void setVisible (boolean visible) {
 	if (showWithParent && !visible) {
 		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
 	}
+	if (!visible) fixActiveShell ();
+	if (visible && center && !moved) {
+		center ();
+		if (isDisposed ()) return;
+	}
 	super.setVisible (visible);
 	if (isDisposed ()) return;
-	if (showWithParent == visible) return;
-	showWithParent = visible;
-	if (visible) {
-		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);
+	if (showWithParent != visible) {
+		showWithParent = visible;
+		if (visible) {
+			if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);		
+		}
 	}
+	
+	/* Make the foreign window parent appear in the task bar */
+	if (visible) {
+		if (parent != null && (parent.state & FOREIGN_HANDLE) != 0) {
+			int /*long*/ hwndParent = parent.handle;
+			int style = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+			if ((style & OS.WS_EX_TOOLWINDOW) != 0) {
+				OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, style & ~OS.WS_EX_TOOLWINDOW);
+				/*
+				* Bug in Windows.  The window does not show in the task bar when
+				* WS_EX_TOOLWINDOW is removed after the window has already been shown.
+				* The fix is to hide and shown the shell. 
+				*/
+				OS.ShowWindow (hwndParent, OS.SW_HIDE);
+				OS.ShowWindow (hwndParent, OS.SW_RESTORE);
+			}
+		}
+	}
+}
+
+void subclass () {
+	super.subclass ();
+	if (ToolTipProc != 0) {
+		int /*long*/ newProc = display.windowProc;
+		if (toolTipHandle != 0) {
+			OS.SetWindowLongPtr (toolTipHandle, OS.GWLP_WNDPROC, newProc);
+		}
+		if (balloonTipHandle != 0) {
+			OS.SetWindowLongPtr (balloonTipHandle, OS.GWLP_WNDPROC, newProc);
+		}
+	}
+}
+
+int /*long*/ toolTipHandle () {
+	if (toolTipHandle == 0) createToolTipHandle ();
+	return toolTipHandle;
 }
 
 boolean translateAccelerator (MSG msg) {
@@ -1370,6 +1893,18 @@ boolean traverseEscape () {
 	return true;
 }
 
+void unsubclass () {
+	super.unsubclass ();
+	if (ToolTipProc != 0) {
+		if (toolTipHandle != 0) {
+			OS.SetWindowLongPtr (toolTipHandle, OS.GWLP_WNDPROC, ToolTipProc);
+		}	
+		if (toolTipHandle != 0) {
+			OS.SetWindowLongPtr (toolTipHandle, OS.GWLP_WNDPROC, ToolTipProc);
+		}
+	}
+}
+
 void updateModal () {
 	if (Display.TrimEnabled) {
 		setItemEnabled (OS.SC_CLOSE, isActive ());
@@ -1382,7 +1917,7 @@ CREATESTRUCT widgetCreateStruct () {
 	return null;
 }
 
-int widgetParent () {
+int /*long*/ widgetParent () {
 	if (handle != 0) return handle;
 	return parent != null ? parent.handle : 0;
 }
@@ -1439,13 +1974,40 @@ TCHAR windowClass () {
 	return parent != null ? DialogClass : super.windowClass ();
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
+	if (windowProc != 0) return windowProc;
 	if (OS.IsSP) return DialogProc;
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
-		if ((style & trim) == 0) super.windowProc ();
+		if ((style & trim) == 0) return super.windowProc ();
 	}
 	return parent != null ? DialogProc : super.windowProc ();
+}
+
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+	if (handle == 0) return 0;
+	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
+		switch (msg) {
+			case OS.WM_TIMER: {
+				if (wParam != ToolTip.TIMER_ID) break;
+				ToolTip tip = getCurrentToolTip (hwnd);
+				if (tip != null && tip.autoHide) {
+					tip.setVisible (false);
+				}
+				break;
+			}
+			case OS.WM_LBUTTONDOWN: {
+				ToolTip tip = getCurrentToolTip (hwnd);
+				if (tip != null) {
+					tip.setVisible (false);
+					tip.postEvent (SWT.Selection);
+				}
+				break;
+			}
+		}
+		return callWindowProc (hwnd, msg, wParam, lParam);
+	}
+	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
 int widgetStyle () {
@@ -1487,21 +2049,21 @@ int widgetStyle () {
 	return bits | OS.WS_OVERLAPPED | OS.WS_CAPTION;
 }
 
-LRESULT WM_ACTIVATE (int wParam, int lParam) {
+LRESULT WM_ACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsPPC) {
 		/*
 		* Note: this does not work when we get WM_ACTIVATE prior
 		* to adding a listener.
 		*/
 		if (hooks (SWT.HardKeyDown) || hooks (SWT.HardKeyUp)) {
-			int fActive = wParam & 0xFFFF;
-			int hwnd = fActive != 0 ? handle : 0;
+			int fActive = OS.LOWORD (wParam);
+			int /*long*/ hwnd = fActive != 0 ? handle : 0;
 			for (int bVk=OS.VK_APP1; bVk<=OS.VK_APP6; bVk++) {
 				OS.SHSetAppKeyWndAssoc ((byte) bVk, hwnd);
 			}
 		}
 		/* Restore SIP state when window is activated */
-		if ((wParam & 0xFFFF) != 0) {
+		if (OS.LOWORD (wParam) != 0) {
 			OS.SHSipPreference (handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
 		} 
 	}
@@ -1509,34 +2071,36 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	/*
 	* Bug in Windows XP.  When a Shell is deactivated, the
 	* IME composition window does not go away. This causes
-	* repaint issues.  The fix is to close the IME to cause
-	* the composition string to be committed.
-	* 
-	* Note. The IME needs to be reopened in order to preserve
-	* the input method status.
+	* repaint issues.  The fix is to commit the composition
+	* string.
 	*/
 	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		if ((wParam & 0xFFFF) == 0 && OS.IsDBLocale && hIMC != 0) {
-			if (OS.ImmGetOpenStatus(hIMC)) {
-				OS.ImmSetOpenStatus (hIMC, false);
-				OS.ImmSetOpenStatus (hIMC, true);
+		if (OS.LOWORD (wParam) == 0 && OS.IsDBLocale && hIMC != 0) {
+			if (OS.ImmGetOpenStatus (hIMC)) {
+				OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
 			}
 		}
 	}
 	
+	/* Process WM_ACTIVATE */
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
-	if (parent != null) return LRESULT.ZERO;
-	return result;
+	if (OS.LOWORD (wParam) == 0) {
+		if (lParam == 0 || (lParam != toolTipHandle && lParam != balloonTipHandle)) {
+			ToolTip tip = getCurrentToolTip ();
+			if (tip != null) tip.setVisible (false);
+		}
+	}
+	return parent != null ? LRESULT.ZERO : result;
 }
 
-LRESULT WM_COMMAND (int wParam, int lParam) {
+LRESULT WM_COMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsPPC) {
 		/*
 		* Note in WinCE PPC:  Close the Shell when the "Done Button" has
 		* been pressed. lParam is either 0 (PocketPC 2002) or the handle
 		* to the Shell (PocketPC).
 		*/
-		int loWord = wParam & 0xFFFF;
+		int loWord = OS.LOWORD (wParam);
 		if (loWord == OS.IDOK && (lParam == 0 || lParam == handle)) {
 			OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 			return LRESULT.ZERO;			
@@ -1554,12 +2118,12 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	*/
 	if (OS.IsPPC || OS.IsSP) {
 		if (menuBar != null) {
-			int hwndCB = menuBar.hwndCB;
+			int /*long*/ hwndCB = menuBar.hwndCB;
 			if (lParam != 0 && hwndCB != 0) {
 				if (lParam == hwndCB) {
 					return super.WM_COMMAND (wParam, 0);
 				} else {
-					int hwndChild = OS.GetWindow (hwndCB, OS.GW_CHILD);
+					int /*long*/ hwndChild = OS.GetWindow (hwndCB, OS.GW_CHILD);
 					if (lParam == hwndChild) return super.WM_COMMAND (wParam, 0);					
 				}
 			}
@@ -1568,7 +2132,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return super.WM_COMMAND (wParam, lParam);
 }
 
-LRESULT WM_DESTROY (int wParam, int lParam) {
+LRESULT WM_DESTROY (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_DESTROY (wParam, lParam);
 	/*
 	* When the shell is a WS_CHILD window of a non-SWT
@@ -1584,16 +2148,34 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_ENTERIDLE (int wParam, int lParam) {
-	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
-	if (OS.IsWinCE && display.runMessages) {
-		if (display.runAsyncMessages (true)) display.wakeThread ();
+	/*
+	* Feature in Windows.  When a shell is resized by dragging
+	* the resize handles, Windows temporarily fills in black
+	* rectangles where the new contents of the shell should
+	* draw.  The fix is to always draw the background of shells.
+	* 
+	* NOTE: This only happens on Vista.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		drawBackground (wParam);
+		return LRESULT.ONE;
 	}
 	return result;
 }
 
-LRESULT WM_GETMINMAXINFO (int wParam, int lParam) {
+LRESULT WM_ENTERIDLE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
+	if (result != null) return result;
+	if (display.runMessages) {
+		if (display.runAsyncMessages (false)) display.wakeThread ();
+	}
+	return result;
+}
+
+LRESULT WM_GETMINMAXINFO (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETMINMAXINFO (wParam, lParam);
 	if (result != null) return result;
 	if (minWidth != SWT.DEFAULT || minHeight != SWT.DEFAULT) {
@@ -1607,7 +2189,7 @@ LRESULT WM_GETMINMAXINFO (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
+LRESULT WM_MOUSEACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_MOUSEACTIVATE (wParam, lParam);
 	if (result != null) return result;
 	
@@ -1616,7 +2198,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	* and stop the normal shell activation but allow the mouse
 	* down to be delivered.
 	*/
-	int hittest = (short) (lParam & 0xFFFF);
+	int hittest = (short) OS.LOWORD (lParam);
 	switch (hittest) {
 		case OS.HTERROR:
 		case OS.HTTRANSPARENT:
@@ -1652,17 +2234,16 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	* order to support Activate and Deactivate
 	* events for embedded widgets that have
 	* their own event loop.  In that case, the
-	* cursor location reported by GetMessagePos
+	* cursor location reported by GetMessagePos()
 	* is the one for our event loop, not the
 	* embedded widget's event loop.
 	*/
 	POINT pt = new POINT ();
 	if (!OS.GetCursorPos (pt)) {
 		int pos = OS.GetMessagePos ();
-		pt.x = (short) (pos & 0xFFFF);
-		pt.y = (short) (pos >> 16);
+		OS.POINTSTOPOINT (pt, pos);
 	}
-	int hwnd = OS.WindowFromPoint (pt);
+	int /*long*/ hwnd = OS.WindowFromPoint (pt);
 	if (hwnd == 0) return null;
 	Control control = display.findControl (hwnd);
 	
@@ -1683,31 +2264,40 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 		}
 	}
 	
+	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEACTIVATE, wParam, lParam);
 	setActiveControl (control);
-	return null;
+	return new LRESULT (code);
 }
 
-LRESULT WM_NCHITTEST (int wParam, int lParam) {
+LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_MOVE (wParam, lParam);
+	if (result != null) return result;
+	ToolTip tip = getCurrentToolTip ();
+	if (tip != null) tip.setVisible (false);
+	return result;
+}
+
+LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
 	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isEnabled () || !isActive ()) {
 		if (!Display.TrimEnabled) return new LRESULT (OS.HTNOWHERE);
-		int hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+		int /*long*/ hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 		if (hittest == OS.HTCLIENT || hittest == OS.HTMENU) hittest = OS.HTBORDER;
 		return new LRESULT (hittest);
 	}
 	if (menuBar != null && !menuBar.getEnabled ()) {
-		int hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+		int /*long*/ hittest = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 		if (hittest == OS.HTMENU) hittest = OS.HTBORDER;
 		return new LRESULT (hittest);
 	}
 	return null;
 }
 
-LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_NCLBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_NCLBUTTONDOWN (wParam, lParam);
 	if (result != null) return result;
 	/*
-	* When the normal activation was interruped in WM_MOUSEACTIVATE
+	* When the normal activation was interrupted in WM_MOUSEACTIVATE
 	* because the active shell was an MDI shell, set the active window
 	* to the top level shell but lock the active window and stop focus
 	* changes.  This allows the user to interact the top level shell
@@ -1715,11 +2305,11 @@ LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
 	*/
 	if (!display.ignoreRestoreFocus) return result;
 	Display display = this.display;
-	int hwndActive = 0;
+	int /*long*/ hwndActive = 0;
 	boolean fixActive = OS.IsWin95 && display.lastHittest == OS.HTCAPTION;
 	if (fixActive) hwndActive = OS.SetActiveWindow (handle);
 	display.lockActiveWindow = true;
-	int code = callWindowProc (handle, OS.WM_NCLBUTTONDOWN, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_NCLBUTTONDOWN, wParam, lParam);
 	display.lockActiveWindow = false;
 	if (fixActive) OS.SetActiveWindow (hwndActive);
 	Control focusControl = display.lastHittestControl;
@@ -1731,21 +2321,21 @@ LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_PALETTECHANGED (int wParam, int lParam) {
+LRESULT WM_PALETTECHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	if (wParam != handle) {
-		int hPalette = display.hPalette;
+		int /*long*/ hPalette = display.hPalette;
 		if (hPalette != 0) return selectPalette (hPalette);
 	}
 	return super.WM_PALETTECHANGED (wParam, lParam);
 }
 
-LRESULT WM_QUERYNEWPALETTE (int wParam, int lParam) {
-	int hPalette = display.hPalette;
+LRESULT WM_QUERYNEWPALETTE (int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ hPalette = display.hPalette;
 	if (hPalette != 0) return selectPalette (hPalette);
 	return super.WM_QUERYNEWPALETTE (wParam, lParam);
 }
 
-LRESULT WM_SETCURSOR (int wParam, int lParam) {
+LRESULT WM_SETCURSOR (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When the shell is disabled
 	* by a Windows standard dialog (like a MessageBox
@@ -1754,12 +2344,12 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	* fix is to detect this case and bring the shell
 	* forward.
 	*/
-	int msg = (short) (lParam >> 16);
+	int msg = OS.HIWORD (lParam);
 	if (msg == OS.WM_LBUTTONDOWN) {
 		if (!Display.TrimEnabled) {
 			Shell modalShell = display.getModalShell ();
 			if (modalShell != null && !isActive ()) {
-				int hwndModal = modalShell.handle;
+				int /*long*/ hwndModal = modalShell.handle;
 				if (OS.IsWindowEnabled (hwndModal)) {
 					OS.SetActiveWindow (hwndModal);
 				}
@@ -1767,7 +2357,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 		}
 		if (!OS.IsWindowEnabled (handle)) {
 			if (!OS.IsWinCE) {
-				int hwndPopup = OS.GetLastActivePopup (handle);
+				int /*long*/ hwndPopup = OS.GetLastActivePopup (handle);
 				if (hwndPopup != 0 && hwndPopup != handle) {
 					if (display.getControl (hwndPopup) == null) {
 						if (OS.IsWindowEnabled (hwndPopup)) {
@@ -1789,27 +2379,27 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	* with HTERROR to set the cursor but only when the
 	* mouse is in the client area of the shell.
 	*/
-	int hitTest = (short) (lParam & 0xFFFF);
+	int hitTest = (short) OS.LOWORD (lParam);
 	if (hitTest == OS.HTERROR) {
 		if (!getEnabled ()) {
 			Control control = display.getControl (wParam);
 			if (control == this && cursor != null) {
 				POINT pt = new POINT ();
-				if (OS.GetCursorPos (pt)) {
-					OS.ScreenToClient (handle, pt);
-					RECT rect = new RECT ();
-					OS.GetClientRect (handle, rect);
-					if (OS.PtInRect (rect, pt)) {
-						OS.SetCursor (cursor.handle);
-						switch (msg) {
-							case OS.WM_LBUTTONDOWN:
-							case OS.WM_RBUTTONDOWN:
-							case OS.WM_MBUTTONDOWN:
-							case OS.WM_XBUTTONDOWN:
-								OS.MessageBeep (OS.MB_OK);
-						}
-						return LRESULT.ONE;
+				int pos = OS.GetMessagePos ();
+				OS.POINTSTOPOINT (pt, pos);
+				OS.ScreenToClient (handle, pt);
+				RECT rect = new RECT ();
+				OS.GetClientRect (handle, rect);
+				if (OS.PtInRect (rect, pt)) {
+					OS.SetCursor (cursor.handle);
+					switch (msg) {
+						case OS.WM_LBUTTONDOWN:
+						case OS.WM_RBUTTONDOWN:
+						case OS.WM_MBUTTONDOWN:
+						case OS.WM_XBUTTONDOWN:
+							OS.MessageBeep (OS.MB_OK);
 					}
+					return LRESULT.ONE;
 				}
 			}
 		}
@@ -1817,7 +2407,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	return super.WM_SETCURSOR (wParam, lParam);
 }
 
-LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
+LRESULT WM_SETTINGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETTINGCHANGE (wParam, lParam);
 	if (result != null) return result;
 	if (OS.IsPPC) {
@@ -1842,7 +2432,7 @@ LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
+LRESULT WM_SHOWWINDOW (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SHOWWINDOW (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1864,7 +2454,7 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+LRESULT WM_SYSCOMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1885,7 +2475,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	* this at this time.
 	*/
 	if (OS.IsWinNT) {
-		int cmd = wParam & 0xFFF0;
+		int cmd = (int)/*64*/wParam & 0xFFF0;
 		switch (cmd) {
 			case OS.SC_MINIMIZE:
 				long memory = Runtime.getRuntime ().totalMemory ();
@@ -1898,7 +2488,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam,lParam);
 	if (result != null) return result;
 	WINDOWPOS lpwp = new WINDOWPOS ();

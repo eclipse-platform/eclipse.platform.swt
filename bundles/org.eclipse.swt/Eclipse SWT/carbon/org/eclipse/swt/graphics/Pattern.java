@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,20 +21,34 @@ import org.eclipse.swt.internal.carbon.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
  * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.1
  */
 public class Pattern extends Resource {
 	int jniRef;
 	Image image;
-	Color color1, color2;
+	float[] color1, color2;
 	int alpha1, alpha2;
 	float x1, y1, x2, y2;
 	int shading;
+	CGRect drawRect;
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
  * pattern will cause the image to be tiled over the resulting area.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the pattern
  * @param image the image that the pattern will draw
@@ -43,29 +57,36 @@ public class Pattern extends Resource {
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, or the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
  */
 public Pattern(Device device, Image image) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
+	device = this.device;
 	this.image = image;
 	device.createPatternCallbacks();
 	jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
  * Constructs a new Pattern that represents a linear, two color
  * gradient. Drawing with the pattern will cause the resulting area to be
  * tiled with the gradient specified by the arguments.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the pattern
  * @param x1 the x coordinate of the starting corner of the gradient
@@ -80,8 +101,11 @@ public Pattern(Device device, Image image) {
  *                              or if either color1 or color2 is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -89,20 +113,55 @@ public Pattern(Device device, Image image) {
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, Color color2) {
 	this(device, x1, y1, x2, y2, color1, 0xFF, color2, 0xFF);
 }
+/**
+ * Constructs a new Pattern that represents a linear, two color
+ * gradient. Drawing with the pattern will cause the resulting area to be
+ * tiled with the gradient specified by the arguments.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the pattern
+ * @param x1 the x coordinate of the starting corner of the gradient
+ * @param y1 the y coordinate of the starting corner of the gradient
+ * @param x2 the x coordinate of the ending corner of the gradient
+ * @param y2 the y coordinate of the ending corner of the gradient
+ * @param color1 the starting color of the gradient
+ * @param alpha1 the starting alpha value of the gradient
+ * @param color2 the ending color of the gradient
+ * @param alpha2 the ending alpha value of the gradient
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
+ *                              or if either color1 or color2 is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * 
+ * @since 3.2
+ */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
+	device = this.device;
 	this.x1 = x1;
 	this.y1 = y1;
 	this.x2 = x2;
 	this.y2 = y2;
-	this.color1 = color1;
-	this.color2 = color2;
+	this.color1 = color1.handle;
+	this.color2 = color2.handle;
 	this.alpha1 = alpha1;
 	this.alpha2 = alpha2;
 	device.createPatternCallbacks();
@@ -121,22 +180,22 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	shading = OS.CGShadingCreateAxial(device.colorspace, start, end, function, true, true);	
 	OS.CGFunctionRelease(function);
 	if (shading == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 int axialShadingProc (int ref, int in, int out) {
 	float[] buffer = new float[4];
-	OS.memcpy(buffer, in, 4);
+	OS.memmove(buffer, in, 4);
 	float factor2 = buffer[0], factor1 = 1 - factor2;
-	float[] c1 = color1.handle;
-	float[] c2 = color2.handle;
+	float[] c1 = color1;
+	float[] c2 = color2;
 	float a1 = ((alpha1 & 0xFF) / (float)0xFF);
 	float a2 = ((alpha2 & 0xFF) / (float)0xFF);
 	buffer[0] = (c2[0] * factor2) + (c1[0] * factor1);
 	buffer[1] = (c2[1] * factor2) + (c1[1] * factor1);
 	buffer[2] = (c2[2] * factor2) + (c1[2] * factor1);
 	buffer[3] = (a2 * factor2) + (a1 * factor1);
-	OS.memcpy(out, buffer, buffer.length * 4);
+	OS.memmove(out, buffer, buffer.length * 4);
 	return 0;
 }
 
@@ -161,33 +220,50 @@ int createPattern(int context) {
 	return pattern;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Pattern. Applications must dispose of all Patterns that
- * they allocate.
- */
-public void dispose() {
-	if (jniRef == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 	if (shading != 0) OS.CGShadingRelease(shading);
 	jniRef = shading = 0;
 	image = null;
 	color1 = color2 = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 int drawPatternProc (int ref, int context) {
 	if (image != null) {
 		if (image.isDisposed()) return 0;
 		int imageHandle = image.handle;
+		int imageWidth = OS.CGImageGetWidth(imageHandle);
+		int imageHeight = OS.CGImageGetHeight(imageHandle);
 		CGRect rect = new CGRect();
-		rect.width = OS.CGImageGetWidth(imageHandle);
-		rect.height = OS.CGImageGetHeight(imageHandle);
+		rect.width = imageWidth;
+		rect.height = imageHeight;
 		OS.CGContextScaleCTM(context, 1, -1);
-	 	OS.CGContextTranslateCTM(context, 0, -rect.height);
-		OS.CGContextDrawImage(context, rect, imageHandle);
+	 	if (drawRect != null && (drawRect.x % imageWidth) + drawRect.width < imageWidth && (drawRect.y % imageHeight) + drawRect.height < imageHeight) {
+	 		rect.x = drawRect.x % imageWidth;
+	 		rect.y = drawRect.y % imageHeight;
+	 		rect.width = drawRect.width;
+	 		rect.height = drawRect.height;
+	 		if (OS.VERSION >= 0x1040) {
+	 			imageHandle = OS.CGImageCreateWithImageInRect(imageHandle, rect);
+	 		} else {
+		 		int srcX = (int)drawRect.x, srcY = (int)drawRect.y;
+		 		int srcWidth = (int)drawRect.width, srcHeight = (int)drawRect.height;
+		 		int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
+				int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
+				int bpr = OS.CGImageGetBytesPerRow(imageHandle);
+				int colorspace = OS.CGImageGetColorSpace(imageHandle);
+				int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
+				int data = image.data + (srcY * bpr) + srcX * 4;
+				int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
+				if (provider != 0) {
+					imageHandle = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
+					OS.CGDataProviderRelease(provider);
+				}
+			}
+	 	}
+	 	OS.CGContextTranslateCTM(context, 0, -(rect.height + 2 * rect.y));
+	 	OS.CGContextDrawImage(context, rect, imageHandle);
+	 	if (imageHandle != 0 && imageHandle != image.handle) OS.CGImageRelease(imageHandle);
 	} else {
 		OS.CGContextDrawShading(context, shading);
 	}

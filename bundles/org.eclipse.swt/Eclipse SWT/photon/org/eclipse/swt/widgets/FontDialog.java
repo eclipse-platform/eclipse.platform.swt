@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,10 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class FontDialog extends Dialog {
 	FontData fontData;	
@@ -47,7 +51,7 @@ public class FontDialog extends Dialog {
  * </ul>
  */
 public FontDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -74,7 +78,7 @@ public FontDialog (Shell parent) {
  * </ul>
  */
 public FontDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 /**
@@ -101,9 +105,10 @@ public FontData [] getFontList () {
 	return result;
 }
 /**
- * Returns the currently selected color in the receiver.
+ * Returns an RGB describing the color that was selected
+ * in the dialog, or null if none is available.
  *
- * @return the RGB value for the selected color, may be null
+ * @return the RGB value for the selected color, or null
  *
  * @see PaletteData#getRGBs
  * 
@@ -171,11 +176,15 @@ public void setFontData (FontData fontData) {
 	this.fontData = fontData;
 }
 /**
- * Sets a set of FontData objects describing the font to
+ * Sets the set of FontData objects describing the font to
  * be selected by default in the dialog, or null to let
  * the platform choose one.
  * 
  * @param fontData the set of FontData objects to use initially, or null
+ *        to let the platform select a default when open() is called
+ *
+ * @see Font#getFontData
+ * 
  * @since 2.1.1
  */
 public void setFontList (FontData [] fontData) {
@@ -186,11 +195,11 @@ public void setFontList (FontData [] fontData) {
 	}
 }
 /**
- * Sets the receiver's selected color to be the argument.
+ * Sets the RGB describing the color to be selected by default
+ * in the dialog, or null to let the platform choose one.
  *
- * @param rgb the new RGB value for the selected color, may be
- *        null to let the platform to select a default when
- *        open() is called
+ * @param rgb the RGB value to use initially, or null to let
+ *        the platform select a default when open() is called
  *
  * @see PaletteData#getRGBs
  * 

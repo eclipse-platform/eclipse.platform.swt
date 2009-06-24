@@ -1,21 +1,21 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_stats.h"
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 468;
-int OS_nativeFunctionCallCount[468];
+int OS_nativeFunctionCount = 466;
+int OS_nativeFunctionCallCount[466];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -86,10 +86,12 @@ char * OS_nativeFunctionNames[] = {
 	"_1XFreeCursor",
 	"_1XFreeFont",
 	"_1XFreeFontNames",
+	"_1XFreeFontPath",
 	"_1XFreeGC",
 	"_1XFreeModifiermap",
 	"_1XFreePixmap",
 	"_1XFreeStringList",
+	"_1XGetFontPath",
 	"_1XGetGCValues",
 	"_1XGetGeometry",
 	"_1XGetIconSizes",
@@ -130,6 +132,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XRenderFindVisualFormat",
 	"_1XRenderFreePicture",
 	"_1XRenderQueryExtension",
+	"_1XRenderQueryVersion",
 	"_1XRenderSetPictureClipRectangles",
 	"_1XRenderSetPictureClipRegion",
 	"_1XRenderSetPictureTransform",
@@ -145,6 +148,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XSetErrorHandler",
 	"_1XSetFillRule",
 	"_1XSetFillStyle",
+	"_1XSetFontPath",
 	"_1XSetForeground",
 	"_1XSetFunction",
 	"_1XSetGraphicsExposures",
@@ -156,6 +160,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XSetSubwindowMode",
 	"_1XSetTSOrigin",
 	"_1XSetTile",
+	"_1XSetTransientForHint",
 	"_1XSetWMNormalHints",
 	"_1XSetWindowBackgroundPixmap",
 	"_1XShapeCombineMask",
@@ -375,6 +380,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XtDisplay",
 	"_1XtDisplayToApplicationContext",
 	"_1XtFree",
+	"_1XtGetDisplays",
 	"_1XtGetMultiClickTime",
 	"_1XtGetSelectionValue",
 	"_1XtGetValues",
@@ -416,6 +422,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XtWindow",
 	"_1XtWindowToWidget",
 	"_1_1XmSetMenuTraversal",
+	"_1_1XtDefaultAppContext",
 	"_1applicationShellWidgetClass",
 	"_1dlclose",
 	"_1dlopen",
@@ -427,7 +434,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1xmMenuShellWidgetClass",
 	"close",
 	"fd_1set_1sizeof",
-	"getenv",
 	"iconv",
 	"iconv_1close",
 	"iconv_1open",
@@ -442,10 +448,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_motif_XmSpinBoxCallbackStruct_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I",
-	"memmove__I_3BI",
-	"memmove__I_3CI",
-	"memmove__I_3II",
-	"memmove__I_3SI",
 	"memmove__Lorg_eclipse_swt_internal_motif_Visual_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II",
@@ -474,16 +476,12 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_motif_XmSpinBoxCallbackStruct_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II",
-	"memmove___3BII",
-	"memmove___3CII",
-	"memmove___3III",
 	"nl_1langinfo",
 	"pipe",
 	"read",
 	"select",
 	"setResourceMem",
 	"setlocale",
-	"strlen",
 	"write",
 };
 

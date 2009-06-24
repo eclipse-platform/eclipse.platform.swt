@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,13 +31,7 @@ public class Callback {
 	int /*long*/ address, errorResult;
 	boolean isStatic, isArrayBased;
 
-	/* Load the SWT library */
-	static {
-		Library.loadLibrary ("swt"); //$NON-NLS-1$
-	}
-
-	static final int PTR_SIZEOF = PTR_sizeof();
-	static final String PTR_SIGNATURE = PTR_SIZEOF == 4 ? "I" : "J"; //$NON-NLS-1$  //$NON-NLS-2$
+	static final String PTR_SIGNATURE = C.PTR_SIZEOF == 4 ? "I" : "J"; //$NON-NLS-1$  //$NON-NLS-2$
 	static final String SIGNATURE_0 = getSignature(0);
 	static final String SIGNATURE_1 = getSignature(1);
 	static final String SIGNATURE_2 = getSignature(2);
@@ -122,8 +116,6 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 	/* Bind the address */
 	address = bind (this, object, method, signature, argCount, isStatic, isArrayBased, errorResult);
 }
-
-static final native int PTR_sizeof ();
 
 /**
  * Allocates the native level resources associated with the

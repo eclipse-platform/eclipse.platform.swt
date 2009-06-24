@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,8 @@ import org.eclipse.swt.internal.photon.*;
  * such as the Display device and the Printer device. Devices
  * can have a graphics context (GC) created for them, and they
  * can be drawn on by sending messages to the associated GC.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
 	
@@ -29,12 +31,11 @@ public abstract class Device implements Drawable {
 	boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
+	Object trackingLock;
 
 	boolean disposed;
 	
-	byte[] systemFont;
-
-	static final Object CREATE_LOCK = new Object();
+	Font systemFont;
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -45,15 +46,13 @@ public abstract class Device implements Drawable {
 	* fix is to remove this feature. Unfortunately,
 	* too many application programs rely on this
 	* feature.
-	*
-	* This code will be removed in the future.
 	*/
 	protected static Device CurrentDevice;
 	protected static Runnable DeviceFinder;
 	static {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display");
-		} catch (Throwable e) {}
+		} catch (ClassNotFoundException e) {}
 	}	
 
 static synchronized Device getDevice () {
@@ -91,20 +90,18 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	synchronized (CREATE_LOCK) {
+	synchronized (Device.class) {
 		if (data != null) {
 			debug = data.debug;
 			tracking = data.tracking;
 		}
-		create (data);
-		init ();
 		if (tracking) {
 			errors = new Error [128];
 			objects = new Object [128];
+			trackingLock = new Object ();
 		}
-	
-		/* Initialize the system font slot */
-		systemFont = getSystemFont ().handle;
+		create (data);
+		init ();
 	}
 }
 
@@ -177,23 +174,30 @@ protected void destroy () {
  * @see #checkDevice
  */
 public void dispose () {
-	if (isDisposed()) return;
-	checkDevice ();
-	release ();
-	destroy ();
-	disposed = true;
-	if (tracking) {
-		objects = null;
-		errors = null;
+	synchronized (Device.class) {
+		if (isDisposed()) return;
+		checkDevice ();
+		release ();
+		destroy ();
+		disposed = true;
+		if (tracking) {
+			synchronized (trackingLock) {
+				objects = null;
+				errors = null;
+				trackingLock = null;
+			}
+		}
 	}
 }
 
 void dispose_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == object) {
-			objects [i] = null;
-			errors [i] = null;
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == object) {
+				objects [i] = null;
+				errors [i] = null;
+				return;
+			}
 		}
 	}
 }
@@ -276,20 +280,26 @@ public DeviceData getDeviceData () {
 	DeviceData data = new DeviceData ();
 	data.debug = debug;
 	data.tracking = tracking;
-	int count = 0, length = 0;
-	if (tracking) length = objects.length;
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) count++;
-	}
-	int index = 0;
-	data.objects = new Object [count];
-	data.errors = new Error [count];
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) {
-			data.objects [index] = objects [i];
-			data.errors [index] = errors [i];
-			index++;
+	if (tracking) {
+		synchronized (trackingLock) {
+			int count = 0, length = objects.length;
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) count++;
+			}
+			int index = 0;
+			data.objects = new Object [count];
+			data.errors = new Error [count];
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) {
+					data.objects [index] = objects [i];
+					data.errors [index] = errors [i];
+					index++;
+				}
+			}
 		}
+	} else {
+		data.objects = new Object [0];
+		data.errors = new Error [0];
 	}
 	return data;
 }
@@ -448,7 +458,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.photon_new (this, systemFont);
+	return systemFont;
 }
 
 /**
@@ -480,6 +490,8 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
+	/* Initialize the system font slot */
+	systemFont = getSystemFont ();
 }
 
 /**	 
@@ -523,25 +535,51 @@ public abstract void internal_dispose_GC (int handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return disposed;
+	synchronized (Device.class) {
+		return disposed;
+	}
+}
+
+/**
+ * Loads the font specified by a file.  The font will be
+ * present in the list of fonts available to the application.
+ *
+ * @param path the font file path
+ * @return whether the font was successfully loaded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if path is null</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see Font
+ * 
+ * @since 3.3
+ */
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return false;
 }
 
 void new_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == null) {
-			objects [i] = object;
-			errors [i] = new Error ();
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == null) {
+				objects [i] = object;
+				errors [i] = new Error ();
+				return;
+			}
 		}
+		Object [] newObjects = new Object [objects.length + 128];
+		System.arraycopy (objects, 0, newObjects, 0, objects.length);
+		newObjects [objects.length] = object;
+		objects = newObjects;
+		Error [] newErrors = new Error [errors.length + 128];
+		System.arraycopy (errors, 0, newErrors, 0, errors.length);
+		newErrors [errors.length] = new Error ();
+		errors = newErrors;
 	}
-	Object [] newObjects = new Object [objects.length + 128];
-	System.arraycopy (objects, 0, newObjects, 0, objects.length);
-	newObjects [objects.length] = object;
-	objects = newObjects;
-	Error [] newErrors = new Error [errors.length + 128];
-	System.arraycopy (errors, 0, newErrors, 0, errors.length);
-	newErrors [errors.length] = new Error ();
-	errors = newErrors;
 }
 
 /**

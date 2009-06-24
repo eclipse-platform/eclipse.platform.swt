@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,9 +52,18 @@ import org.eclipse.swt.events.*;
  * of these changes are also possible.
  * </li>
  * </ul>
- * </p>
- * <p>
- * Note: The styles supported by this class must be treated
+ * </p><p>
+ * The <em>modality</em> of an instance may be specified using
+ * style bits. The modality style bits are used to determine
+ * whether input is blocked for other shells on the display.
+ * The <code>PRIMARY_MODAL</code> style allows an instance to block
+ * input to its parent. The <code>APPLICATION_MODAL</code> style
+ * allows an instance to block input to every other shell in the
+ * display. The <code>SYSTEM_MODAL</code> style allows an instance
+ * to block input to all shells, including shells belonging to
+ * different applications.
+ * </p><p>
+ * Note: The styles supported by this class are treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate
  * control over the appearance and behavior of decorations
@@ -65,9 +74,14 @@ import org.eclipse.swt.events.*;
  * more restrictive modality style that is supported. For
  * example, if <code>PRIMARY_MODAL</code> is not supported,
  * it would be upgraded to <code>APPLICATION_MODAL</code>.
+ * A modality style may also be "downgraded" to a less
+ * restrictive style. For example, most operating systems
+ * no longer support <code>SYSTEM_MODAL</code> because
+ * it can freeze up the desktop, so this is typically
+ * downgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET</dd>
  * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
@@ -98,13 +112,16 @@ import org.eclipse.swt.events.*;
  *
  * @see Decorations
  * @see SWT
+ * @see <a href="http://www.eclipse.org/swt/snippets/#shell">Shell snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Shell extends Decorations {
 	int shellHandle;
 	Menu activeMenu;
 	int blockedList;
 	Control lastActive;
-	Region region;
+	boolean modified;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -146,13 +163,16 @@ public Shell () {
  * @see SWT#MAX
  * @see SWT#RESIZE
  * @see SWT#TITLE
+ * @see SWT#TOOL
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (int style) {
 	this ((Display) null, style);
@@ -216,13 +236,16 @@ public Shell (Display display) {
  * @see SWT#MAX
  * @see SWT#RESIZE
  * @see SWT#TITLE
+ * @see SWT#TOOL
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (Display display, int style) {
 	this (display, null, style, 0);
@@ -317,6 +340,7 @@ public Shell (Shell parent) {
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
  * @see SWT#SYSTEM_MODAL
+ * @see SWT#SHEET
  */
 public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0);
@@ -365,6 +389,7 @@ void bringToTop (boolean force) {
 
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
+	style &= ~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
@@ -527,13 +552,31 @@ Composite findDeferredControl () {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
 public void forceActive () {
 	checkWidget ();
 	bringToTop (true);
+}
+
+/**
+ * Returns the receiver's alpha value. The alpha value
+ * is between 0 (transparent) and 255 (opaque).
+ *
+ * @return the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getAlpha () {
+	checkWidget ();
+	return 255;
 }
 
 public Rectangle getBounds () {
@@ -550,6 +593,25 @@ public Rectangle getBounds () {
 	width += left [0] + right [0];
 	height += top [0] + bottom [0];
 	return new Rectangle (area.pos_x, area.pos_y, width, height);
+}
+
+/**
+ * Returns <code>true</code> if the receiver is currently
+ * in fullscreen state, and false otherwise. 
+ * <p>
+ *
+ * @return the fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public boolean getFullScreen () {
+	checkWidget();
+	return false;
 }
 
 /**
@@ -634,6 +696,22 @@ public Point getMinimumSize () {
 	return new Point (args [1] + left [0] + right [0], args [4] + top [0] + bottom [0]);
 }
 
+/**
+ * Gets the receiver's modified state.
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return modified;
+}
+
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -649,6 +727,7 @@ public Point getMinimumSize () {
  *
  */
 public Region getRegion () {
+	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
@@ -660,7 +739,7 @@ public Shell getShell () {
 
 /**
  * Returns an array containing all shells which are 
- * descendents of the receiver.
+ * descendants of the receiver.
  * <p>
  * @return the dialog shells
  *
@@ -746,7 +825,7 @@ int hotkeyProc (int w, int data, int info) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#setActive
  * @see Shell#forceActive
  */
@@ -755,6 +834,13 @@ public void open () {
 	setVisible (true);
 	if (isDisposed ()) return;
 	traverseGroup (true);
+}
+
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
 }
 
 int Pt_CB_RESIZE (int widget, int info) {
@@ -849,7 +935,6 @@ void releaseWidget () {
 	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
 	blockedList = 0;
 	lastActive = null;
-	region = null;
 }
 
 /**
@@ -897,7 +982,7 @@ public void removeShellListener (ShellListener listener) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
@@ -941,6 +1026,28 @@ void setActiveControl (Control control) {
 			activate [i].sendEvent (SWT.Activate);
 		}
 	}
+}
+
+/**
+ * Sets the receiver's alpha value which must be
+ * between 0 (transparent) and 255 (opaque).
+ * <p>
+ * This operation requires the operating system's advanced
+ * widgets subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * @param alpha the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setAlpha (int alpha) {
+	checkWidget ();
+	/*Not implemented */
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -1025,6 +1132,33 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 /**
+ * Sets the full screen state of the receiver.
+ * If the argument is <code>true</code> causes the receiver
+ * to switch to the full screen state, and if the argument is
+ * <code>false</code> and the receiver was previously switched
+ * into full screen state, causes the receiver to switch back
+ * to either the maximized or normal states.
+ * <p>
+ * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
+ * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
+ * vary by platform. Typically, the behavior will match the platform user's 
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * 
+ * @param fullScreen the new fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setFullScreen (boolean fullScreen) {
+	checkWidget();
+}
+
+/**
  * Sets the input method editor mode to the argument which 
  * should be the result of bitwise OR'ing together one or more
  * of the following constants defined in class <code>SWT</code>:
@@ -1100,6 +1234,24 @@ public void setMinimized (boolean minimized) {
 }
 
 /**
+ * Sets the receiver's modified state as specified by the argument.
+ *
+ * @param modified the new modified state for the receiver
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public void setModified (boolean modified) {
+	checkWidget ();
+	this.modified = modified;
+}
+
+/**
  * Sets the shape of the shell to the region specified
  * by the argument.  When the argument is null, the
  * default shape of the shell is restored.  The shell
@@ -1122,9 +1274,7 @@ public void setMinimized (boolean minimized) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	// TODO implement setRegion
-	this.region = region;
+	super.setRegion (region);
 }
 
 /**

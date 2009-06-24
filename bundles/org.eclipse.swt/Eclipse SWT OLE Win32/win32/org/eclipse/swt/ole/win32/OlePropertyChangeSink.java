@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.ole.win32;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
 final class OlePropertyChangeSink {
@@ -46,7 +47,7 @@ int AddRef() {
 void connect(IUnknown objIUnknown) {
 
 	// Set up property change notification sink
-	int[] ppvObject = new int[1];
+	int /*long*/[] ppvObject = new int /*long*/[1];
 	if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 		IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
 		if (cpc.FindConnectionPoint(COM.IIDIPropertyNotifySink, ppvObject) == COM.S_OK) {
@@ -63,24 +64,24 @@ void connect(IUnknown objIUnknown) {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iUnknown = new COMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	
 	iPropertyNotifySink = new COMObject(new int[]{2, 0, 0, 1, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return OnChanged(args[0]);}
-		public int method4(int[] args) {return OnRequestEdit(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return OnChanged((int)/*64*/args[0]);}
+		public int /*long*/ method4(int /*long*/[] args) {return OnRequestEdit((int)/*64*/args[0]);}
 	};
 }
 void disconnect(IUnknown objIUnknown) {
 
 	// disconnect property notification sink
 	if (propertyCookie != 0 && objIUnknown != null) {
-		int[] ppvObject = new int[1];
+		int /*long*/[] ppvObject = new int /*long*/[1];
 		if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 			IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
 			if (cpc.FindConnectionPoint(COM.IIDIPropertyNotifySink, ppvObject) == COM.S_OK) {
@@ -139,22 +140,22 @@ private int OnRequestEdit(int dispID) {
 	notifyListener(dispID,event);
 	return (event.doit) ? COM.S_OK : COM.S_FALSE;
 }
-private int QueryInterface(int riid, int ppvObject) {
+private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		COM.MoveMemory(ppvObject, new int[] {iUnknown.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iUnknown.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIPropertyNotifySink)) {
-		COM.MoveMemory(ppvObject, new int[] {iPropertyNotifySink.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iPropertyNotifySink.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new int[] {0}, 4);
+	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,11 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
@@ -46,7 +51,7 @@ public class DirectoryDialog extends Dialog {
  * </ul>
  */
 public DirectoryDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**
@@ -74,7 +79,7 @@ public DirectoryDialog (Shell parent) {
  * </ul>
  */
 public DirectoryDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 

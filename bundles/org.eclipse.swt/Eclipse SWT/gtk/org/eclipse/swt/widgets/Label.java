@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,12 @@ import org.eclipse.swt.graphics.*;
  * user interface object that displays a string or image.
  * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
+ * <p>
+ * Shadow styles are hints and may not be honored
+ * by the platform.  To create a separator label
+ * with the default shadow style for the platform,
+ * do not specify a shadow style.
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
@@ -37,6 +43,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#label">Label snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Label extends Control {
 	int /*long*/ frameHandle, labelHandle, imageHandle;
@@ -115,25 +126,77 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (hHint == SWT.DEFAULT) hHint = DEFAULT_HEIGHT;
 		}
 	}
-	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0;
-	if (fixWrap || frameHandle != 0) forceResize ();
-	int [] labelWidth = new int [1], labelHeight = new int [1];
-	if (fixWrap) {
-		OS.gtk_widget_get_size_request (labelHandle, labelWidth, labelHeight);
-		OS.gtk_widget_set_size_request (labelHandle, wHint, hHint);
-	}	
 	Point size; 
-	if (frameHandle != 0) {
-		int [] reqWidth = new int [1], reqHeight = new int [1];
-		OS.gtk_widget_get_size_request (handle, reqWidth, reqHeight);
-		OS.gtk_widget_set_size_request (handle, wHint, hHint);
-		size = computeNativeSize (frameHandle, -1, -1, changed);
-		OS.gtk_widget_set_size_request (handle, reqWidth [0], reqHeight [0]);
-	} else {
-		size = computeNativeSize (handle, wHint, hHint, changed);
-	}
+	/* 
+	* Feature in GTK. GTK has a predetermined maximum width for wrapping text. 
+	* The fix is to use pango layout directly instead of the label size request 
+	* to calculate its preferred size.
+	*/
+	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && (OS.GTK_WIDGET_FLAGS (labelHandle) & OS.GTK_VISIBLE) != 0;
+	if (fixWrap || frameHandle != 0) forceResize ();
 	if (fixWrap) {
-		OS.gtk_widget_set_size_request (labelHandle, labelWidth [0], labelHeight [0]);
+		int /*long*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
+		int pangoWidth = OS.pango_layout_get_width (labelLayout);
+		if (wHint != SWT.DEFAULT) {
+			OS.pango_layout_set_width (labelLayout, wHint * OS.PANGO_SCALE);
+		} else {
+			OS.pango_layout_set_width (labelLayout, -1);
+		}
+		int [] w = new int [1], h = new int [1];
+		OS.pango_layout_get_size (labelLayout, w, h);
+		OS.pango_layout_set_width (labelLayout, pangoWidth);
+		if (frameHandle != 0) {
+			int [] labelWidth = new int [1], labelHeight = new int [1];
+			OS.gtk_widget_get_size_request (labelHandle, labelWidth, labelHeight);
+			OS.gtk_widget_set_size_request (labelHandle, 1, 1);
+			size = computeNativeSize (frameHandle, -1, -1, changed);
+			OS.gtk_widget_set_size_request (labelHandle, labelWidth [0], labelHeight [0]);
+			size.x = size.x - 1;
+			size.y = size.y - 1;
+		} else { 
+			size = new Point (0,0);
+		}
+		size.x += wHint == SWT.DEFAULT ? OS.PANGO_PIXELS(w [0]) : wHint;
+		size.y += hHint == SWT.DEFAULT ? OS.PANGO_PIXELS(h [0]) : hHint;
+	} else {
+		if (frameHandle != 0) {
+			int [] reqWidth = new int [1], reqHeight = new int [1];
+			OS.gtk_widget_get_size_request (handle, reqWidth, reqHeight);
+			OS.gtk_widget_set_size_request (handle, wHint, hHint);
+			size = computeNativeSize (frameHandle, -1, -1, changed);
+			OS.gtk_widget_set_size_request (handle, reqWidth [0], reqHeight [0]);
+		} else {
+			size = computeNativeSize (handle, wHint, hHint, changed);
+		}
+	}
+	/*
+	* Feature in GTK.  Instead of using the font height to determine
+	* the preferred height of the widget, GTK uses the text metrics.
+	* The fix is to ensure that the preferred height is at least as
+	* tall as the font height.
+	* 
+	* NOTE: This work around does not fix the case when there are
+	* muliple lines of text.
+	*/
+	if (hHint == SWT.DEFAULT && labelHandle != 0) {
+		int /*long*/ layout = OS.gtk_label_get_layout (labelHandle);
+		int /*long*/ context = OS.pango_layout_get_context (layout);
+		int /*long*/ lang = OS.pango_context_get_language (context);
+		int /*long*/ font = getFontDescription ();
+		int /*long*/ metrics = OS.pango_context_get_metrics (context, font, lang);
+		int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
+		int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
+		OS.pango_font_metrics_unref (metrics);
+		int fontHeight = ascent + descent;
+		int [] buffer = new int [1];
+		OS.g_object_get (labelHandle, OS.ypad, buffer, 0);
+		fontHeight += 2 * buffer [0];
+		if (frameHandle != 0) {
+			int /*long*/ style = OS.gtk_widget_get_style (frameHandle);
+			fontHeight += 2 * OS.gtk_style_get_ythickness (style);
+			fontHeight += 2 * OS.gtk_container_get_border_width (frameHandle);
+		}
+		size.y = Math.max (size.y, fontHeight);
 	}
 	return size;
 }
@@ -170,25 +233,13 @@ void createHandle (int index) {
 		OS.gtk_container_add (fixedHandle, handle);
 	}
 	if ((style & SWT.SEPARATOR) != 0) return;
-	if ((style & SWT.WRAP) != 0) OS.gtk_label_set_line_wrap (labelHandle, true);
-	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
-		return;
+	if ((style & SWT.WRAP) != 0) {
+		OS.gtk_label_set_line_wrap (labelHandle, true);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			OS.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
+		}
 	}
-	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
-		OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
-		return;
-	}
-	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
-		return;
-	}
+	setAlignment ();
 }
 
 void createWidget (int index) {
@@ -358,10 +409,13 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
+	setAlignment ();
+}
+
+void setAlignment () {
 	if ((style & SWT.LEFT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, isRTL ? OS.GTK_JUSTIFY_RIGHT : OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
 		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
 		return;
 	}
@@ -373,7 +427,7 @@ public void setAlignment (int alignment) {
 	}
 	if ((style & SWT.RIGHT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, isRTL ? OS.GTK_JUSTIFY_LEFT : OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
 		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
 		return;
 	}
@@ -441,9 +495,9 @@ void setFontDescription (int /*long*/ font) {
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	OS.gtk_widget_modify_fg (fixedHandle,  OS.GTK_STATE_NORMAL, color);
-	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
-	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle,  OS.GTK_STATE_NORMAL, color);
+	setForegroundColor (fixedHandle, color);
+	if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	if (imageHandle != 0) setForegroundColor (imageHandle, color);
 }
 
 void setOrientation () {
@@ -451,12 +505,6 @@ void setOrientation () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
 		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
-		if ((style & SWT.LEAD) != 0) {
-			if (labelHandle != 0) OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		}
-		if ((style & SWT.TRAIL) != 0) {
-			if (labelHandle != 0) OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		}
 	}
 }
 
@@ -501,14 +549,14 @@ public void setImage (Image image) {
  * the mnemonic character and line delimiters.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, focus is assigned
  * to the control that follows the label. On most platforms,
  * the mnemonic appears underlined but may be emphasised in a
  * platform specific manner.  The mnemonic indicator character
- *'&amp' can be escaped by doubling it in the string, causing
- * a single '&amp' to be displayed.
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text

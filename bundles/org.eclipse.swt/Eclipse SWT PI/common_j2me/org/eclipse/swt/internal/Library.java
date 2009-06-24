@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ public class Library {
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
-    static int MINOR_VERSION = 224;
+    static int MINOR_VERSION = 550;
 	
 	/**
 	 * SWT revision number (must be >= 0)
@@ -95,6 +95,22 @@ public static int SWT_VERSION (int major, int minor) {
  * @param name the name of the library to load
  */
 public static void loadLibrary (String name) {
+	loadLibrary (name, true);
+}
+
+/**
+ * Loads the shared library that matches the version of the
+ * Java code which is currently running.  SWT shared libraries
+ * follow an encoding scheme where the major, minor and revision
+ * numbers are embedded in the library name and this along with
+ * <code>name</code> is used to load the library.  If this fails,
+ * <code>name</code> is used in another attempt to load the library,
+ * this time ignoring the SWT version encoding scheme.
+ *
+ * @param name the name of the library to load
+ * @param mapName true if the name should be mapped, false otherwise
+ */
+public static void loadLibrary (String name, boolean mapName) {
 }
 
 }

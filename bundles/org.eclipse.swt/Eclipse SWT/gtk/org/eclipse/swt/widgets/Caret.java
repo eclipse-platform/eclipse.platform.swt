@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#caret">Caret snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Canvas tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Caret extends Widget {
 	Canvas parent;
@@ -36,6 +41,8 @@ public class Caret extends Widget {
 	int blinkRate;
 	Image image;
 	Font font;
+	
+	static final int DEFAULT_WIDTH = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -103,11 +110,15 @@ boolean drawCaret () {
 	if (image != null && !image.isDisposed() && image.mask == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
 	 	OS.gdk_drawable_get_size(image.pixmap, width, height);
-		OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, x, y, width[0], height[0]);
+	 	int nX = x;
+		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - width[0] - nX;
+	 	OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, nX, y, width[0], height[0]);
 	} else {
 		int nWidth = width, nHeight = height;
-		if (nWidth <= 0) nWidth = 1;
-		OS.gdk_draw_rectangle (window, gc, 1, x, y, nWidth, nHeight);
+		if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
+		int nX = x;
+		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
+		OS.gdk_draw_rectangle (window, gc, 1, nX, y, nWidth, nHeight);
 	}
 	OS.g_object_unref (gc);
 	OS.gdk_colormap_free_colors (colormap, color, 1);
@@ -130,6 +141,10 @@ public Rectangle getBounds () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Rectangle (x, y, rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			return new Rectangle (x, y, DEFAULT_WIDTH, height);
+		}
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -211,6 +226,10 @@ public Point getSize () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Point (rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			return new Point (DEFAULT_WIDTH, height);
+		}
 	}
 	return new Point (width, height);
 }

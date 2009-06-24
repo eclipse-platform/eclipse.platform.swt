@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,11 +16,13 @@ import org.eclipse.swt.graphics.*;
  * Instances of this class are descriptions of monitors.
  *
  * @see Display
+ * @see <a href="http://www.eclipse.org/swt/snippets/#monitor">Monitor snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */
 public final class Monitor {
-	int handle;
+	int /*long*/ handle;
 	int x, y, width, height;
 	int clientX, clientY, clientWidth, clientHeight;
 	
@@ -49,7 +51,8 @@ public boolean equals (Object object) {
 
 /**
  * Returns a rectangle describing the receiver's size and location
- * relative to its device.
+ * relative to its device. Note that on multi-monitor systems the
+ * origin can be negative.
  *
  * @return the receiver's bounding rectangle
  */	
@@ -78,7 +81,7 @@ public Rectangle getClientArea () {
  * @see #equals(Object)
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 }

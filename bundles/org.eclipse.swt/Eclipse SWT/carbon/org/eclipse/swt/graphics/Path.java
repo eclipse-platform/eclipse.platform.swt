@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent paths through the two-dimensional
@@ -24,6 +25,14 @@ import org.eclipse.swt.internal.carbon.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */
@@ -41,27 +50,193 @@ public class Path extends Resource {
 	 */
 	public int handle;
 	
+	boolean moved, closed = true;
+
 /**
  * Constructs a new empty Path.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the path
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
  */
 public Path (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	handle = OS.CGPathCreateMutable();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
+}
+
+/**
+ * Constructs a new Path that is a copy of <code>path</code>. If
+ * <code>flatness</code> is less than or equal to zero, an unflatten
+ * copy of the path is created. Otherwise, it specifies the maximum
+ * error between the path and its flatten copy. Smaller numbers give
+ * better approximation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param path the path to make a copy
+ * @param flatness the flatness value
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the path has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, Path path, float flatness) {
+	super(device);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	flatness = Math.max(0, flatness);
+	if (flatness == 0) {
+		handle = OS.CGPathCreateMutableCopy(path.handle);
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	} else {
+		handle = OS.CGPathCreateMutable();
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		PathData data = path.getPathData();
+		int bezierPath = Cocoa.objc_msgSend(Cocoa.C_NSBezierPath, Cocoa.S_bezierPath);
+		byte[] types = data.types;
+		float[] points = data.points;
+		NSPoint point = new NSPoint(), point2 = new NSPoint(), point3 = new NSPoint();
+		for (int i = 0, j = 0; i < types.length; i++) {
+			switch (types[i]) {
+				case SWT.PATH_MOVE_TO:
+					point.x = points[j++];
+					point.y = points[j++];
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_moveToPoint, point);
+					break;
+				case SWT.PATH_LINE_TO:
+					point.x = points[j++];
+					point.y = points[j++];
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_lineToPoint, point);
+					break;
+				case SWT.PATH_CUBIC_TO:
+					point2.x = points[j++];
+					point2.y = points[j++];
+					point3.x = points[j++];
+					point3.y = points[j++];
+					point.x = points[j++];
+					point.y = points[j++];
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_curveToPoint, point, point2, point3);
+					break;
+				case SWT.PATH_QUAD_TO:
+					float currentX = point.x;
+					float currentY = point.y;
+					point2.x = points[j++];
+					point2.y = points[j++];
+					point.x = points[j++];
+					point.y = points[j++];
+					float x0 = currentX;
+					float y0 = currentY;
+					float cx1 = x0 + 2 * (point2.x - x0) / 3;
+					float cy1 = y0 + 2 * (point2.y - y0) / 3;
+					float cx2 = cx1 + (point.x - x0) / 3;
+					float cy2 = cy1 + (point.y - y0) / 3;
+					point2.x = cx1;
+					point2.y = cy1;
+					point3.x = cx2;
+					point3.y = cy2;
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_curveToPoint, point, point2, point3);
+					break;
+				case SWT.PATH_CLOSE:
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_closePath);
+					break;
+				default:
+					dispose();
+					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
+		}
+		Cocoa.objc_msgSend(Cocoa.C_NSBezierPath, Cocoa.S_setDefaultFlatness, flatness);
+		bezierPath = Cocoa.objc_msgSend(bezierPath, Cocoa.S_bezierPathByFlatteningPath);
+		int count = Cocoa.objc_msgSend(bezierPath, Cocoa.S_elementCount);
+		int pointsPtr = OS.malloc(NSPoint.sizeof * 3);
+		if (pointsPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		for (int i = 0; i < count; i++) {
+			int element = Cocoa.objc_msgSend(bezierPath, Cocoa.S_elementAtIndex_associatedPoints, i, pointsPtr);
+			switch (element) {
+				case Cocoa.NSMoveToBezierPathElement:
+					Cocoa.memmove(point, pointsPtr, NSPoint.sizeof);
+					moveTo(point.x, point.y);
+					break;
+				case Cocoa.NSLineToBezierPathElement:
+					Cocoa.memmove(point, pointsPtr, NSPoint.sizeof);
+					lineTo(point.x, point.y);
+					break;
+				case Cocoa.NSCurveToBezierPathElement:
+					Cocoa.memmove(point, pointsPtr, NSPoint.sizeof);
+					Cocoa.memmove(point2, pointsPtr + NSPoint.sizeof, NSPoint.sizeof);
+					Cocoa.memmove(point3, pointsPtr + NSPoint.sizeof + NSPoint.sizeof, NSPoint.sizeof);
+					cubicTo(point2.x, point2.y, point3.x, point3.y, point.x, point.y);
+					break;
+				case Cocoa.NSClosePathBezierPathElement:
+					close();
+					break;
+			}
+		}
+		OS.free(pointsPtr);
+	}
+	init();
+}
+
+/**
+ * Constructs a new Path with the specifed PathData.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param data the data for the path
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, PathData data) {
+	this(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(data);
 }
 
 /**
@@ -97,7 +272,12 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] cmt = new float[6];
 	OS.CGAffineTransformMake(width / 2f, 0, 0, height / 2f, x + width / 2f, y + height / 2f, cmt);
-	OS.CGPathAddArc(handle, cmt, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+	float angle = -startAngle * (float)Compatibility.PI / 180;
+	if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
+	OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180, arcAngle >= 0);
+	moved = true;
+	closed = false;
+	if (Math.abs(arcAngle) >= 360) close();
 }
 
 /**
@@ -118,6 +298,8 @@ public void addPath(Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.CGPathAddPath(handle, null, path.handle);
+	moved = false;
+	closed = path.closed;
 }
 
 /**
@@ -140,6 +322,8 @@ public void addRectangle(float x, float y, float width, float height) {
 	rect.width = width;
 	rect.height = height;
 	OS.CGPathAddRect(handle, null, rect);
+	moved = false;
+	closed = true;
 }
 
 int newPathProc(int data) {
@@ -155,10 +339,10 @@ int closePathProc(int data) {
 int lineProc(int pt1, int pt2, int data) {
 	if (first) {
 		first = false;
-		OS.memcpy(point, pt1, 8);
+		OS.memmove(point, pt1, 8);
 		OS.CGPathMoveToPoint(handle, null, originX + point[0], originY + point[1]);
 	}
-	OS.memcpy(point, pt2, 8);
+	OS.memmove(point, pt2, 8);
 	OS.CGPathAddLineToPoint(handle, null, originX + point[0], originY + point[1]);
 	return 0;
 }
@@ -166,12 +350,12 @@ int lineProc(int pt1, int pt2, int data) {
 int curveProc(int pt1, int controlPt, int pt2, int data) {
 	if (first) {
 		first = false;
-		OS.memcpy(point, pt1, 8);
+		OS.memmove(point, pt1, 8);
 		OS.CGPathMoveToPoint(handle, null, originX + point[0], originY + point[1]);
 	}
-	OS.memcpy(point, pt2, 8);
+	OS.memmove(point, pt2, 8);
 	float x2 = point[0], y2 = point[1];	
-	OS.memcpy(point, controlPt, 8);
+	OS.memmove(point, controlPt, 8);
 	OS.CGPathAddQuadCurveToPoint(handle, null, originX + point[0], originY + point[1], originX + x2, originY + y2);
 	return 0;
 }
@@ -202,6 +386,8 @@ public void addString(String string, float x, float y, Font font) {
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = string.length();
 	if (length == 0) return;
+	moved = false;
+	closed = true;
 	
 	Callback newPathCallback = new Callback(this, "newPathProc", 1);
 	int newPathProc = newPathCallback.getAddress();
@@ -227,7 +413,7 @@ public void addString(String string, float x, float y, Font font) {
 	string.getChars(0, length, chars, 0);
 	int textPtr = OS.NewPtr(length * 2);
 	if (textPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.memcpy(textPtr, chars, length * 2);
+	OS.memmove(textPtr, chars, length * 2);
 	OS.ATSUSetTextPointerLocation(layout, textPtr, 0, length, length);
 	OS.ATSUSetRunStyle(layout, style, 0, length);
 	OS.ATSUSetTransientFontMatching(layout, true);
@@ -241,12 +427,12 @@ public void addString(String string, float x, float y, Font font) {
 	int[] deltaY = new int[1], status = new int[1];
 	ATSLayoutRecord record = new ATSLayoutRecord();
 	for (int i = 0; i < numRecords[0]; i++) {
-		OS.memcpy(record, layoutRecords[0] + (i * ATSLayoutRecord.sizeof), ATSLayoutRecord.sizeof);
+		OS.memmove(record, layoutRecords[0] + (i * ATSLayoutRecord.sizeof), ATSLayoutRecord.sizeof);
 		originX = x + (float)OS.Fix2X(record.realPos);
 		if (deltaYs[0] == 0) {
 			originY = y;
 		} else {
-			OS.memcpy(deltaY, deltaYs[0] + (i * 4), 4);
+			OS.memmove(deltaY, deltaYs[0] + (i * 4), 4);
 			originY = y - (float)OS.Fix2X(deltaY[0]);
 		}
 		first = true; 
@@ -275,7 +461,7 @@ int count, typeCount;
 byte[] types;
 float[] points;
 int applierFunc(int info, int elementPtr) {
-	OS.memcpy(element, elementPtr, CGPathElement.sizeof);
+	OS.memmove(element, elementPtr, CGPathElement.sizeof);
 	int type = 0, length = 1;
 	switch (element.type) {
 		case OS.kCGPathElementMoveToPoint: type = SWT.PATH_MOVE_TO; break;
@@ -287,7 +473,7 @@ int applierFunc(int info, int elementPtr) {
 	if (types != null) {
 		types[typeCount] = (byte)type;
 		if (length > 0) {
-			OS.memcpy(point, element.points, length * 8);
+			OS.memmove(point, element.points, length * 8);
 			System.arraycopy(point, 0, points, count, length * 2);
 		}
 	}
@@ -308,6 +494,8 @@ int applierFunc(int info, int elementPtr) {
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathCloseSubpath(handle);
+	moved = false;
+	closed = true;
 }
 
 /**
@@ -322,7 +510,7 @@ public void close() {
  * @param x the x coordinate of the point to test for containment
  * @param y the y coordinate of the point to test for containment
  * @param gc the GC to use when testing for containment
- * @param outline controls wether to check the outline or contained area of the path
+ * @param outline controls whether to check the outline or contained area of the path
  * @return <code>true</code> if the path contains the point and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
@@ -337,19 +525,32 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	//TODO - see windows
 	int pixel = OS.NewPtr(4);
 	if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] buffer = new int[]{0xFFFFFFFF};
-	OS.memcpy(pixel, buffer, 4);
+	OS.memmove(pixel, buffer, 4);
 	int context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, device.colorspace, OS.kCGImageAlphaNoneSkipFirst);
 	if (context == 0) {
 		OS.DisposePtr(pixel);
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	GCData data = gc.data;
-	OS.CGContextSetLineCap(context, data.lineCap);
-	OS.CGContextSetLineJoin(context, data.lineJoin);
+	int capStyle = 0;
+	switch (data.lineCap) {
+		case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
+		case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
+		case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
+	}
+	OS.CGContextSetLineCap(context, capStyle);
+	int joinStyle = 0;
+	switch (data.lineJoin) {
+		case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
+		case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
+		case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
+	}
+	OS.CGContextSetLineJoin(context, joinStyle);
 	OS.CGContextSetLineWidth(context, data.lineWidth);
 	OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
 	OS.CGContextAddPath(context, handle);
@@ -363,7 +564,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 		}
 	}
 	OS.CGContextRelease(context);
-	OS.memcpy(buffer, pixel, 4);
+	OS.memmove(buffer, pixel, 4);
 	OS.DisposePtr(pixel);	
 	return buffer[0] != 0xFFFFFFFF;
 }
@@ -384,20 +585,19 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
  */
 public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (!moved) {
+		CGPoint pt = new CGPoint();
+		if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
+		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
+		moved = true;
+	}
+	closed = false;
 	OS.CGPathAddCurveToPoint(handle, null, cx1, cy1, cx2, cy2, x, y);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Path. Applications must dispose of all Paths that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
+void destroy() {
 	OS.CGPathRelease(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -446,7 +646,7 @@ public void getCurrentPoint(float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	CGPoint pt = new CGPoint();
-	OS.CGPathGetCurrentPoint(handle, pt);
+	if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
 	point[0] = pt.x;
 	point[1] = pt.y;
 }
@@ -486,6 +686,33 @@ public PathData getPathData() {
 	return result;
 }
 
+void init(PathData data) {
+	byte[] types = data.types;
+	float[] points = data.points;
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				moveTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_LINE_TO:
+				lineTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_QUAD_TO:
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_CLOSE:
+				close();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+}
+
 /**
  * Returns <code>true</code> if the Path has been disposed,
  * and <code>false</code> otherwise.
@@ -513,6 +740,13 @@ public boolean isDisposed() {
  */
 public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (!moved) {
+		CGPoint pt = new CGPoint();
+		if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
+		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
+		moved = true;
+	}
+	closed = false;
 	OS.CGPathAddLineToPoint(handle, null, x, y);
 }
 
@@ -531,6 +765,14 @@ public void lineTo(float x, float y) {
 public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathMoveToPoint(handle, null, x, y);
+	/*
+	* Bug in Quartz.  If CGPathMoveToPoint() is not called at the
+	* begining of a subpath, the following segments do not output
+	* anything.  The fix is to detect that the app did not call
+	* CGPathMoveToPoint() and call it explicitly.
+	*/
+	closed = true;
+	moved = true;
 }
 
 /**
@@ -547,6 +789,13 @@ public void moveTo(float x, float y) {
  */
 public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (!moved) {
+		CGPoint pt = new CGPoint();
+		if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
+		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
+		moved = true;
+	}
+	closed = false;
 	OS.CGPathAddQuadCurveToPoint(handle, null, cx, cy, x, y);
 }
 

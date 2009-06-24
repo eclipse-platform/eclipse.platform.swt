@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,11 @@ import org.eclipse.swt.internal.carbon.OS;
  * application to another or within an application.
  * 
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#clipboard">Clipboard snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ClipboardExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Clipboard {
 
@@ -321,7 +326,7 @@ public boolean isDisposed () {
  * 
  * <p>NOTE: On some platforms, the data is immediately copied to the system
  * clipboard but on other platforms it is provided upon request.  As a result,
- * if the application modifes the data object it has set on the clipboard, that 
+ * if the application modifies the data object it has set on the clipboard, that 
  * modification may or may not be available when the data is subsequently 
  * requested.</p>
  *
@@ -359,7 +364,7 @@ public boolean isDisposed () {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_SET_CLIPBOARD should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  */
 public void setContents(Object[] data, Transfer[] dataTypes) {
 	setContents(data, dataTypes, DND.CLIPBOARD);
@@ -373,7 +378,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  * 
  * <p>NOTE: On some platforms, the data is immediately copied to the specified
  * clipboard but on other platforms it is provided upon request.  As a result, 
- * if the application modifes the data object it has set on the clipboard, that 
+ * if the application modifies the data object it has set on the clipboard, that 
  * modification may or may not be available when the data is subsequently 
  * requested.</p>
  *
@@ -417,7 +422,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_SET_CLIPBOARD should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see DND#CLIPBOARD
  * @see DND#SELECTION_CLIPBOARD
@@ -435,8 +440,9 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 		}
 	}
 	if ((clipboards & DND.CLIPBOARD) == 0) return;
-	if (OS.ClearCurrentScrap() != OS.noErr) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+	int errCode = OS.ClearCurrentScrap();
+	if (errCode != OS.noErr) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, errCode);
 	}
 	scrap = 0;
 	int[] currentScrap = new int[1];

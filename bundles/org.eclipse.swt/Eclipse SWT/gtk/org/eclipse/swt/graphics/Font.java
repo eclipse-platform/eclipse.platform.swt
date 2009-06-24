@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,9 @@ import org.eclipse.swt.internal.gtk.*;
  * </p>
  *
  * @see FontData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#font">Font snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Font extends Resource {
 	/**
@@ -41,7 +44,8 @@ public final class Font extends Resource {
 	 */
 	public int /*long*/ handle;
 	
-Font() {
+Font(Device device) {
+	super(device);
 }
 
 /**	 
@@ -63,11 +67,10 @@ Font() {
  * </ul>
  */
 public Font(Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
-	if (device.tracking) device.new_Object(this);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
+	init();
 }
 
 /**	 
@@ -94,16 +97,15 @@ public Font(Device device, FontData fd) {
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	FontData fd = fds[0];
-	init(device,fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
-	if (device.tracking) device.new_Object(this);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
+	init();
 }
 
 /**	 
@@ -129,24 +131,20 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(name, height, style, null);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+/*public*/ Font(Device device, String name, float height, int style) {
+	super(device);
+	init(name, height, style, null);
+	init();
+}
+
+void destroy() {
 	OS.pango_font_description_free(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -185,7 +183,7 @@ public FontData[] getFontData() {
 	byte[] buffer = new byte[length];
 	OS.memmove(buffer, family, length);
 	String name = new String(Converter.mbcsToWcs(null, buffer));
-	int height = OS.PANGO_PIXELS(OS.pango_font_description_get_size(handle));
+	float height = (float)OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
 	int pangoStyle = OS.pango_font_description_get_style(handle);
 	int pangoWeight = OS.pango_font_description_get_weight(handle);
 	int style = SWT.NORMAL;
@@ -218,10 +216,8 @@ public FontData[] getFontData() {
  * @private
  */
 public static Font gtk_new(Device device, int /*long*/ handle) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
+	Font font = new Font(device);
 	font.handle = handle;
-	font.device = device;
 	return font;
 }
 
@@ -239,10 +235,9 @@ public int hashCode() {
 	return (int)/*64*/handle;
 }
 
-void init(Device device, String name, int height, int style, byte[] fontString) {
+void init(String name, float height, int style, byte[] fontString) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	if (fontString != null) {
 		handle = OS.pango_font_description_from_string (fontString);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -251,7 +246,9 @@ void init(Device device, String name, int height, int style, byte[] fontString) 
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		byte[] buffer = Converter.wcsToMbcs(null, name, true);
 		OS.pango_font_description_set_family(handle, buffer);
-		OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE);
+		if (height > 0) {
+			OS.pango_font_description_set_size(handle, (int)(0.5f + height * OS.PANGO_SCALE));
+		}
 		OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL);
 		int pangoStyle = OS.PANGO_STYLE_NORMAL;
 		int pangoWeight = OS.PANGO_WEIGHT_NORMAL;

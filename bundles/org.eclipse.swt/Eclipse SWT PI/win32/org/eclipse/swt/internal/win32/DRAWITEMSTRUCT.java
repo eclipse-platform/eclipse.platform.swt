@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,10 +16,19 @@ public class DRAWITEMSTRUCT {
 	public int itemID;
 	public int itemAction;
 	public int itemState;
-	public int hwndItem;
-	public int hDC;
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndItem;
+	/** @field cast=(HDC) */
+	public int /*long*/ hDC;
 // 	RECT rcItem;
-	public int left, top, bottom, right;
-	public int itemData;
-	public static final int sizeof = 48;
+	/** @field accessor=rcItem.left */
+	public int left;
+	/** @field accessor=rcItem.top */
+	public int top;
+	/** @field accessor=rcItem.bottom */
+	public int bottom;
+	/** @field accessor=rcItem.right */
+	public int right;
+	public int /*long*/ itemData;
+	public static final int sizeof = OS.DRAWITEMSTRUCT_sizeof ();
 }

@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -16,7 +16,9 @@ package org.eclipse.swt.internal.carbon;
 public class Cursor {
 	public byte[] data = new byte[16 * 2];
 	public byte[] mask = new byte[16 * 2];
+	/** @field accessor=hotSpot.v */
 	public short hotSpot_v;
+	/** @field accessor=hotSpot.h */
 	public short hotSpot_h;
 	public static final int sizeof = 68;
 }

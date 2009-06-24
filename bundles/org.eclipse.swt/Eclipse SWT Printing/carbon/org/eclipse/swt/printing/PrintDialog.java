@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.carbon.OS;
 
@@ -22,11 +23,14 @@ import org.eclipse.swt.internal.carbon.OS;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class PrintDialog extends Dialog {
-	int scope = PrinterData.ALL_PAGES;
-	int startPage = 1, endPage = 1;
-	boolean printToFile = false;
+	PrinterData printerData = new PrinterData();
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -78,15 +82,55 @@ public PrintDialog (Shell parent) {
  * @see Widget#getStyle
  */
 public PrintDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle(parent, style));
 	checkSubclass ();
+}
+
+static int checkStyle (Shell parent, int style) {
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & SWT.SHEET) != 0) {
+		style &= ~SWT.SHEET;
+		if ((style & mask) == 0) {
+			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
+		}
+	}
+	return style;
+}
+
+/**
+ * Sets the printer data that will be used when the dialog
+ * is opened.
+ * <p>
+ * Setting the printer data to null is equivalent to
+ * resetting all data fields to their default values.
+ * </p>
+ * 
+ * @param data the data that will be used when the dialog is opened or null to use default data
+ * 
+ * @since 3.4
+ */
+public void setPrinterData(PrinterData data) {
+	this.printerData = data;
+}
+
+/**
+ * Returns the printer data that will be used when the dialog
+ * is opened.
+ * 
+ * @return the data that will be used when the dialog is opened
+ * 
+ * @since 3.4
+ */
+public PrinterData getPrinterData() {
+	return printerData;
 }
 
 /**
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
- * @return a printer data object describing the desired print job parameters
+ * @return a printer data object describing the desired print job parameters,
+ *         or null if the dialog was canceled, no printers were found, or an error occurred
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -103,74 +147,79 @@ public PrinterData open() {
 			if (OS.PMCreatePageFormat(buffer) == OS.noErr) {
 				int pageFormat = buffer[0];
 				OS.PMSessionDefaultPageFormat(printSession, pageFormat);
-				OS.PMSessionSetDestination(printSession, printSettings, (short) (printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
-				if (scope == PrinterData.PAGE_RANGE) {
-					OS.PMSetFirstPage(printSettings, startPage, false);
-					OS.PMSetLastPage(printSettings, endPage, false);
-					OS.PMSetPageRange(printSettings, startPage, endPage);
+				OS.PMSessionSetDestination(printSession, printSettings, (short) (printerData.printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
+				if (printerData.scope == PrinterData.PAGE_RANGE) {
+					OS.PMSetFirstPage(printSettings, printerData.startPage, false);
+					OS.PMSetLastPage(printSettings, printerData.endPage, false);
+					OS.PMSetPageRange(printSettings, printerData.startPage, printerData.endPage);
 				} else {
 					OS.PMSetPageRange(printSettings, 1, OS.kPMPrintAllPages);
 				}
+				OS.PMSetCopies(printSettings, printerData.copyCount, false);
+				OS.PMSetCollate(printSettings, printerData.collate);
+				OS.PMSetOrientation(pageFormat, printerData.orientation == PrinterData.LANDSCAPE ? OS.kPMLandscape : OS.kPMPortrait, false);
 				boolean[] accepted = new boolean [1];
-				OS.PMSessionPageSetupDialog(printSession, pageFormat, accepted);	
-				if (accepted[0]) {		
-					OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
-					if (accepted[0]) {
-						short[] destType = new short[1];
-						OS.PMSessionGetDestinationType(printSession, printSettings, destType);
-						String name = Printer.getCurrentPrinterName(printSession);
-						String driver = Printer.DRIVER;
-						switch (destType[0]) {
-							case OS.kPMDestinationFax: driver = Printer.FAX_DRIVER; break;
-							case OS.kPMDestinationFile: driver = Printer.FILE_DRIVER; break;
-							case OS.kPMDestinationPreview: driver = Printer.PREVIEW_DRIVER; break;
-							case OS.kPMDestinationPrinter: driver = Printer.PRINTER_DRIVER; break;
-						}
-						PrinterData data = new PrinterData(driver, name);
-						if (destType[0] == OS.kPMDestinationFile) {
-							data.printToFile = true;
-							OS.PMSessionCopyDestinationLocation(printSession, printSettings, buffer);
-							int fileName = OS.CFURLCopyFileSystemPath(buffer[0],OS.kCFURLPOSIXPathStyle);
-							OS.CFRelease(buffer[0]);
-							data.fileName = Printer.getString(fileName);
-							OS.CFRelease(fileName);
-						}
-						OS.PMGetCopies(printSettings, buffer);
-						data.copyCount = buffer[0];						
-						OS.PMGetFirstPage(printSettings, buffer);
-						data.startPage = buffer[0];
-						OS.PMGetLastPage(printSettings, buffer);
-						data.endPage = buffer[0];
-						OS.PMGetPageRange(printSettings, null, buffer);
-						if (data.startPage == 1 && data.endPage == OS.kPMPrintAllPages) {
-							data.scope = PrinterData.ALL_PAGES;
-						} else {
-							data.scope = PrinterData.PAGE_RANGE;
-						}
-						boolean[] collate = new boolean[1];
-						OS.PMGetCollate(printSettings, collate);
-						data.collate = collate[0];
-						
-						/* Serialize settings */
-						int[] flatSettings = new int[1];
-						OS.PMFlattenPrintSettings(printSettings, flatSettings);
-						int[] flatFormat = new int[1];
-						OS.PMFlattenPageFormat(pageFormat, flatFormat);
-						int settingsLength = OS.GetHandleSize (flatSettings[0]);
-						int formatLength = OS.GetHandleSize (flatFormat[0]);
-						byte[] otherData = data.otherData = new byte[settingsLength + formatLength + 8];
-						int offset = 0;
-						offset = Printer.packData(flatSettings[0], otherData, offset);
-						offset = Printer.packData(flatFormat[0], otherData, offset);
-						OS.DisposeHandle(flatSettings[0]);
-						OS.DisposeHandle(flatFormat[0]);
-						
-						scope = data.scope;
-						startPage = data.startPage;
-						endPage = data.endPage;
-						printToFile = data.printToFile;
-						return data;
+				if (OS.VERSION >= 0x1050) {
+					int printDialogOptions = OS.kPMShowDefaultInlineItems | OS.kPMShowPageAttributesPDE;
+					OS.PMShowPrintDialogWithOptions(printSession, printSettings, pageFormat, printDialogOptions, accepted);
+				} else {
+					OS.PMSessionPageSetupDialog(printSession, pageFormat, accepted);	
+					if (accepted[0]) OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
+				}
+				if (accepted[0]) {
+					short[] destType = new short[1];
+					OS.PMSessionGetDestinationType(printSession, printSettings, destType);
+					String name = Printer.getCurrentPrinterName(printSession);
+					String driver = Printer.DRIVER;
+					switch (destType[0]) {
+						case OS.kPMDestinationFax: driver = Printer.FAX_DRIVER; break;
+						case OS.kPMDestinationFile: driver = Printer.FILE_DRIVER; break;
+						case OS.kPMDestinationPreview: driver = Printer.PREVIEW_DRIVER; break;
+						case OS.kPMDestinationPrinter: driver = Printer.PRINTER_DRIVER; break;
 					}
+					PrinterData data = new PrinterData(driver, name);
+					if (destType[0] == OS.kPMDestinationFile) {
+						data.printToFile = true;
+						OS.PMSessionCopyDestinationLocation(printSession, printSettings, buffer);
+						int fileName = OS.CFURLCopyFileSystemPath(buffer[0],OS.kCFURLPOSIXPathStyle);
+						OS.CFRelease(buffer[0]);
+						data.fileName = Printer.getString(fileName);
+						OS.CFRelease(fileName);
+					}
+					OS.PMGetCopies(printSettings, buffer);
+					data.copyCount = buffer[0];
+					OS.PMGetFirstPage(printSettings, buffer);
+					data.startPage = buffer[0];
+					OS.PMGetLastPage(printSettings, buffer);
+					data.endPage = buffer[0];
+					//OS.PMGetPageRange(printSettings, null, buffer);
+					if (data.startPage == 1 && data.endPage == OS.kPMPrintAllPages) {
+						data.scope = PrinterData.ALL_PAGES;
+					} else {
+						data.scope = PrinterData.PAGE_RANGE;
+					}
+					boolean[] collate = new boolean[1];
+					OS.PMGetCollate(printSettings, collate);
+					data.collate = collate[0];
+					short[] orientation = new short[1];
+					OS.PMGetOrientation(pageFormat, orientation);
+					data.orientation = orientation[0] == OS.kPMLandscape ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
+					
+					/* Serialize settings */
+					int[] flatSettings = new int[1];
+					OS.PMFlattenPrintSettings(printSettings, flatSettings);
+					int[] flatFormat = new int[1];
+					OS.PMFlattenPageFormat(pageFormat, flatFormat);
+					int settingsLength = OS.GetHandleSize (flatSettings[0]);
+					int formatLength = OS.GetHandleSize (flatFormat[0]);
+					byte[] otherData = data.otherData = new byte[settingsLength + formatLength + 8];
+					int offset = 0;
+					offset = Printer.packData(flatSettings[0], otherData, offset);
+					offset = Printer.packData(flatFormat[0], otherData, offset);
+					OS.DisposeHandle(flatSettings[0]);
+					OS.DisposeHandle(flatFormat[0]);
+					printerData = data;
+					return data;
 				}
 				OS.PMRelease(pageFormat);
 			}
@@ -186,18 +235,18 @@ public PrinterData open() {
  * before pressing OK in the dialog. This will be one
  * of the following values:
  * <dl>
- * <dt><code>ALL_PAGES</code></dt>
+ * <dt><code>PrinterData.ALL_PAGES</code></dt>
  * <dd>Print all pages in the current document</dd>
- * <dt><code>PAGE_RANGE</code></dt>
+ * <dt><code>PrinterData.PAGE_RANGE</code></dt>
  * <dd>Print the range of pages specified by startPage and endPage</dd>
- * <dt><code>SELECTION</code></dt>
+ * <dt><code>PrinterData.SELECTION</code></dt>
  * <dd>Print the current selection</dd>
  * </dl>
  *
  * @return the scope setting that the user selected
  */
 public int getScope() {
-	return scope;
+	return printerData.scope;
 }
 
 /**
@@ -205,74 +254,74 @@ public int getScope() {
  * setting when the dialog is opened. This can have one of
  * the following values:
  * <dl>
- * <dt><code>ALL_PAGES</code></dt>
+ * <dt><code>PrinterData.ALL_PAGES</code></dt>
  * <dd>Print all pages in the current document</dd>
- * <dt><code>PAGE_RANGE</code></dt>
+ * <dt><code>PrinterData.PAGE_RANGE</code></dt>
  * <dd>Print the range of pages specified by startPage and endPage</dd>
- * <dt><code>SELECTION</code></dt>
+ * <dt><code>PrinterData.SELECTION</code></dt>
  * <dd>Print the current selection</dd>
  * </dl>
  *
  * @param scope the scope setting when the dialog is opened
  */
 public void setScope(int scope) {
-	this.scope = scope;
+	printerData.scope = scope;
 }
 
 /**
  * Returns the start page setting that the user selected
  * before pressing OK in the dialog.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  *
  * @return the start page setting that the user selected
  */
 public int getStartPage() {
-	return startPage;
+	return printerData.startPage;
 }
 
 /**
  * Sets the start page that the user will see when the dialog
  * is opened.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  * 
  * @param startPage the startPage setting when the dialog is opened
  */
 public void setStartPage(int startPage) {
-	this.startPage = startPage;
+	printerData.startPage = startPage;
 }
 
 /**
  * Returns the end page setting that the user selected
  * before pressing OK in the dialog.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  *
  * @return the end page setting that the user selected
  */
 public int getEndPage() {
-	return endPage;
+	return printerData.endPage;
 }
 
 /**
  * Sets the end page that the user will see when the dialog
  * is opened.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  * 
  * @param endPage the end page setting when the dialog is opened
  */
 public void setEndPage(int endPage) {
-	this.endPage = endPage;
+	printerData.endPage = endPage;
 }
 
 /**
@@ -282,7 +331,7 @@ public void setEndPage(int endPage) {
  * @return the 'Print to file' setting that the user selected
  */
 public boolean getPrintToFile() {
-	return printToFile;
+	return printerData.printToFile;
 }
 
 /**
@@ -292,7 +341,7 @@ public boolean getPrintToFile() {
  * @param printToFile the 'Print to file' setting when the dialog is opened
  */
 public void setPrintToFile(boolean printToFile) {
-	this.printToFile = printToFile;
+	printerData.printToFile = printToFile;
 }
 
 protected void checkSubclass() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,11 +78,15 @@ import org.eclipse.swt.events.*;
  * @see Scrollable
  * @see Scrollable#getHorizontalBar
  * @see Scrollable#getVerticalBar
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ScrollBar extends Widget {
 	Scrollable parent;
 	int /*long*/ adjustmentHandle;
 	int detail;
+	boolean dragSent;
 	
 ScrollBar () {
 }
@@ -98,7 +102,7 @@ ScrollBar (Scrollable parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -114,7 +118,7 @@ ScrollBar (Scrollable parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's value
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -143,6 +147,16 @@ static int checkStyle (int style) {
 void deregister () {
 	super.deregister ();
 	if (adjustmentHandle != 0) display.removeWidget (adjustmentHandle);
+}
+
+void destroyHandle () {
+	super.destroyWidget ();
+}
+
+void destroyWidget () {
+	parent.destroyScrollBar (this);
+	releaseHandle ();
+	//parent.sendEvent (SWT.Resize);
 }
 
 /**
@@ -292,7 +306,7 @@ public Point getSize () {
 }
 
 /**
- * Answers the size of the receiver's thumb relative to the
+ * Returns the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
  *
  * @return the thumb value
@@ -340,6 +354,14 @@ public boolean getVisible () {
 	}
 }
 
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ result = super.gtk_button_press_event (widget, eventPtr);
+	if (result != 0) return result;
+	detail = OS.GTK_SCROLL_NONE;
+	dragSent = false;	
+	return result;
+}
+
 int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value1, int /*long*/ value2) {
 	detail = (int)/*64*/scroll;
 	return 0;
@@ -347,6 +369,7 @@ int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*l
 
 int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	Event event = new Event ();
+	dragSent = detail == OS.GTK_SCROLL_JUMP;
 	switch (detail) {
 		case OS.GTK_SCROLL_NONE:			event.detail = SWT.NONE; break;
 		case OS.GTK_SCROLL_JUMP:			event.detail = SWT.DRAG; break;
@@ -366,9 +389,33 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 		case OS.GTK_SCROLL_STEP_BACKWARD:	event.detail = SWT.ARROW_UP; break;
 	}
 	detail = OS.GTK_SCROLL_NONE;
+	if (!dragSent) detail = OS.GTK_SCROLL_NONE;
 	postEvent (SWT.Selection, event);
 	parent.updateScrollBarValue (this);
 	return 0;
+}
+
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+	GdkEvent gtkEvent = new GdkEvent ();
+	OS.memmove (gtkEvent, gdkEvent, GdkEvent.sizeof);
+	switch (gtkEvent.type) {
+		case OS.GDK_BUTTON_RELEASE: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 1 && detail == SWT.DRAG) {
+				if (!dragSent) {
+					Event event = new Event ();
+					event.detail = SWT.DRAG;
+					postEvent (SWT.Selection, event);
+				}
+				postEvent (SWT.Selection);
+			}
+			detail = OS.GTK_SCROLL_NONE;
+			dragSent = false;
+			break;
+		}
+	}
+	return super.gtk_event_after (widget, gdkEvent);
 }
 
 void hookEvents () {
@@ -377,6 +424,8 @@ void hookEvents () {
 		OS.g_signal_connect_closure (handle, OS.change_value, display.closures [CHANGE_VALUE], false);
 	}
 	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.closures [VALUE_CHANGED], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);	
 }
 
 /**
@@ -423,6 +472,11 @@ void register () {
 	if (adjustmentHandle != 0) display.addWidget (adjustmentHandle, this);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+}
+
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
@@ -431,12 +485,12 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	parent = null;
+	//parent = null;
 }
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -559,6 +613,17 @@ public void setMinimum (int value) {
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
+void setOrientation () {
+	super.setOrientation ();
+	if ((parent.style & SWT.MIRRORED) != 0) {
+		if ((parent.state & CANVAS) != 0) {
+			if ((style & SWT.HORIZONTAL) != 0) {
+				OS.gtk_range_set_inverted (handle, true);
+			}
+		}
+	}
+}
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the page increment/decrement areas
@@ -636,7 +701,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>
@@ -694,7 +759,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	parent.setScrollBarVisible (this, visible);
+	if (parent.setScrollBarVisible (this, visible)) {
+		sendEvent (visible ? SWT.Show : SWT.Hide);
+		parent.sendEvent (SWT.Resize);
+	}
 }
 
 }

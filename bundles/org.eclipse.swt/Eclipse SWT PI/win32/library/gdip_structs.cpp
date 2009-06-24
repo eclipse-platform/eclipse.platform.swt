@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "gdip_structs.h"
@@ -29,8 +29,8 @@ void cacheBitmapDataFields(JNIEnv *env, jobject lpObject)
 	BitmapDataFc.Height = env->GetFieldID(BitmapDataFc.clazz, "Height", "I");
 	BitmapDataFc.Stride = env->GetFieldID(BitmapDataFc.clazz, "Stride", "I");
 	BitmapDataFc.PixelFormat = env->GetFieldID(BitmapDataFc.clazz, "PixelFormat", "I");
-	BitmapDataFc.Scan0 = env->GetFieldID(BitmapDataFc.clazz, "Scan0", "I");
-	BitmapDataFc.Reserved = env->GetFieldID(BitmapDataFc.clazz, "Reserved", "I");
+	BitmapDataFc.Scan0 = env->GetFieldID(BitmapDataFc.clazz, "Scan0", I_J);
+	BitmapDataFc.Reserved = env->GetFieldID(BitmapDataFc.clazz, "Reserved", I_J);
 	BitmapDataFc.cached = 1;
 }
 
@@ -41,8 +41,8 @@ BitmapData *getBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStr
 	lpStruct->Height = env->GetIntField(lpObject, BitmapDataFc.Height);
 	lpStruct->Stride = env->GetIntField(lpObject, BitmapDataFc.Stride);
 	lpStruct->PixelFormat = (PixelFormat)env->GetIntField(lpObject, BitmapDataFc.PixelFormat);
-	lpStruct->Scan0 = (void*)env->GetIntField(lpObject, BitmapDataFc.Scan0);
-	lpStruct->Reserved = (UINT_PTR)env->GetIntField(lpObject, BitmapDataFc.Reserved);
+	lpStruct->Scan0 = (void*)env->GetIntLongField(lpObject, BitmapDataFc.Scan0);
+	lpStruct->Reserved = (UINT_PTR)env->GetIntLongField(lpObject, BitmapDataFc.Reserved);
 	return lpStruct;
 }
 
@@ -53,8 +53,8 @@ void setBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStruct)
 	env->SetIntField(lpObject, BitmapDataFc.Height, (jint)lpStruct->Height);
 	env->SetIntField(lpObject, BitmapDataFc.Stride, (jint)lpStruct->Stride);
 	env->SetIntField(lpObject, BitmapDataFc.PixelFormat, (jint)lpStruct->PixelFormat);
-	env->SetIntField(lpObject, BitmapDataFc.Scan0, (jint)lpStruct->Scan0);
-	env->SetIntField(lpObject, BitmapDataFc.Reserved, (jint)lpStruct->Reserved);
+	env->SetIntLongField(lpObject, BitmapDataFc.Scan0, (jintLong)lpStruct->Scan0);
+	env->SetIntLongField(lpObject, BitmapDataFc.Reserved, (jintLong)lpStruct->Reserved);
 }
 #endif
 
@@ -84,7 +84,7 @@ ColorPalette *getColorPaletteFields(JNIEnv *env, jobject lpObject, ColorPalette 
 	lpStruct->Count = env->GetIntField(lpObject, ColorPaletteFc.Count);
 	{
 	jintArray lpObject1 = (jintArray)env->GetObjectField(lpObject, ColorPaletteFc.Entries);
-	env->GetIntArrayRegion(lpObject1, 0, sizeof(lpStruct->Entries) / 4, (jint *)lpStruct->Entries);
+	env->GetIntArrayRegion(lpObject1, 0, sizeof(lpStruct->Entries) / sizeof(jint), (jint *)lpStruct->Entries);
 	}
 	return lpStruct;
 }
@@ -96,7 +96,7 @@ void setColorPaletteFields(JNIEnv *env, jobject lpObject, ColorPalette *lpStruct
 	env->SetIntField(lpObject, ColorPaletteFc.Count, (jint)lpStruct->Count);
 	{
 	jintArray lpObject1 = (jintArray)env->GetObjectField(lpObject, ColorPaletteFc.Entries);
-	env->SetIntArrayRegion(lpObject1, 0, sizeof(lpStruct->Entries) / 4, (jint *)lpStruct->Entries);
+	env->SetIntArrayRegion(lpObject1, 0, sizeof(lpStruct->Entries) / sizeof(jint), (jint *)lpStruct->Entries);
 	}
 }
 #endif
@@ -115,9 +115,9 @@ void cacheGdiplusStartupInputFields(JNIEnv *env, jobject lpObject)
 	if (GdiplusStartupInputFc.cached) return;
 	GdiplusStartupInputFc.clazz = env->GetObjectClass(lpObject);
 	GdiplusStartupInputFc.GdiplusVersion = env->GetFieldID(GdiplusStartupInputFc.clazz, "GdiplusVersion", "I");
-	GdiplusStartupInputFc.DebugEventCallback = env->GetFieldID(GdiplusStartupInputFc.clazz, "DebugEventCallback", "I");
-	GdiplusStartupInputFc.SuppressBackgroundThread = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressBackgroundThread", "I");
-	GdiplusStartupInputFc.SuppressExternalCodecs = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressExternalCodecs", "I");
+	GdiplusStartupInputFc.DebugEventCallback = env->GetFieldID(GdiplusStartupInputFc.clazz, "DebugEventCallback", I_J);
+	GdiplusStartupInputFc.SuppressBackgroundThread = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressBackgroundThread", "Z");
+	GdiplusStartupInputFc.SuppressExternalCodecs = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressExternalCodecs", "Z");
 	GdiplusStartupInputFc.cached = 1;
 }
 
@@ -125,9 +125,9 @@ GdiplusStartupInput *getGdiplusStartupInputFields(JNIEnv *env, jobject lpObject,
 {
 	if (!GdiplusStartupInputFc.cached) cacheGdiplusStartupInputFields(env, lpObject);
 	lpStruct->GdiplusVersion = env->GetIntField(lpObject, GdiplusStartupInputFc.GdiplusVersion);
-	lpStruct->DebugEventCallback = (DebugEventProc)env->GetIntField(lpObject, GdiplusStartupInputFc.DebugEventCallback);
-	lpStruct->SuppressBackgroundThread = (BOOL)env->GetIntField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread);
-	lpStruct->SuppressExternalCodecs = (BOOL)env->GetIntField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs);
+	lpStruct->DebugEventCallback = (DebugEventProc)env->GetIntLongField(lpObject, GdiplusStartupInputFc.DebugEventCallback);
+	lpStruct->SuppressBackgroundThread = (BOOL)env->GetBooleanField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread);
+	lpStruct->SuppressExternalCodecs = (BOOL)env->GetBooleanField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs);
 	return lpStruct;
 }
 
@@ -135,9 +135,9 @@ void setGdiplusStartupInputFields(JNIEnv *env, jobject lpObject, GdiplusStartupI
 {
 	if (!GdiplusStartupInputFc.cached) cacheGdiplusStartupInputFields(env, lpObject);
 	env->SetIntField(lpObject, GdiplusStartupInputFc.GdiplusVersion, (jint)lpStruct->GdiplusVersion);
-	env->SetIntField(lpObject, GdiplusStartupInputFc.DebugEventCallback, (jint)lpStruct->DebugEventCallback);
-	env->SetIntField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread, (jint)lpStruct->SuppressBackgroundThread);
-	env->SetIntField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs, (jint)lpStruct->SuppressExternalCodecs);
+	env->SetIntLongField(lpObject, GdiplusStartupInputFc.DebugEventCallback, (jintLong)lpStruct->DebugEventCallback);
+	env->SetBooleanField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread, (jboolean)lpStruct->SuppressBackgroundThread);
+	env->SetBooleanField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs, (jboolean)lpStruct->SuppressExternalCodecs);
 }
 #endif
 

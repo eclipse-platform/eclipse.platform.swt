@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -92,6 +92,8 @@ import org.eclipse.swt.graphics.*;
  * @see #getMaximized
  * @see Shell
  * @see SWT
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Decorations extends Canvas {
 	Image image;
@@ -189,6 +191,25 @@ Control computeTabRoot () {
 	return this;
 }
 
+void fixDecorations (Decorations newDecorations, Control control, Menu [] menus) {
+	if (this == newDecorations) return;
+	if (control == savedFocus) savedFocus = null;
+	if (control == defaultButton) defaultButton = null;
+	if (menus == null) return;
+	Menu menu = control.menu;
+	if (menu != null) {
+		int index = 0;
+		while (index < menus.length) {
+			if (menus [index] == menu) {
+				control.setMenu (null);
+				return;
+			}
+			index++;
+		}
+		menu.fixMenus (newDecorations);
+	}
+}
+
 /**
  * Returns the receiver's default button if one had
  * previously been set, otherwise returns null.
@@ -200,7 +221,7 @@ Control computeTabRoot () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #setDefaultButton
+ * @see #setDefaultButton(Button)
  */
 public Button getDefaultButton () {
 	checkWidget();
@@ -344,6 +365,11 @@ public String getText () {
 	return text;
 }
 
+public boolean isReparentable () {
+	checkWidget();
+	return false;
+}
+
 boolean isTabGroup () {
 	return true;
 }
@@ -390,7 +416,7 @@ boolean restoreFocus () {
 
 void saveFocus () {
 	int window = OS.GetControlOwner (handle);
-	Control control = display.getFocusControl (window);
+	Control control = display.getFocusControl (window, false);
 	if (control != null && control != this && this == control.menuShell ()) {
 		setSavedFocus (control);
 	}
@@ -414,6 +440,7 @@ void saveFocus () {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -458,6 +485,7 @@ public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
+	if (parent != null) return;
 	if (display.dockImage == 0) {
 		if (image != null) {
 			OS.SetApplicationDockTileImage (image.handle);
@@ -498,6 +526,7 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
+	if (parent != null) return;
 	if (display.dockImage == 0) {
 		if (images != null && images.length > 1) {
 			Image [] bestImages = new Image [images.length];
@@ -505,7 +534,11 @@ public void setImages (Image [] images) {
 			sort (bestImages);
 			images = bestImages;
 		}
-		OS.SetApplicationDockTileImage (images [0].handle);
+		if (images != null && images.length > 0) {
+			OS.SetApplicationDockTileImage (images [0].handle);
+		} else {
+			OS.RestoreApplicationDockTileImage ();
+		}
 	}
 }
 

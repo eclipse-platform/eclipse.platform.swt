@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -24,17 +24,28 @@
 #endif
 
 #ifndef RETURN_TYPE
-#define RETURN_TYPE SWT_PTR
+#define RETURN_TYPE jintLong
 #endif
 
 #ifndef RETURN_CAST
 #define RETURN_CAST
 #endif
 
+/*
+* Note that only x86 assembler is supported
+*/
+#if !(defined(__i386__) || defined(_M_IX86) || defined(_X86_))
+#undef USE_ASSEMBLER
+#endif
+
 #ifdef REDUCED_CALLBACKS
 #define MAX_CALLBACKS 16
 #else
+#ifdef USE_ASSEMBLER
+#define MAX_CALLBACKS 256
+#else
 #define MAX_CALLBACKS 128
+#endif
 #endif /* REDUCED_CALLBACKS */
 
 #define MAX_ARGS 12
@@ -46,7 +57,7 @@ typedef struct CALLBACK_DATA {
 	jboolean isStatic;
 	jboolean isArrayBased; 
 	jint argCount;
-	SWT_PTR errorResult;
+	jintLong errorResult;
 } CALLBACK_DATA;
 
 #endif /* ifndef INC_callback_H */

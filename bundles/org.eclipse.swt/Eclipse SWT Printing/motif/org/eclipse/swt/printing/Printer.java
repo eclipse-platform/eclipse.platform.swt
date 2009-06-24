@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,8 @@ import org.eclipse.swt.internal.motif.*;
  *
  * @see PrinterData
  * @see PrintDialog
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Printer extends Device {
 	PrinterData data;
@@ -64,7 +66,7 @@ static DeviceData checkNull (PrinterData data) {
 /**
  * Returns a <code>PrinterData</code> object representing
  * the default printer or <code>null</code> if there is no 
- * printer available on the System.
+ * default printer.
  *
  * @return the default printer data or null
  * 
@@ -113,9 +115,10 @@ static PrinterData getEnvDefaultPrinter(PrinterData[] serverList) {
 
 /**
  * Returns an array of <code>PrinterData</code> objects
- * representing all available printers.
+ * representing all available printers.  If there are no
+ * printers, the array will be empty.
  *
- * @return the list of available printers
+ * @return an array of PrinterData objects representing the available printers
  */
 public static PrinterData[] getPrinterList() {
 	PrinterData[] list = getEnvPrinterList();
@@ -220,7 +223,7 @@ static String[] getXPServerList() {
 		while (i < buffer2.length) {
 			if (buffer2[i] != ' ') {
 				int start = i;
-				while (++i < buffer2.length && buffer2[i] != ' ');
+				while (++i < buffer2.length && buffer2[i] != ' ') {/*empty*/}
 				String server = new String(buffer2, start, i - start);
 				String[] newServerList = new String[serversList.length + 1];
 				System.arraycopy(serversList, 0, newServerList, 0, serversList.length);
@@ -236,7 +239,7 @@ static String[] getXPServerList() {
 /**
  * Constructs a new printer representing the default printer.
  * <p>
- * You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required. 
  * </p>
  *
  * @exception SWTError <ul>
@@ -251,12 +254,13 @@ public Printer() {
 
 /**
  * Constructs a new printer given a <code>PrinterData</code>
- * object representing the desired printer.
+ * object representing the desired printer. If the argument
+ * is null, then the default printer will be used.
  * <p>
- * You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required. 
  * </p>
  *
- * @param data the printer data for the specified printer
+ * @param data the printer data for the specified printer, or null to use the default printer
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the specified printer data does not represent a valid printer
@@ -381,8 +385,12 @@ public int internal_new_GC(GCData data) {
 		if (defaultGC != 0) {
 			XGCValues values = new XGCValues();
 			OS.XGetGCValues(xDisplay, defaultGC, OS.GCBackground | OS.GCForeground, values);
-			data.foreground = values.foreground;
-			data.background = values.background;
+			XColor foreground = new XColor ();
+			foreground.pixel = values.foreground;
+			data.foreground = foreground;
+			XColor background = new XColor ();
+			background.pixel = values.background;
+			data.background = background;
 		}
 		isGCCreated = true;
 	}
@@ -553,7 +561,9 @@ public Point getDPI() {
 
 /**
  * Returns a rectangle describing the receiver's size and location.
- * For a printer, this is the size of a page, in pixels.
+ * <p>
+ * For a printer, this is the size of the physical page, in pixels.
+ * </p>
  *
  * @return the bounding rectangle
  *
@@ -576,8 +586,10 @@ public Rectangle getBounds() {
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
+ * <p>
  * For a printer, this is the size of the printable area
- * of a page, in pixels.
+ * of the page, in pixels.
+ * </p>
  * 
  * @return the client area
  *
@@ -596,27 +608,32 @@ public Rectangle getClientArea() {
 }
 
 /**
- * Given a desired <em>client area</em> for the receiver
- * (as described by the arguments), returns the bounding
- * rectangle which would be required to produce that client
- * area.
+ * Given a <em>client area</em> (as described by the arguments),
+ * returns a rectangle, relative to the client area's coordinates,
+ * that is the client area expanded by the printer's trim (or minimum margins).
  * <p>
- * In other words, it returns a rectangle such that, if the
- * receiver's bounds were set to that rectangle, the area
- * of the receiver which is capable of displaying data
- * (that is, not covered by the "trimmings") would be the
- * rectangle described by the arguments (relative to the
- * receiver's parent).
+ * Most printers have a minimum margin on each edge of the paper where the
+ * printer device is unable to print.  This margin is known as the "trim."
+ * This method can be used to calculate the printer's minimum margins
+ * by passing in a client area of 0, 0, 0, 0 and then using the resulting
+ * x and y coordinates (which will be <= 0) to determine the minimum margins
+ * for the top and left edges of the paper, and the resulting width and height
+ * (offset by the resulting x and y) to determine the minimum margins for the
+ * bottom and right edges of the paper, as follows:
+ * <ul>
+ * 		<li>The left trim width is -x pixels</li>
+ * 		<li>The top trim height is -y pixels</li>
+ * 		<li>The right trim width is (x + width) pixels</li>
+ * 		<li>The bottom trim height is (y + height) pixels</li>
+ * </ul>
  * </p>
- * Note that there is no setBounds for a printer. This method
- * is usually used by passing in the client area (the 'printable
- * area') of the printer. It can also be useful to pass in 0, 0, 0, 0.
  * 
- * @param x the desired x coordinate of the client area
- * @param y the desired y coordinate of the client area
- * @param width the desired width of the client area
- * @param height the desired height of the client area
- * @return the required bounds to produce the given client area
+ * @param x the x coordinate of the client area
+ * @param y the y coordinate of the client area
+ * @param width the width of the client area
+ * @param height the height of the client area
+ * @return a rectangle, relative to the client area's coordinates, that is
+ * 		the client area expanded by the printer's trim (or minimum margins)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>

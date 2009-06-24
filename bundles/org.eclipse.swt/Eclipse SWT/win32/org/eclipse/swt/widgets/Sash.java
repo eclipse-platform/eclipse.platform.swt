@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,11 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#sash">Sash snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Sash extends Control {
 	boolean dragging;
@@ -65,6 +70,7 @@ public class Sash extends Control {
  *
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
+ * @see SWT#SMOOTH
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -74,16 +80,16 @@ public Sash (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the x, y, width, and height fields of the event object are valid.
- * If the reciever is being dragged, the event object detail field contains the value <code>SWT.DRAG</code>.
+ * If the receiver is being dragged, the event object detail field contains the value <code>SWT.DRAG</code>.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -105,7 +111,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -135,12 +141,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void drawBand (int x, int y, int width, int height) {
 	if ((style & SWT.SMOOTH) != 0) return;
-	int hwndTrack = parent.handle;
+	int /*long*/ hwndTrack = parent.handle;
 	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
-	int stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
-	int stippleBrush = OS.CreatePatternBrush (stippleBitmap);
-	int hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
-	int oldBrush = OS.SelectObject (hDC, stippleBrush);
+	int /*long*/ stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
+	int /*long*/ stippleBrush = OS.CreatePatternBrush (stippleBitmap);
+	int /*long*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
+	int /*long*/ oldBrush = OS.SelectObject (hDC, stippleBrush);
 	OS.PatBlt (hDC, x, y, width, height, OS.PATINVERT);
 	OS.SelectObject (hDC, oldBrush);
 	OS.ReleaseDC (hwndTrack, hDC);
@@ -150,7 +156,7 @@ void drawBand (int x, int y, int width, int height) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -177,20 +183,20 @@ TCHAR windowClass () {
 	return display.windowClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return display.windowProc;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	super.WM_ERASEBKGND (wParam, lParam);
 	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_LEFT:
 		case OS.VK_RIGHT:
 		case OS.VK_UP:
@@ -207,7 +213,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 				if (wParam == OS.VK_LEFT || wParam == OS.VK_RIGHT) break;
 				pt.y = wParam == OS.VK_UP ? -step : step;
 			}
-			int hwndTrack = parent.handle;
+			int /*long*/ hwndTrack = parent.handle;
 			OS.MapWindowPoints (handle, hwndTrack, pt, 1);
 			RECT rect = new RECT (), clientRect = new RECT ();
 			OS.GetWindowRect (handle, rect);
@@ -253,19 +259,18 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (OS.DLGC_STATIC);
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
 	/* Compute the banding rectangle */
-	int hwndTrack = parent.handle;
+	int /*long*/ hwndTrack = parent.handle;
 	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16);
+	OS.POINTSTOPOINT (pt, lParam);
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	OS.MapWindowPoints (handle, 0, pt, 1);
@@ -311,7 +316,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
@@ -341,16 +346,15 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
 	if (!dragging || (wParam & OS.MK_LBUTTON) == 0) return result;
 
 	/* Compute the banding rectangle */
 	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16);
-	int hwndTrack = parent.handle;
+	OS.POINTSTOPOINT (pt, lParam);
+	int /*long*/ hwndTrack = parent.handle;
 	OS.MapWindowPoints (handle, hwndTrack, pt, 1);
 	RECT rect = new RECT (), clientRect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -397,12 +401,12 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETCURSOR (int wParam, int lParam) {
+LRESULT WM_SETCURSOR (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
-	int hitTest = lParam & 0xFFFF;
+	int hitTest = (short) OS.LOWORD (lParam);
  	if (hitTest == OS.HTCLIENT) {
-	 	int hCursor = 0;
+	 	int /*long*/ hCursor = 0;
 	 	if ((style & SWT.HORIZONTAL) != 0) {
 			hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
 	 	} else {

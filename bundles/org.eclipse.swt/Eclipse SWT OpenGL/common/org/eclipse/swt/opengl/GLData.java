@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,8 @@ package org.eclipse.swt.opengl;
  * of the pixel format attributes of a GL drawable.
  *
  * @see GLCanvas
+ * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2
  */
@@ -119,6 +121,14 @@ public class GLData {
 	 * are preferred.
 	 */
 	public int samples;
+	
+	/**
+	 * Another GLCanvas whose texture namespace and display lists
+	 * should be shared.
+	 * 
+	 * @since 3.5
+	 */
+	public GLCanvas shareContext;
 	
 /**
  * Returns a string containing a concise, human-readable

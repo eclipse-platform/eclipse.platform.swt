@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,12 @@ package org.eclipse.swt.internal.win32;
 
 public class DOCINFO {
 	public int cbSize; 
-	public int lpszDocName; // LPCTSTR
-	public int lpszOutput; // LPCTSTR
-	public int lpszDatatype;// LPCTSTR
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpszDocName; // LPCTSTR
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpszOutput; // LPCTSTR
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpszDatatype;// LPCTSTR
 	public int fwType; // DWORD
-	public static final int sizeof = 20;
+	public static final int sizeof = OS.DOCINFO_sizeof ();
 }

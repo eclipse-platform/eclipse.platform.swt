@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,7 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see Listener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TypedListener implements Listener {
 	
@@ -77,80 +78,12 @@ public SWTEventListener getEventListener () {
  */
 public void handleEvent (Event e) {
 	switch (e.type) {
-		case SWT.Paint: {
-			/* Field set by Control */
-			PaintEvent event = new PaintEvent (e);
-			((PaintListener) eventListener).paintControl (event);
-			e.gc = event.gc;
-			break;
-		}			
-		case SWT.Selection: {
-			/* Fields set by Sash */
-			SelectionEvent event = new SelectionEvent (e);
-			((SelectionListener) eventListener).widgetSelected (event);			
-			e.x = event.x;
-			e.y = event.y;
-			e.doit = event.doit;
+		case SWT.Activate: {
+			((ShellListener) eventListener).shellActivated(new ShellEvent(e));
 			break;
 		}
-		case SWT.DefaultSelection: {
-			((SelectionListener)eventListener).widgetDefaultSelected(new SelectionEvent(e));
-			break;
-		}
-		case SWT.Dispose: {
-			((DisposeListener) eventListener).widgetDisposed(new DisposeEvent(e));
-			break;
-		}
-		case SWT.FocusIn: {
-			((FocusListener) eventListener).focusGained(new FocusEvent(e));
-			break;
-		}
-		case SWT.FocusOut: {
-			((FocusListener) eventListener).focusLost(new FocusEvent(e));
-			break;
-		}
-		case SWT.Hide: {
-			((MenuListener) eventListener).menuHidden(new MenuEvent(e));
-			break;
-		}
-		case SWT.Show: {
-			((MenuListener) eventListener).menuShown(new MenuEvent(e));
-			break;
-		}
-		case SWT.KeyDown: {
-			KeyEvent event = new KeyEvent(e);
-			((KeyListener) eventListener).keyPressed(event);
-			e.doit = event.doit;
-			break;
-		}
-		case SWT.KeyUp: {
-			KeyEvent event = new KeyEvent(e);
-			((KeyListener) eventListener).keyReleased(event);
-			e.doit = event.doit;
-			break;
-		}
-		case SWT.MouseDown: {
-			((MouseListener) eventListener).mouseDown(new MouseEvent(e));
-			break;
-		}
-		case SWT.MouseUp: {
-			((MouseListener) eventListener).mouseUp(new MouseEvent(e));
-			break;
-		}
-		case SWT.MouseDoubleClick: {
-			((MouseListener) eventListener).mouseDoubleClick(new MouseEvent(e));
-			break;
-		}
-		case SWT.MouseMove: {
-			((MouseMoveListener) eventListener).mouseMove(new MouseEvent(e));
-			return;
-		}
-		case SWT.Resize: {
-			((ControlListener) eventListener).controlResized(new ControlEvent(e));
-			break;
-		}
-		case SWT.Move: {
-			((ControlListener) eventListener).controlMoved(new ControlEvent(e));
+		case SWT.Arm: {
+			((ArmListener) eventListener).widgetArmed (new ArmEvent (e));
 			break;
 		}
 		case SWT.Close: {
@@ -158,30 +91,6 @@ public void handleEvent (Event e) {
 			ShellEvent event = new ShellEvent (e);
 			((ShellListener) eventListener).shellClosed(event);
 			e.doit = event.doit;
-			break;
-		}
-		case SWT.Activate: {
-			((ShellListener) eventListener).shellActivated(new ShellEvent(e));
-			break;
-		}
-		case SWT.Deactivate: {
-			((ShellListener) eventListener).shellDeactivated(new ShellEvent(e));
-			break;
-		}
-		case SWT.Iconify: {
-			((ShellListener) eventListener).shellIconified(new ShellEvent(e));
-			break;
-		}
-		case SWT.Deiconify: {
-			((ShellListener) eventListener).shellDeiconified(new ShellEvent(e));
-			break;
-		}
-		case SWT.Expand: {
-			if (eventListener instanceof TreeListener) {
-				((TreeListener) eventListener).treeExpanded(new TreeEvent(e));
-			} else {
-				((ExpandListener) eventListener).itemExpanded(new ExpandEvent(e));	
-			}
 			break;
 		}
 		case SWT.Collapse: {
@@ -192,36 +101,138 @@ public void handleEvent (Event e) {
 			}
 			break;
 		}
-		case SWT.Modify: {
-			((ModifyListener) eventListener).modifyText(new ModifyEvent(e));
+		case SWT.Deactivate: {
+			((ShellListener) eventListener).shellDeactivated(new ShellEvent(e));
 			break;
 		}
-		case SWT.Verify: {
-			/* Fields set by Text, RichText */
-			VerifyEvent event = new VerifyEvent (e);
-			((VerifyListener) eventListener).verifyText (event);
-			e.text = event.text;
-			e.doit = event.doit;
+		case SWT.Deiconify: {
+			((ShellListener) eventListener).shellDeiconified(new ShellEvent(e));
+			break;
+		}
+		case SWT.DefaultSelection: {
+			((SelectionListener)eventListener).widgetDefaultSelected(new SelectionEvent(e));
+			break;
+		}
+		case SWT.Dispose: {
+			((DisposeListener) eventListener).widgetDisposed(new DisposeEvent(e));
+			break;
+		}
+		case SWT.DragDetect: {
+			((DragDetectListener) eventListener).dragDetected(new DragDetectEvent(e));
+			break;
+		}
+		case SWT.Expand: {
+			if (eventListener instanceof TreeListener) {
+				((TreeListener) eventListener).treeExpanded(new TreeEvent(e));
+			} else {
+				((ExpandListener) eventListener).itemExpanded(new ExpandEvent(e));	
+			}
+			break;
+		}
+		case SWT.FocusIn: {
+			((FocusListener) eventListener).focusGained(new FocusEvent(e));
+			break;
+		}
+		case SWT.FocusOut: {
+			((FocusListener) eventListener).focusLost(new FocusEvent(e));
 			break;
 		}
 		case SWT.Help: {
 			((HelpListener) eventListener).helpRequested (new HelpEvent (e));
 			break;
 		}
-		case SWT.Arm: {
-			((ArmListener) eventListener).widgetArmed (new ArmEvent (e));
+		case SWT.Hide: {
+			((MenuListener) eventListener).menuHidden(new MenuEvent(e));
 			break;
 		}
-		case SWT.MouseExit: {
-			((MouseTrackListener) eventListener).mouseExit (new MouseEvent (e));
+		case SWT.Iconify: {
+			((ShellListener) eventListener).shellIconified(new ShellEvent(e));
+			break;
+		}
+		case SWT.KeyDown: {
+			/* Fields set by Control */
+			KeyEvent event = new KeyEvent(e);
+			((KeyListener) eventListener).keyPressed(event);
+			e.doit = event.doit;
+			break;
+		}
+		case SWT.KeyUp: {
+			/* Fields set by Control */
+			KeyEvent event = new KeyEvent(e);
+			((KeyListener) eventListener).keyReleased(event);
+			e.doit = event.doit;
+			break;
+		}
+		case SWT.Modify: {
+			((ModifyListener) eventListener).modifyText(new ModifyEvent(e));
+			break;
+		}
+		case SWT.MenuDetect: {
+			MenuDetectEvent event = new MenuDetectEvent(e);
+			((MenuDetectListener) eventListener).menuDetected(event);
+			e.x = event.x;
+			e.y = event.y;
+			e.doit = event.doit;
+			break;
+		}
+		case SWT.MouseDown: {
+			((MouseListener) eventListener).mouseDown(new MouseEvent(e));
+			break;
+		}
+		case SWT.MouseDoubleClick: {
+			((MouseListener) eventListener).mouseDoubleClick(new MouseEvent(e));
 			break;
 		}
 		case SWT.MouseEnter: {
 			((MouseTrackListener) eventListener).mouseEnter (new MouseEvent (e));
 			break;
 		}
+		case SWT.MouseExit: {
+			((MouseTrackListener) eventListener).mouseExit (new MouseEvent (e));
+			break;
+		}
 		case SWT.MouseHover: {
 			((MouseTrackListener) eventListener).mouseHover (new MouseEvent (e));
+			break;
+		}
+		case SWT.MouseMove: {
+			((MouseMoveListener) eventListener).mouseMove(new MouseEvent(e));
+			return;
+		}
+		case SWT.MouseWheel: {
+			((MouseWheelListener) eventListener).mouseScrolled(new MouseEvent(e));
+			return;
+		}
+		case SWT.MouseUp: {
+			((MouseListener) eventListener).mouseUp(new MouseEvent(e));
+			break;
+		}
+		case SWT.Move: {
+			((ControlListener) eventListener).controlMoved(new ControlEvent(e));
+			break;
+		}
+		case SWT.Paint: {
+			/* Fields set by Control */
+			PaintEvent event = new PaintEvent (e);
+			((PaintListener) eventListener).paintControl (event);
+			e.gc = event.gc;
+			break;
+		}
+		case SWT.Resize: {
+			((ControlListener) eventListener).controlResized(new ControlEvent(e));
+			break;
+		}
+		case SWT.Selection: {
+			/* Fields set by Sash */
+			SelectionEvent event = new SelectionEvent (e);
+			((SelectionListener) eventListener).widgetSelected (event);			
+			e.x = event.x;
+			e.y = event.y;
+			e.doit = event.doit;
+			break;
+		}
+		case SWT.Show: {
+			((MenuListener) eventListener).menuShown(new MenuEvent(e));
 			break;
 		}
 		case SWT.Traverse: {
@@ -232,7 +243,14 @@ public void handleEvent (Event e) {
 			e.doit = event.doit;
 			break;
 		}
-		
+		case SWT.Verify: {
+			/* Fields set by Text, RichText */
+			VerifyEvent event = new VerifyEvent (e);
+			((VerifyListener) eventListener).verifyText (event);
+			e.text = event.text;
+			e.doit = event.doit;
+			break;
+		}
 	}
 }
 

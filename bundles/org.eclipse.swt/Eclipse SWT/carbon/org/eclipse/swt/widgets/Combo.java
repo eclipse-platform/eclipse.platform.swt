@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
-import org.eclipse.swt.internal.carbon.FontInfo;
+import org.eclipse.swt.internal.carbon.MenuTrackingData;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -46,7 +46,7 @@ import org.eclipse.swt.internal.carbon.Rect;
  * <dt><b>Styles:</b></dt>
  * <dd>DROP_DOWN, READ_ONLY, SIMPLE</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Modify, Selection</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles DROP_DOWN and SIMPLE may be specified.
@@ -55,6 +55,10 @@ import org.eclipse.swt.internal.carbon.Rect;
  * </p>
  *
  * @see List
+ * @see <a href="http://www.eclipse.org/swt/snippets/#combo">Combo snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
 	int menuHandle;
@@ -77,6 +81,13 @@ public class Combo extends Composite {
 		LIMIT = 0x7FFFFFFF;
 	}
 	
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXValueAttribute,
+		OS.kAXNumberOfCharactersAttribute,
+		OS.kAXSelectedTextAttribute,
+		OS.kAXSelectedTextRangeAttribute,
+		OS.kAXStringForRangeParameterizedAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -137,6 +148,13 @@ public void add (String string) {
 	int result;
 	if ((style & SWT.READ_ONLY) != 0) {
 		result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
+		/*
+		* Feature in the Macintosh.  Setting text that starts with "-" makes the
+		* menu item a separator.  The fix is to clear the separator attribute. 
+		*/
+		if (string.startsWith ("-")) {
+			OS.ChangeMenuItemAttributes (menuHandle, (short)OS.CountMenuItems (menuHandle), 0, OS.kMenuItemAttrSeparator);
+		}
 	} else {
 		result = OS.HIComboBoxAppendTextItem (handle, ptr, null);
 	}
@@ -177,13 +195,29 @@ public void add (String string, int index) {
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	if (ptr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	int result;
+	int selectionIndex = -1;
 	if ((style & SWT.READ_ONLY) != 0) {
+		selectionIndex = OS.GetControlValue (handle) - 1;
 		result = OS.InsertMenuItemTextWithCFString (menuHandle, ptr, (short)index, 0, 0);
+		/*
+		* Feature in the Macintosh.  Setting text that starts with "-" makes the
+		* menu item a separator.  The fix is to clear the separator attribute. 
+		*/
+		if (string.startsWith ("-")) {
+			OS.ChangeMenuItemAttributes (menuHandle, (short)(index + 1), 0, OS.kMenuItemAttrSeparator);
+		}
 	} else {
 		result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
 	}
 	OS.CFRelease (ptr);
 	if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
+	/*
+	* When inserting an item into a READ_ONLY combo at or above the selected
+	* index neither the selection index nor the text get updated. Fix is to
+	* update the selection index to be sure the displayed item matches the 
+	* selected index.
+	*/
+	if (selectionIndex >= index) OS.SetControl32BitValue (handle, selectionIndex + 2);
 }
 
 /**
@@ -214,11 +248,11 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the combo's list selection changes.
+ * <code>widgetSelected</code> is called when the user changes the combo's list selection.
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed the combo's text area.
  * </p>
  *
@@ -336,6 +370,14 @@ void checkSelection () {
 	if (isDisposed ()) return;
 	int index = indexOf (newText);
 	if (index != -1) postEvent (SWT.Selection);
+	
+	/* Send value changed notification to accessible client. */
+	String string = OS.kAXFocusedWindowChangedNotification;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.AXNotificationHIObjectNotify(stringRef, handle, 0);
+	OS.CFRelease(stringRef);
 }
 
 protected void checkSubclass () {
@@ -371,19 +413,6 @@ public void clearSelection () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
-	int [] currentPort = new int [1];
-	short themeFont = (short) defaultThemeFont ();
-	if (font != null) {
-		themeFont = OS.kThemeCurrentPortFont;
-		OS.GetPort (currentPort);
-		OS.SetPortWindowPort (OS.GetControlOwner (handle));
-		OS.TextFont (font.id);
-		OS.TextFace (font.style);
-		OS.TextSize (font.size);
-	}
-	FontInfo info = new FontInfo ();
-	OS.GetFontInfo (info);
-	height = info.ascent + info.descent;
 	int [] ptr = new int [1];
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = OS.GetControlValue (handle) - 1;
@@ -391,13 +420,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
 	}
-	org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-	if (ptr [0] != 0) {
-		OS.GetThemeTextDimensions (ptr [0], themeFont, OS.kThemeStateActive, false, ioBounds, null);
-		width = Math.max (width, ioBounds.h);
-		height = Math.max (height, ioBounds.v);
-		OS.CFRelease (ptr [0]);
-	}
+	Point size = textExtent (ptr [0], 0);
+	if (ptr [0] != 0) OS.CFRelease (ptr [0]);
+	width = Math.max (width, size.x);
+	height = Math.max (height, size.y);
 	int count;
 	if ((style & SWT.READ_ONLY) != 0) {
 		count = OS.CountMenuItems (menuHandle);
@@ -412,19 +438,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			result = OS.HIComboBoxCopyTextItemAtIndex (handle, i, ptr);
 		}
 		if (result == OS.noErr) {
-			OS.GetThemeTextDimensions (ptr [0], themeFont, OS.kThemeStateActive, false, ioBounds, null);
-			width = Math.max (width, ioBounds.h);
+			size = textExtent (ptr [0], 0);
+			width = Math.max (width, size.x);
 			OS.CFRelease (ptr [0]);
 		}
-	}
-	if (font != null) {
-		OS.SetPort (currentPort [0]);
 	}
 	int [] metric = new int [1];
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.GetThemeMetric (OS.kThemeMetricDisclosureButtonWidth, metric);
 		width += metric [0];
-		//NOT DONE
+		//TODO
 		width += 13;
 	} else {
 		OS.GetThemeMetric (OS.kThemeMetricComboBoxLargeDisclosureWidth, metric);
@@ -458,15 +481,7 @@ public void copy () {
 	checkWidget ();
 	Point selection = getSelection ();
 	if (selection.x == selection.y) return;
-	copy (getText (selection.x, selection.y));
-}
-
-void copy (char [] buffer) {
-	if (buffer.length == 0) return;
-	OS.ClearCurrentScrap ();
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
+	copyToClipboard (getText (selection.x, selection.y));
 }
 
 void createHandle () {
@@ -483,12 +498,12 @@ void createHandle () {
 		OS.CreatePopupButtonControl(window, null, 0, (short)-12345, false, (short)0, (short)0, 0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
-		int[] menuRef= new int[1];
-		OS.CreateNewMenu ((short)0, 0, menuRef);
+		int[] menuRef= new int [1];
+		OS.CreateNewMenu ((short) 0, 0, menuRef);
 		if (menuRef [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		menuHandle = menuRef[0];
-		OS.SetControlPopupMenuHandle(handle, menuHandle);
-		OS.SetControl32BitMaximum(handle, 0x7FFF);
+		OS.SetControlPopupMenuHandle (handle, menuHandle);
+		OS.SetControl32BitMaximum (handle, 0x7FFF);
 	} else {
 		int [] outControl = new int [1];
 		CGRect rect = new CGRect ();
@@ -503,11 +518,7 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kTXNDrawCaretWhenInactiveTag, 4, new byte [ ]{0});
-		if (OS.HIVIEW) {
-			OS.HIViewSetVisible (handle, true);
-		} else {
-			OS.SetControlVisibility (handle, true, false);
-		}
+		OS.HIViewSetVisible (handle, true);
 	}
 }
 
@@ -534,18 +545,27 @@ public void cut () {
 	String text = getText ();
 	String leftText = text.substring (0, start);
 	String rightText = text.substring (end, text.length ());
+	String oldText = text.substring (start, end);
 	String newText = "";
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		newText = verifyText (newText, start, end, null);
 		if (newText == null) return;
 	}
-	char [] buffer = new char [newText.length ()];
-	newText.getChars (0, buffer.length, buffer, 0);
-	copy (buffer);
+	char [] buffer = new char [oldText.length ()];
+	oldText.getChars (0, buffer.length, buffer, 0);
+	copyToClipboard (buffer);
 	setText (leftText + newText + rightText, false);
 	start += newText.length ();
 	setSelection (new Point (start, start));
 	sendEvent (SWT.Modify);
+}
+
+Color defaultBackground () {
+    return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+}
+
+Color defaultForeground () {
+    return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
 /**
@@ -612,6 +632,10 @@ void destroyWidget () {
 	} else {
 		releaseHandle ();
 	}
+}
+
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
 }
 
 /**
@@ -711,8 +735,44 @@ public String [] getItems () {
 	return result;
 }
 
+/**
+ * Returns <code>true</code> if the receiver's list is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's list's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getListVisible () {
+	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		MenuTrackingData outData = new MenuTrackingData ();
+		return OS.GetMenuTrackingData (menuHandle, outData) == OS.noErr;
+	} else {
+ 		if (OS.VERSION >= 0x1040) {
+ 			return OS.HIComboBoxIsListVisible (handle);
+ 		}
+ 		return false;
+	}
+}
+
 int getMininumHeight () {
 	return getTextHeight ();
+}
+
+String getNameText () {
+	return getText ();
 }
 
 /**
@@ -958,16 +1018,6 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
-String getClipboardText () {
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) != OS.noErr || size [0] == 0) return "";
-	char [] buffer = new char [size [0] / 2];
-	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) != OS.noErr) return "";
-	return new String (buffer);
-}
-
 int getCharCount () {
 //	checkWidget ();
 	int [] ptr = new int [1];
@@ -989,6 +1039,71 @@ Rect getInset () {
 	return display.comboInset;
 }
 
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.eventNotHandledErr;
+	if ((style & SWT.READ_ONLY) == 0) {
+		int [] stringRef = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+		int length = 0;
+		if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+		char [] buffer = new char [length];
+		CFRange range = new CFRange ();
+		range.length = length;
+		OS.CFStringGetCharacters (stringRef [0], range, buffer);
+		String attributeName = new String(buffer);
+		if (attributeName.equals (OS.kAXValueAttribute)) {
+			buffer = getText(0, -1);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				code = OS.noErr;
+			}
+		} else if (attributeName.equals (OS.kAXNumberOfCharactersAttribute)) {
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {getCharCount()});
+			code = OS.noErr;
+		} else if (attributeName.equals (OS.kAXSelectedTextAttribute)) {
+			Point sel = getSelection ();
+			buffer = getText(sel.x, sel.y);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				code = OS.noErr;
+			}
+		} else if (attributeName.equals (OS.kAXSelectedTextRangeAttribute)) {
+			Point sel = getSelection ();
+			range = new CFRange();
+			range.location = sel.x;
+			range.length = sel.y - sel.x;
+			int valueRef = OS.AXValueCreate(OS.kAXValueCFRangeType, range);
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFTypeRef, 4, new int [] {valueRef});
+			OS.CFRelease(valueRef);
+			code = OS.noErr;
+		} else if (attributeName.equals (OS.kAXStringForRangeParameterizedAttribute)) {
+			int valueRef [] = new int [1];
+			int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeParameter, OS.typeCFTypeRef, null, 4, null, valueRef);
+			if (status == OS.noErr) {
+				range = new CFRange();
+				boolean ok = OS.AXValueGetValue(valueRef[0], OS.kAXValueCFRangeType, range);
+				if (ok) {
+					buffer = getText (range.location, range.location + range.length);
+					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+					if (stringRef [0] != 0) {
+						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+						OS.CFRelease(stringRef [0]);
+						code = OS.noErr;
+					}
+				}
+			}
+		}
+	}
+	if (accessible != null) {
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
+	}
+	return code;
+}
+
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -996,7 +1111,7 @@ int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	* Feature in the Macintosh.  When a combo box gets
 	* kEventControlActivate, it starts the caret blinking.
 	* Because there is no clipping on the Macintosh, the
-	* caret may blink through a widget that is obscurred.
+	* caret may blink through a widget that is obscured.
 	* The fix is to avoid running the default handler.
 	*/
 	return OS.noErr;
@@ -1027,14 +1142,18 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	* kEventRawKeyDown event when the up and down arrow keys are
 	* pressed, causing kEventTextInputUnicodeForKeyEvent not
 	* to be sent.  The fix is to handle these keys in kEventRawKeyDown.
+	* 
+	* NOTE:  This was fixed in OS X 10.4.
 	*/
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	switch (keyCode [0]) {
-		case 126: /* Up arrow */
-		case 125: /* Down arrow */
-			if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-			break;
+	if (OS.VERSION < 0x1040) {
+		int [] keyCode = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+		switch (keyCode [0]) {
+			case 126: /* Up arrow */
+			case 125: /* Down arrow */
+				if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+				break;
+		}
 	}
 	return OS.eventNotHandledErr;
 }
@@ -1058,6 +1177,35 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	
+	String string = OS.kAXValueChangedNotification;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.AXNotificationHIObjectNotify(stringRef, handle, 0);
+	OS.CFRelease(stringRef);
+	string = OS.kAXSelectedTextChangedNotification;
+	buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.AXNotificationHIObjectNotify(stringRef, handle, 0);
+	OS.CFRelease(stringRef);
+
+	if (hooks (SWT.Verify) || filters (SWT.Verify)
+			|| hooks (SWT.Modify) || filters (SWT.Modify)) {
+		int [] modifiers = new int [1];
+		OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+		if (modifiers [0] == OS.cmdKey) {
+			switch (keyCode [0]) {
+				case 7: /* X */
+					cut ();
+					return OS.noErr;
+				case 9: /* V */
+					paste ();
+					return OS.noErr;
+			}
+		}
+	}
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
@@ -1097,10 +1245,20 @@ public void paste () {
 		newText = verifyText (newText, start, end, null);
 		if (newText == null) return;
 	}
+	if (textLimit != LIMIT) {
+		int charCount = text.length ();
+		if (charCount - (end - start) + newText.length() > textLimit) {
+			newText = newText.substring(0, textLimit - charCount + (end - start));
+		}
+	}
 	setText (leftText + newText + rightText, false);
 	start += newText.length ();
 	setSelection (new Point (start, start));
 	sendEvent (SWT.Modify);
+}
+
+boolean pollTrackEvent() {
+	return true;
 }
 
 void releaseHandle () {
@@ -1234,6 +1392,7 @@ public void removeAll () {
 		OS.DeleteMenuItems (menuHandle, (short)1, count);
 		OS.SetControl32BitValue (handle, 0);
 	} else {
+		setText ("", true);
 		if (count > 0) {
 			for (int i=count-1; i>=0; i--) {
   				OS.HIComboBoxRemoveItemAtIndex (handle, i);
@@ -1268,7 +1427,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1349,6 +1508,7 @@ boolean sendKeyEvent (int type, Event event) {
 	if (type != SWT.KeyDown) return true;
 	if ((style & SWT.READ_ONLY) != 0) return true;
 	if (event.character == 0) return true;
+	if ((event.stateMask & SWT.COMMAND) != 0) return true;
 	String oldText = "", newText = "";
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int charCount = getCharCount ();
@@ -1396,6 +1556,14 @@ boolean sendKeyEvent (int type, Event event) {
 	postEvent (SWT.Modify);
 	return newText == oldText;
 }
+
+void setBackground (int control, float [] color) {
+	if ((style & SWT.READ_ONLY) == 0) {
+		if (color == null) color = defaultBackground ().handle;
+	}
+	super.setBackground (control, color);
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return super.setBounds (x, y, width, height, move, resize, events);
@@ -1425,11 +1593,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	}
 	return result;
 }
+
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to removing the old item at the index, and then adding the new
- * item at that index.
+ * zero-relative index to the string argument.
  *
  * @param index the index for the item
  * @param string the new text for the item
@@ -1455,6 +1622,13 @@ public void setItem (int index, String string) {
 	int result;
 	if ((style & SWT.READ_ONLY) != 0) {
 		result = OS.SetMenuItemTextWithCFString (menuHandle, (short)(index+1), ptr);
+		/*
+		* Feature in the Macintosh.  Setting text that starts with "-" makes the
+		* menu item a separator.  The fix is to clear the separator attribute. 
+		*/
+		if (string.startsWith ("-")) {
+			OS.ChangeMenuItemAttributes (menuHandle, (short)(index+1), 0, OS.kMenuItemAttrSeparator);
+		}
 	} else {
 		result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
 		OS.HIComboBoxRemoveItemAtIndex (handle, index+1);
@@ -1494,12 +1668,52 @@ public void setItems (String [] items) {
 		int result;
 		if ((style & SWT.READ_ONLY) != 0) {
 			result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
+			/*
+			* Feature in the Macintosh.  Setting text that starts with "-" makes the
+			* menu item a separator.  The fix is to clear the separator attribute. 
+			*/
+			if (string.startsWith ("-")) {
+				OS.ChangeMenuItemAttributes (menuHandle, (short)(i + 1), 0, OS.kMenuItemAttrSeparator);
+			}
 		} else {
 			int [] outIndex = new int[1];
 			result = OS.HIComboBoxAppendTextItem (handle, ptr, outIndex);
 		}
 		OS.CFRelease(ptr);
 		if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+}
+
+/**
+ * Marks the receiver's list as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setListVisible (boolean visible) {
+	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		if (visible) {
+			OS.HIViewSimulateClick (handle, (short) 0, 0, null);
+		} else {
+			OS.CancelMenuTracking (menuHandle, true, 0);
+		}
+	} else {
+ 		if (OS.VERSION >= 0x1040) {
+ 			OS.HIComboBoxSetListVisible (handle, visible);
+ 		}
 	}
 }
 
@@ -1558,6 +1772,10 @@ public void setSelection (Point selection) {
  * Sets the contents of the receiver's text field to the
  * given string.
  * <p>
+ * This call is ignored when the receiver is read only and 
+ * the given string is not in the receiver's list.
+ * </p>
+ * <p>
  * Note: The text field in a <code>Combo</code> is typically
  * only capable of displaying a single line of text. Thus,
  * setting the text to a string containing line breaks or
@@ -1595,7 +1813,7 @@ void setText (String string, boolean notify) {
 			if (notify) sendEvent (SWT.Modify);
 		}
 	} else {
-		char [] buffer = new char [string.length ()];
+		char [] buffer = new char [Math.min(string.length (), textLimit)];
 		string.getChars (0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);

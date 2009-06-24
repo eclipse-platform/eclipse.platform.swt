@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,8 +16,7 @@ import org.eclipse.swt.internal.photon.OS;
 /**
  * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
  * for converting text in HTML format represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.  See 
- * <code>Transfer</code> for additional information.
+ * to a platform specific representation of the data and vice versa.
  * 
  * <p>An example of a java <code>String</code> containing HTML text is shown 
  * below:</p>
@@ -25,6 +24,8 @@ import org.eclipse.swt.internal.photon.OS;
  * <code><pre>
  *     String htmlData = "<p>This is a paragraph of text.</p>";
  * </code></pre>
+ *
+ * @see Transfer
  */
 public class HTMLTransfer extends ByteArrayTransfer {
 
@@ -45,11 +46,12 @@ public static HTMLTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts HTML-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
- * For additional information see <code>Transfer#javaToNative</code>.
  * 
  * @param object a java <code>String</code> containing HTML text
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
@@ -62,12 +64,12 @@ public void javaToNative (Object object, TransferData transferData){
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of HTML text to a java <code>String</code>.
- * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>String</code> containing HTML text if the 
- * conversion was successful; otherwise null
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>String</code> containing HTML text if the conversion was successful;
+ * 		otherwise null
+ * 
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData){
 

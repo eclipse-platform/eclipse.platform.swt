@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -218,7 +218,7 @@ PgDisplaySettings_t *getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject,
 	lpStruct->flags = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.flags);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (jint *)lpStruct->reserved);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / sizeof(jint), (jint *)lpStruct->reserved);
 	}
 	return lpStruct;
 }
@@ -233,7 +233,7 @@ void setPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettin
 	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.flags, (jint)lpStruct->flags);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (jint *)lpStruct->reserved);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / sizeof(jint), (jint *)lpStruct->reserved);
 	}
 }
 #endif
@@ -1324,11 +1324,11 @@ PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObj
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
-	getPhDim_tFields(env, lpObject1, &lpStruct->dim);
+	if (lpObject1 != NULL) getPhDim_tFields(env, lpObject1, &lpStruct->dim);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.pos);
-	getPhPoint_tFields(env, lpObject1, &lpStruct->pos);
+	if (lpObject1 != NULL) getPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
@@ -1349,7 +1349,7 @@ PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObj
 	lpStruct->minfo = (PtFileSelectorInfo_t *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (jint *)lpStruct->spare);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / sizeof(jint), (jint *)lpStruct->spare);
 	}
 	return lpStruct;
 }
@@ -1364,11 +1364,11 @@ void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelecti
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
-	setPhDim_tFields(env, lpObject1, &lpStruct->dim);
+	if (lpObject1 != NULL) setPhDim_tFields(env, lpObject1, &lpStruct->dim);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.pos);
-	setPhPoint_tFields(env, lpObject1, &lpStruct->pos);
+	if (lpObject1 != NULL) setPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
@@ -1389,7 +1389,7 @@ void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelecti
 	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo, (jint)lpStruct->minfo);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (jint *)lpStruct->spare);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / sizeof(jint), (jint *)lpStruct->spare);
 	}
 }
 #endif
@@ -1480,49 +1480,43 @@ void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *
 }
 #endif
 
-#ifndef NO_PtWebClientData_t
-typedef struct PtWebClientData_t_FID_CACHE {
+#ifndef NO_PtWebClient2Data_t
+typedef struct PtWebClient2Data_t_FID_CACHE {
 	int cached;
 	jclass clazz;
 	jfieldID type, url, length, data;
-} PtWebClientData_t_FID_CACHE;
+} PtWebClient2Data_t_FID_CACHE;
 
-PtWebClientData_t_FID_CACHE PtWebClientData_tFc;
+PtWebClient2Data_t_FID_CACHE PtWebClient2Data_tFc;
 
-void cachePtWebClientData_tFields(JNIEnv *env, jobject lpObject)
+void cachePtWebClient2Data_tFields(JNIEnv *env, jobject lpObject)
 {
-	if (PtWebClientData_tFc.cached) return;
-	PtWebClientData_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	PtWebClientData_tFc.type = (*env)->GetFieldID(env, PtWebClientData_tFc.clazz, "type", "I");
-	PtWebClientData_tFc.url = (*env)->GetFieldID(env, PtWebClientData_tFc.clazz, "url", "[B");
-	PtWebClientData_tFc.length = (*env)->GetFieldID(env, PtWebClientData_tFc.clazz, "length", "I");
-	PtWebClientData_tFc.data = (*env)->GetFieldID(env, PtWebClientData_tFc.clazz, "data", "I");
-	PtWebClientData_tFc.cached = 1;
+	if (PtWebClient2Data_tFc.cached) return;
+	PtWebClient2Data_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtWebClient2Data_tFc.type = (*env)->GetFieldID(env, PtWebClient2Data_tFc.clazz, "type", "I");
+	PtWebClient2Data_tFc.url = (*env)->GetFieldID(env, PtWebClient2Data_tFc.clazz, "url", "I");
+	PtWebClient2Data_tFc.length = (*env)->GetFieldID(env, PtWebClient2Data_tFc.clazz, "length", "I");
+	PtWebClient2Data_tFc.data = (*env)->GetFieldID(env, PtWebClient2Data_tFc.clazz, "data", "I");
+	PtWebClient2Data_tFc.cached = 1;
 }
 
-PtWebClientData_t *getPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtWebClientData_t *lpStruct)
+PtWebClient2Data_t *getPtWebClient2Data_tFields(JNIEnv *env, jobject lpObject, PtWebClient2Data_t *lpStruct)
 {
-	if (!PtWebClientData_tFc.cached) cachePtWebClientData_tFields(env, lpObject);
-	lpStruct->type = (*env)->GetIntField(env, lpObject, PtWebClientData_tFc.type);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebClientData_tFc.url);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
-	}
-	lpStruct->length = (*env)->GetIntField(env, lpObject, PtWebClientData_tFc.length);
-	lpStruct->data = (char *)(*env)->GetIntField(env, lpObject, PtWebClientData_tFc.data);
+	if (!PtWebClient2Data_tFc.cached) cachePtWebClient2Data_tFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, PtWebClient2Data_tFc.type);
+	lpStruct->url = (*env)->GetIntField(env, lpObject, PtWebClient2Data_tFc.url);
+	lpStruct->length = (*env)->GetIntField(env, lpObject, PtWebClient2Data_tFc.length);
+	lpStruct->data = (*env)->GetIntField(env, lpObject, PtWebClient2Data_tFc.data);
 	return lpStruct;
 }
 
-void setPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtWebClientData_t *lpStruct)
+void setPtWebClient2Data_tFields(JNIEnv *env, jobject lpObject, PtWebClient2Data_t *lpStruct)
 {
-	if (!PtWebClientData_tFc.cached) cachePtWebClientData_tFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, PtWebClientData_tFc.type, (jint)lpStruct->type);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebClientData_tFc.url);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
-	}
-	(*env)->SetIntField(env, lpObject, PtWebClientData_tFc.length, (jint)lpStruct->length);
-	(*env)->SetIntField(env, lpObject, PtWebClientData_tFc.data, (jint)lpStruct->data);
+	if (!PtWebClient2Data_tFc.cached) cachePtWebClient2Data_tFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PtWebClient2Data_tFc.type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, PtWebClient2Data_tFc.url, (jint)lpStruct->url);
+	(*env)->SetIntField(env, lpObject, PtWebClient2Data_tFc.length, (jint)lpStruct->length);
+	(*env)->SetIntField(env, lpObject, PtWebClient2Data_tFc.data, (jint)lpStruct->data);
 }
 #endif
 
@@ -1541,7 +1535,7 @@ void cachePtWebDataReqCallback_tFields(JNIEnv *env, jobject lpObject)
 	PtWebDataReqCallback_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	PtWebDataReqCallback_tFc.type = (*env)->GetFieldID(env, PtWebDataReqCallback_tFc.clazz, "type", "I");
 	PtWebDataReqCallback_tFc.length = (*env)->GetFieldID(env, PtWebDataReqCallback_tFc.clazz, "length", "I");
-	PtWebDataReqCallback_tFc.url = (*env)->GetFieldID(env, PtWebDataReqCallback_tFc.clazz, "url", "[B");
+	PtWebDataReqCallback_tFc.url = (*env)->GetFieldID(env, PtWebDataReqCallback_tFc.clazz, "url", "I");
 	PtWebDataReqCallback_tFc.cached = 1;
 }
 
@@ -1550,10 +1544,7 @@ PtWebDataReqCallback_t *getPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpO
 	if (!PtWebDataReqCallback_tFc.cached) cachePtWebDataReqCallback_tFields(env, lpObject);
 	lpStruct->type = (*env)->GetIntField(env, lpObject, PtWebDataReqCallback_tFc.type);
 	lpStruct->length = (*env)->GetIntField(env, lpObject, PtWebDataReqCallback_tFc.length);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebDataReqCallback_tFc.url);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
-	}
+	lpStruct->url = (*env)->GetIntField(env, lpObject, PtWebDataReqCallback_tFc.url);
 	return lpStruct;
 }
 
@@ -1562,10 +1553,7 @@ void setPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpObject, PtWebDataReq
 	if (!PtWebDataReqCallback_tFc.cached) cachePtWebDataReqCallback_tFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, PtWebDataReqCallback_tFc.type, (jint)lpStruct->type);
 	(*env)->SetIntField(env, lpObject, PtWebDataReqCallback_tFc.length, (jint)lpStruct->length);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebDataReqCallback_tFc.url);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
-	}
+	(*env)->SetIntField(env, lpObject, PtWebDataReqCallback_tFc.url, (jint)lpStruct->url);
 }
 #endif
 

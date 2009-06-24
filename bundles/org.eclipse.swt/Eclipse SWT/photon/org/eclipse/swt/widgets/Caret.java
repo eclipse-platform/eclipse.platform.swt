@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#caret">Caret snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Canvas tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Caret extends Widget {
 	Canvas parent;
@@ -96,7 +101,19 @@ boolean drawCaret () {
 	int phGC = OS.PgCreateGC (0); // NOTE: PgCreateGC ignores the parameter
 	if (phGC == 0) return false;
 	int prevContext = OS.PgSetGC (phGC);
-	OS.PgSetRegion (OS.PtWidgetRid (handle));
+	PhPoint_t pt = new PhPoint_t ();  
+	PhRect_t tran_rect = new PhRect_t();    
+	int disjoint = OS.PtFindDisjoint( handle );
+	if( disjoint != 0 )
+		OS.PgSetRegion( OS.PtWidgetRid( disjoint ) );
+	OS.PtWidgetExtent(handle, tran_rect) ;
+	OS.PtWidgetOffset(handle, pt);
+	pt.x += tran_rect.ul_x;
+	pt.y += tran_rect.ul_y;
+	OS.PgSetTranslation(pt,0);
+	int clip = OS.PtGetVisibleTiles(handle);
+	if ( clip > 0 )
+		OS.PgSetMultiClipTiles(clip);
 	OS.PgSetDrawMode (OS.Pg_DrawModeDSx);
 	OS.PgSetFillColor (0xFFFFFF);
 	int nWidth = width, nHeight = height;
@@ -109,6 +126,7 @@ boolean drawCaret () {
 	OS.PgDrawIRect (x, y, x + nWidth - 1, y + nHeight - 1, OS.Pg_DRAW_FILL);
 	OS.PgSetGC (prevContext);	
 	OS.PgDestroyGC (phGC);
+	OS.PhFreeTiles(clip);
 	return true;
 }	
 

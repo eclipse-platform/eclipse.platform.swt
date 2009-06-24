@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
@@ -20,6 +19,8 @@ import org.eclipse.swt.*;
  * such as the Display device and the Printer device. Devices
  * can have a graphics context (GC) created for them, and they
  * can be drawn on by sending messages to the associated GC.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
 	
@@ -29,6 +30,7 @@ public abstract class Device implements Drawable {
 	boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
+	Object trackingLock;
 	
 	/* Disposed flag */
 	boolean disposed, warnings;
@@ -47,10 +49,12 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
-	Callback drawPatternCallback, axialShadingCallback;
-	int drawPatternProc, axialShadingProc;
+	/* Device DPI */
+	Point dpi;
 
-	final static Object CREATE_OBJECT = new Object();
+	/* Callbacks */
+	Callback drawPatternCallback, axialShadingCallback, releaseCallback;
+	int drawPatternProc, axialShadingProc, releaseProc;
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -61,15 +65,13 @@ public abstract class Device implements Drawable {
 	* fix is to remove this feature. Unfortunately,
 	* too many application programs rely on this
 	* feature.
-	*
-	* This code will be removed in the future.
 	*/
 	protected static Device CurrentDevice;
 	protected static Runnable DeviceFinder;
 	static {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display");
-		} catch (Throwable e) {}
+		} catch (ClassNotFoundException e) {}
 	}	
 
 /*
@@ -110,17 +112,18 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	synchronized (CREATE_OBJECT) {
+	synchronized (Device.class) {
 		if (data != null) {
 			debug = data.debug;
 			tracking = data.tracking;
 		}
-		create (data);
-		init ();
 		if (tracking) {
 			errors = new Error [128];
 			objects = new Object [128];
+			trackingLock = new Object ();
 		}
+		create (data);
+		init ();
 	}
 }
 
@@ -197,23 +200,30 @@ void createPatternCallbacks () {
  * @see #checkDevice
  */
 public void dispose () {
-	if (isDisposed()) return;
-	checkDevice ();
-	release ();
-	destroy ();
-	disposed = true;
-	if (tracking) {
-		objects = null;
-		errors = null;
+	synchronized (Device.class) {
+		if (isDisposed()) return;
+		checkDevice ();
+		release ();
+		destroy ();
+		disposed = true;
+		if (tracking) {
+			synchronized (trackingLock) {
+				objects = null;
+				errors = null;
+				trackingLock = null;
+			}
+		}
 	}
 }
 
 void dispose_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == object) {
-			objects [i] = null;
-			errors [i] = null;
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == object) {
+				objects [i] = null;
+				errors [i] = null;
+				return;
+			}
 		}
 	}
 }
@@ -256,9 +266,9 @@ public Rectangle getBounds () {
 	checkDevice ();
 	int gdevice = OS.GetMainDevice();
 	int[] ptr = new int[1];
-	OS.memcpy(ptr, gdevice, 4);
+	OS.memmove(ptr, gdevice, 4);
 	GDevice device = new GDevice();
-	OS.memcpy(device, ptr[0], GDevice.sizeof);	
+	OS.memmove(device, ptr[0], GDevice.sizeof);	
 	return new Rectangle(device.left, device.top, device.right - device.left, device.bottom - device.top);
 }
 
@@ -280,20 +290,26 @@ public DeviceData getDeviceData () {
 	DeviceData data = new DeviceData ();
 	data.debug = debug;
 	data.tracking = tracking;
-	int count = 0, length = 0;
-	if (tracking) length = objects.length;
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) count++;
-	}
-	int index = 0;
-	data.objects = new Object [count];
-	data.errors = new Error [count];
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) {
-			data.objects [index] = objects [i];
-			data.errors [index] = errors [i];
-			index++;
+	if (tracking) {
+		synchronized (trackingLock) {
+			int count = 0, length = objects.length;
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) count++;
+			}
+			int index = 0;
+			data.objects = new Object [count];
+			data.errors = new Error [count];
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) {
+					data.objects [index] = objects [i];
+					data.errors [index] = errors [i];
+					index++;
+				}
+			}
 		}
+	} else {
+		data.objects = new Object [0];
+		data.errors = new Error [0];
 	}
 	return data;
 }
@@ -334,9 +350,9 @@ public int getDepth () {
 	checkDevice ();	
 	int gdevice = OS.GetMainDevice();
 	int[] ptr = new int[1];
-	OS.memcpy(ptr, gdevice, 4);
+	OS.memmove(ptr, gdevice, 4);
 	GDevice device = new GDevice();
-	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	OS.memmove(device, ptr[0], GDevice.sizeof);
 	return OS.GetPixDepth(device.gdPMap);
 }
 
@@ -355,12 +371,12 @@ public Point getDPI () {
 	checkDevice ();
 	int gdevice = OS.GetMainDevice();
 	int[] ptr = new int[1];
-	OS.memcpy(ptr, gdevice, 4);
+	OS.memmove(ptr, gdevice, 4);
 	GDevice device = new GDevice();
-	OS.memcpy(device, ptr[0], GDevice.sizeof);
-	OS.memcpy(ptr, device.gdPMap, 4);
+	OS.memmove(device, ptr[0], GDevice.sizeof);
+	OS.memmove(ptr, device.gdPMap, 4);
 	PixMap pixmap = new PixMap();
-	OS.memcpy(pixmap, ptr[0], PixMap.sizeof);
+	OS.memmove(pixmap, ptr[0], PixMap.sizeof);
 	return new Point (OS.Fix2Long (pixmap.hRes), OS.Fix2Long (pixmap.vRes));
 }
 
@@ -379,35 +395,82 @@ public Point getDPI () {
  */
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-	if (!scalable) return new FontData[0];
-	short[] style = new short[1];
-	short[] family = new short[1];
-	int[] fontCount = new int[1];
-	int[] actualLength = new int[1];
-	OS.ATSUGetFontIDs(null, 0, fontCount);
-	int[] fontIDs = new int[fontCount[0]];
-	OS.ATSUGetFontIDs(fontIDs, fontIDs.length, fontCount);
+	if (!scalable) return new FontData[0];	
 	int count = 0;
-	FontData[] fds = new FontData[fontCount[0]];
-	for (int i=0; i<fds.length; i++) {
-		int fontID = fontIDs[i];
-		OS.ATSUFindFontName(fontID, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
-		byte[] buffer = new byte[actualLength[0]];
-		OS.ATSUFindFontName(fontID, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
-		String name = new String(buffer);
-		if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
-			OS.FMGetFontFamilyInstanceFromFont(fontID, family, style);
-			int s = SWT.NORMAL;
-			if ((style[0] & OS.italic) != 0) s |= SWT.ITALIC;
-			if ((style[0] & OS.bold) != 0) s |= SWT.BOLD;
-			FontData data = new FontData(name, 0, s);
-			fds[count++] = data;
+	int[] buffer = new int[1];
+	CFRange range = new CFRange ();
+	OS.ATSUGetFontIDs(null, 0, buffer);
+	FontData[] fds = new FontData[buffer[0]];
+	int status = OS.ATSFontIteratorCreate (OS.kATSFontContextLocal, 0, 0, OS.kATSOptionFlagsDefaultScope, buffer);
+	int iter = buffer[0];
+	while (status == OS.noErr) {
+		status = OS.ATSFontIteratorNext(iter, buffer);
+		if (status == OS.noErr) {
+			int font = buffer[0];
+			if (OS.ATSFontGetName(font, 0, buffer) == OS.noErr) {
+				range.length = OS.CFStringGetLength(buffer[0]);
+				char [] chars = new char[range.length];
+				OS.CFStringGetCharacters(buffer[0], range, chars);
+				OS.CFRelease(buffer[0]);
+				String atsName = new String(chars);
+				int platformCode = OS.kFontUnicodePlatform, encoding = OS.kCFStringEncodingUnicode;
+				if (OS.ATSUFindFontName(font, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, buffer, null) != OS.noErr) {
+					platformCode = OS.kFontNoPlatformCode;
+					encoding = OS.kCFStringEncodingMacRoman;
+					if (OS.ATSUFindFontName(font, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, buffer, null) != OS.noErr) {
+						continue;
+					}
+				}
+				byte[] bytes = new byte[buffer[0]];
+				OS.ATSUFindFontName(font, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, bytes.length, bytes, buffer, null);
+				int ptr = OS.CFStringCreateWithBytes(0, bytes, bytes.length, encoding, false);
+				if (ptr != 0) {
+					range.length = OS.CFStringGetLength(ptr);
+					if (range.length != 0) {
+						chars = new char[range.length];
+						OS.CFStringGetCharacters(ptr, range, chars);
+						String name = new String(chars);
+						if (!name.startsWith(".")) {
+							if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+								int s = SWT.NORMAL;
+								if (atsName.indexOf("Italic") != -1) s |= SWT.ITALIC;
+								if (atsName.indexOf("Bold") != -1) s |= SWT.BOLD;
+								FontData data = new FontData(name, 0, s);
+								data.atsName = atsName;
+								if (count == fds.length) {
+									FontData[] newFDs = new FontData[count + 4];
+									System.arraycopy(fds, 0, newFDs, 0, count);
+									fds = newFDs;
+								}
+								fds[count++] = data;
+							}
+						}
+					}
+					OS.CFRelease(ptr);
+				}
+			}
 		}
+	}
+	if (iter != 0) {
+		buffer [0] = iter;
+		OS.ATSFontIteratorRelease (buffer);
 	}
 	if (count == fds.length) return fds;
 	FontData[] result = new FontData[count];
 	System.arraycopy(fds, 0, result, 0, count);
 	return result;
+}
+
+Point getScreenDPI() {
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memmove(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memmove(device, ptr[0], GDevice.sizeof);
+	OS.memmove(ptr, device.gdPMap, 4);
+	PixMap pixmap = new PixMap();
+	OS.memmove(pixmap, ptr[0], PixMap.sizeof);
+	return new Point (OS.Fix2Long (pixmap.hRes), OS.Fix2Long (pixmap.vRes));
 }
 
 /**
@@ -507,6 +570,10 @@ public boolean getWarnings () {
 protected void init () {
 	colorspace = OS.CGColorSpaceCreateDeviceRGB();
 	if (colorspace == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
+	releaseCallback = new Callback (this, "releaseProc", 3);
+	releaseProc = releaseCallback.getAddress ();
+	if (releaseProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Create the standard colors */
 	COLOR_BLACK = new Color (this, 0,0,0);
@@ -537,7 +604,8 @@ protected void init () {
 	short id = OS.FMGetFontFamilyFromName (family);
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	systemFont = Font.carbon_new (this, font [0], id, style [0], size [0]);
+	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
+	systemFont = Font.carbon_new (this, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0] * dpi.y / screenDPI.y);
 }
 
 /**	 
@@ -581,25 +649,70 @@ public abstract void internal_dispose_GC (int handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return disposed;
+	synchronized (Device.class) {
+		return disposed;
+	}
+}
+
+/**
+ * Loads the font specified by a file.  The font will be
+ * present in the list of fonts available to the application.
+ *
+ * @param path the font file path
+ * @return whether the font was successfully loaded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if path is null</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see Font
+ * 
+ * @since 3.3
+ */
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	boolean result = false;
+	char [] chars = new char [path.length ()];
+	path.getChars (0, chars.length, chars, 0);
+	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+	if (str != 0) {
+		int url = OS.CFURLCreateWithFileSystemPath (OS.kCFAllocatorDefault, str, OS.kCFURLPOSIXPathStyle, false);
+		if (url != 0) {
+			byte [] fsRef = new byte [80];
+			if (OS.CFURLGetFSRef (url, fsRef)) {
+				byte [] fsSpec = new byte [70];
+				if (OS.FSGetCatalogInfo (fsRef, 0, null, null, fsSpec, null) == OS.noErr) {
+					int [] container = new int [1];
+					result = OS.ATSFontActivateFromFileSpecification (fsSpec, OS.kATSFontContextLocal, OS.kATSFontFormatUnspecified, 0, OS.kATSOptionFlagsDefault, container) == OS.noErr;
+				}
+			}
+			OS.CFRelease (url);
+		}
+		OS.CFRelease (str);
+	}
+	return result;
 }
 
 void new_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == null) {
-			objects [i] = object;
-			errors [i] = new Error ();
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == null) {
+				objects [i] = object;
+				errors [i] = new Error ();
+				return;
+			}
 		}
+		Object [] newObjects = new Object [objects.length + 128];
+		System.arraycopy (objects, 0, newObjects, 0, objects.length);
+		newObjects [objects.length] = object;
+		objects = newObjects;
+		Error [] newErrors = new Error [errors.length + 128];
+		System.arraycopy (errors, 0, newErrors, 0, errors.length);
+		newErrors [errors.length] = new Error ();
+		errors = newErrors;
 	}
-	Object [] newObjects = new Object [objects.length + 128];
-	System.arraycopy (objects, 0, newObjects, 0, objects.length);
-	newObjects [objects.length] = object;
-	objects = newObjects;
-	Error [] newErrors = new Error [errors.length + 128];
-	System.arraycopy (errors, 0, newErrors, 0, errors.length);
-	newErrors [errors.length] = new Error ();
-	errors = newErrors;
 }
 
 /**
@@ -626,17 +739,39 @@ void new_Object (Object object) {
  * @see #destroy
  */
 protected void release () {
+	if (releaseCallback != null) releaseCallback.dispose ();
 	if (drawPatternCallback != null) drawPatternCallback.dispose();
 	if (axialShadingCallback != null) axialShadingCallback.dispose();
-	axialShadingCallback = drawPatternCallback = null;
-	axialShadingProc = drawPatternProc = 0;
+	releaseCallback = axialShadingCallback = drawPatternCallback = null;
+	releaseProc = axialShadingProc = drawPatternProc = 0;
 
 	OS.CGColorSpaceRelease(colorspace);
 	colorspace = 0;
-	
+
+	if (COLOR_BLACK != null) COLOR_BLACK.dispose();
+	if (COLOR_DARK_RED != null) COLOR_DARK_RED.dispose();
+	if (COLOR_DARK_GREEN != null) COLOR_DARK_GREEN.dispose();
+	if (COLOR_DARK_YELLOW != null) COLOR_DARK_YELLOW.dispose();
+	if (COLOR_DARK_BLUE != null) COLOR_DARK_BLUE.dispose();
+	if (COLOR_DARK_MAGENTA != null) COLOR_DARK_MAGENTA.dispose();
+	if (COLOR_DARK_CYAN != null) COLOR_DARK_CYAN.dispose();
+	if (COLOR_GRAY != null) COLOR_GRAY.dispose();
+	if (COLOR_DARK_GRAY != null) COLOR_DARK_GRAY.dispose();
+	if (COLOR_RED != null) COLOR_RED.dispose();
+	if (COLOR_GREEN != null) COLOR_GREEN.dispose();
+	if (COLOR_YELLOW != null) COLOR_YELLOW.dispose();
+	if (COLOR_BLUE != null) COLOR_BLUE.dispose();
+	if (COLOR_MAGENTA != null) COLOR_MAGENTA.dispose();
+	if (COLOR_CYAN != null) COLOR_CYAN.dispose();
+	if (COLOR_WHITE != null) COLOR_WHITE.dispose();
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
+}
+
+int releaseProc (int info, int data, int size) {
+	OS.DisposePtr(data);
+	return 0;
 }
 
 /**

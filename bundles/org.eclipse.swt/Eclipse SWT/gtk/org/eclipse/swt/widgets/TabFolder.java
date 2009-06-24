@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,6 +40,11 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tabfolder">TabFolder, TabItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabFolder extends Composite {
 	TabItem [] items;
@@ -70,6 +75,8 @@ public class TabFolder extends Composite {
  * </ul>
  *
  * @see SWT
+ * @see SWT#TOP
+ * @see SWT#BOTTOM
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -94,13 +101,15 @@ protected void checkSubclass () {
 }
 
 int /*long*/ childStyle () {
+	int /*long*/ rcStyle = OS.gtk_widget_get_modifier_style (handle);
+	if ((OS.gtk_rc_style_get_color_flags (rcStyle, 0) & OS.GTK_RC_BG) != 0) return 0;
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_widget_get_style (handle);
 }
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -108,7 +117,7 @@ int /*long*/ childStyle () {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -275,7 +284,7 @@ void destroyItem (TabItem item) {
 }
 
 int /*long*/ eventHandle () {
-	return fixedHandle;
+	return handle;
 }
 		
 /**
@@ -302,6 +311,39 @@ public TabItem getItem (int index) {
 	OS.g_list_free (list);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return items [index];
+}
+
+/**
+ * Returns the tab item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the tab item at the given point, or null if the point is not in a tab item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public TabItem getItem(Point point) {
+	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
+	if (list == 0) return null;
+	int itemCount = OS.g_list_length (list);
+	OS.g_list_free (list);
+	for (int i = 0; i < itemCount; i++) {
+		TabItem item = items[i];
+		Rectangle rect = item.getBounds();
+		if (rect.contains(point)) return item;
+	}
+	return null;
 }
 
 /**
@@ -425,7 +467,7 @@ void hookEvents () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -522,7 +564,7 @@ void removeControl (Control control) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -602,6 +644,7 @@ public void setSelection (int index) {
 void setSelection (int index, boolean notify) {
 	if (index < 0) return;
 	int oldIndex = OS.gtk_notebook_get_current_page (handle);
+	if (oldIndex == index) return;
 	if (oldIndex != -1) {
 		TabItem item = items [oldIndex];
 		Control control = item.control;
@@ -628,6 +671,23 @@ void setSelection (int index, boolean notify) {
 	}
 }
 
+/**
+ * Sets the receiver's selection to the given item.
+ * The current selected is first cleared, then the new item is
+ * selected.
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setSelection (TabItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (new TabItem [] {item});
@@ -661,8 +721,12 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
-boolean traversePage (boolean next) {
-	OS.g_signal_emit_by_name (handle, OS.change_current_page, next ? 1 : -1);
+boolean traversePage (final boolean next) {
+	if (next) {
+		OS.gtk_notebook_next_page (handle);
+	} else {
+		OS.gtk_notebook_prev_page (handle);
+	}
 	return true;
 }
 

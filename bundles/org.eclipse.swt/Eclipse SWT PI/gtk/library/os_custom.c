@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -36,15 +36,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 #endif
 
 #ifndef NO__1gtk_1file_1chooser_1dialog_1new
-JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
-	(JNIEnv *env, jclass that, jbyteArray arg0, SWT_PTR arg1, jint arg2, SWT_PTR arg3, jint arg4, SWT_PTR arg5, jint arg6, SWT_PTR arg7)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLong arg5, jint arg6, jintLong arg7)
 {
 	jbyte *lparg0=NULL;
-	SWT_PTR rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 /*
-	rc = (SWT_PTR)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	rc = (jintLong)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 */
 	{
 		static int initialized = 0;
@@ -57,8 +57,8 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 		* For some reason, we must also explicitly declare all of the arguments we
 		* are passing in, otherwise it crashes.
 		*/
-/*		typedef SWT_PTR (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, ...); */
-		typedef SWT_PTR (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, jint, SWT_PTR, jint, SWT_PTR, ...);
+/*		typedef jintLong (*FPTR)(jbyte *, jintLong, jint, jintLong, ...); */
+		typedef jintLong (*FPTR)(jbyte *, jintLong, jint, jintLong, jint, jintLong, jint, jintLong, ...);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -67,7 +67,7 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (SWT_PTR)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+			rc = (jintLong)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 		}
 	}
 fail:
@@ -76,3 +76,43 @@ fail:
 	return rc;
 }
 #endif
+
+#ifndef NO__1gtk_1cell_1layout_1set_1attributes
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jint arg3, jintLong arg4)
+{
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_cell_layout_set_attributes(arg0, arg1, lparg2, arg3, arg4);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		/*
+		* On AMD64, it is critical that functions which have a variable number of
+		* arguments, indicated by '...', include the '...' in their prototype.  This
+		* changes the calling convention, and leaving it out will cause crashes.
+		*
+		* For some reason, we must also explicitly declare all of the arguments we
+		* are passing in, otherwise it crashes.
+		*/
+/*		typedef void (*FPTR)(jintLong, jintLong, ...); */
+		typedef void (*FPTR)(jintLong, jintLong, jbyte *, jint, jintLong, ...);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_cell_layout_set_attributes_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_cell_layout_set_attributes");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, lparg2, arg3, arg4);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
+}
+#endif
+

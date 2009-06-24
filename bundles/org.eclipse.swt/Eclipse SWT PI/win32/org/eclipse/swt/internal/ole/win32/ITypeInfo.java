@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,16 +16,16 @@ import org.eclipse.swt.internal.win32.OS;
 public class ITypeInfo extends IUnknown
 {
 	
-public ITypeInfo(int address) {
+public ITypeInfo(int /*long*/ address) {
 	super(address);
 }
 public int GetDocumentation(int index, String[] name, String[] docString, int[] pdwHelpContext, String[] helpFile ) {
-	int[] pBstrName = null;
-	if (name != null) pBstrName = new int[1];
-	int[] pBstrDocString = null;
-	if (docString != null) pBstrDocString = new int[1];
-	int[] pBstrHelpFile  = null;
-	if (helpFile != null) pBstrHelpFile = new int[1];
+	int /*long*/[] pBstrName = null;
+	if (name != null) pBstrName = new int /*long*/[1];
+	int /*long*/[] pBstrDocString = null;
+	if (docString != null) pBstrDocString = new int /*long*/[1];
+	int /*long*/[] pBstrHelpFile  = null;
+	if (helpFile != null) pBstrHelpFile = new int /*long*/[1];
 	int rc = COM.VtblCall(12, address, index, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile);
 	if (name != null && pBstrName[0] != 0) {
 		int size = COM.SysStringByteLen(pBstrName[0]);
@@ -68,7 +68,7 @@ public int GetDocumentation(int index, String[] name, String[] docString, int[] 
 	}
 	return rc;
 }
-public int GetFuncDesc(int index, int[] ppFuncDesc) {
+public int GetFuncDesc(int index, int /*long*/[] ppFuncDesc) {
 	return COM.VtblCall(5, address, index, ppFuncDesc);
 }
 public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
@@ -77,9 +77,9 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 	int size = rgszNames.length;
 
 	// create an array to hold the addresses
-	int hHeap = OS.GetProcessHeap();
-	int ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size*4);
-	int[] memTracker = new int[size];
+	int /*long*/ hHeap = OS.GetProcessHeap();
+	int /*long*/ ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * OS.PTR_SIZEOF);
+	int /*long*/[] memTracker = new int /*long*/[size];
 	
 	try {	
 		// add the address of each string to the array
@@ -90,10 +90,10 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 			buffer = new char[nameSize +1];
 			rgszNames[i].getChars(0, nameSize, buffer, 0);
 			// get the address of the start of the array of char
-			int pName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
+			int /*long*/ pName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
 			OS.MoveMemory(pName, buffer, buffer.length * 2);
 			// copy the address to the array of addresses
-			COM.MoveMemory(ppNames + 4*i, new int[]{pName}, 4);
+			COM.MoveMemory(ppNames + OS.PTR_SIZEOF * i, new int /*long*/[]{pName}, OS.PTR_SIZEOF);
 			// keep track of the Global Memory so we can free it
 			memTracker[i] = pName;
 		}
@@ -115,7 +115,7 @@ public int GetImplTypeFlags(int index, int[] pImplTypeFlags) {
 public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 	
 	int nameSize = names.length;
-	int[] rgBstrNames = new int[nameSize];
+	int /*long*/[] rgBstrNames = new int /*long*/[nameSize];
 	int rc = COM.VtblCall(7, address, memid, rgBstrNames, nameSize, pcNames);
 	
 	if (rc == COM.S_OK) {
@@ -136,25 +136,25 @@ public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 	
 	return rc;
 }
-public int GetRefTypeInfo(int hRefType, int[] ppTInfo) {
+public int GetRefTypeInfo(int hRefType, int /*long*/[] ppTInfo) {
 	return COM.VtblCall(14, address, hRefType, ppTInfo);
 }
 public int GetRefTypeOfImplType(int index, int[] pRefType) {
 	return COM.VtblCall(8, address, index, pRefType);
 }
-public int GetTypeAttr(int[] ppTypeAttr) {
+public int GetTypeAttr(int /*long*/[] ppTypeAttr) {
 	return COM.VtblCall(3, address, ppTypeAttr);
 }
-public int GetVarDesc(int index, int[] ppVarDesc ) {
+public int GetVarDesc(int index, int /*long*/[] ppVarDesc ) {
 	return COM.VtblCall(6, address, index, ppVarDesc);
 }
-public int ReleaseFuncDesc(int pFuncDesc ) {
+public int ReleaseFuncDesc(int /*long*/ pFuncDesc ) {
 	return COM.VtblCall(20, address, pFuncDesc);
 }
-public int ReleaseTypeAttr(int pTypeAttr) {
+public int ReleaseTypeAttr(int /*long*/ pTypeAttr) {
 	return COM.VtblCall(19, address, pTypeAttr);
 }
-public int ReleaseVarDesc(int pVarDesc ) {
+public int ReleaseVarDesc(int /*long*/ pVarDesc ) {
 	return COM.VtblCall(21, address, pVarDesc);
 }
 }

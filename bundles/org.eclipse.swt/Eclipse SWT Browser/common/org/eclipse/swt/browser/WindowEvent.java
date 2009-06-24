@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -75,7 +75,7 @@ import org.eclipse.swt.graphics.*;
  *				}
  *				if (event.addressBar || event.menuBar || event.statusBar || event.toolBar) {
  *					// Create widgets for the address bar, menu bar, status bar and/or tool bar
- *					// leave enough space in the Shell to accomodate a Browser of the size
+ *					// leave enough space in the Shell to accommodate a Browser of the size
  *					// given by event.size
  *				}
  *				shell.open();
@@ -118,6 +118,7 @@ import org.eclipse.swt.graphics.*;
  * @see CloseWindowListener
  * @see OpenWindowListener
  * @see VisibilityWindowListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */
@@ -145,7 +146,7 @@ public class WindowEvent extends TypedEvent {
 
 	/** 
 	 * Requested <code>Browser</code> size. The client area of the <code>Shell</code> 
-	 * hosting the <code>Browser</code> should be large enough to accomodate that size. 
+	 * hosting the <code>Browser</code> should be large enough to accommodate that size. 
 	 * It is <code>null</code> if no size has been requested.
 	 */
 	public Point size;
@@ -184,7 +185,34 @@ public class WindowEvent extends TypedEvent {
 	
 	static final long serialVersionUID = 3617851997387174969L;
 	
-WindowEvent(Widget w) {
-	super(w);
+/**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
+ * @since 3.5
+ */
+public WindowEvent(Widget widget) {
+	super(widget);
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	return string.substring (0, string.length() - 1) // remove trailing '}'
+		+ " required=" + required
+		+ " browser=" + browser
+		+ " location=" + location
+		+ " size=" + size
+		+ " addressBar=" + addressBar
+		+ " menuBar=" + menuBar
+		+ " statusBar=" + statusBar
+		+ " toolBar=" + toolBar
+		+ "}";
 }
 }

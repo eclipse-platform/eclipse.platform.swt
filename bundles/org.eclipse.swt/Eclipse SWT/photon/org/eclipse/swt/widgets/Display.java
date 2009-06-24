@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,7 +79,7 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Close, Dispose</dd>
+ * <dd>Close, Dispose, Settings</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -90,6 +90,9 @@ import org.eclipse.swt.graphics.*;
  * @see #readAndDispatch
  * @see #sleep
  * @see Device#dispose
+ * @see <a href="http://www.eclipse.org/swt/snippets/#display">Display snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Display extends Device {
 
@@ -337,9 +340,11 @@ public Display (DeviceData data) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere
- * in a widget. When the event does occur, the listener is
- * notified by sending it the <code>handleEvent()</code> message.
+ * be notified when an event of the given type occurs anywhere
+ * in a widget. The event type is one of the event constants
+ * defined in class <code>SWT</code>. When the event does occur,
+ * the listener is notified by sending it the <code>handleEvent()</code>
+ * message.
  * <p>
  * Setting the type of an event to <code>SWT.None</code> from
  * within the <code>handleEvent()</code> method can be used to
@@ -363,6 +368,7 @@ public Display (DeviceData data) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeFilter
  * @see #removeListener
  * 
@@ -377,8 +383,9 @@ public void addFilter (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
- * event does occur in the display, the listener is notified by
+ * be notified when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
+ * When the event does occur in the display, the listener is notified by
  * sending it the <code>handleEvent()</code> message.
  *
  * @param eventType the type of event to listen for
@@ -393,6 +400,7 @@ public void addFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeListener
  * 
  * @since 2.0 
@@ -427,8 +435,10 @@ public void addListener (int eventType, Listener listener) {
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	synchronizer.asyncExec (runnable);
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer.asyncExec (runnable);
+	}
 }
 
 /**
@@ -451,11 +461,13 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-static synchronized void checkDisplay (Thread thread, boolean multiple) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] != null) {
-			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
-			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+static void checkDisplay (Thread thread, boolean multiple) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] != null) {
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			}
 		}
 	}
 }
@@ -538,7 +550,7 @@ protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread (), false);
 	createDisplay (data);
-	register ();
+	register (this);
 	if (Default == null) Default = this;
 }
 
@@ -548,9 +560,11 @@ void createDisplay (DeviceData data) {
 	app_context = OS.PtCreateAppContext ();
 }
 
-synchronized void deregister () {
-	for (int i=0; i<Displays.length; i++) {
-		if (this == Displays [i]) Displays [i] = null;
+static void deregister (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (display == Displays [i]) Displays [i] = null;
+		}
 	}
 }
 
@@ -566,7 +580,7 @@ synchronized void deregister () {
  */
 protected void destroy () {
 	if (this == Default) Default = null;
-	deregister ();
+	deregister (this);
 	destroyDisplay ();
 }
 
@@ -631,14 +645,16 @@ void error (int code) {
  * @param thread the user-interface thread
  * @return the display for the given thread
  */
-public static synchronized Display findDisplay (Thread thread) {
-	for (int i=0; i<Displays.length; i++) {
-		Display display = Displays [i];
-		if (display != null && display.thread == thread) {
-			return display;
+public static Display findDisplay (Thread thread) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			Display display = Displays [i];
+			if (display != null && display.thread == thread) {
+				return display;
+			}
 		}
+		return null;
 	}
-	return null;
 }
 
 boolean filterEvent (Event event) {
@@ -697,6 +713,29 @@ public Widget findWidget (int handle) {
  * @since 3.1
  */
 public Widget findWidget (int handle, int id) {
+	checkDevice ();
+	return null;
+}
+
+/**
+ * Given a widget and a widget-specific id, returns the
+ * instance of the <code>Widget</code> subclass which represents
+ * the widget/id pair in the currently running application,
+ * if such exists, or null if no matching widget can be found.
+ *
+ * @param widget the widget
+ * @param id the id for the subwidget (usually an item)
+ * @return the SWT subwidget (usually an item) that the widget/id pair represents
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Widget findWidget (Widget widget, int id) {
+	checkDevice ();
 	return null;
 }
 
@@ -815,13 +854,8 @@ public Point getCursorLocation () {
  *
  * @return the current display
  */
-public static synchronized Display getCurrent () {
-	Thread current = Thread.currentThread ();
-	for (int i=0; i<Displays.length; i++) {
-		Display display = Displays [i];
-		if (display != null && display.thread == current) return display;
-	}
-	return null;
+public static Display getCurrent () {
+	return findDisplay (Thread.currentThread ());
 }
 
 /**
@@ -831,9 +865,11 @@ public static synchronized Display getCurrent () {
  *
  * @return the default display
  */
-public static synchronized Display getDefault () {
-	if (Default == null) Default = new Display ();
-	return Default;
+public static Display getDefault () {
+	synchronized (Device.class) {
+		if (Default == null) Default = new Display ();
+		return Default;
+	}
 }
 
 /**
@@ -1133,10 +1169,10 @@ public Color getSystemColor (int id) {
  * specified in class <code>SWT</code>. This cursor should
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
- * be returned if the supplied constant is not an swt cursor
+ * be returned if the supplied constant is not an SWT cursor
  * constant. 
  *
- * @param id the swt cursor constant
+ * @param id the SWT cursor constant
  * @return the corresponding cursor or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -1212,10 +1248,10 @@ public Font getSystemFont () {
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
  * be returned either if the supplied constant is not an
- * swt icon constant or if the platform does not define an
+ * SWT icon constant or if the platform does not define an
  * image that corresponds to the constant. 
  *
- * @param id the swt icon constant
+ * @param id the SWT icon constant
  * @return the corresponding image or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -1254,6 +1290,23 @@ public Tray getSystemTray () {
 }
 
 /**
+ * Gets the synchronizer used by the display.
+ *
+ * @return the receiver's synchronizer
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public Synchronizer getSynchronizer () {
+	checkDevice ();
+	return synchronizer;
+}
+
+/**
  * Returns the thread that has invoked <code>syncExec</code>
  * or null if no such runnable is currently being invoked by
  * the user-interface thread.
@@ -1269,8 +1322,10 @@ public Tray getSystemTray () {
  * </ul>
  */
 public Thread getSyncThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return synchronizer.syncThread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return synchronizer.syncThread;
+	}
 }
 
 /**
@@ -1283,8 +1338,10 @@ public Thread getSyncThread () {
  * </ul>
  */
 public Thread getThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return thread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return thread;
+	}
 }
 
 int hotkeyProc (int handle, int data, int info) {
@@ -1746,6 +1803,7 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
+	if (from == to) return point;
 	if (from != null) {
 		short [] position_x = new short [1], position_y = new short [1];
 		OS.PtGetAbsPosition (from.handle, position_x, position_y);
@@ -1846,6 +1904,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = new Rectangle (x, y, width, height);
+	if (from == to) return rect;
 	if (from != null) {
 		short [] position_x = new short [1], position_y = new short [1];
 		OS.PtGetAbsPosition (from.handle, position_x, position_y);
@@ -1898,6 +1957,13 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  * <li>(in) x the x coordinate to move the mouse pointer to in screen coordinates
  * <li>(in) y the y coordinate to move the mouse pointer to in screen coordinates
  * </ul>
+ * <p>MouseWheel</p>
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type MouseWheel
+ * <li>(in) detail either SWT.SCROLL_LINE or SWT.SCROLL_PAGE
+ * <li>(in) count the number of lines or pages to scroll
+ * </ul>
  * </dl>
  * 
  * @param event the event to be generated
@@ -1915,9 +1981,11 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  * 
  */
 public boolean post (Event event) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return false;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+		return false;
+	}
 }
 
 void postEvent (Event event) {
@@ -1983,20 +2051,22 @@ public boolean readAndDispatch () {
 	}
 	OS.PtRelease ();
 	OS.PtHold ();
-	return result;
+	return isDisposed () || result;
 }
 
-synchronized void register () {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] == null) {
-			Displays [i] = this;
-			return;
+static void register (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] == null) {
+				Displays [i] = display;
+				return;
+			}
 		}
+		Display [] newDisplays = new Display [Displays.length + 4];
+		System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
+		newDisplays [Displays.length] = display;
+		Displays = newDisplays;
 	}
-	Display [] newDisplays = new Display [Displays.length + 4];
-	System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
-	newDisplays [Displays.length] = this;
-	Displays = newDisplays;
 }
 
 /**
@@ -2109,8 +2179,9 @@ void releaseDisplay () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere in
- * a widget.
+ * be notified when an event of the given type occurs anywhere in
+ * a widget. The event type is one of the event constants defined
+ * in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -2123,6 +2194,7 @@ void releaseDisplay () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addFilter
  * @see #addListener
  * 
@@ -2138,10 +2210,11 @@ public void removeFilter (int eventType, Listener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs. The event type
+ * is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -2152,6 +2225,7 @@ public void removeFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
  * 
  * @since 2.0 
@@ -2168,6 +2242,7 @@ boolean runAsyncMessages (boolean all) {
 }
 
 boolean runDeferredEvents () {
+	boolean run = false;
 	/*
 	* Run deferred events.  This code is always
 	* called in the Display's thread so it must
@@ -2187,6 +2262,7 @@ boolean runDeferredEvents () {
 		if (widget != null && !widget.isDisposed ()) {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
+				run = true;
 				widget.sendEvent (event);
 			}
 		}
@@ -2200,7 +2276,7 @@ boolean runDeferredEvents () {
 
 	/* Clear the queue */
 	eventQueue = null;
-	return true;
+	return run;
 }
 
 void sendEvent (int eventType, Event event) {
@@ -2376,10 +2452,15 @@ public void setData (Object data) {
 public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages(true);
+	if (synchronizer == this.synchronizer) return;
+	Synchronizer oldSynchronizer;
+	synchronized (Device.class) {
+		oldSynchronizer = this.synchronizer;
+		this.synchronizer = synchronizer;
 	}
-	this.synchronizer = synchronizer;
+	if (oldSynchronizer != null) {
+		oldSynchronizer.runAsyncMessages(true);
+	}
 }
 
 /**
@@ -2423,14 +2504,18 @@ public boolean sleep () {
  * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
- *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred when executing the runnable</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #asyncExec
  */
 public void syncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	Synchronizer synchronizer;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer = this.synchronizer;
+	}
 	synchronizer.syncExec (runnable);
 }
 
@@ -2570,9 +2655,11 @@ public void update() {
  * @see #sleep
  */
 public void wake () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (thread == Thread.currentThread ()) return;
-	wakeThread ();
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (thread == Thread.currentThread ()) return;
+		wakeThread ();
+	}
 }
 
 void wakeThread () {

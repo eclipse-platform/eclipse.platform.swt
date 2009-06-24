@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,27 +17,53 @@ import org.eclipse.swt.internal.*;
 
 /** 
  * Instances of this class implement a selectable user interface
- * object that displays a list of images and strings and issue
+ * object that displays a list of images and strings and issues
  * notification when selected.
  * <p>
  * The item children that may be added to instances of this class
  * must be of type <code>TableItem</code>.
  * </p><p>
+ * Style <code>VIRTUAL</code> is used to create a <code>Table</code> whose
+ * <code>TableItem</code>s are to be populated by the client on an on-demand basis
+ * instead of up-front.  This can provide significant performance improvements for
+ * tables that are very large or for which <code>TableItem</code> population is
+ * expensive (for example, retrieving values from an external source).
+ * </p><p>
+ * Here is an example of using a <code>Table</code> with style <code>VIRTUAL</code>:
+ * <code><pre>
+ *  final Table table = new Table (parent, SWT.VIRTUAL | SWT.BORDER);
+ *  table.setItemCount (1000000);
+ *  table.addListener (SWT.SetData, new Listener () {
+ *      public void handleEvent (Event event) {
+ *          TableItem item = (TableItem) event.item;
+ *          int index = table.indexOf (item);
+ *          item.setText ("Item " + index);
+ *          System.out.println (item.getText ());
+ *      }
+ *  }); 
+ * </pre></code>
+ * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
- * it does not make sense to add <code>Control</code> children to it,
- * or set a layout on it.
+ * it does not normally make sense to add <code>Control</code> children to
+ * it, or set a layout on it, unless implementing something like a cell
+ * editor.
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection</dd>
+ * <dd>Selection, DefaultSelection, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles SINGLE, and MULTI may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#table">Table, TableItem, TableColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Table extends Composite {
 	Canvas header;
@@ -47,7 +73,7 @@ public class Table extends Composite {
 	TableItem[] selectedItems = new TableItem [0];
 	TableItem focusItem, anchorItem, lastClickedItem;
 	Event lastSelectionEvent;
-	boolean linesVisible, ignoreKey, ignoreDispose;
+	boolean linesVisible, ignoreKey, ignoreDispose, customHeightSet;
 	int itemsCount = 0;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
@@ -64,7 +90,7 @@ public class Table extends Composite {
 	Shell toolTipShell;
 	Label toolTipLabel;
 
-	Rectangle arrowBounds, checkboxBounds;
+	Rectangle arrowBounds, checkboxBounds, clientArea;
 
 	static final int MARGIN_IMAGE = 3;
 	static final int MARGIN_CELL = 1;
@@ -116,13 +142,14 @@ public boolean isFocusControl() {
  * @see SWT#FULL_SELECTION
  * @see SWT#HIDE_SELECTION
  * @see SWT#VIRTUAL
+ * @see SWT#NO_SCROLL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
 public Table (Composite parent, int style) {
-	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
-	setForeground (display.getSystemColor (SWT.COLOR_LIST_FOREGROUND));
-	setBackground (display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
+	super (parent, checkStyle (style));
+	setForeground (null);	/* set foreground and background to chosen default colors */
+	setBackground (null);
 	GC gc = new GC (this);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
@@ -130,6 +157,7 @@ public Table (Composite parent, int style) {
 	initImages (display);
 	checkboxBounds = getUncheckedImage ().getBounds ();
 	arrowBounds = getArrowDownImage ().getBounds ();
+	clientArea = getClientArea ();
 	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
@@ -157,6 +185,7 @@ public Table (Composite parent, int style) {
 	header.addListener (SWT.MouseDoubleClick, listener);
 	header.addListener (SWT.MouseMove, listener);
 	header.addListener (SWT.MouseExit, listener);
+	header.addListener (SWT.MenuDetect, listener);
 
 	toolTipListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -173,29 +202,33 @@ public Table (Composite parent, int style) {
 		}
 	};
 
-	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
-	vBar.setValues (0, 0, 1, 1, 1, 1);
-	hBar.setValues (0, 0, 1, 1, 1, 1);
-	vBar.setVisible (false);
-	hBar.setVisible (false);
-	vBar.addListener (SWT.Selection, listener);
-	hBar.addListener (SWT.Selection, listener);
+	if (hBar != null) {
+		hBar.setValues (0, 0, 1, 1, 1, 1);
+		hBar.setVisible (false);
+		hBar.addListener (SWT.Selection, listener);
+	}
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar != null) {
+		vBar.setValues (0, 0, 1, 1, 1, 1);
+		vBar.setVisible (false);
+		vBar.addListener (SWT.Selection, listener);
+	}
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the item field of the event object is valid.
- * If the reciever has <code>SWT.CHECK</code> style set and the check selection changes,
+ * If the receiver has the <code>SWT.CHECK</code> style and the check selection changes,
  * the event object detail field contains the value <code>SWT.CHECK</code>.
  * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
  * The item field of the event object is valid for default selection, but the detail field is not used.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -222,6 +255,7 @@ boolean checkData (TableItem item, boolean redraw) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
+		event.index = indexOf (item);
 		sendEvent (SWT.SetData, event);
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) redrawItem (item.index, false);
@@ -229,13 +263,31 @@ boolean checkData (TableItem item, boolean redraw) {
 	return true;
 }
 static int checkStyle (int style) {
+	/*
+	* Feature in Windows.  Even when WS_HSCROLL or
+	* WS_VSCROLL is not specified, Windows creates
+	* trees and tables with scroll bars.  The fix
+	* is to set H_SCROLL and V_SCROLL.
+	* 
+	* NOTE: This code appears on all platforms so that
+	* applications have consistent scroll bar behavior.
+	*/
+	if ((style & SWT.NO_SCROLL) == 0) {
+		style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	}
+	style |= SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED;
+	//TEMPORARY CODE
+	style |= SWT.FULL_SELECTION;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
- * value.  If the table was created with the SWT.VIRTUAL style, these
- * attributes are requested again as needed.
+ * value.  If the table was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param index the index of the item to clear
  *
@@ -255,7 +307,7 @@ static int checkStyle (int style) {
 public void clear (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemsCount)) error (SWT.ERROR_INVALID_RANGE);
-	Rectangle bounds = items [index].getBounds ();
+	Rectangle bounds = items [index].getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	items [index].clear ();
 	if (columns.length == 0) updateHorizontalBar (0, -oldRightX);
@@ -264,9 +316,9 @@ public void clear (int index) {
 /**
  * Removes the items from the receiver which are between the given
  * zero-relative start and end indices (inclusive).  The text, icon
- * and other attribues of the items are set to their default values.
- * If the table was created with the SWT.VIRTUAL style, these attributes
- * are requested again as needed.
+ * and other attributes of the items are set to their default values.
+ * If the table was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param start the start index of the item to clear
  * @param end the end index of the item to clear
@@ -298,9 +350,9 @@ public void clear (int start, int end) {
 }
 /**
  * Clears the items at the given zero-relative indices in the receiver.
- * The text, icon and other attribues of the items are set to their default
- * values.  If the table was created with the SWT.VIRTUAL style, these
- * attributes are requested again as needed.
+ * The text, icon and other attributes of the items are set to their default
+ * values.  If the table was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param indices the array of indices of the items
  *
@@ -338,9 +390,9 @@ public void clear (int [] indices) {
 }
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
- * table was created with the SWT.VIRTUAL style, these attributes
- * are requested again as needed.
+ * attributes of the items are set to their default values. If the
+ * table was created with the <code>SWT.VIRTUAL</code> style, these
+ * attributes are requested again as needed.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -378,7 +430,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		if (columns.length == 0) {
 			for (int i = 0; i < itemsCount; i++) {
-				Rectangle itemBounds = items [i].getBounds ();
+				Rectangle itemBounds = items [i].getBounds (false);
 				width = Math.max (width, itemBounds.x + itemBounds.width);
 			}
 		} else {
@@ -424,12 +476,20 @@ void createItem (TableColumn column, int index) {
 		items [i].addColumn (column);
 	}
 
-	/* no visual update needed because column's initial width is 0 */
+	/* existing items become hidden when going from 0 to 1 column (0 width) */
+	if (columns.length == 1 && itemsCount > 0) {
+		redrawFromItemDownwards (topIndex);
+	} else {
+		/* checkboxes become hidden when creating a column with index == orderedIndex == 0 (0 width) */
+		if (itemsCount > 0 && (style & SWT.CHECK) != 0 && index == 0 && column.getOrderIndex () == 0) {
+			redrawFromItemDownwards (topIndex);
+		}
+	}
 }
 void createItem (TableItem item) {
 	int index = item.index;
 	if (itemsCount == items.length) {
-		int grow = drawCount == 0 ? 4 : Math.max (4, items.length * 3 / 2);
+		int grow = drawCount <= 0 ? 4 : Math.max (4, items.length * 3 / 2);
 		TableItem[] newItems = new TableItem [items.length + grow];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -448,7 +508,7 @@ void createItem (TableItem item) {
 
 	/* update scrollbars */
 	updateVerticalBar ();
-	Rectangle bounds = item.getBounds ();
+	Rectangle bounds = item.getBounds (false);
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
 	/* 
@@ -457,11 +517,22 @@ void createItem (TableItem item) {
 	 */
 	if (item.index < topIndex) {
 		topIndex++;
-		getVerticalBar ().setSelection (topIndex);
+		ScrollBar vBar = getVerticalBar ();
+		if (vBar != null) vBar.setSelection (topIndex);
 		return;
 	}
-
-	redrawFromItemDownwards (index);
+	/*
+	 * If this is the first item and the receiver has focus then its boundary
+	 * focus ring must be removed. 
+	 */
+	if (itemsCount == 1 && isFocusControl ()) {
+		focusItem = item;
+		redraw ();
+		return;
+	}
+	if (item.isInViewport ()) {
+		redrawFromItemDownwards (index);
+	}
 }
 /**
  * Deselects the item at the given zero-relative index in the receiver.
@@ -622,13 +693,15 @@ void destroyItem (TableColumn column) {
 			newWidth += columns [i].width;
 		}
 		ScrollBar hBar = getHorizontalBar (); 
-		hBar.setMaximum (newWidth);
-		hBar.setVisible (getClientArea ().width < newWidth);
+		if (hBar != null) {
+			hBar.setMaximum (newWidth);
+			hBar.setVisible (clientArea.width < newWidth);
+		}
 		int selection = hBar.getSelection ();
 		if (selection != horizontalOffset) {
 			horizontalOffset = selection;
 			redraw ();
-			if (header.isVisible () && drawCount == 0) header.redraw ();
+			if (header.isVisible () && drawCount <= 0) header.redraw ();
 		}
 	}
 	TableColumn[] orderedColumns = getOrderedColumns ();
@@ -650,7 +723,7 @@ void destroyItem (TableItem item) {
 	if (item == focusItem) reassignFocus ();
 
 	int index = item.index;
-	Rectangle bounds = item.getBounds ();
+	Rectangle bounds = item.getBounds (false);
 	int rightX = bounds.x + bounds.width;
 
 	if (index != itemsCount - 1) {
@@ -662,7 +735,7 @@ void destroyItem (TableItem item) {
 	}
 	itemsCount--;
 	
-	if (drawCount == 0 && items.length - itemsCount == 4) {
+	if (drawCount <= 0 && items.length - itemsCount == 4) {
 		/* shrink the items array */
 		TableItem[] newItems = new TableItem [itemsCount];
 		System.arraycopy (items, 0, newItems, 0, newItems.length);
@@ -684,7 +757,8 @@ void destroyItem (TableItem item) {
 	 */
 	if (index < topIndex) {
 		topIndex = oldTopIndex - 1;
-		getVerticalBar ().setSelection (topIndex);
+		ScrollBar vBar = getVerticalBar ();
+		if (vBar != null) vBar.setSelection (topIndex);
 	}
 
 	/* selectedItems array */
@@ -702,6 +776,14 @@ void destroyItem (TableItem item) {
 	}
 	if (item == anchorItem) anchorItem = null;
 	if (item == lastClickedItem) lastClickedItem = null;
+	/*
+	 * If this was the last item and the receiver has focus then its boundary
+	 * focus ring must be redrawn.
+	 */
+	if (itemsCount == 0 && isFocusControl ()) {
+		redraw ();
+		return;
+	}
 }
 Image getArrowDownImage () {
 	return (Image) display.getData (ID_ARROWDOWN);
@@ -732,6 +814,7 @@ public Control[] getChildren () {
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
+ * Columns are returned in the order that they were created.
  * If no <code>TableColumn</code>s were created by the programmer,
  * this method will throw <code>ERROR_INVALID_RANGE</code> despite
  * the fact that a single column of data may be visible in the table.
@@ -748,6 +831,12 @@ public Control[] getChildren () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  */
 public TableColumn getColumn (int index) {
 	checkWidget ();
@@ -816,7 +905,8 @@ public int[] getColumnOrder () {
 }
 /**
  * Returns an array of <code>TableColumn</code>s which are the
- * columns in the receiver. If no <code>TableColumn</code>s were
+ * columns in the receiver.  Columns are returned in the order
+ * that they were created.  If no <code>TableColumn</code>s were
  * created by the programmer, the array is empty, despite the fact
  * that visually, one column of items may be visible. This occurs
  * when the programmer uses the table like a list, adding items but
@@ -833,6 +923,12 @@ public int[] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  */
 public TableColumn[] getColumns () {
 	checkWidget ();
@@ -922,9 +1018,16 @@ public TableItem getItem (int index) {
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
  * coordinate system of the receiver.
+ * <p>
+ * The item that is returned represents an item that could be selected by the user.
+ * For example, if selection only occurs in items in the first column, then null is 
+ * returned if the point is outside of the item. 
+ * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
+ * determines the extent of the selection.
+ * </p>
  *
  * @param point the point used to locate the item
- * @return the item at the given point
+ * @return the item at the given point, or null if the point is not in a selectable item
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -959,7 +1062,7 @@ public int getItemCount () {
 }
 /**
  * Returns the height of the area which would be used to
- * display <em>one</em> of the items in the receiver's.
+ * display <em>one</em> of the items in the receiver.
  *
  * @return the height of one item
  *
@@ -1002,7 +1105,8 @@ int getItemY (TableItem item) {
 }
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise.
+ * and <code>false</code> otherwise. Note that some platforms draw 
+ * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, this method
@@ -1045,6 +1149,7 @@ public TableItem[] getSelection () {
 	checkWidget ();
 	TableItem[] result = new TableItem [selectedItems.length];
 	System.arraycopy (selectedItems, 0, result, 0, selectedItems.length);
+	sortAscent (result);
 	return result;
 }
 /**
@@ -1109,6 +1214,7 @@ public int [] getSelectionIndices () {
 	for (int i = 0; i < selectedItems.length; i++) {
 		result [i] = selectedItems [i].index;
 	}
+	sortAscent (result);
 	return result;
 }
 /**
@@ -1179,6 +1285,10 @@ void handleEvents (Event event) {
 				onPaint (event);
 			}
 			break;
+		case SWT.MenuDetect: {
+			notifyListeners (SWT.MenuDetect, event);
+			break;
+			}
 		case SWT.MouseDown:
 			if (event.widget == header) {
 				headerOnMouseDown (event);
@@ -1213,10 +1323,11 @@ void handleEvents (Event event) {
 		case SWT.Resize:
 			onResize (event); break;
 		case SWT.Selection:
+			if (event.widget == getHorizontalBar ()) {
+				onScrollHorizontal (event);
+			}
 			if (event.widget == getVerticalBar ()) {
 				onScrollVertical (event);
-			} else {
-				onScrollHorizontal (event);
 			}
 			break;
 		case SWT.FocusOut:
@@ -1256,7 +1367,7 @@ String headerGetToolTip (int x) {
 		int columnRightX = columnX + column.width;
 		if (columnRightX - x <= TOLLERANCE_COLUMNRESIZE) return null;
 	}
-	return column.toolTipText;
+	return removeMnemonics (column.toolTipText);
 }
 void headerHideToolTip() {
 	if (toolTipShell == null) return;
@@ -1415,7 +1526,7 @@ void headerOnMouseMove (Event event) {
 	/* redraw the resizing line at its new location */
 	GC gc = new GC (this);
 	gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
-	int lineHeight = getClientArea ().height;
+	int lineHeight = clientArea.height;
 	redraw (resizeColumnX - 1, 0, 1, lineHeight, false);
 	resizeColumnX = event.x;
 	gc.drawLine (resizeColumnX - 1, 0, resizeColumnX - 1, lineHeight);
@@ -1423,16 +1534,16 @@ void headerOnMouseMove (Event event) {
 }
 void headerOnMouseUp (Event event) {
 	if (resizeColumn == null) return;	/* not resizing a column */
+
+	/* remove the resize line */
+	GC gc = new GC (this);
+	redraw (resizeColumnX - 1, 0, 1, clientArea.height, false);
+	gc.dispose ();
+
 	int newWidth = resizeColumnX - resizeColumn.getX ();
 	if (newWidth != resizeColumn.width) {
 		setCursor (null);
 		updateColumnWidth (resizeColumn, newWidth);
-	} else {
-		/* remove the resize line */
-		GC gc = new GC (this);
-		int lineHeight = getClientArea ().height;
-		redraw (resizeColumnX - 1, 0, 1, lineHeight, false);
-		gc.dispose ();
 	}
 	resizeColumnX = -1;
 	resizeColumn = null;
@@ -1550,7 +1661,7 @@ boolean headerUpdateToolTip (int x) {
  * @return the index of the column
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the column is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1573,7 +1684,7 @@ public int indexOf (TableColumn column) {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1656,7 +1767,7 @@ static void initImages (final Display display) {
  * range are ignored.
  *
  * @param index the index of the item
- * @return the visibility state of the item at the index
+ * @return the selection state of the item at the index
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1685,12 +1796,12 @@ void onArrowDown (int stateMask) {
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
 			/* CTRL+Down Arrow, CTRL+Shift+Down Arrow */
-			Rectangle clientArea = getClientArea ();
 			int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 			if (itemsCount <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
-			getVerticalBar ().setSelection (topIndex);
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1715,12 +1826,12 @@ void onArrowDown (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			/* CTRL+Shift+Down Arrow */
-			Rectangle clientArea = getClientArea ();
 			int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 			if (itemsCount <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
-			getVerticalBar ().setSelection (topIndex);
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1757,7 +1868,6 @@ void onArrowDown (int stateMask) {
 void onArrowLeft (int stateMask) {
 	if (horizontalOffset == 0) return;
 	int newSelection = Math.max (0, horizontalOffset - SIZE_HORIZONTALSCROLL);
-	Rectangle clientArea = getClientArea ();
 	update ();
 	GC gc = new GC (this);
 	gc.copyArea (
@@ -1767,21 +1877,22 @@ void onArrowLeft (int stateMask) {
 	gc.dispose ();
 	if (header.getVisible ()) {
 		header.update ();
-		clientArea = header.getClientArea ();
+		Rectangle headerClientArea = header.getClientArea ();
 		gc = new GC (header);
 		gc.copyArea (
 			0, 0,
-			clientArea.width, clientArea.height,
+			headerClientArea.width, headerClientArea.height,
 			horizontalOffset - newSelection, 0);
 		gc.dispose();
 	}
 	horizontalOffset = newSelection;
-	getHorizontalBar ().setSelection (horizontalOffset);
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar != null) hBar.setSelection (horizontalOffset);
 }
 void onArrowRight (int stateMask) {
 	ScrollBar hBar = getHorizontalBar ();
+	if (hBar == null) return;
 	int maximum = hBar.getMaximum ();
-	Rectangle clientArea = getClientArea ();
 	int clientWidth = clientArea.width;
 	if ((horizontalOffset + clientArea.width) == maximum) return;
 	if (maximum <= clientWidth) return;
@@ -1794,12 +1905,12 @@ void onArrowRight (int stateMask) {
 		horizontalOffset - newSelection, 0);
 	gc.dispose ();
 	if (header.getVisible ()) {
-		clientArea = header.getClientArea ();
+		Rectangle headerClientArea = header.getClientArea ();
 		header.update ();
 		gc = new GC (header);
 		gc.copyArea (
 			0, 0,
-			clientArea.width, clientArea.height,
+			headerClientArea.width, headerClientArea.height,
 			horizontalOffset - newSelection, 0);
 		gc.dispose();
 	}
@@ -1827,8 +1938,8 @@ void onArrowUp (int stateMask) {
 			if (topIndex == 0) return;	/* at top */
 			update ();
 			topIndex--;
-			getVerticalBar ().setSelection (topIndex);
-			Rectangle clientArea = getClientArea ();
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1857,8 +1968,8 @@ void onArrowUp (int stateMask) {
 			if (topIndex == 0) return;	/* at top */
 			update ();
 			topIndex--;
-			getVerticalBar ().setSelection (topIndex);
-			Rectangle clientArea = getClientArea ();
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1943,7 +2054,7 @@ void onEnd (int stateMask) {
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
 			/* CTRL+End, CTRL+Shift+End */
-			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+			int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 			setTopIndex (itemsCount - visibleItemCount);
 			return;
 		}
@@ -1985,7 +2096,7 @@ void onEnd (int stateMask) {
 	for (int i = anchorIndex; i <= selectIndex; i++) {
 		newSelection [writeIndex++] = items [i];
 	}
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	redrawItems (anchorIndex, selectIndex, true);
 	showItem (selectedItem);
@@ -1995,7 +2106,10 @@ void onEnd (int stateMask) {
 }
 void onFocusIn () {
 	hasFocus = true;
-	if (itemsCount == 0) return;
+	if (itemsCount == 0) {
+		redraw ();
+		return;
+	}
 	if ((style & (SWT.HIDE_SELECTION | SWT.MULTI)) == (SWT.HIDE_SELECTION | SWT.MULTI)) {
 		for (int i = 0; i < selectedItems.length; i++) {
 			redrawItem (selectedItems [i].index, true);
@@ -2018,6 +2132,10 @@ void onFocusIn () {
 }
 void onFocusOut () {
 	hasFocus = false;
+	if (itemsCount == 0) {
+		redraw ();
+		return;
+	}
 	if (focusItem != null) {
 		redrawItem (focusItem.index, true);
 	}
@@ -2085,7 +2203,7 @@ void onHome (int stateMask) {
 	for (int i = anchorIndex; i >= 0; i--) {
 		newSelection [writeIndex++] = items [i];
 	}
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	redrawItems (anchorIndex, selectIndex, true);
 	showItem (selectedItem);
@@ -2282,7 +2400,7 @@ void onMouseDown (Event event) {
 					newSelection [writeIndex++] = items [i];
 				}
 				newSelection [writeIndex] = items [selectIndex];
-				setSelection (newSelection);
+				setSelection (newSelection, false);
 				setFocusItem (selectedItem, true);
 				redrawItems (
 					Math.min (anchorIndex, selectIndex),
@@ -2342,7 +2460,7 @@ void onMouseDown (Event event) {
 			newSelection [writeIndex++] = items [i];
 		}
 		newSelection [writeIndex] = items [selectIndex];
-		setSelection (newSelection);
+		setSelection (newSelection, false);
 		setFocusItem (selectedItem, true);
 		redrawItems (
 			Math.min (anchorIndex, selectIndex),
@@ -2370,7 +2488,7 @@ void onMouseUp (Event event) {
 	lastClickedItem = items [index];
 }
 void onPageDown (int stateMask) {
-	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 		/* PageDown with no modifiers */
 		int newFocusIndex = focusItem.index + visibleItemCount - 1;
@@ -2450,7 +2568,7 @@ void onPageDown (int stateMask) {
 		newSelection [writeIndex++] = items [i];
 	}
 	newSelection [writeIndex] = items [selectIndex];
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	showItem (selectedItem);
 	Event newEvent = new Event ();
@@ -2458,7 +2576,7 @@ void onPageDown (int stateMask) {
 	postEvent (SWT.Selection, newEvent);
 }
 void onPageUp (int stateMask) {
-	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 		/* PageUp with no modifiers */
 		int newFocusIndex = Math.max (0, focusItem.index - visibleItemCount + 1);
@@ -2532,7 +2650,7 @@ void onPageUp (int stateMask) {
 		newSelection [writeIndex++] = items [i];
 	}
 	newSelection [writeIndex] = items [selectIndex];
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	showItem (selectedItem);
 	Event newEvent = new Event ();
@@ -2556,7 +2674,7 @@ void onPaint (Event event) {
 		startColumn = endColumn = 0;
 	}
 
-	/* Determine the TableItems to be painted */
+	/* Determine the items to be painted */
 	int startIndex = (clipping.y - headerHeight) / itemHeight + topIndex;
 	int endIndex = -1;
 	if (startIndex < itemsCount) {
@@ -2564,42 +2682,55 @@ void onPaint (Event event) {
 	}
 	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, itemsCount - 1);
-	for (int i = startIndex; i <= endIndex; i++) {
-		TableItem item = items [i];
-		if (startColumn == -1) {
-			/* indicates that region to paint is to the right of the last column */
-			item.paint (gc, null, false);
-		} else {
-			if (numColumns == 0) {
-				item.paint (gc, null, true);
-			} else {
-				for (int j = startColumn; j <= endColumn; j++) {
-					item.paint (gc, orderedColumns [j], true);
-				}
-			}
-		}
-	}
 
 	/* fill background not handled by items */
 	gc.setBackground (getBackground ());
 	gc.setClipping (clipping);
-	Rectangle clientArea = getClientArea ();
 	int bottomY = endIndex >= 0 ? getItemY (items [endIndex]) + itemHeight : 0;
 	int fillHeight = Math.max (0, clientArea.height - bottomY);
 	if (fillHeight > 0) {	/* space below bottom item */
-		gc.fillRectangle (0, bottomY, clientArea.width, fillHeight);
+		drawBackground (gc, 0, bottomY, clientArea.width, fillHeight);
 	}
 	if (columns.length > 0) {
 		TableColumn column = orderedColumns [orderedColumns.length - 1];	/* last column */
 		int rightX = column.getX () + column.width;
 		if (rightX < clientArea.width) {
-			gc.fillRectangle (rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
+			drawBackground (gc, rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
 		}
 	}
 
+	/* paint the items */
+	boolean noFocusDraw = false;
+	int[] lineDash = gc.getLineDash ();
+	int lineWidth = gc.getLineWidth ();
+	for (int i = startIndex; i <= Math.min (endIndex, itemsCount - 1); i++) {
+		TableItem item = items [i];
+		if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
+			if (startColumn == -1) {
+				/* indicates that region to paint is to the right of the last column */
+				noFocusDraw = item.paint (gc, null, true) || noFocusDraw;
+			} else {
+				if (numColumns == 0) {
+					noFocusDraw = item.paint (gc, null, false) || noFocusDraw;
+				} else {
+					for (int j = startColumn; j <= Math.min (endColumn, columns.length - 1); j++) {
+						if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
+							noFocusDraw = item.paint (gc, orderedColumns [j], false) || noFocusDraw;
+						}
+						if (isDisposed () || gc.isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+					}
+				}
+			}
+		}
+		if (isDisposed () || gc.isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+	}
+
 	/* repaint grid lines */
+	gc.setClipping(clipping);
+	gc.setLineWidth (lineWidth);
 	if (linesVisible) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		gc.setLineDash (lineDash);
 		if (numColumns > 0 && startColumn != -1) {
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
@@ -2618,81 +2749,106 @@ void onPaint (Event event) {
 	}
 
 	/* paint focus rectangle */
-	if (focusItem != null && isFocusControl ()) {
-		Rectangle focusBounds = focusItem.getFocusBounds ();
-		if (focusBounds.width > 0) {
-			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
-			gc.setClipping (focusBounds);
-			int[] oldLineDash = gc.getLineDash ();
-			if (focusItem.isSelected ()) {
-				gc.setLineDash (new int[] {2, 2});
-			} else {
-				gc.setLineDash (new int[] {1, 1});
+	if (!noFocusDraw && isFocusControl ()) {
+		if (focusItem != null) {
+			Rectangle focusBounds = focusItem.getFocusBounds ();
+			if (focusBounds.width > 0) {
+				gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
+				gc.setClipping (focusBounds);
+				if (focusItem.isSelected ()) {
+					gc.setLineDash (new int[] {2, 2});
+				} else {
+					gc.setLineDash (new int[] {1, 1});
+				}
+				gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
 			}
-			gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-			gc.setLineDash (oldLineDash);
+		} else {
+			/* no items, so draw focus border around Table */
+			int y = headerHeight + 1;
+			int width = Math.max (0, clientArea.width - 2);
+			int height = Math.max (0, clientArea.height - headerHeight - 2);
+			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
+			gc.setClipping (1, y, width, height);
+			gc.setLineDash (new int[] {1, 1});
+			gc.drawFocus (1, y, width, height);
 		}
 	}
 }
 void onResize (Event event) {
-	Rectangle clientArea = getClientArea ();
+	clientArea = getClientArea ();
 	/* vertical scrollbar */
 	ScrollBar vBar = getVerticalBar ();
-	int clientHeight = (clientArea.height - getHeaderHeight ()) / itemHeight;
-	int thumb = Math.min (clientHeight, itemsCount);
-	vBar.setThumb (thumb);
-	vBar.setPageIncrement (thumb);
-	int index = vBar.getSelection ();
-	if (index != topIndex) {
-		topIndex = index;
-		redraw ();
+	if (vBar != null) {
+		int clientHeight = (clientArea.height - getHeaderHeight ()) / itemHeight;
+		int thumb = Math.min (clientHeight, itemsCount);
+		vBar.setThumb (thumb);
+		vBar.setPageIncrement (thumb);
+		int index = vBar.getSelection ();
+		if (index != topIndex) {
+			topIndex = index;
+			redraw ();
+		}
+		boolean visible = clientHeight < itemsCount;
+		if (visible != vBar.getVisible ()) {
+			vBar.setVisible (visible);
+			clientArea = getClientArea ();
+		}
 	}
-	boolean visible = clientHeight < itemsCount;
-	if (visible != vBar.getVisible ()) {
-		vBar.setVisible (visible);
-		clientArea = getClientArea ();
-	}
+	
 	/* horizontal scrollbar */ 
-	ScrollBar hBar = getHorizontalBar ();
-	int hBarMaximum = hBar.getMaximum ();
-	thumb = Math.min (clientArea.width, hBarMaximum);
-	hBar.setThumb (thumb);
-	hBar.setPageIncrement (thumb);
-	horizontalOffset = hBar.getSelection ();
-	visible = clientArea.width < hBarMaximum;
-	if (visible != hBar.getVisible ()) {
-		hBar.setVisible (visible);
-		clientArea = getClientArea ();
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar != null) {
+		int hBarMaximum = hBar.getMaximum ();
+		int thumb = Math.min (clientArea.width, hBarMaximum);
+		hBar.setThumb (thumb);
+		hBar.setPageIncrement (thumb);
+		horizontalOffset = hBar.getSelection ();
+		boolean visible = clientArea.width < hBarMaximum;
+		if (visible != hBar.getVisible ()) {
+			hBar.setVisible (visible);
+			clientArea = getClientArea ();
+		}
 	}
+	
 	/* header */
 	int headerHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	header.setSize (clientArea.width, headerHeight);
+	
+	/* if this is the focus control but there are no items then the boundary focus ring must be repainted */
+	if (itemsCount == 0 && isFocusControl ()) redraw ();
 }
 void onScrollHorizontal (Event event) {
-	int newSelection = getHorizontalBar ().getSelection ();
-	Rectangle clientArea = getClientArea ();
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar == null) return;
+	int newSelection = hBar.getSelection ();
 	update ();
-	GC gc = new GC (this);
-	gc.copyArea (
-		0, 0,
-		clientArea.width, clientArea.height,
-		horizontalOffset - newSelection, 0);
-	gc.dispose ();
-	if (header.isVisible ()) {
-		header.update ();
-		clientArea = header.getClientArea ();
-		gc = new GC (header);
+	if (itemsCount > 0) {
+		GC gc = new GC (this);
 		gc.copyArea (
 			0, 0,
 			clientArea.width, clientArea.height,
+			horizontalOffset - newSelection, 0);
+		gc.dispose ();
+	} else {
+		redraw ();	/* ensure that static focus rectangle updates properly */
+	}
+
+	if (drawCount <= 0 && header.isVisible ()) {
+		header.update ();
+		Rectangle headerClientArea = header.getClientArea ();
+		GC gc = new GC (header);
+		gc.copyArea (
+			0, 0,
+			headerClientArea.width, headerClientArea.height,
 			horizontalOffset - newSelection, 0);
 		gc.dispose ();
 	}
 	horizontalOffset = newSelection;
 }
 void onScrollVertical (Event event) {
-	int newSelection = getVerticalBar ().getSelection ();
-	Rectangle clientArea = getClientArea ();
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar == null) return;
+	int newSelection = vBar.getSelection ();
 	update ();
 	GC gc = new GC (this);
 	gc.copyArea (
@@ -2709,16 +2865,14 @@ void onSpace () {
 		redrawItem (focusItem.index, true);
 	}
 	if ((style & SWT.CHECK) != 0) {
-		focusItem.checked = !focusItem.checked;
-		Rectangle bounds = focusItem.getCheckboxBounds ();
-		redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
-	}	
+		focusItem.setChecked (!focusItem.checked);
+	}
 	showItem (focusItem);
 	Event event = new Event ();
 	event.item = focusItem;
 	postEvent (SWT.Selection, event);
 	if ((style & SWT.CHECK) == 0) return;
-	
+
 	/* SWT.CHECK */
 	event = new Event ();
 	event.item = focusItem;
@@ -2751,11 +2905,11 @@ void reassignFocus () {
 }
 public void redraw () {
 	checkWidget ();
-	if (drawCount == 0) super.redraw ();
+	if (drawCount <= 0) super.redraw ();
 }
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	if (drawCount == 0) super.redraw (x, y, width, height, all);
+	if (drawCount <= 0) super.redraw (x, y, width, height, all);
 }
 /* 
  * Redraws from the specified index down to the last available item inclusive.  Note
@@ -2771,6 +2925,7 @@ void redrawFromItemDownwards (int index) {
  * beyond the last available item.
  */
 void redrawItem (int itemIndex, boolean focusBoundsOnly) {
+	if (itemIndex < itemsCount && !items [itemIndex].isInViewport ()) return;
 	redrawItems (itemIndex, itemIndex, focusBoundsOnly);
 }
 /*
@@ -2778,12 +2933,13 @@ void redrawItem (int itemIndex, boolean focusBoundsOnly) {
  * for the end index value to extend beyond the last available item.
  */
 void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
-	if (drawCount != 0) return;
+	if (drawCount > 0) return;
 
 	int startY = (startIndex - topIndex) * itemHeight + getHeaderHeight ();
 	int height = (endIndex - startIndex + 1) * itemHeight;
 	if (focusBoundsOnly) {
-		if (columns.length > 0) {
+		boolean custom = hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
+		if (!custom && columns.length > 0) {
 			TableColumn lastColumn;
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				TableColumn[] orderedColumns = getOrderedColumns ();
@@ -2796,12 +2952,20 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 		}
 		endIndex = Math.min (endIndex, itemsCount - 1);
 		for (int i = startIndex; i <= endIndex; i++) {
-			Rectangle bounds = items [i].getFocusBounds ();
-			redraw (bounds.x, startY, bounds.width, height, false);
+			TableItem item = items [i];
+			if (item.isInViewport ()) {
+				/* if custom painting is being done then repaint the full item */
+				if (custom) {
+					redraw (0, getItemY (item), clientArea.width, itemHeight, false);
+				} else {
+					/* repaint the item's focus bounds */
+					Rectangle bounds = item.getFocusBounds ();
+					redraw (bounds.x, startY, bounds.width, height, false);
+				}
+			}
 		}
 	} else {
-		Rectangle bounds = getClientArea ();
-		redraw (0, startY, bounds.width, height, false);
+		redraw (0, startY, clientArea.width, height, false);
 	}
 }
 /**
@@ -2874,7 +3038,7 @@ public void remove (int [] indices) {
 	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
-	sort (newIndices);
+	sortDescent (newIndices);
 	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	if (!(0 <= start && start <= end && end < itemsCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
@@ -2889,7 +3053,7 @@ public void remove (int [] indices) {
 }
 /**
  * Removes all of the items from the receiver.
- * <p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2910,16 +3074,37 @@ public void removeAll () {
 	anchorItem = lastClickedItem = null;
 	lastSelectionEvent = null;
 	ScrollBar vBar = getVerticalBar ();
-	vBar.setMaximum (1);
-	vBar.setVisible (false);
+	if (vBar != null) {
+		vBar.setMaximum (1);
+		vBar.setVisible (false);
+	}
 	if (columns.length == 0) {
 		horizontalOffset = 0;
-		ScrollBar hBar = getHorizontalBar ();
-		hBar.setMaximum (1);
-		hBar.setVisible (false);
+		ScrollBar hBar = getHorizontalBar (); 
+		if (hBar != null) {
+			hBar.setMaximum (1);
+			hBar.setVisible (false);
+		}
 	}
 
 	setRedraw (true);
+}
+String removeMnemonics (String string) {
+	/* removes single ampersands and preserves double-ampersands */
+	char [] chars = new char [string.length ()];
+	string.getChars (0, chars.length, chars, 0);
+	int i = 0, j = 0;
+	for ( ; i < chars.length; i++, j++) {
+		if (chars[i] == '&') {
+			if (++i == chars.length) break;
+			if (chars[i] == '&') {
+				chars[j++] = chars[i - 1];
+			}
+		}
+		chars[j] = chars[i];
+	}
+	if (i == j) return string;
+	return new String (chars, 0, j);
 }
 void removeSelectedItem (int index) {
 	TableItem[] newSelectedItems = new TableItem [selectedItems.length - 1];
@@ -2929,7 +3114,7 @@ void removeSelectedItem (int index) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -2981,6 +3166,7 @@ public void select (int index) {
  * if start is greater than end.
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
+ * </p>
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -3014,6 +3200,7 @@ public void select (int start, int end) {
  * Indices that are out of range and duplicate indices are ignored.
  * If the receiver is single-select and multiple indices are specified,
  * then all indices are ignored.
+ * </p>
  *
  * @param indices the array of indices for the items to select
  *
@@ -3049,6 +3236,7 @@ public void select (int [] indices) {
  * Selects all of the items in the receiver.
  * <p>
  * If the receiver is single-select, do nothing.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3081,6 +3269,16 @@ void selectItem (TableItem item, boolean addToSelection) {
 		System.arraycopy (oldSelectedItems, 0, selectedItems, 0, oldSelectedItems.length);
 		selectedItems [selectedItems.length - 1] = item;
 	}
+}
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND); 
+	super.setBackground (color);
+}
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND); 
+	super.setForeground (color);
 }
 /**
  * Sets the order that the items in the receiver should 
@@ -3143,7 +3341,7 @@ public void setColumnOrder (int [] order) {
 	}
 
 	redraw ();
-	if (drawCount == 0 && header.isVisible ()) header.redraw ();
+	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
 }
 void setFocusItem (TableItem item, boolean redrawOldFocus) {
 	if (item == focusItem) return;
@@ -3164,7 +3362,7 @@ public void setFont (Font value) {
 	
 	/* recompute the receiver's cached font height and item height values */
 	fontHeight = gc.getFontMetrics ().getHeight ();
-	itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	setItemHeight (Math.max (fontHeight, imageHeight) + 2 * getCellPadding ());
 	Point headerSize = header.getSize ();
 	int newHeaderHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	if (headerSize.y != newHeaderHeight) {
@@ -3185,16 +3383,18 @@ public void setFont (Font value) {
 	
 	gc.dispose ();
 	
-	if (drawCount == 0 && header.isVisible ()) header.redraw ();
+	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
 	
 	/* update scrollbars */
 	if (columns.length == 0) updateHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
-	int thumb = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-	vBar.setThumb (thumb);
-	vBar.setPageIncrement (thumb);
-	topIndex = vBar.getSelection ();
-	vBar.setVisible (thumb < vBar.getMaximum ());
+	if (vBar != null) {
+		int thumb = (clientArea.height - getHeaderHeight ()) / itemHeight;
+		vBar.setThumb (thumb);
+		vBar.setPageIncrement (thumb);
+		topIndex = vBar.getSelection ();
+		vBar.setVisible (thumb < vBar.getMaximum ());
+	}
 	redraw ();
 }
 void setHeaderImageHeight (int value) {
@@ -3231,7 +3431,7 @@ public void setHeaderVisible (boolean value) {
 }
 void setImageHeight (int value) {
 	imageHeight = value;
-	itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	setItemHeight (Math.max (fontHeight, imageHeight) + 2 * getCellPadding ());
 }
 /**
  * Sets the number of items contained in the receiver.
@@ -3249,6 +3449,7 @@ public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (count == itemsCount) return;
+	int oldCount = itemsCount;
 	int redrawStart, redrawEnd;
 	
 	/* if the new item count is less than the current count then remove all excess items from the end */
@@ -3294,14 +3495,29 @@ public void setItemCount (int count) {
 			items [i] = new TableItem (this, SWT.NONE, i, false);
 			itemsCount++;
 		}
+		if (oldCount == 0) focusItem = items [0];
 	}
 
 	updateVerticalBar ();
+	/*
+	 * If this is the focus control and the item count is going from 0->!0 or !0->0 then the
+	 * receiver must be redrawn to ensure that its boundary focus ring is updated.
+	 */
+	if ((oldCount == 0 || itemsCount == 0) && isFocusControl ()) {
+		redraw ();
+		return;
+	}
 	redrawItems (redrawStart, redrawEnd, false);
+}
+boolean setItemHeight (int value) {
+	boolean update = !customHeightSet || itemHeight < value; 
+	if (update) itemHeight = value;
+	return update;
 }
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
+ * and marks it invisible otherwise. Note that some platforms draw grid lines
+ * while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, marking
@@ -3321,6 +3537,10 @@ public void setLinesVisible (boolean value) {
 	linesVisible = value;
 	redraw ();
 }
+public void setMenu (Menu menu) {
+	super.setMenu (menu);
+	header.setMenu (menu);
+}
 public void setRedraw (boolean value) {
 	checkWidget();
 	if (value) {
@@ -3339,10 +3559,30 @@ public void setRedraw (boolean value) {
 	super.setRedraw (value);
 	header.setRedraw (value);
 }
-public void setSelection (TableItem  item) {
+/**
+ * Sets the receiver's selection to the given item.
+ * The current selection is cleared before the new item is selected.
+ * <p>
+ * If the item is not in the receiver, then it is ignored.
+ * </p>
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSelection (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSelection (new TableItem[] {item});
+	setSelection (new TableItem[] {item}, true);
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -3351,6 +3591,7 @@ public void setSelection (TableItem  item) {
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,
  * then all items are ignored.
+ * </p>
  *
  * @param items the array of items
  *
@@ -3370,6 +3611,9 @@ public void setSelection (TableItem  item) {
 public void setSelection (TableItem[] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (items, true);
+}
+void setSelection (TableItem[] items, boolean updateViewport) {
 	if (items.length == 0 || ((style & SWT.SINGLE) != 0 && items.length > 1)) {
 		deselectAll ();
 		return;
@@ -3406,15 +3650,17 @@ public void setSelection (TableItem[] items) {
 			redrawItem (selectedItems [i].index, true);
 		}
 	}
-	showItem (selectedItems [0]);
-	setFocusItem (selectedItems [0], true);
+	if (updateViewport) {
+		showItem (selectedItems [0]);
+		setFocusItem (selectedItems [0], true);
+	}
 }
 /**
  * Sets the column used by the sort indicator for the receiver. A null
  * value will clear the sort indicator.  The current sort column is cleared 
  * before the new column is set.
  *
- * @param column the column used by the sort indicator
+ * @param column the column used by the sort indicator or <code>null</code>
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
@@ -3490,6 +3736,7 @@ public void setSelection (int index) {
  * if start is greater than end.
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
+ * </p>
  * 
  * @param start the start index of the items to select
  * @param end the end index of the items to select
@@ -3520,6 +3767,7 @@ public void setSelection (int start, int end) {
  * Indices that are out of range and duplicate indices are ignored.
  * If the receiver is single-select and multiple indices are specified,
  * then all indices are ignored.
+ * </p>
  *
  * @param indices the indices of the items to select
  *
@@ -3565,7 +3813,6 @@ public void setSelection (int [] indices) {
 public void setTopIndex (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemsCount)) return;
-	Rectangle clientArea = getClientArea ();
 	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	if (itemsCount <= visibleItemCount) return;
 	index = Math.min (index, itemsCount - visibleItemCount);
@@ -3574,8 +3821,9 @@ public void setTopIndex (int index) {
 	update ();
 	int change = topIndex - index;
 	topIndex = index;
-	getVerticalBar ().setSelection (topIndex);
-	if (drawCount == 0) {
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar != null) vBar.setSelection (topIndex);
+	if (drawCount <= 0) {
 		GC gc = new GC (this);
 		gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
 		gc.dispose ();
@@ -3607,8 +3855,7 @@ public void showColumn (TableColumn column) {
 
 	int x = column.getX ();
 	int rightX = x + column.width;
-	Rectangle bounds = getClientArea ();
-	if (0 <= x && rightX <= bounds.width) return;	 /* column is fully visible */
+	if (0 <= x && rightX <= clientArea.width) return;	 /* column is fully visible */
 
 	headerHideToolTip ();
 	int absX = 0;	/* the X of the column irrespective of the horizontal scroll */
@@ -3616,14 +3863,15 @@ public void showColumn (TableColumn column) {
 	for (int i = 0; i < column.getOrderIndex (); i++) {
 		absX += orderedColumns [i].width;
 	}
-	if (x < bounds.x) { 	/* column is to left of viewport */
+	if (x < clientArea.x) { 	/* column is to left of viewport */
 		horizontalOffset = absX;
 	} else {
-		horizontalOffset = absX + column.width - bounds.width;
+		horizontalOffset = absX + column.width - clientArea.width;
 	}
-	getHorizontalBar ().setSelection (horizontalOffset);
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar != null) hBar.setSelection (horizontalOffset);
 	redraw ();
-	if (drawCount == 0 && header.isVisible ()) header.redraw ();
+	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,
@@ -3650,7 +3898,7 @@ public void showItem (TableItem item) {
 	if (item.parent != this) return;
 	
 	int index = item.index;
-	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	/* nothing to do if item is already in viewport */
 	if (topIndex <= index && index < topIndex + visibleItemCount) return;
 	
@@ -3659,6 +3907,7 @@ public void showItem (TableItem item) {
 		setTopIndex (item.index);
 	} else {
 		/* item is below current viewport, so show on bottom */
+		visibleItemCount = Math.max (visibleItemCount, 1);	/* item to show should be top item */
 		setTopIndex (Math.min (index - visibleItemCount + 1, itemsCount - 1));
 	}
 }
@@ -3679,12 +3928,12 @@ public void showSelection () {
 	if (selectedItems.length == 0) return;
 	showItem (selectedItems [0]);
 }
-void sort (int [] items) {
+void sortDescent (int [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
-	for (int gap=length/2; gap>0; gap/=2) {
-		for (int i=gap; i<length; i++) {
-			for (int j=i-gap; j>=0; j-=gap) {
+	for (int gap = length / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < length; i++) {
+			for (int j = i - gap; j >= 0; j -= gap) {
 				if (items [j] <= items [j + gap]) {
 					int swap = items [j];
 					items [j] = items [j + gap];
@@ -3694,43 +3943,105 @@ void sort (int [] items) {
 		}
 	}
 }
+void sortAscent (int [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap = length / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < length; i++) {
+			for (int j = i - gap; j >= 0; j -= gap) {
+				if (items [j] >= items [j + gap]) {
+					int swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+				}
+			}
+		}
+	}
+}
+void sortAscent (TableItem [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap = length / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < length; i++) {
+			for (int j = i - gap; j >= 0; j -= gap) {
+				if (items [j].index >= items [j + gap].index) {
+					TableItem swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+				}
+			}
+		}
+	}
+}
 void updateColumnWidth (TableColumn column, int width) {
 	headerHideToolTip ();
+	int oldWidth = column.width;
+	int columnX = column.getX ();
+	int x = columnX + oldWidth - 1;	/* -1 ensures that grid line is included */
+
+	update ();
+	GC gc = new GC (this);
+	gc.copyArea (x, 0, clientArea.width - x, clientArea.height, columnX + width - 1, 0);	/* dest x -1 offsets x's -1 above */
+	if (width > oldWidth) {
+		/* column width grew */
+		int change = width - oldWidth + 1;	/* +1 offsets x's -1 above */
+		/* -1/+1 below ensure that right bound of selection redraws correctly in column */ 
+		redraw (x - 1, 0, change + 1, clientArea.height, false);
+	} else {
+		int change = oldWidth - width + 1;	/* +1 offsets x's -1 above */
+		redraw (clientArea.width - change, 0, change, clientArea.height, false);
+	}
+	/* the focus box must be repainted because its stipple may become shifted as a result of its new width */
+	if (focusItem != null) redrawItem (focusItem.index, true);
+
+	GC headerGC = new GC (header);
+	if (drawCount <= 0 && header.getVisible ()) {
+		Rectangle headerBounds = header.getClientArea ();
+		header.update ();
+		x -= 1;	/* -1 ensures that full header column separator is included */
+		headerGC.copyArea (x, 0, headerBounds.width - x, headerBounds.height, columnX + width - 2, 0);	/* dest x -2 offsets x's -1s above */
+		if (width > oldWidth) {
+			/* column width grew */
+			int change = width - oldWidth + 2;	/* +2 offsets x's -1s above */
+			header.redraw (x, 0, change, headerBounds.height, false);
+		} else {
+			int change = oldWidth - width + 2;	/* +2 offsets x's -1s above */
+			header.redraw (headerBounds.width - change, 0, change, headerBounds.height, false);
+		}
+	}
+
 	column.width = width;
-	Rectangle bounds = getClientArea ();
+
+	/*
+	 * Notify column and all items of column width change so that display labels
+	 * can be recomputed if needed.
+	 */
+	column.updateWidth (headerGC);
+	headerGC.dispose ();
+	for (int i = 0; i < itemsCount; i++) {
+		items [i].updateColumnWidth (column, gc);
+	}
+	gc.dispose ();
 
 	int maximum = 0;
 	for (int i = 0; i < columns.length; i++) {
 		maximum += columns [i].width;
 	}
 	ScrollBar hBar = getHorizontalBar ();
-	hBar.setMaximum (maximum);
-	hBar.setThumb (bounds.width);
-	hBar.setPageIncrement (bounds.width);
-	hBar.setVisible (bounds.width < maximum);
-	boolean offsetChanged = false;
-	int selection = hBar.getSelection ();
-	if (selection != horizontalOffset) {
-		horizontalOffset = selection;
-		offsetChanged = true;
-	}
-	
-	/* 
-	 * Notify column and all items of column width change so that display labels
-	 * can be recomputed if needed.
-	 */
-	GC gc = new GC (this);
-	column.computeDisplayText (gc);
-	for (int i = 0; i < itemsCount; i++) {
-		items [i].updateColumnWidth (column, gc);
-	}
-	gc.dispose ();
-
-	int x = 0;
-	if (!offsetChanged) x = column.getX ();
-	redraw (x, 0, bounds.width - x, bounds.height, false);
-	if (drawCount == 0 && header.getVisible ()) {
-		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
+	if (hBar != null) {
+		hBar.setMaximum (Math.max (1, maximum));	/* setting a value of 0 here is ignored */
+		if (hBar.getThumb () != clientArea.width) {
+			hBar.setThumb (clientArea.width);
+			hBar.setPageIncrement (clientArea.width);
+		}
+		int oldHorizontalOffset = horizontalOffset;	/* hBar.setVisible() can modify horizontalOffset */
+		hBar.setVisible (clientArea.width < maximum);
+		int selection = hBar.getSelection ();
+		if (selection != oldHorizontalOffset) {
+			horizontalOffset = selection;
+			redraw ();
+			if (drawCount <= 0 && header.getVisible ()) header.redraw ();
+		}
 	}
 
 	column.sendEvent (SWT.Resize);
@@ -3740,14 +4051,17 @@ void updateColumnWidth (TableColumn column, int width) {
 			orderedColumns [i].sendEvent (SWT.Move);
 		}
 	}
+
+	if (itemsCount == 0) redraw ();	/* ensure that static focus rectangle updates properly */
 }
 /*
  * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
-	if (drawCount != 0) return;
-
+	if (drawCount > 0) return;
 	ScrollBar hBar = getHorizontalBar ();
+	if (hBar == null) return;
+	
 	int maxX = 0;
 	if (columns.length > 0) {
 		for (int i = 0; i < columns.length; i++) {
@@ -3755,14 +4069,14 @@ void updateHorizontalBar () {
 		}
 	} else {
 		for (int i = 0; i < itemsCount; i++) {
-			Rectangle itemBounds = items [i].getBounds ();
+			Rectangle itemBounds = items [i].getCellBounds (0);
 			maxX = Math.max (maxX, itemBounds.x + itemBounds.width + horizontalOffset);
 		}
 	}
 	
-	int clientWidth = getClientArea ().width;
+	int clientWidth = clientArea.width;
 	if (maxX != hBar.getMaximum ()) {
-		hBar.setMaximum (maxX);
+		hBar.setMaximum (Math.max (1, maxX));	/* setting a value of 0 here is ignored */
 	}
 	int thumb = Math.min (clientWidth, maxX);
 	if (thumb != hBar.getThumb ()) {
@@ -3791,14 +4105,15 @@ void updateHorizontalBar () {
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
-	if (drawCount != 0) return;
+	if (drawCount > 0) return;
+	ScrollBar hBar = getHorizontalBar ();
+	if (hBar == null) return;
 
 	newRightX += horizontalOffset;
-	ScrollBar hBar = getHorizontalBar ();
 	int barMaximum = hBar.getMaximum ();
 	if (newRightX > barMaximum) {	/* item has extended beyond previous maximum */
 		hBar.setMaximum (newRightX);
-		int clientAreaWidth = getClientArea ().width;
+		int clientAreaWidth = clientArea.width;
 		int thumb = Math.min (newRightX, clientAreaWidth);
 		hBar.setThumb (thumb);
 		hBar.setPageIncrement (thumb);
@@ -3809,7 +4124,7 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 	int previousRightX = newRightX - rightXchange;
 	if (previousRightX != barMaximum) {
 		/* this was not the rightmost item, so just check for client width change */
-		int clientAreaWidth = getClientArea ().width;
+		int clientAreaWidth = clientArea.width;
 		int thumb = Math.min (barMaximum, clientAreaWidth);
 		hBar.setThumb (thumb);
 		hBar.setPageIncrement (thumb);
@@ -3819,11 +4134,12 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
-	if (drawCount != 0) return;
-
-	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-	int maximum = Math.max (1, itemsCount);
+	if (drawCount > 0) return;
 	ScrollBar vBar = getVerticalBar ();
+	if (vBar == null) return;
+
+	int pageSize = (clientArea.height - getHeaderHeight ()) / itemHeight;
+	int maximum = Math.max (1, itemsCount);	/* setting a value of 0 here is ignored */
 	if (maximum != vBar.getMaximum ()) {
 		vBar.setMaximum (maximum);
 	}

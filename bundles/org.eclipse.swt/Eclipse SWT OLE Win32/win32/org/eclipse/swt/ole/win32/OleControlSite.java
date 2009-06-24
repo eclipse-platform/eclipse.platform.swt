@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.ole.win32;
+
+import java.io.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -38,6 +40,8 @@ import org.eclipse.swt.internal.win32.*;
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
  * </dl>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public class OleControlSite extends OleClientSite
 {
@@ -51,13 +55,46 @@ public class OleControlSite extends OleClientSite
 	// supporting Event Sink attributes
 	private OleEventSink[] oleEventSink = new OleEventSink[0];
 	private GUID[] oleEventSinkGUID = new GUID[0];
-	private int[] oleEventSinkIUnknown = new int[0];
+	private int /*long*/[] oleEventSinkIUnknown = new int /*long*/[0];
 		
 	// supporting information for the Control COM object
 	private CONTROLINFO currentControlInfo;
 	private int[] sitePropertyIds = new int[0];
 	private Variant[] sitePropertyValues = new Variant[0];
 	
+	private Font font;
+
+
+/**
+ * Create an OleControlSite child widget using the OLE Document type associated with the
+ * specified file.  The OLE Document type is determined either through header information in the file 
+ * or through a Registry entry for the file extension. Use style bits to select a particular look 
+ * or set of properties.
+ *
+ * @param parent a composite widget; must be an OleFrame
+ * @param style the bitwise OR'ing of widget styles
+ * @param file the file that is to be opened in this OLE Document
+ *
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul> 
+ * @exception SWTException
+ * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
+ *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
+ *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
+ *     <li>ERROR_INVALID_CLASSID
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public OleControlSite(Composite parent, int style, File file) {
+	super(parent, style, file);
+	
+	// Init site properties
+	setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
+	setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
+}
 /**
  * Create an OleControlSite child widget using style bits
  * to select a particular look or set of properties.
@@ -69,7 +106,7 @@ public class OleControlSite extends OleClientSite
  *               in the registry for this Control (for example, the VersionIndependentProgID for 
  *               Internet Explorer is Shell.Explorer)
  *
- *@exception IllegalArgumentException <ul>
+ * @exception IllegalArgumentException <ul>
  *     <li>ERROR_NULL_ARGUMENT when the parent is null
  *</ul>
  * @exception SWTException <ul>
@@ -88,15 +125,15 @@ public OleControlSite(Composite parent, int style, String progId) {
 		appClsid = getClassID(progId);
 		if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
 	
-		int licinfo = getLicenseInfo(appClsid);
+		int /*long*/ licinfo = getLicenseInfo(appClsid);
 		if (licinfo == 0) {
 			
 			// Open a storage object
 			tempStorage = createTempStorage();
 	
 			// Create ole object with storage object
-			int[] address = new int[1];
-			int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
+			int /*long*/[] address = new int /*long*/[1];
+			int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, iOleClientSite.getAddress(), tempStorage.getAddress(), address);
 			if (result != COM.S_OK)
 				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 	
@@ -104,7 +141,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 			
 		} else {
 			// Prepare the ClassFactory
-			int[] ppvObject = new int[1];
+			int /*long*/[] ppvObject = new int /*long*/[1];
 			try {
 				int result = COM.CoGetClassObject(appClsid, COM.CLSCTX_INPROC_HANDLER | COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory2, ppvObject);
 				if (result != COM.S_OK) {
@@ -112,7 +149,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 				}
 				IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
 				// Create Com Object
-				ppvObject = new int[1];
+				ppvObject = new int /*long*/[1];
 				result = classFactory.CreateInstanceLic(0, 0, COM.IIDIUnknown, licinfo, ppvObject);
 				classFactory.Release();
 				if (result != COM.S_OK)
@@ -124,7 +161,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 			objIUnknown = new IUnknown(ppvObject[0]);
 	
 			// Prepare a storage medium
-			ppvObject = new int[1];
+			ppvObject = new int /*long*/[1];
 			if (objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppvObject) == COM.S_OK) {
 				IPersistStorage persist = new IPersistStorage(ppvObject[0]);
 				tempStorage = createTempStorage();
@@ -148,6 +185,43 @@ public OleControlSite(Composite parent, int style, String progId) {
 		throw e;
 	}			
 }
+/**
+ * Create an OleClientSite child widget to edit the specified file using the specified OLE Document
+ * application.  Use style bits to select a particular look or set of properties. 
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>OleClientSite</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ * @param parent a composite widget; must be an OleFrame
+ * @param style the bitwise OR'ing of widget styles
+ * @param progId the unique program identifier of am OLE Document application; 
+ *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
+ *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
+ *               for Word is Word.Document)
+ * @param file the file that is to be opened in this OLE Document
+ *
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul>
+ * @exception SWTException
+ * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
+ *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public OleControlSite(Composite parent, int style, String progId, File file) {
+	super(parent, style, progId, file);
+	
+	// Init site properties
+	setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
+	setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
+}
 /**	 
  * Adds the listener to receive events.
  *
@@ -169,7 +243,7 @@ public void addEventListener(int eventID, OleListener listener) {
 }
 static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	// get Event Sink I/F from IProvideClassInfo2
-	int[] ppvObject = new int[1];
+	int /*long*/[] ppvObject = new int /*long*/[1];
 	if (unknown.QueryInterface(COM.IIDIProvideClassInfo2, ppvObject) == COM.S_OK) {
 		IProvideClassInfo2 pci2 = new IProvideClassInfo2(ppvObject[0]);
 		GUID riid = new GUID();
@@ -181,14 +255,14 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	// get Event Sink I/F from IProvideClassInfo
 	if (unknown.QueryInterface(COM.IIDIProvideClassInfo, ppvObject) == COM.S_OK) {
 		IProvideClassInfo pci = new IProvideClassInfo(ppvObject[0]);
-		int[] ppTI = new int[1];
-		int[] ppEI = new int[1];
+		int /*long*/[] ppTI = new int /*long*/[1];
+		int /*long*/[] ppEI = new int /*long*/[1];
 		int result = pci.GetClassInfo(ppTI);
 		pci.Release();
 		
 		if (result == COM.S_OK && ppTI[0] != 0) {		
 			ITypeInfo classInfo = new ITypeInfo(ppTI[0]);
-			int[] ppTypeAttr = new int[1];
+			int /*long*/[] ppTypeAttr = new int /*long*/[1];
 			result = classInfo.GetTypeAttr(ppTypeAttr);
 			if (result == COM.S_OK  && ppTypeAttr[0] != 0) {
 				TYPEATTR typeAttribute = new TYPEATTR();
@@ -213,7 +287,7 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	
 			if (ppEI[0] != 0) {
 				ITypeInfo eventInfo = new ITypeInfo(ppEI[0]);
-				ppTypeAttr = new int[1];
+				ppTypeAttr = new int /*long*/[1];
 				result = eventInfo.GetTypeAttr(ppTypeAttr);
 				GUID riid = null;
 				if (result == COM.S_OK && ppTypeAttr[0] != 0) {
@@ -244,7 +318,7 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
  */
 public void addEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	if (listener == null || automation == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
-	int address = automation.getAddress();
+	int /*long*/ address = automation.getAddress();
 	IUnknown unknown = new IUnknown(address);
 	GUID riid = getDefaultEventSinkGUID(unknown);
 	if (riid != null) {
@@ -268,7 +342,7 @@ public void addEventListener(OleAutomation automation, int eventID, OleListener 
  */
 public void addEventListener(OleAutomation automation, String eventSinkId, int eventID, OleListener listener) {
 	if (listener == null || automation == null || eventSinkId == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
-	int address = automation.getAddress();
+	int /*long*/ address = automation.getAddress();
 	if (address == 0) return;
 	char[] buffer = (eventSinkId +"\0").toCharArray();
 	GUID guid = new GUID();
@@ -276,7 +350,7 @@ public void addEventListener(OleAutomation automation, String eventSinkId, int e
 	addEventListener(address, guid, eventID, listener);
 }
 
-void addEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
+void addEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListener listener) {
 	if (listener == null || iunknown == 0 || guid == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
 	// have we connected to this kind of event sink before?
 	int index = -1;
@@ -294,7 +368,7 @@ void addEventListener(int iunknown, GUID guid, int eventID, OleListener listener
 		int oldLength = oleEventSink.length;
 		OleEventSink[] newOleEventSink = new OleEventSink[oldLength + 1];
 		GUID[] newOleEventSinkGUID = new GUID[oldLength + 1];
-		int[] newOleEventSinkIUnknown = new int[oldLength + 1];
+		int /*long*/[] newOleEventSinkIUnknown = new int /*long*/[oldLength + 1];
 		System.arraycopy(oleEventSink, 0, newOleEventSink, 0, oldLength);
 		System.arraycopy(oleEventSinkGUID, 0, newOleEventSinkGUID, 0, oldLength);
 		System.arraycopy(oleEventSinkIUnknown, 0, newOleEventSinkIUnknown, 0, oldLength);
@@ -319,7 +393,7 @@ protected void addObjectReferences() {
 	connectPropertyChangeSink();
 
 	// Get access to the Control object
-	int[] ppvObject = new int[1];
+	int /*long*/[] ppvObject = new int /*long*/[1];
 	if (objIUnknown.QueryInterface(COM.IIDIOleControl, ppvObject) == COM.S_OK) {
 		IOleControl objIOleControl = new IOleControl(ppvObject[0]);
 		// ask the control for its info in case users
@@ -354,26 +428,26 @@ protected void createCOMInterfaces () {
 	
 	// register each of the interfaces that this object implements
 	iOleControlSite = new COMObject(new int[]{2, 0, 0, 0, 1, 1, 3, 2, 1, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return OnControlInfoChanged();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return OnControlInfoChanged();}
 		// method4 LockInPlaceActive - not implemented
 		// method5 GetExtendedControl - not implemented
 		// method6 TransformCoords - not implemented
 		// method7 Translate Accelerator - not implemented
-		public int method8(int[] args) {return OnFocus(args[0]);}
+		public int /*long*/ method8(int /*long*/[] args) {return OnFocus((int)/*64*/args[0]);}
 		// method9 ShowPropertyFrame - not implemented
 	};
 	
 	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 5, 8}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 		// method3 GetTypeInfoCount - not implemented
 		// method4 GetTypeInfo - not implemented
 		// method5 GetIDsOfNames - not implemented
-		public int method6(int[] args) {return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
+		public int /*long*/ method6(int /*long*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 	};
 }
 private void disconnectEventSinks() {
@@ -385,7 +459,7 @@ private void disconnectEventSinks() {
 	}
 	oleEventSink = new OleEventSink[0];
 	oleEventSinkGUID = new GUID[0];
-	oleEventSinkIUnknown = new int[0];
+	oleEventSinkIUnknown = new int /*long*/[0];
 }
 private void disconnectPropertyChangeSink() {
 
@@ -424,7 +498,7 @@ public Color getBackground () {
 	return super.getBackground();
 }
 public Font getFont () {
-
+	if (font != null && !font.isDisposed()) return font;
 	if (objIUnknown != null) {
 		OleAutomation oleObject= new OleAutomation(this);
 		Variant varDispFont = oleObject.getProperty(COM.DISPID_FONT);
@@ -444,7 +518,7 @@ public Font getFont () {
 				lfItalic != null && 
 				lfBold != null){
 				int style = 3 * lfBold.getInt() + 2 * lfItalic.getInt();
-				Font font = new Font(getShell().getDisplay(), lfFaceName.getString(), lfHeight.getInt(), style);
+				font = new Font(getShell().getDisplay(), lfFaceName.getString(), lfHeight.getInt(), style);
 				return font;
 			}
 		}
@@ -469,34 +543,40 @@ public Color getForeground () {
 		
 	return super.getForeground();
 }
-protected int getLicenseInfo(GUID clsid) {
-	int[] ppvObject = new int[1];
-
-	if (COM.CoGetClassObject(clsid, COM.CLSCTX_INPROC_HANDLER | COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory2, ppvObject) != COM.S_OK) {
+protected int /*long*/ getLicenseInfo(GUID clsid) {
+	int /*long*/[] ppvObject = new int /*long*/[1];
+	if (COM.CoGetClassObject(clsid, COM.CLSCTX_INPROC_HANDLER
+				| COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory, ppvObject) != COM.S_OK) {
 		return 0;
 	}
-	IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
-	LICINFO licinfo = new LICINFO();
-	if (classFactory.GetLicInfo(licinfo) != COM.S_OK) {
-		classFactory.Release();
-		return 0;
-	}
-	int[] pBstrKey = new int[1];
-	if (licinfo != null && licinfo.fRuntimeKeyAvail) {
-		if (classFactory.RequestLicKey(0, pBstrKey) == COM.S_OK) {
-			classFactory.Release();
-			return pBstrKey[0];
+	int /*long*/ result = 0;
+	IUnknown unknown = new IUnknown(ppvObject[0]);
+	if (unknown.QueryInterface(COM.IIDIClassFactory2, ppvObject) == COM.S_OK) {
+		IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
+		LICINFO licinfo = new LICINFO();
+		if (classFactory.GetLicInfo(licinfo) == COM.S_OK) {
+			int /*long*/[] pBstrKey = new int /*long*/[1];
+			if (licinfo != null && licinfo.fRuntimeKeyAvail) {
+				if (classFactory.RequestLicKey(0, pBstrKey) == COM.S_OK) {
+					result = pBstrKey[0];
+				}
+			}
 		}
+		classFactory.Release();
 	}
-	classFactory.Release();
-	return 0;
+	unknown.Release();	
+	return result;
 }
 /**
  * 
- * Get the control site property specified by the dispIdMember.
+ * Get the control site property specified by the dispIdMember, or
+ * <code>null</code> if the dispId is not recognised.
+ * 
+ * @param dispId the dispId
+ * 
+ * @return the property value or <code>null</code>
  * 
  * @since 2.1
- * 
  */
 public Variant getSiteProperty(int dispId){
 	for (int i = 0; i < sitePropertyIds.length; i++) {
@@ -506,22 +586,22 @@ public Variant getSiteProperty(int dispId){
 	}
 	return null;
 }
-protected int GetWindow(int phwnd) {
+protected int GetWindow(int /*long*/ phwnd) {
 
 	if (phwnd == 0)
 		return COM.E_INVALIDARG;
 	if (frame == null) {
-		COM.MoveMemory(phwnd, new int[] {0}, 4);
+		COM.MoveMemory(phwnd, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 		return COM.E_NOTIMPL;
 	}
 	
 	// Copy the Window's handle into the memory passed in
-	COM.MoveMemory(phwnd, new int[] {handle}, 4);
+	COM.MoveMemory(phwnd, new int /*long*/[] {handle}, OS.PTR_SIZEOF);
 	return COM.S_OK;
 }
-private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispParams, int pVarResult, int pExcepInfo, int pArgErr) {
+private int Invoke(int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*long*/ pDispParams, int /*long*/ pVarResult, int /*long*/ pExcepInfo, int /*long*/ pArgErr) {
 	if (pVarResult == 0 || dwFlags != COM.DISPATCH_PROPERTYGET) {
-		if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int[] {0}, 4);
+		if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
 		if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 		return COM.DISP_E_MEMBERNOTFOUND;
 	}
@@ -535,8 +615,8 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 		case COM.DISPID_AMBIENT_SUPPORTSMNEMONICS :
 		case COM.DISPID_AMBIENT_SHOWGRABHANDLES :
 		case COM.DISPID_AMBIENT_SHOWHATCHING :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int[] {0}, 4);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int[] {0}, 4);
+			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
+			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
 			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.S_FALSE;
 
@@ -548,20 +628,20 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 		case COM.DISPID_AMBIENT_LOCALEID :
 		case COM.DISPID_AMBIENT_SILENT :
 		case COM.DISPID_AMBIENT_MESSAGEREFLECT :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int[] {0}, 4);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int[] {0}, 4);
+			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
+			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
 			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.E_NOTIMPL;
 			
 		default :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int[] {0}, 4);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int[] {0}, 4);
+			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
+			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo,new int /*long*/ [] {0}, OS.PTR_SIZEOF);
 			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.DISP_E_MEMBERNOTFOUND;
 	}
 }
 private int OnControlInfoChanged() {
-	int[] ppvObject = new int[1];
+	int /*long*/[] ppvObject = new int /*long*/[1];
 	if (objIUnknown.QueryInterface(COM.IIDIOleControl, ppvObject) == COM.S_OK) {
 		IOleControl objIOleControl = new IOleControl(ppvObject[0]);
 		// ask the control for its info in case users
@@ -572,30 +652,88 @@ private int OnControlInfoChanged() {
 	}
 	return COM.S_OK;
 }
-void onFocusIn(Event e) {
-	if (objIOleInPlaceObject == null) return;
-	doVerb(OLE.OLEIVERB_UIACTIVATE);
-	if (isFocusControl()) return;
-	int[] phwnd = new int[1];
-	objIOleInPlaceObject.GetWindow(phwnd);
-	if (phwnd[0] == 0) return;
-	OS.SetFocus(phwnd[0]);
-}
-void onFocusOut(Event e) {
-	if (objIOleInPlaceObject != null) {
-		objIOleInPlaceObject.UIDeactivate();
-	}
-}
+
+// The following is intentionally commented, it's not believed that
+// OLEIVERB_UIACTIVATE and UIDeactivate should be invoked for every
+// received focusIn and focusOut, respectively.
+//
+//void onFocusIn(Event e) {
+//	String progID = getProgramID();
+//	if (progID == null) return;
+//	if (!progID.startsWith("Shell.Explorer")) {
+//		super.onFocusIn(e);
+//		return;
+//	}
+//	if (objIOleInPlaceObject == null) return;
+//	doVerb(OLE.OLEIVERB_UIACTIVATE);
+//	if (isFocusControl()) return;
+//	int /*long*/[] phwnd = new int /*long*/[1];
+//	objIOleInPlaceObject.GetWindow(phwnd);
+//	if (phwnd[0] == 0) return;
+//	OS.SetFocus(phwnd[0]);
+//}
+//void onFocusOut(Event e) {
+//	if (objIOleInPlaceObject == null) return;
+//	String progID = getProgramID();
+//	if (progID == null) return;
+//	if (!progID.startsWith("Shell.Explorer")) {
+//		super.onFocusOut(e);
+//		return;
+//	}
+//	/*
+//	* Bug in Windows.  When IE7 loses focus and UIDeactivate()
+//	* is called, IE destroys the caret even though it is
+//	* no longer owned by IE.  If focus has moved to a control
+//	* that shows a caret then the caret disappears.  The fix 
+//	* is to detect this case and restore the caret.
+//	*/
+//	int threadId = OS.GetCurrentThreadId();
+//	GUITHREADINFO lpgui1 = new GUITHREADINFO();
+//	lpgui1.cbSize = GUITHREADINFO.sizeof;
+//	OS.GetGUIThreadInfo(threadId, lpgui1);
+//	objIOleInPlaceObject.UIDeactivate();
+//	if (lpgui1.hwndCaret != 0) {
+//		GUITHREADINFO lpgui2 = new GUITHREADINFO();
+//		lpgui2.cbSize = GUITHREADINFO.sizeof;
+//		OS.GetGUIThreadInfo(threadId, lpgui2);
+//		if (lpgui2.hwndCaret == 0 && lpgui1.hwndCaret == OS.GetFocus()) {
+//			if (SWT_RESTORECARET == 0) {
+//				SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
+//			}
+//			/*
+//			* If the caret was not restored by SWT, put it back using
+//			* the information from GUITHREADINFO.  Note that this will
+//			* not be correct when the caret has a bitmap.  There is no
+//			* API to query the bitmap that the caret is using.
+//			*/
+//			if (OS.SendMessage (lpgui1.hwndCaret, SWT_RESTORECARET, 0, 0) == 0) {
+//				int width = lpgui1.right - lpgui1.left;
+//				int height = lpgui1.bottom - lpgui1.top;
+//				OS.CreateCaret (lpgui1.hwndCaret, 0, width, height);
+//				OS.SetCaretPos (lpgui1.left, lpgui1.top);
+//				OS.ShowCaret (lpgui1.hwndCaret);
+//			}
+//		}
+//	}
+//}
+
 private int OnFocus(int fGotFocus) {
 	return COM.S_OK;
 }
 protected int OnUIDeactivate(int fUndoable) {
 	// controls don't need to do anything for
 	// border space or menubars
+	if (frame == null || frame.isDisposed()) return COM.S_OK;
 	state = STATE_INPLACEACTIVE;
+	frame.SetActiveObject(0,0);
+	redraw();
+	Shell shell = getShell();
+	if (isFocusControl() || frame.isFocusControl()) {
+		shell.traverse(SWT.TRAVERSE_TAB_NEXT);
+	}
 	return COM.S_OK;
 }
-protected int QueryInterface(int riid, int ppvObject) {
+protected int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	int result = super.QueryInterface(riid, ppvObject);
 	if (result == COM.S_OK)
 		return result;
@@ -604,16 +742,16 @@ protected int QueryInterface(int riid, int ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIOleControlSite)) {
-		COM.MoveMemory(ppvObject, new int[] {iOleControlSite.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iOleControlSite.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
-		COM.MoveMemory(ppvObject, new int[] {iDispatch.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new int[] {0}, 4);
+	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 protected int Release() {
@@ -640,7 +778,7 @@ protected void releaseObjectInterfaces() {
  *
  * @param eventID the event identifier
  * 
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
@@ -681,29 +819,27 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
 /**	 
  * Removes the listener.
  *
- * @since 2.0
- * 
  * @param automation the automation object that provides the event notification
- * 
  * @param eventID the event identifier
- * 
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
+ * 
+ * @since 2.0
  */
 public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	checkWidget();
 	if (automation == null || listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int address = automation.getAddress();
+	int /*long*/ address = automation.getAddress();
 	IUnknown unknown = new IUnknown(address);
 	GUID riid = getDefaultEventSinkGUID(unknown);
 	if (riid != null) {
 		removeEventListener(address, riid, eventID, listener);
 	}
 }
-void removeEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
+void removeEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListener listener) {
 	if (listener == null || guid == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i = 0; i < oleEventSink.length; i++) {
 		if (COM.IsEqualGUID(oleEventSinkGUID[i], guid)) {
@@ -717,7 +853,7 @@ void removeEventListener(int iunknown, GUID guid, int eventID, OleListener liste
 					if (oldLength == 1) {
 						oleEventSink = new OleEventSink[0];
 						oleEventSinkGUID = new GUID[0];
-						oleEventSinkIUnknown = new int[0];
+						oleEventSinkIUnknown = new int /*long*/[0];
 					} else {
 						OleEventSink[] newOleEventSink = new OleEventSink[oldLength - 1];
 						System.arraycopy(oleEventSink, 0, newOleEventSink, 0, i);
@@ -729,7 +865,7 @@ void removeEventListener(int iunknown, GUID guid, int eventID, OleListener liste
 						System.arraycopy(oleEventSinkGUID, i + 1, newOleEventSinkGUID, i, oldLength - i - 1);
 						oleEventSinkGUID = newOleEventSinkGUID;
 						
-						int[] newOleEventSinkIUnknown = new int[oldLength - 1];
+						int /*long*/[] newOleEventSinkIUnknown = new int /*long*/[oldLength - 1];
 						System.arraycopy(oleEventSinkIUnknown, 0, newOleEventSinkIUnknown, 0, i);
 						System.arraycopy(oleEventSinkIUnknown, i + 1, newOleEventSinkIUnknown, i, oldLength - i - 1);
 						oleEventSinkIUnknown = newOleEventSinkIUnknown;
@@ -743,7 +879,8 @@ void removeEventListener(int iunknown, GUID guid, int eventID, OleListener liste
 /**	 
  * Removes the listener.
  *
- * @param listener the listener
+ * @param propertyID the identifier of the property
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
@@ -786,7 +923,7 @@ public void setFont (Font font) {
 			iDispFont.dispose();
 		}
 	}
-		
+	this.font = font;	
 	return;
 }
 public void setForeground (Color color) {

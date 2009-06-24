@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,10 @@ import org.eclipse.swt.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Group extends Composite {
 	int labelHandle;
@@ -122,12 +126,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int marginWidth = argList [3];
 	int marginHeight = argList [5];
 	int borderWidth = getBorderWidth ();
-	trimX = x - marginWidth + thickness - borderWidth;
-	trimY = y - marginHeight + thickness - borderWidth;
+	trimX = x - marginWidth - thickness - borderWidth;
+	trimY = y - marginHeight - thickness - borderWidth;
 	trimWidth = width + ((marginWidth + thickness + borderWidth) * 2);
 	trimHeight = height + ((marginHeight + thickness + borderWidth) * 2);
 	if (OS.XtIsManaged (labelHandle)) {
-		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0, OS.XmNchildHorizontalSpacing, 0};
+		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0};
 		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
 		int titleHeight = ((short) argList2 [1]) + argList2 [3];
 		trimY = y - titleHeight;
@@ -199,15 +203,16 @@ public Rectangle getClientArea () {
 	int thickness = argList [5];
 	int marginWidth = argList [7];
 	int marginHeight = argList [9];
-	int x = marginWidth + thickness;
-	int y = marginHeight + thickness;
-	int width = argList [1] - ((marginWidth + thickness) * 2) - 1;
-	int height = argList [3] - ((marginHeight + thickness) * 2) - 1;
+	int borderWidth = getBorderWidth ();
+	int x = marginWidth + thickness + borderWidth;
+	int y = marginHeight + thickness + borderWidth;
+	int width = argList [1] - ((marginWidth + thickness + borderWidth) * 2);
+	int height = argList [3] - ((marginHeight + thickness + borderWidth) * 2);
 	if (OS.XtIsManaged (labelHandle)) {
 		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0};
 		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
 		y = ((short) argList2 [1]) + argList2 [3];
-		height = argList [3] - y - (marginHeight + thickness) - 1;
+		height = argList [3] - y - (marginHeight + thickness + borderWidth);
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -283,14 +288,14 @@ void setParentBackground () {
  * be displayed as the receiver's <em>title</em>, to the argument,
  * which may not be null. The string may include the mnemonic character.
  * </p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
- * key sequence that matches the mnemonic, focus is assgned
+ * key sequence that matches the mnemonic, focus is assigned
  * to the first child of the group. On most platforms, the
  * mnemonic appears underlined but may be emphasised in a
  * platform specific manner.  The mnemonic indicator character
- *'&amp' can be escaped by doubling it in the string, causing
- * a single '&amp' to be displayed.
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
  * </p>
  * @param string the new text
  *

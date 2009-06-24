@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,13 +14,13 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IViewObject2 extends IUnknown
 {
-public IViewObject2(int address) {
+public IViewObject2(int /*long*/ address) {
 	super(address);
 }
 public int GetExtent(int dwAspect, int lindex, DVTARGETDEVICE ptd, SIZE lpsizel) {
 	return COM.VtblCall(9, address, dwAspect, lindex, ptd, lpsizel);
 }
-public int SetAdvise(int dwAspects, int dwAdvf, int pIAdviseSink) {
+public int SetAdvise(int dwAspects, int dwAdvf, int /*long*/ pIAdviseSink) {
 	return COM.VtblCall(7, address, dwAspects, dwAdvf, pIAdviseSink);
 }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ public class PgDisplaySettings_t {
 	public int yres;
 	public int refresh;
 	public int flags;
+	/** @field cast=(long *) */
 	public int [] reserved = new int [22];
 	public static final int sizeof = 108;
 }

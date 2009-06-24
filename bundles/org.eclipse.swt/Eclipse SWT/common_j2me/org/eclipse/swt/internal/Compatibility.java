@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -191,6 +191,19 @@ public static int pow2(int n) {
 }
 
 /**
+ * Create an DeflaterOutputStream if such things are supported.
+ * 
+ * @param stream the output stream
+ * @return a deflater stream or <code>null</code>
+ * @exception IOException
+ * 
+ * @since 3.4
+ */
+public static OutputStream newDeflaterOutputStream(OutputStream stream) throws IOException {
+	return null;
+}
+
+/**
  * Open a file if such things are supported.
  * 
  * @param filename the name of the file to open
@@ -208,6 +221,19 @@ public static InputStream newFileInputStream (String filename) throws IOExceptio
  */
 public static OutputStream newFileOutputStream (String filename) throws IOException {
 	throw new IOException();
+}
+
+/**
+ * Create an InflaterInputStream if such things are supported.
+ * 
+ * @param stream the input stream
+ * @return a inflater stream or <code>null</code>
+ * @exception IOException
+ * 
+ * @since 3.3
+ */
+public static InputStream newInflaterInputStream(InputStream stream) throws IOException {
+	return null;
 }
 
 /**
@@ -269,6 +295,17 @@ public static boolean isWhitespace(char c) {
  */
 public static void exec(String prog) throws java.io.IOException {
 	throw new IOException();
+}
+
+/**
+ * Answers whether the indicated file exists or not.
+ * 
+ * @param parent the file's parent directory
+ * @param child the file's name
+ * @return true if the file exists
+ */
+public static boolean fileExists(String parent, String child) {
+	return false;
 }
 
 /**

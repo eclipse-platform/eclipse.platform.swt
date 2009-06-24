@@ -1,33 +1,50 @@
-/* ***** BEGIN LICENSE BLOCK *****
-* Version: MPL 1.1
-*
-* The contents of this file are subject to the Mozilla Public License Version
-* 1.1 (the "License"); you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/
-*
-* Software distributed under the License is distributed on an "AS IS" basis,
-* WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-* for the specific language governing rights and limitations under the
-* License.
-*
-* The Original Code is Mozilla Communicator client code, released March 31, 1998.
-*
-* The Initial Developer of the Original Code is
-* Netscape Communications Corporation.
-* Portions created by Netscape are Copyright (C) 1998-1999
-* Netscape Communications Corporation.  All Rights Reserved.
-*
-* Contributor(s):
-*
-* IBM
-* -  Binding to permit interfacing between Mozilla and SWT
-* -  Copyright (C) 2003, 2004 IBM Corp.  All Rights Reserved.
-*
-* ***** END LICENSE BLOCK ***** */
+/*******************************************************************************
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "xpcom_structs.h"
+
+#ifndef NO_nsDynamicFunctionLoad
+typedef struct nsDynamicFunctionLoad_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID functionName, function;
+} nsDynamicFunctionLoad_FID_CACHE;
+
+nsDynamicFunctionLoad_FID_CACHE nsDynamicFunctionLoadFc;
+
+void cachensDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject)
+{
+	if (nsDynamicFunctionLoadFc.cached) return;
+	nsDynamicFunctionLoadFc.clazz = env->GetObjectClass(lpObject);
+	nsDynamicFunctionLoadFc.functionName = env->GetFieldID(nsDynamicFunctionLoadFc.clazz, "functionName", I_J);
+	nsDynamicFunctionLoadFc.function = env->GetFieldID(nsDynamicFunctionLoadFc.clazz, "function", I_J);
+	nsDynamicFunctionLoadFc.cached = 1;
+}
+
+nsDynamicFunctionLoad *getnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct)
+{
+	if (!nsDynamicFunctionLoadFc.cached) cachensDynamicFunctionLoadFields(env, lpObject);
+	lpStruct->functionName = (const char *)env->GetIntLongField(lpObject, nsDynamicFunctionLoadFc.functionName);
+	lpStruct->function = (NSFuncPtr  *)env->GetIntLongField(lpObject, nsDynamicFunctionLoadFc.function);
+	return lpStruct;
+}
+
+void setnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct)
+{
+	if (!nsDynamicFunctionLoadFc.cached) cachensDynamicFunctionLoadFields(env, lpObject);
+	env->SetIntLongField(lpObject, nsDynamicFunctionLoadFc.functionName, (jintLong)lpStruct->functionName);
+	env->SetIntLongField(lpObject, nsDynamicFunctionLoadFc.function, (jintLong)lpStruct->function);
+}
+#endif
 
 #ifndef NO_nsID
 typedef struct nsID_FID_CACHE {

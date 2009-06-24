@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -41,7 +42,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>DROP_DOWN, READ_ONLY, SIMPLE</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Modify, Selection</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles DROP_DOWN and SIMPLE may be specified.
@@ -50,12 +51,16 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see List
+ * @see <a href="http://www.eclipse.org/swt/snippets/#combo">Combo snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class Combo extends Composite {
-	boolean noSelection, ignoreModify, ignoreCharacter;
-	int visibleCount = 5;
-	
+	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify, ignoreResize, lockText;
+	int scrollWidth, visibleCount = 5;
+	int /*long*/ cbtHook;
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -79,9 +84,9 @@ public class Combo extends Composite {
 	 */
 	static final int CBID_LIST = 1000;
 	static final int CBID_EDIT = 1001;
-	static /*final*/ int EditProc, ListProc;
+	static /*final*/ int /*long*/ EditProc, ListProc;
 	
-	static final int ComboProc;
+	static final int /*long*/ ComboProc;
 	static final TCHAR ComboClass = new TCHAR (0, "COMBOBOX", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -121,7 +126,9 @@ public class Combo extends Composite {
  */
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	if ((style & SWT.H_SCROLL) != 0) this.style |= SWT.H_SCROLL;
+	/* This code is intentionally commented */
+	//if ((style & SWT.H_SCROLL) != 0) this.style |= SWT.H_SCROLL;
+	this.style |= SWT.H_SCROLL;
 }
 
 /**
@@ -143,7 +150,7 @@ public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
-	int result = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
+	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 	if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
@@ -175,12 +182,12 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
-	int result = OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer);
+	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer);
 	if (result == OS.CB_ERRSPACE || result == OS.CB_ERR) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
@@ -215,11 +222,11 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the combo's list selection changes.
+ * <code>widgetSelected</code> is called when the user changes the combo's list selection.
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed the combo's text area.
  * </p>
  *
@@ -273,23 +280,45 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == handle) {
+		switch (msg) {
+			case OS.WM_SIZE: {
+				ignoreResize = true;
+				int /*long*/ result = OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
+				ignoreResize = false;
+				return result;
+			}
+		}
 		return OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
 	}
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwnd == hwndText) {
+		if (lockText && msg == OS.WM_SETTEXT) return 0;
 		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
 	}
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwnd == hwndList) {
 		return OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
-boolean checkHandle (int hwnd) {
+int /*long*/ CBTProc (int /*long*/ nCode, int /*long*/ wParam, int /*long*/ lParam) {
+	if ((int)/*64*/nCode == OS.HCBT_CREATEWND) {
+		TCHAR buffer = new TCHAR (0, 128);
+		OS.GetClassName (wParam, buffer, buffer.length ());
+		String className = buffer.toString (0, buffer.strlen ());
+		if (className.equals ("Edit") || className.equals ("EDIT")) { //$NON-NLS-1$  //$NON-NLS-2$
+			int bits = OS.GetWindowLong (wParam, OS.GWL_STYLE);
+			OS.SetWindowLong (wParam, OS.GWL_STYLE, bits & ~OS.ES_NOHIDESEL);
+		}
+	}
+	return OS.CallNextHookEx (cbtHook, (int)/*64*/nCode, wParam, lParam);
+}
+
+boolean checkHandle (int /*long*/ hwnd) {
 	return hwnd == handle || hwnd == OS.GetDlgItem (handle, CBID_EDIT) || hwnd == OS.GetDlgItem (handle, CBID_LIST);
 }
 
@@ -351,42 +380,42 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT) {
+		int /*long*/ newFont, oldFont = 0;
+		int /*long*/ hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+		RECT rect = new RECT ();
+		int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+		if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
+		int length = OS.GetWindowTextLength (handle);
+		int cp = getCodePage ();
+		TCHAR buffer = new TCHAR (cp, length + 1);
+		OS.GetWindowText (handle, buffer, length + 1);
+		OS.DrawText (hDC, buffer, length, rect, flags);
+		width = Math.max (width, rect.right - rect.left);
 		if ((style & SWT.H_SCROLL) != 0) {
-			width = OS.SendMessage (handle, OS.CB_GETHORIZONTALEXTENT, 0, 0);
+			width = Math.max (width, scrollWidth);
 		} else {
-			int newFont, oldFont = 0;
-			int hDC = OS.GetDC (handle);
-			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-			RECT rect = new RECT ();
-			int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
-			if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
-			int length = OS.GetWindowTextLength (handle);
-			int cp = getCodePage ();
-			TCHAR buffer = new TCHAR (cp, length + 1);
-			OS.GetWindowText (handle, buffer, length + 1);
-			OS.DrawText (hDC, buffer, length, rect, flags);
-			width = Math.max (width, rect.right - rect.left);
 			for (int i=0; i<count; i++) {
-				length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
+				length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
 				if (length != OS.CB_ERR) {
 					if (length + 1 > buffer.length ()) buffer = new TCHAR (cp, length + 1);
-					int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
+					int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
 					if (result != OS.CB_ERR) {
 						OS.DrawText (hDC, buffer, length, rect, flags);
 						width = Math.max (width, rect.right - rect.left);
 					}
 				}
 			}
-			if (newFont != 0) OS.SelectObject (hDC, oldFont);
-			OS.ReleaseDC (handle, hDC);
 		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
 	}
 	if (hHint == SWT.DEFAULT) {
 		if ((style & SWT.SIMPLE) != 0) {
-			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-			int itemHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
+			int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+			int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
 			height = count * itemHeight;
 		}
 	}
@@ -397,10 +426,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		width += 8;
 	} else {
-		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+		int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 		if (hwndText != 0) {
-			int margins = OS.SendMessage (hwndText, OS.EM_GETMARGINS, 0, 0);
-			int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+			int /*long*/ margins = OS.SendMessage (hwndText, OS.EM_GETMARGINS, 0, 0);
+			int marginWidth = OS.LOWORD (margins) + OS.HIWORD (margins);
 			width += marginWidth + 3;
 		}
 	}
@@ -412,14 +441,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;		
-		int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
+		int textHeight = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 		if ((style & SWT.DROP_DOWN) != 0) {
 			height = textHeight + 6;
 		} else {
 			height += textHeight + 10;
 		}
 	}
-	if ((style & SWT.H_SCROLL) != 0) height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+	if ((style & SWT.SIMPLE) != 0 && (style & SWT.H_SCROLL) != 0) {
+		height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+	}
 	return new Point (width, height);
 }
 
@@ -442,17 +473,39 @@ public void copy () {
 }
 
 void createHandle () {
-	super.createHandle ();
+	/*
+	* Feature in Windows.  When the selection changes in a combo box,
+	* Windows draws the selection, even when the combo box does not
+	* have focus.  Strictly speaking, this is the correct Windows
+	* behavior because the combo box sets ES_NOHIDESEL on the text
+	* control that it creates.  Despite this, it looks strange because
+	* Windows also clears the selection and selects all the text when
+	* the combo box gets focus.  The fix is use the CBT hook to clear
+	* the ES_NOHIDESEL style bit when the text control is created.
+	*/
+	if (OS.IsWinCE || (style & (SWT.READ_ONLY | SWT.SIMPLE)) != 0) {
+		super.createHandle ();
+	} else {
+		int threadId = OS.GetCurrentThreadId ();
+		Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
+		int /*long*/ cbtProc = cbtCallback.getAddress ();
+		if (cbtProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtProc, 0, threadId);
+		super.createHandle ();
+		if (cbtHook != 0) OS.UnhookWindowsHookEx (cbtHook);
+		cbtHook = 0;
+		cbtCallback.dispose ();
+	}
 	state &= ~(CANVAS | THEME_BACKGROUND);
 
 	/* Get the text and list window procs */
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0 && EditProc == 0) {
-		EditProc = OS.GetWindowLong (hwndText, OS.GWL_WNDPROC);
+		EditProc = OS.GetWindowLongPtr (hwndText, OS.GWLP_WNDPROC);
 	}
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0 && ListProc == 0) {
-		ListProc = OS.GetWindowLong (hwndList, OS.GWL_WNDPROC);
+		ListProc = OS.GetWindowLongPtr (hwndList, OS.GWLP_WNDPROC);
 	}
 
 	/*
@@ -494,9 +547,9 @@ int defaultBackground () {
 
 void deregister () {
 	super.deregister ();
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) display.removeControl (hwndText);
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0) display.removeControl (hwndList);
 }
 
@@ -514,7 +567,7 @@ void deregister () {
  */
 public void deselect (int index) {
 	checkWidget ();
-	int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	int selection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 	if (index != selection) return;
 	OS.SendMessage (handle, OS.CB_SETCURSEL, -1, 0);
 	sendEvent (SWT.Modify);
@@ -542,6 +595,28 @@ public void deselectAll () {
 	// widget could be disposed at this point
 }
 
+boolean dragDetect (int /*long*/ hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
+	if (filter && (style & SWT.READ_ONLY) == 0) {
+		int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+		if (hwndText != 0) {
+			int [] start = new int [1], end = new int [1];
+			OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
+			if (start [0] != end [0]) {
+				int /*long*/ lParam = OS.MAKELPARAM (x, y);
+				int position = OS.LOWORD (OS.SendMessage (hwndText, OS.EM_CHARFROMPOS, 0, lParam));
+				if (start [0] <= position && position < end [0]) {
+					if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
+						if (consume != null) consume [0] = true;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+	return super.dragDetect (hwnd, x, y, filter, detect, consume);
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
@@ -560,13 +635,13 @@ public void deselectAll () {
  */
 public String getItem (int index) {
 	checkWidget ();
-	int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
+	int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 	if (length != OS.CB_ERR) {
 		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-		int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
+		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
 		if (result != OS.CB_ERR) return buffer.toString (0, length);
 	}
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
 	error (SWT.ERROR_INVALID_RANGE);
 	return "";
@@ -584,7 +659,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (count == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_COUNT);
 	return count;
 }
@@ -602,7 +677,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	int result = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
+	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
 	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 	return result;
 }
@@ -631,8 +706,58 @@ public String [] getItems () {
 	return result;
 }
 
+/**
+ * Returns <code>true</code> if the receiver's list is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's list's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getListVisible () {
+	checkWidget ();
+	if ((style & SWT.DROP_DOWN) != 0) {
+		return OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0;
+	}
+	return true;
+}
+
 String getNameText () {
 	return getText ();
+}
+
+/**
+ * Marks the receiver's list as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setListVisible (boolean visible) {
+	checkWidget ();
+	OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, visible ? 1 : 0, 0);
 }
 
 /**
@@ -699,7 +824,7 @@ public Point getSelection () {
 public int getSelectionIndex () {
 	checkWidget ();
 	if (noSelection) return -1;
-	return OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 }
 
 /**
@@ -740,7 +865,7 @@ public int getTextHeight () {
 	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
 		return (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2; 
 	}
-	int result = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
+	int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 	return (style & SWT.DROP_DOWN) != 0 ? result + 6 : result + 10;
 }
@@ -762,9 +887,9 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget ();
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return LIMIT;
-	return OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0);
+	return (int)/*64*/OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 }
 
 /**
@@ -790,12 +915,12 @@ public int getVisibleItemCount () {
 }
 
 boolean hasFocus () {
-	int hwndFocus = OS.GetFocus ();
+	int /*long*/ hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) return true;
 	if (hwndFocus == 0) return false;
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndFocus == hwndText) return true;
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndFocus == hwndList) return true;
 	return false;
 }
@@ -859,12 +984,12 @@ public int indexOf (String string, int start) {
 	}
 
 	/* Use CB_FINDSTRINGEXACT to search for the item */	
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start < count)) return -1;
 	int index = start - 1, last = 0;
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	do {
-		index = OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, buffer);
+		index = (int)/*64*/OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, buffer);
 		if (index == OS.CB_ERR || index <= last) return -1;
 	} while (!string.equals (getItem (index)));
 	return index;
@@ -873,7 +998,7 @@ public int indexOf (String string, int start) {
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
 	if (OS.IsUnicode) return mbcsPos;
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return mbcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
 	if (mbcsSize == 0) return 0;
@@ -905,9 +1030,9 @@ public void paste () {
 
 void register () {
 	super.register ();
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) display.addControl (hwndText, this);
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0) display.addControl (hwndList, this);
 }
 
@@ -927,23 +1052,35 @@ void register () {
  */
 public void remove (int index) {
 	checkWidget ();
+	remove (index, true);
+}
+
+void remove (int index, boolean notify) {
 	TCHAR buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
-		int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
-		if (length == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
+		if (length == OS.CB_ERR) {
+			int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+			error (SWT.ERROR_INVALID_RANGE);
+		}
 		buffer = new TCHAR (getCodePage (), length + 1);
-		int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
-		if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
+		if (result == OS.CB_ERR) {
+			int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+			error (SWT.ERROR_INVALID_RANGE);
+		}
 	}
 	int length = OS.GetWindowTextLength (handle);
-	int code = OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0);
+	int code = (int)/*64*/OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0);
 	if (code == OS.CB_ERR) {
-		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+		int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
-	if (length != OS.GetWindowTextLength (handle)) {
+	if (notify && length != OS.GetWindowTextLength (handle)) {
 		sendEvent (SWT.Modify);
 		if (isDisposed ()) return;
 	}
@@ -955,7 +1092,7 @@ public void remove (int index) {
 	* force a redraw.
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {		
-		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+		int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 		if (count == 0) OS.InvalidateRect (handle, null, true);
 	}
 }
@@ -979,13 +1116,14 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int textLength = OS.GetWindowTextLength (handle);
 	RECT rect = null;
-	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
+	int /*long*/ hDC = 0, oldFont = 0, newFont = 0;
+	int newWidth = 0;
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect = new RECT ();
 		hDC = OS.GetDC (handle);
@@ -997,13 +1135,13 @@ public void remove (int start, int end) {
 	for (int i=start; i<=end; i++) {
 		TCHAR buffer = null;
 		if ((style & SWT.H_SCROLL) != 0) {
-			int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, start, 0);
+			int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, start, 0);
 			if (length == OS.CB_ERR) break;
 			buffer = new TCHAR (cp, length + 1);
-			int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, start, buffer);
+			int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, start, buffer);
 			if (result == OS.CB_ERR) break;
 		}
-		int result = OS.SendMessage (handle, OS.CB_DELETESTRING, start, 0);
+		int result = (int)/*64*/OS.SendMessage (handle, OS.CB_DELETESTRING, start, 0);
 		if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		if ((style & SWT.H_SCROLL) != 0) {
 			OS.DrawText (hDC, buffer, -1, rect, flags);
@@ -1027,7 +1165,7 @@ public void remove (int start, int end) {
 	* force a redraw.
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {		
-		count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+		count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 		if (count == 0) OS.InvalidateRect (handle, null, true);
 	}
 }
@@ -1070,9 +1208,7 @@ public void removeAll () {
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	sendEvent (SWT.Modify);
 	if (isDisposed ()) return;
-	if ((style & SWT.H_SCROLL) != 0) {
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
-	}
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (0);
 }
 
 /**
@@ -1101,7 +1237,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1150,7 +1286,7 @@ public void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
-boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
+boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lParam, Event event) {
 	if (!super.sendKeyEvent (type, msg, wParam, lParam, event)) {
 		return false;
 	}
@@ -1188,7 +1324,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	/* Verify the character */
 	String oldText = "";
 	int [] start = new int [1], end = new int [1];
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return true;
 	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
 	switch (key) {
@@ -1249,10 +1385,10 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
  */
 public void select (int index) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) {
-		int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-		int code = OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
+		int selection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+		int code = (int)/*64*/OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
 		if (code != OS.CB_ERR && code != selection) {
 			sendEvent (SWT.Modify);
 			// widget could be disposed at this point
@@ -1260,19 +1396,19 @@ public void select (int index) {
 	}
 }
 
-void setBackgroundImage (int hBitmap) {
+void setBackgroundImage (int /*long*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
 }
 
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
 }
 
@@ -1296,9 +1432,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
-		if ((style & SWT.H_SCROLL) != 0) { 
-			height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
-		}
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
 		* the combo box resizes the height of the text field and uses
@@ -1334,17 +1467,15 @@ public void setFont (Font font) {
 
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
 }
 
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to removing the old item at the index, and then adding the new
- * item at that index.
+ * zero-relative index to the string argument.
  *
  * @param index the index for the item
  * @param string the new text for the item
@@ -1361,13 +1492,11 @@ void setForegroundPixel (int pixel) {
 public void setItem (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-	remove (index);
+	int selection = getSelectionIndex ();
+	remove (index, false);
 	if (isDisposed ()) return;
 	add (string, index);
-	if (selection != -1) {
-		OS.SendMessage (handle, OS.CB_SETCURSEL, selection, 0);
-	}
+	if (selection != -1) select (selection);
 }
 
 /**
@@ -1391,32 +1520,33 @@ public void setItems (String [] items) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	RECT rect = null;
-	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
+	int /*long*/ hDC = 0, oldFont = 0, newFont = 0;
+	int newWidth = 0;
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect = new RECT ();
 		hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
+		setScrollWidth (0);
 	}
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	int codePage = getCodePage ();
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
 		TCHAR buffer = new TCHAR (codePage, string, true);
-		int code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
+		int code = (int)/*64*/OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if ((style & SWT.H_SCROLL) != 0) {
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			OS.DrawText (hDC, buffer, -1, rect, flags);
 			newWidth = Math.max (newWidth, rect.right - rect.left);
 		}
 	}
 	if ((style & SWT.H_SCROLL) != 0) {
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+		setScrollWidth (newWidth + 3);
 	}
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
@@ -1453,7 +1583,7 @@ public void setOrientation (int orientation) {
 		bits &= ~OS.WS_EX_LAYOUTRTL;
 	}
 	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
-	int hwndText = 0, hwndList = 0;
+	int /*long*/ hwndText = 0, hwndList = 0;
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
 	if (OS.GetComboBoxInfo (handle, pcbi)) {
@@ -1505,18 +1635,18 @@ public void setOrientation (int orientation) {
 void setScrollWidth () {
 	int newWidth = 0;
 	RECT rect = new RECT ();
-	int newFont, oldFont = 0;
-	int hDC = OS.GetDC (handle);
+	int /*long*/ newFont, oldFont = 0;
+	int /*long*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int cp = getCodePage ();
-	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 	for (int i=0; i<count; i++) {
-		int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
+		int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
 		if (length != OS.CB_ERR) {
 			TCHAR buffer = new TCHAR (cp, length + 1);
-			int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
+			int result = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
 			if (result != OS.CB_ERR) {
 				OS.DrawText (hDC, buffer, -1, rect, flags);
 				newWidth = Math.max (newWidth, rect.right - rect.left);
@@ -1525,13 +1655,57 @@ void setScrollWidth () {
 	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+	setScrollWidth (newWidth + 3);
+}
+
+void setScrollWidth (int scrollWidth) {
+	this.scrollWidth = scrollWidth;
+	if ((style & SWT.SIMPLE) != 0) {
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, scrollWidth, 0);
+		return;
+	}
+	boolean scroll = false;
+	int count = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	if (count > 3) {
+		int maxWidth = 0;
+		if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
+			RECT rect = new RECT ();
+			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+			maxWidth = (rect.right - rect.left) / 4;
+		} else {
+			int /*long*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
+			MONITORINFO lpmi = new MONITORINFO ();
+			lpmi.cbSize = MONITORINFO.sizeof;
+			OS.GetMonitorInfo (hmonitor, lpmi);
+			maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
+		}
+		scroll = scrollWidth > maxWidth;
+	}
+	/*
+	* Feature in Windows.  For some reason, in a editable combo box,
+	* when CB_SETDROPPEDWIDTH is used to set the width of the drop
+	* down list and the current text does not match an item in the
+	* list, Windows selects the item that most closely matches the
+	* contents of the combo.  The fix is to lock the current text
+	* by ignoring all WM_SETTEXT messages during processing of
+	* CB_SETDROPPEDWIDTH.
+	*/
+	if ((style & SWT.READ_ONLY) == 0) lockText = true;
+	if (scroll) {
+		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, 0, 0);
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, scrollWidth, 0);
+	} else {
+		scrollWidth += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, scrollWidth, 0);
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
+	}
+	if ((style & SWT.READ_ONLY) == 0) lockText = false;
 }
 
 void setScrollWidth (TCHAR buffer, boolean grow) {
 	RECT rect = new RECT ();
-	int newFont, oldFont = 0;
-	int hDC = OS.GetDC (handle);
+	int /*long*/ newFont, oldFont = 0;
+	int /*long*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
@@ -1542,12 +1716,11 @@ void setScrollWidth (TCHAR buffer, boolean grow) {
 }
 
 void setScrollWidth (int newWidth, boolean grow) {
-	int width = OS.SendMessage (handle, OS.CB_GETHORIZONTALEXTENT, 0, 0);
 	if (grow) {
-		if (newWidth <= width) return;
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+		if (newWidth <= scrollWidth) return;
+		setScrollWidth (newWidth + 3);
 	} else {
-		if (newWidth < width) return;
+		if (newWidth < scrollWidth) return;
 		setScrollWidth ();
 	}
 }
@@ -1576,13 +1749,17 @@ public void setSelection (Point selection) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
 	}
-	int bits = start | (end << 16);
+	int /*long*/ bits = OS.MAKELPARAM (start, end);
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 }
 
 /**
  * Sets the contents of the receiver's text field to the
  * given string.
+ * <p>
+ * This call is ignored when the receiver is read only and 
+ * the given string is not in the receiver's list.
+ * </p>
  * <p>
  * Note: The text field in a <code>Combo</code> is typically
  * only capable of displaying a single line of text. Thus,
@@ -1609,6 +1786,12 @@ public void setText (String string) {
 		if (index != -1) select (index);
 		return;
 	}
+	int limit = LIMIT;
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0) {
+		limit = (int)/*64*/OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
+	}
+	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	if (OS.SetWindowText (handle, buffer)) {
 		sendEvent (SWT.Modify);
@@ -1643,8 +1826,8 @@ public void setTextLimit (int limit) {
 }
 
 void setToolTipText (Shell shell, String string) {
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndText != 0) shell.setToolTipText (hwndText, string);
 	if (hwndList != 0) shell.setToolTipText (hwndList, string);
 	shell.setToolTipText (handle, string);
@@ -1682,14 +1865,14 @@ public void setVisibleItemCount (int count) {
 
 void subclass () {
 	super.subclass ();
-	int newProc = display.windowProc;
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ newProc = display.windowProc;
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) {
-		OS.SetWindowLong (hwndText, OS.GWL_WNDPROC, newProc);
+		OS.SetWindowLongPtr (hwndText, OS.GWLP_WNDPROC, newProc);
 	}
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0) {	
-		OS.SetWindowLong (hwndList, OS.GWL_WNDPROC, newProc);
+		OS.SetWindowLongPtr (hwndList, OS.GWLP_WNDPROC, newProc);
 	}
 }
 
@@ -1699,7 +1882,7 @@ boolean translateTraversal (MSG msg) {
 	* to select an item in the list and escape to close
 	* the combo box.
 	*/
-	switch (msg.wParam) {
+	switch ((int)/*64*/(msg.wParam)) {
 		case OS.VK_RETURN:
 		case OS.VK_ESCAPE:
 			if ((style & SWT.DROP_DOWN) != 0) {
@@ -1721,15 +1904,25 @@ boolean traverseEscape () {
 	return super.traverseEscape ();
 }
 
+boolean traverseReturn () {
+	if ((style & SWT.DROP_DOWN) != 0) {
+		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+			OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
+			return true;
+		}
+	}
+	return super.traverseReturn ();
+}
+
 void unsubclass () {
 	super.unsubclass ();
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0 && EditProc != 0) {
-		OS.SetWindowLong (hwndText, OS.GWL_WNDPROC, EditProc);
+		OS.SetWindowLongPtr (hwndText, OS.GWLP_WNDPROC, EditProc);
 	}
-	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0 && ListProc != 0) {
-		OS.SetWindowLong (hwndList, OS.GWL_WNDPROC, ListProc);
+		OS.SetWindowLongPtr (hwndList, OS.GWLP_WNDPROC, ListProc);
 	}
 }
 
@@ -1761,7 +1954,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 int wcsToMbcsPos (int wcsPos) {
 	if (wcsPos <= 0) return 0;
 	if (OS.IsUnicode) return wcsPos;
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return wcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
 	if (mbcsSize == 0) return 0;
@@ -1791,15 +1984,15 @@ TCHAR windowClass () {
 	return ComboClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return ComboProc;
 }
 
-int windowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd != handle) {
-		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
-		int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+		int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+		int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 		if ((hwndText != 0 && hwnd == hwndText) || (hwndList != 0 && hwnd == hwndList)) {
 			LRESULT result = null;
 			switch (msg) {
@@ -1861,7 +2054,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 					newText = "";
 				} else {
 					if (0 <= wParam && wParam < getItemCount ()) {
-						newText = getItem (wParam);
+						newText = getItem ((int)/*64*/wParam);
 					}
 				}
 				if (newText != null && !newText.equals (oldText)) {
@@ -1882,16 +2075,16 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_CTLCOLOR (int wParam, int lParam) {
+LRESULT WM_CTLCOLOR (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmColorChild (wParam, lParam);
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
-	int code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
 	return new LRESULT (code | OS.DLGC_WANTARROWS);
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  When a combo box that is read only
 	* is disposed in CBN_KILLFOCUS, Windows segment faults.
@@ -1911,7 +2104,7 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When an editable combo box is dropped
 	* down and the text in the entry field partially matches an
@@ -1919,11 +2112,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* WM_COMMAND with CBN_SELCHANGE.  The fix is to detect that
 	* the selection has changed and issue the notification.
 	*/
-	int oldSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	int oldSelection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if ((style & SWT.READ_ONLY) == 0) {
-		int newSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+		int newSelection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 		if (oldSelection != newSelection) {
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
@@ -1934,7 +2127,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Return NULL - Focus notification is
 	* done by WM_COMMAND with CBN_SETFOCUS.
@@ -1942,7 +2135,17 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {	
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Feature in Windows.  When a combo box is resized,
+	* the size of the drop down rectangle is specified
+	* using the height and then the combo box resizes
+	* to be the height of the text field.  This causes
+	* two WM_SIZE messages to be sent and two SWT.Resize
+	* events to be issued.  The fix is to ignore the
+	* second resize.
+	*/
+	if (ignoreResize) return null;
 	/*
 	* Bug in Windows.  If the combo box has the CBS_SIMPLE style,
 	* the list portion of the combo box is not redrawn when the
@@ -1953,9 +2156,9 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		LRESULT result = super.WM_SIZE (wParam, lParam);
 		if (OS.IsWindowVisible (handle)) {
 			if (OS.IsWinCE) {	
-				int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+				int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 				if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
-				int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+				int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 				if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
 			} else {
 				int uFlags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
@@ -1969,46 +2172,76 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* Feature in Windows.  When an editable drop down combo box
 	* contains text that does not correspond to an item in the
 	* list, when the widget is resized, it selects the closest
-	* match from the list.  The fix is to remember the original
-	* text and reset it after the widget is resized.
+	* match from the list.  The fix is to lock the current text
+	* by ignoring all WM_SETTEXT messages during processing of
+	* WM_SIZE.
 	*/
-	if ((style & SWT.READ_ONLY) != 0 || (style & SWT.DROP_DOWN) == 0) {
-		return super.WM_SIZE (wParam, lParam);
-	}
-	int index = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-	boolean redraw = false;
-	TCHAR buffer = null;
-	int [] start = null, end = null;
-	if (index == OS.CB_ERR) {
-		int length = OS.GetWindowTextLength (handle);
-		if (length != 0) {
-			buffer = new TCHAR (getCodePage (), length + 1);
-			OS.GetWindowText (handle, buffer, length + 1);
-			start = new int [1];  end = new int [1];
-			OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
-			redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-			if (redraw) setRedraw (false);
-		}
-	}
+	if ((style & SWT.READ_ONLY) == 0) lockText = true;
 	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if ((style & SWT.READ_ONLY) == 0) lockText = false;
 	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
+	* Feature in Windows.  When CB_SETDROPPEDWIDTH is called with
+	* a width that is smaller than the current size of the combo
+	* box, it is ignored.  This the fix is to set the width after
+	* the combo box has been resized.
 	*/
-	if (isDisposed ()) return result;
-	if (buffer != null) {
-		OS.SetWindowText (handle, buffer);
-		int bits = start [0] | (end [0] << 16);
-		OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
-		if (redraw) setRedraw (true);
-	}
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (scrollWidth);
 	return result; 
 }
 
-LRESULT wmChar (int hwnd, int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When a combo box is resized,
+	* the size of the drop down rectangle is specified
+	* using the height and then the combo box resizes
+	* to be the height of the text field.  This causes
+	* sibling windows that intersect with the original
+	* bounds to redrawn.  The fix is to stop the redraw
+	* using SWP_NOREDRAW and then damage the combo box
+	* text field and the area in the parent where the
+	* combo box used to be.
+	*/
+	if (OS.IsWinCE) return result;
+	if (!getDrawing ()) return result;
+	if (!OS.IsWindowVisible (handle)) return result;
+	if (ignoreResize) {
+		WINDOWPOS lpwp = new WINDOWPOS ();
+		OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+		if ((lpwp.flags & OS.SWP_NOSIZE) == 0) {
+			lpwp.flags |= OS.SWP_NOREDRAW;
+			OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
+			OS.InvalidateRect (handle, null, true);
+			RECT rect = new RECT ();
+			OS.GetWindowRect (handle, rect);
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+			if (width != 0 && height != 0) {
+				int /*long*/ hwndParent = parent.handle;
+				int /*long*/ hwndChild = OS.GetWindow (hwndParent, OS.GW_CHILD);
+				OS.MapWindowPoints (0, hwndParent, rect, 2);
+				int /*long*/ rgn1 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+				while (hwndChild != 0) {
+					if (hwndChild != handle) {
+						OS.GetWindowRect (hwndChild, rect);
+						OS.MapWindowPoints (0, hwndParent, rect, 2);
+						int /*long*/ rgn2 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+						OS.CombineRgn (rgn1, rgn1, rgn2, OS.RGN_DIFF);
+						OS.DeleteObject (rgn2);
+					}
+					hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+				}
+				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+				OS.RedrawWindow (hwndParent, null, rgn1, flags);
+				OS.DeleteObject (rgn1);
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmChar (hwnd, wParam, lParam);
 	if (result != null) return result;
@@ -2022,10 +2255,11 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	* NOTE: This only happens when the drop down list
 	* is not visible.
 	*/
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case SWT.TAB: return LRESULT.ZERO;
 		case SWT.CR:
-			postEvent (SWT.DefaultSelection);
+			if (!ignoreDefaultSelection) postEvent (SWT.DefaultSelection);
+			ignoreDefaultSelection = false;
 			// FALL THROUGH
 		case SWT.ESC:
 			if ((style & SWT.DROP_DOWN) != 0) {
@@ -2037,12 +2271,12 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
+LRESULT wmClipboard (int /*long*/ hwndText, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.READ_ONLY) != 0) return null;
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
 	boolean call = false;
 	int [] start = new int [1], end = new int [1];
-	String oldText = null, newText = null;
+	String newText = null;
 	switch (msg) {
 		case OS.WM_CLEAR:
 		case OS.WM_CUT:
@@ -2060,23 +2294,24 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 		case OS.WM_UNDO:
 			if (OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0) != 0) {
 				ignoreModify = true;
-				OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
 				int length = OS.GetWindowTextLength (hwndText);
-				if (length != 0 && start [0] != end [0]) {
+				int [] newStart = new int [1], newEnd = new int [1];
+				OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
+				if (length != 0 && newStart [0] != newEnd [0]) {
 					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 					OS.GetWindowText (hwndText, buffer, length + 1);
-					newText = buffer.toString (start [0], end [0] - start [0]);
+					newText = buffer.toString (newStart [0], newEnd [0] - newStart [0]);
 				} else {
 					newText = "";
 				}
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
+				OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
 				ignoreModify = false;
 			}
 			break;
 		case OS.WM_SETTEXT:
 			end [0] = OS.GetWindowTextLength (hwndText);
-			oldText = getText ();
 			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
 			TCHAR buffer = new TCHAR (getCodePage (), length);
 			int byteCount = buffer.length () * TCHAR.sizeof;
@@ -2084,8 +2319,8 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 			newText = buffer.toString (0, length);
 			break;
 	}
-	if (newText != null && !newText.equals (oldText)) {
-		oldText = newText;
+	if (newText != null) {
+		String oldText = newText;
 		newText = verifyText (newText, start [0], end [0], null);
 		if (newText == null) return LRESULT.ZERO;
 		if (!newText.equals (oldText)) {
@@ -2094,11 +2329,11 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 			}
 			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 			if (msg == OS.WM_SETTEXT) {
-				int hHeap = OS.GetProcessHeap ();
+				int /*long*/ hHeap = OS.GetProcessHeap ();
 				int byteCount = buffer.length () * TCHAR.sizeof;
-				int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 				OS.MoveMemory (pszText, buffer, byteCount); 
-				int code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
+				int /*long*/ code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
 				OS.HeapFree (hHeap, 0, pszText);
 				return new LRESULT (code);
 			} else {
@@ -2110,8 +2345,8 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmCommandChild (int wParam, int lParam) {
-	int code = wParam >> 16;
+LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
+	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.CBN_EDITCHANGE:
 			if (ignoreModify) break;
@@ -2139,7 +2374,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			* match the list selection.  The fix is to force the text field
 			* to match the list selection by re-selecting the list item.
 			*/
-			int index = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+			int index = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 			if (index != OS.CB_ERR) {
 				OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
 			}
@@ -2175,12 +2410,12 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
-LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
+LRESULT wmIMEChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Process a DBCS character */
 	Display display = this.display;
 	display.lastKey = 0;
-	display.lastAscii = wParam;
+	display.lastAscii = (int)/*64*/wParam;
 	display.lastVirtual = display.lastNull = display.lastDead = false;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
@@ -2194,7 +2429,7 @@ LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
 	* them to the application.
 	*/
 	ignoreCharacter = true;
-	int result = callWindowProc (hwnd, OS.WM_IME_CHAR, wParam, lParam);
+	int /*long*/ result = callWindowProc (hwnd, OS.WM_IME_CHAR, wParam, lParam);
 	MSG msg = new MSG ();
 	int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
 	while (OS.PeekMessage (msg, hwnd, OS.WM_CHAR, OS.WM_CHAR, flags)) {
@@ -2209,7 +2444,22 @@ LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
 	return new LRESULT (result);
 }
 
-LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
+LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	if (ignoreCharacter) return null;
+	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
+	if (result != null) return result;
+	ignoreDefaultSelection = false;
+	if (wParam == OS.VK_RETURN) {
+		if ((style & SWT.DROP_DOWN) != 0) {
+			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+				ignoreDefaultSelection = true;
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When an editable combo box is dropped
 	* down using Alt+Down and the text in the entry field partially
@@ -2217,13 +2467,13 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 	* send WM_COMMAND with CBN_SELCHANGE.  The fix is to detect that
 	* the selection has changed and issue the notification.
 	*/
-	int oldSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	int oldSelection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 	LRESULT result = super.wmSysKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	if ((style & SWT.READ_ONLY) == 0) {
 		if (wParam == OS.VK_DOWN) {
-			int code = callWindowProc (hwnd, OS.WM_SYSKEYDOWN, wParam, lParam);
-			int newSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+			int /*long*/ code = callWindowProc (hwnd, OS.WM_SYSKEYDOWN, wParam, lParam);
+			int newSelection = (int)/*64*/OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 			if (oldSelection != newSelection) {
 				sendEvent (SWT.Modify);
 				if (isDisposed ()) return LRESULT.ZERO;

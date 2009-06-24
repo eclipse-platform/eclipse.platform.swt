@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,11 +40,16 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * 
  * @see GridData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#gridlayout">GridLayout snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class GridLayout extends Layout {
  
  	/**
  	 * numColumns specifies the number of cell columns in the layout.
+ 	 * If numColumns has a value less than 1, the layout will not
+ 	 * set the size and position of any controls.
  	 *
  	 * The default value is 1.
  	 */
@@ -140,6 +145,8 @@ public GridLayout () {}
  * Constructs a new instance of this class given the
  * number of columns, and whether or not the columns
  * should be forced to have the same width.
+ * If numColumns has a value less than 1, the layout will not
+ * set the size and position of any controls.
  *
  * @param numColumns the number of columns in the grid
  * @param makeColumnsEqualWidth whether or not the columns will have equal width
@@ -717,7 +724,7 @@ String getName () {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the layout
  */
 public String toString () {
  	String string = getName ()+" {";

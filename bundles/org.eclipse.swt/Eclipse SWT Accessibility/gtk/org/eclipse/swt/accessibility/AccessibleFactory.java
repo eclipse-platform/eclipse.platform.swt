@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,7 @@ class AccessibleFactory {
 	static final int[] actionRoles = {
 		ACC.ROLE_CHECKBUTTON, ACC.ROLE_COMBOBOX, ACC.ROLE_LINK,
 		ACC.ROLE_MENUITEM, ACC.ROLE_PUSHBUTTON, ACC.ROLE_RADIOBUTTON,
+		ACC.ROLE_SPLITBUTTON,
 	};
 	static final int[] hypertextRoles = {ACC.ROLE_LINK};
 	static final int[] selectionRoles = {
@@ -286,8 +287,7 @@ class AccessibleFactory {
 			typeInfo.instance_size = (short) query.instance_size;
 			ObjectIfaceDefinition = OS.g_malloc (GTypeInfo.sizeof); 
 			OS.memmove (ObjectIfaceDefinition, typeInfo, GTypeInfo.sizeof);
-			byte[] nameBytes = new byte [swtTypeName.length () + 1];
-			System.arraycopy(swtTypeName.getBytes (), 0, nameBytes, 0, swtTypeName.length ()); 
+			byte[] nameBytes = Converter.wcsToMbcs(null, swtTypeName, true);
 			type = OS.g_type_register_static (parentType, nameBytes, ObjectIfaceDefinition, 0);
 			OS.g_type_add_interface_static (type, AccessibleObject.ATK_COMPONENT_TYPE, ComponentIfaceDefinition);
 			if (action) OS.g_type_add_interface_static (type, AccessibleObject.ATK_ACTION_TYPE, ActionIfaceDefinition);

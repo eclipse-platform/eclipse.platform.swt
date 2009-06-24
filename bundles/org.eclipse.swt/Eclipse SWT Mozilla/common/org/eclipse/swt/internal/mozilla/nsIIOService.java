@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -65,15 +65,15 @@ public class nsIIOService extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
 	}
 
-	public int GetOffline(boolean[] aOffline) {
+	public int GetOffline(int[] aOffline) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aOffline);
 	}
 
-	public int SetOffline(boolean aOffline) {
+	public int SetOffline(int aOffline) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aOffline);
 	}
 
-	public int AllowPort(int aPort, byte[] aScheme, boolean[] _retval) {
+	public int AllowPort(int aPort, byte[] aScheme, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aPort, aScheme, _retval);
 	}
 

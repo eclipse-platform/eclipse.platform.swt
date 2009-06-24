@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,11 @@ public class LVCOLUMN {
 	public int mask;
 	public int fmt;
 	public int cx;
-	public int pszText;
+	/** @field cast=(LPTSTR) */
+	public int /*long*/ pszText;
 	public int cchTextMax;
 	public int iSubItem;
 	public int iImage;
 	public int iOrder;
-	public static final int sizeof = 24;
+	public static final int sizeof = OS.LVCOLUMN_sizeof ();
 }

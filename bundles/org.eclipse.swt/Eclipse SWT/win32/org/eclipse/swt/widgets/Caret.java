@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#caret">Caret snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Canvas tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class Caret extends Widget {
@@ -80,10 +85,10 @@ void createWidget () {
 	}
 }
 
-int defaultFont () {
-	int hwnd = parent.handle;
-	int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
-	int hFont = 0;
+int /*long*/ defaultFont () {
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
+	int /*long*/ hFont = 0;
 	if (hwndIME != 0) {
 		hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
 	}
@@ -110,6 +115,13 @@ public Rectangle getBounds () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Rectangle (x, y, rect.width, rect.height);
+	} else {
+		if (!OS.IsWinCE && width == 0) {
+			int [] buffer = new int [1];
+			if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+				return new Rectangle (x, y, buffer [0], height);
+			}
+		}
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -127,7 +139,7 @@ public Rectangle getBounds () {
 public Font getFont () {
 	checkWidget();
 	if (font == null) {
-		int hFont = defaultFont ();
+		int /*long*/ hFont = defaultFont ();
 		return Font.win32_new (display, hFont);
 	}
 	return font;
@@ -194,6 +206,13 @@ public Point getSize () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Point (rect.width, rect.height);
+	} else {
+		if (!OS.IsWinCE && width == 0) {
+			int [] buffer = new int [1];
+			if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+				return new Point (buffer [0], height);
+			}
+		}
 	}
 	return new Point (width, height);
 }
@@ -262,19 +281,30 @@ void resizeIME () {
 	if (!OS.IsDBLocale) return;
 	POINT ptCurrentPos = new POINT ();
 	if (!OS.GetCaretPos (ptCurrentPos)) return;
-	int hwnd = parent.handle;
-	RECT rect = new RECT ();
-	OS.GetClientRect (hwnd, rect);
-	COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
-	lpCompForm.dwStyle = OS.CFS_RECT;
-	lpCompForm.x = ptCurrentPos.x;
-	lpCompForm.y = ptCurrentPos.y;
-	lpCompForm.left = rect.left;
-	lpCompForm.right = rect.right;
-	lpCompForm.top = rect.top;
-	lpCompForm.bottom = rect.bottom;
-	int hIMC = OS.ImmGetContext (hwnd);
-	OS.ImmSetCompositionWindow (hIMC, lpCompForm);
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
+	IME ime = parent.getIME ();
+	if (ime != null && ime.isInlineEnabled ()) {
+		Point size = getSize ();
+		CANDIDATEFORM lpCandidate = new CANDIDATEFORM ();
+		lpCandidate.dwStyle = OS.CFS_EXCLUDE;
+		lpCandidate.ptCurrentPos = ptCurrentPos;
+		lpCandidate.rcArea = new RECT ();
+		OS.SetRect (lpCandidate.rcArea, ptCurrentPos.x, ptCurrentPos.y, ptCurrentPos.x + size.x, ptCurrentPos.y + size.y);
+		OS.ImmSetCandidateWindow (hIMC, lpCandidate);
+	} else {
+		RECT rect = new RECT ();
+		OS.GetClientRect (hwnd, rect);
+		COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
+		lpCompForm.dwStyle = OS.CFS_RECT;
+		lpCompForm.x = ptCurrentPos.x;
+		lpCompForm.y = ptCurrentPos.y;
+		lpCompForm.left = rect.left;
+		lpCompForm.right = rect.right;
+		lpCompForm.top = rect.top;
+		lpCompForm.bottom = rect.bottom;
+		OS.ImmSetCompositionWindow (hIMC, lpCompForm);
+	}
 	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
@@ -293,9 +323,16 @@ void releaseWidget () {
 
 void resize () {
 	resized = false;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	OS.DestroyCaret ();		
-	int hBitmap = image != null ? image.handle : 0;
+	int /*long*/ hBitmap = image != null ? image.handle : 0;
+	int width = this.width;
+	if (!OS.IsWinCE && image == null && width == 0) {
+		int [] buffer = new int [1];
+		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+			width = buffer [0];
+		}
+	}
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	OS.SetCaretPos (x, y);
 	OS.ShowCaret (hwnd);
@@ -305,8 +342,8 @@ void resize () {
 void restoreIMEFont () {
 	if (!OS.IsDBLocale) return;
 	if (oldFont == null) return;
-	int hwnd = parent.handle;
-	int hIMC = OS.ImmGetContext (hwnd);
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	OS.ImmSetCompositionFont (hIMC, oldFont);
 	OS.ImmReleaseContext (hwnd, hIMC);
 	oldFont = null;
@@ -333,8 +370,10 @@ public void setBounds (int x, int y, int width, int height) {
 	boolean samePosition = this.x == x && this.y == y;
 	boolean sameExtent = this.width == width && this.height == height;
 	if (samePosition && sameExtent) return;
-	this.x = x;  this.y = y;
-	this.width = width;  this.height = height;
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
 	if (sameExtent) {
 		moved = true;
 		if (isVisible && hasFocus ()) move ();
@@ -363,9 +402,16 @@ public void setBounds (Rectangle rect) {
 }
 
 void setFocus () {
-	int hwnd = parent.handle;
-	int hBitmap = 0;
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hBitmap = 0;
 	if (image != null) hBitmap = image.handle;
+	int width = this.width;
+	if (!OS.IsWinCE && image == null && width == 0) {
+		int [] buffer = new int [1];
+		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+			width = buffer [0];
+		}
+	}
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	move ();
 	setIMEFont ();
@@ -422,11 +468,11 @@ public void setImage (Image image) {
 
 void setIMEFont () {
 	if (!OS.IsDBLocale) return;
-	int hFont = 0;
+	int /*long*/ hFont = 0;
 	if (font != null) hFont = font.handle;
 	if (hFont == 0) hFont = defaultFont ();
-	int hwnd = parent.handle;
-	int hIMC = OS.ImmGetContext (hwnd);
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	/* Save the current IME font */
 	if (oldFont == null) {
 		oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
@@ -537,7 +583,7 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == isVisible) return;
 	isVisible = visible;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	if (OS.GetFocus () != hwnd) return;
 	if (!isVisible) {
 		OS.HideCaret (hwnd);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,16 +13,30 @@ package org.eclipse.swt.internal.win32;
 public class NMTOOLBAR extends NMHDR {
 	public int iItem;
 //	TBBUTTON tbButton;
+	/** @field accessor=tbButton.iBitmap */
 	public int iBitmap;
+	/** @field accessor=tbButton.idCommand */
 	public int idCommand;
+	/** @field accessor=tbButton.fsState */
 	public byte fsState;
+	/** @field accessor=tbButton.fsStyle */
 	public byte fsStyle;
-	public int dwData;
-	public int iString;
+	/** @field accessor=tbButton.dwData */
+	public int /*long*/ dwData;
+	/** @field accessor=tbButton.iString */
+	public int /*long*/ iString;
 	public int cchText;
-	public int pszText;
+	/** @field cast=(LPTSTR) */
+	public int /*long*/ pszText;
 //	RECT rcButton;
-	public int left, top, right, bottom;
+	/** @field accessor=rcButton.left,flags=no_wince */
+	public int left; 
+	/** @field accessor=rcButton.top,flags=no_wince */
+	public int top; 
+	/** @field accessor=rcButton.right,flags=no_wince */
+	public int right; 
+	/** @field accessor=rcButton.bottom,flags=no_wince */
+	public int bottom;
 	/* Note in WinCE.  The field rcButton is not defined. */
-	public static final int sizeof = OS.IsWinCE ? 44 : 60;
+	public static final int sizeof = OS.NMTOOLBAR_sizeof ();
 }

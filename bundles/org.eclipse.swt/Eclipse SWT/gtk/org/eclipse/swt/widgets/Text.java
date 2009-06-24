@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,18 +20,40 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class are selectable user interface
  * objects that allow the user to enter and modify text.
+ * Text controls can be either single or multi-line.
+ * When a text control is created with a border, the
+ * operating system includes a platform specific inset
+ * around the contents of the control.  When created
+ * without a border, an effort is made to remove the
+ * inset such that the preferred size of the control
+ * is the same size as the contents.
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>CENTER, LEFT, MULTI, PASSWORD, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
+ * <dd>CENTER, ICON_CANCEL, ICON_SEARCH, LEFT, MULTI, PASSWORD, SEARCH, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles MULTI and SINGLE may be specified. 
- * </p><p>
+ * Note: Only one of the styles MULTI and SINGLE may be specified,
+ * and only one of the styles LEFT, CENTER, and RIGHT may be specified.
+ * </p>
+ * <p>
+ * Note: The styles ICON_CANCEL and ICON_SEARCH are hints used in combination with SEARCH.
+ * When the platform supports the hint, the text control shows these icons.  When an icon
+ * is selected, a default selection event is sent with the detail field set to one of
+ * ICON_CANCEL or ICON_SEARCH.  Normally, application code does not need to check the
+ * detail.  In the case of ICON_CANCEL, the text is cleared before the default selection
+ * event is sent causing the application to search for an empty string.
+ * </p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#text">Text snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Text extends Scrollable {
 	int /*long*/ bufferHandle;
@@ -39,9 +61,10 @@ public class Text extends Scrollable {
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	boolean doubleClick;
+	String message = "";
 	
-	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = OS.GtkTextIter_sizeof();
+	static final int SPACE_FOR_CURSOR = 1;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -96,6 +119,13 @@ public class Text extends Scrollable {
  * @see SWT#MULTI
  * @see SWT#READ_ONLY
  * @see SWT#WRAP
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#CENTER
+ * @see SWT#PASSWORD
+ * @see SWT#SEARCH
+ * @see SWT#ICON_SEARCH
+ * @see SWT#ICON_CANCEL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -104,6 +134,15 @@ public Text (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+		/* 
+		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
+		* ICON_SEARCH has the same value as V_SCROLL so they are
+		* cleared because SWT.SINGLE is set. 
+		*/
+	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -121,6 +160,11 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE | MENU;
+	if ((style & SWT.READ_ONLY) != 0) {
+		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			state |= THEME_BACKGROUND;
+		}
+	}
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
@@ -147,7 +191,7 @@ void createHandle (int index) {
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
 		OS.gtk_container_add (scrolledHandle, handle);
 		OS.gtk_text_view_set_editable (handle, (style & SWT.READ_ONLY) == 0);
-		if ((style & SWT.WRAP) != 0) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_WRAP_WORD);
+		if ((style & SWT.WRAP) != 0) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_VERSION < OS.VERSION (2, 4, 0) ? OS.GTK_WRAP_WORD : OS.GTK_WRAP_WORD_CHAR);
 		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
@@ -194,15 +238,17 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
  * <code>widgetSelected</code> is not called for texts.
- * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text.
+ * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
+ * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.CANCEL</code> style
+ * and the user cancels the search, the event object detail field contains the value <code>SWT.CANCEL</code>.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -313,6 +359,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int [1], h = new int [1];
 	if ((style & SWT.SINGLE) != 0) {
+		OS.gtk_widget_realize (handle);
 		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
 		OS.pango_layout_get_size (layout, w, h);
 	} else {
@@ -327,6 +374,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	int width = OS.PANGO_PIXELS (w [0]);
 	int height = OS.PANGO_PIXELS (h [0]);
+	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, message, true);
+		int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+		OS.pango_layout_get_size (layout, w, h);
+		OS.g_object_unref (layout);
+		width = Math.max (width, OS.PANGO_PIXELS (w [0]));
+	}
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
@@ -343,8 +399,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 			xborder += OS.gtk_style_get_xthickness (style);
 			yborder += OS.gtk_style_get_ythickness (style);
 		}
-		xborder += INNER_BORDER;
-		yborder += INNER_BORDER;
+		GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
+		trim.x -= innerBorder.left;
+		trim.y -= innerBorder.top;
+		trim.width += innerBorder.left + innerBorder.right;
+		trim.height += innerBorder.top + innerBorder.bottom;
 	} else {
 		int borderWidth = OS.gtk_container_get_border_width (handle);  
 		xborder += borderWidth;
@@ -361,6 +420,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trim.y -= yborder;
 	trim.width += 2 * xborder;
 	trim.height += 2 * yborder;
+	trim.width += SPACE_FOR_CURSOR;
 	return new Rectangle (trim.x, trim.y, trim.width, trim.height);
 }
 
@@ -414,42 +474,53 @@ void deregister () {
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
-boolean dragDetect (int x, int y) {
-	int start = 0, end = 0;
-	if ((style & SWT.SINGLE) != 0) {
-		int [] s = new int [1], e = new int [1];
-		OS.gtk_editable_get_selection_bounds (handle, s, e);
-		start = s [0]; end = e [0];
-	} else {
-		byte [] s =  new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
-		start = OS.gtk_text_iter_get_offset (s);
-		end = OS.gtk_text_iter_get_offset (e);
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	if (filter) {
+		int start = 0, end = 0;
+		if ((style & SWT.SINGLE) != 0) {
+			int [] s = new int [1], e = new int [1];
+			OS.gtk_editable_get_selection_bounds (handle, s, e);
+			start = s [0];
+			end = e [0];
+		} else {
+			byte [] s = new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
+			OS.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
+			start = OS.gtk_text_iter_get_offset (s);
+			end = OS.gtk_text_iter_get_offset (e);
+		}
+		if (start != end) {
+			if (end < start) {
+				int temp = end;
+				end = start;
+				start = temp;
+			}
+			int position = -1;
+			if ((style & SWT.SINGLE) != 0) {
+				int [] index = new int [1];
+				int [] trailing = new int [1];
+				int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+				OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
+				int /*long*/ ptr = OS.pango_layout_get_text (layout);
+				position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
+			} else {
+				byte [] p = new byte [ITER_SIZEOF];
+				OS.gtk_text_view_get_iter_at_location (handle, p, x, y);
+				position = OS.gtk_text_iter_get_offset (p);
+			}
+			if (start <= position && position < end) {
+				if (super.dragDetect (x, y, filter, consume)) {
+					if (consume != null) consume [0] = true;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
-	if (start == end) return false;
-	if (end < start) {
-		int temp = end;
-		end = start;
-		start = temp;
-	}
-	int offset = -1;
-	if ((style & SWT.SINGLE) != 0) {
-		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
-		int [] index = new int [1];
-		int [] trailing = new int [1];
-		OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-		int /*long*/ ptr = OS.pango_layout_get_text (layout);
-		offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]);
-	} else {
-		byte [] position = new byte [ITER_SIZEOF];
-		OS.gtk_text_view_get_iter_at_location (handle, position, x, y);
-		offset =  OS.gtk_text_iter_get_offset (position);
-	}
-	return offset > start && offset < end;
+	return super.dragDetect (x, y, filter, consume);
 }
 
-boolean dragOverride () {
-	return true;
+int /*long*/ eventWindow () {
+	return paintWindow ();
 }
 
 boolean filterKey (int keyval, int /*long*/ event) {
@@ -514,7 +585,7 @@ public int getBorderWidth () {
  */
 public int getCaretLineNumber () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return 1;
+	if ((style & SWT.SINGLE) != 0) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
 	int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);
@@ -537,7 +608,20 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return new Point (0, 0);
+	if ((style & SWT.SINGLE) != 0) {
+		int index = OS.gtk_editable_get_position (handle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+			index = OS.gtk_entry_text_index_to_layout_index (handle, index);
+		}
+		int [] offset_x = new int [1], offset_y = new int [1];
+		OS.gtk_entry_get_layout_offsets (handle, offset_x, offset_y);
+		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		PangoRectangle pos = new PangoRectangle ();
+		OS.pango_layout_index_to_pos (layout, index, pos);
+		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
+		int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
+		return new Point (x, y);
+	}
 	byte [] position = new byte [ITER_SIZEOF];
 	int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);
@@ -642,7 +726,7 @@ public char getEchoChar () {
 /**
  * Returns the editable state.
  *
- * @return whether or not the reciever is editable
+ * @return whether or not the receiver is editable
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -710,6 +794,27 @@ public int getLineHeight () {
 }
 
 /**
+ * Returns the widget message.  The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
+ * 
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public String getMessage () {
+	checkWidget ();
+	return message;
+}
+
+/**
  * Returns the orientation of the receiver, which will be one of the
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
@@ -725,6 +830,25 @@ public int getLineHeight () {
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+/*public*/ int getPosition (Point point) {
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int position = -1;
+	if ((style & SWT.SINGLE) != 0) {
+		int [] index = new int [1];
+		int [] trailing = new int [1];
+		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		OS.pango_layout_xy_to_index (layout, point.x * OS.PANGO_SCALE, point.y * OS.PANGO_SCALE, index, trailing);
+		int /*long*/ ptr = OS.pango_layout_get_text (layout);
+		position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
+	} else {
+		byte [] p = new byte [ITER_SIZEOF];
+		OS.gtk_text_view_get_iter_at_location (handle, p, point.x, point.y);
+		position = OS.gtk_text_iter_get_offset (p);
+	}
+	return position;
 }
 
 /**
@@ -875,13 +999,15 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return "";
-	start = Math.max (0, start);
 	int /*long*/ address;
 	if ((style & SWT.SINGLE) != 0) {
+		start = Math.max (0, start);
 		address = OS.gtk_editable_get_chars (handle, start, end + 1);
 	} else {
 		int length = OS.gtk_text_buffer_get_char_count (bufferHandle);
 		end = Math.min (end, length - 1);
+		if (start > end) return "";
+		start = Math.max (0, start);
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
@@ -974,13 +1100,13 @@ public int getTopPixel () {
 	return lineTop [0];
 }
 
-int gtk_activate (int widget) {
+int /*long*/ gtk_activate (int /*long*/ widget) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result =  super.gtk_button_press_event (widget, event);
+	int /*long*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -994,37 +1120,6 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
-	if (display.dragOverride && !display.dragging) {
-		GdkEventButton gdkEvent = new GdkEventButton ();
-		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-		int x = (int)gdkEvent.x, y = (int)gdkEvent.y;
-		
-		int offset;
-		if ((style & SWT.SINGLE) != 0) {
-			int /*long*/ layout = OS.gtk_entry_get_layout (handle);
-			int [] index = new int [1];
-			int [] trailing = new int [1];
-			OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-			int /*long*/ ptr = OS.pango_layout_get_text (layout);
-			offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]);
-		} else {
-			byte [] position = new byte [ITER_SIZEOF];
-			OS.gtk_text_view_get_iter_at_location (handle, position, x, y);
-			offset = OS.gtk_text_iter_get_offset (position);
-		}
-		if ((style & SWT.SINGLE) != 0) {
-			OS.gtk_editable_set_position (handle, offset);
-		} else {
-			byte [] position =  new byte [ITER_SIZEOF];
-			OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, offset);
-			OS.gtk_text_buffer_place_cursor (bufferHandle, position);
-			int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-			OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
-		}
-	}
-	return super.gtk_button_release_event (widget, event);
-}
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
 	/*
@@ -1073,9 +1168,7 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	* the new selection is lost.  The fix is to detect a selection
 	* change and set it after the insert-text signal has completed.
 	*/
-	if ((style & SWT.SINGLE) != 0) { 
-		fixStart = fixEnd = -1;
-	}
+	fixStart = fixEnd = -1;
 	OS.g_signal_handlers_block_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 	int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
@@ -1093,8 +1186,8 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 			OS.gtk_editable_set_position (handle, fixStart);
 			OS.gtk_editable_select_region (handle, fixStart, fixEnd);
 		}
-		fixStart = fixEnd = -1;
 	}
+	fixStart = fixEnd = -1;
 	return 0;
 }
 
@@ -1108,6 +1201,14 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 	int end = OS.gtk_text_iter_get_offset (endIter);
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
+		/* Remember the selection when the text was deleted */
+		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, startIter, endIter);
+		start = OS.gtk_text_iter_get_offset (startIter);
+		end = OS.gtk_text_iter_get_offset (endIter);
+		if (start != end) {
+			fixStart = start;
+			fixEnd = end;
+		}
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
 	} else {
 		if (newText.length () > 0) {
@@ -1130,6 +1231,13 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
 	if (newText == null) {
+		/* Remember the selection when the text was deleted */
+		int [] newStart = new int [1], newEnd = new int [1];
+		OS.gtk_editable_get_selection_bounds (handle, newStart, newEnd);
+		if (newStart [0] != newEnd [0]) {
+			fixStart = newStart [0];
+			fixEnd = newEnd [0];
+		}
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
 	} else {
 		if (newText.length () > 0) {
@@ -1172,6 +1280,65 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
+int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
+	if ((state & OBSCURED) != 0) return 0;
+	int /*long*/ result = super.gtk_expose_event (widget, event);
+	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
+		int /*long*/ str = OS.gtk_entry_get_text (handle);
+		if (!OS.GTK_WIDGET_HAS_FOCUS (handle) && OS.strlen (str) == 0) {
+			GdkEventExpose gdkEvent = new GdkEventExpose ();
+			OS.memmove (gdkEvent, event, GdkEventExpose.sizeof);
+			int /*long*/ window = paintWindow ();
+			int [] w = new int [1], h = new int [1];
+			OS.gdk_drawable_get_size (window, w, h);
+			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
+			int width = w [0] - innerBorder.left - innerBorder.right;
+			int height = h [0] - innerBorder.top - innerBorder.bottom;
+			int /*long*/ context = OS.gtk_widget_get_pango_context (handle);
+			int /*long*/ lang = OS.pango_context_get_language (context);
+			int /*long*/ metrics = OS.pango_context_get_metrics (context, getFontDescription (), lang);
+			int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
+			int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
+			OS.pango_font_metrics_unref (metrics);
+			byte [] buffer = Converter.wcsToMbcs (null, message, true);
+			int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+			int /*long*/ line = OS.pango_layout_get_line (layout, 0);
+			PangoRectangle rect = new PangoRectangle ();
+			OS.pango_layout_line_get_extents (line, null, rect);
+			rect.y = OS.PANGO_PIXELS (rect.y);
+			rect.height = OS.PANGO_PIXELS (rect.height);
+			rect.width = OS.PANGO_PIXELS (rect.width);
+			int y = (height - ascent - descent) / 2 + ascent + rect.y;
+			if (rect.height > height) {
+				y = (height - rect.height) / 2;
+			} else if (y < 0) {
+				y = 0;
+			} else if (y + rect.height > height) {
+				y = height - rect.height;
+			}
+			y += innerBorder.top;
+			int x = innerBorder.left;
+			boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
+			int alignment = style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+			switch (alignment) {
+				case SWT.LEFT: x = rtl ? width - rect.width: innerBorder.left; break;
+				case SWT.CENTER: x = (width - rect.width) / 2; break;
+				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
+			}
+			int /*long*/ gc = OS.gdk_gc_new	(window);
+			int /*long*/ style = OS.gtk_widget_get_style (handle);	
+			GdkColor textColor = new GdkColor ();
+			OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
+			GdkColor baseColor = new GdkColor ();
+			OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
+			OS.gdk_draw_layout_with_colors (window, gc, x, y, layout, textColor, baseColor);
+			OS.g_object_unref (gc);
+			OS.g_object_unref (layout);
+		}
+	}
+	return result;
+}
+
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);
@@ -1205,7 +1372,14 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
 		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	}
-	String newText = verifyText (oldText, pos [0], pos [0]);
+	/* Use the selection when the text was deleted */
+	int start = pos [0], end = pos [0];
+	if (fixStart != -1 && fixEnd != -1) {
+		start = pos [0] = fixStart;
+		end = fixEnd;
+		fixStart = fixEnd = -1;
+	}
+	String newText = verifyText (oldText, start, end);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, newStart, newEnd);
@@ -1221,6 +1395,7 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			newStart [0] = newEnd [0] = pos [0];
 		}
 		pos [0] = newEnd [0];
 		if (newStart [0] != newEnd [0]) {
@@ -1241,21 +1416,29 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_popup_menu (int /*long*/ widget) {
-	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, null);
-	return showMenu (x [0], y [0]) ? 1 : 0;
+int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (menu, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}
+	return 0;
 }
 
 int /*long*/ gtk_text_buffer_insert_text (int /*long*/ widget, int /*long*/ iter, int /*long*/ text, int /*long*/ length) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
 	OS.memmove (position, iter, position.length);
-	int start = OS.gtk_text_iter_get_offset (position);
+	/* Use the selection when the text was deleted */
+	int start = OS.gtk_text_iter_get_offset (position), end = start;
+	if (fixStart != -1 && fixEnd != -1) {
+		start = fixStart;
+		end = fixEnd;
+		fixStart = fixEnd = -1;
+	}
 	byte [] buffer = new byte [(int)/*64*/length];
 	OS.memmove (buffer, text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
-	String newText = verifyText (oldText, start, start);
+	String newText = verifyText (oldText, start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
 	} else {
@@ -1278,10 +1461,12 @@ void hookEvents () {
 		OS.g_signal_connect_closure (handle, OS.delete_text, display.closures [DELETE_TEXT], false);
 		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
 		OS.g_signal_connect_closure (handle, OS.grab_focus, display.closures [GRAB_FOCUS], false);
+		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
 	} else {
 		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.closures [CHANGED], false);
 		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.closures [TEXT_BUFFER_INSERT_TEXT], false);
 		OS.g_signal_connect_closure (bufferHandle, OS.delete_range, display.closures [DELETE_RANGE], false);
+		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
 	}
 	int /*long*/ imContext = imContext ();
 	if (imContext != 0) {
@@ -1293,7 +1478,10 @@ void hookEvents () {
 }
 
 int /*long*/ imContext () {
-	return (style & SWT.SINGLE) != 0 ? OS.GTK_ENTRY_IM_CONTEXT (handle) : OS.GTK_TEXTVIEW_IM_CONTEXT (handle);
+	if ((style & SWT.SINGLE) != 0) {
+		return OS.gtk_editable_get_editable (handle) ? OS.GTK_ENTRY_IM_CONTEXT (handle) : 0;
+	} 
+	return OS.GTK_TEXTVIEW_IM_CONTEXT (handle);
 }
 
 /**
@@ -1391,6 +1579,7 @@ void releaseWidget () {
 			OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
 		}
 	}
+	message = null;
 }
 
 /**
@@ -1419,7 +1608,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1580,9 +1769,30 @@ void setFontDescription (int /*long*/ font) {
 	setTabStops (tabs);
 }
 
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	OS.gtk_widget_modify_text (handle, 0, color);
+/**
+ * Sets the widget message. The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
+ * 
+ * @param message the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the message is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
+	redraw (false);
 }
 
 /**

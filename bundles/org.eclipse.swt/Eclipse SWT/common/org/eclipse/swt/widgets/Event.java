@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,6 +25,8 @@ import org.eclipse.swt.graphics.*;
  * 
  * @see Listener
  * @see org.eclipse.swt.events.TypedEvent
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Listeners</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class Event {
@@ -163,7 +165,8 @@ public class Event {
 	
 	/**
 	 * depending on the event, the range of text being modified.
-	 * Setting these fields has no effect.
+	 * Setting these fields only has effect during ImeComposition 
+	 * events.
 	 */
 	public int start, end;
 	
@@ -214,6 +217,6 @@ public void setBounds (Rectangle rect) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "Event {type=" + type + ",widget=" + widget + ",x=" + x + ",y=" + y + ",width=" + width + ",height=" + height + "}";  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+	return "Event {type=" + type + " " + widget + " time=" + time + " data=" + data + " x=" + x + " y=" + y + " width=" + width + " height=" + height + " detail=" + detail + "}";  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 }
 }

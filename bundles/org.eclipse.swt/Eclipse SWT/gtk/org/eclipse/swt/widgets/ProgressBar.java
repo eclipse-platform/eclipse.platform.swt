@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
- * Instances of the receiver represent is an unselectable
+ * Instances of the receiver represent an unselectable
  * user interface object that is used to display progress,
  * typically in the form of a bar.
  * <dl>
@@ -30,6 +30,11 @@ import org.eclipse.swt.internal.gtk.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#progressbar">ProgressBar snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ProgressBar extends Control {
 	int timerId, minimum = 0, maximum = 100, selection = 0;
@@ -62,6 +67,7 @@ public class ProgressBar extends Control {
  * @see SWT#SMOOTH
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
+ * @see SWT#INDETERMINATE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -134,6 +140,28 @@ public int getSelection () {
 	return selection;
 }
 
+/**
+ * Returns the state of the receiver. The value will be one of:
+ * <ul>
+ * 	<li>{@link SWT#NORMAL}</li>
+ * 	<li>{@link SWT#ERROR}</li>
+ * 	<li>{@link SWT#PAUSED}</li>
+ * </ul>
+ *
+ * @return the state 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getState () {
+	checkWidget ();
+	return SWT.NORMAL;
+}
+
 int /*long*/ gtk_realize (int /*long*/ widget) {
 	int /*long*/ result = super.gtk_realize (widget);
 	if (result != 0) return result;
@@ -151,6 +179,15 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (timerId != 0) OS.gtk_timeout_remove (timerId);
 	timerId = 0;
+}
+
+void setParentBackground () {
+	/*
+	* Bug in GTK.  For some reason, some theme managers will crash
+	* when the progress bar is inheriting the background from a parent.
+	* The fix is to stop inheriting the background. This is acceptable
+	* since progress bars do not use the inherited background. 
+	*/
 }
 
 /**
@@ -213,6 +250,28 @@ public void setSelection (int value) {
 	updateBar (selection, minimum, maximum);
 }
 
+/**
+ * Sets the state of the receiver. The state must be one of these values:
+ * <ul>
+ * 	<li>{@link SWT#NORMAL}</li>
+ * 	<li>{@link SWT#ERROR}</li>
+ * 	<li>{@link SWT#PAUSED}</li>
+ * </ul>
+ *
+ * @param state the new state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setState (int state) {
+	checkWidget ();
+	//NOT IMPLEMENTED
+}
+
 int /*long*/ timerProc (int /*long*/ widget) {
 	if (isVisible ()) OS.gtk_progress_bar_pulse (handle);
 	return 1;
@@ -236,8 +295,8 @@ void updateBar (int selection, int minimum, int maximum) {
 	* but unexpected.  The fix is to force all
 	* outstanding redraws to be delivered.
 	*/
-	OS.gdk_flush ();
 	int /*long*/ window = paintWindow ();
 	OS.gdk_window_process_updates (window, false);
+	OS.gdk_flush ();
 }
 }

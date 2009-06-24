@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -31,6 +32,10 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#toolbar">ToolBar, ToolItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolItem extends Item {
 	ToolBar parent;
@@ -97,10 +102,11 @@ public ToolItem (ToolBar parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -123,7 +129,7 @@ public ToolItem (ToolBar parent, int style, int index) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -132,7 +138,7 @@ public ToolItem (ToolBar parent, int style, int index) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user,
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -163,12 +169,12 @@ protected void checkSubclass () {
 }
 
 void click (boolean dropDown) {	
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
-	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
-	int hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
+	int hotIndex = (int)/*64*/OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
 	
 	/*
 	* In order to emulate all the processing that
@@ -178,7 +184,7 @@ void click (boolean dropDown) {
 	* properly.
 	*/
 	int y = rect.top + (rect.bottom - rect.top) / 2;
-	int lParam = (dropDown ? rect.right - 1 : rect.left) | (y << 16);
+	int /*long*/ lParam = OS.MAKELPARAM (dropDown ? rect.right - 1 : rect.left, y);
 	parent.ignoreMouse = true;
 	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
 	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);
@@ -189,35 +195,17 @@ void click (boolean dropDown) {
 	}
 }
 
-Image createDisabledImage (Image image, Color color) {
-  	/*
-  	* In order to be consistent with the way that disabled
-	* images appear in other places in the user interface,
-	* use the SWT Graphics to create a disabled image instead
-    * of calling DrawState().
-	*/
-	return new Image (display, image, SWT.IMAGE_DISABLE);
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (OS.IsWinCE) {
-//		return new Image (display, image, SWT.IMAGE_DISABLE);
-//	}
-//	Rectangle rect = image.getBounds ();
-//	Image disabled = new Image (display, rect);
-//	GC gc = new GC (disabled);
-//	gc.setBackground (color);
-//	gc.fillRectangle (rect);
-//	int hDC = gc.handle;
-//	int hImage = image.handle;
-//	int fuFlags = OS.DSS_DISABLED;
-//	switch (image.type) {
-//		case SWT.BITMAP: fuFlags |= OS.DST_BITMAP; break;
-//		case SWT.ICON: fuFlags |= OS.DST_ICON; break;
-//	}
-//	OS.DrawState (hDC, 0, 0, hImage, 0, 0, 0, rect.width, rect.height, fuFlags);
-//	gc.dispose ();
-//	return disabled;
+Widget [] computeTabList () {
+	if (isTabGroup ()) {
+		if (getEnabled ()) {
+			if ((style & SWT.SEPARATOR) != 0) {
+				if (control != null) return control.computeTabList();
+			} else {
+				return new Widget [] {this};
+			}
+		}
+	}
+	return new Widget [0];
 }
 
 void destroyWidget () {
@@ -238,8 +226,8 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	int hwnd = parent.handle;
-	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+	int /*long*/ hwnd = parent.handle;
+	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
 	int width = rect.right - rect.left;
@@ -302,8 +290,8 @@ public boolean getEnabled () {
 	if ((style & SWT.SEPARATOR) != 0) {
 		return (state & DISABLED) == 0;
 	}
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
 	return (fsState & OS.TBSTATE_ENABLED) != 0;
 }
 
@@ -361,8 +349,8 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
 	return (fsState & OS.TBSTATE_CHECKED) != 0;
 }
 
@@ -393,8 +381,8 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	int hwnd = parent.handle;
-	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+	int /*long*/ hwnd = parent.handle;
+	int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
 	return rect.right - rect.left;
@@ -420,6 +408,20 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+boolean isTabGroup () {
+	ToolItem [] tabList = parent._getTabItemList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
+	if ((style & SWT.SEPARATOR) != 0) return true;
+	int index = parent.indexOf (this);
+	if (index == 0) return true;
+	ToolItem previous = parent.getItem (index - 1);
+	return (previous.getStyle () & SWT.SEPARATOR) != 0;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	releaseImages ();
@@ -440,7 +442,7 @@ void releaseImages () {
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
 	/*
 	* Feature in Windows.  For some reason, a tool item that has
@@ -464,7 +466,7 @@ void releaseImages () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -556,7 +558,7 @@ public void setControl (Control control) {
 	*/
 	if ((parent.style & (SWT.WRAP | SWT.VERTICAL)) != 0) {
 		boolean changed = false;
-		int hwnd = parent.handle;
+		int /*long*/ hwnd = parent.handle;
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_STYLE | OS.TBIF_STATE;
@@ -564,7 +566,7 @@ public void setControl (Control control) {
 		if (control == null) {
 			if ((info.fsStyle & OS.BTNS_SEP) == 0) {
 				changed = true;
-				info.fsStyle &= ~OS.BTNS_BUTTON;
+				info.fsStyle &= ~(OS.BTNS_BUTTON | OS.BTNS_SHOWTEXT);
 				info.fsStyle |= OS.BTNS_SEP;
 				if ((state & DISABLED) != 0) {
 					info.fsState &= ~OS.TBSTATE_ENABLED;
@@ -576,7 +578,7 @@ public void setControl (Control control) {
 			if ((info.fsStyle & OS.BTNS_SEP) != 0) {
 				changed = true;
 				info.fsStyle &= ~OS.BTNS_SEP;
-				info.fsStyle |= OS.BTNS_BUTTON;
+				info.fsStyle |= OS.BTNS_BUTTON | OS.BTNS_SHOWTEXT;
 				info.fsState &= ~OS.TBSTATE_ENABLED;
 				info.dwMask |= OS.TBIF_IMAGE;
 				info.iImage = OS.I_IMAGENONE;
@@ -619,8 +621,8 @@ public void setControl (Control control) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
+	int /*long*/ hwnd = parent.handle;
+	int fsState = (int)/*64*/OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
 	/*
 	* Feature in Windows.  When TB_SETSTATE is used to set the
 	* state of a tool item, the item redraws even when the state
@@ -645,7 +647,7 @@ public void setEnabled (boolean enabled) {
  * Sets the receiver's disabled image to the argument, which may be
  * null indicating that no disabled image should be displayed.
  * <p>
- * The disbled image is displayed when the receiver is disabled.
+ * The disabled image is displayed when the receiver is disabled.
  * </p>
  *
  * @param image the disabled image to display on the receiver (may be null)
@@ -726,8 +728,8 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
+	int /*long*/ hwnd = parent.handle;
+	int fsState = (int)/*64*/OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
 	/*
 	* Feature in Windows.  When TB_SETSTATE is used to set the
 	* state of a tool item, the item redraws even when the state
@@ -759,19 +761,29 @@ public void setSelection (boolean selected) {
 	}
 }
 
+boolean setTabItemFocus () {
+	if (parent.setTabItemFocus ()) {
+		int /*long*/ hwnd = parent.handle;
+		int index = (int)/*64*/OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+		OS.SendMessage (hwnd, OS.TB_SETHOTITEM, index, 0);
+		return true;
+	}
+	return false;
+}
+
 /**
  * Sets the receiver's text. The string may include
  * the mnemonic character.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
  * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text
@@ -788,13 +800,14 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (string.equals (text)) return;
 	super.setText (string);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_TEXT | OS.TBIF_STYLE;
 	info.fsStyle = (byte) (widgetStyle () | OS.BTNS_AUTOSIZE);
-	int hHeap = OS.GetProcessHeap (), pszText = 0;
+	int /*long*/ hHeap = OS.GetProcessHeap (), pszText = 0;
 	if (string.length () != 0) {
 		info.fsStyle |= OS.BTNS_SHOWTEXT;
 		TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
@@ -814,16 +827,26 @@ public void setText (String string) {
 	* item is created.  The fix is to use WM_SETFONT to force
 	* the tool bar to redraw and layout.
 	*/
-	int hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+	parent.setDropDownItems (false);
+	int /*long*/ hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
-	
+	parent.setDropDownItems (true);
 	parent.layoutItems ();
 }
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -850,7 +873,7 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_SIZE;
@@ -861,7 +884,7 @@ public void setWidth (int width) {
 
 void updateImages (boolean enabled) {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_IMAGE;
@@ -888,8 +911,7 @@ void updateImages (boolean enabled) {
 			disabledImage2 = null;
 			disabled = image;
 			if (!enabled) {
-				Color color = parent.getBackground ();
-				disabled = disabledImage2 = createDisabledImage (image, color);
+				disabled = disabledImage2 = new Image (display, image, SWT.IMAGE_DISABLE);
 			}
 		}
 		/*
@@ -919,8 +941,7 @@ void updateImages (boolean enabled) {
 				if (disabledImage == null) {
 					disabled = image;
 					if (!enabled) {
-						Color color = parent.getBackground ();
-						disabled = disabledImage2 = createDisabledImage (image, color);
+						disabled = disabledImage2 = new Image (display, image, SWT.IMAGE_DISABLE);
 					}
 				}
 			}
@@ -972,7 +993,7 @@ int widgetStyle () {
 	return OS.BTNS_BUTTON;
 }
 
-LRESULT wmCommandChild (int wParam, int lParam) {
+LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
 			selectRadio ();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,7 @@ package org.eclipse.swt.dnd;
 /**
  * The class <code>ByteArrayTransfer</code> provides a platform specific 
  * mechanism for converting a java <code>byte[]</code> to a platform 
- * specific representation of the byte array and vice versa.  See 
- * <code>Transfer</code> for additional information.
+ * specific representation of the byte array and vice versa.
  *
  * <p><code>ByteArrayTransfer</code> is never used directly but is sub-classed 
  * by transfer agents that convert between data in a java format such as a
@@ -57,7 +56,7 @@ package org.eclipse.swt.dnd;
  * 			// write data to a byte array and then ask super to convert to pMedium
  * 			ByteArrayOutputStream out = new ByteArrayOutputStream();
  * 			DataOutputStream writeOut = new DataOutputStream(out);
- * 			for (int i = 0, length = myTypes.length; i &lt length;  i++){
+ * 			for (int i = 0, length = myTypes.length; i &lt; length;  i++){
  * 				byte[] buffer = myTypes[i].fileName.getBytes();
  * 				writeOut.writeInt(buffer.length);
  * 				writeOut.write(buffer);
@@ -114,6 +113,8 @@ package org.eclipse.swt.dnd;
  * }
  * }
  * </code></pre>
+ *
+ * @see Transfer
  */
 public abstract class ByteArrayTransfer extends Transfer {
 
@@ -138,14 +139,13 @@ public boolean isSupportedType(TransferData transferData){
 
 /**
  * This implementation of <code>javaToNative</code> converts a java 
- * <code>byte[]</code> to a platform specific representation.  For additional
- * information see <code>Transfer#javaToNative</code>.
- * 
- * @see Transfer#javaToNative
+ * <code>byte[]</code> to a platform specific representation.
  * 
  * @param object a java <code>byte[]</code> containing the data to be converted
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 protected void javaToNative (Object object, TransferData transferData) {
 	if (!checkByteArray(object) && !isSupportedType(transferData)) {
@@ -162,14 +162,12 @@ protected void javaToNative (Object object, TransferData transferData) {
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of a byte array to a java <code>byte[]</code>.   
- * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @see Transfer#nativeToJava
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>byte[]</code> containing the converted data if the conversion was
+ * 		successful; otherwise null
  * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>byte[]</code> containing the converted data if the 
- * conversion was successful; otherwise null
+ * @see Transfer#javaToNative
  */
 protected Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null) return null;

@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -14,9 +14,13 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class PMRect {
+	/** @field cast=(double) */
 	public double top;
+	/** @field cast=(double) */
 	public double left;
+	/** @field cast=(double) */
 	public double bottom;
+	/** @field cast=(double) */
 	public double right;
 	public static final int sizeof = 32;
 }

@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "agl_structs.h"
@@ -23,7 +23,7 @@ JNIEXPORT jint JNICALL AGL_NATIVE(aglChoosePixelFormat)
 	jint rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglChoosePixelFormat_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)aglChoosePixelFormat(arg0, arg1, lparg2);
+	rc = (jint)aglChoosePixelFormat((const AGLDevice *)arg0, arg1, (const GLint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	AGL_NATIVE_EXIT(env, that, aglChoosePixelFormat_FUNC);
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL AGL_NATIVE(aglCreateContext)
 {
 	jint rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglCreateContext_FUNC);
-	rc = (jint)aglCreateContext(arg0, arg1);
+	rc = (jint)aglCreateContext((AGLPixelFormat)arg0, (AGLContext)arg1);
 	AGL_NATIVE_EXIT(env, that, aglCreateContext_FUNC);
 	return rc;
 }
@@ -51,7 +51,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglDescribePixelFormat)
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglDescribePixelFormat_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)aglDescribePixelFormat(arg0, arg1, lparg2);
+	rc = (jboolean)aglDescribePixelFormat((AGLPixelFormat)arg0, (GLint)arg1, (GLint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	AGL_NATIVE_EXIT(env, that, aglDescribePixelFormat_FUNC);
@@ -65,7 +65,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglDestroyContext)
 {
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglDestroyContext_FUNC);
-	rc = (jboolean)aglDestroyContext(arg0);
+	rc = (jboolean)aglDestroyContext((AGLContext)arg0);
 	AGL_NATIVE_EXIT(env, that, aglDestroyContext_FUNC);
 	return rc;
 }
@@ -76,7 +76,7 @@ JNIEXPORT void JNICALL AGL_NATIVE(aglDestroyPixelFormat)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	AGL_NATIVE_ENTER(env, that, aglDestroyPixelFormat_FUNC);
-	aglDestroyPixelFormat(arg0);
+	aglDestroyPixelFormat((AGLPixelFormat)arg0);
 	AGL_NATIVE_EXIT(env, that, aglDestroyPixelFormat_FUNC);
 }
 #endif
@@ -87,7 +87,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglEnable)
 {
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglEnable_FUNC);
-	rc = (jboolean)aglEnable(arg0, arg1);
+	rc = (jboolean)aglEnable((AGLContext)arg0, (GLenum)arg1);
 	AGL_NATIVE_EXIT(env, that, aglEnable_FUNC);
 	return rc;
 }
@@ -111,7 +111,7 @@ JNIEXPORT jint JNICALL AGL_NATIVE(aglGetDrawable)
 {
 	jint rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglGetDrawable_FUNC);
-	rc = (jint)aglGetDrawable(arg0);
+	rc = (jint)aglGetDrawable((AGLContext)arg0);
 	AGL_NATIVE_EXIT(env, that, aglGetDrawable_FUNC);
 	return rc;
 }
@@ -123,7 +123,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetCurrentContext)
 {
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglSetCurrentContext_FUNC);
-	rc = (jboolean)aglSetCurrentContext(arg0);
+	rc = (jboolean)aglSetCurrentContext((AGLContext)arg0);
 	AGL_NATIVE_EXIT(env, that, aglSetCurrentContext_FUNC);
 	return rc;
 }
@@ -135,7 +135,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetDrawable)
 {
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglSetDrawable_FUNC);
-	rc = (jboolean)aglSetDrawable(arg0, arg1);
+	rc = (jboolean)aglSetDrawable((AGLContext)arg0, (AGLDrawable)arg1);
 	AGL_NATIVE_EXIT(env, that, aglSetDrawable_FUNC);
 	return rc;
 }
@@ -147,7 +147,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetInteger__III)
 {
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglSetInteger__III_FUNC);
-	rc = (jboolean)aglSetInteger(arg0, arg1, arg2);
+	rc = (jboolean)aglSetInteger((AGLContext)arg0, (GLenum)arg1, (const GLint *)arg2);
 	AGL_NATIVE_EXIT(env, that, aglSetInteger__III_FUNC);
 	return rc;
 }
@@ -161,7 +161,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetInteger__II_3I)
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglSetInteger__II_3I_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)aglSetInteger(arg0, arg1, lparg2);
+	rc = (jboolean)aglSetInteger((AGLContext)arg0, (GLenum)arg1, (const GLint *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	AGL_NATIVE_EXIT(env, that, aglSetInteger__II_3I_FUNC);
@@ -174,7 +174,7 @@ JNIEXPORT void JNICALL AGL_NATIVE(aglSwapBuffers)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	AGL_NATIVE_ENTER(env, that, aglSwapBuffers_FUNC);
-	aglSwapBuffers(arg0);
+	aglSwapBuffers((AGLContext)arg0);
 	AGL_NATIVE_EXIT(env, that, aglSwapBuffers_FUNC);
 }
 #endif
@@ -185,7 +185,7 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglUpdateContext)
 {
 	jboolean rc = 0;
 	AGL_NATIVE_ENTER(env, that, aglUpdateContext_FUNC);
-	rc = (jboolean)aglUpdateContext(arg0);
+	rc = (jboolean)aglUpdateContext((AGLContext)arg0);
 	AGL_NATIVE_EXIT(env, that, aglUpdateContext_FUNC);
 	return rc;
 }

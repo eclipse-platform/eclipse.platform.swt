@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IDataObject extends IUnknown {
-public IDataObject(int address) {
+public IDataObject(int /*long*/ address) {
 	super(address);
 }
-public int EnumFormatEtc(int dwDirection, int[] ppenumFormatetc) {
+public int EnumFormatEtc(int dwDirection, int /*long*/[] ppenumFormatetc) {
 	return COM.VtblCall(8, address, dwDirection, ppenumFormatetc);
 }
 public int GetData(FORMATETC pFormatetc, STGMEDIUM pmedium) {

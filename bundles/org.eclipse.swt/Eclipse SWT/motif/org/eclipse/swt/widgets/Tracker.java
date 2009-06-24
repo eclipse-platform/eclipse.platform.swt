@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,14 +34,19 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tracker">Tracker snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Tracker extends Widget {
 	Composite parent;
 	boolean tracking, cancelled, stippled;
-	Rectangle [] rectangles, proportions;
+	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
-	int cursor, window, oldX, oldY;
+	Cursor cursor;
+	int window, oldX, oldY;
 
 	final static int STEPSIZE_SMALL = 1;
 	final static int STEPSIZE_LARGE = 9;
@@ -116,6 +121,7 @@ public Tracker (Composite parent, int style) {
  * @see SWT#RIGHT
  * @see SWT#UP
  * @see SWT#DOWN
+ * @see SWT#RESIZE
  */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
@@ -181,6 +187,7 @@ public void addKeyListener(KeyListener listener) {
 }
 
 Point adjustMoveCursor () {
+	if (bounds == null) return null;
 	final int unused[] = new int[1];
 	int actualX[] = new int[1];
 	int actualY[] = new int[1];
@@ -199,6 +206,7 @@ Point adjustMoveCursor () {
 	return new Point (actualX[0], actualY[0]);
 }
 Point adjustResizeCursor () {
+	if (bounds == null) return null;
 	int newX, newY;
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
@@ -250,6 +258,7 @@ public void close () {
 	tracking = false;
 }
 Rectangle computeBounds () {
+	if (rectangles.length == 0) return null;
 	int xMin = rectangles [0].x;
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
@@ -270,21 +279,23 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	bounds = computeBounds ();
-	for (int i = 0; i < rects.length; i++) {
-		int x = 0, y = 0, width = 0, height = 0;
-		if (bounds.width != 0) {
-			x = (rects [i].x - bounds.x) * 100 / bounds.width;
-			width = rects [i].width * 100 / bounds.width;
-		} else {
-			width = 100;
+	if (bounds != null) {
+		for (int i = 0; i < rects.length; i++) {
+			int x = 0, y = 0, width = 0, height = 0;
+			if (bounds.width != 0) {
+				x = (rects [i].x - bounds.x) * 100 / bounds.width;
+				width = rects [i].width * 100 / bounds.width;
+			} else {
+				width = 100;
+			}
+			if (bounds.height != 0) {
+				y = (rects [i].y - bounds.y) * 100 / bounds.height;
+				height = rects [i].height * 100 / bounds.height;
+			} else {
+				height = 100;
+			}
+			result [i] = new Rectangle (x, y, width, height);			
 		}
-		if (bounds.height != 0) {
-			y = (rects [i].y - bounds.y) * 100 / bounds.height;
-			height = rects [i].height * 100 / bounds.height;
-		} else {
-			height = 100;
-		}
-		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
@@ -337,10 +348,8 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
-	int length = 0;
-	if (rectangles != null) length = rectangles.length;
-	Rectangle [] result = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	Rectangle [] result = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
 	}
@@ -362,6 +371,7 @@ public boolean getStippled () {
 }
 
 void moveRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
@@ -388,7 +398,6 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget ();
-	if (rectangles == null) return false;
 	int xDisplay = display.xDisplay;
 	window = OS.XDefaultRootWindow (xDisplay);
 	if (parent != null) {
@@ -416,16 +425,19 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 	
-	Point cursorPos;
 	int mouseMasks = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
 	boolean mouseDown = (mask [0] & mouseMasks) != 0;
 	if (!mouseDown) {
+		Point cursorPos = null;
 		if ((style & SWT.RESIZE) != 0) {
 			cursorPos = adjustResizeCursor ();
 		} else {
 			cursorPos = adjustMoveCursor ();
 		}
-		oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
+		if (cursorPos != null) {
+			oldX [0] = cursorPos.x;
+			oldY [0] = cursorPos.y;
+		}
 	}
 	this.oldX = oldX [0];
 	this.oldY = oldY [0];
@@ -525,7 +537,14 @@ public void removeKeyListener(KeyListener listener) {
 	eventTable.unhook(SWT.KeyUp, listener);
 	eventTable.unhook(SWT.KeyDown, listener);
 }
+void releaseWidget () {
+	super.releaseWidget ();
+	parent = null;
+	rectangles = proportions = null;
+	bounds = null;
+}
 void resizeRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	/*
 	 * If the cursor orientation has not been set in the orientation of
 	 * this change then try to set it here.
@@ -649,8 +668,7 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor (Cursor value) {
 	checkWidget ();
-	cursor = 0;
-	if (value != null) cursor = value.handle;
+	cursor = value;
 }
 /**
  * Specifies the rectangles that should be drawn, expressed relative to the parent
@@ -669,9 +687,8 @@ public void setCursor (Cursor value) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget ();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int length = rectangles.length;
-	this.rectangles = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	this.rectangles = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
 		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);
@@ -836,19 +853,21 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 				}
 				cursorPos = adjustMoveCursor ();
 			}
-			oldX = cursorPos.x;
-			oldY = cursorPos.y;
+			if (cursorPos != null) {
+				oldX = cursorPos.x;
+				oldY = cursorPos.y;
+			}
 		}
 	}
 	return result;
 }
 
 int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
-	if (cursor != 0) {
+	if (cursor != null) {
 		int xDisplay = display.xDisplay;
 		OS.XChangeActivePointerGrab (xDisplay,
 			OS.ButtonPressMask | OS.ButtonReleaseMask | OS.PointerMotionMask,
-			cursor, OS.CurrentTime);
+			cursor.handle, OS.CurrentTime);
 	}
 	return xMouse (OS.MotionNotify, w, client_data, call_data, continue_to_dispatch);
 }
@@ -909,8 +928,10 @@ int xMouse (int type, int w, int client_data, int call_data, int continue_to_dis
 				drawRectangles (rectangles, stippled);
 			}
 			Point cursorPos = adjustResizeCursor ();
-			newX [0] = cursorPos.x;
-			newY [0] = cursorPos.y;
+			if (cursorPos != null) {
+				newX [0] = cursorPos.x;
+				newY [0] = cursorPos.y;
+			}
 		} else {
 			moveRectangles (newX [0] - oldX, newY [0] - oldY);
 			sendEvent (SWT.Move, event);

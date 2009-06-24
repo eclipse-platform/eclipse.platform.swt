@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,5 +17,5 @@ public final class DVTARGETDEVICE {
 	public short tdPortNameOffset;
 	public short tdExtDevmodeOffset;
 	public byte[] tdData = new byte[1];
-	public static final int sizeof = 13;
+	public static final int sizeof = COM.DVTARGETDEVICE_sizeof ();
 }

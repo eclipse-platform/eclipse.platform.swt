@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,7 +42,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>DROP_DOWN, READ_ONLY, SIMPLE</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Modify, Selection</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles DROP_DOWN and SIMPLE may be specified.
@@ -51,6 +51,10 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see List
+ * @see <a href="http://www.eclipse.org/swt/snippets/#combo">Combo snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
 	/**
@@ -356,11 +360,11 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the combo's list selection changes.
+ * <code>widgetSelected</code> is called when the user changes the combo's list selection.
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed the combo's text area.
  * </p>
  *
@@ -620,6 +624,30 @@ public String [] getItems () {
 		result [i] = new String (unicode);
 	}
 	return result;
+}
+
+/**
+ * Returns <code>true</code> if the receiver's list is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's list's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getListVisible () {
+	checkWidget ();
+	return false;
 }
 
 String getNameText () {
@@ -1051,7 +1079,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1126,9 +1154,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to removing the old item at the index, and then adding the new
- * item at that index.
+ * zero-relative index to the string argument.
  *
  * @param index the index for the item
  * @param string the new text for the item
@@ -1194,6 +1220,28 @@ public void setItems (String [] items) {
 }
 
 /**
+ * Marks the receiver's list as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setListVisible (boolean visible) {
+	checkWidget ();
+}
+
+/**
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  * <p>
@@ -1236,6 +1284,10 @@ public void setSelection (Point selection) {
 /**
  * Sets the contents of the receiver's text field to the
  * given string.
+ * <p>
+ * This call is ignored when the receiver is read only and 
+ * the given string is not in the receiver's list.
+ * </p>
  * <p>
  * Note: The text field in a <code>Combo</code> is typically
  * only capable of displaying a single line of text. Thus,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,6 +78,9 @@ import org.eclipse.swt.events.*;
  * @see Scrollable
  * @see Scrollable#getHorizontalBar
  * @see Scrollable#getVerticalBar
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ScrollBar extends Widget {
 	Scrollable parent;
@@ -102,7 +105,7 @@ static int checkStyle (int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -118,7 +121,7 @@ static int checkStyle (int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's value
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -316,7 +319,7 @@ public Point getSize () {
 }
 
 /**
- * Answers the size of the receiver's thumb relative to the
+ * Returns the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
  *
  * @return the thumb value
@@ -439,7 +442,7 @@ int Pt_CB_SCROLL_MOVE (int widget, int info) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -650,7 +653,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>

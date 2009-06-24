@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
 
-final class OS2BMPFileFormat extends FileFormat {
+public final class OS2BMPFileFormat extends FileFormat {
 	static final int BMPFileHeaderSize = 14;
 	static final int BMPHeaderFixedSize = 12;
 	int width, height, bitCount;

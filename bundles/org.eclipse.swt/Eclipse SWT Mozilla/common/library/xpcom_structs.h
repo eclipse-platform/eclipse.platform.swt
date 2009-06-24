@@ -1,32 +1,27 @@
-/* ***** BEGIN LICENSE BLOCK *****
-* Version: MPL 1.1
-*
-* The contents of this file are subject to the Mozilla Public License Version
-* 1.1 (the "License"); you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-* http://www.mozilla.org/MPL/
-*
-* Software distributed under the License is distributed on an "AS IS" basis,
-* WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-* for the specific language governing rights and limitations under the
-* License.
-*
-* The Original Code is Mozilla Communicator client code, released March 31, 1998.
-*
-* The Initial Developer of the Original Code is
-* Netscape Communications Corporation.
-* Portions created by Netscape are Copyright (C) 1998-1999
-* Netscape Communications Corporation.  All Rights Reserved.
-*
-* Contributor(s):
-*
-* IBM
-* -  Binding to permit interfacing between Mozilla and SWT
-* -  Copyright (C) 2003, 2004 IBM Corp.  All Rights Reserved.
-*
-* ***** END LICENSE BLOCK ***** */
+/*******************************************************************************
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "xpcom.h"
+
+#ifndef NO_nsDynamicFunctionLoad
+void cachensDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject);
+nsDynamicFunctionLoad *getnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct);
+void setnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct);
+#define nsDynamicFunctionLoad_sizeof() sizeof(nsDynamicFunctionLoad)
+#else
+#define cachensDynamicFunctionLoadFields(a,b)
+#define getnsDynamicFunctionLoadFields(a,b,c) NULL
+#define setnsDynamicFunctionLoadFields(a,b,c)
+#define nsDynamicFunctionLoad_sizeof() 0
+#endif
 
 #ifndef NO_nsID
 void cachensIDFields(JNIEnv *env, jobject lpObject);

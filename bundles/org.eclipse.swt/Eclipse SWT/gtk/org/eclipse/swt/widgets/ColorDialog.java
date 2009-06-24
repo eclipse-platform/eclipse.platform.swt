@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,6 +29,10 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ColorDialog extends Dialog {
 	RGB rgb;
@@ -50,7 +54,7 @@ public class ColorDialog extends Dialog {
  * @see Widget#getStyle
  */
 public ColorDialog (Shell parent) {
-	this (parent, SWT.NONE);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -81,7 +85,7 @@ public ColorDialog (Shell parent) {
  * @see Widget#getStyle
  */
 public ColorDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
@@ -111,6 +115,7 @@ public RGB getRGB () {
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ handle = OS.gtk_color_selection_dialog_new (buffer);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	if (parent != null) {
 		int /*long*/ shellHandle = parent.topHandle ();
 		OS.gtk_window_set_transient_for (handle, shellHandle);
@@ -120,6 +125,7 @@ public RGB open () {
 			OS.g_list_free (pixbufs);
 		}
 	}
+	OS.gtk_window_set_modal (handle, true);
 	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
 	OS.memmove (dialog, handle);
 	GdkColor color = new GdkColor();
@@ -130,7 +136,25 @@ public RGB open () {
 		OS.gtk_color_selection_set_current_color (dialog.colorsel, color);
 	}
 	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
+	display.addIdleProc ();
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int signalId = 0;
+	int /*long*/ hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
+	}	
 	int response = OS.gtk_dialog_run (handle);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook (signalId, hookId);
+	}
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
 		OS.gtk_color_selection_get_current_color (dialog.colorsel, color);
@@ -139,6 +163,7 @@ public RGB open () {
 		int blue = (color.blue >> 8) & 0xFF;
 		rgb = new RGB (red, green, blue);
 	}
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	if (!success) return null;
 	return rgb;

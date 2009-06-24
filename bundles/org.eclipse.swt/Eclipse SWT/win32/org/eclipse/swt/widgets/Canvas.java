@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,10 +33,14 @@ import org.eclipse.swt.graphics.*;
  * </p>
  *
  * @see Composite
+ * @see <a href="http://www.eclipse.org/swt/snippets/#canvas">Canvas snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class Canvas extends Composite {
 	Caret caret;
+	IME ime;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -80,41 +84,10 @@ void clearArea (int x, int y, int width, int height) {
 	if (OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
 		OS.SetRect (rect, x, y, x + width, y + height);
-		int hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
+		int /*long*/ hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
 		drawBackground (hDC, rect);
 		OS.ReleaseDC (handle, hDC);
 	}
-}
-
-/**
- * Returns the caret.
- * <p>
- * The caret for the control is automatically hidden
- * and shown when the control is painted or resized,
- * when focus is gained or lost and when an the control
- * is scrolled.  To avoid drawing on top of the caret,
- * the programmer must hide and show the caret when
- * drawing in the window any other time.
- * </p>
- *
- * @return the caret
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Caret getCaret () {
-	checkWidget ();
-	return caret;
-}
-
-void releaseChildren (boolean destroy) {
-	if (caret != null) {
-		caret.release (false);
-		caret = null;
-	}
-	super.releaseChildren (destroy);
 }
 
 /** 
@@ -144,7 +117,61 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	drawBackground (gc.handle, rect);
+	int /*long*/ hDC = gc.handle;
+	int pixel = background == -1 ? gc.getBackground ().handle : -1;
+	drawBackground (hDC, rect, pixel);
+}
+
+/**
+ * Returns the caret.
+ * <p>
+ * The caret for the control is automatically hidden
+ * and shown when the control is painted or resized,
+ * when focus is gained or lost and when an the control
+ * is scrolled.  To avoid drawing on top of the caret,
+ * the programmer must hide and show the caret when
+ * drawing in the window any other time.
+ * </p>
+ *
+ * @return the caret for the receiver, may be null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Caret getCaret () {
+	checkWidget ();
+	return caret;
+}
+
+/**
+ * Returns the IME.
+ *
+ * @return the IME
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public IME getIME () {
+	checkWidget ();
+	return ime;
+}
+
+void releaseChildren (boolean destroy) {
+	if (caret != null) {
+		caret.release (false);
+		caret = null;
+	}
+	if (ime != null) {
+		ime.release (false);
+		ime = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 /**
@@ -276,7 +303,121 @@ public void setFont (Font font) {
 	super.setFont (font);
 }
 
-LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
+/**
+ * Sets the receiver's IME.
+ * 
+ * @param ime the new IME for the receiver, may be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the IME has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
+}
+
+TCHAR windowClass () {
+	if (display.useOwnDC) return display.windowOwnDCClass;
+	return super.windowClass ();
+}
+
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+	if (msg == Display.SWT_RESTORECARET) {
+		if ((state & CANVAS) != 0) {
+			if (caret != null) {
+				caret.killFocus ();
+				caret.setFocus ();
+				return 1;
+			}
+		}
+	}
+	return super.windowProc (hwnd, msg, wParam, lParam);
+}
+
+LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
+	if (result != null) return result;
+	if (caret != null) {
+		switch ((int)/*64*/wParam) {
+			case SWT.DEL:
+			case SWT.BS:
+			case SWT.ESC:
+				break;
+			default: {
+				if (OS.GetKeyState (OS.VK_CONTROL) >= 0) {
+					int [] value = new int [1];
+					if (OS.SystemParametersInfo (OS.SPI_GETMOUSEVANISH, 0, value, 0)) {
+						if (value [0] != 0) OS.SetCursor (0);
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+	if (ime != null) {
+		LRESULT result = ime.WM_IME_COMPOSITION (wParam, lParam);
+		if (result != null) return result;
+	}
+	
+	/*
+	* Bug in Windows.  On Korean Windows XP, the IME window
+	* for the Korean Input System (MS-IME 2002) always opens 
+	* in the top left corner of the screen, despite the fact
+	* that ImmSetCompositionWindow() was called to position
+	* the IME when focus is gained.  The fix is to position
+	* the IME on every WM_IME_COMPOSITION message.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
+		if (OS.IsDBLocale) {
+			short langID = OS.GetSystemDefaultUILanguage ();
+			short primaryLang = OS.PRIMARYLANGID (langID);
+			if (primaryLang == OS.LANG_KOREAN) {
+				if (caret != null && caret.isFocusCaret ()) {
+					POINT ptCurrentPos = new POINT ();
+					if (OS.GetCaretPos (ptCurrentPos)) {
+						COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
+						lpCompForm.dwStyle = OS.CFS_POINT;
+						lpCompForm.x = ptCurrentPos.x;
+						lpCompForm.y = ptCurrentPos.y;
+						int /*long*/ hIMC = OS.ImmGetContext (handle);
+						OS.ImmSetCompositionWindow (hIMC, lpCompForm);
+						OS.ImmReleaseContext (handle, hIMC);
+					}
+				}
+			}
+		}
+	}
+	return super.WM_IME_COMPOSITION (wParam, lParam);
+}
+
+LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
+	if (ime != null) {
+		LRESULT result = ime.WM_IME_COMPOSITION_START (wParam, lParam);
+		if (result != null) return result;
+	}
+	return super.WM_IME_COMPOSITION_START (wParam, lParam);
+}
+
+LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+	if (ime != null) {
+		LRESULT result = ime.WM_IME_ENDCOMPOSITION (wParam, lParam);
+		if (result != null) return result;
+	}
+	return super.WM_IME_ENDCOMPOSITION (wParam, lParam);
+}
+
+LRESULT WM_INPUTLANGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) {
 		caret.setIMEFont ();
@@ -285,27 +426,40 @@ LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
+	if (ime != null) {
+		LRESULT result = ime.WM_KILLFOCUS (wParam, lParam);
+		if (result != null) return result;
+	}
+	Caret caret = this.caret;
 	LRESULT result  = super.WM_KILLFOCUS (wParam, lParam);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+	if (ime != null) {
+		LRESULT result = ime.WM_LBUTTONDOWN (wParam, lParam);
+		if (result != null) return result;
+	}
+	return super.WM_LBUTTONDOWN (wParam, lParam);
+}
+
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
-	if (caret != null) caret.setFocus ();
+	if (caret != null && caret.isFocusCaret ()) caret.setFocus ();
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_SIZE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) caret.resizeIME ();
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGED (wParam, lParam);
-	if (result != null) return result;
+	//if (result != null) return result;
 	/*
 	* Bug in Windows.  When a window with style WS_EX_LAYOUTRTL
 	* that contains a caret is resized, Windows does not move the
@@ -318,7 +472,7 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	/*

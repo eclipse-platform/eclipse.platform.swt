@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,7 +47,7 @@ public int getCharCount();
  * <p>
  *
  * @param lineIndex index of the line to return. Does not include 
- *	delimiters of preceeding lines. Index 0 is the first line of the 
+ *	delimiters of preceding lines. Index 0 is the first line of the 
  * 	content.
  * @return the line text without delimiters
  */
@@ -138,7 +138,8 @@ public String getTextRange(int start, int length);
  * Remove the specified text changed listener.
  * <p>
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
@@ -184,7 +185,7 @@ public void removeTextChangeListener(TextChangeListener listener);
  * </p>
  *
  * @param start start offset of text to replace, none of the offsets include 
- *	delimiters of preceeding lines, offset 0 is the first character of the 
+ *	delimiters of preceding lines, offset 0 is the first character of the 
  * 	document 
  * @param replaceLength length of text to replace
  * @param text text to replace

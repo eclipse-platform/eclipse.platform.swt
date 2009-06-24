@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,13 +12,18 @@ package org.eclipse.swt.internal.win32;
 
 public class CHOOSECOLOR {
 	public int lStructSize; 
-	public int hwndOwner;
-	public int hInstance; 
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndOwner;
+	/** @field cast=(HANDLE) */
+	public int /*long*/ hInstance; 
 	public int rgbResult;
-	public int lpCustColors; 
+	/** @field cast=(COLORREF *) */
+	public int /*long*/ lpCustColors; 
 	public int Flags;
-	public int lCustData;
-	public int lpfnHook; 
-	public int lpTemplateName;
-	public static final int sizeof = 36;
+	public int /*long*/ lCustData;
+	/** @field cast=(LPCCHOOKPROC) */
+	public int /*long*/ lpfnHook; 
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpTemplateName;
+	public static final int sizeof = OS.CHOOSECOLOR_sizeof ();
 }

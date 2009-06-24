@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,13 @@ import org.eclipse.swt.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */
@@ -38,14 +45,22 @@ public class Transform extends Resource {
 	
 /**
  * Constructs a new identity Transform.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the Transform
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -57,6 +72,11 @@ public Transform (Device device) {
 /**
  * Constructs a new Transform given an array of elements that represent the 
  * matrix that describes the transformation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the Transform
  * @param elements an array of floats that describe the transformation matrix
@@ -65,8 +85,11 @@ public Transform (Device device) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device, or the elements array is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the elements array is too small to hold the matrix values</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -78,6 +101,11 @@ public Transform(Device device, float[] elements) {
 /**
  * Constructs a new Transform given all of the elements that represent the 
  * matrix that describes the transformation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the Transform
  * @param m11 the first element of the first row of the matrix
@@ -90,18 +118,20 @@ public Transform(Device device, float[] elements) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	SWT.error(SWT.ERROR_NO_GRAPHICS_LIBRARY);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 static float[] checkTransform(float[] elements) {
@@ -110,17 +140,8 @@ static float[] checkTransform(float[] elements) {
 	return elements;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Transform. Applications must dispose of all Transforms that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -128,7 +149,6 @@ public void dispose() {
  * that the receiver represents, in the order {m11, m12, m21, m22, dx, dy}.
  *
  * @param elements array to hold the matrix values
- * @return (in elements array) the transformation matrix represented by the receiver
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -146,11 +166,25 @@ public void getElements(float[] elements) {
 
 /**
  * Modifies the receiver such that the matrix it represents becomes the
+ * identity matrix. 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void identity() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
+/**
+ * Modifies the receiver such that the matrix it represents becomes
  * the mathematical inverse of the matrix it previously represented. 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_CANNOT_INVERT_MATRIX - if the matrix is not invertable</li>
+ *    <li>ERROR_CANNOT_INVERT_MATRIX - if the matrix is not invertible</li>
  * </ul>
  */
 public void invert() {
@@ -253,6 +287,23 @@ public void scale(float scaleX, float scaleY) {
  * </ul>
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
+/**
+ * Modifies the receiver so that it represents a transformation that is
+ * equivalent to its previous transformation sheared by (shearX, shearY).
+ * 
+ * @param shearX the shear factor in the X direction
+ * @param shearY the shear factor in the Y direction
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void shear(float shearX, float shearY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 

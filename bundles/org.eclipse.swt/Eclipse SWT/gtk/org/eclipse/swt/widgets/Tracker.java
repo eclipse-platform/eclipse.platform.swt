@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,12 +34,17 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tracker">Tracker snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Tracker extends Widget {
 	Composite parent;
-	int /*long*/ cursor, lastCursor, window;
+	Cursor cursor;
+	int /*long*/ lastCursor, window;
 	boolean tracking, cancelled, grabbed, stippled;
-	Rectangle [] rectangles, proportions;
+	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	int oldX, oldY;
@@ -117,6 +122,7 @@ public Tracker (Composite parent, int style) {
  * @see SWT#RIGHT
  * @see SWT#UP
  * @see SWT#DOWN
+ * @see SWT#RESIZE
  */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
@@ -183,6 +189,7 @@ public void addKeyListener(KeyListener listener) {
 }
 
 Point adjustMoveCursor () {	
+	if (bounds == null) return null;
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	
@@ -200,6 +207,7 @@ Point adjustMoveCursor () {
 }
 
 Point adjustResizeCursor () {
+	if (bounds == null) return null;
 	int newX, newY;
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
@@ -254,6 +262,7 @@ static int checkStyle (int style) {
 }
 
 Rectangle computeBounds () {
+	if (rectangles.length == 0) return null;
 	int xMin = rectangles [0].x;
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
@@ -274,21 +283,23 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	bounds = computeBounds ();
-	for (int i = 0; i < rects.length; i++) {
-		int x = 0, y = 0, width = 0, height = 0;
-		if (bounds.width != 0) {
-			x = (rects [i].x - bounds.x) * 100 / bounds.width;
-			width = rects [i].width * 100 / bounds.width;
-		} else {
-			width = 100;
+	if (bounds != null) {
+		for (int i = 0; i < rects.length; i++) {
+			int x = 0, y = 0, width = 0, height = 0;
+			if (bounds.width != 0) {
+				x = (rects [i].x - bounds.x) * 100 / bounds.width;
+				width = rects [i].width * 100 / bounds.width;
+			} else {
+				width = 100;
+			}
+			if (bounds.height != 0) {
+				y = (rects [i].y - bounds.y) * 100 / bounds.height;
+				height = rects [i].height * 100 / bounds.height;
+			} else {
+				height = 100;
+			}
+			result [i] = new Rectangle (x, y, width, height);			
 		}
-		if (bounds.height != 0) {
-			y = (rects [i].y - bounds.y) * 100 / bounds.height;
-			height = rects [i].height * 100 / bounds.height;
-		} else {
-			height = 100;
-		}
-		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
@@ -309,7 +320,9 @@ void drawRectangles (Rectangle [] rects) {
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
 	for (int i=0; i<rects.length; i++) {
 		Rectangle rect = rects [i];
-		OS.gdk_draw_rectangle (window, gc, 0, rect.x, rect.y, rect.width, rect.height);
+		int x = rect.x;
+		if (parent != null && (parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - rect.width - x;
+		OS.gdk_draw_rectangle (window, gc, 0, x, rect.y, rect.width, rect.height);
 	}
 	OS.g_object_unref (gc);
 }
@@ -328,10 +341,8 @@ void drawRectangles (Rectangle [] rects) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
-	int length = 0;
-	if (rectangles != null) length = rectangles.length;
-	Rectangle [] result = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	Rectangle [] result = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
 	}
@@ -354,6 +365,7 @@ public boolean getStippled () {
 }
 
 boolean grab () {
+	int /*long*/ cursor = this.cursor != null ? this.cursor.handle : 0;
 	int result = OS.gdk_pointer_grab (window, false, OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK, window, cursor, OS.GDK_CURRENT_TIME);
 	return result == OS.GDK_GRAB_SUCCESS;
 }
@@ -399,6 +411,9 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		Event event = new Event ();
 		event.x = oldX + xChange;
 		event.y = oldY + yChange;
+		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
+			event.x = parent.getClientWidth () - event.width - event.x;
+		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (xChange, yChange);
 			sendEvent (SWT.Resize, event);
@@ -440,8 +455,10 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustResizeCursor ();
-			oldX = cursorPos.x;
-			oldY = cursorPos.y;
+			if (cursorPos != null) {
+				oldX = cursorPos.x;
+				oldY = cursorPos.y;
+			}
 		} else {
 			moveRectangles (xChange, yChange);
 			sendEvent (SWT.Move, event);
@@ -483,14 +500,17 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustMoveCursor ();
-			oldX = cursorPos.x;
-			oldY = cursorPos.y;
+			if (cursorPos != null) {
+				oldX = cursorPos.x;
+				oldY = cursorPos.y;
+			}
 		}
 	}
 	return result;
 }
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ cursor = this.cursor != null ? this.cursor.handle : 0;
 	if (cursor != lastCursor) {
 		ungrab ();
 		grabbed = grab ();
@@ -559,8 +579,10 @@ int /*long*/ gtk_mouse (int eventType, int /*long*/ widget, int /*long*/ eventPt
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustResizeCursor ();
-			newX [0] = cursorPos.x;
-			newY [0] = cursorPos.y;
+			if (cursorPos != null) {
+				newX [0] = cursorPos.x;
+				newY [0] = cursorPos.y;
+			}
 		} else {
 			moveRectangles (newX [0] - oldX, newY [0] - oldY);
 			sendEvent (SWT.Move, event);
@@ -610,11 +632,13 @@ int /*long*/ gtk_mouse (int eventType, int /*long*/ widget, int /*long*/ eventPt
 }
 
 void moveRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) yChange = 0;
 	if (xChange == 0 && yChange == 0) return;
+	if (parent != null && (parent.style & SWT.MIRRORED) != 0) xChange *= -1;
 	bounds.x += xChange; bounds.y += yChange;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
@@ -636,7 +660,6 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget();
-	if (rectangles == null) return false;
 	window = OS.GDK_ROOT_PARENT ();
 	if (parent != null) {
 		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
@@ -662,23 +685,25 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
-	Point cursorPos;
 	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK; 
 	boolean mouseDown = (state [0] & mask) != 0;
 	if (!mouseDown) {
+		Point cursorPos = null;
 		if ((style & SWT.RESIZE) != 0) {
 			cursorPos = adjustResizeCursor ();
 		} else {
 			cursorPos = adjustMoveCursor ();
 		}
-		oldX [0] = cursorPos.x;
-		oldY [0] = cursorPos.y;
+		if (cursorPos != null) {
+			oldX [0] = cursorPos.x;
+			oldY [0] = cursorPos.y;
+		}
 	}
 	this.oldX = oldX [0];
 	this.oldY = oldY [0];
 	
 	grabbed = grab ();
-	lastCursor = cursor;
+	lastCursor = this.cursor != null ? this.cursor.handle : 0;
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	GdkEvent gdkEvent = new GdkEvent();
@@ -725,6 +750,13 @@ public boolean open () {
 	ungrab ();
 	window = 0;
 	return !cancelled;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	parent = null;
+	rectangles = proportions = null;
+	bounds = null;
 }
 
 /**
@@ -778,6 +810,8 @@ public void removeKeyListener(KeyListener listener) {
 }
 
 void resizeRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
+	if (parent != null && (parent.style & SWT.MIRRORED) != 0) xChange *= -1;
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.
@@ -901,8 +935,7 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor (Cursor value) {
 	checkWidget ();
-	cursor = 0;
-	if (value != null) cursor = value.handle;
+	cursor = value;
 }
 
 /**

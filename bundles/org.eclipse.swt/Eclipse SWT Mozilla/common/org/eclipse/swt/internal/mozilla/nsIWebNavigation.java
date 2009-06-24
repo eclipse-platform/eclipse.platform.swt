@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,11 +41,11 @@ public class nsIWebNavigation extends nsISupports {
 		super(address);
 	}
 
-	public int GetCanGoBack(boolean[] aCanGoBack) {
+	public int GetCanGoBack(int[] aCanGoBack) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aCanGoBack);
 	}
 
-	public int GetCanGoForward(boolean[] aCanGoForward) {
+	public int GetCanGoForward(int[] aCanGoForward) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCanGoForward);
 	}
 

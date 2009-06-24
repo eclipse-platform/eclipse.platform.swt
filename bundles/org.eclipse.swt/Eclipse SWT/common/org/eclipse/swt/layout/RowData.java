@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  * 
  * @see RowLayout
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class RowData {
 	/**
@@ -77,7 +78,7 @@ public RowData () {
 /**
  * Constructs a new instance of RowData according to the parameters.
  * A value of SWT.DEFAULT indicates that no minimum width or
- * no minumum height is specified.
+ * no minimum height is specified.
  * 
  * @param width a minimum width for the control
  * @param height a minimum height for the control
@@ -90,7 +91,7 @@ public RowData (int width, int height) {
 /**
  * Constructs a new instance of RowData according to the parameter.
  * A value of SWT.DEFAULT indicates that no minimum width or
- * no minumum height is specified.
+ * no minimum height is specified.
  * 
  * @param point a point whose x coordinate specifies a minimum width for the control
  * and y coordinate specifies a minimum height for the control
@@ -110,7 +111,7 @@ String getName () {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the RowData object
  */
 public String toString () {
 	String string = getName ()+" {";

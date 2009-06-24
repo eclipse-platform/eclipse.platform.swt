@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,10 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tabfolder">TabFolder, TabItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabItem extends Item {
 	TabFolder parent;
@@ -92,11 +96,11 @@ public TabItem (TabFolder parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- *    <li>ERROR_INVALID_RANGE - if the index is either negative or greater than the parent's current tab count</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -137,9 +141,20 @@ void expand(int left, int top, int right, int bottom) {
 	}
 }
 /**
- * Return the bounds of the TabItem.
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
  */
-Rectangle getBounds () {
+public Rectangle getBounds () {
+	checkWidget();
 	return new Rectangle(x, y, width, height);
 }
 /**
@@ -319,10 +334,16 @@ public void setControl (Control control) {
 	}
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
-	int index = parent.indexOf (this);
-	if (index != parent.getSelectionIndex ()) {
-		if (newControl != null) newControl.setVisible(false);
-		return;
+	int index = parent.indexOf (this), selectionIndex = parent.getSelectionIndex();
+	if (index != selectionIndex) {
+		if (newControl != null) {
+			if (selectionIndex != -1) {
+				Control selectedControl = parent.getItem(selectionIndex).getControl();
+				if (selectedControl == newControl) return;
+			}
+			newControl.setVisible(false);
+			return;
+		}
 	}
 	if (newControl != null) {
 		newControl.setBounds (parent.getClientArea ());
@@ -344,14 +365,14 @@ public void setImage (Image image) {
  * the mnemonic character.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
  * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text
@@ -377,8 +398,17 @@ public void setText (String string) {
 }
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>

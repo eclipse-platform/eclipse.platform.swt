@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,8 +16,7 @@ import org.eclipse.swt.internal.win32.*;
 /**
  * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
  * for converting text in HTML format represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.  See 
- * <code>Transfer</code> for additional information.
+ * to a platform specific representation of the data and vice versa.
  * 
  * <p>An example of a java <code>String</code> containing HTML text is shown 
  * below:</p>
@@ -25,6 +24,8 @@ import org.eclipse.swt.internal.win32.*;
  * <code><pre>
  *     String htmlData = "<p>This is a paragraph of text.</p>";
  * </code></pre>
+ *
+ * @see Transfer
  */
 public class HTMLTransfer extends ByteArrayTransfer {
 
@@ -52,11 +53,12 @@ public static HTMLTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts HTML-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
- * For additional information see <code>Transfer#javaToNative</code>.
  * 
  * @param object a java <code>String</code> containing HTML text
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
@@ -66,8 +68,8 @@ public void javaToNative (Object object, TransferData transferData){
 	int count = string.length();
 	char[] chars = new char[count + 1];
 	string.getChars(0, count, chars, 0);
-	int codePage = OS.GetACP();
-	int cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
+	/* NOTE: CF_HTML uses UTF-8 encoding. */
+	int cchMultiByte = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, null, 0, null, null);
 	if (cchMultiByte == 0) {
 		transferData.stgmedium = new STGMEDIUM();
 		transferData.result = COM.DV_E_STGMEDIUM;
@@ -81,19 +83,19 @@ public void javaToNative (Object object, TransferData transferData){
 	StringBuffer buffer = new StringBuffer(HEADER);
 	int maxLength = NUMBER.length();
 	//startHTML
-	int start = buffer.indexOf(NUMBER);
+	int start = buffer.toString().indexOf(NUMBER);
 	String temp = Integer.toString(startHTML);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	//endHTML
-	start = buffer.indexOf(NUMBER, start);
+	start = buffer.toString().indexOf(NUMBER, start);
 	temp = Integer.toString(endHTML);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	//startFragment
-	start = buffer.indexOf(NUMBER, start);
+	start = buffer.toString().indexOf(NUMBER, start);
 	temp = Integer.toString(startFragment);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	//endFragment
-	start = buffer.indexOf(NUMBER, start);
+	start = buffer.toString().indexOf(NUMBER, start);
 	temp = Integer.toString(endFragment);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	
@@ -104,9 +106,9 @@ public void javaToNative (Object object, TransferData transferData){
 	count = buffer.length();
 	chars = new char[count + 1];
 	buffer.getChars(0, count, chars, 0);
-	cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
-	int lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
-	OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
+	cchMultiByte = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, null, 0, null, null);
+	int /*long*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
+	OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.stgmedium.unionField = lpMultiByteStr;
@@ -118,12 +120,12 @@ public void javaToNative (Object object, TransferData transferData){
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of HTML text to a java <code>String</code>.
- * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>String</code> containing HTML text if the 
- * conversion was successful; otherwise null
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>String</code> containing HTML text if the conversion was successful;
+ * 		otherwise null
+ * 
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;
@@ -132,26 +134,28 @@ public Object nativeToJava(TransferData transferData){
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	FORMATETC formatetc = transferData.formatetc;
 	stgmedium.tymed = COM.TYMED_HGLOBAL;	
-	transferData.result = data.GetData(formatetc, stgmedium);
+	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
-	int hMem = stgmedium.unionField;
+	int /*long*/ hMem = stgmedium.unionField;
 	
 	try {
-		int lpMultiByteStr = OS.GlobalLock(hMem);
+		int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
-			int codePage = OS.GetACP();
-			int cchWideChar  = OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+			/* NOTE: CF_HTML uses UTF-8 encoding. 
+			 * The MSDN documentation for MultiByteToWideChar states that dwFlags must be set to 0 for UTF-8.
+			 * Otherwise, the function fails with ERROR_INVALID_FLAGS. */
+			int cchWideChar  = OS.MultiByteToWideChar (OS.CP_UTF8, 0, lpMultiByteStr, -1, null, 0);
 			if (cchWideChar == 0) return null;
 			char[] lpWideCharStr = new char [cchWideChar - 1];
-			OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
-			StringBuffer buffer = new StringBuffer(new String(lpWideCharStr));
+			OS.MultiByteToWideChar (OS.CP_UTF8, 0, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+			String string = new String(lpWideCharStr);
 			int fragmentStart = 0, fragmentEnd = 0;
-			int start = buffer.indexOf(StartFragment) + StartFragment.length();
+			int start = string.indexOf(StartFragment) + StartFragment.length();
 			int end = start + 1;
-			while (end < buffer.length()) { 
-				String s = buffer.substring(start, end);
+			while (end < string.length()) { 
+				String s = string.substring(start, end);
 				try {
 					fragmentStart = Integer.parseInt(s);
 					end++;
@@ -159,10 +163,10 @@ public Object nativeToJava(TransferData transferData){
 					break;
 				}
 			}
-			start = buffer.indexOf(EndFragment) + EndFragment.length();
+			start = string.indexOf(EndFragment) + EndFragment.length();
 			end = start + 1;
-			while (end < buffer.length()) { 
-				String s = buffer.substring(start, end);
+			while (end < string.length()) { 
+				String s = string.substring(start, end);
 				try {
 					fragmentEnd = Integer.parseInt(s);
 					end++;
@@ -170,12 +174,10 @@ public Object nativeToJava(TransferData transferData){
 					break;
 				}
 			}
-			if (fragmentEnd <= fragmentStart || fragmentEnd > lpWideCharStr.length) return null;
-			/* TO DO:
-			 * FragmentStart and FragmentEnd are offsets in original byte stream, not
-			 * the wide char version of the byte stream.
-			 */
-			String s = buffer.substring(fragmentStart, fragmentEnd);
+			if (fragmentEnd <= fragmentStart || fragmentEnd > OS.strlen(lpMultiByteStr)) return null;
+			cchWideChar = OS.MultiByteToWideChar (OS.CP_UTF8, 0, lpMultiByteStr+fragmentStart, fragmentEnd - fragmentStart, lpWideCharStr, lpWideCharStr.length);
+			if (cchWideChar == 0) return null;
+			String s = new String(lpWideCharStr, 0, cchWideChar);
 			/*
 			 * Firefox includes <!--StartFragment --> in the fragment, so remove it.
 			 */

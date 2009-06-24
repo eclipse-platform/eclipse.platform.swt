@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,8 +16,7 @@ import org.eclipse.swt.internal.win32.*;
 /**
  * The class <code>RTFTransfer</code> provides a platform specific mechanism 
  * for converting text in RTF format represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.  See 
- * <code>Transfer</code> for additional information.
+ * to a platform specific representation of the data and vice versa.
  * 
  * <p>An example of a java <code>String</code> containing RTF text is shown 
  * below:</p>
@@ -25,6 +24,8 @@ import org.eclipse.swt.internal.win32.*;
  * <code><pre>
  *     String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
  * </code></pre>
+ *
+ * @see Transfer
  */
 public class RTFTransfer extends ByteArrayTransfer {
 
@@ -46,11 +47,12 @@ public static RTFTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts RTF-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
- * For additional information see <code>Transfer#javaToNative</code>.
  * 
  * @param object a java <code>String</code> containing RTF text
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (!checkRTF(object) || !isSupportedType(transferData)) {
@@ -68,7 +70,7 @@ public void javaToNative (Object object, TransferData transferData){
 		transferData.result = COM.DV_E_STGMEDIUM;
 		return;
 	}
-	int lpMultiByteStr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
+	int /*long*/ lpMultiByteStr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
 	OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -81,12 +83,12 @@ public void javaToNative (Object object, TransferData transferData){
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of RTF text to a java <code>String</code>.
- * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>String</code> containing RTF text if the 
- * conversion was successful; otherwise null
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>String</code> containing RTF text if the conversion was successful;
+ * 		otherwise null
+ * 
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;
@@ -95,12 +97,12 @@ public Object nativeToJava(TransferData transferData){
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	FORMATETC formatetc = transferData.formatetc;
 	stgmedium.tymed = COM.TYMED_HGLOBAL;	
-	transferData.result = data.GetData(formatetc, stgmedium);
+	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
-	int hMem = stgmedium.unionField;
+	int /*long*/ hMem = stgmedium.unionField;
 	try {
-		int lpMultiByteStr = OS.GlobalLock(hMem);
+		int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
 			int codePage = OS.GetACP();

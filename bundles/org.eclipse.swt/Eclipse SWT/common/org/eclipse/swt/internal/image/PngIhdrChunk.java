@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,6 @@ package org.eclipse.swt.internal.image;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Compatibility;
 
 class PngIhdrChunk extends PngChunk {
 	static final int IHDR_DATA_LENGTH = 13;
@@ -44,6 +43,9 @@ class PngIhdrChunk extends PngChunk {
 	static final byte[] ValidBitDepths = {1, 2, 4, 8, 16};
 	static final byte[] ValidColorTypes = {0, 2, 3, 4, 6};
 	
+	int width, height;
+	byte bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod;
+	
 PngIhdrChunk(int width, int height, byte bitDepth, byte colorType, byte compressionMethod, byte filterMethod, byte interlaceMethod) {
 	super(IHDR_DATA_LENGTH);
 	setType(TYPE_IHDR);
@@ -63,13 +65,25 @@ PngIhdrChunk(int width, int height, byte bitDepth, byte colorType, byte compress
  */	
 PngIhdrChunk(byte[] reference) {
 	super(reference);
+	if (reference.length <= IHDR_DATA_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	width = getInt32(WIDTH_DATA_OFFSET);
+	height = getInt32(HEIGHT_DATA_OFFSET);
+	bitDepth = reference[BIT_DEPTH_OFFSET];
+	colorType = reference[COLOR_TYPE_OFFSET];
+	compressionMethod = reference[COMPRESSION_METHOD_OFFSET];
+	filterMethod = reference[FILTER_METHOD_OFFSET];
+	interlaceMethod = reference[INTERLACE_METHOD_OFFSET];
+}
+
+int getChunkType() {
+	return CHUNK_IHDR;
 }
 
 /**
  * Get the image's width in pixels.
  */
 int getWidth() {
-	return getInt32(WIDTH_DATA_OFFSET);
+	return width;
 }
 
 /**
@@ -77,13 +91,14 @@ int getWidth() {
  */
 void setWidth(int value) {
 	setInt32(WIDTH_DATA_OFFSET, value);
+	width = value;
 }
 
 /**
  * Get the image's height in pixels.
  */
 int getHeight() {
-	return getInt32(HEIGHT_DATA_OFFSET);
+	return height;
 }
 
 /**
@@ -91,6 +106,7 @@ int getHeight() {
  */
 void setHeight(int value) {
 	setInt32(HEIGHT_DATA_OFFSET, value);
+	height = value;
 }
 
 /**
@@ -98,7 +114,7 @@ void setHeight(int value) {
  * This is limited to the values 1, 2, 4, 8, or 16.
  */
 byte getBitDepth() {
-	return reference[BIT_DEPTH_OFFSET];
+	return bitDepth;
 }
 
 /**
@@ -107,6 +123,7 @@ byte getBitDepth() {
  */
 void setBitDepth(byte value) {
 	reference[BIT_DEPTH_OFFSET] = value;
+	bitDepth = value;
 }
 
 /**
@@ -119,7 +136,7 @@ void setBitDepth(byte value) {
  * 6 - RGB with Alpha channel.
  */
 byte getColorType() {
-	return reference[COLOR_TYPE_OFFSET];
+	return colorType;
 }
 
 /**
@@ -133,6 +150,7 @@ byte getColorType() {
  */
 void setColorType(byte value) {
 	reference[COLOR_TYPE_OFFSET] = value;
+	colorType = value;
 }
 
 /**
@@ -140,7 +158,7 @@ void setColorType(byte value) {
  * This value must be 0.
  */
 byte getCompressionMethod() {
-	return reference[COMPRESSION_METHOD_OFFSET];
+	return compressionMethod;
 }
 
 /**
@@ -149,6 +167,7 @@ byte getCompressionMethod() {
  */
 void setCompressionMethod(byte value) {
 	reference[COMPRESSION_METHOD_OFFSET] = value;
+	compressionMethod = value;
 }
 
 /**
@@ -156,7 +175,7 @@ void setCompressionMethod(byte value) {
  * This value must be 0.
  */
 byte getFilterMethod() {
-	return reference[FILTER_METHOD_OFFSET];
+	return filterMethod;
 }
 
 /**
@@ -165,6 +184,7 @@ byte getFilterMethod() {
  */
 void setFilterMethod(byte value) {
 	reference[FILTER_METHOD_OFFSET] = value;
+	filterMethod = value;
 }
 
 /**
@@ -174,7 +194,7 @@ void setFilterMethod(byte value) {
  * 1 - Adam7 interlacing used.
  */
 byte getInterlaceMethod() {
-	return reference[INTERLACE_METHOD_OFFSET];
+	return interlaceMethod;
 }
 
 /**
@@ -185,6 +205,7 @@ byte getInterlaceMethod() {
  */
 void setInterlaceMethod(byte value) {
 	reference[INTERLACE_METHOD_OFFSET] = value;
+	interlaceMethod = value;
 }
 
 /**
@@ -205,15 +226,14 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	
 	super.validate(readState, headerChunk);
 	
-	if (getLength() != IHDR_DATA_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	if (getCompressionMethod() != 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
-	if (getInterlaceMethod() != INTERLACE_METHOD_NONE &&
-		getInterlaceMethod() != INTERLACE_METHOD_ADAM7) {
+	if (length != IHDR_DATA_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	if (compressionMethod != 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	if (interlaceMethod != INTERLACE_METHOD_NONE &&
+		interlaceMethod != INTERLACE_METHOD_ADAM7) {
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	
 	boolean colorTypeIsValid = false;
-	byte colorType = getColorType();
 	for (int i = 0; i < ValidColorTypes.length; i++) {
 		if (ValidColorTypes[i] == colorType) {
 			colorTypeIsValid = true;
@@ -223,7 +243,6 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (!colorTypeIsValid) SWT.error(SWT.ERROR_INVALID_IMAGE);
 
 	boolean bitDepthIsValid = false;
-	byte bitDepth = getBitDepth();
 	for (int i = 0; i < ValidBitDepths.length; i++) {
 		if (ValidBitDepths[i] == bitDepth) {
 			bitDepthIsValid = true;
@@ -246,18 +265,18 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 }
 
 String getColorTypeString() {
-	switch (getColorType()) {
+	switch (colorType) {
 		case COLOR_TYPE_GRAYSCALE: 				return "Grayscale";
 		case COLOR_TYPE_RGB: 					return "RGB";		
 		case COLOR_TYPE_PALETTE:				return "Palette";
 		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:	return "Grayscale with Alpha";
 		case COLOR_TYPE_RGB_WITH_ALPHA:			return "RGB with Alpha";
-		default:								return "Unknown - " + getColorType();
+		default:								return "Unknown - " + colorType;
 	}
 }
 
 String getFilterMethodString() {
-	switch (getFilterMethod()) {
+	switch (filterMethod) {
 		case FILTER_NONE:		return "None";
 		case FILTER_SUB:		return "Sub";
 		case FILTER_UP:			return "Up";
@@ -268,7 +287,7 @@ String getFilterMethodString() {
 }
 
 String getInterlaceMethodString() {
-	switch (getInterlaceMethod()) {
+	switch (interlaceMethod) {
 		case INTERLACE_METHOD_NONE: 	return "Not Interlaced";
 		case INTERLACE_METHOD_ADAM7:	return "Interlaced - ADAM7";
 		default:				return "Unknown";
@@ -277,15 +296,15 @@ String getInterlaceMethodString() {
 
 void contributeToString(StringBuffer buffer) {
 	buffer.append("\n\tWidth: ");
-	buffer.append(getWidth());
+	buffer.append(width);
 	buffer.append("\n\tHeight: ");
-	buffer.append(getHeight());
+	buffer.append(height);
 	buffer.append("\n\tBit Depth: ");
-	buffer.append(getBitDepth());
+	buffer.append(bitDepth);
 	buffer.append("\n\tColor Type: ");
 	buffer.append(getColorTypeString());
 	buffer.append("\n\tCompression Method: ");
-	buffer.append(getCompressionMethod());
+	buffer.append(compressionMethod);
 	buffer.append("\n\tFilter Method: ");
 	buffer.append(getFilterMethodString());
 	buffer.append("\n\tInterlace Method: ");
@@ -293,11 +312,10 @@ void contributeToString(StringBuffer buffer) {
 }
 
 boolean getMustHavePalette() {
-	return getColorType() == COLOR_TYPE_PALETTE;
+	return colorType == COLOR_TYPE_PALETTE;
 }
 
 boolean getCanHavePalette() {
-	int colorType = getColorType();
 	return colorType != COLOR_TYPE_GRAYSCALE && 
 		colorType != COLOR_TYPE_GRAYSCALE_WITH_ALPHA;
 }
@@ -307,8 +325,7 @@ boolean getCanHavePalette() {
  * and bit depth.
  */
 int getBitsPerPixel() {
-	int bitDepth = getBitDepth();
-	switch (getColorType()) {
+	switch (colorType) {
 		case COLOR_TYPE_RGB_WITH_ALPHA:
 			return 4 * bitDepth;
 		case COLOR_TYPE_RGB:
@@ -329,8 +346,7 @@ int getBitsPerPixel() {
  * and bit depth.
  */
 int getSwtBitsPerPixel() {
-	int bitDepth = getBitDepth();
-	switch (getColorType()) {
+	switch (colorType) {
 		case COLOR_TYPE_RGB_WITH_ALPHA:
 		case COLOR_TYPE_RGB:
 		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:
@@ -345,12 +361,12 @@ int getSwtBitsPerPixel() {
 }
 
 int getFilterByteOffset() {
-	if (getBitDepth() < 8) return 1;
+	if (bitDepth < 8) return 1;
 	return getBitsPerPixel() / 8;
 }
 
 boolean usesDirectColor() {
-	switch (getColorType()) {
+	switch (colorType) {
 		case COLOR_TYPE_GRAYSCALE:
 		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:
 		case COLOR_TYPE_RGB:
@@ -362,8 +378,8 @@ boolean usesDirectColor() {
 }
 
 PaletteData createGrayscalePalette() {
-	int bitDepth = Math.min(getBitDepth(), 8);
-	int max = Compatibility.pow2(bitDepth) - 1;
+	int depth = Math.min(bitDepth, 8);
+	int max = (1 << depth) - 1;
 	int delta = 255 / max;
 	int gray = 0;
 	RGB[] rgbs = new RGB[max + 1]; 
@@ -375,7 +391,7 @@ PaletteData createGrayscalePalette() {
 }
 
 PaletteData getPaletteData() {
-	switch (getColorType()) {
+	switch (colorType) {
 		case COLOR_TYPE_GRAYSCALE:
 			return createGrayscalePalette();
 		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:

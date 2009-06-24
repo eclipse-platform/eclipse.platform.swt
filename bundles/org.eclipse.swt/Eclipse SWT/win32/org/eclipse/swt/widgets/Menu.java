@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -32,6 +33,11 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#menu">Menu snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class Menu extends Widget {
@@ -45,9 +51,13 @@ public class Menu extends Widget {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
-	int x, y, hwndCB, id0, id1;
+	int x, y; 
+	int /*long*/ hBrush, hwndCB;
+	int id0, id1;
+	int foreground = -1, background = -1;
+	Image backgroundImage;	
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
@@ -68,6 +78,11 @@ public class Menu extends Widget {
  * Constructs a new instance of this class given its parent,
  * and sets the style for the instance so that the instance
  * will be a popup menu on the given parent's shell.
+ * <p>
+ * After constructing a menu, it can be set into its parent
+ * using <code>parent.setMenu(menu)</code>.  In this case, the parent may
+ * be any control in the same widget tree as the parent.
+ * </p>
  *
  * @param parent a control which will be the parent of the new instance (cannot be null)
  *
@@ -99,6 +114,9 @@ public Menu (Control parent) {
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
+ * </p><p>
+ * After constructing a menu or menuBar, it can be set into its parent
+ * using <code>parent.setMenu(menu)</code> or <code>parent.setMenuBar(menuBar)</code>.
  * </p>
  *
  * @param parent a decorations control which will be the parent of the new instance (cannot be null)
@@ -115,6 +133,9 @@ public Menu (Control parent) {
  * @see SWT#BAR
  * @see SWT#DROP_DOWN
  * @see SWT#POP_UP
+ * @see SWT#NO_RADIO_GROUP
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -127,6 +148,10 @@ public Menu (Decorations parent, int style) {
  * (which must be a <code>Menu</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentMenu
+ * using <code>parentMenu.setMenu(menu)</code>.
+ * </p>
  *
  * @param parentMenu a menu which will be the parent of the new instance (cannot be null)
  *
@@ -151,6 +176,10 @@ public Menu (Menu parentMenu) {
  * (which must be a <code>MenuItem</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent menu.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentItem
+ * using <code>parentItem.setMenu(menu)</code>.
+ * </p>
  *
  * @param parentItem a menu item which will be the parent of the new instance (cannot be null)
  *
@@ -170,7 +199,7 @@ public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
 }
 
-Menu (Decorations parent, int style, int handle) {
+Menu (Decorations parent, int style, int /*long*/ handle) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	this.handle = handle;
@@ -194,7 +223,7 @@ Menu (Decorations parent, int style, int handle) {
 
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	int hwndParent = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
 	if (visible) {
 		int flags = OS.TPM_LEFTBUTTON;
 		if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) flags |= OS.TPM_RIGHTBUTTON;
@@ -206,8 +235,8 @@ void _setVisible (boolean visible) {
 		int nX = x, nY = y;
 		if (!hasLocation) {
 			int pos = OS.GetMessagePos ();
-			nX = (short) (pos & 0xFFFF);
-			nY = (short) (pos >> 16);
+			nX = OS.GET_X_LPARAM (pos);
+			nY = OS.GET_Y_LPARAM (pos);
 		}
 		/*
 		* Feature in Windows.  It is legal use TrackPopupMenu()
@@ -217,14 +246,14 @@ void _setVisible (boolean visible) {
 		* that the menu has been closed.  This is not strictly a
 		* bug but leads to unwanted behavior when application code
 		* assumes that every WM_INITPOPUPMENU will eventually result
-		* in a WM_MENUSELECT, wParam=0xFFFF0000, lParam=0 to indicate
-		* that the menu has been closed.  The fix is to detect the
-		* case when TrackPopupMenu() fails and the number of items in
+		* in a WM_MENUSELECT, wParam=MAKEWPARAM (0, 0xFFFF), lParam=0 to
+		* indicate that the menu has been closed.  The fix is to detect
+		* the case when TrackPopupMenu() fails and the number of items in
 		* the menu is zero and issue a fake WM_MENUSELECT.
 		*/
 		boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
 		if (!success && GetMenuItemCount (handle) == 0) {
-			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
+			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, OS.MAKEWPARAM (0, 0xFFFF), 0);
 		}
 	} else {
 		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
@@ -307,7 +336,7 @@ void createHandle () {
 	if (handle != 0) return;
 	if ((style & SWT.BAR) != 0) {
 		if (OS.IsPPC) {
-			int hwndShell = parent.handle;
+			int /*long*/ hwndShell = parent.handle;
 			SHMENUBARINFO mbi = new SHMENUBARINFO ();
 			mbi.cbSize = SHMENUBARINFO.sizeof;
 			mbi.hwndParent = hwndShell;
@@ -364,7 +393,7 @@ void createHandle () {
 			
 			/* Set first item */
 			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPMB) {
-				int hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY0);
+				int /*long*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY0);
 				/* Remove the item from the resource file */
 				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
 				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
@@ -377,7 +406,7 @@ void createHandle () {
 
 			/* Set second item */
 			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPBM) {
-				int hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY1);
+				int /*long*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY1);
 				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
 				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
 				item = new MenuItem (this, menu, SWT.CASCADE, 1);
@@ -393,14 +422,14 @@ void createHandle () {
 			* a result, Shell on WinCE SP must use the class Dialog.
 			*/
 			int dwMask = OS.SHMBOF_NODEFAULT | OS.SHMBOF_NOTIFY;
-			int lParam = dwMask << 16 | dwMask;
+			int /*long*/ lParam = OS.MAKELPARAM (dwMask, dwMask);
 			OS.SendMessage (hwndCB, OS.SHCMBM_OVERRIDEKEY, OS.VK_ESCAPE, lParam);
 			return;
 		}
 		handle = OS.CreateMenu ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (OS.IsHPC) {
-			int hwndShell = parent.handle;
+			int /*long*/ hwndShell = parent.handle;
 			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), hwndShell, 1);
 			if (hwndCB == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.CommandBar_Show (hwndCB, false);
@@ -464,15 +493,16 @@ void createItem (MenuItem item, int index) {
 			* becomes unexpectedly disabled.  The fix is to insert a
 			* space.
 			*/
-			int hHeap = OS.GetProcessHeap ();
+			int /*long*/ hHeap = OS.GetProcessHeap ();
 			TCHAR buffer = new TCHAR (0, " ", true);
 			int byteCount = buffer.length () * TCHAR.sizeof;
-			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 			OS.MoveMemory (pszText, buffer, byteCount);	
 			MENUITEMINFO info = new MENUITEMINFO ();
 			info.cbSize = MENUITEMINFO.sizeof;
 			info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
-			info.wID = info.dwItemData = item.id;
+			info.wID = item.id;
+			info.dwItemData = item.id;
 			info.fType = item.widgetStyle ();
 			info.dwTypeData = pszText;
 			success = OS.InsertMenuItem (handle, index, true, info);
@@ -506,16 +536,10 @@ void createWidget () {
 	parent.addMenu (this);
 }
 
-/*
-* Currently not used.
-*/
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_MENU);
 }
 
-/*
-* Currently not used.
-*/
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_MENUTEXT);
 }
@@ -531,11 +555,11 @@ void destroyItem (MenuItem item) {
 				redraw();
 				return;
 			}
-			int index = OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
+			int index = (int)/*64*/OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
 			if (OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, index, 0) == 0) {
 				error (SWT.ERROR_ITEM_NOT_REMOVED);
 			}
-			int count = OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
+			int count = (int)/*64*/OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
 			if (count == 0) {
 				if (imageList != null) {
 					OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
@@ -568,12 +592,17 @@ void destroyItem (MenuItem item) {
 }
 
 void destroyWidget () {
-	int hMenu = handle, hCB = hwndCB;
+	MenuItem cascade = this.cascade;
+	int /*long*/ hMenu = handle, hCB = hwndCB;
 	releaseHandle ();
 	if (OS.IsWinCE && hCB != 0) {
 		OS.CommandBar_Destroy (hCB);
 	} else {
-		if (hMenu != 0) OS.DestroyMenu (hMenu);
+		if (cascade != null) {
+			if (!OS.IsSP) cascade.setMenu (null, true);
+		} else {
+			if (hMenu != 0) OS.DestroyMenu (hMenu);
+		}
 	}
 }
 
@@ -585,6 +614,40 @@ void fixMenus (Decorations newParent) {
 	parent.removeMenu (this);
 	newParent.addMenu (this);
 	this.parent = newParent;
+}
+
+/**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ Color getBackground () {
+	checkWidget ();
+	return Color.win32_new (display, background != -1 ? background : defaultBackground ());
+}
+
+/**
+ * Returns the receiver's background image.
+ *
+ * @return the background image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ Image getBackgroundImage () {
+	checkWidget ();
+	return backgroundImage;
 }
 
 /**
@@ -614,7 +677,7 @@ void fixMenus (Decorations newParent) {
 		if (parent.menuBar != this) {
 			return new Rectangle (0, 0, 0, 0);
 		}
-		int hwndShell = parent.handle;
+		int /*long*/ hwndShell = parent.handle;
 		MENUBARINFO info = new MENUBARINFO ();
 		info.cbSize = MENUBARINFO.sizeof;
 		if (OS.GetMenuBarInfo (hwndShell, OS.OBJID_MENU, 0, info)) {
@@ -687,6 +750,21 @@ public boolean getEnabled () {
 }
 
 /**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+/*public*/ Color getForeground () {
+	checkWidget ();
+	return Color.win32_new (display, foreground != -1 ? foreground : defaultForeground ());
+}
+
+/**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
  *
@@ -707,7 +785,7 @@ public MenuItem getItem (int index) {
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 		if (OS.IsPPC) {
 			TBBUTTON lpButton = new TBBUTTON ();
-			int result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
+			int /*long*/ result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
 			if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 			id = lpButton.idCommand;
 		}
@@ -722,7 +800,7 @@ public MenuItem getItem (int index) {
 		if (!OS.GetMenuItemInfo (handle, index, true, info)) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}
-		id = info.dwItemData;
+		id = (int)/*64*/info.dwItemData;
 	}
 	return display.getMenuItem (id);
 }
@@ -767,7 +845,7 @@ public MenuItem [] getItems () {
 			result[1] = display.getMenuItem (id1);
 			return result;
 		}
-		int count = OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
+		int count = (int)/*64*/OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
 		TBBUTTON lpButton = new TBBUTTON ();
 		MenuItem [] result = new MenuItem [count];
 		for (int i=0; i<count; i++) {
@@ -788,7 +866,7 @@ public MenuItem [] getItems () {
 			System.arraycopy (items, 0, newItems, 0, count);
 			items = newItems;
 		}
-		MenuItem item = display.getMenuItem (info.dwItemData);
+		MenuItem item = display.getMenuItem ((int)/*64*/info.dwItemData);
 		if (item != null) items [count++] = item;
 		index++;
 	}
@@ -798,10 +876,10 @@ public MenuItem [] getItems () {
 	return result;
 }
 
-int GetMenuItemCount (int handle) {
+int GetMenuItemCount (int /*long*/ handle) {
 	if (OS.IsWinCE) {
 		if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-			return OS.IsSP ? 2 : OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
+			return OS.IsSP ? 2 : (int)/*64*/OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
 		}
 		int count = 0;
 		MENUITEMINFO info = new MENUITEMINFO ();
@@ -938,7 +1016,7 @@ int imageIndex (Image image) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.add (image);
-		int hImageList = imageList.getHandle ();
+		int /*long*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -961,7 +1039,7 @@ int imageIndex (Image image) {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -975,7 +1053,7 @@ public int indexOf (MenuItem item) {
 	if (item.parent != this) return -1;
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 		if (OS.IsPPC) {
-			return OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
+			return (int)/*64*/OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
 		}
 		if (OS.IsSP) {
 			if (item.id == id0) return 0;
@@ -1012,7 +1090,9 @@ public int indexOf (MenuItem item) {
 public boolean isEnabled () {
 	checkWidget ();
 	Menu parentMenu = getParentMenu ();
-	if (parentMenu == null) return getEnabled ();
+	if (parentMenu == null) {
+		return getEnabled () && parent.isEnabled ();
+	}
 	return getEnabled () && parentMenu.isEnabled ();
 }
 
@@ -1047,6 +1127,7 @@ void redraw () {
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = hwndCB = 0;
+	cascade = null;
 }
 
 void releaseChildren (boolean destroy) {
@@ -1066,7 +1147,6 @@ void releaseChildren (boolean destroy) {
 
 void releaseParent () {
 	super.releaseParent ();
-	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
 		display.removeBar (this);
 		if (this == parent.menuBar) {
@@ -1081,6 +1161,9 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	backgroundImage = null;
+	if (hBrush == 0) OS.DeleteObject (hBrush);
+	hBrush = 0;
 	if (OS.IsPPC && hwndCB != 0) {
 		if (imageList != null) {
 			OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, 0);
@@ -1090,7 +1173,6 @@ void releaseWidget () {
 	}
 	if (parent != null) parent.removeMenu (this);
 	parent = null;
-	cascade = null;
 }
 
 /**
@@ -1140,6 +1222,94 @@ public void removeMenuListener (MenuListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Hide, listener);
 	eventTable.unhook (SWT.Show, listener);
+}
+
+/**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setBackground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == background) return;
+	background = pixel;
+	updateBackground ();
+}
+
+/**
+ * Sets the receiver's background image to the image specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.  The background image is tiled to fill
+ * the available space.
+ *
+ * @param image the new image (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setBackgroundImage (Image image) {
+	checkWidget ();
+	if (image != null) {
+		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (image.type != SWT.BITMAP) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (backgroundImage == image) return;
+	backgroundImage = image;
+	updateBackground ();
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setForeground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == foreground) return;
+	foreground = pixel;
+	updateForeground ();
 }
 
 /**
@@ -1330,17 +1500,23 @@ void update () {
 	* Under certain circumstances that have yet to be isolated,
 	* some menus can become huge and blank.  For now, do not
 	* run the code on Windows 98.
+	* 
+	* NOTE:  This work around doesn't run on Vista because
+	* WM_MEASURECHILD and WM_DRAWITEM cause Vista to lose
+	* the menu theme.
 	*/	
 	if (!OS.IsWin95) {
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_BITMAP;
-		for (int i=0; i<items.length; i++) {
-			MenuItem item = items [i];
-			if ((style & SWT.SEPARATOR) == 0) {
-				if (item.image == null) {
-					info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
-					OS.SetMenuItemInfo (handle, item.id, false, info);
+		if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+			MENUITEMINFO info = new MENUITEMINFO ();
+			info.cbSize = MENUITEMINFO.sizeof;
+			info.fMask = OS.MIIM_BITMAP;
+			for (int i=0; i<items.length; i++) {
+				MenuItem item = items [i];
+				if ((style & SWT.SEPARATOR) == 0) {
+					if (item.image == null || foreground != -1) {
+						info.hbmpItem = hasImage || foreground != -1 ? OS.HBMMENU_CALLBACK : 0;
+						OS.SetMenuItemInfo (handle, item.id, false, info);
+					}
 				}
 			}
 		}
@@ -1359,4 +1535,32 @@ void update () {
 	OS.SetMenuInfo (handle, lpcmi);
 }
 
+void updateBackground () {
+	if (hBrush == 0) OS.DeleteObject (hBrush);
+	hBrush = 0;
+	if (backgroundImage != null) {
+		hBrush = OS.CreatePatternBrush (backgroundImage.handle);
+	} else {
+		if (background != -1) hBrush = OS.CreateSolidBrush (background);
+	}
+	MENUINFO lpcmi = new MENUINFO ();
+	lpcmi.cbSize = MENUINFO.sizeof;
+	lpcmi.fMask = OS.MIM_BACKGROUND;
+	lpcmi.hbrBack = hBrush;
+	OS.SetMenuInfo (handle, lpcmi);
+}
+
+void updateForeground () {
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	int index = 0;
+	while (OS.GetMenuItemInfo (handle, index, true, info)) {
+		info.fMask = OS.MIIM_BITMAP;
+		info.hbmpItem = OS.HBMMENU_CALLBACK;
+		OS.SetMenuItemInfo (handle, index, true, info);
+		index++;
+	}
+	redraw ();
+}
 }

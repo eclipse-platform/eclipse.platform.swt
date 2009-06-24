@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,7 @@ import org.eclipse.swt.*;
  * required, and thus no <code>dispose()</code> method is provided.
  *
  * @see Font
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class FontData {
@@ -64,7 +65,7 @@ public final class FontData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int height;
+	public float height;
 	
 	/**
 	 * The locales of the font
@@ -72,7 +73,7 @@ public final class FontData {
 	String lang, country, variant;
 	
 /**	 
- * Constructs a new un-initialized font data.
+ * Constructs a new uninitialized font data.
  */
 public FontData() {
 	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
@@ -89,7 +90,7 @@ public FontData() {
  * 
  * @param data the <code>LOGFONT</code> for the result
  */
-FontData(LOGFONT data, int height) {
+FontData(LOGFONT data, float height) {
 	this.data = data;
 	this.height = height;
 }
@@ -133,9 +134,9 @@ public FontData(String string) {
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int height = 0;
+	float height = 0;
 	try {
-		height = Integer.parseInt(string.substring(start, end));
+		height = Float.parseFloat(string.substring(start, end));
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -266,6 +267,18 @@ public FontData(String name, int height, int style) {
 	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 }
 
+/*public*/ FontData(String name, float height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+	setName(name);
+	setHeight(height);
+	setStyle(style);
+	// We set the charset field so that
+	// wildcard searching will work properly
+	// out of the box
+	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
+}
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -304,7 +317,7 @@ public boolean equals (Object object) {
 		getName().equals(fd.getName());
 }
 
-int EnumLocalesProc(int lpLocaleString) {
+int /*long*/ EnumLocalesProc(int /*long*/ lpLocaleString) {
 	
 	/* Get the locale ID */
 	int length = 8;
@@ -339,9 +352,13 @@ int EnumLocalesProc(int lpLocaleString) {
  *
  * @return the height of this FontData
  *
- * @see #setHeight
+ * @see #setHeight(int)
  */
 public int getHeight() {
+	return (int)(0.5f + height);
+}
+
+/*public*/ float getHeightF() {
 	return height;
 }
 
@@ -440,7 +457,7 @@ public int getStyle() {
  * @see #equals
  */
 public int hashCode () {
-	return data.lfCharSet ^ height ^ data.lfWidth ^ data.lfEscapement ^
+	return data.lfCharSet ^ getHeight() ^ data.lfWidth ^ data.lfEscapement ^
 		data.lfOrientation ^ data.lfWeight ^ data.lfItalic ^data.lfUnderline ^
 		data.lfStrikeOut ^ data.lfCharSet ^ data.lfOutPrecision ^
 		data.lfClipPrecision ^ data.lfQuality ^ data.lfPitchAndFamily ^
@@ -461,6 +478,11 @@ public int hashCode () {
  * @see #getHeight
  */
 public void setHeight(int height) {
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.height = height;
+}
+
+/*public*/ void setHeight(float height) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
 }
@@ -504,7 +526,7 @@ public void setLocale(String locale) {
 		data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	} else {
 		Callback callback = new Callback (this, "EnumLocalesProc", 1); //$NON-NLS-1$
-		int lpEnumLocalesProc = callback.getAddress ();	
+		int /*long*/ lpEnumLocalesProc = callback.getAddress ();	
 		if (lpEnumLocalesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLocales(lpEnumLocalesProc, OS.LCID_SUPPORTED);
 		callback.dispose ();
@@ -586,11 +608,12 @@ public void setStyle(int style) {
  * @see FontData
  */
 public String toString() {
-	StringBuffer buffer = new StringBuffer();
+	StringBuffer buffer = new StringBuffer(128);
 	buffer.append("1|"); //$NON-NLS-1$
-	buffer.append(getName());
+	String name = getName();
+	buffer.append(name);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(getHeight());
+	buffer.append(getHeightF());
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getStyle());
 	buffer.append("|"); //$NON-NLS-1$
@@ -621,7 +644,7 @@ public String toString() {
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfPitchAndFamily);
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(getName());
+	buffer.append(name);
 	return buffer.toString();
 }
 
@@ -639,7 +662,7 @@ public String toString() {
  * @param height the height of the font data
  * @return a new font data object containing the specified <code>LOGFONT</code> and height
  */
-public static FontData win32_new(LOGFONT data, int height) {
+public static FontData win32_new(LOGFONT data, float height) {
 	return new FontData(data, height);
 }
 

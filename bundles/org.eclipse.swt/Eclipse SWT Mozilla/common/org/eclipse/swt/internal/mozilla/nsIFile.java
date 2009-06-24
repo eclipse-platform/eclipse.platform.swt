@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -101,7 +101,7 @@ public class nsIFile extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), newParentDir, newName);
 	}
 
-	public int Remove(boolean recursive) {
+	public int Remove(int recursive) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), recursive);
 	}
 
@@ -165,39 +165,39 @@ public class nsIFile extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 30, getAddress(), aNativePath);
 	}
 
-	public int Exists(boolean[] _retval) {
+	public int Exists(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 31, getAddress(), _retval);
 	}
 
-	public int IsWritable(boolean[] _retval) {
+	public int IsWritable(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 32, getAddress(), _retval);
 	}
 
-	public int IsReadable(boolean[] _retval) {
+	public int IsReadable(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 33, getAddress(), _retval);
 	}
 
-	public int IsExecutable(boolean[] _retval) {
+	public int IsExecutable(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 34, getAddress(), _retval);
 	}
 
-	public int IsHidden(boolean[] _retval) {
+	public int IsHidden(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 35, getAddress(), _retval);
 	}
 
-	public int IsDirectory(boolean[] _retval) {
+	public int IsDirectory(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 36, getAddress(), _retval);
 	}
 
-	public int IsFile(boolean[] _retval) {
+	public int IsFile(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 37, getAddress(), _retval);
 	}
 
-	public int IsSymlink(boolean[] _retval) {
+	public int IsSymlink(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 38, getAddress(), _retval);
 	}
 
-	public int IsSpecial(boolean[] _retval) {
+	public int IsSpecial(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 39, getAddress(), _retval);
 	}
 
@@ -209,11 +209,11 @@ public class nsIFile extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 41, getAddress(), _retval);
 	}
 
-	public int Equals(int /*long*/ inFile, boolean[] _retval) {
+	public int Equals(int /*long*/ inFile, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 42, getAddress(), inFile, _retval);
 	}
 
-	public int Contains(int /*long*/ inFile, boolean recur, boolean[] _retval) {
+	public int Contains(int /*long*/ inFile, int recur, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 43, getAddress(), inFile, recur, _retval);
 	}
 

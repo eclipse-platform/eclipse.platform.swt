@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class AEDesc {
+	/** @field cast=(DescType) */
 	public int descriptorType;
+	/** @field cast=(AEDataStorage) */
 	public int dataHandle;
 	public static final int sizeof = 8;
 }

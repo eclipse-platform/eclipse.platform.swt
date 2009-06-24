@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -72,6 +72,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @see FormLayout
  * @see FormData
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */
@@ -119,12 +120,12 @@ public final class FormAttachment {
 	 * </p>
 	 * 
 	 * <br>Possible values are: <ul>
-	 *    <li>TOP: Attach the side to the top side of the specified control.</li>
-	 *    <li>BOTTOM : Attach the side to the bottom side of the specified control.</li>
-	 *    <li>LEFT: Attach the side to the left side of the specified control.</li>
-	 *    <li>RIGHT: Attach the side to the right side of the specified control.</li>
-	 *    <li>CENTER: Attach the side at a position which will center the control on the specified control.</li>
-	 *    <li>DEFAULT: Attach the side to the adjacent side of the specified control.</li>
+	 *    <li>{@link SWT#TOP}: Attach the side to the top side of the specified control.</li>
+	 *    <li>{@link SWT#BOTTOM}: Attach the side to the bottom side of the specified control.</li>
+	 *    <li>{@link SWT#LEFT}: Attach the side to the left side of the specified control.</li>
+	 *    <li>{@link SWT#RIGHT}: Attach the side to the right side of the specified control.</li>
+	 *    <li>{@link SWT#CENTER}: Attach the side at a position which will center the control on the specified control.</li>
+	 *    <li>{@link SWT#DEFAULT}: Attach the side to the adjacent side of the specified control.</li>
 	 * </ul>
 	 */
 	public int alignment;
@@ -213,11 +214,26 @@ public FormAttachment (Control control, int offset) {
 
 /**
  * Constructs a new instance of this class given a control,
- * an offset and an alignment.
+ * an offset and an alignment.  The possible alignment values are:
+ * <dl>
+ * <dt><b>{@link SWT#TOP}</b></dt>
+ * <dd>the side will be attached to the top side of the specified control</dd>
+ * <dt><b>{@link SWT#BOTTOM}</b></dt>
+ * <dd>the side will be attached to the bottom side of the specified control</dd>
+ * <dt><b>{@link SWT#LEFT}</b></dt>
+ * <dd>the side will be attached to the left side of the specified control</dd>
+ * <dt><b>{@link SWT#RIGHT}</b></dt>
+ * <dd>the side will be attached to the right side of the specified control</dd>
+ * <dt><b>{@link SWT#CENTER}</b></dt>
+ * <dd>the side will be centered on the same side of the specified control</dd>
+ * <dt><b>{@link SWT#DEFAULT}</b></dt>
+ * <dd>the side will be attached to the adjacent side of the specified control</dd>
+ * </dl>
  * 
  * @param control the control the side is attached to
  * @param offset the offset of the side from the control
- * @param alignment the alignment of the side to the control it is attached to
+ * @param alignment the alignment of the side to the control it is attached to,
+ * 		one of TOP, BOTTOM, LEFT, RIGHT, CENTER, or DEFAULT
  */
 public FormAttachment (Control control, int offset, int alignment) {
 	this.control = control;
@@ -290,7 +306,7 @@ int solveY (int value) {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the FormAttachment
  */
 public String toString () {
  	String string = control != null ? control.toString () : numerator + "/" + denominator;

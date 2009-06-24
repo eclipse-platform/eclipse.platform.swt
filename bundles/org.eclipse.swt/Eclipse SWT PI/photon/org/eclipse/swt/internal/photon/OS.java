@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,10 +13,7 @@ package org.eclipse.swt.internal.photon;
  
 import org.eclipse.swt.internal.*;
 
-public class OS extends Platform {
-	static {
-		Library.loadLibrary ("swt");
-	}
+public class OS extends C {
 
 	public static final int QNX_MAJOR;
 	public static final int QNX_MINOR;
@@ -556,291 +553,935 @@ public class OS extends Platform {
 
 /** Natives */
 public static final native int PfDecomposeStemToID(byte[] pkszStem);
+/**
+ * @param font cast=(const char *)
+ * @param str cast=(const char *)
+ */
 public static final native int PfExtentText(PhRect_t extent, PhPoint_t pos, int font, int str, int len);
+/**
+ * @param font cast=(const char *)
+ * @param str cast=(const char *)
+ */
 public static final native int PfExtentText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int len);
+/**
+ * @param font cast=(const char *)
+ * @param str cast=(const uint16_t *)
+ */
 public static final native int PfExtentWideText(PhRect_t extent, PhPoint_t pos, byte[] font, char[] str, int len);
+/** @param ptsID cast=(FontID *) */
 public static final native int PfFontDescription(int ptsID);
+/** @param ptsID cast=(FontID *) */
 public static final native int PfFontFlags(int ptsID);
+/** @param ptsID cast=(FontID *) */
 public static final native int PfFontSize(int ptsID);
+/** @param ptsID cast=(FontID *) */
 public static final native int PfFreeFont(int ptsID);
+/**
+ * @param pkucDescription cast=(char const *)
+ * @param pucBuff cast=(char *)
+ */
 public static final native int PfGenerateFontName(byte[] pkucDescription, int kuiFlags, int kuiSize, byte[] pucBuff);
+/** @param font cast=(const char *) */
 public static final native int PfLoadMetrics(byte[] font);
+/**
+ * @param font cast=(const char *)
+ * @param info cast=(FontQueryInfo *)
+ */
 public static final native int PfQueryFontInfo(byte[] font, FontQueryInfo info);
+/** @param list cast=(FontDetails *) */
 public static final native int PfQueryFonts(int symbol, int flags, int list, int n);
 public static final native void PgAlphaOff();
 public static final native void PgAlphaOn();
 public static final native int PgCreateGC(int size);
+/** @param GC cast=(PhGC_t *) */
 public static final native void PgDestroyGC(int GC);
 public static final native int PgDrawArc(PhPoint_t center, PhPoint_t radii, int start, int end, int flags);
+/** @param color cast=(PgColor_t) */
 public static final native void PgDrawArrow(PhRect_t rect, short unknown, int color, int flags);
+/**
+ * @param ptr cast=(void const *)
+ * @param flags cast=(int)
+ * @param pos cast=(PhPoint_t *)
+ * @param size cast=(PhPoint_t *)
+ * @param bpl cast=(int)
+ * @param tag cast=(long)
+ */
 public static final native int PgDrawBitmap(int ptr, int flags, PhPoint_t pos, PhDim_t size, int bpl, int tag);
 public static final native int PgDrawEllipse(PhPoint_t center, PhPoint_t radii, int flags);
+/**
+ * @param color1 cast=(PgColor_t)
+ * @param color2 cast=(PgColor_t)
+ * @param color3 cast=(PgColor_t)
+ * @param color4 cast=(PgColor_t)
+ * @param transition_table cast=(unsigned char *)
+ */
 public static final native int PgDrawGradient(PhPoint_t ul, PhPoint_t lr, int gradient_type, int transition_type, int num_color_pts, int color1, int color2, int color3, int color4, int table_size, byte[] transition_table);
 public static final native int PgDrawILine(int x1, int y1, int x2, int y2);
 public static final native int PgDrawIPixel(int x,int y);
 public static final native int PgDrawIRect(int ulx, int uly, int lrx, int lry, int flags);
+/** @param ptr cast=(void const *) */
 public static final native int PgDrawImage(int ptr, int type, PhPoint_t pos, PhDim_t size, int bpl, int tag);
+/** @param text cast=(char *) */
 public static final native int PgDrawMultiTextArea(byte[] text, int len, PhRect_t canvas, int text_flags, int canvas_flags, int linespacing);
+/** @param image cast=(PhImage_t const *) */
 public static final native int PgDrawPhImageRectmx(PhPoint_t pos, int image, PhRect_t rect, int flags);
+/**
+ * @param ptr cast=(PhPoint_t const *)
+ * @param pos cast=(PhPoint_t const *)
+ */
 public static final native int PgDrawPolygon(short[] ptr, int num, PhPoint_t pos, int flags);
+/**
+ * @param rect cast=(PhRect_t const *)
+ * @param radii cast=(PhPoint_t const *)
+ */
 public static final native int PgDrawRoundRect(PhRect_t rect, PhPoint_t radii, int flags);
+/**
+ * @param ptr cast=(void const *)
+ * @param pos cast=(PhPoint_t const *)
+ * @param size cast=(PhDim_t const *)
+ * @param TransPtr cast=(void const *)
+ */
 public static final native int PgDrawTImage(int ptr, int type, PhPoint_t pos, PhDim_t size, int bpl, int tag, int TransPtr, int TransBPl);
+/**
+ * @param ptr cast=(char const *)
+ * @param pos cast=(PhPoint_t *)
+ */
 public static final native int PgDrawText(byte[] ptr, int len, PhPoint_t pos, int flags);
+/**
+ * @param extent cast=(PhRect_t *)
+ * @param pos cast=(PhPoint_t *)
+ * @param font cast=(char *)
+ * @param str cast=(char *)
+ */
 public static final native int PgExtentMultiText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int n, int linespacing);
 public static final native int PgFlush();
+/** @param settings cast=(PgDisplaySettings_t *),flags=init */
 public static final native int PgGetVideoMode(PgDisplaySettings_t settings);
+/** @param mode_info cast=(PgVideoModeInfo_t *) */
 public static final native int PgGetVideoModeInfo(short mode_number, PgVideoModeInfo_t mode_info);
+/**
+ * @param rect cast=(PhRect_t *)
+ * @param buffer cast=(void *)
+ */
 public static final native int PgReadScreen(PhRect_t rect, int buffer);
+/** @param rect cast=(PhRect_t *) */
 public static final native int PgReadScreenSize(PhRect_t rect);
+/**
+ * @param src_alpha_map cast=(PgMap_t const *)
+ * @param src_alpha_gradient cast=(PgGradient_t const *)
+ */
 public static final native void PgSetAlpha(int alpha_op, PgMap_t src_alpha_map, int src_alpha_gradient, byte src_global_alpha, byte dst_global_alpha);
+/** @param rects cast=(PhRect_t const *) */
 public static final native void PgSetClipping(short n, int rects);
 public static final native int PgSetDrawBufferSize(int cmd_buf_len);
 public static final native int PgSetDrawMode(int mode);
+/** @param color cast=(PgColor_t) */
 public static final native int PgSetFillColor(int color);
+/** @param pat cast=(PgPattern_t) */
 public static final native void PgSetFillTransPat(byte[] pat);
+/** @param ff cast=(char const *) */
 public static final native void PgSetFont(byte[] ff);
+/** @param GC cast=(PhGC_t *) */
 public static final native int PgSetGC(int GC);
+/** @param clip_list cast=(PhRect_t const *) */
 public static final native int PgSetMultiClip(int num, int clip_list);
+public static final native int PgSetMultiClipTiles (int tile);
+/** @param palette cast=(PgColor_t const *) */
 public static final native int PgSetPalette(int palette, int palette_id, short first_color, short num_colors, int flags, int tag);
+/** @param rid cast=(PhRid_t) */
 public static final native void PgSetRegion(int rid);
 public static final native int PgSetStrokeCap(int cap);
+/** @param color cast=(PgColor_t) */
 public static final native int PgSetStrokeColor(int color);
+/** @param DashList cast=(unsigned char const *) */
 public static final native void PgSetStrokeDash(byte[] DashList, int ListLen, int DashScale);
 public static final native int PgSetStrokeJoin(int join);
 public static final native int PgSetStrokeWidth(int width);
+/** @param color cast=(PgColor_t) */
 public static final native int PgSetTextColor(int color);
+/**
+ * @param frgd cast=(PgColor_t)
+ * @param bkgd cast=(PgColor_t)
+ */
 public static final native void PgSetTextXORColor(int frgd, int bkgd);
+public static final native void PgSetTranslation (PhPoint_t point, int flags);
+/** @param ClipRect cast=(PhRect_t const *) */
 public static final native void PgSetUserClip(PhRect_t ClipRect);
+/** @param name cast=(char const *) */
 public static final native int PgShmemCreate(int size, byte[] name);
+/** @param addr cast=(void *) */
 public static final native int PgShmemDestroy(int addr);
+/**
+ * @param tiles cast=(PhTile_t *)
+ * @param add_tiles cast=(PhTile_t *)
+ * @param added cast=(int *)
+ */
 public static final native int PhAddMergeTiles(int tiles, int add_tiles, int[] added);
+/**
+ * @param area cast=(PhArea_t const *)
+ * @param rect cast=(PhRect_t *)
+ */
 public static final native void PhAreaToRect(PhArea_t area, PhRect_t rect);
+/**
+ * @param rid cast=(PhRid_t)
+ * @param rect cast=(const PhRect_t *)
+ * @param offset cast=(const PhPoint_t *)
+ */
 public static final native void PhBlit(int rid, PhRect_t rect, PhPoint_t offset);
+/**
+ * @param tiles cast=(PhTile_t *)
+ * @param clip_tiles cast=(PhTile_t *)
+ * @param intersection cast=(PhTile_t **)
+ */
 public static final native int PhClipTilings(int tiles, int clip_tiles, int[] intersection);
+/** @param clip cast=(PhClipHeader const *) */
 public static final native int PhClipboardCopy(short ig, int n, byte[] clip);
+/** @param string cast=(const char *) */
 public static final native int PhClipboardCopyString(short ig, byte[] string);
+/** @param cbdata cast=(void *) */
 public static final native void PhClipboardPasteFinish(int cbdata);
 public static final native int PhClipboardPasteStart(short ig);
 public static final native int PhClipboardPasteString(short ig);
+/** @param cbdata cast=(void *) */
 public static final native int PhClipboardPasteType(int cbdata, byte[] type);
+/** @param cbdata cast=(void *) */
 public static final native int PhClipboardPasteTypeN(int cbdata, int n);
+/** @param tiles cast=(PhTile_t *) */
 public static final native int PhCoalesceTiles(int tiles);
+/** @param tile cast=(PhTile_t *) */
 public static final native int PhCopyTiles(int tile);
+/**
+ * @param buffer cast=(PhImage_t *)
+ * @param palette cast=(PgColor_t const *)
+ */
 public static final native int PhCreateImage(PhImage_t buffer, short width, short height, int type, int palette, int ncolors, int shmem);
+/** @param draw_context cast=(void *) */
 public static final native int PhDCSetCurrent(int draw_context);
+/**
+ * @param tile cast=(PhTile_t *)
+ * @param point_subtract cast=(PhPoint_t const *)
+ */
 public static final native int PhDeTranslateTiles(int tile, int point_subtract);
+/** @param buffer cast=(void *) */
 public static final native int PhEventNext(int buffer, int size);
+/** @param buffer cast=(void *) */
 public static final native int PhEventPeek(int buffer, int size);
+/** @param tiles cast=(PhTile_t *) */
 public static final native void PhFreeTiles(int tiles);
+/** @param event cast=(PhEvent_t *) */
 public static final native int PhGetData(int event);
+/** @param event_buf cast=(PhEvent_t const *) */
 public static final native int PhGetMsgSize(int event_buf);
+/** @param event cast=(PhEvent_t *) */
 public static final native int PhGetRects(int event);
+/** @method flags=no_gen */
 public static final native int PhGetTile();
+/**
+ * @param rid cast=(PhRid_t)
+ * @param rect cast=(const PhRect_t *)
+ * @param boundary cast=(const PhRect_t *)
+ * @param min cast=(PhDim_t *)
+ * @param max cast=(PhDim_t *)
+ * @param step cast=(PhDim_t *)
+ * @param ptrpos cast=(PhPoint_t *)
+ * @param cursor cast=(PhCursorDescription_t *)
+ */
 public static final native int PhInitDrag(int rid, int flags, PhRect_t rect, PhRect_t boundary, int input_group, PhDim_t min, PhDim_t max, PhDim_t step, PhPoint_t ptrpos, short[] cursor);
+/** @param event cast=(PhEvent_t *) */
 public static final native int PhInputGroup(int event);
+/**
+ * @param tile1 cast=(PhTile_t const *)
+ * @param tile2 cast=(PhTile_t const *)
+ */
 public static final native int PhIntersectTilings(int tile1, int tile2, short[] num_intersect_tiles);
+/** @param buffer cast=(char *) */
 public static final native int PhKeyToMb(byte[] buffer,PhKeyEvent_t keyevent);
+/** @param image cast=(PhImage_t *) */
 public static final native int PhMakeGhostBitmap(int image);
+/**
+ * @param image cast=(PhImage_t *)
+ * @param trans_color cast=(PgColor_t)
+ */
 public static final native int PhMakeTransBitmap(int image, int trans_color);
+/** @param tiles cast=(PhTile_t *) */
 public static final native int PhMergeTiles(int tiles);
 public static final native void PhMoveCursorAbs(int input_group, int x, int y);
+/** @param buf cast=(PhCursorInfo_t *) */
 public static final native int PhQueryCursor(short ig, PhCursorInfo_t buf);
+/**
+ * @param rid cast=(PhRid_t)
+ * @param emitter cast=(PhRid_t)
+ * @param rect cast=(const PhRect_t *)
+ * @param rids cast=(PhRid_t *)
+ */
 public static final native int PhQueryRids(int flags, int rid, int input_group, int type, int sense, int emitter, PhRect_t rect, int[] rids, int num);
+/**
+ * @param rect1 cast=(PhRect_t *)
+ * @param rect2 cast=(PhRect_t const *)
+ */
 public static final native int PhRectIntersect(int rect1, int rect2);
+/**
+ * @param rect1 cast=(PhRect_t *)
+ * @param rect2 cast=(PhRect_t const *)
+ */
 public static final native int PhRectUnion(int rect1, int rect2);
+/**
+ * @param rect1 cast=(PhRect_t *)
+ * @param rect2 cast=(PhRect_t const *)
+ */
 public static final native int PhRectUnion(PhRect_t rect1, PhRect_t rect2);
+/** @param rects cast=(PhRect_t *) */
 public static final native int PhRectsToTiles(int rects, int num_rects);
+/**
+ * @param rid cast=(PhRid_t)
+ * @param region cast=(PhRegion_t *)
+ * @param rect cast=(PhRect_t *)
+ * @param data cast=(void *)
+ */
 public static final native int PhRegionQuery(int rid, PhRegion_t region, PhRect_t rect, int data, int data_len);
+/** @param image cast=(PhImage_t *) */
 public static final native void PhReleaseImage(int image);
+/** @param tiles cast=(PhTile_t *) */
 public static final native int PhSortTiles(int tiles);
+/**
+ * @param tiles cast=(PhTile_t *)
+ * @param num_rects cast=(int *)
+ */
 public static final native int PhTilesToRects(int tiles, int[] num_rects);
+/**
+ * @param tile cast=(PhTile_t *)
+ * @param point_add cast=(PhPoint_t const *)
+ */
 public static final native int PhTranslateTiles(int tile, PhPoint_t point_add);
+/**
+ * @param rid cast=(PhRid_t)
+ * @param rect cast=(PhRect_t *)
+ */
 public static final native int PhWindowQueryVisible(int flag, int rid, int input_group, PhRect_t rect);
+/**
+ * @param image cast=(PhImage_t *)
+ * @param bounds cast=(PhRect_t const *)
+ */
 public static final native int PiCropImage(int image, PhRect_t bounds, int flags);
+/** @param image cast=(PhImage_t *) */
 public static final native int PiDuplicateImage(int image, int flags);
+/**
+ * @param image cast=(PhImage_t *)
+ * @param dim cast=(PhDim_t *)
+ * @param translation cast=(PhPoint_t *)
+ */
 public static final native int PmMemCreateMC(int image, PhDim_t dim, PhPoint_t translation);
+/**
+ * @param mc cast=(PmMemoryContext_t *)
+ * @param image cast=(PhImage_t *)
+ */
 public static final native int PmMemFlush(int mc, int image);
+/** @param mc cast=(PmMemoryContext_t *) */
 public static final native void PmMemReleaseMC(int mc);
+/** @param mc cast=(PmMemoryContext_t *) */
 public static final native int PmMemStart(int mc);
+/** @param mc cast=(PmMemoryContext_t *) */
 public static final native int PmMemStop(int mc);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param callback cast=(PtCallbackF_t *)
+ * @param data cast=(void *)
+ */
 public static final native void PtAddCallback(int widget, int callback_type, int callback, int data);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param callback cast=(PtCallbackF_t *)
+ * @param data cast=(void *)
+ */
 public static final native void PtAddEventHandler(int widget, int event_mask, int callback, int data);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param callback cast=(PtCallbackF_t *)
+ * @param data cast=(void *)
+ */
 public static final native void PtAddFilterCallback(int widget, int event_mask, int callback, int data);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param data cast=(void *)
+ * @param callback cast=(PtCallbackF_t *)
+ */
 public static final native void PtAddHotkeyHandler(int widget, int key_sym_cap, int key_mods, short flags, int data, int callback);
+/**
+ * @param parent cast=(PtWidget_t *)
+ * @param location cast=(PhPoint_t const *)
+ * @param title cast=(char const *)
+ * @param image cast=(PhImage_t const *)
+ * @param message cast=(char const *)
+ * @param msgFont cast=(char const *)
+ * @param buttons cast=(char const **)
+ * @param btnFonts cast=(char const **)
+ */
 public static final native int PtAlert(int parent, PhPoint_t location, byte[] title, int image, byte[] message, byte[] msgFont, int btnCount, int[] buttons, int[] btnFonts, int defBtn, int escBtn, int flags);
+/**
+ * @param app_context cast=(PtAppContext_t)
+ * @param pid cast=(pid_t)
+ * @param input_func cast=(PtInputCallbackProc_t)
+ * @param data cast=(void *)
+ */
 public static final native int PtAppAddInput(int app_context, int pid, int input_func, int data);
+/**
+ * @param app_context cast=(PtAppContext_t)
+ * @param work_func cast=(PtWorkProc_t)
+ * @param data cast=(void *)
+ */
 public static final native int PtAppAddWorkProc(int app_context, int work_func, int data);
+/** @param app cast=(PtAppContext_t) */
 public static final native int PtAppCreatePulse(int app, int priority);
+/**
+ * @param app cast=(PtAppContext_t)
+ * @param pulse_pid cast=(pid_t)
+ */
 public static final native int PtAppDeletePulse(int app, int pulse_pid);
+/** @param app_context cast=(PtAppContext_t) */
 public static final native void PtAppProcessEvent(int app_context);
+/**
+ * @param app cast=(PtAppContext_t)
+ * @param pulse cast=(pid_t)
+ */
 public static final native int PtAppPulseTrigger(int app, int pulse);
+/**
+ * @param app_context cast=(PtAppContext_t)
+ * @param input_id cast=(PtInputId_t *)
+ */
 public static final native void PtAppRemoveInput(int app_context, int input_id);
+/**
+ * @param app_context cast=(PtAppContext_t)
+ * @param WorkProc_id cast=(PtWorkProcId_t *)
+ */
 public static final native void PtAppRemoveWorkProc(int app_context, int WorkProc_id);
 public static final native int PtBeep();
+/**
+ * @param widget cast=(PtWidget_t const *)
+ * @param source cast=(PhRect_t const *)
+ * @param delta cast=(PhPoint_t const *)
+ */
 public static final native int PtBlit(int widget, PhRect_t source, PhPoint_t delta);
+/**
+ * @param skip cast=(PtWidget_t *)
+ * @param cursor_color cast=(PgColor_t)
+ */
 public static final native int PtBlockAllWindows(int skip, short cursor, int cursor_color);
+/**
+ * @param window cast=(PtWidget_t *)
+ * @param cursor_color cast=(PgColor_t)
+ */
 public static final native int PtBlockWindow(int window, short cursor, int cursor_color);
+/** @method flags=const */
 public static final native int PtButton();
+/** @param widget cast=(PtWidget_t *) */
 public static final native void PtCalcBorder(int widget, PhRect_t rect);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param canvas_rect cast=(PhRect_t *)
+ */
 public static final native int PtCalcCanvas(int widget, PhRect_t canvas_rect);
+/**
+ * @param widget cast=(PtWidget_t const *)
+ * @param src cast=(PhTile_t const *)
+ * @param delta cast=(PhPoint_t const *)
+ * @param clip cast=(PhTile_t const *)
+ */
 public static final native int PtClippedBlit(int widget, int src, PhPoint_t delta, int clip);
+/**
+ * @param parent cast=(PtWidget_t *)
+ * @param title cast=(char *)
+ */
 public static final native int PtColorSelect(int parent, byte[] title, PtColorSelectInfo_t info);
+/** @method flags=const */
 public static final native int PtComboBox();
+/** @method flags=const */
 public static final native int PtContainer();
+/** @param family_member cast=(PtWidget_t *) */
 public static final native int PtContainerFindFocus(int family_member);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native int PtContainerFocusNext(int widget, PhEvent_t event);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native int PtContainerFocusPrev(int widget, PhEvent_t event);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native int PtContainerGiveFocus(int widget, PhEvent_t event);
+/** @param container_widget cast=(PtWidget_t *) */
 public static final native int PtContainerHold(int container_widget);
+/** @param container_widget cast=(PtWidget_t *) */
 public static final native int PtContainerRelease(int container_widget);
 public static final native int PtCreateAppContext();
+/**
+ * @param clazz cast=(PtWidgetClassRef_t *)
+ * @param parent cast=(PtWidget_t *)
+ * @param args cast=(PtArg_t const *)
+ */
 public static final native int PtCreateWidget(int clazz, int parent, int n_args, int[] args);
+/**
+ * @param superclass_ref cast=(PtWidgetClassRef_t *)
+ * @param arg cast=(PtArg_t const *)
+ */
 public static final native int PtCreateWidgetClass(int superclass_ref, int size, int num_args, int[] arg);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param extent cast=(PhRect_t const *)
+ */
 public static final native int PtDamageExtent(int widget, PhRect_t extent);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtDamageWidget(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtDestroyWidget(int widget);
+/** @method flags=const */
 public static final native int PtDisjoint();
 public static final native int PtEnter(int flags);
+/** @param event cast=(PhEvent_t *) */
 public static final native int PtEventHandler(int event);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtExtentWidget(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtExtentWidgetFamily(int widget);
+/**
+ * @param parent cast=(PtWidget_t *)
+ * @param pos cast=(PhPoint_t const *)
+ * @param title cast=(char const *)
+ * @param root_dir cast=(char const *)
+ * @param file_spec cast=(char const *)
+ * @param btn1 cast=(char const *)
+ * @param btn2 cast=(char const *)
+ * @param format cast=(char const *)
+ * @param info cast=(PtFileSelectionInfo_t *),flags=init
+ */
 public static final native int PtFileSelection(int parent, PhPoint_t pos, byte[] title, byte[] root_dir, byte[] file_spec, byte[] btn1, byte[] btn2, byte[] format, PtFileSelectionInfo_t info, int flags);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtFindDisjoint(int widget);
 public static final native int PtFlush();
+/**
+ * @param parent cast=(PtWidget_t *)
+ * @param pos cast=(const PhPoint_t *)
+ * @param title cast=(const char *)
+ * @param font cast=(const char *)
+ * @param sample cast=(const char *)
+ */
 public static final native int PtFontSelection(int parent, PhPoint_t pos, byte[] title, byte[] font, int symbol, int flags, byte[] sample);
+/** @param event cast=(PhWindowEvent_t const *) */
 public static final native int PtForwardWindowEvent(PhWindowEvent_t event);
 public static final native void PtFrameSize(int widget, int border_width, int[] left_border, int[] top_border, int[] right_border, int[] bottom_border);
+/** @param widget cast=(PtWidget_t *) */
 public static final native void PtGetAbsPosition(int widget, short[] x, short[] y);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param args cast=(PtArg_t *)
+ */
 public static final native int PtGetResources(int widget, int n_args, int[] args);
+public static final native int PtGetVisibleTiles (int widget);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native int PtGlobalFocusNext(int widget, PhEvent_t event);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native int PtGlobalFocusNextContainer(int widget, PhEvent_t event);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native int PtGlobalFocusPrev(int widget, PhEvent_t event);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native int PtGlobalFocusPrevContainer(int widget, PhEvent_t event);
+/** @method flags=const */
 public static final native int PtGroup();
+/**
+ * @param container cast=( PtWidget_t *)
+ * @param rect cast=(PhRect_t const *)
+ */
 public static final native int PtHit(int container, int n, PhRect_t rect);
 public static final native int PtHold();
+/**
+ * @param win cast=(PtWidget_t *)
+ * @param me cast=(PtWidget_t *)
+ * @param string cast=(char const *)
+ * @param font cast=(char const *)
+ * @param fill cast=(PgColor_t)
+ * @param text_color cast=(PgColor_t)
+ */
 public static final native int PtInflateBalloon(int win, int me, int position, byte[] string, byte[] font, int fill, int text_color);
+/** @param name cast=(char const *) */
 public static final native int PtInit(byte[] name);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtIsFocused(int widget);
+/** @method flags=const */
 public static final native int PtLabel();
 public static final native int PtLeave(int flags);
+/** @method flags=const */
 public static final native int PtList();
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param items cast=(const char **)
+ */
 public static final native int PtListAddItems(int widget, int[] items, int item_count, int position);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtListDeleteAllItems(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtListDeleteItemPos(int widget, int item_count, int position);
+/** @param widget cast=(PtWidget_t *) */
 public static final native void PtListGotoPos(int widget, int pos);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param item cast=(const char *)
+ */
 public static final native int PtListItemPos(int widget, byte[] item);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param new_items cast=(const char **)
+ */
 public static final native int PtListReplaceItemPos(int widget, int[] new_items, int item_count, int position);
+/** @param widget cast=(PtWidget_t *) */
 public static final native void PtListSelectPos(int widget, int pos);
+/** @param widget cast=(PtWidget_t *) */
 public static final native void PtListUnselectPos(int widget, int pos);
 public static final native void PtMainLoop();
+/** @method flags=const */
 public static final native int PtMenu();
+/** @method flags=const */
 public static final native int PtMenuBar();
+/** @method flags=const */
 public static final native int PtMenuButton();
+/** @method flags=const */
 public static final native int PtMultiText();
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtNextTopLevelWidget(int widget);
+/** @method flags=const */
 public static final native int PtNumericInteger ();
+/** @method flags=const */
 public static final native int PtPane();
+/** @method flags=const */
 public static final native int PtPanelGroup();
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native void PtPositionMenu(int widget, PhEvent_t event);
+/** @method flags=const */
 public static final native int PtProgress();
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param parent cast=(PtWidget_t *)
+ */
 public static final native int PtReParentWidget(int widget, int parent);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtRealizeWidget(int widget);
+/** @method flags=const */
 public static final native int PtRegion();
 public static final native int PtRelease();
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param callback cast=(PtCallbackF_t *)
+ * @param data cast=(void *)
+ */
 public static final native void PtRemoveCallback(int widget, int callback_type, int callback, int data);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param data cast=(void *)
+ * @param callback cast=(PtCallbackF_t *)
+ */
 public static final native void PtRemoveHotkeyHandler(int widget, int key_sym_cap, int key_mods, short flags, int data, int callback);
+/** @method flags=const */
 public static final native int PtScrollArea();
+/** @method flags=const */
 public static final native int PtScrollContainer();
+/** @method flags=const */
 public static final native int PtScrollbar();
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param event cast=(PhEvent_t *)
+ */
 public static final native void PtSendEventToWidget(int widget, int event);
+/** @method flags=const */
 public static final native int PtSeparator();
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtSetAreaFromWidgetCanvas(int widget, PhRect_t canvas_rect, PhArea_t area);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtSetParentWidget(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtSetResource(int widget, int type, int value, int length);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param args cast=(PtArg_t *)
+ */
 public static final native int PtSetResources(int widget, int n_args, int[] args);
+/** @method flags=const */
 public static final native int PtSlider();
+/**
+ * @param wc_ref cast=(PtWidgetClassRef_t *)
+ * @param widget cast=(PtWidget_t *)
+ * @param damage cast=(PhTile_t const *)
+ */
 public static final native void PtSuperClassDraw(int wc_ref, int widget, int damage);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtSyncWidget(int widget);
+/** @method flags=const */
 public static final native int PtText();
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtTextGetSelection(int widget, int[] start, int[] end);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param text cast=(char const *)
+ */
 public static final native int PtTextModifyText(int widget, int start, int end, int insert_pos, byte[] text, int length);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param text cast=(char const *)
+ */
 public static final native int PtTextModifyText(int widget, int start, int end, int insert_pos, int text, int length);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtTextSetSelection(int widget, int[] start, int[] end);
+/** @method flags=const */
 public static final native int PtTimer();
+/** @method flags=const */
 public static final native int PtToggleButton();
+/** @method flags=const */
 public static final native int PtToolbar();
+/** @param bl cast=(PtBlockedList_t *) */
 public static final native void PtUnblockWindows(int bl);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtUnrealizeWidget(int widget);
+/**
+ * @param widget_parent cast=(PtWidget_t *)
+ * @param class_ref cast=(PtWidgetClassRef_t *)
+ */
 public static final native int PtValidParent(int widget_parent, int class_ref);
+/** @method flags=const */
 public static final native int PtWebClient();
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param area cast=(PhArea_t *)
+ */
 public static final native int PtWidgetArea(int widget, PhArea_t area);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetBrotherBehind(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetBrotherInFront(int widget);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param canvas_rect cast=(PhRect_t *)
+ */
 public static final native int PtWidgetCanvas(int widget, int canvas_rect);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetCanvas(int widget, PhRect_t canvas_rect);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetChildBack(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetChildFront(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetClass(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetExtent(int widget, int extent);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetExtent(int widget, PhRect_t extent);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetFlags(int widget);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param new_sibling cast=(PtWidget_t *)
+ */
 public static final native int PtWidgetInsert(int widget, int new_sibling, int behind);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param clazz cast=(PtWidgetClassRef_t *)
+ */
 public static final native int PtWidgetIsClassMember(int widget, int clazz);
+/** @param widget cast=(PtWidget_t *) */
 public static final native boolean PtWidgetIsRealized(int widget);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param offset cast=(PhPoint_t *)
+ */
 public static final native int PtWidgetOffset(int widget, PhPoint_t offset);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetParent(int widget);
+/**
+ * @param widget cast=(PtWidget_t *)
+ * @param dim cast=(PhDim_t *)
+ */
 public static final native int PtWidgetPreferredSize(int widget, PhDim_t dim);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetRid(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetToBack(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWidgetToFront(int widget);
+/** @method flags=const */
 public static final native int PtWindow();
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWindowFocus(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native int PtWindowGetState(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native void PtWindowToBack(int widget);
+/** @param widget cast=(PtWidget_t *) */
 public static final native void PtWindowToFront(int widget);
-public static final native void free(int ptr);
-public static final native int getenv(byte[] name);
-public static final native int malloc(int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhPoint_t src, int size);
-public static final native void memmove(int[] dest, int src, int size);
-public static final native void memmove(int dest, int[] src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhTile_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhTile_t dest, int src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PtCallbackInfo_t dest, int src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhWindowEvent_t dest, int src, int size);
-public static final native void memmove(byte[] dest, int src, int size);
-public static final native void memmove(int dest, byte[] src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhRect_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhRect_t dest, int src, int size);
-public static final native void memmove(short[] dest, int src, int size);
-public static final native void memmove(int dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhImage_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhImage_t dest, int src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(FontDetails dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhPointerEvent_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhPointerEvent_t dest, int src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhEvent_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhEvent_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhKeyEvent_t dest, int src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PtScrollbarCallback_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhArea_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in init
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PgAlpha_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out init
+ */
 public static final native void memmove(int dest, PgAlpha_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PtTextCallback_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PtTextCallback_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PgMap_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ */
 public static final native void memmove(int dest, PhCursorDef_t src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PhClipHeader dest, int src, int size);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(byte[] dest, PhClipHeader src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PtWebStatusCallback_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PtWebDataReqCallback_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PtWebWindowCallback_t dest, int src, int size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ */
 public static final native void memmove(PtWebMetaDataCallback_t dest, int src, int size);
-public static final native void memmove(int dest, PtWebClientData_t src, int size);
-public static final native void memset(int dest, int c, int length);
+public static final native void memmove(int dest, PtWebClient2Data_t src, int size);
+/** @param string cast=(const char *) */
 public static final native int strdup(int string);
-public static final native int strlen(int string);
+/** @param udata cast=(utsname *) */
 public static final native int uname(utsname udata);
 
 }

@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2006 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -25,5 +25,8 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 #include <string.h>
+#include <dlfcn.h>
+
+#include "cairo_custom.h"
 
 #endif /* INC_cairo_H */

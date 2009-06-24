@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -61,7 +61,7 @@ public void hide(WindowEvent event);
  * hosting the browser. It is <code>null</code> if no location is set. 
  * <li>(in) size the requested size for the <code>Browser</code>.
  * The client area of the <code>Shell</code> hosting the
- * <code>Browser</code> should be large enough to accomodate that size.
+ * <code>Browser</code> should be large enough to accommodate that size.
  * It is <code>null</code> if no size is set.
  * <li>(in) addressBar <code>true</code> if the <code>Shell</code> 
  * hosting the <code>Browser</code> should display an address bar or

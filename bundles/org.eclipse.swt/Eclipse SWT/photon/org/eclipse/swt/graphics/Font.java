@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,9 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see FontData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#font">Font snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Font extends Resource {
 
@@ -42,7 +45,8 @@ public final class Font extends Resource {
 	 */
 	public byte[] handle;
 
-Font() {
+Font(Device device) {
+	super(device);
 }
 
 /**	 
@@ -64,11 +68,10 @@ Font() {
  * </ul>
  */
 public Font(Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd.getName(), fd.getHeight(), fd.getStyle(), fd.stem);
-	if (device.tracking) device.new_Object(this);	
+	init(fd.getName(), fd.getHeight(), fd.getStyle(), fd.stem);
+	init();
 }
 
 /**	 
@@ -95,16 +98,15 @@ public Font(Device device, FontData fd) {
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	FontData fd = fds[0];
-	init(device,fd.getName(), fd.getHeight(), fd.getStyle(), fd.stem);
-	if (device.tracking) device.new_Object(this);	
+	init(fd.getName(), fd.getHeight(), fd.getStyle(), fd.stem);
+	init();
 }
 /**	 
  * Constructs a new font given a device, a font name,
@@ -129,25 +131,14 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
-	if (device.tracking) device.new_Object(this);	
+	init(name, height, style, null);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose() {
-	if (handle == null) return;
-	if (device.isDisposed()) return;
-		
+void destroy() {
 	handle = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -220,9 +211,8 @@ public boolean isDisposed() {
 	return handle == null;
 }
 
-void init(Device device, String name, int height, int style, byte[] stem) {
+void init(String name, int height, int style, byte[] stem) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	if (stem != null) {
 		handle = stem;
 	} else {
@@ -233,7 +223,7 @@ void init(Device device, String name, int height, int style, byte[] stem) {
 		byte[] buffer = new byte[OS.MAX_FONT_TAG];
 		if (OS.PfGenerateFontName(description, osStyle, height, buffer) != 0) handle = buffer;
 		if (handle == null) {
-			byte[] defaultFont = device.systemFont;
+			byte[] defaultFont = device.systemFont.handle;
 			int fontID = OS.PfDecomposeStemToID(defaultFont);
 			if (fontID != 0) {
 				int desc = OS.PfFontDescription(fontID);
@@ -250,9 +240,8 @@ void init(Device device, String name, int height, int style, byte[] stem) {
 }
 
 public static Font photon_new(Device device, byte[] stem) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
-	font.init(device, null, 0, 0, stem);
+	Font font = new Font(device);
+	font.init(null, 0, 0, stem);
 	return font;
 }
 

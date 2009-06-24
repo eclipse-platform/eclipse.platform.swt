@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,12 +27,18 @@ class ScrolledCompositeLayout extends Layout {
 	
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	ScrolledComposite sc = (ScrolledComposite)composite;
-	if (sc.content == null) {
-		int w = (wHint != SWT.DEFAULT) ? wHint : DEFAULT_WIDTH;
-		int h = (hHint != SWT.DEFAULT) ? hHint : DEFAULT_HEIGHT;
-		return new Point(w, h);
+	Point size = new Point(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	if (sc.content != null) {
+		Point preferredSize = sc.content.computeSize(wHint, hHint, flushCache);
+		Point currentSize = sc.content.getSize();
+		size.x = sc.getExpandHorizontal() ? preferredSize.x : currentSize.x;
+		size.y = sc.getExpandVertical() ? preferredSize.y : currentSize.y;
 	}
-	return sc.content.computeSize (wHint, hHint, flushCache);
+	size.x = Math.max(size.x, sc.minWidth);
+	size.y = Math.max(size.y, sc.minHeight);
+	if (wHint != SWT.DEFAULT) size.x = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
+	return size;
 }
 
 protected boolean flushCache(Control control) {

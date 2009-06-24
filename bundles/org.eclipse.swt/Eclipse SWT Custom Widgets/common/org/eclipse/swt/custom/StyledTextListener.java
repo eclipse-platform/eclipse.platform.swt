@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,9 +22,10 @@ StyledTextListener(SWTEventListener listener) {
 }
 /**
  * Process StyledText events by invoking the event's handler.
+ *
+ * @param e the event to handle
  */
 public void handleEvent(Event e) {
-	TextChangedEvent textChangedEvent;
 	
 	switch (e.type) {
 		case StyledText.ExtendedModify:
@@ -61,18 +62,38 @@ public void handleEvent(Event e) {
 			((VerifyKeyListener) eventListener).verifyKey(verifyEvent);
 			e.doit = verifyEvent.doit;
 			break;
-		case StyledText.TextChanged:
-			textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
+		case StyledText.TextChanged: {
+			TextChangedEvent textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
 			((TextChangeListener) eventListener).textChanged(textChangedEvent);
 			break;
+		}
 		case StyledText.TextChanging:
 			TextChangingEvent textChangingEvent = new TextChangingEvent((StyledTextContent) e.data, (StyledTextEvent) e);
 			((TextChangeListener) eventListener).textChanging(textChangingEvent);
 			break;
-		case StyledText.TextSet:
-			textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
+		case StyledText.TextSet: {
+			TextChangedEvent textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
 			((TextChangeListener) eventListener).textSet(textChangedEvent);
 			break;
+		}
+		case StyledText.WordNext: {
+			MovementEvent wordBoundaryEvent = new MovementEvent((StyledTextEvent) e);
+			((MovementListener) eventListener).getNextOffset(wordBoundaryEvent);
+			((StyledTextEvent) e).end = wordBoundaryEvent.newOffset;
+			break;
+		}
+		case StyledText.WordPrevious: {
+			MovementEvent wordBoundaryEvent = new MovementEvent((StyledTextEvent) e);
+			((MovementListener) eventListener).getPreviousOffset(wordBoundaryEvent);
+			((StyledTextEvent) e).end = wordBoundaryEvent.newOffset;
+			break;
+		}
+		case StyledText.CaretMoved: {
+			CaretEvent caretEvent = new CaretEvent((StyledTextEvent) e);
+			((CaretListener) eventListener).caretMoved(caretEvent);
+			((StyledTextEvent) e).end = caretEvent.caretOffset;
+			break;
+		}
 	}
 }
 }

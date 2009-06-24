@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,7 +41,7 @@ public class nsIDocShell extends nsISupports {
 		super(address);
 	}
 
-	public int LoadURI(int /*long*/ uri, int /*long*/ loadInfo, int aLoadFlags, boolean firstParty) {
+	public int LoadURI(int /*long*/ uri, int /*long*/ loadInfo, int aLoadFlags, int firstParty) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), uri, loadInfo, aLoadFlags, firstParty);
 	}
 
@@ -49,7 +49,7 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aStream, aURI, aContentType, aContentCharset, aLoadInfo);
 	}
 
-	public int InternalLoad(int /*long*/ aURI, int /*long*/ aReferrer, int /*long*/ aOwner, boolean aInheritOwner, char[] aWindowTarget, int /*long*/ aPostDataStream, int /*long*/ aHeadersStream, int aLoadFlags, int /*long*/ aSHEntry, boolean firstParty, int /*long*/[] aDocShell, int /*long*/[] aRequest) {
+	public int InternalLoad(int /*long*/ aURI, int /*long*/ aReferrer, int /*long*/ aOwner, int aInheritOwner, char[] aWindowTarget, int /*long*/ aPostDataStream, int /*long*/ aHeadersStream, int aLoadFlags, int /*long*/ aSHEntry, int firstParty, int /*long*/[] aDocShell, int /*long*/[] aRequest) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aURI, aReferrer, aOwner, aInheritOwner, aWindowTarget, aPostDataStream, aHeadersStream, aLoadFlags, aSHEntry, firstParty, aDocShell, aRequest);
 	}
 
@@ -109,43 +109,43 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aDocumentCharsetInfo);
 	}
 
-	public int GetAllowPlugins(boolean[] aAllowPlugins) {
+	public int GetAllowPlugins(int[] aAllowPlugins) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aAllowPlugins);
 	}
 
-	public int SetAllowPlugins(boolean aAllowPlugins) {
+	public int SetAllowPlugins(int aAllowPlugins) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), aAllowPlugins);
 	}
 
-	public int GetAllowJavascript(boolean[] aAllowJavascript) {
+	public int GetAllowJavascript(int[] aAllowJavascript) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), aAllowJavascript);
 	}
 
-	public int SetAllowJavascript(boolean aAllowJavascript) {
+	public int SetAllowJavascript(int aAllowJavascript) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 21, getAddress(), aAllowJavascript);
 	}
 
-	public int GetAllowMetaRedirects(boolean[] aAllowMetaRedirects) {
+	public int GetAllowMetaRedirects(int[] aAllowMetaRedirects) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress(), aAllowMetaRedirects);
 	}
 
-	public int SetAllowMetaRedirects(boolean aAllowMetaRedirects) {
+	public int SetAllowMetaRedirects(int aAllowMetaRedirects) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), aAllowMetaRedirects);
 	}
 
-	public int GetAllowSubframes(boolean[] aAllowSubframes) {
+	public int GetAllowSubframes(int[] aAllowSubframes) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 24, getAddress(), aAllowSubframes);
 	}
 
-	public int SetAllowSubframes(boolean aAllowSubframes) {
+	public int SetAllowSubframes(int aAllowSubframes) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 25, getAddress(), aAllowSubframes);
 	}
 
-	public int GetAllowImages(boolean[] aAllowImages) {
+	public int GetAllowImages(int[] aAllowImages) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 26, getAddress(), aAllowImages);
 	}
 
-	public int SetAllowImages(boolean aAllowImages) {
+	public int SetAllowImages(int aAllowImages) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 27, getAddress(), aAllowImages);
 	}
 
@@ -169,11 +169,11 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 30, getAddress(), aAppType);
 	}
 
-	public int GetAllowAuth(boolean[] aAllowAuth) {
+	public int GetAllowAuth(int[] aAllowAuth) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 31, getAddress(), aAllowAuth);
 	}
 
-	public int SetAllowAuth(boolean aAllowAuth) {
+	public int SetAllowAuth(int aAllowAuth) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 32, getAddress(), aAllowAuth);
 	}
 
@@ -201,23 +201,23 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 38, getAddress(), aMarginHeight);
 	}
 
-	public int GetHasFocus(boolean[] aHasFocus) {
+	public int GetHasFocus(int[] aHasFocus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 39, getAddress(), aHasFocus);
 	}
 
-	public int SetHasFocus(boolean aHasFocus) {
+	public int SetHasFocus(int aHasFocus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 40, getAddress(), aHasFocus);
 	}
 
-	public int GetCanvasHasFocus(boolean[] aCanvasHasFocus) {
+	public int GetCanvasHasFocus(int[] aCanvasHasFocus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 41, getAddress(), aCanvasHasFocus);
 	}
 
-	public int SetCanvasHasFocus(boolean aCanvasHasFocus) {
+	public int SetCanvasHasFocus(int aCanvasHasFocus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 42, getAddress(), aCanvasHasFocus);
 	}
 
-	public int TabToTreeOwner(boolean forward, boolean[] tookFocus) {
+	public int TabToTreeOwner(int forward, int[] tookFocus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 43, getAddress(), forward, tookFocus);
 	}
 
@@ -247,11 +247,11 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 46, getAddress(), aLoadType);
 	}
 
-	public int IsBeingDestroyed(boolean[] _retval) {
+	public int IsBeingDestroyed(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 47, getAddress(), _retval);
 	}
 
-	public int GetIsExecutingOnLoadHandler(boolean[] aIsExecutingOnLoadHandler) {
+	public int GetIsExecutingOnLoadHandler(int[] aIsExecutingOnLoadHandler) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 48, getAddress(), aIsExecutingOnLoadHandler);
 	}
 
@@ -263,7 +263,7 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 50, getAddress(), aLayoutHistoryState);
 	}
 
-	public int GetShouldSaveLayoutState(boolean[] aShouldSaveLayoutState) {
+	public int GetShouldSaveLayoutState(int[] aShouldSaveLayoutState) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 51, getAddress(), aShouldSaveLayoutState);
 	}
 }

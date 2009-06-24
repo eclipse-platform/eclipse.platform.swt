@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,6 +33,9 @@ import org.eclipse.swt.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class ViewForm extends Composite {
@@ -70,7 +73,7 @@ public class ViewForm extends Composite {
 	/**
 	 * Color of innermost line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated
@@ -79,7 +82,7 @@ public class ViewForm extends Composite {
 	/**
 	 * Color of middle line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated
@@ -88,7 +91,7 @@ public class ViewForm extends Composite {
 	/**
 	 * Color of outermost line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated
@@ -114,6 +117,7 @@ public class ViewForm extends Composite {
 	Point oldSize;
 	
 	Color selectionBackground;
+	Listener listener;
 	
 	static final int OFFSCREEN = -200;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
@@ -151,10 +155,10 @@ public ViewForm(Composite parent, int style) {
 	
 	setBorderVisible((style & SWT.BORDER) != 0);
 	
-	Listener listener = new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
-				case SWT.Dispose: onDispose(); break;
+				case SWT.Dispose: onDispose(e); break;
 				case SWT.Paint: onPaint(e.gc); break;
 				case SWT.Resize: onResize(); break;
 			}
@@ -237,7 +241,11 @@ public Control getTopRight() {
 	//checkWidget();
 	return topRight;
 }
-void onDispose() {
+void onDispose(Event event) {
+	removeListener(SWT.Dispose, listener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
 	topLeft = null;
 	topCenter = null;
 	topRight = null;
@@ -323,7 +331,7 @@ public void setContent(Control content) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : No Layout can be set on this Control because it already
+ * Note: No Layout can be set on this Control because it already
  * manages the size and position of its children.
  * </p>
  *

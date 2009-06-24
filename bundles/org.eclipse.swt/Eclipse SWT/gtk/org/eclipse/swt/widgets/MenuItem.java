@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,9 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
@@ -95,10 +98,11 @@ public MenuItem (Menu parent, int style) {
  *
  * @param parent a menu control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -186,7 +190,7 @@ public void addHelpListener (HelpListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the menu item is selected, by sending
+ * be notified when the menu item is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -194,7 +198,7 @@ public void addHelpListener (HelpListener listener) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the menu item is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -357,6 +361,11 @@ public Menu getMenu () {
 	return menu;
 }
 
+String getNameText () {
+	if ((style & SWT.SEPARATOR) != 0) return "|";
+	return super.getNameText ();
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Menu</code>.
  *
@@ -398,8 +407,8 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	* Bug in GTK.  When an ancestor menu is disabled and
 	* the user types an accelerator key, GTK delivers the
 	* the activate signal even though the menu item cannot
-	* be invoked using the mouse.  The fix is to ignore activate
-	* signals when an ancestor menu is disabled.
+	* be invoked using the mouse.  The fix is to ignore
+	* activate signals when an ancestor menu is disabled.
 	*/
 	if (!isEnabled ()) return 0;
 	Event event = new Event ();
@@ -562,7 +571,7 @@ public void removeHelpListener (HelpListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -646,6 +655,9 @@ public void setEnabled (boolean enabled) {
  * <p>
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept (for example, Windows NT).
+ * Furthermore, some platforms (such as GTK), cannot display both
+ * a check box and an image at the same time.  Instead, they hide
+ * the image and display the check box.
  * </p>
  *
  * @param image the image to display
@@ -684,6 +696,11 @@ public void setImage (Image image) {
  * pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
+ * <p>
+ * Note: Disposing of a menu item that has a pull down menu
+ * will dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the menu item is disposed.
+ * </p>
  *
  * @param menu the new pull down menu
  *
@@ -779,14 +796,14 @@ public void setSelection (boolean selected) {
  * Sets the receiver's text. The string may include
  * the mnemonic character and accelerator text.
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
  * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
  * </p>
  * <p>
  * Accelerator text is indicated by the '\t' character.
@@ -821,7 +838,8 @@ public void setText (String string) {
 	String accelString = "";
 	int index = string.indexOf ('\t');
 	if (index != -1) {
-		accelString = string.substring (index, string.length());
+		boolean isRTL = (parent.style & SWT.RIGHT_TO_LEFT) != 0;
+		accelString = (isRTL? "" : "  ") + string.substring (index+1, string.length()) + (isRTL? "  " : "");
 		string = string.substring (0, index);
 	}
 	char [] chars = fixMnemonic (string);
@@ -838,6 +856,7 @@ public void setText (String string) {
 
 void updateAccelerator (int /*long*/ accelGroup, boolean add) {
 	if (accelerator == 0 || !getEnabled ()) return;
+	if ((accelerator & SWT.COMMAND) != 0) return;
 	int mask = 0;
 	if ((accelerator & SWT.ALT) != 0) mask |= OS.GDK_MOD1_MASK;
 	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.GDK_SHIFT_MASK;

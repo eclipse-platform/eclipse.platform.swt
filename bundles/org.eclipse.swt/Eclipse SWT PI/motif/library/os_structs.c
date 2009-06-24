@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -242,7 +242,7 @@ XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject,
 	lpStruct->format = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.format);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (jint *)lpStruct->data.l);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / sizeof(jint), (jint *)lpStruct->data.l);
 	}
 	return lpStruct;
 }
@@ -255,7 +255,7 @@ void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageE
 	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.format, (jint)lpStruct->format);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (jint *)lpStruct->data.l);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / sizeof(jint), (jint *)lpStruct->data.l);
 	}
 }
 #endif
@@ -1257,17 +1257,17 @@ void cacheXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject)
 	if (XRenderPictureAttributesFc.cached) return;
 	XRenderPictureAttributesFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	XRenderPictureAttributesFc.repeat = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "repeat", "Z");
-	XRenderPictureAttributesFc.alpha_map = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_map", "I");
+	XRenderPictureAttributesFc.alpha_map = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_map", I_J);
 	XRenderPictureAttributesFc.alpha_x_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_x_origin", "I");
 	XRenderPictureAttributesFc.alpha_y_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_y_origin", "I");
 	XRenderPictureAttributesFc.clip_x_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_x_origin", "I");
 	XRenderPictureAttributesFc.clip_y_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_y_origin", "I");
-	XRenderPictureAttributesFc.clip_mask = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_mask", "I");
+	XRenderPictureAttributesFc.clip_mask = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_mask", I_J);
 	XRenderPictureAttributesFc.graphics_exposures = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "graphics_exposures", "Z");
 	XRenderPictureAttributesFc.subwindow_mode = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "subwindow_mode", "I");
 	XRenderPictureAttributesFc.poly_edge = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "poly_edge", "I");
 	XRenderPictureAttributesFc.poly_mode = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "poly_mode", "I");
-	XRenderPictureAttributesFc.dither = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "dither", "I");
+	XRenderPictureAttributesFc.dither = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "dither", I_J);
 	XRenderPictureAttributesFc.component_alpha = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "component_alpha", "Z");
 	XRenderPictureAttributesFc.cached = 1;
 }
@@ -1276,17 +1276,17 @@ XRenderPictureAttributes *getXRenderPictureAttributesFields(JNIEnv *env, jobject
 {
 	if (!XRenderPictureAttributesFc.cached) cacheXRenderPictureAttributesFields(env, lpObject);
 	lpStruct->repeat = (*env)->GetBooleanField(env, lpObject, XRenderPictureAttributesFc.repeat);
-	lpStruct->alpha_map = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_map);
+	lpStruct->alpha_map = (*env)->GetIntLongField(env, lpObject, XRenderPictureAttributesFc.alpha_map);
 	lpStruct->alpha_x_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_x_origin);
 	lpStruct->alpha_y_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_y_origin);
 	lpStruct->clip_x_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.clip_x_origin);
 	lpStruct->clip_y_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.clip_y_origin);
-	lpStruct->clip_mask = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.clip_mask);
+	lpStruct->clip_mask = (*env)->GetIntLongField(env, lpObject, XRenderPictureAttributesFc.clip_mask);
 	lpStruct->graphics_exposures = (*env)->GetBooleanField(env, lpObject, XRenderPictureAttributesFc.graphics_exposures);
 	lpStruct->subwindow_mode = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.subwindow_mode);
 	lpStruct->poly_edge = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.poly_edge);
 	lpStruct->poly_mode = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.poly_mode);
-	lpStruct->dither = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.dither);
+	lpStruct->dither = (*env)->GetIntLongField(env, lpObject, XRenderPictureAttributesFc.dither);
 	lpStruct->component_alpha = (*env)->GetBooleanField(env, lpObject, XRenderPictureAttributesFc.component_alpha);
 	return lpStruct;
 }
@@ -1295,17 +1295,17 @@ void setXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject, XRenderPic
 {
 	if (!XRenderPictureAttributesFc.cached) cacheXRenderPictureAttributesFields(env, lpObject);
 	(*env)->SetBooleanField(env, lpObject, XRenderPictureAttributesFc.repeat, (jboolean)lpStruct->repeat);
-	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_map, (jint)lpStruct->alpha_map);
+	(*env)->SetIntLongField(env, lpObject, XRenderPictureAttributesFc.alpha_map, (jintLong)lpStruct->alpha_map);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_x_origin, (jint)lpStruct->alpha_x_origin);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_y_origin, (jint)lpStruct->alpha_y_origin);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.clip_x_origin, (jint)lpStruct->clip_x_origin);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.clip_y_origin, (jint)lpStruct->clip_y_origin);
-	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.clip_mask, (jint)lpStruct->clip_mask);
+	(*env)->SetIntLongField(env, lpObject, XRenderPictureAttributesFc.clip_mask, (jintLong)lpStruct->clip_mask);
 	(*env)->SetBooleanField(env, lpObject, XRenderPictureAttributesFc.graphics_exposures, (jboolean)lpStruct->graphics_exposures);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.subwindow_mode, (jint)lpStruct->subwindow_mode);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.poly_edge, (jint)lpStruct->poly_edge);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.poly_mode, (jint)lpStruct->poly_mode);
-	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.dither, (jint)lpStruct->dither);
+	(*env)->SetIntLongField(env, lpObject, XRenderPictureAttributesFc.dither, (jintLong)lpStruct->dither);
 	(*env)->SetBooleanField(env, lpObject, XRenderPictureAttributesFc.component_alpha, (jboolean)lpStruct->component_alpha);
 }
 #endif

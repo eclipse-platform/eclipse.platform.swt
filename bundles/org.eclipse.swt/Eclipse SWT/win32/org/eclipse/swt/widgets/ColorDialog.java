@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,9 +29,15 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class ColorDialog extends Dialog {
+	Display display;
+	int width, height;
 	RGB rgb;
 	
 /**
@@ -52,7 +58,7 @@ public class ColorDialog extends Dialog {
  * @see Widget#getStyle
  */
 public ColorDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**
@@ -84,19 +90,38 @@ public ColorDialog (Shell parent) {
  * @see Widget#getStyle
  */
 public ColorDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
-int CCHookProc (int hdlg, int uiMsg, int lParam, int lpData) {
-	switch (uiMsg) {
-		case OS.WM_INITDIALOG:
+int /*long*/ CCHookProc (int /*long*/ hdlg, int /*long*/ uiMsg, int /*long*/ lParam, int /*long*/ lpData) {
+	switch ((int)/*64*/uiMsg) {
+		case OS.WM_INITDIALOG: {
+			RECT rect = new RECT ();
+			OS.GetWindowRect (hdlg, rect);
+			width = rect.right - rect.left;
+			height = rect.bottom - rect.top;
 			if (title != null && title.length () != 0) {
 				/* Use the character encoding for the default locale */
 				TCHAR buffer = new TCHAR (0, title, true);
 				OS.SetWindowText (hdlg, buffer);
 			}
 			break;
+		}
+		case OS.WM_DESTROY: {
+			RECT rect = new RECT ();
+			OS.GetWindowRect (hdlg, rect);
+			int newWidth = rect.right - rect.left;
+			int newHeight = rect.bottom - rect.top;
+			if (newWidth < width || newHeight < height) {
+				//display.fullOpen = false;
+			} else {
+				if (newWidth > width || newHeight > height) {
+					//display.fullOpen = true;
+				}
+			}
+			break;
+		}
 	}
 	return 0;
 }
@@ -128,17 +153,46 @@ public RGB getRGB () {
 public RGB open () {
 	
 	/* Get the owner HWND for the dialog */
-	int hwndOwner = parent.handle;
+	int /*long*/ hwndOwner = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
+	
+	/*
+	* Feature in Windows.  There is no API to set the orientation of a
+	* color dialog.  It is always inherited from the parent.  The fix is
+	* to create a hidden parent and set the orientation in the hidden
+	* parent for the dialog to inherit.
+	*/
+	boolean enabled = false;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		if (dialogOrientation != parentOrientation) {
+			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+			hwndOwner = OS.CreateWindowEx (
+				exStyle,
+				Shell.DialogClass,
+				null,
+				0,
+				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+				hwndParent,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			enabled = OS.IsWindowEnabled (hwndParent);
+			if (enabled) OS.EnableWindow (hwndParent, false);
+		}
+	}
 
 	/* Create the CCHookProc */
 	Callback callback = new Callback (this, "CCHookProc", 4); //$NON-NLS-1$
-	int lpfnHook = callback.getAddress ();
+	int /*long*/ lpfnHook = callback.getAddress ();
 	if (lpfnHook == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Allocate the Custom Colors */
-	Display display = parent.display;
+	display = parent.display;
 	if (display.lpCustColors == 0) {
-		int hHeap = OS.GetProcessHeap ();
+		int /*long*/ hHeap = OS.GetProcessHeap ();
 		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);
 	}
 	
@@ -146,6 +200,7 @@ public RGB open () {
 	CHOOSECOLOR lpcc = new CHOOSECOLOR ();
 	lpcc.lStructSize = CHOOSECOLOR.sizeof;
 	lpcc.Flags = OS.CC_ANYCOLOR | OS.CC_ENABLEHOOK;
+	//if (display.fullOpen) lpcc.Flags |= OS.CC_FULLOPEN;
 	lpcc.lpfnHook = lpfnHook;
 	lpcc.hwndOwner = hwndOwner;
 	lpcc.lpCustColors = display.lpCustColors;
@@ -158,10 +213,10 @@ public RGB open () {
 	}
 	
 	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
+	Dialog oldModal = null;
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 	
 	/* Open the dialog */
@@ -169,7 +224,7 @@ public RGB open () {
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 	
 	if (success) {
@@ -190,6 +245,13 @@ public RGB open () {
 	* when the display is disposed.
 	*/
 //	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
+
+	/* Destroy the BIDI orientation window */
+	if (hwndParent != hwndOwner) {
+		if (enabled) OS.EnableWindow (hwndParent, true);
+		OS.SetActiveWindow (hwndParent);
+		OS.DestroyWindow (hwndOwner);
+	}
 	
 	/*
 	* This code is intentionally commented.  On some
@@ -199,6 +261,7 @@ public RGB open () {
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
 	
+	display = null;
 	if (!success) return null;
 	return rgb;
 }

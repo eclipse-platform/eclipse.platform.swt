@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 
 import org.eclipse.swt.*;
@@ -23,6 +22,12 @@ import org.eclipse.swt.graphics.*;
  * user interface object that displays a string or image.
  * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
+ * <p>
+ * Shadow styles are hints and may not be honored
+ * by the platform.  To create a separator label
+ * with the default shadow style for the platform,
+ * do not specify a shadow style.
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
@@ -39,6 +44,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#label">Label snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Label extends Control {
 	String text = "";
@@ -86,6 +96,31 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+void addRelation (Control control) {
+	if (!control.isDescribedByLabel ()) return;
+	
+	int labelElement = OS.AXUIElementCreateWithHIObjectAndIdentifier (handle, 0);
+	String string = OS.kAXTitleUIElementAttribute;  // control LabeledBy this
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.HIObjectSetAuxiliaryAccessibilityAttribute(control.focusHandle (), 0, stringRef, labelElement);
+	OS.CFRelease(labelElement);
+	OS.CFRelease(stringRef);
+	
+	int relatedElement = OS.AXUIElementCreateWithHIObjectAndIdentifier (control.focusHandle (), 0);
+	int array = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
+	OS.CFArrayAppendValue(array, relatedElement);
+	string = OS.kAXServesAsTitleForUIElementsAttribute;  // this LabelFor control
+	buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.HIObjectSetAuxiliaryAccessibilityAttribute(handle, 0, stringRef, array);
+	OS.CFRelease(relatedElement);
+	OS.CFRelease(stringRef);
+	OS.CFRelease(array);
+}
+
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -111,37 +146,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			Rectangle r = image.getBounds ();
 			width = r.width;
 			height = r.height;
-		} else {
-			int length = text.length (); 
-			if (length != 0) {
-				int [] ptr = new int [1];
-				OS.GetControlData (handle, (short) 0 , OS.kControlStaticTextCFStringTag, 4, ptr, null);
-				if (ptr [0] != 0) {
-					org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) ioBounds.h = (short) wHint;					
-					if (font == null) {
-						OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, ioBounds.h != 0, ioBounds, null);
-					} else {
-						int [] currentPort = new int [1];
-						OS.GetPort (currentPort);
-						OS.SetPortWindowPort (OS.GetControlOwner (handle));
-						OS.TextFont (font.id);
-						OS.TextFace (font.style);
-						OS.TextSize (font.size);
-						OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, ioBounds.h != 0, ioBounds, null);
-						OS.SetPort (currentPort [0]);
-					}
-					width = ioBounds.h;
-					height = ioBounds.v;
-				}
-				OS.CFRelease (ptr [0]);
-			} else {
-				Font font = getFont ();
-				FontInfo info = new FontInfo ();
-				OS.FetchFontInfo(font.id, font.size, font.style, info);
-				int fontHeight = info.ascent + info.descent;
-				height = fontHeight;
-			}
+		} else {			
+			int [] ptr = new int [1];
+			OS.GetControlData (handle, (short) 0 , OS.kControlStaticTextCFStringTag, 4, ptr, null);
+			Point size = textExtent (ptr [0], (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT ? wHint : 0);
+			if (ptr [0] != 0) OS.CFRelease (ptr [0]);
+			width = size.x;
+			height = size.y;			
 		}
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -166,6 +177,9 @@ void createHandle () {
 	}
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	if ((style & SWT.WRAP) == 0) {
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlStaticTextIsMultilineTag, 1, new byte[] {0});
+	}
 }
 
 int defaultThemeFont () {
@@ -216,11 +230,6 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
-public int getBorderWidth () {
-	checkWidget();
-	return (style & SWT.BORDER) != 0 ? 1 : 0;
-}
-
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.
@@ -257,6 +266,22 @@ public String getText () {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
+}
+
+boolean isDescribedByLabel () {
+	return false;
+}
+
+/*
+ * Remove "Label for" relations from the receiver.
+ */
+void removeRelation () {
+	String string = OS.kAXServesAsTitleForUIElementsAttribute;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.HIObjectSetAuxiliaryAccessibilityAttribute(handle, 0, stringRef, 0);
+	OS.CFRelease(stringRef);
 }
 
 /**
@@ -331,14 +356,14 @@ public void setImage (Image image) {
  * the mnemonic character and line delimiters.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, focus is assigned
  * to the control that follows the label. On most platforms,
  * the mnemonic appears underlined but may be emphasised in a
  * platform specific manner.  The mnemonic indicator character
- *'&amp' can be escaped by doubling it in the string, causing
- * a single '&amp' to be displayed.
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text

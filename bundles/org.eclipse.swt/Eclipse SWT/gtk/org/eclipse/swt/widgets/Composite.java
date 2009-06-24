@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -31,12 +32,19 @@ import org.eclipse.swt.graphics.*;
  * behavior is undefined if they are used with subclasses of <code>Composite</code> other
  * than <code>Canvas</code>.
  * </p><p>
+ * Note: The <code>CENTER</code> style, although undefined for composites, has the
+ * same value as <code>EMBEDDED</code> which is used to embed widgets from other
+ * widget toolkits into SWT.  On some operating systems (GTK, Motif), this may cause
+ * the children of this composite to be obscured.
+ * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
  * of other controls.
  * </p>
  *
  * @see Canvas
+ * @see <a href="http://www.eclipse.org/swt/snippets/#composite">Composite snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Composite extends Scrollable {
 	public int /*long*/  embeddedHandle;
@@ -79,10 +87,17 @@ Composite () {
  * @see SWT#NO_MERGE_PAINTS
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_RADIO_GROUP
+ * @see SWT#EMBEDDED
+ * @see SWT#DOUBLE_BUFFERED
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (style));
+}
+
+static int checkStyle (int style) {
+	style &= ~SWT.TRANSPARENT;
+	return style;
 }
 
 Control [] _getChildren () {
@@ -217,15 +232,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
-Control [] computeTabList () {
-	Control result [] = super.computeTabList ();
+Widget [] computeTabList () {
+	Widget result [] = super.computeTabList ();
 	if (result.length == 0) return result;
 	Control [] list = tabList != null ? _getTabList () : _getChildren ();
 	for (int i=0; i<list.length; i++) {
 		Control child = list [i];
-		Control [] childList = child.computeTabList ();
+		Widget [] childList = child.computeTabList ();
 		if (childList.length != 0) {
-			Control [] newResult = new Control [result.length + childList.length];
+			Widget [] newResult = new Widget [result.length + childList.length];
 			System.arraycopy (result, 0, newResult, 0, result.length);
 			System.arraycopy (childList, 0, newResult, result.length, childList.length);
 			result = newResult;
@@ -260,7 +275,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
 	if ((style & SWT.EMBEDDED) == 0) {
-		if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
+		if ((state & CANVAS) != 0) {
 			/* Prevent an input method context from being created for the Browser widget */
 			if (display.getData (NO_INPUT_METHOD) == null) {
 				imHandle = OS.gtk_im_multicontext_new ();
@@ -292,7 +307,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		if (socketHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, socketHandle);
 	}
-	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
+	if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
 	/*
@@ -315,25 +330,64 @@ void deregister () {
 }
 
 void drawBackground (GC gc, int x, int y, int width, int height) {
-	int /*long*/ gdkGC = gc.handle;
-	GdkGCValues values = new GdkGCValues ();
-	OS.gdk_gc_get_values (gdkGC, values);
 	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	if (control.backgroundImage != null) {
-		Point pt = display.map (this, control, 0, 0);
-		OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-		OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
-		OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
-		gc.fillRectangle (x, y, width, height);
-		OS.gdk_gc_set_fill (gdkGC, values.fill);
-		OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+	if (control != null) {
+		GCData data = gc.getGCData ();
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) {
+			Cairo.cairo_save (cairo);
+			if (control.backgroundImage != null) {
+				Point pt = display.map (this, control, 0, 0);
+				Cairo.cairo_translate (cairo, -pt.x, -pt.y);
+				x += pt.x;
+				y += pt.y;
+				int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+				int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
+				int /*long*/ drawable = control.backgroundImage.pixmap;
+				int /*long*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
+				int [] w = new int [1], h = new int [1];
+				OS.gdk_drawable_get_size (drawable, w, h);
+				int /*long*/ surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+				int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
+				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+				if ((data.style & SWT.MIRRORED) != 0) {
+					double[] matrix = {-1, 0, 0, 1, 0, 0};
+					Cairo.cairo_pattern_set_matrix(pattern, matrix);
+				}
+				Cairo.cairo_set_source (cairo, pattern);
+				Cairo.cairo_surface_destroy (surface);
+				Cairo.cairo_pattern_destroy (pattern);
+			} else {
+				GdkColor color = control.getBackgroundColor ();
+				Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+			}			
+			Cairo.cairo_rectangle (cairo, x, y, width, height);
+			Cairo.cairo_fill (cairo);
+			Cairo.cairo_restore (cairo);
+		} else {
+			int /*long*/ gdkGC = gc.handle;
+			GdkGCValues values = new GdkGCValues ();
+			OS.gdk_gc_get_values (gdkGC, values);
+			if (control.backgroundImage != null) {
+				Point pt = display.map (this, control, 0, 0);
+				OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
+				OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
+				OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
+				OS.gdk_draw_rectangle (data.drawable, gdkGC, 1, x, y, width, height);
+				OS.gdk_gc_set_fill (gdkGC, values.fill);
+				OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+			} else {
+				GdkColor color = control.getBackgroundColor ();
+				OS.gdk_gc_set_foreground (gdkGC, color);
+				OS.gdk_draw_rectangle (data.drawable, gdkGC, 1, x, y, width, height);
+				color.pixel = values.foreground_pixel;
+				OS.gdk_gc_set_foreground (gdkGC, color);
+			}
+		}
 	} else {
-		gc.setBackground (control.getBackground ());
 		gc.fillRectangle (x, y, width, height);
-		GdkColor color = new GdkColor ();
-		color.pixel = values.background_pixel;
-		OS.gdk_gc_set_background (gdkGC, color);
 	}
 }
 
@@ -368,6 +422,22 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		children [i].fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	}
+}
+
+void fixModal(int /*long*/ group, int /*long*/ modalGroup)  {
+	Control[] controls = _getChildren ();
+	for (int i = 0; i < controls.length; i++) {
+		controls[i].fixModal (group, modalGroup);
+	}
+}
+
+void fixStyle () {
+	super.fixStyle ();
+	if (scrolledHandle == 0) fixStyle (handle);
+	Control[] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].fixStyle ();
 	}
 }
 
@@ -427,6 +497,24 @@ boolean forceFocus (int /*long*/ focusHandle) {
 	return result;
 }
 
+/**
+ * Returns the receiver's background drawing mode. This
+ * will be one of the following constants defined in class
+ * <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERTIT_FORCE</code>.
+ *
+ * @return the background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public int getBackgroundMode () {
 	checkWidget ();
 	return backgroundMode;
@@ -434,7 +522,9 @@ public int getBackgroundMode () {
 
 /**
  * Returns a (possibly empty) array containing the receiver's children.
- * Children are returned in the order that they are drawn.
+ * Children are returned in the order that they are drawn.  The topmost
+ * control appears at the beginning of the array.  Subsequent controls
+ * draw beneath this control and appear later in the array.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
@@ -481,6 +571,10 @@ public Rectangle getClientArea () {
 		return new Rectangle (0, 0, width, height);
 	}
 	return super.getClientArea();
+}
+
+int getClientWidth() {
+	return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle ());
 }
 
 /**
@@ -589,6 +683,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		event.y = rect.y;
 		event.width = rect.width;
 		event.height = rect.height;
+		if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
 		int /*long*/ damageRgn = OS.gdk_region_new ();
 		OS.gdk_region_union_with_rect (damageRgn, rect);
 		GCData data = new GCData ();
@@ -683,9 +778,6 @@ void hookEvents () {
 		if (scrolledHandle != 0) {
 			OS.g_signal_connect_closure (scrolledHandle, OS.scroll_child, display.closures [SCROLL_CHILD], false);
 		}
-		if ((state & PARENT_BACKGROUND) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
-			OS.g_signal_connect_closure_by_id (handle, display.signalIds [STYLE_SET], 0, display.closures [STYLE_SET], false);
-		}
 	}
 }
 
@@ -732,7 +824,13 @@ boolean isTabGroup() {
  * <p>
  * This is equivalent to calling <code>layout(true)</code>.
  * </p>
- *
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -758,7 +856,14 @@ public void layout () {
  * will cascade down through all child widgets in the receiver's widget 
  * tree until a child is encountered that does not resize.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  *
@@ -789,7 +894,14 @@ public void layout (boolean changed) {
  * tree.  However, if a child is resized as a result of a call to layout, the 
  * resize event will invoke the layout of the child.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  * @param all <code>true</code> if all children in the receiver's widget tree should be laid out, and <code>false</code> otherwise
@@ -816,6 +928,12 @@ public void layout (boolean changed, boolean all) {
  * (potentially) optimize the work it is doing by assuming that none of the 
  * peers of the changed control have changed state since the last layout.
  * If an ancestor does not have a layout, skip it.
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  * 
  * @param changed a control that has had a state change which requires a recalculation of its size
  * 
@@ -963,6 +1081,41 @@ void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 	OS.memmove (parentHandle, fixed);
 }
 
+void moveChildren(int oldWidth) {
+	Control[] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		Control child = children[i];
+		int /*long*/ topHandle = child.topHandle ();
+		int x = OS.GTK_WIDGET_X (topHandle);
+		int y = OS.GTK_WIDGET_Y (topHandle);
+		int controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		x = oldWidth - controlWidth - x; 
+		int clientWidth = getClientWidth ();
+		x = clientWidth - controlWidth - x;
+		if (child.enableWindow != 0) {
+			OS.gdk_window_move (child.enableWindow, x, y);
+		}
+		child.moveHandle (x, y);
+		/*
+		* Cause a size allocation this widget's topHandle.  Note that
+		* all calls to gtk_widget_size_allocate() must be preceded by
+		* a call to gtk_widget_size_request().
+		*/
+		GtkRequisition requisition = new GtkRequisition ();
+		gtk_widget_size_request (topHandle, requisition);
+		GtkAllocation allocation = new GtkAllocation ();
+		allocation.x = x;
+		allocation.y = y;
+		allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
+		allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+		OS.gtk_widget_size_allocate (topHandle, allocation);
+		Control control = child.findBackgroundControl ();
+		if (control != null && control.backgroundImage != null) {
+			if (child.isVisible ()) child.redrawWidget (0, 0, 0, 0, true, true, true);
+		}
+	}
+}
+
 Point minimumSize (int wHint, int hHint, boolean changed) {
 	Control [] children = _getChildren ();
 	int width = 0, height = 0;
@@ -977,6 +1130,34 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 int /*long*/ parentingHandle () {
 	if ((state & CANVAS) != 0) return handle;
 	return fixedHandle != 0 ? fixedHandle : handle;
+}
+
+void printWidget (GC gc, int /*long*/ drawable, int depth, int x, int y) {
+	Region oldClip = new Region (gc.getDevice ());
+	Region newClip = new Region (gc.getDevice ());
+	gc.getClipping (oldClip);
+	Rectangle rect = getBounds ();
+	newClip.add (oldClip);
+	newClip.intersect (x, y, rect.width, rect.height);
+	gc.setClipping (newClip);
+	super.printWidget (gc, drawable, depth, x, y);
+	Rectangle clientRect = getClientArea ();
+	Point pt = display.map (this, parent, clientRect.x, clientRect.y);
+	clientRect.x = x + pt.x - rect.x;
+	clientRect.y = y + pt.y - rect.y;
+	newClip.intersect (clientRect);
+	gc.setClipping (newClip);
+	Control [] children = _getChildren ();
+	for (int i=children.length-1; i>=0; --i) {
+		Control child = children [i];
+		if (child.getVisible ()) {
+			Point location = child.getLocation ();
+			child.printWidget (gc, drawable, depth, x + location.x, y + location.y);
+		}
+	}
+	gc.setClipping (oldClip);
+	oldClip.dispose ();
+	newClip.dispose ();
 }
 
 void redrawChildren () {
@@ -1029,6 +1210,23 @@ void resizeHandle (int width, int height) {
 	if (socketHandle != 0) OS.gtk_widget_set_size_request (socketHandle, width, height);
 }
 
+/**
+ * Sets the background drawing mode to the argument which should
+ * be one of the following constants defined in class <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERIT_FORCE</code>.
+ *
+ * @param mode the new background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
@@ -1179,6 +1377,10 @@ void showWidget () {
 		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
 	}
 	if (scrolledHandle == 0) fixStyle (handle);
+}
+
+boolean checkSubwindow () {
+	return true;
 }
 
 boolean translateMnemonic (Event event, Control control) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.opengl.carbon;
 
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
 
-public class AGL {
+public class AGL extends Platform {
 	static {
 		Library.loadLibrary("swt-agl");
 	}
@@ -45,18 +45,55 @@ public class AGL {
 	public static final int AGL_BUFFER_NAME = 231;
 	public static final int AGL_CLIP_REGION = 254;
 
+/**
+ * @param gdevs cast=(const AGLDevice *)
+ * @param attribs cast=(const GLint *)
+ */
 public static final native int aglChoosePixelFormat(int gdevs, int ndev, int[] attribs);
+/**
+ * @param pix cast=(AGLPixelFormat)
+ * @param share cast=(AGLContext)
+ */
 public static final native int aglCreateContext(int pix, int share);
+/**
+ * @param pix cast=(AGLPixelFormat)
+ * @param attrib cast=(GLint)
+ * @param value cast=(GLint *)
+ */
 public static final native boolean aglDescribePixelFormat(int pix, int attrib, int[] value);
+/** @param ctx cast=(AGLContext) */
 public static final native boolean aglDestroyContext(int ctx);
+/** @param pix cast=(AGLPixelFormat) */
 public static final native void aglDestroyPixelFormat(int pix);
+/**
+ * @param ctx cast=(AGLContext)
+ * @param pname cast=(GLenum)
+ */
 public static final native boolean aglEnable(int ctx, int pname);
 public static final native int aglGetCurrentContext();
+/** @param ctx cast=(AGLContext) */
 public static final native int aglGetDrawable(int ctx);
+/** @param ctx cast=(AGLContext) */
 public static final native boolean aglSetCurrentContext(int ctx);
+/**
+ * @param ctx cast=(AGLContext)
+ * @param draw cast=(AGLDrawable)
+ */
 public static final native boolean aglSetDrawable(int ctx, int draw);
+/**
+ * @param ctx cast=(AGLContext)
+ * @param pname cast=(GLenum)
+ * @param params cast=(const GLint *)
+ */
 public static final native boolean aglSetInteger(int ctx, int pname, int[] params);
+/**
+ * @param ctx cast=(AGLContext)
+ * @param pname cast=(GLenum)
+ * @param param cast=(const GLint *)
+ */
 public static final native boolean aglSetInteger(int ctx, int pname, int param);
+/** @param ctx cast=(AGLContext) */
 public static final native void aglSwapBuffers(int ctx);
+/** @param ctx cast=(AGLContext) */
 public static final native boolean aglUpdateContext(int ctx);
 }

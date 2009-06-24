@@ -1,11 +1,11 @@
 #!/bin/sh
 #*******************************************************************************
-# Copyright (c) 2000, 2005 IBM Corporation and others.
+# Copyright (c) 2000, 2009 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #     Kevin Cornell (Rational Software Corporation)
@@ -28,7 +28,7 @@ case $OS in
 		case $MODEL in		
 		*) 
 			if [ "${JAVA_HOME}" = "" ]; then
-				JAVA_HOME=/bluebird/teamswt/swt-builddir/aixj9
+				echo "Please set JAVA_HOME to point at a JRE."
 			fi
 			if [ "${MOTIF_HOME}" = "" ]; then
 				MOTIF_HOME=/usr
@@ -43,17 +43,36 @@ case $OS in
 		;;
 	"Linux")
 		case $MODEL in
-		*) 
+		*)
 			if [ "${JAVA_HOME}" = "" ]; then
-				JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
+				echo "Please set JAVA_HOME to point at a JRE."
 			fi
 			if [ "${MOTIF_HOME}" = "" ]; then
-				MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
+				echo "Please set MOTIF_HOME to point at a Motif dev path."
 			fi
-			if [ "${GECKO_SDK}" = "" ]; then
-				GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
-				GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/nspr/include -I${GECKO_SDK}/xpcom/include -I${GECKO_SDK}/string/include -I${GECKO_SDK}/embed_base/include -I${GECKO_SDK}/embedstring/include"
-				GECKO_LIBS="-L${GECKO_SDK}/embedstring/bin -lembedstring -L${GECKO_SDK}/embed_base/bin -lembed_base_s -L${GECKO_SDK}/xpcom/bin -lxpcomglue_s -lxpcom -L${GECKO_SDK}/nspr/bin -lnspr4 -lplds4 -lplc4"
+			if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" ]; then
+				if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
+					MOZILLA_INCLUDES=`pkg-config --cflags mozilla-xpcom`
+					MOZILLA_LIBS=`pkg-config --libs mozilla-xpcom`
+					export MOZILLA_INCLUDES
+					export MOZILLA_LIBS
+					MAKE_MOZILLA=make_mozilla
+				elif [ x`pkg-config --exists firefox-xpcom && echo YES` = "xYES" ]; then
+					MOZILLA_INCLUDES=`pkg-config --cflags firefox-xpcom`
+					MOZILLA_LIBS=`pkg-config --libs firefox-xpcom`
+					export MOZILLA_INCLUDES
+					export MOZILLA_LIBS
+					MAKE_MOZILLA=make_mozilla
+				elif [ x`pkg-config --exists libxul && echo YES` = "xYES" ]; then
+					XULRUNNER_INCLUDES=`pkg-config --cflags libxul`
+					XULRUNNER_LIBS=`pkg-config --libs libxul`
+					export XULRUNNER_INCLUDES
+					export XULRUNNER_LIBS
+					MAKE_MOZILLA=make_xulrunner
+				else
+					echo "None of the following libraries were found:  Mozilla/XPCOM, Firefox/XPCOM, or XULRunner/XPCOM"
+					echo "    *** Mozilla embedding support will not be compiled."
+				fi
 			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
@@ -83,7 +102,7 @@ case $OS in
 		case $MODEL in
 			"ia64")
 				if [ "${JAVA_HOME}" = "" ]; then
-					JAVA_HOME=/opt/jdk14101
+					echo "Please set JAVA_HOME to point at a JRE."
 				fi
 				if [ "${MOTIF_HOME}" = "" ]; then
 					MOTIF_HOME=/usr
@@ -97,7 +116,7 @@ case $OS in
 				;;
 			*)
 				if [ "${JAVA_HOME}" = "" ]; then
-					JAVA_HOME=/opt/jdk14101
+					echo "Please set JAVA_HOME to point at a JRE."
 				fi
 				if [ "${MOTIF_HOME}" = "" ]; then
 					MOTIF_HOME=/usr
@@ -117,6 +136,6 @@ case $OS in
 		;;
 esac
 
-export JAVA_HOME MOTIF_HOME CDE_HOME GECKO_SDK GECKO_INCLUDES GECKO_LIBS OUTPUT_DIR
+export JAVA_HOME MOTIF_HOME CDE_HOME MOZILLA_SDK MOZILLA_INCLUDES MOZILLA_LIBS XULRUNNER_SDK XULRUNNER_INCLUDES XULRUNNER_LIBS OUTPUT_DIR
 
 make -f $makefile $1 $2 $3 $4

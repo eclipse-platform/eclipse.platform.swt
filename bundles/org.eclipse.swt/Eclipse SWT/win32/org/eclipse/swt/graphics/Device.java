@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,8 @@ import org.eclipse.swt.*;
  * such as the Display device and the Printer device. Devices
  * can have a graphics context (GC) created for them, and they
  * can be drawn on by sending messages to the associated GC.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
 	
@@ -30,6 +32,7 @@ public abstract class Device implements Drawable {
 	boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
+	Object trackingLock;
 	
 	/**
 	 * Palette 
@@ -41,11 +44,11 @@ public abstract class Device implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int hPalette = 0;
+	public int /*long*/ hPalette = 0;
 	int [] colorRefCount;
 	
 	/* System Font */
-	int systemFont;
+	Font systemFont;
 
 	/* Font Enumeration */
 	int nFonts = 256;
@@ -54,14 +57,14 @@ public abstract class Device implements Drawable {
 	int[] pixels;
 
 	/* Scripts */
-	int [] scripts;
+	int /*long*/ [] scripts;
 
 	/* Advanced Graphics */
-	int [] gdipToken;
+	int /*long*/ [] gdipToken;
+	int /*long*/ fontCollection;
+	String[] loadedFonts;
 
 	boolean disposed;
-	
-	final static Object CREATE_LOCK = new Object();
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -72,15 +75,13 @@ public abstract class Device implements Drawable {
 	* fix is to remove this feature. Unfortunately,
 	* too many application programs rely on this
 	* feature.
-	*
-	* This code will be removed in the future.
 	*/
 	protected static Device CurrentDevice;
 	protected static Runnable DeviceFinder;
 	static {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display"); //$NON-NLS-1$
-		} catch (Throwable e) {}
+		} catch (ClassNotFoundException e) {}
 	}	
 
 /*
@@ -121,21 +122,38 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	synchronized (CREATE_LOCK) {
+	synchronized (Device.class) {
 		if (data != null) {
 			debug = data.debug;
 			tracking = data.tracking;
 		}
-		create (data);
-		init ();
 		if (tracking) {
 			errors = new Error [128];
 			objects = new Object [128];
+			trackingLock = new Object ();
 		}
-		
-		/* Initialize the system font slot */
-		systemFont = getSystemFont().handle;
+		create (data);
+		init ();
 	}
+}
+
+void addFont (String font) {
+	if (loadedFonts == null) loadedFonts = new String [4];
+	int length = loadedFonts.length;
+	for (int i=0; i<length; i++) {
+		if (font.equals(loadedFonts [i])) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (loadedFonts [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		String [] temp = new String [length + 4];
+		System.arraycopy (loadedFonts, 0, temp, 0, length);
+		loadedFonts = temp;
+	}
+	loadedFonts [index] = font;
 }
 
 /**
@@ -163,19 +181,32 @@ protected void checkDevice () {
 
 void checkGDIP() {
 	if (gdipToken != null) return;
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-    int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
+    int oldErrorMode = 0;
+    if (!OS.IsWinCE) oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	try {
-		int [] token = new int [1];
+		int /*long*/ [] token = new int /*long*/ [1];
 		GdiplusStartupInput input = new GdiplusStartupInput ();
 		input.GdiplusVersion = 1;
 		if (Gdip.GdiplusStartup (token, input, 0) == 0) {
 			gdipToken = token;
+			if (loadedFonts != null) {
+				fontCollection = Gdip.PrivateFontCollection_new();
+				if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				for (int i = 0; i < loadedFonts.length; i++) {
+					String path = loadedFonts[i];
+					if (path == null) break;
+					int length = path.length();
+					char [] buffer = new char [length + 1];
+					path.getChars(0, length, buffer, 0);
+					Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
+				}
+				loadedFonts = null;
+			}
 		}
 	} catch (Throwable t) {
 		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [GDI+ is required]"); //$NON-NLS-1$
 	} finally {
-        OS.SetErrorMode (oldErrorMode);
+		if (!OS.IsWinCE) OS.SetErrorMode (oldErrorMode);
     }
 }
 
@@ -197,15 +228,15 @@ void checkGDIP() {
 protected void create (DeviceData data) {
 }
 
-int computePixels(int height) {
-	int hDC = internal_new_GC (null);
-	int pixels = -Compatibility.round(height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY), 72);
+int computePixels(float height) {
+	int /*long*/ hDC = internal_new_GC (null);
+	int pixels = -(int)(0.5f + (height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72f));
 	internal_dispose_GC (hDC, null);
 	return pixels;
 }
 
-int computePoints(LOGFONT logFont, int hFont) {
-	int hDC = internal_new_GC (null);
+float computePoints(LOGFONT logFont, int /*long*/ hFont) {
+	int /*long*/ hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	int pixels = 0; 
 	if (logFont.lfHeight > 0) {
@@ -216,7 +247,7 @@ int computePoints(LOGFONT logFont, int hFont) {
 		 * height of a font in points does not include the internal leading,
 		 * we must subtract the internal leading, which requires a TEXTMETRIC.
 		 */
-		int oldFont = OS.SelectObject(hDC, hFont);
+		int /*long*/ oldFont = OS.SelectObject(hDC, hFont);
 		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 		OS.GetTextMetrics(hDC, lptm);
 		OS.SelectObject(hDC, oldFont);
@@ -225,8 +256,7 @@ int computePoints(LOGFONT logFont, int hFont) {
 		pixels = -logFont.lfHeight;
 	}
 	internal_dispose_GC (hDC, null);
-
-	return Compatibility.round(pixels * 72, logPixelsY);
+	return pixels * 72f / logPixelsY;
 }
 
 /**
@@ -257,29 +287,37 @@ protected void destroy () {
  * @see #checkDevice
  */
 public void dispose () {
-	if (isDisposed()) return;
-	checkDevice ();
-	release ();
-	destroy ();
-	disposed = true;
-	if (tracking) {
-		objects = null;
-		errors = null;
-	}
-}
-
-void dispose_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == object) {
-			objects [i] = null;
-			errors [i] = null;
-			return;
+	synchronized (Device.class) {
+		if (isDisposed()) return;
+		checkDevice ();
+		release ();
+		destroy ();
+		disposed = true;
+		if (tracking) {
+			synchronized (trackingLock) {
+				printErrors ();
+				objects = null;
+				errors = null;
+				trackingLock = null;
+			}
 		}
 	}
 }
 
-int EnumFontFamProc (int lpelfe, int lpntme, int FontType, int lParam) {
-	boolean isScalable = (FontType & OS.RASTER_FONTTYPE) == 0;
+void dispose_Object (Object object) {
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == object) {
+				objects [i] = null;
+				errors [i] = null;
+				return;
+			}
+		}
+	}
+}
+
+int /*long*/ EnumFontFamProc (int /*long*/ lpelfe, int /*long*/ lpntme, int /*long*/ FontType, int /*long*/ lParam) {
+	boolean isScalable = ((int)/*64*/FontType & OS.RASTER_FONTTYPE) == 0;
 	boolean scalable = lParam == 1;
 	if (isScalable == scalable) {
 		/* Add the log font to the list of log fonts */
@@ -325,7 +363,7 @@ int EnumFontFamProc (int lpelfe, int lpntme, int FontType, int lParam) {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	int hDC = internal_new_GC (null);
+	int /*long*/ hDC = internal_new_GC (null);
 	int width = OS.GetDeviceCaps (hDC, OS.HORZRES);
 	int height = OS.GetDeviceCaps (hDC, OS.VERTRES);
 	internal_dispose_GC (hDC, null);
@@ -350,20 +388,26 @@ public DeviceData getDeviceData () {
 	DeviceData data = new DeviceData ();
 	data.debug = debug;
 	data.tracking = tracking;
-	int count = 0, length = 0;
-	if (tracking) length = objects.length;
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) count++;
-	}
-	int index = 0;
-	data.objects = new Object [count];
-	data.errors = new Error [count];
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) {
-			data.objects [index] = objects [i];
-			data.errors [index] = errors [i];
-			index++;
+	if (tracking) {
+		synchronized (trackingLock) {
+			int count = 0, length = objects.length;
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) count++;
+			}
+			int index = 0;
+			data.objects = new Object [count];
+			data.errors = new Error [count];
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) {
+					data.objects [index] = objects [i];
+					data.errors [index] = errors [i];
+					index++;
+				}
+			}
 		}
+	} else {
+		data.objects = new Object [0];
+		data.errors = new Error [0];
 	}
 	return data;
 }
@@ -398,7 +442,7 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();
-	int hDC = internal_new_GC (null);
+	int /*long*/ hDC = internal_new_GC (null);
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
 	internal_dispose_GC (hDC, null);
@@ -418,7 +462,7 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	int hDC = internal_new_GC (null);
+	int /*long*/ hDC = internal_new_GC (null);
 	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
@@ -443,7 +487,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	
 	/* Create the callback */
 	Callback callback = new Callback (this, "EnumFontFamProc", 4); //$NON-NLS-1$
-	int lpEnumFontFamProc = callback.getAddress ();
+	int /*long*/ lpEnumFontFamProc = callback.getAddress ();
 	if (lpEnumFontFamProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Initialize the instance variables */
@@ -457,7 +501,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 
 	/* Enumerate */
 	int offset = 0;
-	int hDC = internal_new_GC (null);
+	int /*long*/ hDC = internal_new_GC (null);
 	if (faceName == null) {	
 		/* The user did not specify a face name, so they want all versions of all available face names */
 		OS.EnumFontFamilies (hDC, null, lpEnumFontFamProc, scalable ? 1 : 0);
@@ -495,11 +539,20 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	internal_dispose_GC (hDC, null);
 
 	/* Create the fontData from the logfonts */
-	int count = nFonts - offset;
-	FontData [] result = new FontData [count];
-	for (int i=0; i<count; i++) {
-		int index = i + offset;
-		result [i] = FontData.win32_new (logFonts [index], Compatibility.round(pixels [index] * 72, logPixelsY));
+	int count = 0;
+	FontData [] result = new FontData [nFonts - offset];
+	for (int i=offset; i<nFonts; i++) {
+		FontData fd = FontData.win32_new (logFonts [i], pixels [i] * 72f / logPixelsY);
+		int j;
+		for (j = 0; j < count; j++) {
+			if (fd.equals (result [j])) break;
+		}
+		if (j == count) result [count++] = fd;
+	}
+	if (count != result.length) {
+		FontData [] newResult = new FontData [count];
+		System.arraycopy (result, 0, newResult, 0, count);
+		result = newResult;
 	}
 	
 	/* Clean up */
@@ -519,7 +572,7 @@ String getLastError () {
 String getLastErrorText () {
 	int error = OS.GetLastError();
 	if (error == 0) return ""; //$NON-NLS-1$
-	int[] buffer = new int[1];
+	int /*long*/ [] buffer = new int /*long*/ [1];
 	int dwFlags = OS.FORMAT_MESSAGE_ALLOCATE_BUFFER | OS.FORMAT_MESSAGE_FROM_SYSTEM | OS.FORMAT_MESSAGE_IGNORE_INSERTS;
 	int length = OS.FormatMessage(dwFlags, 0, error, OS.LANG_USER_DEFAULT, buffer, 0, 0);
 	if (length == 0) return " [GetLastError=0x" + Integer.toHexString(error) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -549,24 +602,24 @@ String getLastErrorText () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	int pixel = 0x02000000;
+	int pixel = 0x00000000;
 	switch (id) {
-		case SWT.COLOR_WHITE:				pixel = 0x02FFFFFF;  break;
-		case SWT.COLOR_BLACK:				pixel = 0x02000000;  break;
-		case SWT.COLOR_RED:					pixel = 0x020000FF;  break;
-		case SWT.COLOR_DARK_RED:			pixel = 0x02000080;  break;
-		case SWT.COLOR_GREEN:				pixel = 0x0200FF00;  break;
-		case SWT.COLOR_DARK_GREEN:			pixel = 0x02008000;  break;
-		case SWT.COLOR_YELLOW:				pixel = 0x0200FFFF;  break;
-		case SWT.COLOR_DARK_YELLOW:			pixel = 0x02008080;  break;
-		case SWT.COLOR_BLUE:				pixel = 0x02FF0000;  break;
-		case SWT.COLOR_DARK_BLUE:			pixel = 0x02800000;  break;
-		case SWT.COLOR_MAGENTA:				pixel = 0x02FF00FF;  break;
-		case SWT.COLOR_DARK_MAGENTA:		pixel = 0x02800080;  break;
-		case SWT.COLOR_CYAN:				pixel = 0x02FFFF00;  break;
-		case SWT.COLOR_DARK_CYAN:			pixel = 0x02808000;  break;
-		case SWT.COLOR_GRAY:				pixel = 0x02C0C0C0;  break;
-		case SWT.COLOR_DARK_GRAY:			pixel = 0x02808080;  break;
+		case SWT.COLOR_WHITE:				pixel = 0x00FFFFFF;  break;
+		case SWT.COLOR_BLACK:				pixel = 0x00000000;  break;
+		case SWT.COLOR_RED:					pixel = 0x000000FF;  break;
+		case SWT.COLOR_DARK_RED:			pixel = 0x00000080;  break;
+		case SWT.COLOR_GREEN:				pixel = 0x0000FF00;  break;
+		case SWT.COLOR_DARK_GREEN:			pixel = 0x00008000;  break;
+		case SWT.COLOR_YELLOW:				pixel = 0x0000FFFF;  break;
+		case SWT.COLOR_DARK_YELLOW:			pixel = 0x00008080;  break;
+		case SWT.COLOR_BLUE:				pixel = 0x00FF0000;  break;
+		case SWT.COLOR_DARK_BLUE:			pixel = 0x00800000;  break;
+		case SWT.COLOR_MAGENTA:				pixel = 0x00FF00FF;  break;
+		case SWT.COLOR_DARK_MAGENTA:		pixel = 0x00800080;  break;
+		case SWT.COLOR_CYAN:				pixel = 0x00FFFF00;  break;
+		case SWT.COLOR_DARK_CYAN:			pixel = 0x00808000;  break;
+		case SWT.COLOR_GRAY:				pixel = 0x00C0C0C0;  break;
+		case SWT.COLOR_DARK_GRAY:			pixel = 0x00808080;  break;
 	}
 	return Color.win32_new (this, pixel);
 }
@@ -593,7 +646,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	int hFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	int /*long*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 	return Font.win32_new (this, hFont);
 }
 
@@ -630,20 +683,23 @@ protected void init () {
 		if (!OS.IsWinCE) OS.GdiSetBatchLimit(1);
 	}
 
+	/* Initialize the system font slot */
+	systemFont = getSystemFont();
+
 	/* Initialize scripts list */
 	if (!OS.IsWinCE) {
-		int [] ppSp = new int [1];
+		int /*long*/ [] ppSp = new int /*long*/ [1];
 		int [] piNumScripts = new int [1];
 		OS.ScriptGetProperties (ppSp, piNumScripts);
-		scripts = new int [piNumScripts [0]];
-		OS.MoveMemory (scripts, ppSp [0], scripts.length * 4);
+		scripts = new int /*long*/ [piNumScripts [0]];
+		OS.MoveMemory (scripts, ppSp [0], scripts.length * OS.PTR_SIZEOF);
 	}
 	
 	/*
 	 * If we're not on a device which supports palettes,
 	 * don't create one.
 	 */
-	int hDC = internal_new_GC (null);
+	int /*long*/ hDC = internal_new_GC (null);
 	int rc = OS.GetDeviceCaps (hDC, OS.RASTERCAPS);
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
@@ -715,7 +771,7 @@ protected void init () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public abstract int internal_new_GC (GCData data);
+public abstract int /*long*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -730,7 +786,7 @@ public abstract int internal_new_GC (GCData data);
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public abstract void internal_dispose_GC (int hDC, GCData data);
+public abstract void /*long*/ internal_dispose_GC (int /*long*/ hDC, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,
@@ -743,25 +799,118 @@ public abstract void internal_dispose_GC (int hDC, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return disposed;
+	synchronized (Device.class) {
+		return disposed;
+	}
+}
+
+/**
+ * Loads the font specified by a file.  The font will be
+ * present in the list of fonts available to the application.
+ *
+ * @param path the font file path
+ * @return whether the font was successfully loaded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if path is null</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see Font
+ * 
+ * @since 3.3
+ */
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		TCHAR lpszFilename = new TCHAR (0, path, true);
+		boolean loaded = OS.AddFontResourceEx (lpszFilename, OS.FR_PRIVATE, 0) != 0;
+		if (loaded) {
+			if (gdipToken != null) {
+				if (fontCollection == 0) {
+					fontCollection = Gdip.PrivateFontCollection_new();
+					if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				}
+				int length = path.length();
+				char [] buffer = new char [length + 1];
+				path.getChars(0, length, buffer, 0);
+				Gdip.PrivateFontCollection_AddFontFile(fontCollection, buffer);
+			} else {
+				addFont(path);
+			}
+		}
+		return loaded;
+	}
+	return false;
 }
 
 void new_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == null) {
-			objects [i] = object;
-			errors [i] = new Error ();
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == null) {
+				objects [i] = object;
+				errors [i] = new Error ();
+				return;
+			}
+		}
+		Object [] newObjects = new Object [objects.length + 128];
+		System.arraycopy (objects, 0, newObjects, 0, objects.length);
+		newObjects [objects.length] = object;
+		objects = newObjects;
+		Error [] newErrors = new Error [errors.length + 128];
+		System.arraycopy (errors, 0, newErrors, 0, errors.length);
+		newErrors [errors.length] = new Error ();
+		errors = newErrors;
+	}
+}
+
+void printErrors () {
+	if (!DEBUG) return;
+	if (tracking) {
+		synchronized (trackingLock) {
+			if (objects == null || errors == null) return;
+			int objectCount = 0;
+			int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
+			int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms = 0;
+			for (int i=0; i<objects.length; i++) {
+				Object object = objects [i];
+				if (object != null) {
+					objectCount++;
+					if (object instanceof Color) colors++;
+					if (object instanceof Cursor) cursors++;
+					if (object instanceof Font) fonts++;
+					if (object instanceof GC) gcs++;
+					if (object instanceof Image) images++;
+					if (object instanceof Path) paths++;
+					if (object instanceof Pattern) patterns++;
+					if (object instanceof Region) regions++;
+					if (object instanceof TextLayout) textLayouts++;
+					if (object instanceof Transform) transforms++;
+				}
+			}
+			if (objectCount != 0) {
+				String string = "Summary: ";
+				if (colors != 0) string += colors + " Color(s), ";
+				if (cursors != 0) string += cursors + " Cursor(s), ";
+				if (fonts != 0) string += fonts + " Font(s), ";
+				if (gcs != 0) string += gcs + " GC(s), ";
+				if (images != 0) string += images + " Image(s), ";
+				if (paths != 0) string += paths + " Path(s), ";
+				if (patterns != 0) string += patterns + " Pattern(s), ";
+				if (regions != 0) string += regions + " Region(s), ";
+				if (textLayouts != 0) string += textLayouts + " TextLayout(s), ";
+				if (transforms != 0) string += transforms + " Transforms(s), ";
+				if (string.length () != 0) {
+					string = string.substring (0, string.length () - 2);
+					System.err.println (string);
+				}
+				for (int i=0; i<errors.length; i++) {
+					if (errors [i] != null) errors [i].printStackTrace (System.err);
+				}
+			}
 		}
 	}
-	Object [] newObjects = new Object [objects.length + 128];
-	System.arraycopy (objects, 0, newObjects, 0, objects.length);
-	newObjects [objects.length] = object;
-	objects = newObjects;
-	Error [] newErrors = new Error [errors.length + 128];
-	System.arraycopy (errors, 0, newErrors, 0, errors.length);
-	newErrors [errors.length] = new Error ();
-	errors = newErrors;
 }
 
 /**
@@ -789,7 +938,11 @@ void new_Object (Object object) {
  */
 protected void release () {
 	if (gdipToken != null) {
-		Gdip.GdiplusShutdown (gdipToken);
+		if (fontCollection != 0) {
+			Gdip.PrivateFontCollection_delete(fontCollection);
+		}
+		fontCollection = 0;
+		Gdip.GdiplusShutdown (gdipToken[0]);
 	}
 	gdipToken = null;
 	scripts = null;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -178,7 +178,7 @@ public class OLE extends SWT {
 	/* Ole Description types */
 	public static final short VT_BOOL = 11;     // Boolean; True=-1, False=0.
 	public static final short VT_BSTR = 8;      // Binary String.
-	public static final short VT_BYREF = 16384; // By reference - must be combined with one of the othre VT values
+	public static final short VT_BYREF = 16384; // By reference - must be combined with one of the other VT values
 	public static final short VT_CY = 6;        // Currency.
 	public static final short VT_DATE = 7;      // Date.
 	public static final short VT_DISPATCH = 9;  // IDispatch
@@ -390,7 +390,7 @@ public static String findProgramID (String extension) {
 	return ""; //$NON-NLS-1$
 }
 static String getKeyValue (TCHAR key) {
-	int [] phkResult = new int [1];
+	int /*long*/ [] phkResult = new int /*long*/ [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
 	}
@@ -413,7 +413,7 @@ static String getKeyValue (TCHAR key) {
 	return result;
 }
 private static boolean getKeyExists (TCHAR key) {
-	int [] phkResult = new int [1];
+	int /*long*/ [] phkResult = new int /*long*/ [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return false;
 	}

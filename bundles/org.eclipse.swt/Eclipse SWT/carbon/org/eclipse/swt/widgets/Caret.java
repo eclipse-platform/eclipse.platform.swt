@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#caret">Caret snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Canvas tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Caret extends Widget {
 	Canvas parent;
@@ -41,6 +46,8 @@ public class Caret extends Widget {
 	Image image;
 	Font font;
 
+	static final int DEFAULT_WIDTH	= 1;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -95,9 +102,18 @@ boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
 	int parentHandle = parent.handle;
-	if (!parent.isDrawing (parentHandle)) return false;
+	if (!parent.isDrawing ()) return false;
+	if (!OS.IsControlVisible (parentHandle)) return false;
 	int nWidth = width, nHeight = height;
-	if (nWidth <= 0) nWidth = 1;
+	if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
+	if (OS.VERSION >= 0x1040) {
+		if (image != null) {
+			nWidth = OS.CGImageGetWidth (image.handle);
+			nHeight = OS.CGImageGetHeight (image.handle);
+		}
+		parent.redrawWidget (parent.handle, x, y, nWidth, nHeight, false);
+		return true;
+	}
 	int window = OS.GetControlOwner (parentHandle);
 	int port = OS.GetWindowPort (window);
 	int [] currentPort = new int [1];
@@ -109,14 +125,12 @@ boolean drawCaret () {
 	OS.SetClip (visibleRgn);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (parentHandle, rect);
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		int [] contentView = new int [1];
-		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
-		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (parentHandle), contentView [0]);
-		rect.left += (int) pt.x;
-		rect.top += (int) pt.y;
-	}
+	CGPoint pt = new CGPoint ();
+	int [] contentView = new int [1];
+	OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+	OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (parentHandle), contentView [0]);
+	rect.left += (int) pt.x;
+	rect.top += (int) pt.y;
 	int left = rect.left + x;
 	int top = rect.top + y;
 	if (image == null) {
@@ -177,6 +191,10 @@ public Rectangle getBounds () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Rectangle (x, y, rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			return new Rectangle (x, y, DEFAULT_WIDTH, height);
+		}
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -258,6 +276,10 @@ public Point getSize () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Point (rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			return new Point (DEFAULT_WIDTH, height);
+		}
 	}
 	return new Point (width, height);
 }
@@ -355,9 +377,10 @@ public void setBounds (int x, int y, int width, int height) {
 	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
 	boolean isFocus = isFocusCaret ();
 	if (isFocus && isVisible) hideCaret ();
-	this.x = x; this.y = y;
-	this.width = width; this.height = height;
-//	parent.updateCaret ();
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
 	if (isFocus && isVisible) showCaret ();
 }
 

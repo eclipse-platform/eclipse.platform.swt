@@ -1,35 +1,43 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
- * The contents of this file are made available under the terms
- * of the GNU Lesser General Public License (LGPL) Version 2.1 that
- * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
- * available at http://www.gnu.org/licenses/lgpl.html.  If the version
- * of the LGPL at http://www.gnu.org is different to the version of
- * the LGPL accompanying this distribution and there is any conflict
- * between the two license versions, the terms of the LGPL accompanying
- * this distribution shall govern.
- * 
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
   
-#ifndef INC_os_H
-#define INC_os_H
+#ifndef INC_xpcom_H
+#define INC_xpcom_H
 
 #define NDEBUG
+#define XPCOM_GLUE 1
 
 #include "nsXPCOM.h"
-#include "nsEmbedAPI.h"	
 #include "nsEmbedString.h"
 #include "nsIInputStream.h"
+#include "nsIMemory.h"
 #include "nsISupportsUtils.h"
-#include "prmem.h"
-#include "prenv.h"
+#include "nsXPCOMGlue.h"
+#include "xpcom_custom.h"
+
+#ifndef nsIScriptContext_h__
+#include "nsIScriptContext.h"
+#include "nsIScriptGlobalObject.h"
+#endif /* nsIScriptContext_h__ */
 
 #ifdef _WIN32
 #define STDMETHODCALLTYPE __stdcall
-#else
+#define NO__1NS_1InitXPCOM2
+#else /* _WIN32 */
 #define STDMETHODCALLTYPE
-#endif
+#ifdef __APPLE__
+#define NO__1NS_1InitXPCOM2
+#endif /* __APPLE__ */
+#endif /* _WIN32 */
 
-#endif /* INC_os_H */
+#define SWT_XREInitEmbedding nsresult (*)(nsILocalFile *,nsILocalFile *,nsIDirectoryServiceProvider *,nsStaticModuleInfo const *,PRUint32)
+
+#endif /* INC_xpcom_H */

@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "os.h"
 
@@ -311,16 +311,16 @@ void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *
 #define PtTextCallback_t_sizeof() 0
 #endif
 
-#ifndef NO_PtWebClientData_t
-void cachePtWebClientData_tFields(JNIEnv *env, jobject lpObject);
-PtWebClientData_t *getPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtWebClientData_t *lpStruct);
-void setPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtWebClientData_t *lpStruct);
-#define PtWebClientData_t_sizeof() sizeof(PtWebClientData_t)
+#ifndef NO_PtWebClient2Data_t
+void cachePtWebClient2Data_tFields(JNIEnv *env, jobject lpObject);
+PtWebClient2Data_t *getPtWebClient2Data_tFields(JNIEnv *env, jobject lpObject, PtWebClient2Data_t *lpStruct);
+void setPtWebClient2Data_tFields(JNIEnv *env, jobject lpObject, PtWebClient2Data_t *lpStruct);
+#define PtWebClient2Data_t_sizeof() sizeof(PtWebClient2Data_t)
 #else
-#define cachePtWebClientData_tFields(a,b)
-#define getPtWebClientData_tFields(a,b,c) NULL
-#define setPtWebClientData_tFields(a,b,c)
-#define PtWebClientData_t_sizeof() 0
+#define cachePtWebClient2Data_tFields(a,b)
+#define getPtWebClient2Data_tFields(a,b,c) NULL
+#define setPtWebClient2Data_tFields(a,b,c)
+#define PtWebClient2Data_t_sizeof() 0
 #endif
 
 #ifndef NO_PtWebDataReqCallback_t

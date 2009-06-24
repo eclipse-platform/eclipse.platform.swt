@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,9 @@ import org.eclipse.swt.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class Region extends Resource {
@@ -37,7 +40,7 @@ public final class Region extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 
 /**
  * Constructs a new empty region.
@@ -70,12 +73,10 @@ public Region () {
  * @since 3.0
  */
 public Region (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	handle = OS.CreateRectRgn (0, 0, 0, 0);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
@@ -85,7 +86,7 @@ public Region (Device device) {
  * @param handle the handle for the result
  */
 Region(Device device, int handle) {
-	this.device = device;
+	super(device);
 	this.handle = handle;
 }
 
@@ -109,7 +110,7 @@ public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
+	int /*long*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_OR);
 	OS.DeleteObject (polyRgn);
 }
@@ -155,7 +156,7 @@ public void add (Rectangle rect) {
 public void add (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	int /*long*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_OR);
 	OS.DeleteObject (rectRgn);
 }
@@ -221,18 +222,9 @@ public boolean contains (Point pt) {
 	return contains(pt.x, pt.y);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the region. Applications must dispose of all regions which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy () {
 	OS.DeleteObject(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -283,7 +275,7 @@ public Rectangle getBounds() {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 /**
@@ -329,7 +321,7 @@ public void intersect (Rectangle rect) {
 public void intersect (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	int /*long*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_AND);
 	OS.DeleteObject (rectRgn);
 }
@@ -457,7 +449,7 @@ public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
+	int /*long*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_DIFF);
 	OS.DeleteObject (polyRgn);
 }
@@ -505,7 +497,7 @@ public void subtract (Rectangle rect) {
 public void subtract (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);	
-	int rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	int /*long*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_DIFF);
 	OS.DeleteObject (rectRgn);
 }

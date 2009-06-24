@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,8 @@ import org.eclipse.swt.internal.*;
  * <em>HINT</em> may change from release to release, although we typically
  * will not withdraw support for a <em>HINT</em> once it is made available.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
  
 /* NOTE:
@@ -405,7 +407,9 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
+	 * @see org.eclipse.swt.custom.CCombo#addVerifyListener
 	 * @see org.eclipse.swt.widgets.Combo#addVerifyListener
+	 * @see org.eclipse.swt.custom.StyledText#addVerifyListener
 	 * @see org.eclipse.swt.widgets.Text#addVerifyListener
 	 * @see org.eclipse.swt.events.VerifyListener#verifyText
 	 * @see org.eclipse.swt.events.VerifyEvent
@@ -558,7 +562,7 @@ public class SWT {
 	public static final int MouseWheel = 37;
 
 	/**
-	 * The settings changed event type (value is 38).
+	 * The settings changed event type (value is 39).
 	 * <p>
 	 * The settings changed event is sent when an operating system
 	 * property, such as a system font or color, has been changed.
@@ -579,28 +583,24 @@ public class SWT {
 	public static final int Settings = 39;
 	
 	/**
-	 * The paint item event type (value is 40).
+	 * The erase item event type (value is 40).
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int EraseItem = 40;
 	
 	/**
-	 * The paint item event type (value is 41).
+	 * The measure item event type (value is 41).
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int MeasureItem = 41;
 	
@@ -612,24 +612,220 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int PaintItem = 42;	
 	
-	/* Event Details */
-
 	/**
-	 * A constant known to be zero (0), used in operations which
-	 * take bit flags to indicate that "no bits are set".
+	 * The IME composition event type (value is 43).  
+	 * <p>
+	 * The IME composition event is sent to allow
+	 * custom text editors to implement in-line
+	 * editing of international text. 
+	 * </p> 
+	 * 
+	 * The detail field indicates the action to be taken:
+	 * <p><ul>
+	 * <li>{@link SWT#COMPOSITION_CHANGED}</li>
+	 * <li>{@link SWT#COMPOSITION_OFFSET}</li>
+	 * <li>{@link SWT#COMPOSITION_SELECTION}</li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.4
 	 */
-	public static final int NONE = 0;
+	public static final int ImeComposition = 43;
 	
+	/* Event Details */
+	
+	/**
+	 * The IME composition event detail that indicates
+	 * a change in the IME composition. The text field
+	 * of the event is the new composition text. 
+	 * The start and end indicate the offsets where the
+	 * composition text should be inserted.
+	 * The styles and ranges are stored in the IME 
+	 * object (value is 1).
+	 * 
+	 * @see SWT#ImeComposition
+	 * 
+	 * @since 3.4
+	 */
+	public static final int COMPOSITION_CHANGED = 1;
+	
+	/**
+	 * The IME composition event detail that indicates
+	 * that the IME needs the offset for a given location.
+	 * The x and y fields of the event are used by the 
+	 * application to determine the offset.
+	 * 
+	 * The index field of the event should be set to the 
+	 * text offset at that location. The count field should 
+	 * be set to indicate whether the location is closer to
+	 * the leading edge (0) or the trailing edge (1) (value is 2).
+	 * 
+	 * @see SWT#ImeComposition
+	 * @see org.eclipse.swt.graphics.TextLayout#getOffset(int, int, int[])
+	 * 
+	 * @since 3.4
+	 */
+	public static final int COMPOSITION_OFFSET = 2;
+	
+	/**
+	 * The IME composition event detail that indicates
+	 * that IME needs the selected text and its start
+	 * and end offsets (value is 3).
+	 * 
+	 * @see SWT#ImeComposition
+	 * 
+	 * @since 3.4
+	 */
+	public static final int COMPOSITION_SELECTION = 3;
+
 	/**
 	 * Indicates that a user-interface component is being dragged,
 	 * for example dragging the thumb of a scroll bar (value is 1).
 	 */
 	public static final int DRAG = 1;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * state is selected (value is 1&lt;&lt;1).
+	 *
+	 * @since 3.2
+	 */
+	public static final int SELECTED = 1 << 1;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * state is focused (value is 1&lt;&lt;2).
+	 *
+	 * @since 3.2
+	 */	
+	public static final int FOCUSED = 1 << 2;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * draws the background (value is 1&lt;&lt;3).
+	 *
+	 * @since 3.2
+	 */
+	public static final int BACKGROUND = 1 << 3;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * draws the foreground (value is 1&lt;&lt;4).
+	 *
+	 * @since 3.2
+	 */
+	public static final int FOREGROUND = 1 << 4;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * state is hot (value is 1&lt;&lt;5).
+	 *
+	 * @since 3.3
+	 */
+	public static final int HOT = 1 << 5;
+	
+	/* This code is intentionally commented */
+	//public static final int PRESSED = 1 << 3;
+	//public static final int ACTIVE = 1 << 4;
+	//public static final int DISABLED = 1 << 5;
+	//public static final int HOT = 1 << 6;
+	//public static final int DEFAULTED = 1 << 7;
+
+	/**
+	 * Traversal event detail field value indicating that no 
+	 * traversal action should be taken
+	 * (value is 0).
+	 */
+	public static final int TRAVERSE_NONE = 0;
+	
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that a dialog should be cancelled was
+	 * pressed; typically, this is the ESC key
+	 * (value is 1&lt;&lt;1).
+	 */
+	public static final int TRAVERSE_ESCAPE = 1 << 1;
+
+	/**
+	 * Traversal event detail field value indicating that the
+	 * key which activates the default button in a dialog was
+	 * pressed; typically, this is the ENTER key
+	 * (value is 1&lt;&lt;2).
+	 */
+	public static final int TRAVERSE_RETURN = 1 << 2;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab group was pressed; typically, this is the
+	 * SHIFT-TAB key sequence
+	 * (value is 1&lt;&lt;3).
+	 */
+	public static final int TRAVERSE_TAB_PREVIOUS = 1 << 3;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * next tab group was pressed; typically, this is the
+	 * TAB key
+	 * (value is 1&lt;&lt;4).
+	 */
+	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab item was pressed; typically, this is either
+	 * the LEFT-ARROW or UP-ARROW keys
+	 * (value is 1&lt;&lt;5).
+	 */
+	public static final int TRAVERSE_ARROW_PREVIOUS = 1 << 5;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab item was pressed; typically, this is either
+	 * the RIGHT-ARROW or DOWN-ARROW keys
+	 * (value is 1&lt;&lt;6).
+	 */
+	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
+
+	/**
+	 * Traversal event detail field value indicating that a 
+	 * mnemonic key sequence was pressed
+	 * (value is 1&lt;&lt;7).
+	 */
+	public static final int TRAVERSE_MNEMONIC = 1 << 7;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that the previous page of a multi-page
+	 * window should be shown was pressed; typically, this
+	 * is the CTRL-PAGEUP key sequence
+	 * (value is 1&lt;&lt;8).
+	 */
+	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
+	
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that the next page of a multi-page
+	 * window should be shown was pressed; typically, this
+	 * is the CTRL-PAGEDOWN key sequence
+	 * (value is 1&lt;&lt;9).
+	 */
+	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
+
+	/**
+	 * A constant known to be zero (0), typically used in operations
+	 * which take bit flags to indicate that "no bits are set".
+	 */
+	public static final int NONE = 0;
 	
 	/**
 	 * A constant known to be zero (0), used in operations which
@@ -680,11 +876,13 @@ public class SWT {
 
 	/**
 	 * Style constant for drop down menu/list behavior (value is 1&lt;&lt;2).
+	 * <br>Note that for <code>DateTime</code> this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Menu</code></li>
 	 * <li><code>ToolItem</code></li>
 	 * <li><code>CoolItem</code></li>
 	 * <li><code>Combo</code></li>
+	 * <li><code>DateTime</code></li>
 	 * </ul></p>
 	 */
 	public static final int DROP_DOWN = 1 << 2;
@@ -769,6 +967,8 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * <li><code>List</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
 	 * <li><code>FileDialog</code></li>
 	 * </ul></p>
 	 */
@@ -805,6 +1005,16 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int WRAP = 1 << 6;
+
+	/**
+	 * Style constant for search behavior (value is 1&lt;&lt;7).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Text</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int SEARCH = 1 << 7;
 
 	/**
 	 * Style constant for simple (not drop down) behavior (value is 1&lt;&lt;6).
@@ -971,6 +1181,23 @@ public class SWT {
 	public static final int V_SCROLL = 1 << 9;
 
 	/**
+	 * Style constant for no scrollbar behavior (value is 1&lt;&lt;4).
+	 * <p>
+	 * When neither H_SCROLL or V_SCROLL are specified, controls
+	 * are free to create the default scroll bars for the control.
+	 * Using NO_SCROLL overrides the default and forces the control
+	 * to have no scroll bars.
+	 * 
+	 * <b>Used By:</b><ul>
+	 * <li><code>Tree</code></li>
+	 * <li><code>Table</code></li>
+	 * </ul></p>
+	 *
+	 * @since 3.4
+	 */
+	public static final int NO_SCROLL = 1 << 4;
+	
+	/**
 	 * Style constant for bordered behavior (value is 1&lt;&lt;11).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
@@ -1007,6 +1234,25 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int ON_TOP = 1 << 14;
+	
+	/**
+	 * Style constant for sheet window behavior (value is 1&lt;&lt;28).
+	 * <p>
+	 * A sheet window is a window intended to be used as a temporary modal
+	 * dialog that is attached to a parent window. It is typically used to
+	 * prompt the user before proceeding. The window trim, positioning and
+	 * general look of a sheet window is platform specific. For example,
+	 * on the Macintosh, at the time this documentation was written, the
+	 * window title is not visible.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p><p><b>Used By:</b><ul>
+	 * <li><code>Dialog</code> and subclasses</li>
+	 * <li><code>Shell</code> and subclasses</li>
+	 * </ul></p>
+	 * 
+	 * @since 3.5
+	 */
+	public static final int SHEET = 1 << 28;
 
 	/**
 	 * Trim style convenience constant for the most common top level shell appearance
@@ -1076,12 +1322,15 @@ public class SWT {
 	public static final int HIDE_SELECTION = 1 << 15;
 
 	/**
-	 * Style constant for full row selection behavior. (value is 1&lt;&lt;16).
-	 * <br>Note that this is a <em>HINT</em>.
+	 * Style constant for full row selection behavior and 
+	 * selection constant indicating that a full line should be 
+	 * drawn. (value is 1&lt;&lt;16).
+	 * <br>Note that for some widgets this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>StyledText</code></li>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
+	 * <li><code>StyledText</code></li>
+	 * <li><code>TextLayout</code></li> 
 	 * </ul></p>
 	 */
 	public static final int FULL_SELECTION = 1 << 16;
@@ -1097,7 +1346,7 @@ public class SWT {
 	public static final int FLAT = 1 << 23;
 
 	/**
-	 * Style constant for flat appearance. (value is 1&lt;&lt;16).
+	 * Style constant for smooth appearance. (value is 1&lt;&lt;16).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ProgressBar</code></li>
@@ -1122,7 +1371,15 @@ public class SWT {
 
 	/**
 	 * Style constant for no focus from the mouse behavior (value is 1&lt;&lt;19).
+	 * <p>
+	 * Normally, when the user clicks on a control, focus is assigned to that
+	 * control, providing the control has no children.  Some controls, such as
+	 * tool bars and sashes, don't normally take focus when the mouse is clicked
+	 * or accept focus when assigned from within the program.  This style allows
+	 * Composites to implement "no focus" mouse behavior.
+	 * 
 	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
@@ -1137,6 +1394,8 @@ public class SWT {
 	 * the SWT.Paint event is not sent. When it gets bigger, an SWT.Paint event is
 	 * sent with a GC clipped to only the new areas to be painted. Without this
 	 * style, the entire client area will be repainted.
+	 * 
+	 * <br>Note that this is a <em>HINT</em>.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
@@ -1145,6 +1404,8 @@ public class SWT {
 
 	/**
 	 * Style constant for no paint event merging behavior (value is 1&lt;&lt;21).
+	 * 
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
@@ -1155,6 +1416,7 @@ public class SWT {
 	 * Style constant for preventing child radio group behavior (value is 1&lt;&lt;22).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
+	 * <li><code>Menu</code></li>
 	 * </ul></p>
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;
@@ -1242,15 +1504,121 @@ public class SWT {
 	public static final int DOUBLE_BUFFERED = 1 << 29;
 	
 	/**
+	 * Style constant for transparent behavior (value is 1&lt;&lt;30).
+	 * <p>
+	 * By default, before a widget paints, the client area is filled with the current background.
+	 * When this style is specified, the background is not filled and widgets that are obscured
+	 * will draw through.
+	 * </p><p><b>Used By:</b><ul>
+	 * <li><code>Composite</code></li>
+	 * </ul></p>
+	 *
+	 * @since 3.4
+	 * 
+	 * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
+	 */
+	public static final int TRANSPARENT = 1 << 30;
+	
+	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code> with <code>ARROW</code> style</li>
 	 * <li><code>Tracker</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
 	 * </ul></p>
 	 */
 	public static final int UP = 1 << 7;
+	
+	/**
+	 * Style constant to indicate single underline (value is 0).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int UNDERLINE_SINGLE = 0;
 
+	/**
+	 * Style constant to indicate double underline (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int UNDERLINE_DOUBLE = 1;
+	
+	/**
+	 * Style constant to indicate error underline (value is 2).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int UNDERLINE_ERROR = 2;
+	
+	/**
+	 * Style constant to indicate squiggle underline (value is 3).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int UNDERLINE_SQUIGGLE = 3;
+	
+	/**
+	 * Style constant to indicate link underline (value is 0).
+	 * <p>
+	 * If the text color or the underline color are not set in the range
+	 * the usage of <code>UNDERLINE_LINK</code> will change these colors
+	 * to the preferred link color of the platform.<br>
+	 * Note that clients that use this style, such as <code>StyledText</code>,
+	 * will include code to track the mouse and change the cursor to the hand
+	 * cursor when mouse is over the link.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.5
+	 */
+	public static final int UNDERLINE_LINK = 4;
+
+	/**
+	 * Style constant to indicate solid border (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int BORDER_SOLID = 1;
+
+	/**
+	 * Style constant to indicate dashed border (value is 2).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int BORDER_DASH = 2;
+	
+	/**
+	 * Style constant to indicate dotted border (value is 4).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int BORDER_DOT = 4;
+	
 	/**
 	 * Style constant for align top behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
@@ -1266,6 +1634,8 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code> with <code>ARROW</code> style</li>
 	 * <li><code>Tracker</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
 	 * </ul></p>
 	 */
 	public static final int DOWN               = 1 << 10;
@@ -1302,7 +1672,7 @@ public class SWT {
 	public static final int LEFT               = LEAD;
 
 	/**
-	 * Style constant for trailiing alignment (value is 1&lt;&lt;17).
+	 * Style constant for trailing alignment (value is 1&lt;&lt;17).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
@@ -1317,7 +1687,7 @@ public class SWT {
 		
 	/**
 	 * Style constant for align right behavior (value is 1&lt;&lt;17).
-	 * This is a synonym for TRAIL (value is 1&lt;&lt;14).  Newer
+	 * This is a synonym for TRAIL (value is 1&lt;&lt;17).  Newer
 	 * applications should use TRAIL instead of RIGHT to make code more
 	 * understandable on right-to-left platforms.
 	 */
@@ -1368,31 +1738,102 @@ public class SWT {
 	public static final int VERTICAL = 1 << 9;
 
 	/**
-	 * Event detail field that indicates a user-interface component
-	 * is selected (value is 1&lt;&lt;1).
-	 *
-	 * @since 3.2
+	 * Style constant for date display (value is 1&lt;&lt;5).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
 	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+	 * @since 3.3
 	 */
-	public static final int SELECTED = 1 << 1;
+	public static final int DATE = 1 << 5;
+
+	/**
+	 * Style constant for time display (value is 1&lt;&lt;7).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int TIME = 1 << 7;
 	
 	/**
-	 * Event detail field that indicates a user-interface component
-	 * is focused (value is 1&lt;&lt;2).
+	 * Style constant for calendar display (value is 1&lt;&lt;10).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int CALENDAR = 1 << 10;
+
+	/**
+	 * Style constant for short date/time format (value is 1&lt;&lt;15).
+	 * <p>
+	 * A short date displays the month and year.
+	 * A short time displays hours and minutes.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int SHORT = 1 << 15;
+
+	/**
+	 * Style constant for medium date/time format (value is 1&lt;&lt;16).
+	 * <p>
+	 * A medium date displays the day, month and year.
+	 * A medium time displays hours, minutes, and seconds.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int MEDIUM = 1 << 16;
+
+	/**
+	 * Style constant for long date/time format (value is 1&lt;&lt;28).
+	 * <p>
+	 * A long date displays the day, month and year.
+	 * A long time displays hours, minutes, and seconds.
+	 * The day and month names may be displayed.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int LONG = 1 << 28;
+
+	/**
+	 * Style constant specifying that a Browser should use a Mozilla GRE
+	 * for rendering its content (value is 1&lt;&lt;15).
+	 * <p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Browser</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int MOZILLA = 1 << 15;
+
+	/**
+	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ToolTip</code></li>
+	 * </ul></p>
 	 *
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */	
-	public static final int FOCUSED = 1 << 2;
-	
-	/* This code is intentionally commented */
-	//public static final int PRESSED = 1 << 3;
-	//public static final int ACTIVE = 1 << 4;
-	//public static final int DISABLED = 1 << 5;
-	//public static final int HOT = 1 << 6;
-	//public static final int DEFAULTED = 1 << 7;
+	public static final int BALLOON = 1 << 12;
 	
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 1).
@@ -1522,7 +1963,7 @@ public class SWT {
 	 * To allow for the future, this mask  is intended to be used in 
 	 * place of code that references  each individual keyboard mask. 
 	 *  For example, the following expression will determine whether 
-	 * any modifer is pressed and will continue to work as new modifier 
+	 * any modifier is pressed and will continue to work as new modifier 
 	 * masks are added.
 	 * 
  	 * <code>(stateMask & SWT.MODIFIER_MASK) != 0</code>.
@@ -2014,7 +2455,7 @@ public class SWT {
 	public static final int BREAK = KEYCODE_BIT + 86;
 	
 	/**
-	 * Keyboard event constant representing the break
+	 * Keyboard event constant representing the print screen
 	 * key (value is (1&lt;&lt;24)+87).
 	 * 
 	 * @since 3.0
@@ -2050,6 +2491,41 @@ public class SWT {
 	 * behavior (value is 1&lt;&lt;4).
 	 */
 	public static final int ICON_WORKING = 1 << 4;
+	
+	/**
+	 * The style constant for "search" icon. This style constant is 
+	 * used with <code>Text</code> in combination with <code>SWT.SEARCH
+	 * </code> (value is 1&lt;&lt;9).
+	 * <br>Note that this is a <em>HINT</em>. 
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Text</code></li>
+	 * </ul></p>
+	 * 
+	 * @see #SEARCH
+	 * @see #ICON_CANCEL
+	 * 
+	 * @since 3.5
+	 */
+	public static final int ICON_SEARCH = 1 << 9;
+	
+	/**
+	 * The style constant for "cancel" icon. This style constant is 
+	 * used with <code>Text</code> in combination with <code>SWT.SEARCH
+	 * </code> (value is 1&lt;&lt;8).
+	 * <br>Note that this is a <em>HINT</em>. 
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Text</code></li>
+	 * </ul></p>
+	 * 
+	 * @see #SEARCH
+	 * @see #ICON_SEARCH
+	 * 
+	 * @since 3.5
+	 */
+	public static final int ICON_CANCEL = 1 << 8;
+	
 
 	/**
 	 * The <code>MessageBox</code> style constant for an OK button;
@@ -2076,6 +2552,10 @@ public class SWT {
 	 * The <code>MessageBox</code> style constant for a CANCEL button;
 	 * valid combinations are OK|CANCEL, YES|NO|CANCEL, RETRY|CANCEL
 	 * (value is 1&lt;&lt;8).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>MessageBox</code></li>
+	 * </ul></p>
 	 */
 	public static final int CANCEL = 1 << 8;
 
@@ -2113,22 +2593,31 @@ public class SWT {
 	public static final int SAVE = 1 << 13;
 
 	/**
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
-	 * 
+	 * The <code>Composite</code> constant to indicate that
+	 * an attribute (such as background) is not inherited
+	 * by the children (value is 0).
+	 *
 	 * @since 3.2
 	 */
 	public static final int INHERIT_NONE = 0;
 	
 	/**
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
-	 * 
+	 * The <code>Composite</code> constant to indicate that
+	 * an attribute (such as background) is inherited by
+	 * children who choose this value as their "default"
+	 * (value is 1).  For example, a label child will
+	 * typically choose to inherit the background color
+	 * of a composite while a list or table will not.
+	 *
 	 * @since 3.2
 	 */
 	public static final int INHERIT_DEFAULT = 1;
 	
 	/**
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
-	 * 
+	 * The <code>Composite</code> constant to indicate that
+	 * an attribute (such as background) is inherited by
+	 * all children.
+	 *
 	 * @since 3.2
 	 */
 	public static final int INHERIT_FORCE = 2;
@@ -2169,7 +2658,7 @@ public class SWT {
 	public static final int COLOR_YELLOW = 7;
 
 	/**
-	 * Default color dark yello (value is 8).
+	 * Default color dark yellow (value is 8).
 	 */
 	public static final int COLOR_DARK_YELLOW = 8;
 
@@ -2332,7 +2821,7 @@ public class SWT {
 
 	/**
 	 * Draw constant indicating whether the string drawing operation
-	 * should handle line-delimeters (value is 1&lt;&lt;1).
+	 * should handle line-delimiters (value is 1&lt;&lt;1).
 	 */
 	public static final int DRAW_DELIMITER = 1 << 1;
 
@@ -2347,6 +2836,38 @@ public class SWT {
 	 * should handle mnemonics (value is 1&lt;&lt;3).
 	 */
 	public static final int DRAW_MNEMONIC = 1 << 3;	
+
+	
+	/**
+	 * Selection constant indicating that a line delimiter should be 
+	 * drawn (value is 1&lt;&lt;17).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextLayout</code></li>
+	 * </ul></p>
+	 *
+	 * @see #FULL_SELECTION
+	 * @see #LAST_LINE_SELECTION
+	 * 
+	 * @since 3.3
+	 */
+	public static final int DELIMITER_SELECTION = 1 << 17;
+	
+	/**
+	 * Selection constant indicating that the last line is selected
+	 * to the end and should be drawn using either a line delimiter 
+	 * or full line selection (value is 1&lt;&lt;20).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextLayout</code></li>
+	 * </ul></p>
+	 * 
+	 * @see #DELIMITER_SELECTION
+	 * @see #FULL_SELECTION
+	 * 
+	 * @since 3.3
+	 */
+	public static final int LAST_LINE_SELECTION = 1 << 20;
 	
 	/** 
 	 * SWT error constant indicating that no error number was specified
@@ -2617,7 +3138,7 @@ public class SWT {
 	
 	/** 
 	 * SWT error constant indicating that an unsatisfied link
-	 * error occured while attempting to load a library
+	 * error occurred while attempting to load a library
 	 * (value is 47).
 	 * 
 	 * @since 3.1
@@ -2632,89 +3153,31 @@ public class SWT {
 	 */
 	public static final int ERROR_INVALID_FONT = 48;
 
-	/**
-	 * Traversal event detail field value indicating that no 
-	 * traversal action should be taken
-	 * (value is 0).
+	/** 
+	 * SWT error constant indicating that an attempt was made to
+	 * use an BrowserFunction object which had already been disposed
+	 * (value is 49).
+	 * 
+	 * @since 3.5
 	 */
-	public static final int TRAVERSE_NONE = 0;
-	
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that a dialog should be cancelled was
-	 * pressed; typically, this is the ESC key
-	 * (value is 1&lt;&lt;1).
-	 */
-	public static final int TRAVERSE_ESCAPE = 1 << 1;
+	public static final int ERROR_FUNCTION_DISPOSED = 49;
 
-	/**
-	 * Traversal event detail field value indicating that the
-	 * key which activates the default button in a dialog was
-	 * pressed; typically, this is the ENTER key
-	 * (value is 1&lt;&lt;2).
+	/** 
+	 * SWT error constant indicating that an exception happened
+	 * when evaluating a javascript expression
+	 * (value is 50).
+	 * 
+	 * @since 3.5
 	 */
-	public static final int TRAVERSE_RETURN = 1 << 2;
+	public static final int ERROR_FAILED_EVALUATE = 50;
 
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * previous tab group was pressed; typically, this is the
-	 * SHIFT-TAB key sequence
-	 * (value is 1&lt;&lt;3).
+	/** 
+	 * SWT error constant indicating that an invalid value was returned
+	 * (value is 51).
+	 * 
+	 * @since 3.5
 	 */
-	public static final int TRAVERSE_TAB_PREVIOUS = 1 << 3;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * next tab group was pressed; typically, this is the
-	 * TAB key
-	 * (value is 1&lt;&lt;4).
-	 */
-	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * previous tab item was pressed; typically, this is either
-	 * the LEFT-ARROW or UP-ARROW keys
-	 * (value is 1&lt;&lt;5).
-	 */
-	public static final int TRAVERSE_ARROW_PREVIOUS = 1 << 5;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * previous tab item was pressed; typically, this is either
-	 * the RIGHT-ARROW or DOWN-ARROW keys
-	 * (value is 1&lt;&lt;6).
-	 */
-	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
-
-	/**
-	 * Traversal event detail field value indicating that a 
-	 * mnemonic key sequence was pressed
-	 * (value is 1&lt;&lt;7).
-	 */
-	public static final int TRAVERSE_MNEMONIC = 1 << 7;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that the previous page of a multi-page
-	 * window should be shown was pressed; typically, this
-	 * is the CTRL-PAGEUP key sequence
-	 * (value is 1&lt;&lt;8).
-	 */
-	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
-	
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that the next page of a multi-page
-	 * window should be shown was pressed; typically, this
-	 * is the CTRL-PAGEDOWN key sequence
-	 * (value is 1&lt;&lt;9).
-	 */
-	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
+	public static final int ERROR_INVALID_RETURN_VALUE = 51;
 
 	/**
 	 * Constant indicating that an image or operation is of type bitmap  (value is 0).
@@ -2749,8 +3212,32 @@ public class SWT {
 	public static final int IMAGE_GRAY = 2;
 	
 	/**
+	 * Constant to indicate an error state (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int ERROR = 1;
+	
+	/**
+	 * Constant to a indicate a paused state (value is 4).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int PAUSED = 1 << 2;
+	
+	/**
 	 * The font style constant indicating a normal weight, non-italic font
-	 * (value is 0).
+	 * (value is 0). This constant is also used with <code>ProgressBar</code>
+	 * to indicate a normal state.
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
 	 */
 	public static final int NORMAL = 0;
 	
@@ -3119,6 +3606,7 @@ public class SWT {
 
 	/**
 	 * The character movement type (value is 1&lt;&lt;0).
+	 * This constant is used to move a text offset over a character.
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
@@ -3129,6 +3617,10 @@ public class SWT {
 
 	/**
 	 * The cluster movement type (value is 1&lt;&lt;1).
+	 * This constant is used to move a text offset over a cluster.
+	 * A cluster groups one or more characters. A cluster is 
+	 * undivisible, this means that a caret offset can not be placed in the
+	 * middle of a cluster.  
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
@@ -3139,6 +3631,12 @@ public class SWT {
 
 	/**
 	 * The word movement type (value is 1&lt;&lt;2).
+	 * This constant is used to move a text offset over a word.
+	 * The behavior of this constant depends on the platform and on the 
+	 * direction of the movement. For example, on Windows the stop is 
+	 * always at the start of the word. On GTK and Mac the stop is at the end 
+	 * of the word if the direction is next and at the start of the word if the 
+	 * direction is previous.
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
@@ -3147,6 +3645,32 @@ public class SWT {
 	 */	
 	public static final int MOVEMENT_WORD = 1 << 2;
 
+	/**
+	 * The word end movement type (value is 1&lt;&lt;3).
+	 * This constant is used to move a text offset to the next or previous
+	 * word end. The behavior of this constant does not depend on the platform.  
+	 * 
+	 * 
+	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
+	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
+	 * 
+	 * @since 3.3
+	 */	
+	public static final int MOVEMENT_WORD_END = 1 << 3;
+
+	/**
+	 * The word start movement type (value is 1&lt;&lt;4).
+	 * This constant is used to move a text offset to the next or previous
+	 * word start. The behavior of this constant does not depend on the platform.  
+	 * 
+	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
+	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
+	 * 
+	 * @since 3.3
+	 */	
+	public static final int MOVEMENT_WORD_START = 1 << 4;
+
+	
 /**
  * Answers a concise, human readable description of the error code.
  *
@@ -3162,6 +3686,7 @@ static String findErrorText (int code) {
 		case ERROR_NO_MORE_CALLBACKS:      return "No more callbacks"; //$NON-NLS-1$
 		case ERROR_NULL_ARGUMENT:          return "Argument cannot be null"; //$NON-NLS-1$
 		case ERROR_INVALID_ARGUMENT:       return "Argument not valid"; //$NON-NLS-1$
+		case ERROR_INVALID_RETURN_VALUE:   return "Return value not valid"; //$NON-NLS-1$
 		case ERROR_INVALID_RANGE:          return "Index out of bounds"; //$NON-NLS-1$
 		case ERROR_CANNOT_BE_ZERO:         return "Argument cannot be zero"; //$NON-NLS-1$
 		case ERROR_CANNOT_GET_ITEM:        return "Cannot get item"; //$NON-NLS-1$
@@ -3191,7 +3716,9 @@ static String findErrorText (int code) {
 		case ERROR_INVALID_SUBCLASS:       return "Subclassing not allowed"; //$NON-NLS-1$
 		case ERROR_GRAPHIC_DISPOSED:       return "Graphic is disposed"; //$NON-NLS-1$
 		case ERROR_DEVICE_DISPOSED:        return "Device is disposed"; //$NON-NLS-1$
+		case ERROR_FUNCTION_DISPOSED:      return "BrowserFunction is disposed"; //$NON-NLS-1$
 		case ERROR_FAILED_EXEC:            return "Failed to execute runnable"; //$NON-NLS-1$
+		case ERROR_FAILED_EVALUATE:        return "Failed to evaluate javascript expression"; //$NON-NLS-1$
 		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library"; //$NON-NLS-1$
 		case ERROR_CANNOT_INVERT_MATRIX:    return "Cannot invert matrix"; //$NON-NLS-1$
 		case ERROR_NO_GRAPHICS_LIBRARY:    return "Unable to load graphics library"; //$NON-NLS-1$
@@ -3216,7 +3743,7 @@ public static String getMessage(String key) {
 	
 /**
  * Returns the SWT platform name.
- * Examples: "win32", "motif", "gtk", "photon", "carbon"
+ * Examples: "win32", "motif", "gtk", "photon", "carbon", "cocoa", "wpf"
  *
  * @return the SWT platform name
  */
@@ -3312,9 +3839,14 @@ public static void error (int code, Throwable throwable, String detail) {
 	*
 	* On the theory that the low level code is closest to the
 	* original problem, we simply re-throw the original exception here.
+	* 
+	* NOTE: Exceptions thrown in syncExec and asyncExec must be
+	* wrapped.
 	*/
-	if (throwable instanceof SWTError) throw (SWTError) throwable;
-	if (throwable instanceof SWTException) throw (SWTException) throwable;
+	if (code != SWT.ERROR_FAILED_EXEC) {
+		if (throwable instanceof SWTError) throw (SWTError) throwable;
+		if (throwable instanceof SWTException) throw (SWTException) throwable;
+	}
 
 	String message = findErrorText (code);
 	if (detail != null) message += detail;
@@ -3339,12 +3871,15 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_WIDGET_DISPOSED:
 		case ERROR_GRAPHIC_DISPOSED:
 		case ERROR_DEVICE_DISPOSED:
+		case ERROR_FUNCTION_DISPOSED:
 		case ERROR_INVALID_IMAGE:
 		case ERROR_UNSUPPORTED_DEPTH:
 		case ERROR_UNSUPPORTED_FORMAT:
 		case ERROR_FAILED_EXEC:
+		case ERROR_FAILED_EVALUATE:
 		case ERROR_CANNOT_INVERT_MATRIX:
 		case ERROR_NO_GRAPHICS_LIBRARY:
+		case ERROR_INVALID_RETURN_VALUE:
 		case ERROR_IO: {
 			SWTException exception = new SWTException (code, message);
 			exception.throwable = throwable;
@@ -3399,7 +3934,7 @@ static {
 	* to stop the compiler from inlining.
 	*/
 	String platform = getPlatform ();
-	if ("carbon".equals (platform)) { //$NON-NLS-1$
+	if ("carbon".equals (platform) || "cocoa".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
 		MOD1 = COMMAND;
 		MOD2 = SHIFT;
 		MOD3 = ALT;

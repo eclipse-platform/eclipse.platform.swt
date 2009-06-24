@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IOleWindow extends IUnknown {
-public IOleWindow(int address) {
+public IOleWindow(int /*long*/ address) {
 	super(address);
 }
-public int GetWindow(int phwnd[]) {
+public int GetWindow(int /*long*/[] phwnd) {
 	return COM.VtblCall(3, address, phwnd);
 }
 }

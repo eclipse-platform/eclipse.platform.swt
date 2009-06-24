@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,6 +79,9 @@ import org.eclipse.swt.graphics.*;
  * @see Scrollable
  * @see Scrollable#getHorizontalBar
  * @see Scrollable#getVerticalBar
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ScrollBar extends Widget {
 	int handle;
@@ -100,7 +103,7 @@ ScrollBar (Scrollable parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -116,7 +119,7 @@ ScrollBar (Scrollable parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's value
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -142,7 +145,9 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-int actionProc (int theControl, int partCode) {	
+int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
+	if (result == OS.noErr) return result;
 	Event event = new Event ();
 	int inc = 0;
 	switch (partCode) {
@@ -167,7 +172,7 @@ int actionProc (int theControl, int partCode) {
 			event.detail = SWT.DRAG;
 	        break;
 		default:
-			return 0;
+			return result;
 	}
 	if (oldActionProc != 0) {
 		OS.Call (oldActionProc, theControl, partCode);
@@ -177,16 +182,21 @@ int actionProc (int theControl, int partCode) {
 		OS.SetControl32BitValue (handle, value);
 	}
 	sendEvent (SWT.Selection, event);
-	if (!OS.HIVIEW) parent.update (true);
-	return 0;
+	return result;
 }
 
-void destroyWidget () {
+void destroyHandle () {
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
 		OS.DisposeControl (theControl);
 	}
+}
+
+void destroyWidget () {
+	parent.destroyScrollBar (this);
+	releaseHandle ();
+	//parent.sendEvent (SWT.Resize);
 }
 
 void enableWidget (boolean enabled) {
@@ -216,8 +226,8 @@ void deregister () {
 	display.removeWidget (handle);
 }
 
-int getDrawCount (int control) {
-	return parent.getDrawCount (control);
+boolean getDrawing () {
+	return parent.getDrawing ();
 }
 
 /**
@@ -355,7 +365,7 @@ public Point getSize () {
 }
 
 /**
- * Answers the size of the receiver's thumb relative to the
+ * Returns the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
  *
  * @return the thumb value
@@ -406,15 +416,13 @@ int getVisibleRegion (int control, boolean clipChildren) {
 
 void hookEvents () {
 	super.hookEvents ();
-	if (!OS.HIVIEW) {
-		int controlProc = display.controlProc;
-		int [] mask = new int [] {
-			OS.kEventClassControl, OS.kEventControlDraw,
-		};
-		int controlTarget = OS.GetControlEventTarget (handle);
-		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
-	}
-	if (parent.scrolledHandle == 0) {
+	int controlProc = display.controlProc;
+	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlTrack,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+	if ((parent.state & CANVAS) == 0) {
 		oldActionProc = OS.GetControlAction (handle);
 		OS.SetControlAction (handle, display.actionProc);
 	}
@@ -430,17 +438,8 @@ void invalWindowRgn (int window, int rgn) {
 	parent.invalWindowRgn (window, rgn);
 }
 
-boolean isDrawing (int control) {
-	/*
-	* Feature in the Macintosh.  The scroll bars in a DataBrowser are
-	* always invisible according to IsControlVisible(), despite the fact
-	* that they are drawn.  The fix is to check our visibility flag
-	* instead of calling IsControlVisible().
-	* 
-	* Note: During resize IsControlVisible() returns true allowing the
-	* clipping to be properly calculated.
-	*/
-	return isVisible () && getDrawCount (control) == 0;
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing();
 }
 
 /**
@@ -499,13 +498,17 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return status;
 }
 
+int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
+    return parent.kEventMouseWheelMoved (nextHandler, theEvent, userData);
+}
+
 void redraw () {
 	redrawWidget (handle, false);
 }
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -549,7 +552,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
 	visibleRgn = 0;
-	parent = null;
 }
 
 void resetVisibleRegion (int control) {
@@ -722,7 +724,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>
@@ -773,7 +775,17 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	parent.setScrollBarVisible (this, visible);
+	if (visible) {
+		if ((state & HIDDEN) == 0) return;
+		state &= ~HIDDEN;
+	} else {
+		if ((state & HIDDEN) != 0) return;
+		state |= HIDDEN;
+	}
+	if (parent.setScrollBarVisible (this, visible)) {
+		sendEvent (visible ? SWT.Show : SWT.Hide);
+		parent.sendEvent (SWT.Resize);
+	}
 }
 
 void setZOrder () {

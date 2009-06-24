@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -92,6 +93,11 @@ import org.eclipse.swt.internal.win32.*;
  *	<dt><b>Styles</b></dt> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK</dd>
  *	<dt><b>Events</b></dt> <dd>DND.DragStart, DND.DragSetData, DND.DragEnd</dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: DNDExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DragSource extends Widget {
 
@@ -99,7 +105,9 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DragSourceEffect dragEffect;
+	Composite topControl;
+	int /*long*/ hwndDrag;
 	
 	// ole interfaces
 	COMObject iDropSource;
@@ -107,12 +115,11 @@ public class DragSource extends Widget {
 	int refCount;
 	
 	//workaround - track the operation performed by the drop target for DragEnd event
-	int dataEffect = DND.DROP_NONE;
-
-	Runnable dragMove;	
+	int dataEffect = DND.DROP_NONE;	
 	
-	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
+	static final TCHAR WindowClass = new TCHAR (0, "#32770", true);
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -134,7 +141,7 @@ public class DragSource extends Widget {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see Widget#dispose
  * @see DragSource#checkSubclass
@@ -146,10 +153,10 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 	super(control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null) {
+	if (control.getData(DND.DRAG_SOURCE_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
-	control.setData(DRAGSOURCEID, this);
+	control.setData(DND.DRAG_SOURCE_KEY, this);
 	createCOMInterfaces();
 	this.AddRef();
 
@@ -175,12 +182,14 @@ public DragSource(Control control, int style) {
 			DragSource.this.onDispose();
 		}
 	});
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
+	} else if (control instanceof Tree) {
+		dragEffect = new TreeDragSourceEffect((Tree) control);
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dragEffect = new TableDragSourceEffect((Table) control);
 	}
 }
 
@@ -215,12 +224,14 @@ static int checkStyle(int style) {
  * </ul>
  *
  * @see DragSourceListener
+ * @see #getDragListeners
  * @see #removeDragListener
  * @see DragSourceEvent
  */
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener(listener);
+	typedListener.dndWidget = this;
 	addListener(DND.DragStart, typedListener);
 	addListener(DND.DragSetData, typedListener);
 	addListener(DND.DragEnd, typedListener);
@@ -234,23 +245,23 @@ private int AddRef() {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iDropSource = new COMObject(new int[]{2, 0, 0, 2, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return QueryContinueDrag(args[0], args[1]);}
-		public int method4(int[] args) {return GiveFeedback(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return QueryContinueDrag((int)/*64*/args[0], (int)/*64*/args[1]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GiveFeedback((int)/*64*/args[0]);}
 	};
 	
 	iDataObject = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return GetData(args[0], args[1]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return GetData(args[0], args[1]);}
 		// method4 GetDataHere - not implemented
-		public int method5(int[] args) {return QueryGetData(args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return QueryGetData(args[0]);}
 		// method6 GetCanonicalFormatEtc - not implemented
-		public int method7(int[] args) {return SetData(args[0], args[1], args[2]);}
-		public int method8(int[] args) {return EnumFormatEtc(args[0], args[1]);}
+		public int /*long*/ method7(int /*long*/[] args) {return SetData(args[0], args[1], (int)/*64*/args[2]);}
+		public int /*long*/ method8(int /*long*/[] args) {return EnumFormatEtc((int)/*64*/args[0], args[1]);}
 		// method9 DAdvise - not implemented
 		// method10 DUnadvise - not implemented
 		// method11 EnumDAdvise - not implemented
@@ -291,8 +302,77 @@ private void drag(Event dragEvent) {
 	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	Object oldValue = display.getData(key);
 	display.setData(key, new Boolean(true));
-	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
-	display.setData(key, oldValue);
+	ImageList imagelist = null;
+	Image image = event.image;
+	hwndDrag = 0;
+	topControl = null;
+	if (image != null) {
+		imagelist = new ImageList(SWT.NONE);
+		imagelist.add(image);
+		topControl = control.getShell();
+		/* 
+		 * Bug in Windows. The image is inverted if the shell is RIGHT_TO_LEFT.
+		 * The fix is to create a transparent window that covers the shell client
+		 * area and use it during the drag to prevent the image from being inverted.
+		 * On XP if the shell is RTL, the image is not displayed.
+		 */
+		int offsetX = event.offsetX;
+		hwndDrag = topControl.handle;
+		if ((topControl.getStyle() & SWT.RIGHT_TO_LEFT) != 0) {
+			offsetX = image.getBounds().width - offsetX;
+			RECT rect = new RECT ();
+			OS.GetClientRect (topControl.handle, rect);
+			hwndDrag = OS.CreateWindowEx (
+				OS.WS_EX_TRANSPARENT | OS.WS_EX_NOINHERITLAYOUT,
+				WindowClass,
+				null,
+				OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
+				0, 0,
+				rect.right - rect.left, rect.bottom - rect.top, 
+				topControl.handle,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			OS.ShowWindow (hwndDrag, OS.SW_SHOW);
+		}
+		OS.ImageList_BeginDrag(imagelist.getHandle(), 0, offsetX, event.offsetY);
+        /*
+        * Feature in Windows. When ImageList_DragEnter() is called,
+        * it takes a snapshot of the screen  If a drag is started
+        * when another window is in front, then the snapshot will
+        * contain part of the other window, causing pixel corruption.
+        * The fix is to force all paints to be delivered before
+        * calling ImageList_DragEnter().
+        */
+		if (OS.IsWinCE) {
+			OS.UpdateWindow (topControl.handle);
+		} else {
+			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (topControl.handle, null, 0, flags);
+		}
+		POINT pt = new POINT ();
+		pt.x = dragEvent.x;
+		pt.y = dragEvent.y;
+		OS.MapWindowPoints (control.handle, 0, pt, 1);
+		RECT rect = new RECT ();
+		OS.GetWindowRect (hwndDrag, rect);
+		OS.ImageList_DragEnter(hwndDrag, pt.x - rect.left, pt.y - rect.top);
+	}
+	int result = COM.DRAGDROP_S_CANCEL;
+	try {
+		result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
+	} finally {
+		// ensure that we don't leave transparent window around
+		if (hwndDrag != 0) {
+			OS.ImageList_DragLeave(hwndDrag);
+			OS.ImageList_EndDrag();
+			imagelist.dispose();
+			if (hwndDrag != topControl.handle) OS.DestroyWindow(hwndDrag);
+			hwndDrag = 0;
+			topControl = null;
+		}
+		display.setData(key, oldValue);
+	}
 	int operation = osToOp(pdwEffect[0]);
 	if (dataEffect == DND.DROP_MOVE) {
 		operation = (operation == DND.DROP_NONE || operation == DND.DROP_COPY) ? DND.DROP_TARGET_MOVE : DND.DROP_MOVE;
@@ -309,24 +389,26 @@ private void drag(Event dragEvent) {
 	notifyListeners(DND.DragEnd,event);
 	dataEffect = DND.DROP_NONE;
 }
-
 /* 
  * EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)
  * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc 
  * must be incremented before returning.  Caller is responsible for releasing ppenumFormatetc.
  */
-private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
+private int EnumFormatEtc(int dwDirection, int /*long*/ ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
 
 	// what types have been registered?
 	TransferData[] allowedDataTypes = new TransferData[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		TransferData[] formats = transferAgents[i].getSupportedTypes();
-		TransferData[] newAllowedDataTypes = new TransferData[allowedDataTypes.length + formats.length];
-		System.arraycopy(allowedDataTypes, 0, newAllowedDataTypes, 0, allowedDataTypes.length);
-		System.arraycopy(formats, 0, newAllowedDataTypes, allowedDataTypes.length, formats.length);
-		allowedDataTypes = newAllowedDataTypes;
+		Transfer transferAgent = transferAgents[i];
+		if (transferAgent != null) {
+			TransferData[] formats = transferAgent.getSupportedTypes();
+			TransferData[] newAllowedDataTypes = new TransferData[allowedDataTypes.length + formats.length];
+			System.arraycopy(allowedDataTypes, 0, newAllowedDataTypes, 0, allowedDataTypes.length);
+			System.arraycopy(formats, 0, newAllowedDataTypes, allowedDataTypes.length, formats.length);
+			allowedDataTypes = newAllowedDataTypes;
+		}
 	}
 	
 	OleEnumFORMATETC enumFORMATETC = new OleEnumFORMATETC();
@@ -338,7 +420,7 @@ private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	}
 	enumFORMATETC.setFormats(formats);
 	
-	OS.MoveMemory(ppenumFormatetc, new int[] {enumFORMATETC.getAddress()}, 4);
+	OS.MoveMemory(ppenumFormatetc, new int /*long*/[] {enumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
 	return COM.S_OK;
 }
 /**
@@ -351,7 +433,7 @@ public Control getControl() {
 	return control;
 }
 
-private int GetData(int pFormatetc, int pmedium) {
+private int GetData(int /*long*/ pFormatetc, int /*long*/ pmedium) {
 	/* Called by a data consumer to obtain data from a source data object. 
 	   The GetData method renders the data described in the specified FORMATETC 
 	   structure and transfers it through the specified STGMEDIUM structure. 
@@ -374,11 +456,14 @@ private int GetData(int pFormatetc, int pmedium) {
 	event.dataType = transferData;
 	notifyListeners(DND.DragSetData,event);
 	
+	if (!event.doit) return COM.E_FAIL;
+	
 	// get matching transfer agent to perform conversion
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
-			transfer = transferAgents[i];
+		Transfer transferAgent = transferAgents[i];
+		if (transferAgent != null && transferAgent.isSupportedType(transferData)){
+			transfer = transferAgent;
 			break;
 		}
 	}
@@ -388,6 +473,56 @@ private int GetData(int pFormatetc, int pmedium) {
 	if (transferData.result != COM.S_OK) return transferData.result;
 	COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
 	return transferData.result;
+}
+
+/**
+ * Returns an array of listeners who will be notified when a drag and drop 
+ * operation is in progress, by sending it one of the messages defined in 
+ * the <code>DragSourceListener</code> interface.
+ *
+ * @return the listeners who will be notified when a drag and drop
+ * operation is in progress
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragSourceListener
+ * @see #addDragListener
+ * @see #removeDragListener
+ * @see DragSourceEvent
+ * 
+ * @since 3.4
+ */
+public DragSourceListener[] getDragListeners() {
+	Listener[] listeners = getListeners(DND.DragStart);
+	int length = listeners.length;
+	DragSourceListener[] dragListeners = new DragSourceListener[length];
+	int count = 0;
+	for (int i = 0; i < length; i++) {
+		Listener listener = listeners[i];
+		if (listener instanceof DNDListener) {
+			dragListeners[count] = (DragSourceListener) ((DNDListener) listener).getEventListener();
+			count++;
+		}
+	}
+	if (count == length) return dragListeners;
+	DragSourceListener[] result = new DragSourceListener[count];
+	System.arraycopy(dragListeners, 0, result, 0, count);
+	return result;
+}
+
+/**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop operation.
+ *
+ * @return the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
 }
 
 /**
@@ -404,11 +539,31 @@ private int GiveFeedback(int dwEffect) {
 }
 
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
-	if (fEscapePressed != 0)
+	if (topControl != null && topControl.isDisposed()) return COM.DRAGDROP_S_CANCEL;
+	if (fEscapePressed != 0){
+		if (hwndDrag != 0) OS.ImageList_DragLeave(hwndDrag);
 		return COM.DRAGDROP_S_CANCEL;
-	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	if ((grfKeyState & mask) == 0)
+	}
+	/*
+	* Bug in Windows.  On some machines that do not have XBUTTONs,
+	* the MK_XBUTTON1 and OS.MK_XBUTTON2 bits are sometimes set,
+	* causing mouse capture to become stuck.  The fix is to test
+	* for the extra buttons only when they exist.
+	*/
+	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
+//	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	if ((grfKeyState & mask) == 0) {
+		if (hwndDrag != 0) OS.ImageList_DragLeave(hwndDrag);
 		return COM.DRAGDROP_S_DROP;
+	}
+	
+	if (hwndDrag != 0) {
+		POINT pt = new POINT ();
+		OS.GetCursorPos (pt);
+		RECT rect = new RECT ();
+		OS.GetWindowRect (hwndDrag, rect);
+		OS.ImageList_DragMove (pt.x - rect.left, pt.y - rect.top);
+	}
 	return COM.S_OK;
 }
 
@@ -420,7 +575,7 @@ private void onDispose() {
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
 	controlListener = null;
-	control.setData(DRAGSOURCEID, null);
+	control.setData(DND.DRAG_SOURCE_KEY, null);
 	control = null;
 	transferAgents = null;
 }
@@ -453,7 +608,7 @@ private int osToOp(int osOperation){
 	return operation;
 }
 
-private int QueryGetData(int pFormatetc) {
+private int QueryGetData(int /*long*/ pFormatetc) {
 	if (transferAgents == null) return COM.E_FAIL;
 	TransferData transferData = new TransferData();
 	transferData.formatetc = new FORMATETC();
@@ -462,7 +617,8 @@ private int QueryGetData(int pFormatetc) {
 
 	// is this type supported by the transfer agent?
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData))
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData))
 			return COM.S_OK;
 	}
 	
@@ -473,25 +629,25 @@ private int QueryGetData(int pFormatetc) {
  * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
-private int QueryInterface(int riid, int ppvObject) {
+private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropSource)) {
-		OS.MoveMemory(ppvObject, new int[] {iDropSource.getAddress()}, 4);
+		OS.MoveMemory(ppvObject, new int /*long*/[] {iDropSource.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 
 	if (COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
-		OS.MoveMemory(ppvObject, new int[] {iDataObject.getAddress()}, 4);
+		OS.MoveMemory(ppvObject, new int /*long*/[] {iDataObject.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	
-	OS.MoveMemory(ppvObject, new int[] {0}, 4);
+	OS.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -508,7 +664,7 @@ private int Release() {
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -520,6 +676,7 @@ private int Release() {
  *
  * @see DragSourceListener
  * @see #addDragListener
+ * @see #getDragListeners
  */
 public void removeDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
@@ -528,23 +685,36 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener(DND.DragEnd, listener);
 }
 
-private int SetData(int pFormatetc, int pmedium, int fRelease) {
+private int SetData(int /*long*/ pFormatetc, int /*long*/ pmedium, int fRelease) {
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
 	FORMATETC formatetc = new FORMATETC();
 	COM.MoveMemory(formatetc, pFormatetc, FORMATETC.sizeof);
 	if (formatetc.cfFormat == CFSTR_PERFORMEDDROPEFFECT && formatetc.tymed == COM.TYMED_HGLOBAL) {
 		STGMEDIUM stgmedium = new STGMEDIUM();
 		COM.MoveMemory(stgmedium, pmedium,STGMEDIUM.sizeof);
-		int[] ptrEffect = new int[1];
-		OS.MoveMemory(ptrEffect, stgmedium.unionField,4);
+		//TODO - this should be GlobalLock()
+		int /*long*/[] ptrEffect = new int /*long*/[1];
+		OS.MoveMemory(ptrEffect, stgmedium.unionField, OS.PTR_SIZEOF);
 		int[] effect = new int[1];
-		OS.MoveMemory(effect, ptrEffect[0],4);
+		OS.MoveMemory(effect, ptrEffect[0], 4);
 		dataEffect = osToOp(effect[0]);
 	}
 	if (fRelease == 1) {
 		COM.ReleaseStgMedium(pmedium);
 	}
 	return COM.S_OK;
+}
+
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * used during a drag and drop operation.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
 }
 
 /**

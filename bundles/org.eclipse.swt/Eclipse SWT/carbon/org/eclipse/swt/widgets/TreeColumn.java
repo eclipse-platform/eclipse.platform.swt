@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,19 +20,23 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
- *  <dl>
+ * <p><dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, CENTER</dd>
  * <dt><b>Events:</b></dt>
  * <dd> Move, Resize, Selection</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tree">Tree, TreeItem, TreeColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TreeColumn extends Item {
 	Tree parent;
@@ -93,13 +97,17 @@ public TreeColumn (Tree parent, int style) {
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
  * </p>
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -148,7 +156,7 @@ public void addControlListener(ControlListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -156,7 +164,7 @@ public void addControlListener(ControlListener listener) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -248,7 +256,7 @@ public Tree getParent () {
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
  * 
- * @since 3.1
+ * @since 3.2
  */
 public boolean getMoveable () {
 	checkWidget ();
@@ -274,6 +282,19 @@ public boolean getResizable () {
 	return resizable;
 }
 
+/**
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public String getToolTipText () {
 	checkWidget ();
 	return toolTipText;
@@ -324,17 +345,18 @@ public void pack () {
 }
 
 int calculateWidth (int[] ids, int index, GC gc, int width) {
-	if (ids == null) return width;
+	int max = width;
+	if (ids == null) return max;
 	for (int i=0; i<ids.length; i++) {
-		TreeItem item = parent._getItem (ids [i], false);;
-		if (item != null) {
-			width = Math.max (width, item.calculateWidth (index, gc));
+		TreeItem item = parent._getItem (ids [i], false);
+		if (item != null && item.cached) {
+			max = Math.max (max, item.calculateWidth (index, gc));
 			if (item.getExpanded ()) {
-				width = Math.max (width, calculateWidth (item.childIds, index, gc, width));
+				max = Math.max (max, calculateWidth (item.childIds, index, gc, max));
 			}
 		}
 	}
-	return width;
+	return max;
 }
 
 void releaseHandle () {
@@ -379,7 +401,7 @@ public void removeControlListener (ControlListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -422,7 +444,10 @@ void resized (int newWidth) {
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
  * or <code>CENTER</code>.
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param alignment the new alignment 
  *
  * @exception SWTException <ul>
@@ -479,7 +504,7 @@ public void setImage (Image image) {
  * @see TreeColumn#getMoveable()
  * @see SWT#Move
  * 
- * @since 3.1
+ * @since 3.2
  */
 public void setMoveable (boolean moveable) {
 	checkWidget ();
@@ -518,6 +543,28 @@ public void setText (String string) {
 	updateHeader ();
 }
 
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
@@ -535,6 +582,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	if (width < 0) return;
 	/*
 	* Feature in the Macintosh. The data browser widget adds the left inset
 	* of the disclosure column to the specified width making the column too
@@ -556,8 +604,10 @@ void updateHeader () {
 	DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
 	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
 	desc.btnFontStyle_just = OS.teFlushLeft;
-	if ((style & SWT.CENTER) != 0) desc.btnFontStyle_just = OS.teCenter;
-	if ((style & SWT.RIGHT) != 0) desc.btnFontStyle_just = OS.teFlushRight;
+	if (parent.indexOf (this) != 0) {
+		if ((style & SWT.CENTER) != 0) desc.btnFontStyle_just = OS.teCenter;
+		if ((style & SWT.RIGHT) != 0) desc.btnFontStyle_just = OS.teFlushRight;
+	}
 	desc.btnFontStyle_flags |= OS.kControlUseJustMask;
 	if (resizable) {
 		desc.minimumWidth = 0;

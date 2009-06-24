@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,19 +41,19 @@ public class nsIURIContentListener extends nsISupports {
 		super(address);
 	}
 
-	public int OnStartURIOpen(int /*long*/ aURI, boolean[] _retval) {
+	public int OnStartURIOpen(int /*long*/ aURI, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aURI, _retval);
 	}
 
-	public int DoContent(byte[] aContentType, boolean aIsContentPreferred, int /*long*/ aRequest, int /*long*/[] aContentHandler, boolean[] _retval) {
+	public int DoContent(byte[] aContentType, int aIsContentPreferred, int /*long*/ aRequest, int /*long*/[] aContentHandler, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aContentType, aIsContentPreferred, aRequest, aContentHandler, _retval);
 	}
 
-	public int IsPreferred(byte[] aContentType, int /*long*/[] aDesiredContentType, boolean[] _retval) {
+	public int IsPreferred(byte[] aContentType, int /*long*/[] aDesiredContentType, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aContentType, aDesiredContentType, _retval);
 	}
 
-	public int CanHandleContent(byte[] aContentType, boolean aIsContentPreferred, int /*long*/[] aDesiredContentType, boolean[] _retval) {
+	public int CanHandleContent(byte[] aContentType, int aIsContentPreferred, int /*long*/[] aDesiredContentType, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContentType, aIsContentPreferred, aDesiredContentType, _retval);
 	}
 

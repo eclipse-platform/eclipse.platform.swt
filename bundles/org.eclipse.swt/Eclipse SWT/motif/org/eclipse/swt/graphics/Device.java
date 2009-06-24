@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,8 @@ import org.eclipse.swt.internal.motif.*;
  * such as the Display device and the Printer device. Devices
  * can have a graphics context (GC) created for them, and they
  * can be drawn on by sending messages to the associated GC.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
 	/**
@@ -54,6 +56,7 @@ public abstract class Device implements Drawable {
 	boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
+	Object trackingLock;
 
 	/* Arguments for XtOpenDisplay */
 	String display_name;
@@ -102,8 +105,6 @@ public abstract class Device implements Drawable {
 	static Callback XErrorCallback, XIOErrorCallback;
 	static int XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
 	static Device[] Devices = new Device[4];
-	
-	static final Object CREATE_LOCK = new Object();
 
 	/* Initialize X and Xt */
 	static {
@@ -124,15 +125,13 @@ public abstract class Device implements Drawable {
 	* fix is to remove this feature. Unfortunately,
 	* too many application programs rely on this
 	* feature.
-	*
-	* This code will be removed in the future.
 	*/
 	protected static Device CurrentDevice;
 	protected static Runnable DeviceFinder;
 	static {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display");
-		} catch (Throwable e) {}
+		} catch (ClassNotFoundException e) {}
 	}	
 
 /* 
@@ -173,7 +172,7 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	synchronized (CREATE_LOCK) {
+	synchronized (Device.class) {
 		if (data != null) {
 			display_name = data.display_name;
 			application_name = data.application_name;
@@ -184,6 +183,7 @@ public Device(DeviceData data) {
 		if (tracking) {
 			errors = new Error [128];
 			objects = new Object [128];
+			trackingLock = new Object ();
 		}
 		create (data);
 		init ();
@@ -291,24 +291,31 @@ protected void destroy () {
  * @see #checkDevice
  */
 public void dispose () {
-	if (isDisposed()) return;
-	checkDevice ();
-	release ();
-	destroy ();
-	deregister (this);
-	xDisplay = 0;
-	if (tracking) {
-		objects = null;
-		errors = null;
+	synchronized (Device.class) {
+		if (isDisposed()) return;
+		checkDevice ();
+		release ();
+		destroy ();
+		deregister (this);
+		xDisplay = 0;
+		if (tracking) {
+			synchronized (trackingLock) {
+				objects = null;
+				errors = null;
+				trackingLock = null;
+			}
+		}
 	}
 }
 
 void dispose_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == object) {
-			objects [i] = null;
-			errors [i] = null;
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == object) {
+				objects [i] = null;
+				errors [i] = null;
+				return;
+			}
 		}
 	}
 }
@@ -395,20 +402,26 @@ public DeviceData getDeviceData () {
 	data.application_class = application_class;
 	data.debug = debug;
 	data.tracking = tracking;
-	int count = 0, length = 0;
-	if (tracking) length = objects.length;
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) count++;
-	}
-	int index = 0;
-	data.objects = new Object [count];
-	data.errors = new Error [count];
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) {
-			data.objects [index] = objects [i];
-			data.errors [index] = errors [i];
-			index++;
+	if (tracking) {
+		synchronized (trackingLock) {
+			int count = 0, length = objects.length;
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) count++;
+			}
+			int index = 0;
+			data.objects = new Object [count];
+			data.errors = new Error [count];
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) {
+					data.objects [index] = objects [i];
+					data.errors [index] = errors [i];
+					index++;
+				}
+			}
 		}
+	} else {
+		data.objects = new Object [0];
+		data.errors = new Error [0];
 	}
 	return data;
 }
@@ -601,7 +614,11 @@ protected void init () {
 	if (debug) OS.XSynchronize (xDisplay, true);
 
 	int[] event_basep = new int[1], error_basep = new int [1];
-	useXRender = OS.XRenderQueryExtension(xDisplay, event_basep, error_basep);
+	if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {
+		int[] major_versionp = new int[1], minor_versionp = new int [1];
+		OS.XRenderQueryVersion (xDisplay, major_versionp, minor_versionp);
+		useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
+	}
 		
 	/* Create the warning and error callbacks */
 	Class clazz = getClass ();
@@ -728,25 +745,80 @@ public abstract void internal_dispose_GC (int handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return xDisplay == 0;
+	synchronized (Device.class) {
+		return xDisplay == 0;
+	}
+}
+
+/**
+ * Loads the font specified by a file.  The font will be
+ * present in the list of fonts available to the application.
+ *
+ * @param path the font file path
+ * @return whether the font was successfully loaded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if path is null</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see Font
+ * 
+ * @since 3.3
+ */
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	//TEMPORARY CODE
+	/*if (true)*/ return false;
+//	int index = path.lastIndexOf ("/");
+//	if (index != -1) path = path.substring (0, index);
+//	int [] ndirs = new int [1];
+//	int dirs = OS.XGetFontPath (xDisplay, ndirs);
+//	int [] ptr = new int [1];
+//	for (int i = 0; i < ndirs [0]; i++) {
+//		OS.memmove (ptr, dirs + (i * 4), 4);
+//		int length = OS.strlen (ptr [0]);
+//		byte [] buffer = new byte [length];
+//		OS.memmove (buffer, ptr [0], length);
+//		if (Converter.mbcsToWcs (null, buffer).equals (path)) {
+//			OS.XFreeFontPath (dirs);
+//			return true;
+//		}
+//	}
+//	int newDirs = OS.XtMalloc ((ndirs [0] + 1) * 4);
+//	int[] dirsBuffer = new int [ndirs [0] + 1];
+//	OS.memmove (dirsBuffer, dirs, ndirs [0] * 4);
+//	byte[] buffer = Converter.wcsToMbcs (null, path, true);
+//	int pathPtr = OS.XtMalloc (buffer.length);
+//	OS.memmove (pathPtr, buffer, buffer.length);
+//	dirsBuffer [dirsBuffer.length - 1] = pathPtr;
+//	OS.memmove (newDirs, dirsBuffer, dirsBuffer.length * 4);
+//	OS.XSetFontPath (xDisplay, newDirs, dirsBuffer.length);
+//	OS.XFreeFontPath (dirs);
+//	OS.XFree (newDirs);
+//	OS.XFree (pathPtr);
+//	return true;
 }
 	
 void new_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == null) {
-			objects [i] = object;
-			errors [i] = new Error ();
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == null) {
+				objects [i] = object;
+				errors [i] = new Error ();
+				return;
+			}
 		}
+		Object [] newObjects = new Object [objects.length + 128];
+		System.arraycopy (objects, 0, newObjects, 0, objects.length);
+		newObjects [objects.length] = object;
+		objects = newObjects;
+		Error [] newErrors = new Error [errors.length + 128];
+		System.arraycopy (errors, 0, newErrors, 0, errors.length);
+		newErrors [errors.length] = new Error ();
+		errors = newErrors;
 	}
-	Object [] newObjects = new Object [objects.length + 128];
-	System.arraycopy (objects, 0, newObjects, 0, objects.length);
-	newObjects [objects.length] = object;
-	objects = newObjects;
-	Error [] newErrors = new Error [errors.length + 128];
-	System.arraycopy (errors, 0, newErrors, 0, errors.length);
-	newErrors [errors.length] = new Error ();
-	errors = newErrors;
 }
 
 static synchronized void register (Device device) {
@@ -818,6 +890,22 @@ protected void release () {
 	xcolors = null;
 	colorRefCount = null;
 	
+	if (COLOR_BLACK != null) COLOR_BLACK.dispose();
+	if (COLOR_DARK_RED != null) COLOR_DARK_RED.dispose();
+	if (COLOR_DARK_GREEN != null) COLOR_DARK_GREEN.dispose();
+	if (COLOR_DARK_YELLOW != null) COLOR_DARK_YELLOW.dispose();
+	if (COLOR_DARK_BLUE != null) COLOR_DARK_BLUE.dispose();
+	if (COLOR_DARK_MAGENTA != null) COLOR_DARK_MAGENTA.dispose();
+	if (COLOR_DARK_CYAN != null) COLOR_DARK_CYAN.dispose();
+	if (COLOR_GRAY != null) COLOR_GRAY.dispose();
+	if (COLOR_DARK_GRAY != null) COLOR_DARK_GRAY.dispose();
+	if (COLOR_RED != null) COLOR_RED.dispose();
+	if (COLOR_GREEN != null) COLOR_GREEN.dispose();
+	if (COLOR_YELLOW != null) COLOR_YELLOW.dispose();
+	if (COLOR_BLUE != null) COLOR_BLUE.dispose();
+	if (COLOR_MAGENTA != null) COLOR_MAGENTA.dispose();
+	if (COLOR_CYAN != null) COLOR_CYAN.dispose();
+	if (COLOR_WHITE != null) COLOR_WHITE.dispose();
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW =
 	COLOR_DARK_BLUE = COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;

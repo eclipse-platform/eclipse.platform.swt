@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,18 @@
 package org.eclipse.swt.internal.win32;
 
 public class BROWSEINFO {
-	public int hwndOwner;
-	public int pidlRoot;
-	public int pszDisplayName;
-	public int lpszTitle;
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndOwner;
+	/** @field cast=(LPCITEMIDLIST) */
+	public int /*long*/ pidlRoot;
+	/** @field cast=(LPTSTR) */
+	public int /*long*/ pszDisplayName;
+	/** @field cast=(LPCTSTR) */
+	public int /*long*/ lpszTitle;
 	public int ulFlags;
-	public int lpfn;
-	public int lParam;
+	/** @field cast=(BFFCALLBACK) */
+	public int /*long*/ lpfn;
+	public int /*long*/ lParam;
 	public int iImage;
-	public static final int sizeof = 32;
+	public static final int sizeof = OS.BROWSEINFO_sizeof ();
 }

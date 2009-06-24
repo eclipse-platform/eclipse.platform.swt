@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -18,11 +18,11 @@
 __declspec(dllexport) HRESULT DllGetVersion(DLLVERSIONINFO *dvi);
 HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
 {
-     dvi->dwMajorVersion = SWT_VERSION / 1000;
-     dvi->dwMinorVersion = SWT_VERSION % 1000;
-     dvi->dwBuildNumber = 0;
-     dvi->dwPlatformID = DLLVER_PLATFORM_WINDOWS;
-     return 1;
+	dvi->dwMajorVersion = SWT_VERSION / 1000;
+	dvi->dwMinorVersion = SWT_VERSION % 1000;
+	dvi->dwBuildNumber = 0;
+	dvi->dwPlatformID = DLLVER_PLATFORM_WINDOWS;
+	return 1;
 }
 
 HINSTANCE g_hInstance = NULL;
@@ -35,12 +35,12 @@ BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 }
 
 #ifndef NO_GetLibraryHandle
-JNIEXPORT jint JNICALL OS_NATIVE(GetLibraryHandle)
+JNIEXPORT jintLong JNICALL OS_NATIVE(GetLibraryHandle)
 	(JNIEnv *env, jclass that)
 {
-	jint rc;
+	jintLong rc;
 	OS_NATIVE_ENTER(env, that, GetLibraryHandle_FUNC)
-	rc = (jint)g_hInstance;
+	rc = (jintLong)g_hInstance;
 	OS_NATIVE_EXIT(env, that, GetLibraryHandle_FUNC)
 	return rc;
 }
@@ -78,14 +78,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsSP)
 }
 #endif
 
-#ifndef NO_SendMessageW__II_3I_3I
-JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+#if (!defined(NO_SendMessageW__II_3I_3I) && !defined(JNI64)) || (!defined(SendMessageW__JI_3I_3I) && defined(JNI64))
+#ifdef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageW__JI_3I_3I)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
+#endif
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jintArray arg3)
 {
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
-	jint rc;
+	jintLong rc = 0;
+#ifdef JNI64
+	OS_NATIVE_ENTER(env, that, SendMessageW__JI_3I_3I_FUNC)
+#else
 	OS_NATIVE_ENTER(env, that, SendMessageW__II_3I_3I_FUNC)
+#endif
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 #ifdef _WIN32_WCE
@@ -99,24 +107,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 		case EM_GETSEL:
 		case CB_GETEDITSEL: {
 			jint wParam = 0, lParam = 0;
-			jint *lpwParam = NULL, *lplParam = NULL;
+			jintLong *lpwParam = NULL, *lplParam = NULL;
 			if (lparg2 != NULL) lpwParam = &wParam;
 			if (lparg3 != NULL) lplParam = &lParam;
-			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lpwParam, (LPARAM)lplParam);
+			rc = (jintLong)SendMessageW((HWND)arg0, arg1, (WPARAM)lpwParam, (LPARAM)lplParam);
 			if (lparg2 != NULL) lparg2[0] = wParam;
 			if (lparg3 != NULL) lparg3[0] = lParam;
 			break;
 		}
 		default:
-			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+			rc = (jintLong)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 	}
 #else
-	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+	rc = (jintLong)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 #endif
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+#ifdef JNI64
+	OS_NATIVE_EXIT(env, that, SendMessageW__JI_3I_3I_FUNC)
+#else
 	OS_NATIVE_EXIT(env, that, SendMessageW__II_3I_3I_FUNC)
+#endif
 	return rc;
 }
 #endif

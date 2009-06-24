@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.image;
 
+import java.io.*;
 
 public class PngHuffmanTables {
 	PngHuffmanTable literalTable;
@@ -46,7 +47,7 @@ public class PngHuffmanTables {
 		11, 4, 12, 3, 13, 2, 14, 1, 15
 	};
 	
-static PngHuffmanTables getDynamicTables(PngDecodingDataStream stream){
+static PngHuffmanTables getDynamicTables(PngDecodingDataStream stream) throws IOException {
 	return new PngHuffmanTables(stream);
 }
 static PngHuffmanTables getFixedTables() {
@@ -72,7 +73,7 @@ private PngHuffmanTables () {
 	distanceTable = getFixedDistanceTable();
 }
 
-private PngHuffmanTables (PngDecodingDataStream stream) {
+private PngHuffmanTables (PngDecodingDataStream stream) throws IOException {
 	int literals = PngLzBlockReader.FIRST_LENGTH_CODE 
 		+ stream.getNextIdatBits(5);
 	int distances = PngLzBlockReader.FIRST_DISTANCE_CODE 
@@ -110,7 +111,7 @@ private PngHuffmanTables (PngDecodingDataStream stream) {
 private int [] readLengths (PngDecodingDataStream stream, 
 	int numLengths, 
 	PngHuffmanTable lengthsTable,
-	int tableSize) 
+	int tableSize) throws IOException
 {
 	int[] lengths = new int[tableSize];
 	
@@ -148,11 +149,11 @@ private int [] readLengths (PngDecodingDataStream stream,
 	return lengths;
 }
 
-int getNextLiteralValue(PngDecodingDataStream stream) {
+int getNextLiteralValue(PngDecodingDataStream stream) throws IOException {
 	return literalTable.getNextValue(stream);
 }
 
-int getNextDistanceValue(PngDecodingDataStream stream) {
+int getNextDistanceValue(PngDecodingDataStream stream) throws IOException {
 	return distanceTable.getNextValue(stream);
 }
 

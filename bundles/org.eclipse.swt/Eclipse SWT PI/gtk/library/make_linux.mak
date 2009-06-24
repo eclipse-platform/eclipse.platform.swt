@@ -1,10 +1,10 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2005 IBM Corporation and others.
+# Copyright (c) 2000, 2009 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
@@ -24,7 +24,9 @@ SWTPI_PREFIX = swt-pi
 CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 GNOME_PREFIX = swt-gnome
-MOZILLA_PREFIX = swt-mozilla
+MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
+XULRUNNER_PREFIX = swt-xulrunner
+XPCOMINIT_PREFIX = swt-xpcominit
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -35,6 +37,8 @@ CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+XPCOMINIT_LIB = lib$(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
@@ -46,7 +50,7 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthrea
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -s
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
@@ -63,7 +67,6 @@ GLXLIBS = -shared -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
 MOZILLACFLAGS = -O \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	$(NATIVE_STATS) \
-	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
 	-fno-rtti \
 	-fno-exceptions \
@@ -73,12 +76,20 @@ MOZILLACFLAGS = -O \
 	-I. \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
-	${GECKO_INCLUDES} \
 	${SWT_PTR_CFLAGS}
-MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic \
-	${GECKO_LIBS}
-	
-SWT_OBJECTS = swt.o callback.o
+MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
+MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
+	-DNO__1XPCOMGlueStartup \
+	-DNO__1XPCOMGlueLoadXULFunctions \
+	-DNO_memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I \
+	-DNO_memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J \
+	-DNO_nsDynamicFunctionLoad_1sizeof \
+	-DNO__1Call__IIIIII \
+	-DNO__1Call__JJJJJI \
+	-DNO_nsDynamicFunctionLoad
+XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
+
+SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
@@ -86,6 +97,8 @@ CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
+XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
+XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
 CFLAGS = -O -Wall \
@@ -96,8 +109,13 @@ CFLAGS = -O -Wall \
 		-I$(JAVA_HOME)/include/linux \
 		-fPIC \
 		${SWT_PTR_CFLAGS}
-LIBS = -shared -fPIC -s
+LIBS = -shared -fPIC
 
+ifndef NO_STRIP
+	AWT_LIBS := $(AWT_LIBS) -s
+	MOZILLALIBS := $(MOZILLALIBS) -s
+	LIBS := $(LIBS) -s
+endif
 
 all: make_swt make_atk make_gnome make_glx
 
@@ -110,7 +128,7 @@ $(SWT_LIB): $(SWT_OBJECTS)
 	$(CC) $(LIBS) -o $(SWT_LIB) $(SWT_OBJECTS)
 
 callback.o: callback.c callback.h
-	$(CC) $(CFLAGS) -c callback.c
+	$(CC) $(CFLAGS) -DUSE_ASSEMBLER -c callback.c
 
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
 	$(CC) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
@@ -198,19 +216,56 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 make_mozilla:$(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
-	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
+	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS) ${MOZILLA_LIBS}
 
 xpcom.o: xpcom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom.cpp
 
 xpcom_structs.o: xpcom_structs.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_structs.cpp
 	
 xpcom_custom.o: xpcom_custom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_custom.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_custom.cpp
 
 xpcom_stats.o: xpcom_stats.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_stats.cpp
+
+#
+# XULRunner lib
+#
+make_xulrunner:$(XULRUNNER_LIB)
+
+$(XULRUNNER_LIB): $(XULRUNNER_OBJECTS)
+	$(CXX) -o $(XULRUNNER_LIB) $(XULRUNNER_OBJECTS) $(MOZILLALIBS) ${XULRUNNER_LIBS}
+
+xpcomxul.o: xpcom.cpp
+	$(CXX) -o xpcomxul.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom.cpp
+
+xpcomxul_structs.o: xpcom_structs.cpp
+	$(CXX) -o xpcomxul_structs.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
+	
+xpcomxul_custom.o: xpcom_custom.cpp
+	$(CXX) -o xpcomxul_custom.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
+
+xpcomxul_stats.o: xpcom_stats.cpp
+	$(CXX) -o xpcomxul_stats.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
+
+#
+# XPCOMInit lib
+#
+make_xpcominit:$(XPCOMINIT_LIB)
+
+$(XPCOMINIT_LIB): $(XPCOMINIT_OBJECTS)
+	$(CXX) -o $(XPCOMINIT_LIB) $(XPCOMINIT_OBJECTS) $(MOZILLALIBS) ${XULRUNNER_LIBS}
+
+xpcominit.o: xpcominit.cpp
+	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit.cpp
+
+xpcominit_structs.o: xpcominit_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit_structs.cpp
+	
+xpcominit_stats.o: xpcominit_stats.cpp
+	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit_stats.cpp
 
 #
 # GLX lib

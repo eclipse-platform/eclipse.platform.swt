@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,11 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
@@ -74,7 +79,7 @@ public DirectoryDialog (Shell parent) {
  * </ul>
  */
 public DirectoryDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
@@ -137,6 +142,26 @@ public String open () {
 	int [] outDialog = new int [1];
 	// NEEDS WORK - use inFilterProc to handle filtering
 	if (OS.NavCreateChooseFolderDialog (options, 0, 0, 0, outDialog) == OS.noErr) {
+		if (filterPath != null && filterPath.length () > 0) {
+			char [] chars = new char [filterPath.length ()];
+			filterPath.getChars (0, chars.length, chars, 0);
+			int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+			if (str != 0) {
+				int url = OS.CFURLCreateWithFileSystemPath (OS.kCFAllocatorDefault, str, OS.kCFURLPOSIXPathStyle, false);
+				if (url != 0) {
+					byte [] fsRef = new byte [80];
+					if (OS.CFURLGetFSRef (url, fsRef)) {
+						AEDesc params = new AEDesc ();
+						if (OS.AECreateDesc (OS.typeFSRef, fsRef, fsRef.length, params) == OS.noErr) {
+							OS.NavCustomControl (outDialog [0], OS.kNavCtlSetLocation, params);
+							OS.AEDisposeDesc (params);
+						}
+					}
+					OS.CFRelease (url);
+				}
+				OS.CFRelease (str);
+			}
+		}
 		OS.NavDialogRun (outDialog [0]);
 		if (OS.NavDialogGetUserAction (outDialog [0]) == OS.kNavUserActionChoose) {
 			NavReplyRecord record = new NavReplyRecord ();
@@ -155,7 +180,7 @@ public String open () {
 				int status = OS.AEGetNthPtr (selection, 1, OS.typeFSRef, theAEKeyword, typeCode, dataPtr, maximumSize, actualSize);
 				if (status == OS.noErr && typeCode [0] == OS.typeFSRef) {
 					byte [] fsRef = new byte [actualSize [0]];
-					OS.memcpy (fsRef, dataPtr, actualSize [0]);
+					OS.memmove (fsRef, dataPtr, actualSize [0]);
 					int dirUrl = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
 					int dirString = OS.CFURLCopyFileSystemPath(dirUrl, OS.kCFURLPOSIXPathStyle);
 					OS.CFRelease (dirUrl);						

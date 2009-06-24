@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "os.h"
 
@@ -21,6 +21,18 @@ void setACCELFields(JNIEnv *env, jobject lpObject, ACCEL *lpStruct);
 #define getACCELFields(a,b,c) NULL
 #define setACCELFields(a,b,c)
 #define ACCEL_sizeof() 0
+#endif
+
+#ifndef NO_ACTCTX
+void cacheACTCTXFields(JNIEnv *env, jobject lpObject);
+ACTCTX *getACTCTXFields(JNIEnv *env, jobject lpObject, ACTCTX *lpStruct);
+void setACTCTXFields(JNIEnv *env, jobject lpObject, ACTCTX *lpStruct);
+#define ACTCTX_sizeof() sizeof(ACTCTX)
+#else
+#define cacheACTCTXFields(a,b)
+#define getACTCTXFields(a,b,c) NULL
+#define setACTCTXFields(a,b,c)
+#define ACTCTX_sizeof() 0
 #endif
 
 #ifndef NO_BITMAP
@@ -59,6 +71,18 @@ void setBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject, BLENDFUNCTION *lpStru
 #define BLENDFUNCTION_sizeof() 0
 #endif
 
+#ifndef NO_BP_PAINTPARAMS
+void cacheBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject);
+BP_PAINTPARAMS *getBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject, BP_PAINTPARAMS *lpStruct);
+void setBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject, BP_PAINTPARAMS *lpStruct);
+#define BP_PAINTPARAMS_sizeof() sizeof(BP_PAINTPARAMS)
+#else
+#define cacheBP_PAINTPARAMSFields(a,b)
+#define getBP_PAINTPARAMSFields(a,b,c) NULL
+#define setBP_PAINTPARAMSFields(a,b,c)
+#define BP_PAINTPARAMS_sizeof() 0
+#endif
+
 #ifndef NO_BROWSEINFO
 void cacheBROWSEINFOFields(JNIEnv *env, jobject lpObject);
 BROWSEINFO *getBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct);
@@ -81,6 +105,18 @@ void setBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject, BUTTON_IMAGELIST *
 #define getBUTTON_IMAGELISTFields(a,b,c) NULL
 #define setBUTTON_IMAGELISTFields(a,b,c)
 #define BUTTON_IMAGELIST_sizeof() 0
+#endif
+
+#ifndef NO_CANDIDATEFORM
+void cacheCANDIDATEFORMFields(JNIEnv *env, jobject lpObject);
+CANDIDATEFORM *getCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStruct);
+void setCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStruct);
+#define CANDIDATEFORM_sizeof() sizeof(CANDIDATEFORM)
+#else
+#define cacheCANDIDATEFORMFields(a,b)
+#define getCANDIDATEFORMFields(a,b,c) NULL
+#define setCANDIDATEFORMFields(a,b,c)
+#define CANDIDATEFORM_sizeof() 0
 #endif
 
 #ifndef NO_CHOOSECOLOR
@@ -143,6 +179,42 @@ void setCREATESTRUCTFields(JNIEnv *env, jobject lpObject, CREATESTRUCT *lpStruct
 #define CREATESTRUCT_sizeof() 0
 #endif
 
+#ifndef NO_DEVMODE
+void cacheDEVMODEFields(JNIEnv *env, jobject lpObject);
+DEVMODE *getDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct);
+void setDEVMODEFields(JNIEnv *env, jobject lpObject, DEVMODE *lpStruct);
+#define DEVMODE_sizeof() sizeof(DEVMODE)
+#else
+#define cacheDEVMODEFields(a,b)
+#define getDEVMODEFields(a,b,c) NULL
+#define setDEVMODEFields(a,b,c)
+#define DEVMODE_sizeof() 0
+#endif
+
+#ifndef NO_DEVMODEA
+void cacheDEVMODEAFields(JNIEnv *env, jobject lpObject);
+DEVMODEA *getDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct);
+void setDEVMODEAFields(JNIEnv *env, jobject lpObject, DEVMODEA *lpStruct);
+#define DEVMODEA_sizeof() sizeof(DEVMODEA)
+#else
+#define cacheDEVMODEAFields(a,b)
+#define getDEVMODEAFields(a,b,c) NULL
+#define setDEVMODEAFields(a,b,c)
+#define DEVMODEA_sizeof() 0
+#endif
+
+#ifndef NO_DEVMODEW
+void cacheDEVMODEWFields(JNIEnv *env, jobject lpObject);
+DEVMODEW *getDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct);
+void setDEVMODEWFields(JNIEnv *env, jobject lpObject, DEVMODEW *lpStruct);
+#define DEVMODEW_sizeof() sizeof(DEVMODEW)
+#else
+#define cacheDEVMODEWFields(a,b)
+#define getDEVMODEWFields(a,b,c) NULL
+#define setDEVMODEWFields(a,b,c)
+#define DEVMODEW_sizeof() 0
+#endif
+
 #ifndef NO_DIBSECTION
 void cacheDIBSECTIONFields(JNIEnv *env, jobject lpObject);
 DIBSECTION *getDIBSECTIONFields(JNIEnv *env, jobject lpObject, DIBSECTION *lpStruct);
@@ -165,6 +237,18 @@ void setDLLVERSIONINFOFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpSt
 #define getDLLVERSIONINFOFields(a,b,c) NULL
 #define setDLLVERSIONINFOFields(a,b,c)
 #define DLLVERSIONINFO_sizeof() 0
+#endif
+
+#ifndef NO_DOCHOSTUIINFO
+void cacheDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject);
+DOCHOSTUIINFO *getDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStruct);
+void setDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStruct);
+#define DOCHOSTUIINFO_sizeof() sizeof(DOCHOSTUIINFO)
+#else
+#define cacheDOCHOSTUIINFOFields(a,b)
+#define getDOCHOSTUIINFOFields(a,b,c) NULL
+#define setDOCHOSTUIINFOFields(a,b,c)
+#define DOCHOSTUIINFO_sizeof() 0
 #endif
 
 #ifndef NO_DOCINFO
@@ -201,6 +285,54 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct);
 #define getDROPFILESFields(a,b,c) NULL
 #define setDROPFILESFields(a,b,c)
 #define DROPFILES_sizeof() 0
+#endif
+
+#ifndef NO_DWM_BLURBEHIND
+void cacheDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject);
+DWM_BLURBEHIND *getDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct);
+void setDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct);
+#define DWM_BLURBEHIND_sizeof() sizeof(DWM_BLURBEHIND)
+#else
+#define cacheDWM_BLURBEHINDFields(a,b)
+#define getDWM_BLURBEHINDFields(a,b,c) NULL
+#define setDWM_BLURBEHINDFields(a,b,c)
+#define DWM_BLURBEHIND_sizeof() 0
+#endif
+
+#ifndef NO_EMR
+void cacheEMRFields(JNIEnv *env, jobject lpObject);
+EMR *getEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct);
+void setEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct);
+#define EMR_sizeof() sizeof(EMR)
+#else
+#define cacheEMRFields(a,b)
+#define getEMRFields(a,b,c) NULL
+#define setEMRFields(a,b,c)
+#define EMR_sizeof() 0
+#endif
+
+#ifndef NO_EMREXTCREATEFONTINDIRECTW
+void cacheEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject);
+EMREXTCREATEFONTINDIRECTW *getEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject, EMREXTCREATEFONTINDIRECTW *lpStruct);
+void setEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject, EMREXTCREATEFONTINDIRECTW *lpStruct);
+#define EMREXTCREATEFONTINDIRECTW_sizeof() sizeof(EMREXTCREATEFONTINDIRECTW)
+#else
+#define cacheEMREXTCREATEFONTINDIRECTWFields(a,b)
+#define getEMREXTCREATEFONTINDIRECTWFields(a,b,c) NULL
+#define setEMREXTCREATEFONTINDIRECTWFields(a,b,c)
+#define EMREXTCREATEFONTINDIRECTW_sizeof() 0
+#endif
+
+#ifndef NO_EXTLOGFONTW
+void cacheEXTLOGFONTWFields(JNIEnv *env, jobject lpObject);
+EXTLOGFONTW *getEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct);
+void setEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct);
+#define EXTLOGFONTW_sizeof() sizeof(EXTLOGFONTW)
+#else
+#define cacheEXTLOGFONTWFields(a,b)
+#define getEXTLOGFONTWFields(a,b,c) NULL
+#define setEXTLOGFONTWFields(a,b,c)
+#define EXTLOGFONTW_sizeof() 0
 #endif
 
 #ifndef NO_EXTLOGPEN
@@ -261,6 +393,18 @@ void setGUITHREADINFOFields(JNIEnv *env, jobject lpObject, GUITHREADINFO *lpStru
 #define getGUITHREADINFOFields(a,b,c) NULL
 #define setGUITHREADINFOFields(a,b,c)
 #define GUITHREADINFO_sizeof() 0
+#endif
+
+#ifndef NO_HDHITTESTINFO
+void cacheHDHITTESTINFOFields(JNIEnv *env, jobject lpObject);
+HDHITTESTINFO *getHDHITTESTINFOFields(JNIEnv *env, jobject lpObject, HDHITTESTINFO *lpStruct);
+void setHDHITTESTINFOFields(JNIEnv *env, jobject lpObject, HDHITTESTINFO *lpStruct);
+#define HDHITTESTINFO_sizeof() sizeof(HDHITTESTINFO)
+#else
+#define cacheHDHITTESTINFOFields(a,b)
+#define getHDHITTESTINFOFields(a,b,c) NULL
+#define setHDHITTESTINFOFields(a,b,c)
+#define HDHITTESTINFO_sizeof() 0
 #endif
 
 #ifndef NO_HDITEM
@@ -479,6 +623,18 @@ void setMARGINSFields(JNIEnv *env, jobject lpObject, MARGINS *lpStruct);
 #define MARGINS_sizeof() 0
 #endif
 
+#ifndef NO_MCHITTESTINFO
+void cacheMCHITTESTINFOFields(JNIEnv *env, jobject lpObject);
+MCHITTESTINFO *getMCHITTESTINFOFields(JNIEnv *env, jobject lpObject, MCHITTESTINFO *lpStruct);
+void setMCHITTESTINFOFields(JNIEnv *env, jobject lpObject, MCHITTESTINFO *lpStruct);
+#define MCHITTESTINFO_sizeof() sizeof(MCHITTESTINFO)
+#else
+#define cacheMCHITTESTINFOFields(a,b)
+#define getMCHITTESTINFOFields(a,b,c) NULL
+#define setMCHITTESTINFOFields(a,b,c)
+#define MCHITTESTINFO_sizeof() 0
+#endif
+
 #ifndef NO_MEASUREITEMSTRUCT
 void cacheMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject);
 MEASUREITEMSTRUCT *getMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT *lpStruct);
@@ -671,6 +827,18 @@ void setNMLVFINDITEMFields(JNIEnv *env, jobject lpObject, NMLVFINDITEM *lpStruct
 #define NMLVFINDITEM_sizeof() 0
 #endif
 
+#ifndef NO_NMLVODSTATECHANGE
+void cacheNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject);
+NMLVODSTATECHANGE *getNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject, NMLVODSTATECHANGE *lpStruct);
+void setNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject, NMLVODSTATECHANGE *lpStruct);
+#define NMLVODSTATECHANGE_sizeof() sizeof(NMLVODSTATECHANGE)
+#else
+#define cacheNMLVODSTATECHANGEFields(a,b)
+#define getNMLVODSTATECHANGEFields(a,b,c) NULL
+#define setNMLVODSTATECHANGEFields(a,b,c)
+#define NMLVODSTATECHANGE_sizeof() 0
+#endif
+
 #ifndef NO_NMREBARCHEVRON
 void cacheNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject);
 NMREBARCHEVRON *getNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpStruct);
@@ -731,6 +899,30 @@ void setNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct);
 #define NMTOOLBAR_sizeof() 0
 #endif
 
+#ifndef NO_NMTREEVIEW
+void cacheNMTREEVIEWFields(JNIEnv *env, jobject lpObject);
+NMTREEVIEW *getNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct);
+void setNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct);
+#define NMTREEVIEW_sizeof() sizeof(NMTREEVIEW)
+#else
+#define cacheNMTREEVIEWFields(a,b)
+#define getNMTREEVIEWFields(a,b,c) NULL
+#define setNMTREEVIEWFields(a,b,c)
+#define NMTREEVIEW_sizeof() 0
+#endif
+
+#ifndef NO_NMTTCUSTOMDRAW
+void cacheNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject);
+NMTTCUSTOMDRAW *getNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTTCUSTOMDRAW *lpStruct);
+void setNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTTCUSTOMDRAW *lpStruct);
+#define NMTTCUSTOMDRAW_sizeof() sizeof(NMTTCUSTOMDRAW)
+#else
+#define cacheNMTTCUSTOMDRAWFields(a,b)
+#define getNMTTCUSTOMDRAWFields(a,b,c) NULL
+#define setNMTTCUSTOMDRAWFields(a,b,c)
+#define NMTTCUSTOMDRAW_sizeof() 0
+#endif
+
 #ifndef NO_NMTTDISPINFO
 void cacheNMTTDISPINFOFields(JNIEnv *env, jobject lpObject);
 NMTTDISPINFO *getNMTTDISPINFOFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpStruct);
@@ -789,6 +981,18 @@ void setNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct
 #define getNMTVDISPINFOFields(a,b,c) NULL
 #define setNMTVDISPINFOFields(a,b,c)
 #define NMTVDISPINFO_sizeof() 0
+#endif
+
+#ifndef NO_NMTVITEMCHANGE
+void cacheNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject);
+NMTVITEMCHANGE *getNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject, NMTVITEMCHANGE *lpStruct);
+void setNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject, NMTVITEMCHANGE *lpStruct);
+#define NMTVITEMCHANGE_sizeof() sizeof(NMTVITEMCHANGE)
+#else
+#define cacheNMTVITEMCHANGEFields(a,b)
+#define getNMTVITEMCHANGEFields(a,b,c) NULL
+#define setNMTVITEMCHANGEFields(a,b,c)
+#define NMTVITEMCHANGE_sizeof() 0
 #endif
 
 #ifndef NO_NMUPDOWN
@@ -875,6 +1079,18 @@ void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lp
 #define NOTIFYICONDATAW_sizeof() 0
 #endif
 
+#ifndef NO_OFNOTIFY
+void cacheOFNOTIFYFields(JNIEnv *env, jobject lpObject);
+OFNOTIFY *getOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct);
+void setOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct);
+#define OFNOTIFY_sizeof() sizeof(OFNOTIFY)
+#else
+#define cacheOFNOTIFYFields(a,b)
+#define getOFNOTIFYFields(a,b,c) NULL
+#define setOFNOTIFYFields(a,b,c)
+#define OFNOTIFY_sizeof() 0
+#endif
+
 #ifndef NO_OPENFILENAME
 void cacheOPENFILENAMEFields(JNIEnv *env, jobject lpObject);
 OPENFILENAME *getOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct);
@@ -911,6 +1127,42 @@ void setOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpSt
 #define OSVERSIONINFOA_sizeof() 0
 #endif
 
+#ifndef NO_OSVERSIONINFOEX
+void cacheOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject);
+OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
+void setOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
+#define OSVERSIONINFOEX_sizeof() sizeof(OSVERSIONINFOEX)
+#else
+#define cacheOSVERSIONINFOEXFields(a,b)
+#define getOSVERSIONINFOEXFields(a,b,c) NULL
+#define setOSVERSIONINFOEXFields(a,b,c)
+#define OSVERSIONINFOEX_sizeof() 0
+#endif
+
+#ifndef NO_OSVERSIONINFOEXA
+void cacheOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject);
+OSVERSIONINFOEXA *getOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct);
+void setOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct);
+#define OSVERSIONINFOEXA_sizeof() sizeof(OSVERSIONINFOEXA)
+#else
+#define cacheOSVERSIONINFOEXAFields(a,b)
+#define getOSVERSIONINFOEXAFields(a,b,c) NULL
+#define setOSVERSIONINFOEXAFields(a,b,c)
+#define OSVERSIONINFOEXA_sizeof() 0
+#endif
+
+#ifndef NO_OSVERSIONINFOEXW
+void cacheOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject);
+OSVERSIONINFOEXW *getOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct);
+void setOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct);
+#define OSVERSIONINFOEXW_sizeof() sizeof(OSVERSIONINFOEXW)
+#else
+#define cacheOSVERSIONINFOEXWFields(a,b)
+#define getOSVERSIONINFOEXWFields(a,b,c) NULL
+#define setOSVERSIONINFOEXWFields(a,b,c)
+#define OSVERSIONINFOEXW_sizeof() 0
+#endif
+
 #ifndef NO_OSVERSIONINFOW
 void cacheOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject);
 OSVERSIONINFOW *getOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpStruct);
@@ -923,6 +1175,42 @@ void setOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpSt
 #define OSVERSIONINFOW_sizeof() 0
 #endif
 
+#ifndef NO_OUTLINETEXTMETRIC
+void cacheOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject);
+OUTLINETEXTMETRIC *getOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct);
+void setOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct);
+#define OUTLINETEXTMETRIC_sizeof() sizeof(OUTLINETEXTMETRIC)
+#else
+#define cacheOUTLINETEXTMETRICFields(a,b)
+#define getOUTLINETEXTMETRICFields(a,b,c) NULL
+#define setOUTLINETEXTMETRICFields(a,b,c)
+#define OUTLINETEXTMETRIC_sizeof() 0
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICA
+void cacheOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject);
+OUTLINETEXTMETRICA *getOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct);
+void setOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct);
+#define OUTLINETEXTMETRICA_sizeof() sizeof(OUTLINETEXTMETRICA)
+#else
+#define cacheOUTLINETEXTMETRICAFields(a,b)
+#define getOUTLINETEXTMETRICAFields(a,b,c) NULL
+#define setOUTLINETEXTMETRICAFields(a,b,c)
+#define OUTLINETEXTMETRICA_sizeof() 0
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICW
+void cacheOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject);
+OUTLINETEXTMETRICW *getOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct);
+void setOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct);
+#define OUTLINETEXTMETRICW_sizeof() sizeof(OUTLINETEXTMETRICW)
+#else
+#define cacheOUTLINETEXTMETRICWFields(a,b)
+#define getOUTLINETEXTMETRICWFields(a,b,c) NULL
+#define setOUTLINETEXTMETRICWFields(a,b,c)
+#define OUTLINETEXTMETRICW_sizeof() 0
+#endif
+
 #ifndef NO_PAINTSTRUCT
 void cachePAINTSTRUCTFields(JNIEnv *env, jobject lpObject);
 PAINTSTRUCT *getPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct);
@@ -933,6 +1221,18 @@ void setPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct);
 #define getPAINTSTRUCTFields(a,b,c) NULL
 #define setPAINTSTRUCTFields(a,b,c)
 #define PAINTSTRUCT_sizeof() 0
+#endif
+
+#ifndef NO_PANOSE
+void cachePANOSEFields(JNIEnv *env, jobject lpObject);
+PANOSE *getPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct);
+void setPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct);
+#define PANOSE_sizeof() sizeof(PANOSE)
+#else
+#define cachePANOSEFields(a,b)
+#define getPANOSEFields(a,b,c) NULL
+#define setPANOSEFields(a,b,c)
+#define PANOSE_sizeof() 0
 #endif
 
 #ifndef NO_POINT
@@ -957,6 +1257,18 @@ void setPRINTDLGFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpStruct);
 #define getPRINTDLGFields(a,b,c) NULL
 #define setPRINTDLGFields(a,b,c)
 #define PRINTDLG_sizeof() 0
+#endif
+
+#ifndef NO_PROCESS_INFORMATION
+void cachePROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject);
+PROCESS_INFORMATION *getPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct);
+void setPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct);
+#define PROCESS_INFORMATION_sizeof() sizeof(PROCESS_INFORMATION)
+#else
+#define cachePROCESS_INFORMATIONFields(a,b)
+#define getPROCESS_INFORMATIONFields(a,b,c) NULL
+#define setPROCESS_INFORMATIONFields(a,b,c)
+#define PROCESS_INFORMATION_sizeof() 0
 #endif
 
 #ifndef NO_REBARBANDINFO
@@ -1005,6 +1317,18 @@ void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpSt
 #define getSCRIPT_CONTROLFields(a,b,c) NULL
 #define setSCRIPT_CONTROLFields(a,b,c)
 #define SCRIPT_CONTROL_sizeof() 0
+#endif
+
+#ifndef NO_SCRIPT_DIGITSUBSTITUTE
+void cacheSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject);
+SCRIPT_DIGITSUBSTITUTE *getSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject, SCRIPT_DIGITSUBSTITUTE *lpStruct);
+void setSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject, SCRIPT_DIGITSUBSTITUTE *lpStruct);
+#define SCRIPT_DIGITSUBSTITUTE_sizeof() sizeof(SCRIPT_DIGITSUBSTITUTE)
+#else
+#define cacheSCRIPT_DIGITSUBSTITUTEFields(a,b)
+#define getSCRIPT_DIGITSUBSTITUTEFields(a,b,c) NULL
+#define setSCRIPT_DIGITSUBSTITUTEFields(a,b,c)
+#define SCRIPT_DIGITSUBSTITUTE_sizeof() 0
 #endif
 
 #ifndef NO_SCRIPT_FONTPROPERTIES
@@ -1067,6 +1391,18 @@ void setSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct
 #define SCRIPT_STATE_sizeof() 0
 #endif
 
+#ifndef NO_SCROLLBARINFO
+void cacheSCROLLBARINFOFields(JNIEnv *env, jobject lpObject);
+SCROLLBARINFO *getSCROLLBARINFOFields(JNIEnv *env, jobject lpObject, SCROLLBARINFO *lpStruct);
+void setSCROLLBARINFOFields(JNIEnv *env, jobject lpObject, SCROLLBARINFO *lpStruct);
+#define SCROLLBARINFO_sizeof() sizeof(SCROLLBARINFO)
+#else
+#define cacheSCROLLBARINFOFields(a,b)
+#define getSCROLLBARINFOFields(a,b,c) NULL
+#define setSCROLLBARINFOFields(a,b,c)
+#define SCROLLBARINFO_sizeof() 0
+#endif
+
 #ifndef NO_SCROLLINFO
 void cacheSCROLLINFOFields(JNIEnv *env, jobject lpObject);
 SCROLLINFO *getSCROLLINFOFields(JNIEnv *env, jobject lpObject, SCROLLINFO *lpStruct);
@@ -1091,6 +1427,18 @@ void setSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpSt
 #define SHACTIVATEINFO_sizeof() 0
 #endif
 
+#ifndef NO_SHDRAGIMAGE
+void cacheSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject);
+SHDRAGIMAGE *getSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct);
+void setSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct);
+#define SHDRAGIMAGE_sizeof() sizeof(SHDRAGIMAGE)
+#else
+#define cacheSHDRAGIMAGEFields(a,b)
+#define getSHDRAGIMAGEFields(a,b,c) NULL
+#define setSHDRAGIMAGEFields(a,b,c)
+#define SHDRAGIMAGE_sizeof() 0
+#endif
+
 #ifndef NO_SHELLEXECUTEINFO
 void cacheSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject);
 SHELLEXECUTEINFO *getSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct);
@@ -1101,6 +1449,42 @@ void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *
 #define getSHELLEXECUTEINFOFields(a,b,c) NULL
 #define setSHELLEXECUTEINFOFields(a,b,c)
 #define SHELLEXECUTEINFO_sizeof() 0
+#endif
+
+#ifndef NO_SHFILEINFO
+void cacheSHFILEINFOFields(JNIEnv *env, jobject lpObject);
+SHFILEINFO *getSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct);
+void setSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct);
+#define SHFILEINFO_sizeof() sizeof(SHFILEINFO)
+#else
+#define cacheSHFILEINFOFields(a,b)
+#define getSHFILEINFOFields(a,b,c) NULL
+#define setSHFILEINFOFields(a,b,c)
+#define SHFILEINFO_sizeof() 0
+#endif
+
+#ifndef NO_SHFILEINFOA
+void cacheSHFILEINFOAFields(JNIEnv *env, jobject lpObject);
+SHFILEINFOA *getSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct);
+void setSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct);
+#define SHFILEINFOA_sizeof() sizeof(SHFILEINFOA)
+#else
+#define cacheSHFILEINFOAFields(a,b)
+#define getSHFILEINFOAFields(a,b,c) NULL
+#define setSHFILEINFOAFields(a,b,c)
+#define SHFILEINFOA_sizeof() 0
+#endif
+
+#ifndef NO_SHFILEINFOW
+void cacheSHFILEINFOWFields(JNIEnv *env, jobject lpObject);
+SHFILEINFOW *getSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct);
+void setSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct);
+#define SHFILEINFOW_sizeof() sizeof(SHFILEINFOW)
+#else
+#define cacheSHFILEINFOWFields(a,b)
+#define getSHFILEINFOWFields(a,b,c) NULL
+#define setSHFILEINFOWFields(a,b,c)
+#define SHFILEINFOW_sizeof() 0
 #endif
 
 #ifndef NO_SHMENUBARINFO
@@ -1151,6 +1535,30 @@ void setSIZEFields(JNIEnv *env, jobject lpObject, SIZE *lpStruct);
 #define SIZE_sizeof() 0
 #endif
 
+#ifndef NO_STARTUPINFO
+void cacheSTARTUPINFOFields(JNIEnv *env, jobject lpObject);
+STARTUPINFO *getSTARTUPINFOFields(JNIEnv *env, jobject lpObject, STARTUPINFO *lpStruct);
+void setSTARTUPINFOFields(JNIEnv *env, jobject lpObject, STARTUPINFO *lpStruct);
+#define STARTUPINFO_sizeof() sizeof(STARTUPINFO)
+#else
+#define cacheSTARTUPINFOFields(a,b)
+#define getSTARTUPINFOFields(a,b,c) NULL
+#define setSTARTUPINFOFields(a,b,c)
+#define STARTUPINFO_sizeof() 0
+#endif
+
+#ifndef NO_SYSTEMTIME
+void cacheSYSTEMTIMEFields(JNIEnv *env, jobject lpObject);
+SYSTEMTIME *getSYSTEMTIMEFields(JNIEnv *env, jobject lpObject, SYSTEMTIME *lpStruct);
+void setSYSTEMTIMEFields(JNIEnv *env, jobject lpObject, SYSTEMTIME *lpStruct);
+#define SYSTEMTIME_sizeof() sizeof(SYSTEMTIME)
+#else
+#define cacheSYSTEMTIMEFields(a,b)
+#define getSYSTEMTIMEFields(a,b,c) NULL
+#define setSYSTEMTIMEFields(a,b,c)
+#define SYSTEMTIME_sizeof() 0
+#endif
+
 #ifndef NO_TBBUTTON
 void cacheTBBUTTONFields(JNIEnv *env, jobject lpObject);
 TBBUTTON *getTBBUTTONFields(JNIEnv *env, jobject lpObject, TBBUTTON *lpStruct);
@@ -1173,6 +1581,18 @@ void setTBBUTTONINFOFields(JNIEnv *env, jobject lpObject, TBBUTTONINFO *lpStruct
 #define getTBBUTTONINFOFields(a,b,c) NULL
 #define setTBBUTTONINFOFields(a,b,c)
 #define TBBUTTONINFO_sizeof() 0
+#endif
+
+#ifndef NO_TCHITTESTINFO
+void cacheTCHITTESTINFOFields(JNIEnv *env, jobject lpObject);
+TCHITTESTINFO *getTCHITTESTINFOFields(JNIEnv *env, jobject lpObject, TCHITTESTINFO *lpStruct);
+void setTCHITTESTINFOFields(JNIEnv *env, jobject lpObject, TCHITTESTINFO *lpStruct);
+#define TCHITTESTINFO_sizeof() sizeof(TCHITTESTINFO)
+#else
+#define cacheTCHITTESTINFOFields(a,b)
+#define getTCHITTESTINFOFields(a,b,c) NULL
+#define setTCHITTESTINFOFields(a,b,c)
+#define TCHITTESTINFO_sizeof() 0
 #endif
 
 #ifndef NO_TCITEM
@@ -1221,6 +1641,30 @@ void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct);
 #define getTEXTMETRICWFields(a,b,c) NULL
 #define setTEXTMETRICWFields(a,b,c)
 #define TEXTMETRICW_sizeof() 0
+#endif
+
+#ifndef NO_TF_DA_COLOR
+void cacheTF_DA_COLORFields(JNIEnv *env, jobject lpObject);
+TF_DA_COLOR *getTF_DA_COLORFields(JNIEnv *env, jobject lpObject, TF_DA_COLOR *lpStruct);
+void setTF_DA_COLORFields(JNIEnv *env, jobject lpObject, TF_DA_COLOR *lpStruct);
+#define TF_DA_COLOR_sizeof() sizeof(TF_DA_COLOR)
+#else
+#define cacheTF_DA_COLORFields(a,b)
+#define getTF_DA_COLORFields(a,b,c) NULL
+#define setTF_DA_COLORFields(a,b,c)
+#define TF_DA_COLOR_sizeof() 0
+#endif
+
+#ifndef NO_TF_DISPLAYATTRIBUTE
+void cacheTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject);
+TF_DISPLAYATTRIBUTE *getTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject, TF_DISPLAYATTRIBUTE *lpStruct);
+void setTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject, TF_DISPLAYATTRIBUTE *lpStruct);
+#define TF_DISPLAYATTRIBUTE_sizeof() sizeof(TF_DISPLAYATTRIBUTE)
+#else
+#define cacheTF_DISPLAYATTRIBUTEFields(a,b)
+#define getTF_DISPLAYATTRIBUTEFields(a,b,c) NULL
+#define setTF_DISPLAYATTRIBUTEFields(a,b,c)
+#define TF_DISPLAYATTRIBUTE_sizeof() 0
 #endif
 
 #ifndef NO_TOOLINFO
@@ -1305,6 +1749,18 @@ void setTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct);
 #define getTVITEMEXFields(a,b,c) NULL
 #define setTVITEMEXFields(a,b,c)
 #define TVITEMEX_sizeof() 0
+#endif
+
+#ifndef NO_TVSORTCB
+void cacheTVSORTCBFields(JNIEnv *env, jobject lpObject);
+TVSORTCB *getTVSORTCBFields(JNIEnv *env, jobject lpObject, TVSORTCB *lpStruct);
+void setTVSORTCBFields(JNIEnv *env, jobject lpObject, TVSORTCB *lpStruct);
+#define TVSORTCB_sizeof() sizeof(TVSORTCB)
+#else
+#define cacheTVSORTCBFields(a,b)
+#define getTVSORTCBFields(a,b,c) NULL
+#define setTVSORTCBFields(a,b,c)
+#define TVSORTCB_sizeof() 0
 #endif
 
 #ifndef NO_UDACCEL

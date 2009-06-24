@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,7 +36,10 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.0
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class CBanner extends Composite {	
@@ -47,18 +50,19 @@ public class CBanner extends Composite {
 	
 	boolean simple = true;
 	
-	int[] curve;
+	int[] curve = new int[0];
 	int curveStart = 0;
 	Rectangle curveRect = new Rectangle(0, 0, 0, 0);
 	int curve_width = 5;
 	int curve_indent = -2;
 	
 	int rightWidth = SWT.DEFAULT;
-	int rightMinWidth = SWT.DEFAULT;
-	int rightMinHeight = SWT.DEFAULT;
+	int rightMinWidth = 0;
+	int rightMinHeight = 0;
 	Cursor resizeCursor;
 	boolean dragging = false;
 	int rightDragDisplacement = 0;
+	Listener listener;
 	
 	static final int OFFSCREEN = -200;
 	static final int BORDER_BOTTOM = 2;
@@ -100,11 +104,11 @@ public CBanner(Composite parent, int style) {
 	super.setLayout(new CBannerLayout());
 	resizeCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
 	
-	Listener listener = new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.Dispose:
-					onDispose(); break;
+					onDispose(e); break;
 				case SWT.MouseDown:
 					onMouseDown (e.x, e.y); break;
 				case SWT.MouseExit:
@@ -149,6 +153,17 @@ static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int 
 static int checkStyle (int style) {
 	return SWT.NONE;
 }
+/*
+* This class was not intended to be subclassed but this restriction
+* cannot be enforced without breaking backward compatibility.
+*/
+//protected void checkSubclass () {
+//	String name = getClass ().getName ();
+//	int index = name.lastIndexOf ('.');
+//	if (!name.substring (0, index + 1).equals ("org.eclipse.swt.custom.")) {
+//		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
+//	}
+//}
 /**
 * Returns the Control that appears on the bottom side of the banner.
 * 
@@ -224,7 +239,7 @@ public int getRightWidth() {
 	checkWidget();
 	if (right == null) return 0;
 	if (rightWidth == SWT.DEFAULT) {
-		Point size = right.computeSize(SWT.DEFAULT, getSize().y, false);
+		Point size = right.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
 		return size.x;
 	}
 	return rightWidth;
@@ -233,7 +248,7 @@ public int getRightWidth() {
  * Returns <code>true</code> if the CBanner is rendered
  * with a simple, traditional shape.
  * 
- * @return <code>true</code> if the Cbanner is rendered with a simple shape
+ * @return <code>true</code> if the CBanner is rendered with a simple shape
  * 
  * @since 3.0
  */
@@ -241,11 +256,16 @@ public boolean getSimple() {
 	checkWidget();
 	return simple;
 }
-void onDispose() {
+void onDispose(Event event) {
+	removeListener(SWT.Dispose, listener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
 	if (resizeCursor != null) resizeCursor.dispose();
 	resizeCursor = null;
 	left = null;
 	right = null;
+	bottom = null;
 }
 void onMouseDown (int x, int y) {
 	if (curveRect.contains(x, y)) {
@@ -261,7 +281,10 @@ void onMouseMove(int x, int y) {
 		Point size = getSize();
 		if (!(0 < x && x < size.x)) return;
 		rightWidth = Math.max(0, size.x - x - rightDragDisplacement);
-		if (rightMinWidth != SWT.DEFAULT) {
+		if (rightMinWidth == SWT.DEFAULT) {
+			Point minSize = right.computeSize(rightMinWidth, rightMinHeight);
+			rightWidth = Math.max(minSize.x, rightWidth);
+		} else {
 			rightWidth = Math.max(rightMinWidth, rightWidth);
 		}
 		layout(false);
@@ -283,25 +306,23 @@ void onPaint(GC gc) {
 //	gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GREEN));
 //	gc.fillRectangle(-10, -10, size.x+20, size.y+20);
 //	}
+	if (left == null && right == null) return;
 	Point size = getSize();
 	Color border1 = getDisplay().getSystemColor(BORDER1);
-	
-	if (bottom != null && (left != null || right != null)) {
-		gc.setForeground(border1);
+	if (bottom != null) {
 		int y = bottom.getBounds().y - BORDER_STRIPE - 1;
+		gc.setForeground(border1);
 		gc.drawLine(0, y, size.x, y);
 	}
-	
 	if (left == null || right == null) return;
 	int[] line1 = new int[curve.length+6];
 	int index = 0;
 	int x = curveStart;
-	int y = 0;
 	line1[index++] = x + 1;
 	line1[index++] = size.y - BORDER_STRIPE;
 	for (int i = 0; i < curve.length/2; i++) {
 		line1[index++]=x+curve[2*i];
-		line1[index++]=y+curve[2*i+1];
+		line1[index++]=curve[2*i+1];
 	}
 	line1[index++] = x + curve_width;
 	line1[index++] = 0;
@@ -386,7 +407,7 @@ public void setBottom(Control control) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : No Layout can be set on this Control because it already
+ * Note: No Layout can be set on this Control because it already
  * manages the size and position of its children.
  * </p>
  *
@@ -457,7 +478,7 @@ public void setRight(Control control) {
 	layout(false);
 }
 /**
- * Set the minumum height of the control that appears on the right side of the banner.
+ * Set the minimum height of the control that appears on the right side of the banner.
  * 
  * @param size the minimum size of the control on the right
  * 
@@ -474,6 +495,7 @@ public void setRightMinimumSize(Point size) {
 	if (size == null || size.x < SWT.DEFAULT || size.y < SWT.DEFAULT) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	rightMinWidth = size.x;
 	rightMinHeight = size.y;
+	layout(false);
 }
 /**
  * Set the width of the control that appears on the right side of the banner.

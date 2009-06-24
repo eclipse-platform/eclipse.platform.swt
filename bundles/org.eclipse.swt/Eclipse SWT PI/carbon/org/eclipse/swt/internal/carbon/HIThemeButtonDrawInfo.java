@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -19,7 +19,9 @@ public class HIThemeButtonDrawInfo {
 	public int kind;
 	public int value;
 	public int adornment;
+	/** @field accessor=animation.time */
 	public HIThemeAnimationTimeInfo time;
+	/** @field accessor=animation.frame */
 	public HIThemeAnimationFrameInfo frame;
 	public static final int sizeof = 30;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,21 +21,32 @@ package org.eclipse.swt.dnd;
  *
  * @see DragSourceListener
  * @see DragSourceEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class DragSourceAdapter implements DragSourceListener {
-	/**
-	 * This implementation of <code>dragStart</code> permits the drag operation to start.
-	 * For additional information see <code>DragSourceListener.dragStart</code>.
-	 */
-	public void dragStart(DragSourceEvent event){}
-	/**
-	 * This implementation of <code>dragFinished</code> does nothing.
-	 * For additional information see <code>DragSourceListener.dragFinished</code>.
-	 */
-	public void dragFinished(DragSourceEvent event){}
-	/**
-	 * This implementation of <code>dragSetData</code> does nothing.
-	 * For additional information see <code>DragSourceListener.dragSetData</code>.
-	 */
-	public void dragSetData(DragSourceEvent event){}
+
+/**
+ * This implementation of <code>dragStart</code> permits the drag operation to start.
+ * For additional information see <code>DragSourceListener.dragStart</code>.
+ * 
+ * @param event the information associated with the drag start event
+ */
+public void dragStart(DragSourceEvent event){}
+
+/**
+ * This implementation of <code>dragFinished</code> does nothing.
+ * For additional information see <code>DragSourceListener.dragFinished</code>.
+ * 
+ * @param event the information associated with the drag finished event
+ */
+public void dragFinished(DragSourceEvent event){}
+
+/**
+ * This implementation of <code>dragSetData</code> does nothing.
+ * For additional information see <code>DragSourceListener.dragSetData</code>.
+ * 
+ * @param event the information associated with the drag set data event
+ */
+public void dragSetData(DragSourceEvent event){}
+
 }

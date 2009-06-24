@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,11 +33,16 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#scale">Scale snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class Scale extends Control {
-	boolean ignoreResize;
-	static final int TrackBarProc;
+	boolean ignoreResize, ignoreSelection;
+	static final int /*long*/ TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -45,7 +50,7 @@ public class Scale extends Control {
 		TrackBarProc = lpWndClass.lpfnWndProc;
 		/*
 		* Feature in Windows.  The track bar window class
-		* does not include CS_DBLCLKS.  This mean that these
+		* does not include CS_DBLCLKS.  This means that these
 		* controls will not get double click messages such as
 		* WM_LBUTTONDBLCLK.  The fix is to register a new 
 		* window class with CS_DBLCLKS.
@@ -60,17 +65,17 @@ public class Scale extends Control {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int hInstance = OS.GetModuleHandle (null);
-		int hHeap = OS.GetProcessHeap ();
+		int /*long*/ hInstance = OS.GetModuleHandle (null);
+		int /*long*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
 		int byteCount = TrackBarClass.length () * TCHAR.sizeof;
-		int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, TrackBarClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
-//		OS.HeapFree (hHeap, 0, lpszClassName);	
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**
@@ -108,11 +113,11 @@ public Scale (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control's value changes.
+ * <code>widgetSelected</code> is called when the user changes the receiver's value.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -137,7 +142,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TrackBarProc, hwnd, msg, wParam, lParam);
 }
@@ -192,7 +197,7 @@ int defaultForeground () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETLINESIZE, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETLINESIZE, 0, 0);
 }
 
 /**
@@ -207,7 +212,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 }
 
 /**
@@ -222,7 +227,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	return (int)OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
 }
 
 /**
@@ -239,7 +244,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETPAGESIZE, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPAGESIZE, 0, 0);
 }
 
 /**
@@ -254,12 +259,12 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
 }
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -282,6 +287,19 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void setBackgroundImage (int /*long*/ hImage) {
+	super.setBackgroundImage (hImage);
+	/*
+	* Bug in Windows.  Changing the background color of the Scale
+	* widget and calling InvalidateRect() still draws with the old
+	* color.  The fix is to send a fake WM_SIZE event to cause
+	* it to redraw with the new background color.
+	*/
+	ignoreResize = true;
+	OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
+	ignoreResize = false;
+}
+
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	/*
@@ -293,6 +311,33 @@ void setBackgroundPixel (int pixel) {
 	ignoreResize = true;
 	OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
 	ignoreResize = false;
+}
+
+void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	/*
+	* Bug in Windows.  If SetWindowPos() is called on a
+	* track bar with either SWP_DRAWFRAME, a new size,
+	* or both during mouse down, the track bar posts a
+	* WM_MOUSEMOVE message when the mouse has not moved.
+	* The window proc for the track bar uses WM_MOUSEMOVE
+	* to issue WM_HSCROLL or WM_SCROLL events to notify
+	* the application that the slider has changed.  The
+	* end result is that when the user requests a page
+	* scroll and the application resizes the track bar
+	* during the change notification, continuous stream
+	* of WM_MOUSEMOVE messages are generated and the
+	* thumb moves to the mouse position rather than
+	* scrolling by a page.  The fix is to clear the
+	* SWP_DRAWFRAME flag.
+	* 
+	* NOTE:  There is no fix for the WM_MOUSEMOVE that
+	* is generated by a new size.  Clearing SWP_DRAWFRAME
+	* does not fix the problem.  However, it is unlikely
+	* that the programmer will resize the control during
+	* mouse down.
+	*/
+	flags &= ~OS.SWP_DRAWFRAME;
+	super.setBounds (x, y, width, height, flags, true);
 }
 
 /**
@@ -311,8 +356,8 @@ void setBackgroundPixel (int pixel) {
 public void setIncrement (int increment) {
 	checkWidget ();
 	if (increment < 1) return;
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (increment > maximum - minimum) return;
 	OS.SendMessage (handle, OS.TBM_SETLINESIZE, 0, increment);
 }
@@ -332,7 +377,7 @@ public void setIncrement (int increment) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
 	if (0 <= minimum && minimum < value) {
 		OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 1, value);
 	}
@@ -353,7 +398,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (0 <= value && value < maximum) {
 		OS.SendMessage (handle, OS.TBM_SETRANGEMIN, 1, value);
 	}
@@ -375,8 +420,8 @@ public void setMinimum (int value) {
 public void setPageIncrement (int pageIncrement) {
 	checkWidget ();
 	if (pageIncrement < 1) return;
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (pageIncrement > maximum - minimum) return;
 	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, pageIncrement);
 	OS.SendMessage (handle, OS.TBM_SETTICFREQ, pageIncrement, 0);
@@ -408,11 +453,39 @@ TCHAR windowClass () {
 	return TrackBarClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return TrackBarProc;
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
+LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
+	if (result != null) return result;	
+	/*
+	* Bug in Windows.  When a track bar slider is changed
+	* from WM_MOUSEWHEEL, it does not always send either
+	* a WM_VSCROLL or M_HSCROLL to notify the application
+	* of the change.  The fix is to detect that the selection
+	* has changed and that notification has not been issued
+	* and send the selection event.
+	*/
+	int oldPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	ignoreSelection = true;
+	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	ignoreSelection = false;
+	int newPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	if (oldPosition != newPosition) {
+		/*
+		* Send the event because WM_HSCROLL and WM_VSCROLL
+		* are sent from a modal message loop in windows that
+		* is active when the user is scrolling.
+		*/
+		sendEvent (SWT.Selection);
+		// widget could be disposed at this point		
+	}
+	return new LRESULT (code);
+}
+
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  For some reason, when WM_CTLCOLORSTATIC
 	* is used to implement transparency and returns a NULL brush,
@@ -423,7 +496,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	* results.  The fix is to send a fake WM_SIZE to force it
 	* to redraw every time there is a WM_PAINT.
 	*/
-	boolean fixPaint = findImageControl () != null;
+	boolean fixPaint = findBackgroundControl () != null;
 	if (!fixPaint) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 			Control control = findThemeControl ();
@@ -431,56 +504,57 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		}
 	}
 	if (fixPaint) {
-		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		ignoreResize = true;
 		OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
 		ignoreResize = false;
 		if (redraw) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			OS.InvalidateRect (handle, null, true);
+			OS.InvalidateRect (handle, null, false);
 		}
 	}
 	return super.WM_PAINT (wParam, lParam);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
 }
 
-LRESULT wmScrollChild (int wParam, int lParam) {
+LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 	
 	/* Do nothing when scrolling is ending */
-	int code = wParam & 0xFFFF;
+	int code = OS.LOWORD (wParam);
 	switch (code) {
 		case OS.TB_ENDTRACK:
 		case OS.TB_THUMBPOSITION:
 			return null;
 	}
 
-	Event event = new Event ();
-	/*
-	* This code is intentionally commented.  The event
-	* detail field is not currently supported on all
-	* platforms.
-	*/
-//	switch (code) {
-//		case OS.TB_TOP: 		event.detail = SWT.HOME;  break;
-//		case OS.TB_BOTTOM:		event.detail = SWT.END;  break;
-//		case OS.TB_LINEDOWN:	event.detail = SWT.ARROW_DOWN;  break;
-//		case OS.TB_LINEUP: 		event.detail = SWT.ARROW_UP;  break;
-//		case OS.TB_PAGEDOWN: 	event.detail = SWT.PAGE_DOWN;  break;
-//		case OS.TB_PAGEUP: 		event.detail = SWT.PAGE_UP;  break;
-//	}
-	
-	/*
-	* Send the event because WM_HSCROLL and WM_VSCROLL
-	* are sent from a modal message loop in windows that
-	* is active when the user is scrolling.
-	*/
-	sendEvent (SWT.Selection, event);
-	// widget could be disposed at this point
+	if (!ignoreSelection) {
+		Event event = new Event ();
+		/*
+		* This code is intentionally commented.  The event
+		* detail field is not currently supported on all
+		* platforms.
+		*/
+//		switch (code) {
+//			case OS.TB_TOP: 		event.detail = SWT.HOME;  break;
+//			case OS.TB_BOTTOM:		event.detail = SWT.END;  break;
+//			case OS.TB_LINEDOWN:	event.detail = SWT.ARROW_DOWN;  break;
+//			case OS.TB_LINEUP: 		event.detail = SWT.ARROW_UP;  break;
+//			case OS.TB_PAGEDOWN: 	event.detail = SWT.PAGE_DOWN;  break;
+//			case OS.TB_PAGEUP: 		event.detail = SWT.PAGE_UP;  break;
+//		}
+		/*
+		* Send the event because WM_HSCROLL and WM_VSCROLL
+		* are sent from a modal message loop in windows that
+		* is active when the user is scrolling.
+		*/
+		sendEvent (SWT.Selection, event);
+		// widget could be disposed at this point
+	}
 	return null;
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,11 @@ import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+/**
+ * Abstract factory class for loading/unloading images from files or streams
+ * in various image file formats.
+ *
+ */
 public abstract class FileFormat {
 	static final String FORMAT_PACKAGE = "org.eclipse.swt.internal.image"; //$NON-NLS-1$
 	static final String FORMAT_SUFFIX = "FileFormat"; //$NON-NLS-1$
@@ -33,6 +38,10 @@ abstract boolean isFileFormat(LEDataInputStream stream);
 
 abstract ImageData[] loadFromByteStream();
 
+/**
+ * Read the specified input stream, and return the
+ * device independent image array represented by the stream.
+ */	
 public ImageData[] loadFromStream(LEDataInputStream stream) {
 	try {
 		inputStream = stream;
@@ -103,6 +112,10 @@ public static void save(OutputStream os, int format, ImageLoader loader) {
 
 abstract void unloadIntoByteStream(ImageLoader loader);
 
+/**
+ * Write the device independent image array stored in the specified loader
+ * to the specified output stream.
+ */	
 public void unloadIntoStream(ImageLoader loader, LEDataOutputStream stream) {
 	try {
 		outputStream = stream;

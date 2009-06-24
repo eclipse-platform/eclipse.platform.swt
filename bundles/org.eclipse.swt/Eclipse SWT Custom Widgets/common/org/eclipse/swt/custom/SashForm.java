@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,18 +16,27 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * The SashForm lays out its children in a Row or Column arrangement (as specified
- * by the orientation) and places a Sash between the children.
- * One child may be maximized to occupy the entire size of the SashForm.
- * The relative sizes of the children may be specfied using weights.
- *
+ * The SashForm is a composite control that lays out its children in a
+ * row or column arrangement (as specified by the orientation) and places
+ * a Sash between each child. One child may be maximized to occupy the
+ * entire size of the SashForm.  The relative sizes of the children may
+ * be specified using weights.
  * <p>
  * <dl>
- * <dt><b>Styles:</b><dd>HORIZONTAL, VERTICAL, SMOOTH
+ * <dt><b>Styles:</b></dt>
+ * <dd>HORIZONTAL, VERTICAL, SMOOTH</dd>
  * </dl>
+ * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#sashform">SashForm snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class SashForm extends Composite {
 
+	/**
+	* The width of all sashes in the form.
+	*/
 	public int SASH_WIDTH = 3;
 
 	int sashStyle;
@@ -86,6 +95,14 @@ static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
 }
+Sash createSash() {
+	Sash sash = new Sash(this, sashStyle);
+	sash.setBackground(background);
+	sash.setForeground(foreground);
+	sash.setToolTipText(getToolTipText());
+	sash.addListener(SWT.Selection, sashListener);
+	return sash;
+}
 /**
  * Returns SWT.HORIZONTAL if the controls in the SashForm are laid out side by side
  * or SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
@@ -95,6 +112,23 @@ static int checkStyle (int style) {
 public int getOrientation() {
 	//checkWidget();
 	return (sashStyle & SWT.VERTICAL) != 0 ? SWT.HORIZONTAL : SWT.VERTICAL;
+}
+/**
+ * Returns the width of the sashes when the controls in the SashForm are 
+ * laid out.
+ * 
+ * @return the width of the sashes
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getSashWidth() {
+	checkWidget();
+	return SASH_WIDTH;
 }
 public int getStyle() {
 	int style = super.getStyle();
@@ -270,10 +304,7 @@ public void setOrientation(int orientation) {
 	sashStyle |= orientation == SWT.VERTICAL ? SWT.HORIZONTAL : SWT.VERTICAL;
 	for (int i = 0; i < sashes.length; i++) {
 		sashes[i].dispose();
-		sashes[i] = new Sash(this, sashStyle);
-		sashes[i].setBackground(background);
-		sashes[i].setForeground(foreground);
-		sashes[i].addListener(SWT.Selection, sashListener);
+		sashes[i] = createSash();
 	}
 	layout(false);
 }
@@ -295,7 +326,7 @@ public void setForeground (Color color) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : No Layout can be set on this Control because it already
+ * Note: No Layout can be set on this Control because it already
  * manages the size and position of its children.
  * </p>
  *
@@ -313,8 +344,8 @@ public void setLayout (Layout layout) {
 /**
  * Specify the control that should take up the entire client area of the SashForm.  
  * If one control has been maximized, and this method is called with a different control, 
- * the previous control will be minimized and the new control will be maximized..
- * if the value of control is null, the SashForm will minimize all controls and return to
+ * the previous control will be minimized and the new control will be maximized.
+ * If the value of control is null, the SashForm will minimize all controls and return to
  * the default layout where all controls are laid out separated by sashes.
  * 
  * @param control the control to be maximized or null
@@ -344,6 +375,31 @@ public void setMaximizedControl(Control control){
 	layout(false);
 }
 
+/**
+ * Specify the width of the sashes when the controls in the SashForm are 
+ * laid out.
+ * 
+ * @param width the width of the sashes
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setSashWidth(int width) {
+	checkWidget();
+	if (SASH_WIDTH == width) return;
+	SASH_WIDTH = width;
+	layout(false);
+}
+public void setToolTipText(String string) {
+	super.setToolTipText(string);
+	for (int i = 0; i < sashes.length; i++) {
+		sashes[i].setToolTipText(string);
+	}
+}
 /**
  * Specify the relative weight of each child in the SashForm.  This will determine
  * what percent of the total width (if SashForm has Horizontal orientation) or 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,11 +63,15 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see ScrollBar
+ * @see <a href="http://www.eclipse.org/swt/snippets/#slider">Slider snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Slider extends Control {
 	int increment, pageIncrement;
 	boolean ignoreFocus;
-	static final int ScrollBarProc;
+	static final int /*long*/ ScrollBarProc;
 	static final TCHAR ScrollBarClass = new TCHAR (0, "SCROLLBAR", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -110,7 +114,7 @@ public Slider (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -126,7 +130,7 @@ public Slider (Composite parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's value
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -148,7 +152,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Feature in Windows.  Windows runs a modal message
@@ -191,7 +195,7 @@ void createWidget () {
 	increment = 1;
 	pageIncrement = 10;
 	/*
-	* Set the intial values of the maximum
+	* Set the initial values of the maximum
 	* to 100 and the thumb to 10.  Note that
 	* info.nPage needs to be 11 in order to
 	* get a thumb that is 10.
@@ -344,7 +348,7 @@ public int getThumb () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -470,7 +474,7 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
-boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
+boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 	/*
 	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
 	* SetScrollInfo () can change enabled and disabled
@@ -619,11 +623,11 @@ TCHAR windowClass () {
 	return ScrollBarClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return ScrollBarProc;
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
  	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
  	if (result != null) return result;
  	if ((style & SWT.VERTICAL) != 0) return result;
@@ -637,11 +641,11 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
  	* in the operating system.
  	*/
 	if ((style & SWT.MIRRORED) != 0) {
-	 	switch (wParam) {
+	 	switch ((int)/*64*/wParam) {
 	 		case OS.VK_LEFT: 
 			case OS.VK_RIGHT: {
 				int key = wParam == OS.VK_LEFT ? OS.VK_RIGHT : OS.VK_LEFT;
-				int code = callWindowProc (handle, OS.WM_KEYDOWN, key, lParam);
+				int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, key, lParam);
 	 			return new LRESULT (code);
 	 		}
 	 	}
@@ -649,7 +653,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
  	return result;
 }
  
-LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
+LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
 	* style for the scroll bar to decide that focus
@@ -682,7 +686,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
 	* style for the scroll bar to decide that focus
@@ -715,15 +719,15 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreFocus) return null;
 	return super.WM_SETFOCUS (wParam, lParam);
 }
 
-LRESULT wmScrollChild (int wParam, int lParam) {
+LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Do nothing when scrolling is ending */
-	int code = wParam & 0xFFFF;
+	int code = OS.LOWORD (wParam);
 	if (code == OS.SB_ENDSCROLL) return null;
 
 	/* Move the thumb */

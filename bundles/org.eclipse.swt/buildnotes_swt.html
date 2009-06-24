@@ -10,11 +10,3333 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+
+<h2> SWT Build 3.5 50a - Thursday June 04, 2009</h2>
+<blockquote>
+279042 Cocoa: top-level menus not updated as you switch between editors
+</blockquote>
+
+<h2> SWT Build 3.5 50 - Wednesday June 03, 2009</h2>
+<blockquote>
+277713 Crash (probably opening dialog with progress reporting in it) 
+</blockquote>
+
+<h2> SWT Build 3.5 49 - Tuesday May 26, 2009</h2>
+<blockquote>
+261206   Console view: Copy is disabled after double-click to select word
+<br>277442 	BlockSelection: Exception and crash while RTL orientation
+<br>277631 	Cannot move cursor after cancelling IME input by pressing escape key.
+<br>277268 	[Forms] section header labels are cut off on Gtk
+<br>277437 	[Cocoa] GC#drawText font background issue 
+</blockquote>
+
+<h2> SWT Build 3.5 48h - Monday May 25, 2009</h2>
+<blockquote>
+273570 Unable to create view ID org.eclipse.jdt.ui.PackageExplorer: An unexpected exception was thrown. in existing workspace only 
+</blockquote>
+
+<h2> SWT Build 3.5 48g - Thursday May 21, 2009</h2>
+<blockquote>
+276564    	Eclipse won't launch using JDK 7 because SWT native libraries don't load
+<br>277193 	Graphics drawing in unwanted places when scrolling bundles in a launch config
+<br>277235 	Accessibility Control Example ClassCastException
+<br>277285 	Cursor position does not change while typing in Japanese input method program
+<br>277314 	Cocoa - Application crashes while copying an image 
+</blockquote>
+
+<h2> SWT Build 3.5 48f - Wednesday May 20, 2009</h2>
+<blockquote>
+274925    	Drag view shows outline in wrong location with multiple monitors
+<br>276532 	Debug toolbar button glows, key bindings stop working
+<br>277173 	ToolItems and Buttons are not accessible on Cocoa (regression)
+<br>276485 	BlockSelection: copying block only fills with spaces when folding enabled
+<br>276506 	BlockSelection: Paste should end with long caret
+<br>276516 	BlockSelection: Arrow_Left and Arrow_Right should set caret to beginning/end of selection
+<br>276854 	BlockSelection: Shift+Click does not work with normal caret
+<br>276569 	Cocoa: exception gets logged when opening views while a detached view exists
+<br>277195 	FileDialog NPE's when attempting to upload an attachment with Mylyn
+<br>276531 	Selection jumps in tree
+<br>276553 	Cocoa: Menus completely gray after drag-and-drop to detached view 
+<br>277175	Accessibility - Console message printed when custom control has focus
+<br>277193 	Graphics drawing in unwanted places when scrolling bundles in a launch config
+</blockquote>
+
+<h2> SWT Build 3.5 48e - Tuesday May 19, 2009</h2>
+<blockquote>
+275935 	[babel] update NLS string files
+<br>276683 	Tree item icons drawn into next column
+<br>276760 	GC#drawRoundRectangle(..) draw too big radii on Cocoa
+<br>276826 	Compile warning in official build 
+</blockquote>
+
+<h2> SWT Build 3.5 48d - Monday May 18, 2009</h2>
+<blockquote>
+223703    	FileDialog.setOverwrite(boolean) does nothing on Cocoa
+<br>275945 	[clipboard] regression: pasting text from file properties to java editor seems to be in wrong format
+<br>275552 	Font loading slow for font that is not there (ie. 'Sans Serif')
+<br>275875 	crash: Cmd+Q only closes first shell in SnippetLauncher
+<br>276131 	Browser Test crashing 
+</blockquote>
+
+<h2> SWT Build 3.5 48b - Wednesday May 13, 2009</h2>
+<blockquote>
+275631	Ctrl+Tab key binding works incorrectly.
+<br>275913 	StyledText with block selection: Typing at virtual caret on empty line inserts char after caret
+</blockquote>
+
+<h2> SWT Build 3.5 48a - Monday May 11, 2009</h2>
+<blockquote>
+274925		Drag view shows outline in wrong location with multiple monitors
+</blockquote>
+
+<h2> SWT Build 3.5 48 - Friday May 8, 2009</h2>
+<blockquote>
+274274    	NPE in Accessible#removeAccessibleListener() if called from dispose listener
+<br>180176 	[OLE] [EditorMgmt] Strange behavior while opening default gif editor
+<br>236630 	[OLE] Saving docx file will corrupt the file and produce OLE exception
+<br>267884 	Select All does not work in TextEditor Example with block selection
+<br>270316 	[OLE] Failure save 2003 Word document with embedded Word 2007 editor
+<br>270495 	Improving performance of ImageData.blit and Image.init methods
+<br>270676 	StyledText : text selection stops when mouse cursor leaves the x-axis
+<br>273354 	Form Feed (\f) makes StyledText go crazy
+<br>274931 	StringIndexOutOfBoundsException in Program.getImageData(*)
+<br>275484 	OleClientSite#isDirty QueryInterface IIDIPersistFile but creates IPersistStorage
+<br>254861 	Gtk SWT should set window type hint for SWT.BALLOON tooltips
+<br>262981 	GC#drawText could use data.stringWidth and data.stringHeight
+<br>275459 	Test failures in GC on I20090507-2000
+<br>253230 	Implement preferred size for scrolled widgets (text, tree, table ...)
+<br>269198 	[Browser-IE] Cannot register a function for the whole browser's lifetime.
+<br>271029 	No menu bar items with Mozilla Browser (XULRunner 1.9.0.7)
+<br>272401 	[browser] [KeyBindings] copy and paste key bindings not working in embedded browser
+<br>275207 	[Browser] crash when showing text entry prompter
+<br>252109 	[Clipboard] Mac: When you copy text to the clipboard from a StyledText widget, the text uses the wrong end-of-line sequence
+<br>266172 	Shell setFullScreen not implemented
+<br>274120 	Update progress bar from UI thread does not work on Cocoa
+<br>274141 	[content assist] Additional info of newly selected proposal not shown
+<br>275220 	Printing java file causes crash
+<br>273099 	Save As.. dialog is not seeded with selection's file name
+<br>273953 	[carbon] DeviceResourceException on certain images
+<br>274001 	Rollover tooltips for all truncated tree and table items
+<br>274161 	Cannot create circular Shell on Cocoa
+<br>274273 	Accessibility - Window not allowing programatic reposition or resize
+<br>274385 	Control-click for context menu loses multi-selection
+<br>274387 	Old dragging behavior when tree/table item is not selected
+<br>165033 	Table vertical lines always showing 
+</blockquote>
+
+<h2> SWT Build 3.5 47 - Tuesday May 5, 2009</h2>
+<blockquote>
+274890  SWT crash  
+<br>274931  StringIndexOutOfBoundsException in Program.getImageData(*)  
+<br>245278  [DateTime] ignores User's keyboard input  
+<br>274271  SHEET Javadoc issues  
+<br>274655  Build Cairo on Solaris SPARC  
+<br>274696  Checkbox Tree wastes a lot of space beween box and item  
+</blockquote>
+
+<h2> SWT Build 3.5 46 - Monday May 4, 2009</h2>
+<blockquote>
+273661  [KeyBindings] copy/paste doesn't always work in dialogs  
+<br>274230  Using content assist in the new Java class wizard crashes the VM  
+<br>273688  N20090424-2000 swt contains 3542.dll but wants 3543  
+<br>264560  hard crash upon opening internal browser on mac  
+<br>250501  Control.print(GC) does not work correctly  
+<br>274409  tag projects changed since I20090421-0930 build - swt  
+<br>274295  Did you mean "image/jpeg"?  
+<br>165251  Not enough information in Calendar control's SelectionEvent  
+<br>259028  Implement AWT/Swing interop  
+<br>274538  Shells with SWT.SHEET do not hide with setVisible(false) (only when disposed)  
+<br>274188  create caret from image does not work  
+<br>274302  Nested GridLayouts cut content if inner grabs vertical space  
+<br>274169  drawing problem after inserting Bullet into StyledText  
+<br>274529  All build.xml files must be updated to get the .api_description file  
+<br>274344  [64] [DND] Snippet282 crashes  
+<br>274194  FocusEvents and Control#isFocusControl() don't match up  
+</blockquote>
+
+<h2> SWT Build 3.5 45 - Wednesday April 29, 2009</h2>
+<blockquote>
+165251 	Not enough information in Calendar control's SelectionEvent
+<br>250501 	Control.print(GC) does not work correctly
+<br>264560    	hard crash upon opening internal browser on mac
+<br>272276 	DBCS3.5:Selecting korean text and right clicking on eclipse editor results in deletion of those characters.
+<br>274409	tag projects changed since I20090421-0930 build - swt
+</blockquote>
+ 
+<h2> SWT Build 3.5 44 - Monday April 27, 2009</h2>
+<blockquote>
+52789    	DCR: No pageOrientation in PrintData?
+<br>135638 	StyledText ignores alignment with style SWT.SINGLE
+<br>159465 	Accessibilities: Improve traverse order for SWT ToolBar
+<br>268529 	SWT.Error when using mouse click cell editor activation
+<br>272412 	Checkboxes with images have incorrect image alignment
+<br>273492 	[Mac] Test failure in Bug43610Test.testShiftAlt on Cocoa
+<br>273521 	Toolbar: tooltip shows at 0,0 when hot item moved by key with mouse over item
+<br>273631 	Second call to fillRectangle/fillOval uses black background instead of the declared one
+<br>273635 	Command+click to deselect one of a multi-selection doesn't work
+<br>273919 	getOffset(int,int,int[]) fails for empty lines ("\n")
+<br>273925 	Advice to p2 metadata generation
+<br>273939 	toolitems can't be traversed when the toolbar has tabitem siblings 
+</blockquote>
+
+<h2> SWT Build 3.5 43 - Sunday April 26, 2009</h2>
+<blockquote>
+23618    	Printing - copyCount field in PrinterData is useless
+<br>52789 	DCR: No pageOrientation in PrintData?
+<br>254497 	traverser always happen to all controls
+<br>268529 	SWT.Error when using mouse click cell editor activation
+<br>271310 	[Presentations] BIDI3.5:HCG_Wrong repaint of mirrored windows on linux
+<br>271384 	Safari - Open Link in New Window does not load link in new window
+<br>271691 	outline not implemented in Path.contains
+<br>271726 	DBCS3.5: Java Editor can not copy DBCS correctly into WordPad
+<br>272046 	clipping of PaintItem events for Trees is inconsistent across platforms
+<br>272212 	Add Solaris x86 build support
+<br>272412 	Checkboxes with images have incorrect image alignment
+<br>272833 	Context menus outdated on right-click because MenuDetect fires before Selection event
+<br>272834 	Rollover tooltips on every Tree and Table item
+<br>272835 	Rollover tooltips wrongly placed on Tree and Table items with images
+<br>273083 	Create a MessageBox with SWT.SHEET style gives 2 apple menus
+<br>273095 	Can't insert characters into a StyledText using the Character Palette on OS X
+<br>273117 	BlockSelection: setBlockSelectionRectangle should not clamp selection width to renderer width if client area allows a larger selection
+<br>273256 	Cleanup duplicated string in properties files
+<br>273280 	Link widget does not handle single quote (') for href attribute
+<br>273521 	Toolbar: tooltip shows at 0,0 when hot item moved by key with mouse over item 
+</blockquote>
+
+<h2> SWT Build 3.5 42 - Tuesday April 21, 2009</h2>
+<blockquote>
+182753    	[Browser] SWT Browser does not reload images when they change
+<br>222783 	[Table & Tree] Cocoa moveable columns do not work
+<br>239556 	[Java Editor]Space character is NOT displayed after a Korean character
+<br>253056 	BlockSelection: add get/setBlockSelectionRectangle to StyledText
+<br>261391 	StyledText should use PDE API Tools @noextend
+<br>267038 	[expressions] Edit watch expression action is never enabled
+<br>267680 	embedded browser cache does not reset
+<br>269566 	mylyn - two tooltips in task list
+<br>270176 	main shell unresponsive after a dialog was opened while shell minimized
+<br>271179 	findProgram("a.null and void") returns Text Edit instead of null
+<br>271726 	DBCS3.5: Java Editor can not copy DBCS correctly into WordPad
+<br>272075 	Spaces/Tabs are not added after multibyte characters in Java Class.
+<br>272156 	NPE in Display.applicationDelegateProc(..) when creating display
+<br>272259 	NPE in Display.runAsyncMessages(..) on quit
+<br>272592 	Issues with PNG images on Cocoa
+<br>272616 	GB18030: 4-byte GB18030 displayed as ? in SWT Clipboard RTFTransfer.
+<br>272631 	SWT error when initializing GC
+<br>272710 	transparent png has black background
+<br>272808 	XULRunner doesn't work in Eclipse >= 3.5M6
+<br>272827 	CCE in Text.getLineHeight()
+<br>272868 	Explicit class pre-initialization breaks "new Display()" on motif 
+</blockquote>
+
+<h2> SWT Build 3.5 40 - Tuesday April 14, 2009</h2>
+<blockquote>
+188320    	Possible Deadlock in JFace ModalContext
+<br>253229 	Implement SWT.Settings for Display
+<br>259687 	[Browser] Javascript executes asynchronously with xulrunner 1.9
+<br>263508 	Click and drag behavior in Tables and Trees different from other Cocoa apps
+<br>267507 	Progress bar in progress view shines through fast view
+<br>269924 	SWT Text Control getCaretLocation returns NULL for Style SWT.MULTI
+<br>270036 	UI Test Suite does not run to completion.
+<br>270280 	Debug test suite crashes on cocoa
+<br>270382 	Drag and drop to Tree does not update cursor
+<br>270954 	Eclipse crashes when trying to print code with a scale different from 100%.
+<br>271088 	VM crash starting with N20090402-2000
+<br>271336 	Test failures on Mac OS
+<br>271634 	[cocoa] Display loads hardcoded english nib file
+<br>271677 	context menu widget disposed exception
+<br>271697 	Shell print(GC) not implemented
+<br>271904 	Checkbox takes too much space to the right 
+</blockquote>
+
+<h2> SWT Build 3.5 40 - Tuesday April 7, 2009</h2>
+<blockquote>
+185204    	[CTabFolder] CTabItem.drawClose could preserve color
+<br>226973 	On Linux, TableColumn#getWidth() sometimes incorrectly returns 0.
+<br>239477 	Crash in ScriptStringOut
+<br>240033 	[Viewers] 'Dialog refresh' has encountered a problem
+<br>246408 	Parent Composite gets MouseEntered event when mouse enters a control
+<br>262694 	[e3.5][mac] Add CC text field content assist doesn't work
+<br>269383 	Compiler warnings in N20090318-2000
+<br>270179 	MouseHover event always has empty stateMask
+<br>270381 	Drag and drop to Tree does not show drop target selection feedback
+<br>270406 	CTabFolder.setBackground(Image) should be deleted
+<br>270544 	caret line highlight leaves screen artifacts
+<br>270654 	Scale does not fire selection events
+<br>270663 	Combo.select() causes SelectionEvent
+<br>270670 	CTabFolder should not cache borderColor
+<br>270858 	Display.post failing in test suite
+<br>270861 	[Browser] don't use InitXPCOM2 to initialize xulrunner
+<br>270880 	Combo does not fire SWT.Modify immediately on select(int)
+<br>271017 	Compiler warnings in N20090401-2000
+<br>271026 	"Quick Type Hierarchy" window briefly appears, then disappears.
+<br>271027 	Failure in JFace test suite related to virtual table
+<br>271129 	Changes from 240033 causes java.lang.UnsatisfiedLinkError at org.eclipse.swt.internal.gtk.OS.g_object_notify
+<br>271340 	Region.contains always returns false on MacOS Cocoa port (3.5M6) 
+</blockquote>
+
+
+<h2> SWT Build 3.5 39 - Tuesday March 31, 2009</h2>
+<blockquote>
+136515    	[OpenGL] Support shared context for GLCanvas
+<br>213194 	[Browser] setText crash with xulrunner 1.9 stream
+<br>222863 	No horizontal scrollbars in List
+<br>242388 	[FastView] Unhandled event loop exception: NPE in ToolBarManager.update
+<br>251608 	Artificial bold and italic style to font
+<br>255070 	cocoa_new() functions leaking?
+<br>267126 	SWTException evaluating JS with Sarfari
+<br>267276 	NPE in tooltip code
+<br>268181 	Screen cheese after switching compare provider
+<br>268702 	[CellEditors] Selecting a cell erases the other cells on Mac OSX Cocoa
+<br>268724 	TRAVERSE_PAGE_NEXT events don't get through StyledText
+<br>269606 	Wrong default new text line delimiter on Mac/Cocoa
+<br>269950 	Combo.setText does nothing in read-only mode
+<br>270140 	MessageDialog spews warning on gtk 2.4.13
+<br>270177 	SWT - DateTime component is broken on MAC cocoa 64 bits.
+<br>270262 	Leaks in ToolTip
+<br>270379 	Main menu is not closed when dialog opens asynchronously
+<br>270500 	[mac] TrayItem menus should be drop downs rooted to the menu bar (COCOA) 
+</blockquote>
+
+<h2> SWT Build 3.5 38 - Tuesday March 24, 2009</h2>
+<blockquote>
+210871    	Toolbar combo box multiple glitches
+<br>213185 	DropTargetEvent does not mention DND.DROP_DEFAULT
+<br>251608 	Artificial bold and italic style to font
+<br>253065 	Window -> Show View -> Other ... is broken
+<br>253217 	Implement GC.copyArea()
+<br>253226 	Implement widget attributes (foreground, background, font, background image)
+<br>257003 	SWT controls: discrepancy in the application of Background Image
+<br>259027 	Implement internationalization
+<br>262694 	[e3.5][mac] Add CC text field content assist doesn't work
+<br>264744 	Display.post() not implemented
+<br>265990 	[website] Please provide visibility for swtbot on the swt home page
+<br>266171 	Text getCaretLocation not implemented.
+<br>266200 	Vuze menu says "About SWT"
+<br>267468 	[SWT_AWT] Browser.print(GC) flickers
+<br>267894 	computeSize of Tree/Table is wrong
+<br>267895 	StyledText block selection: cut & paste should give original text
+<br>268584 	update swt custom build scripts to support new publishing task
+<br>268649 	image not shown in check and radio buttons
+<br>268745 	StyledText makes CTabFolder send same KeyDown event multiple times
+<br>268853 	cannot programmatically collapse item whose parent is collapsed
+<br>268958 	Null pointer exception in thread "Help Browser UI" when PDF files opened from Help Content of plug-in
+<br>269010 	ModifyListener isn't working for Combo
+<br>269031 	Exception in Image running junit tests
+<br>269106 	SWT test suite does not call readAndDispatch
+<br>269305 	Path#addString baseline aligning
+<br>269506 	[Browser] JS->Java call can crash due to freeing of args
+<br>269533 	StyledText sometimes doesn't scroll far enough to show caret if moved via left-key to EOL
+<br>269599 	Compiler warnings in N20090320-2000
+<br>269717 	TextEditor walkback if you decrease font twice 
+</blockquote>
+
+<h2> SWT Build 3.5 37 - Tuesday March 17, 2009</h2>
+<blockquote>
+244597    	Cannot activate shell programatically on gtk
+<br>236630 	[OLE] Saving docx file will corrupt the file and produce OLE exception
+<br>267176 	Path#addString() not working with custom font
+<br>266335 	rssowl: controls are clipped
+<br>266203 	Vuze find icon flipped
+<br>267717 	New element not revealed
+<br>253060 	Preference dialog flickers
+<br>268303 	Tree#getItem(Point) should not return item if point is on twistie
+<br>252416 	SWT.HIDE_SELECTION doesn't work on Table
+<br>256998 	TabFolder control: default size not displaying correctly
+<br>262985 	Scrollbar dancing in DebugView
+<br>267886 	cocoa: multiple command q opens multiples confirm dialogs
+<br>268389 	Null pointer resizing fast view
+<br>267174 	Device#loadFont() not implemented
+<br>268217 	no KeyDown event for Help key
+<br>267450 	Mylyn task list draws icons in wrong spot
+<br>196884 	[OpenGL] GLCanvas doesn't work on Vista
+<br>194887 	Eclipse actions are not executed in embedded awt component
+<br>267129 	Content assist shells movable when clicking on scrollbar thumb
+<br>253214 	Using 'SWT.YES | SWT.NO' on a MessageBox shows Yes/No instead of No/Yes
+<br>268543 	Test_org_eclipse_swt_graphics_Cursor leaks a Cursor
+<br>226356 	[patch] Build against xulrunner
+<br>268613 	Should call NSOutlineView.initWithFrame instead of init()
+<br>253075 	[misc] No object:text-changed:insert events fired for method completion (and others)
+<br>261228 	fix doc for SWT.SEARCH
+<br>267466 	[SWT_AWT] Browser.print(GC) should not use AWT component ancestor clip
+<br>268787 	OS: uninitialized TCHAR sizeof value usage
+<br>268410 	Typing text in Spinner does not change value
+<br>267405 	event detail wrong on scrollbar selection events
+<br>268307 	Twistie in Tree does not give feedback on mouseDown with DragDetect listener
+<br>268732 	Typo in field name in carbon
+</blockquote>
+
+<h2> SWT Build 3.5 36b - Wednesday March 11, 2009 (1300)</h2>
+<blockquote>
+267450    	Mylyn task list draws icons in wrong spot
+<br>268112 	Combo getListVisible missing
+</blockquote>
+ 
+<h2> SWT Build 3.5 36a - Wednesday March 11, 2009 (0010)</h2>
+<blockquote>
+266578    	Crash in TextLayout.computeRuns()
+<br>267752 	Not calling init when creating SWTSearchField
+<br>267841 	MessageBox#open() always returns SWT.CANCEL
+<br>267913 	Display#getLastEventTime () not right 
+</blockquote>
+
+<h2> SWT Build 3.5 36 - Monday March 9, 2009 (1700)</h2>
+<blockquote>
+257830    	CompareDialog doesn't get focus when launching it from wizard on MacOSX
+<br>265339 	Update the build JRE used on AIX
+<br>265947 	[Browser] events not reusable outside org.eclipse.swt.browser pkg
+<br>267103 	Text Fields too big
+<br>267516 	Tree tries to show multiple lines of text in items 
+</blockquote>
+
+<h2> SWT Build 3.5 35 - Sunday March 8, 2009</h2>
+<blockquote>
+25612    	Printing: Print dialog properties are not remembered between print jobs
+<br>56342 	StyledText should allow to set margins
+<br>109849 	Mac Window Modified on Shell
+<br>171706 	DateTime should support drop-down calendar
+<br>199809 	Existing Snippet Does Not Function as Expected
+<br>223590 	Browser.print(GC) should not use ancestor clip
+<br>254498 	expander touches the image in treeitem
+<br>255000 	[Browser] Provide API to handle authentication challenges properly
+<br>256054 	[Cocoa] Implement Space bar toggle for checkboxes
+<br>261548 	Weird focus
+<br>261699 	version of org.eclipse.swt.motif.hpux.PA_RISC in maintenance stream is lower than the one in 3.4
+<br>262501 	M5 got slower since last week
+<br>265568  [Cocoa] Single-clicking to select a CCombo choice from the drop-down has no effect 
+<br>266011 	Unable to click in Shell
+<br>266330 	rssowl: read news item headers look the same as unread ones
+<br>266370 	CCombo not dismissing popups 
+<br>266385 	Mylyn notifications don't close properly
+<br>266387 	Tab traversal of mylyn bug editor broken
+<br>266402 	System beep on Command+F6, F6, F6,... 
+<br>266405 	Ctrl+Tab traversal broken with traverse listener
+<br>266549 	Scrollbar cheese and autoscroll behavior in debugger
+<br>266828 	getCharCount() in Combo throws NullPointerException
+<br>266883 	Lots of cheese in StyledText running ppc cocoa
+<br>266934 	Display.getDismissalAlignment() should honor "gtk-alternative-button-order"
+<br>266956 	CCE in Combo.updateBackground(...)
+<br>267064 	[cocoa][mac] task list collapse all button has white background
+<br>267098 	[SWT] add @see SWT#TOOL to Shell constructor javadocs
+<br>267104 	Canvas' region not applied to scroll bars
+<br>267138 	CCombo popup doesn't scroll with CCombo 
+<br>267179 	Ctrl+Y for undo on Carbon
+<br>267196 	[mylyn] Open png attachment in browser causes editor tabs to disappear
+<br>267270 	NPE in Composite.nextValidKeyView
+<br>267283 	HEAD crashes
+<br>267405 	event detail wrong on scrollbar selection events 
+</blockquote>
+
+<h2> SWT Build 3.5 34 - Tuesday March 3, 2009</h2>
+<blockquote>
+240657    	Combo.setText() doesnt set the text if the string is a substring of the strings in combo
+<br>253071 	Breadcrumb menu flickers badly
+<br>253075 	[misc] No object:text-changed:insert events fired for method completion (and others)
+<br>258954 	org.eclipse.swt/.project should not use path variable WORKSPACE
+<br>261732 	progress does not animate if create before Shell.open()
+<br>262417 	Search text only shows the after 2 chars have been entered
+<br>263620 	Listeners added to CTabFolder#addTraverseListener(..) cannot block default traversal
+<br>264342 	Text field truncated
+<br>265481 	[Cocoa] Squiggles/underlines are displayed too close to text
+<br>265604 	popup shells quickly show title bar
+<br>265652 	Need Text.setMessage without side-effects
+<br>265897 	Text throws exceptions and doesn't display bullets in Mylyn task repository setup
+<br>265940 	Cannot input T-Chinese chars in Java Editor
+<br>266180 	keyUp not delivered if command key is down
+<br>266206 	Code assist popup has cheese initial items
+<br>266213 	Hung GUI when comparing with another branch
+<br>266344 	Table/Tree check boxes show intermediate state
+<br>266370 	CCombo not dismissing popups
+<br>266373 	Single line text doesn't scroll as you type
+<br>266407 	Foreground color in Table/Tree should not be drawn for selected active items
+<br>266409 	[SWT] FontData.toString() optimization
+<br>266475 	Control#setBackgroundImage() does not work
+<br>266499 	IME broken on cocoa
+<br>266625 	StyledText computeSize() answering slightly short width when SWT.WRAP, causes missing text 
+</blockquote>
+
+<h2> SWT Build 3.5 33 - Tuesday February 24, 2009</h2>
+<blockquote>
+252251    	Can't create multiple Displays in same application
+<br>259181 	SWT Cocoa: Text.setEchoChar() doesn't work
+<br>259457 	swt tray icon disappears on gnome panel restart - gtk
+<br>262651 	Crash on Cocoa
+<br>262968 	bad scrolling of maximized editor
+<br>262978 	jumpness in quick outline
+<br>262985 	Scrollbar dancing in DebugView
+<br>263518 	[cocoa] Incorrect colors for eclipse views in 3.5m5
+<br>263663 	[Keybindings]Ctrl-A/Ctrl-E ignored in Cocoa SWT
+<br>263824 	Enabled or disabled link widget looks the same in Cocoa
+<br>263999 	[cocoa 64 bits]Key bindings not working well for three combinations
+<br>264399 	[DND] A deadlock occurs during automated testing of a SWT application on Linux/GTK/x86_64
+<br>264425 	SashForm doesn't display tooltip text on its Sashes
+<br>264694 	[cocoa] Line numbers from editor bleed through to fast-view search view after search-replace
+<br>265188 	Refactor rename popup (border is black and bottom is missing)
+<br>265326 	next annotation short cut (command+.) broke
+<br>265338 	NPE in Control.keyDown(...)
+<br>265393 	View menus open again after dialog is closed
+<br>265427 	Editor/View switcher: 1 key press forwards by 3 items
+<br>265603 	ToolItem#setToolTipText(..) should not render mnemonic character (&)
+<br>265668 	Text#setMessage(..) should force redraw 
+</blockquote>
+
+<h2> SWT Build 3.5 32 - Tuesday February 17, 2009</h2>
+<blockquote>
+257188    	Regression from 3.3.2 behaviour, no SWT.Activate event is sent when setFocus() is called on child controls
+<br>259457 	swt tray icon disappears on gnome panel restart - gtk
+<br>262968 	bad scrolling of maximized editor
+<br>263563 	[cocoa] Icon mask problem in dialog help
+<br>263663 	[Keybindings]Ctrl-A/Ctrl-E ignored in Cocoa SWT
+<br>263971 	code inconsistency in Spinner
+<br>263999 	[cocoa 64 bits]Key bindings not working well for three combinations
+<br>264212 	Link.setForeground() overrides disable color set in Link.enableWidget()
+<br>264368 	Cursor keep changing from arrow to text cursor
+<br>264553 	Shell.open() does not make window key if it's already visible
+<br>264694 	[cocoa] Line numbers from editor bleed through to fast-view search view after search-replace
+<br>264703 	should DND set cursors?
+<br>264705 	ArrayStoreException in TextLayout running 64 bit
+<br>264714 	drawing to Image can fail
+<br>264755 	SashForm cursor weirdness on Mac OSX Cocoa
+<br>264764 	Table, Tree, List send DefaultSelection when double-click in header 
+</blockquote>
+
+<h2> SWT Build 3.5 31 - Tuesday February 10, 2009</h2>
+<blockquote>
+213305    	100% cpu usage on opening files with long lines.
+<br>223703	FileDialog.setOverwrite(boolean) does nothing on Cocoa
+<br>234240	Group alpha should not be 0.25 if background color set
+<br>245266	Upside down table
+<br>247444 	[DND] NavigatorDnDService does not update DragSource Transfer if invalid
+<br>248796	[DND] Cannot drag and drop files between the Finder (ie. Cocoa and Carbon apps)
+<br>252067	expanding tree item spews "unlockFocus" error message
+<br>252279	Group foreground and background color don't work
+<br>256267	Tab text gets underlined unexpectedly when trying to close tab
+<br>256940	Popup menus: unexpected appearance of application context menus
+<br>260514	Resizing columns on virtual tables does not always update horizontal scroll bar
+<br>262867	Text Editor doesn't show selected string correctly in Japanese inline editor
+<br>262922	Cursor jumps to top right corner of screen on drag of trim element
+<br>262955	URLTransfer is missing @since 3.4 tag
+<br>263085	Focused javadoc windows stick to the cursor
+<br>263529 	[cocoa] Incorrect file paths when opening .html files in an external browser
+<br>263530	NPE disabling multi-line Text
+<br>263603	Tooltip should not render mnemonic indicator (&) on Cocoa
+<br>263656	Cannot select tree item
+<br>263664	Tree.showItem() may not reveal children of non-expanded items
+<br>263677	Tree does not always fully expand in debugger
+<br>263824	Enabled or disabled link widget looks the same in Cocoa
+<br>263967	Spinner is missing getText() method
+<br>263969	Spinner doesn't support negavite minimum value
+<br>264003	Exception in Combo.dragDetect()
+<br>264019	Hover not working while the mouse is down. 
+<br>264128  [cocoa] Trees do not render text on them
+</blockquote>
+
+<h2> SWT Build 3.5 30 - Tuesday February 3, 2009</h2>
+<blockquote>
+248400  Backspace doesnot work flash files viewed in SWT browser when eclipse is minimised and restored
+<br>250575 	File -> Switch Workspace -> Other... does not work the first time.
+<br>258727 	CTabFolder should not select an item unless the first button has been pressed
+<br>260761 	Need a Cocoa runloop observer for async messages
+<br>262451 	CCombo in TreeEditor truncates in Vista
+<br>262651 	Crash on Cocoa
+<br>262681 	isFocusControl incorrect
+<br>262700 	Drag feedback image draws above cursor when dragging a Label
+<br>262702 	Crash on second drag of checkbox
+<br>262767 	[perfs] Possible regression for "Draw on a window" perf test
+<br>262778 	disposed widget in Control Example Menu tab
+<br>262866 	CCombo is too tall (vertical height)
+<br>262888 	GTK-BIDI: Mirrored drawText background has wrong size
+<br>262939 	Update Snippet195
+<br>262970 	Drag is too eager to kick in
+<br>262984 	SetThemeCursor() sometimes checks PTR_SIZEOF, sometimes doesn't
+<br>263062 	Missing @since tag on ACC.ROLE_SPLITBUTTON
+<br>263071 	Sash cursor changes while dragging the sash 
+</blockquote>
+
+<h2> SWT Build 3.5 29a - Wednesday January 28, 2009</h2>
+<blockquote>
+261553    	NPE pasting in combo
+<br>262573 	Hover help is dismissed without selection 
+</blockquote>
+
+<h2> SWT Build 3.5 29 - Monday January 26, 2009</h2>
+<blockquote>
+262346    	Control Example should use SWT.ICON_CANCEL for Text widget
+<br>256327 	[Cocoa] Forms layout oddity
+<br>262117 	[Cocoa] problem creating image
+<br>253990 	implement OpenGL support 
+</blockquote>
+
+<h2> SWT Build 3.5 28 - Sunday January 25, 2009</h2>
+<blockquote>
+86569    	[Clipboard] Support x-special/gnome-copied-files
+<br>153432 	[KeyBindings] Unicode keyboards on Mac OSX produce wrong keys when used with modifiers
+<br>160870 	[Contributions] ToolItem.setWidth fails when ToolItem on ViewPart toolbar
+<br>248155 	Cursor is wrong over title bar of dialog
+<br>250443 	Content assist shells should not have title bar
+<br>251021 	MacOSX-cocoa swt crash importing a folder containing ~800 Java files
+<br>257278 	Ctrl-Shift-R does not update correctly on Mac Carbon
+<br>258110 	wrapping Link is clipped on Help preference page
+<br>258675 	[Viewers] Arithmetic exception when typing show types dialog
+<br>260370 	Allow to show magnifier icon for Text with SWT.SEARCH
+<br>261219 	text inner border can be wrong on gtk 2.10
+<br>261230 	computeSize not right for SWT.SEARCH Text
+<br>261576 	[mac] Mylyn notifications create an empty ghost shell under Cocoa port
+<br>261699 	version of org.eclipse.swt.motif.hpux.PA_RISC in maintenance stream is lower than the one in 3.4
+<br>261854 	adding/removing TreeItems can be very slow
+<br>262230 	debug hover comes up blank 
+</blockquote>
+
+<h2> SWT Build 3.5 27 - Tuesday January 20, 2009</h2>
+<blockquote>
+244597    	Cannot activate shell programatically on gtk
+<br>251150 	Canvas is 100000 x 100000 even after sizing to fit.
+<br>251454 	Table and Tree do not respect style SWT.NO_SCROLL
+<br>252384 	Tree scrollbars disappear
+<br>252419 	Spinner foreground and background color don't work.
+<br>252479 	resizing preference dialog tree with keyboard causes system beep
+<br>253786 	Cannot change tabs in TabFolder using keyboard
+<br>254533 	Can't invoke context menu using keybindings
+<br>254792 	Move Tab Group does not work on Mac/Cocoa 3.5M3
+<br>256159 	Certain Images copied from Lotus Notes and pasted using SWT's Clipboard are corrupted
+<br>256471 	ControlExample - Link Font changes
+<br>256825 	Eclipse "Problems Tab": dragging column separators causes application to hang
+<br>258424 	Clip is not honored in Canvas.paint .
+<br>259003 	Eclipse Cocoa: drag and drop in Package Explorer sometimes incorrectly shows icon indicating illegal drop target
+<br>259379 	[64] Text fields in Project Properties dialog have incorrect background
+<br>259910 	Unprecise Javadoc for ImageData constructor
+<br>260361 	Clients can't find out whether Text#setMessage(..) works on current platform
+<br>260870 	buttons in perspective switcher appear too tight
+<br>260929 	Caret blinks when application is not active.
+<br>261052 	Possible leak in DragSource.drag() method
+<br>261099 	CTabItem curvers are blurry
+<br>261228 	fix doc for SWT.SEARCH
+<br>261279 	coordinates flipped when using Tracker
+<br>261354 	Need to implement Text#setMessage() on Motif 
+</blockquote>
+
+<h2> SWT Build 3.5 26 - Tuesday December 16, 2008</h2>
+<blockquote>
+236855    	SWT JNI libraries should have different names for Win32 and Win64
+<br>250579 	Form titles do not draw correctly
+<br>256169 	[Cocoa] Image radio and check buttons don't display state
+<br>256808 	Eclipse "Select Workspace Directory" does not allow creation of new folder
+<br>258123 	[64] Can't self host on cocoa x86_64 with Java 5
+<br>258309 	[64][Browser] Browser crashes on Snippet307
+<br>258672 	Examples page links to update site for Eclipse 2.0!
+<br>258839 	recompile solaris-motif os library 
+</blockquote>
+
+<h2> SWT Build 3.5 25 - Wednesday December 10, 2008</h2>
+<blockquote>
+156276  Provide a way for JavaScript to call out to the Browser's container
+<br>258159  [64] MessageBox Crashes 
+</blockquote>
+
+<h2> SWT Build 3.5 24 - Wednesday December 10, 2008</h2>
+<blockquote>
+92757   StyledText: Add caret listener
+<br>156276 	Provide a way for JavaScript to call out to the Browser's container
+<br>239301 	Support 64-bit on Cocoa
+<br>250179 	Consider drawing the block selection on characters
+<br>257967 	BlockSelection: paste on wrong place when Styledtext is scrolled
+<br>257975 	Cannot open internal browser on linux 
+</blockquote>
+
+<h2> SWT Build 3.5 23 - Monday December 8, 2008</h2>
+<blockquote>
+92757    	StyledText: Add caret listener
+<br>257967 	BlockSelection: paste on wrong place when Styledtext is scrolled 
+</blockquote>
+
+<h2> SWT Build 3.5 22 - Sunday December 7, 2008</h2>
+<blockquote>
+248880  Cocoa: Eclipse dialogs too modal
+<br>254956 	[DND] Drag and drop maintaining a grab too long.
+<br>255118 	Default Cocoa quit handler calls exit()
+<br>256476 	DefaultSelection not being sent from Spinner
+<br>256685 	CoolBar control: for Vertical style, Horizontal Fill also applies Vertical Fill
+<br>256870 	The logic for drawing Vertical gradient of Bottom tabs is incorrect
+<br>257147 	No setTextLimit in Cocoa version of Spinner?
+<br>257238 	StyledText: block selection mode: trouble with caret and newline
+<br>257278 	Ctrl-Shift-R does not update correctly on Mac Carbon
+<br>257614 	[Browser] add API to evaluate JS expression 
+</blockquote>
+
+<h2> SWT Build 3.5 21 - Tuesday December 2, 2008</h2>
+<blockquote>
+194887  Eclipse actions are not executed in embedded awt component
+<br>223590 	Browser.print(GC) should not use ancestor clip
+<br>233303 	[Contributions] Menuitem has incorrect letter underlined
+<br>253219 	Implement gradient Patterns
+<br>253228 	Implement default selection (text, tree, table ...)
+<br>253929 	java.lang.UnsatisfiedLinkError when launching eclipse SDK on AIX
+<br>255652 	Test failures on win32
+<br>255730 	NPE in Tree
+<br>256467 	Button images bad in Control Example
+<br>256507 	cheese around icons (no transparency)
+<br>256687 	NPE in Tree setSelection
+<br>256688 	IndexOutOfBoundsException in TreeItem
+<br>256703 	setItemCount breaks selection
+<br>256770 	[StyledText] setBackground() conflicts with LineStyleListener
+<br>256797 	org.eclipse.swt.motif.hpux.PA_RISC fragment is version 3.5.0.qualifier in maintenance stream
+<br>256845 	Shell control: "remain on top" property is voided when one goes to another application
+<br>257056 	[TestStyle] border missing in toString() 
+</blockquote>
+
+<h2> SWT Build 3.5 20 - Tuesday November 25, 2008</h2>
+<blockquote>
+236513    	bidi: english characters swapped only in linux
+<br>245523 	GC stops drawing after setting transform with dy=-1
+<br>248921 	Getting immediately setting back a Region on a GC once setAdvanced is set to true causes the region to change provided the repaint region is offset
+<br>251447 	setTooltip throws ArrayIndexOutOfBoundsException
+<br>251587 	Snippet 135 (SWT/AWT) no longer works
+<br>253223 	Implement painting (setRedraw(), scroll/paint/update, setRegion(), Display.update() ...)
+<br>253673 	Snippet207 doesn't rotate 45°
+<br>255282 	SWTException thrown from CCombo
+<br>255403 	Some images in eclipse are not transparent
+<br>255637 	Missing removeComponentListener in SWT_AWT.new_Shell
+<br>255658 	SWT.UNDERLINE_LINK needs more doc
+<br>255821 	Image size incorrect when using native loader.
+<br>256170 	Image loses alpha information and crashes on 64 bit
+<br>256261 	Hand cursor stays when releasing Ctrl after hovering a link 
+</blockquote>
+
+<h2> SWT Build 3.5 19 - Tuesday November 18, 2008</h2>
+<blockquote>
+15165   BIDI: enable RTL orientation in SWT widgets
+<br>83408 	Support links in StyledText
+<br>128804 	No settings callback when High Contrast is turned off
+<br>210441 	setBackground/setBackgroundImage not implemented.
+<br>246470 	[Browser] Safari fails on Mac OS X 10.4.11
+<br>249210 	Crash in Tree.setItemCount
+<br>252418 	Can't replace text in spinner
+<br>253215 	Support BIDI in TextLayout
+<br>253220 	Support native image loading
+<br>253221 	Implement Image.setBackground()
+<br>254797 	Upside down topsy turvey text
+<br>254865 	Annotation underlines not properly drawn when end of range not visible
+<br>254947 	underlineColor, strikeoutColor, borderColor not respected when tex is selected
+<br>255373 	Textlayout border and error underline are not bidi aware
+<br>255398 	IndexOutOfBoundsException in Image.setBackground 
+</blockquote>
+
+<h2> SWT Build 3.5 18 - Tuesday November 11, 2008</h2>
+<blockquote>
+246057	SWT_AWT application does not receive mouse events
+<br>253720	Setting clipping causes printing to be flipped
+<br>253058	StyledText should handle mouse click sequences in block selection mode
+<br>253057	selection changes must send out selection event notifications
+<br>253916	Printing long files sometimes crashes
+<br>253964	Occasional crash on quit after dragging text
+<br>252693	computeSize causing Resize, and Move events
+<br>253259	Label in synchronize view is getting cut off.
+<br>253305	ControlsWithLabelsExample needs to be accessible
+<br>251762	block selection, getSelectionText and getSelectionTextCount should be aware of block selection
+<br>250175	fix DND in block selection mode
+<br>253254	[Browser] Exception while disposing SWT Mozilla browser
+<br>253062	Forms have resize / layout problems
+<br>252388	Check box shows indeterminate state before checked state
+<br>253298	NSAccessibilityException typing tab in multi-line Text in ControlExample
+<br>253225	Implement Control.print()
+<br>252714	Control/right-click on Package Explorer doesn't select item first
+<br>254607	emulated coolbar height is wrong when it has multi rows of different size
+</blockquote>
+
+<h2> SWT Build 3.5 17 - Tuesday November 04, 2008</h2>
+<blockquote>
+246274	SWT.ARROW Button direction not consistent when RTL
+<br>246541	[misc] BIDI: Java editor does not ensure LTR for declarations and invocations with RTL names
+<br>247866	Images not centered in tool items
+<br>248758	[DND] No dragStart event when dragging from Text widget
+<br>249006	implement cursor on mouse grab
+<br>252245	Implement Printing on Cocoa
+<br>252277	resizing Table/Tree column sends Selection event
+<br>252370	fix cell accessibility post-3.5M3
+<br>252391	sort indicator moves
+<br>252422	reduce damaging of Table/Tree column headers
+<br>252424	background color of List only sets background of items.
+<br>252427	List - changing font size doesn't update item height
+<br>252486	[DND] Cannot drag from StyledText
+<br>252642	block selection doesn't work on win2000
+<br>252678	StyledText #setLineSpacing(int) not working in GTK
+<br>252679	TableColumn/TreeColumn don't send Move and Resize events
+<br>252747	double underline doesn't show in win32
+<br>252749	Bullet not working in styled text
+<br>252770	fragment binary should exclude *.extra files
+<br>252895	StyledText strikeout over tab space
+<br>252903	replace initWithFrame(new NSRect()) with init()
+<br>252995	Drop down tool items are selected on mouse up
+<br>253189	NullPointerException when trying to print
+<br>253240	Missing autorealese pool in printer
+<br>253294	remove printlns in Accessibility
+</blockquote>
+
+<h2> SWT Build 3.5 16 - Thursday October 30, 2008</h2>
+<blockquote>
+252441	Can't select plugins in run configurations
+<br>252764 Stack overflow caused by 246057 fix
+</blockquote>
+
+
+<h2> SWT Build 3.5 15 - Tuesday October 28, 2008</h2>
+<blockquote>
+251582  No splash screen progress using Cocoa
+<br>251779 	Snippet124 crashes
+<br>252232 	scrollbars are disabled
+<br>252252 	Can't get a context menu on a tree item
+</blockquote>
+
+
+<h2> SWT Build 3.5 14 - Monday October 27, 2008</h2>
+<blockquote>
+222791    	Spinner accepts non-numeric input in Cocoa
+<br>222795 	[Spinner] Cannot increase number of digits
+<br>225266 	Cocoa port has no org.eclipse.swt.internal.carbon.smallFonts equivalent
+<br>237102 	[OLE] OleControlSite with Excel.Sheet renders deactivated view improperly
+<br>249003 	implement cursors (wait, etc.)
+<br>250178 	change the keyboard block selection expansion increment to match average char width
+<br>250574 	Group does not layout correctly.
+<br>251016 	Crash on shut down
+<br>251084 	NullPointerException when VoiceOver asks for position of Shell
+<br>251126 	Please remove unused Platform Interface constants etc.
+<br>251128 	Display.readAndDispatch() and sleep() should not try/catch and call printStackTrace()
+<br>251149 	SWT Accessibility API needs to work on all Controls
+<br>251469 	Accessible.getDescription should not return name
+<br>251482 	Don't work around bug in Accessibility Verifier
+<br>251516 	[Browser] cannot type Ü into web browser text area
+<br>251528 	SWT Image created without GDI tracking
+<br>251581 	Wrong cursor when editing
+<br>251583 	Crash using I20091021 Cocoa
+<br>251603 	Spacing not working in TextLayout
+<br>251607 	TextLayout - TextStyle's border not showing bottom line in StyledText
+<br>251614 	Space in font name
+<br>251618 	Text glitch after inserting an image
+<br>251712 	New shell not active when opened
+<br>251766 	Accessibility: Button role incorrect for toolbar buttons
+<br>251818 	drawString works improperly after drawing any primitives
+<br>251910 	creating tall combo spews long error message and can draw wrong 
+</blockquote>
+
+<h2> SWT Build 3.5 13 - Tuesday October 21, 2008</h2>
+<blockquote>
+211048    	Accessibility is not implemented for Cocoa
+<br>212851 	StyledText - getStyleRanges(int start, int length) returns wrong style range
+<br>249001 	implement GC drawFlags
+<br>249005 	implement/verify mouse events and mouse wheel
+<br>249007 	implement modify/verify events
+<br>249008 	implement MenuDetect events and show native menu on Texts
+<br>250171 	add int[] getBlockSelectionRanges() to StyledText
+<br>250172 	Fix inserting text in block select mode
+<br>250177 	convert block selections to linear selections and vice-versa
+<br>250180 	don't reset block selection mode under no circumstances
+<br>250193 	StyledText SetStyleRange not working
+<br>250622 	org.eclipse.swt.printing.PrintDialog.open() returns 'null' for two different scenarios
+<br>250782 	No More Handles Exception when trying to load an image
+<br>250841 	Table/Tree scrollbars do not work
+<br>250859 	StyledText getRages(int start, int length) returns incorrect array
+<br>250976 	FileDialog should be resizable
+<br>250994 	Last character of the line disappears when selecting code at the end of line
+<br>251007 	underline not select when last run run is full selected
+<br>251016 	Crash on shut down
+<br>251089 	StyledText#copy() fails in RTFWriter with AIOOBE
+<br>251130 	Compiler warnings in N20081015-2000
+<br>251442 	block selection: handle multi-line paste 
+</blockquote>
+
+<h2> SWT Build 3.5 12 - Tuesday October 14, 2008</h2>
+<blockquote>
+206173 	Permit SWT.DEFAULT as an argument to ScrolledComposite.setMinSize
+<br>248551 	BidiLevel is improperly set to -1
+<br>248881 	Cocoa: (specific) Dialog text doesn't wrap
+<br>249999 	Closing an editor takes two clicks
+<br>250299 	scrollbar's selection is reset to 0 when its NSScrollView is resized
+<br>250327 	SWT.NO_TRIM Shells cannot become the key window
+<br>250346 	Please update link to PaperClips project on SWT community page 
+</blockquote>
+
+<h2> SWT Build 3.5 11 - Tuesday October 07, 2008</h2>
+<blockquote>
+8521    	StyledText: block select mode
+<br>84552 	The image of a checked action in a menu of a pulldown action is not displayed
+<br>165033 	Table vertical lines always showing
+<br>173556 	[OLE] SWTException constructing OleControlSite for WMPlayer.OCX with Windows Media Player 11
+<br>211696 	CLabel does not specify that "&" introduces mnemonic
+<br>223518 	implement Shell modality
+<br>245667 	Horizontal Sash does not show resize cursor
+<br>248187 	Adobe Reader 9.0 browser crash NPE
+<br>248773 	implement custom draw in Tables and Trees
+<br>249000 	implement graphics in non-UI thread
+<br>249009 	implement Shell.setImage(...) and -Xdoc:icon
+<br>249286 	Table.setTopIndex does not work correctly with MeasureItem
+<br>249376 	Tree in package explorer hides text
+<br>249517 	ClassCastException in Combo
+<br>249608 	TextLayout.draw(...) does not use GC foreground
+<br>249612 	Links on preference pages are opened in browser
+</blockquote>
+
+<h2> SWT Build 3.5 10 - Tuesday September 30, 2008</h2>
+<blockquote>
+211652 	DND not implemented on Cocoa
+<br>246309 	[Browser, Mac, 3.4] Doesn't open local URLs (file:///) that contain query parameters and/or that are URL encoded.
+<br>247069 	Display#post(*) sometimes freezes eclipse
+<br>248169 	ld-linux.so causing JavaVM to seg. fault. on startup....
+<br>248187 	Adobe Reader 9.0 browser crash NPE
+<br>248190 	implement Table/Tree column reordering
+<br>248266 	Javadoc warnings in N20080922-2000
+<br>248467 	Keypad Enter and Help keys do not draw in MenuItems
+<br>248559 	Image not loaded in Flex
+<br>248728 	cannot use jdk 1.5 method Class.getSimpleName()
+<br>248731 	FileDialog does not provide enough information to open multiple files from different directories (COCOA)
+<br>248735 	System.out.println() in DragSource
+<br>248950 	Custom Control Example crashes. 
+</blockquote>
+
+<h2> SWT Build 3.5 09e - Tuesday September 22, 2008</h2>
+<blockquote>
+165033    	Table vertical lines always showing
+<br>219758 	The second shell can not be active after closing the first shell
+<br>247869 	Pixel corruption in Java Editor
+<br>248167 	Accelerators are not drawn on menu items in Eclipse 
+</blockquote>
+
+<h2> SWT Build 3.5 09d - Friday September 19, 2008</h2>
+<blockquote>
+247550 	Alt+Arrow moves line up/down by 2 in Java editor
+</blockquote>
+
+<h2> SWT Build 3.5 09c - Thursday September 18, 2008</h2>
+<blockquote>
+245667    	Horizontal Sash does not show resize cursor
+<br>247557 	Tracker seems broken, affects dragging Views, Editors
+<br>247649 	Compiler warnings in I20080917-0100
+<br>247667 	TabFolder sends Selection events for programmatic selections
+<br>247676 	setting TabFolder content in Selection callback does not appear
+<br>247702 	NPE in Display.map(...) when called from TabFolder Selection listener
+<br>247728 	implement underline (squiggle/error) and outline for cocoa 
+</blockquote>
+
+<h2> SWT Build 3.5 09b - Wednesday September 17, 2008</h2>
+<blockquote>
+247290 	SWT ToolItem loses text when only one item and VERTICAL with image
+<br>247549 	default button doesn't work for single line Texts 
+</blockquote>
+
+<h2> SWT Build 3.5 09a - Tuesday September 16, 2008</h2>
+<blockquote>
+192014    	Certain fonts appear squished with advanced graphics on
+<br>247237 	Compiler warnings in cocoa port in N20080914-2000
+<br>247318 	Crash creating new display after disposing previous one 
+</blockquote>
+
+<h2> SWT Build 3.5 09 - Sunday September 14, 2008</h2>
+<blockquote>
+211796 	Regenerate the PI ("Platform Interface") to better match cocoa
+<br>237724 	(Accessibility) keyboard shortcuts are not read with VoiceOver in most menus
+<br>246820 	org.eclipse.swt.tools causes 242 warnings in latest I-build
+</blockquote>
+
+<h2> SWT Build 3.5 08 - Friday September 12, 2008</h2>
+<blockquote>
+174968    	Provide API to select tree items without scrolling
+<br>244318 	Unable to scroll fast using MX Revolution Mouse
+<br>245367 	[Browser] swt browser doesn't hold the SWT global lock when calling to Xlib
+<br>246884 	DateTime not in HPUX source
+<br>247083 	disposing first column in Tree fails 
+</blockquote>
+
+<h2> SWT Build 3.5 07 - Tuesday September 9, 2008</h2>
+<blockquote>
+88516 	Advanced GC reports different string extents than non advanced
+<br>95410 	GDI+ drawString is not consistent with GDI
+<br>104729 	setAntialias changes sizes of strings
+<br>139070 	ExpandBar draws on top of scrollbars
+<br>225264 	Help menu opens up in the wrong place
+<br>243558 	StyledText: squiggles not drawn for tabs
+<br>244472 	Text does not WRAP on RHEL3
+<br>244723 	Embedding external widgets into SWT using the EMBEDDED Style
+<br>244747 	Snippet illustrating how to properly post key events with shift keys
+<br>244931 	On carbon platform, when scroll the mouse wheel on top of the vertical scroll bar of a canvas, no selection event is generated.
+<br>245185 	Message in the MessaeBox is not BiDi correctly
+<br>245249 	org.eclipse.swt.win32.win32.x86 version mismatch
+<br>245379 	Table.getVerticalBar() returns null
+<br>245724 	SWT_AWT bridge hangs in Cocoa SWT
+<br>246133 	plug-in and fragment versions need updating for 3.4.1
+<br>246235 	App crashes on exit
+<br>246379 	warning compiling callback.c (pad not unused)
+<br>246602 	Table/Tree columns do not send Selection events 
+</blockquote>
+
+<h2> SWT Build 3.5 06 - Tuesday August 26, 2008</h2>
+<blockquote>
+49996    	[CCombo] CCombo, CLabel - Custom widgets are nulling internal slots too soon
+<br>196884 	[OpenGL] GLCanvas doesn't work on Vista
+<br>231776 	[SWT Mac] Incorrect mouseExit event generated when balloon ToolTip is shown
+<br>232690 	No event is sent on clearing SWT.SEARCH-styled text field
+<br>234809 	[QuickAccess] PopupDialog stays open even though Eclipse has focus
+<br>239965 	Application menu does not share application name
+<br>242644 	eclipse crashes when downloading a file in the internal browser
+<br>243842 	Solaris crash: symbol gnome_icon_theme_new: referenced symbol not found
+<br>244234 	losing keybindings...
+<br>244396 	[DND] Combo on Linux does not fire DragSourceEvent.
+<br>244533 	Cursor Control
+<br>244574 	ProgressBar state can be visually lost by updating selection 
+</blockquote>
+
+<h2> SWT Build 3.5 05 - Tuesday August 19, 2008</h2>
+<blockquote>
+243842 	Solaris crash: symbol gnome_icon_theme_new: referenced symbol not found
+<br>243924 	Debugger crashes on Step out.
+<br>243942 	NPE in Tree.getSelection
+<br>244072 	Tree and Table setBackground doesn't work
+<br>244108 	[WorkbenchLauncher] ArrayIndexOutOfBoundsException in IDEApplication.start() when launching partially branded product 
+</blockquote>
+
+<h2> SWT Build 3.5 04b - Tuesday August 12, 2008</h2>
+<blockquote>
+140646    	[OLE] OleControlSite new constructor needed
+<br>199441 	ScrollBars visible even when not required
+<br>241062 	[consistency] Font#getFontData() not safe from non-ui thread on MacOS
+<br>242251 	N20080727-2000 on linux.gtk.x86 doesn't proceed past the splash screen on startup
+</blockquote>
+
+<h2> SWT Build 3.5 04a - Wednesday August 6, 2008</h2>
+<blockquote>
+242484 	org.eclipse.swt.graphics.Rectangle.contains(int, int) returns incorrect results
+<br>242567 	version of org.eclipse.swt.motif.hpux.PA_RISC in HEAD stream has lower version that released 3.4 version
+<br>242603 	Solaris crash: symbol gnome_icon_theme_new: referenced symbol not found
+<br>243012 	Password fields can be copied to the clipboard on Mac OS X
+<br>243037 	SWT.getPlatform() should list all valid values
+<br>243232 	Child shells don't stay above their parent 
+</blockquote>
+
+<h2> SWT Build 3.5 04 - Thursday July 31, 2008</h2>
+<blockquote>
+97496    	Table: setBackground is not deferred by setRedraw(false)
+<br>164928 	GC.setTextAntialias(SWT.OFF) not working for StyledText
+<br>173218 	[SWT_AWT] SWT needs to support ModalityListener interface
+<br>210855 	Table's "sort indicator" has no visible effect
+<br>210856 	Table & Tree Header images don't do anything
+<br>229651 	ComboBoxEditor is unresponsive and unusable on RH 5
+<br>241671 	Mouse cursor disappears in editor and gets progressively slower coming back
+<br>242263 	Problems with read-only text boxes on Linux
+<br>242414 	AntiAlias does not work in TextLayout 
+</blockquote>
+
+<h2> SWT Build 3.5 03 - Tuesday July 29, 2008</h2>
+<blockquote>
+110916    	Backspace stops working (due to mouse stuck down)
+<br>193359 	Shared library for cairo not build on AIX/Motif
+<br>219133 	printer.getDPI() returns 72x72
+<br>232688 	Shell.setActive() is not implemented
+<br>236724 	[Browser] Eclipse causes JVM crash in libxul when editing Java
+<br>240817 	SWT Tree: in 3.4, DragSourceEvent gives higher x-coordinate than in 3.3
+<br>241144 	SWT deletes libswt-cairo-motif if libcairo isn't found
+<br>241443 	[Button] Paint event missed on traversal
+<br>241720 	Padding wrong when vertical lines displayed in Tree and Table
+<br>241743 	TableColumn pack works not the same on diffrent Platforms..
+<br>242003 	Image buffer is allocated twice unnecessarily
+<br>242030 	Filter in SWT.Paint event not delivered for table, tree and composite 
+</blockquote>
+
+<h2> SWT Build 3.5 02 - Tuesday July 22, 2008</h2>
+<blockquote>
+193359    	Shared library for cairo not build on AIX/Motif
+<br>200743 	[Clipboard] Copy/Paste intermittently doesn't work for a line of text
+<br>210872 	SWT.BALLOON tooltip draws background outside balloon
+<br>210874 	Crash when using SWT.BALLOON and SWT.ICON_INFORMATION
+<br>230119 	Keyboard navigation in the StyledText (Cocoa)
+<br>239418 	table.setLinesVisible(true) does not work on solaris. Eclipse 3.2.0 and GTK 2.12.0 and 11.
+<br>240190 	OSX: TabFolder Images not shown if setImage before setText or setControl
+<br>241380 	Ctrl+N doesn't work in the internal browser view
+<br>241490 	GC.setAlpha() / GC.getAlpha() does not work properly on Linux 
+</blockquote>
+
+<h2> SWT Build 3.5 01b - Tuesday July 15, 2008</h2>
+<blockquote>
+211536 	RTFTransfer not implemented; code demonstrating NSPasteboard attached
+<br>235968 	CCombo class should not be final
+<br>236634 	Cannot dismiss attribute type combo
+<br>239482 	SWT.VIRTUAL Table Freezes under 3.4 when dragging (DND) 
+</blockquote>
+
+<h2> SWT Build 3.5 01a - Tuesday July 08, 2008</h2>
+<blockquote>
+86745  Tree shows horizontal scrollbar although not required  
+<br>211202  StyledText#setSelection() does not reveal caret with non-zero selection  
+<br>221938  new GC(Control) doesn't work  
+<br>233261  dialog window distorted after going out of "Not responding" state  
+<br>236312  GTK Assertion for gdk_window_get_user_data  
+<br>239220  Text.getText() returns empty string after calling setText() with non-empty string  
+<br>239231  Text.getCaretLineNumber() differs between Windows and Linux  
+</blockquote>
+
+<h2> SWT Build 3.5 01 - Wednesday June 25, 2008</h2>
+<blockquote>
+54525    	Radio group gets traversed (gets focus) when not visible
+<br>65648 	Reparented Toolbars lose their tooltips if the shell they were originally created in is destroyed
+<br>87460 	StyledText: Caret location not updated when line style is used
+<br>101153 	Text.getText(int,int) can throw StringIndexOutOfBounds
+<br>119173 	IllegalArgumentException when applying overlapping StyleRanges
+<br>125499 	Pixel corruption when setSelection() called from within SWT.SetData
+<br>127971 	Cannot remove caret in FocusOut handler
+<br>211358 	New windows opened at bottom-left of screen
+<br>211363 	Weird resize behaviour in paint example
+<br>226090 	Clarify/improve TextLayout.setText(String)
+<br>236347 	swt standalone zip contains javadoc location from eclipse 3.1?
+<br>237138 	StyledText blank in Linux RedHat
+<br>237432 	[64] Add External JARs in Java Build Path fails consistently
+<br>237486 	[Accessibility] Shift+Tab navigates forward (should be backward)
+<br>237675 	Giving focus to other control during FocusIn doesn't reassign the Caret
+<br>237903 	Browser sends LocationEvent with non-URL location for file:/C:/...
+<br>238149 	Rollover tooltip for owner-drawn tree should be hidden when tree view changes
+</blockquote>
+
+<h2> SWT Build 3.4 48f - Wednesday June 18, 2008</h2>
+<blockquote>
+237432	[64] Add External JARs in Java Build Path fails consistently
+</blockquote>
+
+<h2> SWT Build 3.4 48e - Thursday June 12, 2008</h2>
+<blockquote>
+236288    	update swt.tools and swt.examples.browser.demos.source to include about.html
+<br>236419 	Printing does NOT work on Mac
+<br>236669 	exception when removing TableItem
+</blockquote>
+
+<h2> SWT Build 3.4 48d - Friday June 6, 2008</h2>
+<blockquote>
+235350 	[64] Bad screen display
+<br>235806 	improper usage of "Device" when setting font description in org.eclipse.swt.graphics.TextLayout constructor
+<br>235847    	[Contributions] [Mac] Odd behaviour in help menu on OS X
+</blockquote>
+
+<h2> SWT Build 3.4 48c - Thursday June 5, 2008</h2>
+<blockquote>
+10465    	org.eclipse.swt.graphics.Image Documentaton
+<br>78818 	Bengali not showing in Editor
+<br>84463 	Equals sign (=) is rendered in incorrect font.
+<br>98894 	Shell.setImages() should be smarter on Mac
+<br>102201 	disposing TableColumn can change display order
+<br>161792 	Printer.computeTrim(...) javadoc is confusing
+<br>164437 	Disable automatic horizontal scrolling on tree item selection
+<br>173340 	[zh_CN] StyledText default font are too small compared to other SWT text on Windows for Simplified Chinese
+<br>204199 	Problem with copy/append of GB18030 characters
+<br>223525 	Describe multiple wildcards usage in org.eclipse.swt.widgets.FileDialog.setFilterExtensions(String[]) javadoc
+<br>235324 	Canvas#getCaret() should tell that caret can be null
+<br>235329 	vertical scroll bar remains in empty tree viewer
+<br>235348 	Exception in setItemCount
+<br>235417 	org.eclipse.swt..motif.hpux.ia64_32 has qualifer HEAD
+<br>235617 	The visibility of the constructor org.eclipse.swt.graphics.Resource.Resource() has been reduced
+</blockquote>
+
+<h2> SWT Build 3.4 48b - Wednesday June 4, 2008</h2>
+<blockquote>
+235324    	Canvas#getCaret() should tell that caret can be null
+<br>235329 	vertical scroll bar remains in empty tree viewer
+<br>235348 	Exception in setItemCount
+</blockquote>
+
+<h2> SWT Build 3.4 48a - Tuesday June 3, 2008</h2>
+<blockquote>
+219437    	Javadocs of get/setAlpha(..) should specify range of value
+<br>227914 	IAE in TextLayout._getOffset()
+<br>229469 	Drag Source Effect not visible for Tree and Table
+<br>232625 	SWT/JFace - Lack of examples in API
+<br>232685 	ScrollBar works incorrectly with StyledText
+<br>232686 	Shell doesn't send SWT.Move
+<br>234940 	TextLayout#drawText and GC#drawText draw some Unicode very differently.
+<br>235219 	Cheese in tree
+</blockquote>
+
+<h2> SWT Build 3.4 48 - Friday May 30, 2008</h2>
+<blockquote>
+234751 Warnings in SWT builds
+</blockquote>
+
+<h2> SWT Build 3.4 47 - Friday May 30, 2008</h2>
+<blockquote>
+36226    	DCR - Improve Performance for Large Tables
+<br>223823 	ControlExample: Select Listeners dialog opens behind menu bar
+<br>231958 	TVT34:TCT236: KO: truncation of "Configure connection preference..."
+<br>234437 	CCombo#setVisible() doesn't check if the popup shell is disposed
+<br>234732 	WRAP break font fallback , DBCS does not show
+<br>234738    	TextLayout font fallback improvement
+</blockquote>
+
+<h2> SWT Build 3.4 46d - Thursday May 29, 2008</h2>
+<blockquote>
+233638 	Extreme performance degradation in TextLayout.shape()
+<br>234158 	StyledText should stop blinking caret when losing focus in verify key listener
+<br>234271 	Invalid thread access logged in the .log file
+<br>234433 	[Browser] Some characters cannot be entered in forms
+<br>234481 	API consistency changes needed
+</blockquote>
+
+<h2> SWT Build 3.4 46c - Wednesday May 28, 2008</h2>
+<blockquote>
+213194    	[Browser] setText crash with xulrunner 1.9 stream
+<br>234119 	Segfault when disposing shell in keylistener of browser
+</blockquote>
+
+<h2> SWT Build 3.4 46b - Tuesday May 27, 2008</h2>
+<blockquote>
+229181    	[DateTime] DateTime widget does not report mouseDoubleClick
+<br>233595 	DragImage looks bad on vista (table+tree)
+<br>233598 	carriage return inserted twice when using text box in web browser
+<br>233867 	Text#getPosition() is missing JavaDoc
+<br>233969 	NPE in Tree.windowProc when starting to drag elements
+<br>233985 	build.xml's need updating to rename *._properties to *.properties
+</blockquote>
+
+<h2> SWT Build 3.4 46a - Thursday May 22, 2008</h2>
+<blockquote>
+232617 TVT34:TCT301: The Update Preferences link is not active in Linux
+<br>Bug 233487 add swt's nl files for swt stand-alone download
+</blockquote>
+
+
+<h2> SWT Build 3.4 46 - Thursday May 22, 2008</h2>
+<blockquote>
+225404 	Clicking on areas to left or right of cell editors in tree does not raise a FocusIn event for tree on vista
+<br>229481 	Drag Images not supported in Custom Trees and Tables
+<br>231877 	WM_PRINT for ToolBar with SHADOW_OUT
+<br>232163 	[Accessibility] StyledText speaks entire value when asked for "line"
+<br>232499 	[JFace] Slower image painting due to fix for bug 224422 and bug 219432
+<br>232965 	[breadcrumb] set top item in drop down is too aggressive on OSX
+<br>233351 	fix leak in drag image
+</blockquote>
+
+<h2> SWT Build 3.4 45d - Wednesday May 21, 2008</h2>
+<blockquote>
+222582    	[Perspectives] BIDI3.4:HCG Wrong caption alignment in Customize Perspecitve dialog with Hebrew translation
+<br>226832 	BIDI3.4:HCG "Cancel" button of Source Folder Selection dialog does not work in Hebrew version
+<br>228282 	[Accessibility] Table & Tree with no column headers say "sort button" on Leopard
+<br>229570 	Screen cheese in breadcrumb when using Windows classic style
+<br>231882 	[Accessibility] Characters typed into Text are not accessible on Leopard
+<br>232114 	[Accessibility] VoiceOver speaks name of some controls twice
+</blockquote>
+
+<h2> SWT Build 3.4 45c - Friday May 16, 2008</h2>
+<blockquote>
+201774    Mozilla Browser doesn't open at the first execution in a Linux RHEL 4.
+<br>228762 	setRegion on Button behaving strangely after shell.open
+<br>232017 	[breadcrumb] Open type dialog pops up behind breadcrumb drop down on OSX
+</blockquote>
+
+<h2> SWT Build 3.4 45b - Thursday May 15, 2008</h2>
+<blockquote>
+226007  BIDI3.4: search results appear shaped improperly
+<br>227076 	[DND]Combo:Multiple problems during drag text in combo on Mac OS X
+<br>231787 	When computing bounds,TextLayout does not take trailing line break into account
+<br>231925 	Arrow button is drawn backwards
+<br>232093 	crash in Safari browser while handling key events
+</blockquote>
+
+<h2> SWT Build 3.4 45a - Wednesday May 14, 2008</h2>
+<blockquote>
+231606 	[Browser] disposing Browser in KeyDown causes crash
+<br>231690 	Smooth scroll is slow on Vista with DWM, impossible to turn off (for text editors)
+<br>231884 	[Accessibility] Controls that implement kEventAccessibleGetNamedAttribute need to call swt accessible API
+</blockquote>
+
+<h2> SWT Build 3.4 45 - Tuesday May 13, 2008</h2>
+<blockquote>
+206870  [Mac] New Project wizard Finish button isn't enabled for Japanese project name
+<br>214503 	Incorrect KeyEvents returned using SWT_AWT.
+<br>223926 	Table/Tree scrollbars bad after setVisible()
+<br>225373 	Bidi3.4: Unicode Markers don't have any effect in Console View
+<br>226832 	BIDI3.4:HCG "Cancel" button of Source Folder Selection dialog does not work in Hebrew version
+<br>227965 	Tooltip for table column not appearing
+<br>227974 	DBCS3.4: Dragged texts from Safari gets garbled when dropped on a StyledText widget
+<br>228167 	DBCS3.4: URLTransfer for DBCS URL failed
+<br>228762 	setRegion on Button behaving strangely after shell.open
+<br>229520 	FileDialog does not provide enough information to open multiple files from different directories
+<br>230940 	(Hovering over a link in Safari does not change the cursor or display the URL
+<br>231102 	javadoc warning in I20080507-2000
+<br>231148 	[Accessibility] StyledText typed characters are not accessible on Leopard
+<br>231192 	[Accessibility] Characters typed into Editable Combo are not accessible on Leopard
+<br>231303 	Browser widget: Tab key traps focus when key listener is added
+<br>231449 	First Table Row Justification Wrong
+</blockquote>
+
+<h2> SWT Build 3.4 44 - Thursday May 8, 2008</h2>
+<blockquote>
+223926 	Table/Tree scrollbars bad after setVisible()
+<br>230940 	Hovering over a link in Safari does not change the cursor or display the URL
+<br>231102 	javadoc warning in I20080507-2000
+<br>231148 	[Accessibility] StyledText typed characters are not accessible on Leopard
+<br>231192 	[Accessibility] Characters typed into Editable Combo are not accessible on Leopard
+</blockquote>
+
+<h2> SWT Build 3.4 43 - Wednesday May 7, 2008</h2>
+<blockquote>
+202902    	Password can not be saved with SWT.MOZILLA browser
+<br>212991 	Mac OS X accessibility does not have the standard relations
+<br>214944 	[browser] xulrunner 1.9-based Browser has no initial background
+<br>216919 	Incompatibilities with MacOSX CMI (Context Menu Interface)
+<br>219558 	[CellEditors] ComboBoxCellEditor doesn't work properly (CCombo)
+<br>222582 	[Perspectives] BIDI3.4:HCG Wrong caption alignment in Customize Perspecitve dialog with Hebrew translation
+<br>222937 	[typing] DBCS3.4: "Assign parameter to new field" refectoring function in DBCS environment
+<br>224550 	GB180303.4: Some 4-bytes GB18030 characters can't be displayed in Package Explore view.
+<br>226653 	DBCS3.4: Unicode Ideogrpahic characters for Vista Japanese are not displayed in text editor
+<br>229377 	No vertical scrollbars in the stacktrace console
+<br>229508 	When closing Eclipse from dock with modified file, window does not restore
+<br>229672 	Fix for bug 228182/222937 is adding a new API after API freeze
+<br>229680 	PRIMARY_MODAL Shell can make other Shell lose its menubar
+<br>229776 	SWT.TOGGLE style bit stops setRegion from working on linux
+<br>229841 	Widget is disposed in ControlExample
+<br>230071 	Snippet223 requires an image
+<br>230388 	Cannot get focus out of browser widget any more
+<br>230489 	use DeleteObject to dispose non-Mlang fonts
+<br>230912 	IAE when leaving IME
+<br>230935 	[Accessibility] StyledText speaks name twice
+<br>231009 	Compile Error on GTK 2.2.x: Fields missing from PangoLayoutLine</blockquote>
+
+<h2> SWT Build 3.4 42a - Wednesday April 30, 2008</h2>
+<blockquote>
+229377    	No vertical scrollbars in the stacktrace console
+</blockquote>
+
+<h2> SWT Build 3.4 42 - Wednesday April 30, 2008</h2>
+<blockquote>
+148094  Control#setCapture() not working as expected
+<br>220642 	[open type] Open Type dialog does not work in high contrast
+<br>226832 	BIDI3.4:HCG "Cancel" button of Source Folder Selection dialog does not work in Hebrew version
+<br>229172 	[Win32] MessageBox gets stuck in event loop
+</blockquote>
+
+<h2> SWT Build 3.4 41 - Tuesday April 29, 2008</h2>
+<blockquote>
+51829    	GTK-BIDI: RTL support in Dialogs
+<br>102686 	Browser widget, suppress key actions.
+<br>181937 	[OLE] eclipse should handle accelerators before OLE controls
+<br>206485 	GTK-BIDI: Bidi support in Link.
+<br>214381 	Tree hover help leaving cheese
+<br>219641 	Triple vertical scrollbar inside compare editor
+<br>221048 	Browser doesn't send key events for arrow keys on Windows platform
+<br>222024 	Browser widget sends key events with wrong character/keyCode
+<br>222594 	BIDI3.4:HCG Context menu is not mirrored
+<br>225677 	Random crashes attributable to Safari
+<br>226016 	BIDI3.4: Last two characters in BIDI text are not shaped correctly
+<br>226023 	BIDI3.4: Last two characters in Arabic in tooptip are not shaped correctly
+<br>226106 	BIDI3.4: Arabic text in console is not shaped correctly
+<br>228273 	[Accessibility] ToolBar is not accessible on Leopard
+<br>228277 	[Accessibility] Table & Tree are not accessible on Leopard
+<br>228287 	[Accessibility] Link is not accessible on Leopard
+<br>228484 	[Browser] unable to go to next or previous editor since browser consumes common keys (F6 and Tab)
+<br>228667 	ACC: SWT does not give focus to a context menu from a dialog
+<br>228770 	setRegion on Canvas not working on linux
+<br>228968 	NPE in MozillaDelegate
+</blockquote>
+
+<h2> SWT Build 3.4 40 - Tuesday April 22, 2008</h2>
+<blockquote>
+73390   Tooltips not shown for some widgets
+<br>127848 	CustomControlExample CLabel background image differences
+<br>160707 	code hints window remains visible when minimizing eclipse
+<br>174014 	GC.isClipped() always returns false in advanced graphics mode
+<br>191968 	Stack overflow due to infinite recursion when calling Control.update from inside a PaintListener
+<br>192365 	Label is truncated under Linux.
+<br>195564 	Unsetting image in but not working
+<br>197794 	Transformed drawing broken in SWT 3.3 (but specific values only)
+<br>210028 	[mac] screenshot tool does not capture multiple displays properly
+<br>219133 	printer.getDPI() returns 72x72
+<br>220471 	[Accessibility] Editable Combo is not accessible on Leopard
+<br>223015 	Combo height on Linux is too small
+<br>223480 	Combo within Toolbar no longer renders correctly
+<br>223512 	[CCombo] dropdown does not move when window is dragged
+<br>224122 	Opening a modal dialog while an ON_TOP shell is active should activate the dialog
+<br>224870 	Bidi3.4: Eclipse Crashes when trying to open HTML file that resides in Arabic named project
+<br>225351 	Owner draw: measure doesn't allow to change width
+<br>225975 	SWT Table: PaintItem events not sent for items with empty text on Mac OS X
+<br>226229 	Carbon Text widgets cannot be properly center-aligned when style is SWT.SEARCH
+<br>226363 	BIDI3.4:HCG TreeColumn has wrong BIDI alignment with style SWT.NONE
+<br>227384 	Owner draw tree showing too much gap between selected items
+<br>227411 	Controls in shell blocked by a modal shell still scroll via the scroll wheel
+<br>27597 	BIDI: owner draw: tool tips don't work with BIDI
+</blockquote>
+
+<h2> SWT Build 3.4 39 - Tuesday April 15, 2008</h2>
+<blockquote>
+4800    	Timings vs. Sun JDK on image loading/creation/drawing (1GIVMG8)
+<br>5927 	Cannot start eclipse from anywhere but install directory
+<br>24640 	Vertical scrollbar obscures the combo box pulldown
+<br>29764 	BIDI:Dialogs are not mirrored RTL.
+<br>35915 	Need a locale String from FontData
+<br>36729 	File deleted by unexpected drag and drop
+<br>42485 	Mouse cursor does not hide when typing on Mac OS X
+<br>56184 	[browser] IE sometimes freezes on PDF documents with Acrobat Reader 6.0 plugin
+<br>69986 	TabItem contents have wrong background on Mac/Carbon
+<br>76381 	[Browser] Help contents does not start with keyboard focus
+<br>95982 	Double-touch trackpad scrolling doesn't work in the compare editor
+<br>101948 	FileDialog.setFilterExtensions ineffective on Mac OSX
+<br>116748 	Custom Combo: drop down menu is hard to use
+<br>119156 	org.eclipse.swt.SWTError: No more handles [gtk_init_check() failed]
+<br>125866 	need more parent.indexOf() == -1 checks in TableItem
+<br>126544 	Eclipse can't use the font BitStream Vera Sans Mono in plain style (only italics)
+<br>128436 	Tree with gray state does not report state to Accessible listeners
+<br>130470 	[Tree] Selection-Rect changes on expanding TreeItem causes pixel corruption
+<br>139866 	Text.setTextLimit() not limiting pasted text
+<br>143358 	Tree items array don't shrink correctly
+<br>153365 	DirectoryDialog's setFilterPath() has no effect
+<br>158243 	Background for read only Text objects is wrong in dialogs.
+<br>177368 	Display.getCursorControl returning null for complex Xlib widget on Eclipse/Gtk
+<br>187036 	[Workbench] TVT33:TCT[Workbench] 159: ar: 13.001120 Tool tips text does not have RTL reading order
+<br>192542 	Eclipse 3.3RC3 Loosing keyboard input while using Synergy
+<br>196676 	[consistency] Link does not fire double-click events
+<br>197238 	UML causing stack overflow
+<br>202534 	SWT error in Wizard dialog when help is displayed and "Finish" is pressed
+<br>204915 	SWT.COLOR_WIDGET_BACKGROUND is not the default label background color on Mac OS X with UNO
+<br>207206 	jvm crash using mozilla browser on linux
+<br>211181 	Help Browser crashes on Windows 2000
+<br>215879 	SWT crashes on start
+<br>223298 	Coredump running Demo-App from EclipseCon
+<br>224550 	GB180303.4: Some 4-bytes GB18030 characters can't be displayed in Package Explore view.
+<br>224917 	Program.findProgram should return null on Vista if there are no known applications
+<br>224941 	Esc deactivates parent shell if SWT.TOOL is used
+<br>225527 	rendering problems after removing owner listeners
+<br>225933 	First Table Column Justification Ignored
+<br>225946 	TOGGLE Buttons inherit background with SWT.INHERIT_DEFAULT
+<br>225973 	Cant attach Menu to a Link widget
+<br>226356 	[patch] Build against xulrunner
+<br>226469 	Successfully to setFocus to a control while getFocusControl return null
+<br>226747 	CCombo arrow button not centered
+</blockquote>
+
+
+<h2> SWT Build 3.4 38 - Tuesday April 08, 2008</h2>
+<blockquote>
+170459    	SWT_AWT: Focus problem in Java 6
+<br>181864 	[Browser] crash when disposed in changing callback
+<br>192646 	TextLayout implementation on VISTA platform cannot correctly render some gb18030 characters(Mongolian Baiti, Microsoft Yi Baiti etc)
+<br>205032 	Eclipse crashes after a couple of hours
+<br>207909 	[carbon SWT] ON_TOP shell can not be hidden when parent shell is minimized
+<br>210854 	setSize on Spinner doesn't have an effect
+<br>214721 	The web service explorer crashes on Linux when basic auth is required
+<br>220465 	[Accessibility] StyledText is not accessible on Leopard
+<br>221268 	Running operation that continuously refreshes/updates SWT Browser it does not stay minimized
+<br>221411 	[Accessibility] Leopard: VoiceOver doesn't follow focus if Browser is in Shell
+<br>223592 	Control.print(GC) does not work on Linux.
+<br>224121 	BIDI3.4:HCG Print dialog is not mirrored completely
+<br>224124 	Mac OS X Tree poor performance
+<br>224462 	[Browser-Mozilla] Save-as window shown when disposing the browser during a location changing event
+<br>224870 	Bidi3.4: Eclipse Crashes when trying to open HTML file that resides in Arabic named project
+<br>225038 	Virtual table create all items if setItemCount before create first column
+<br>225086 	[Browser] Browser widget does only receive key events when using IE
+<br>225151 	GTK MenuItem Accelerator Consuming Characters (SWT.COMMAND)
+<br>225263 	Opening a fast view crashes Eclipse
+<br>225329 	Owner draw: gc in paint doesn't have foreground color set
+<br>225440 	MenuDetect events sent with (0, 0) coordinates
+<br>225593 	org.eclipse.swt.events.LineStyleEvent doesn't keep the style when multiple listener are listening
+<br>225663 	ToolTip forTrayItem causes crash on Carbon
+<br>225997 	TextLayout font seems not the be the system font
+</blockquote>
+
+<h2> SWT Build 3.4 37 - Tuesday April 01, 2008</h2>
+<blockquote>
+126545    	[CTabFolder] API to enable / disable Close-Button on TabItems
+<br>207511 	Mac SWT callback generates incorrect assembly code
+<br>219165 	JVM: AttachCurrentThread crashing as of 1.5
+<br>221924 	Perspective Switcher context menu appears in bad location
+<br>223846 	[Viewers] Open Resource dialog causes 'Ignored reentrant call while viewer is busy'
+</blockquote>
+
+<h2> SWT Build 3.4 35 - Thursday March 20, 2008</h2>
+<blockquote>
+4727 DCR: FileDialog to use overwrite prompt (1GFDH0D)
+<br>146643 	awt frame on osx works on first initialization of workspace but not after
+<br>183830 	"Xlib: unexpected async reply" and deadlock in GLX.glXMakeCurrent(int, int, int)
+<br>193362 	update() does not flush paints (Display#readAndDispatch() needed)
+<br>210858 	Editing text has no horizontal scrollbar
+<br>222798 	[Shell] SWT.MAX does not work
+<br>223170 	Memory leaks and number of handles growth
+<br>223179 	BIDI3.4:HCG Hebrew data in Java editor is treated different from Win OS
+<br>223397 	Set/Get API of DateTime widget crashes the control example
+<br>223591 	Button.print(GC) does not work on Windows.
+</blockquote>
+
+<h2> SWT Build 3.4 35 - Thursday March 20, 2008</h2>
+<blockquote>
+215204  read-only Combo.setText() does not fire Modify event on GTK
+<br>220852 	Combo control does not fire modify events on gtk+
+<br>222120 	DND - how to detect which tab item is involved in a DropTargetEvent
+<br>222281 	Table events screwed up if asyncExec happens on focus lost / out
+<br>222896 	Tree#getColumnCount() can be slow because of Win32 API calls
+<br>223082 	javadoc warning in N200803172000
+</blockquote>
+
+<h2> SWT Build 3.4 34 - Tuesday March 18, 2008</h2>
+<blockquote>
+78825   [CCombo] Tab doesn't go to next entry field when list is down
+<br>142981 	[CCombo] CCombo doesn't lose focus
+<br>175689 	[CCombo] CCombo#deselectAll() doesn't clear Text
+<br>183087 	Windows trees don't have to always have scroll bars
+<br>202005 	GC Transform rotate(90) or rotate(-90) not applied to several methods
+<br>204102 	Eclipse freezes on opening java source file (with spell checking enabled)
+<br>204891 	TabFolder.setSelection() does not update focus hilight on OS X
+<br>210870 	Toolbar Drop Down type doesn't appear to do anything
+<br>212086 	gc.drawXXX fails if matrix is rotated
+<br>214944 	[browser] xulrunner 1.9-based Browser has no initial background
+<br>215243 	Wrong drawing behaviour using SWT and Cairo drawing a text and then an oval
+<br>215988 	Transform.rotate does not work when angle is 90 and GC.setLineWidth(0)
+<br>217831 	DateTime different size than other widgets
+<br>220112 	[SashForm] Add getter/setter methods to control SashForm.SASH_WIDTH
+<br>220836 	[Browser] SWT Safari Browser uses wrong 'user-agent' header resulting in some websites disabling functionality
+<br>220974 	ClassCastException in Safari
+<br>220975 	New Java Project Wizard doesn't work
+<br>221363 	Disappearing Text with Tabs & Quotes
+<br>221669 	DateTime returns wrong values under Windows
+<br>221687 	[Viewers] TableViewer scrolls after selection on AIX
+<br>221957 	Huge Cursor in huge Text control
+<br>221958 	Transform.setIdentity() method is needed
+<br>222305 	ToolItem should call ToolBar.destroyItem
+<br>222381 	AIOOBE in GIFFileFormat
+<br>222872 	Fixes for running SWT tests on p2 builds
+</blockquote>
+
+
+<h2> SWT Build 3.4 33 - Tuesday March 11, 2008</h2>
+<blockquote>
+184932    	[SWT] Popup window with SWT.ON_TOP style bit stays opened when minimize the application window
+<br>205796 	[Browser] Navigate / Open External Javadoc does not work on method anymore
+<br>209428 	[Browser] crash on mouseover
+<br>210825 	NSBox seems to be a few pixels short
+<br>211362 	Crash running paint example
+<br>211885 	ScrolledComposite control's setOrigin method not the same as moving scroll bar on Windows
+<br>216346 	NullPointerException in Display.asyncExec
+<br>221302 	[browser] Eclipse crashes everytime the internal browser component is activated
+<br>221512 	Ctrl-Click in package explorer select the item only on the second click
+<br>221559 	Cut/Paste does not fire modifyText events in Combo
+<br>221665 	NPE using N20080306 once closing the Welcome page
+<br>221683 	Label always wraps
+<br>221936 	Cannot paint on label with text.
+</blockquote>
+
+<h2> SWT Build 3.4 32 - Tuesday March 04, 2008</h2>
+<blockquote>
+26095    	DCR - possibility to print the content of SWT widgets
+<br>117335 	[Accessibility] Mac: cannot select checkboxes in trees, lists
+<br>152547 	Clarify what SWT.NO_FOCUS means
+<br>166381 	alignment support for RowLayout and RowData
+<br>178587 	[ScrolledComposite] Accessibility: ScrolledComposite widgets don't automatically scroll when controls are tabbed to inside the composite
+<br>186634 	Spinner: getSelection() during modify event should provide a mechanism to detect if the user has typed a value that is out of range
+<br>198430 	Font not set correctly in GC supplied to events of virtual table/tree
+<br>210306 	Menu items created in menuNeedsUpdate: do not show up
+<br>210826 	Enabled on NSButton seems to have no effect
+<br>210827 	Add pop-up menu, remove, select and crash
+<br>214030 	setTextLimit for SWT Spinner widget
+<br>214599 	Link Widget: hyperlink parsing mangles certain input strings
+<br>215183 	Shell with ON_TOP style stay behind of Shell with APPLICATION_MODAL style.
+<br>216900 	StyledText: Cannot overtype contents if text limit reached
+<br>217374 	VoiceOver does not work on Leopard (10.5.1)
+<br>217446 	TextLayout#getBounds() should return minimal bounds also if width was set
+<br>218295 	Clicking into white area besides tree with SimpleStyledCellLabelProvider selects single element
+<br>218502 	event loop exception starting mozilla
+<br>218606 	Shells no longer added to defaultWindowGroup as of 2.10.x
+<br>219306 	StyledText.getTextBounds does not work when using SWT.WRAP
+<br>219307 	GlyphMetrics behaves differently on carbon
+<br>219582 	SWT.KeyDown event.keyCode reports wrong key number for Marathi & Bengali
+<br>220057 	DND exception when dragging file within a Common Navigator in 3.4M5
+<br>220246 	Whenever the internal browser component is loaded, eclipse crashes
+<br>220398 	implement Table and Tree checkboxes
+<br>220462 	TableItem/Treeitem getBounds not implemented
+<br>220583 	All the JUnits with ui are failing on Linux for N20080227-0010
+<br>220836 	[Browser] SWT Safari Browser uses wrong 'user-agent' header resulting in some websites disabling functionality
+<br>220997 	Path.addString uses incorrect Transform
+<br>221128 	Mozilla fires wrong events when executing java script
+<br>221166 	Graphics Example GraphicAntialiasTab doesn't work
+</blockquote>
+
+<h2> SWT Build 3.4 31 - Tuesday February 26, 2008</h2>
+<blockquote>
+78974    	[Browser] EventListener:changing() called twice on Browser:setText()
+<br>103124 	On Linux,Key event doesn't stop propagating after it is responsed by an "ActionSet".
+<br>210430 	Shell.setMenuBar() does not work
+</blockquote>
+
+
+<h2> SWT Build 3.4 30 - Friday February 22, 2008</h2>
+<blockquote>
+28132 Repaint cheeze with editor bottom right corner
+<br>173794 	[Browser Mozilla]: Display-Filter (SWT.MouseWheel) no longer working when focus set to Browser
+<br>190992 	String truncation in non-English cases.
+<br>195585 	HTMLTransfer does not support non-English text.
+<br>210857 	Text box without 'SWT.V_SCROLL' uneditable
+<br>211284 	[Browser] Browser widget in ON_TOP shell not focused on first click (Mozilla/Safari)
+<br>211357 	FileViewer crashes
+<br>211359 	Apple+Q doesn't quit an SWT app, nor does menu selection of same
+<br>213489 	Increasing height of table rows via MeasureItem listener affects row height but not line height (OS X)
+<br>213937 	The Method getBorderWidth () from Control returns 0 every time
+<br>214557 	Combo#add(String,int) does update selection-index
+<br>215252 	frequent "invalid thread access"
+<br>217371 	[Browser] Support click-through for Browser and toolbar buttons
+<br>217842 	NPE in GC when creating problems View
+<br>218229 	API to open an URL in the OS default browser
+<br>218234 	Display keeps lock on runnable for timerExcec when disposed
+<br>218682 	2nd GC erases the first.
+<br>218700 	Tree getHeaderHeight not implemented
+<br>218702 	Tree getSelectionCount not implemented
+<br>219326 	Shell with custom region and SWT.NO_TRIM still has border
+<br>219601 	StyledText: Unexpected loss of mouse cursor
+<br>219621 	Tree get/set column order not implemented
+<br>219693 	Eclipse crashes when Browser closed with command-W
+</blockquote>
+
+<h2> SWT Build 3.4 29 - Tuesday February 12, 2008</h2>
+<blockquote>
+196191  Performance Improvement for JPEGFileFormat class initializer
+<br>199811 	Calling TableItem#setText(int,String) with sortDirection set to SWT.DOWN extermley slow
+<br>211360 	Graphics example can't select items from tree-menu
+<br>215335 	[browser] browser.execute(s) does not work on Linux/Mozilla when using line comments
+<br>217430 	Certain SWT controls do not display under linux
+<br>217764 	setting Device.DEBUG before creating Display fails silently
+<br>217854 	[Leopard] Errors logged during GC tests
+<br>218088 	Hover help in editor re-appears after restoring from minimze
+<br>218212 	Text failing jUnit tests
+<br>218215 	shells created too large with multple monitors
+<br>218514 	Control.print() does not work with gtk 2.4.x and greater
+<br>218547 	Tree selectAll doesn't
+</blockquote>
+
+
+<h2> SWT Build 3.4 28a - Thursday February 07, 2008</h2>
+<blockquote>
+217374 	VoiceOver does not work on Leopard (10.5.1)
+<br>218061 [browser] GRE version range upper bound should include 1.9.*
+</blockquote>
+
+<h2> SWT Build 3.4 28 - Wednesday February 06, 2008</h2>
+<blockquote>
+217849    	JUnit test failure - FontData
+<br>217854 	[Leopard] Errors logged during GC tests
+<br>217915 	[64] FileDialog consistently crashes
+</blockquote>
+
+<h2> SWT Build 3.4 27 - Tuesday February 05, 2008</h2>
+<blockquote>
+53608    	TableCursor bounds are wrong. Cursors does not fit TableItem bounds.
+<br>150559 	[DND] No insertion feedback for dragging in a tree on Mac
+<br>182196 	[CCombo] Mouse Listener Support for CCombo
+<br>191252 	Virtual Tree w/ columns: Items appear in wrong order when sortDirection is SWT.DOWN
+<br>198582 	SIGSEGV [libxpcom.so+0xc976d] _ZN13nsCOMPtr_baseD2Ev+0x13
+<br>207819 	JFace tests don't run on WPF
+<br>209016 	[Viewers] Virtual Tree Tests failing on OS X in I20071106-0816
+<br>212823 	Calling Region.add with only 1 polygon point causes a segfault
+<br>213194 	[Browser] setText crash with xulrunner 1.9 stream
+<br>214682 	[Browser] download crashes wih xulrunner 1.9
+<br>214802 	[browser] xulrunner 1.9 uses new interface for authentication
+<br>215388 	Add API to make the DropTarget more open
+<br>216805 	[Browser] shutting down XPCOM glue can lead to crash with sun 1.6 jre
+<br>217154 	Shell.checkOpen incorrectly named
+<br>217161 	List.getItemHeight can return 0
+<br>217179 	Table and Tree return incorrect default background and foreground color
+<br>217180 	TreeItem getBackground, getForeground, getFont not implemented
+<br>217242 	PNG cannot be loaded anymore, worked with releases before
+<br>217319 	Fix Iconify/DeIconify events on Shell
+<br>217336 	Linux mirroring problems
+<br>217470 	BIDI: Custom Draw Tree does not render properly in 2.8
+<br>217746 	Table test failures.
+<br>217758 	Combo test failures
+</blockquote>
+
+<h2> SWT Build 3.4 26 - Tuesday January 29, 2008</h2>
+<blockquote>
+66615    	SWT_AWT.new_Frame occasionally hangs
+<br>71478 	ImageData constructor accepts incomplete pixel data
+<br>133933 	[Browser] KeyDown events not fired on Safari
+<br>190793 	GTK Printing getClipping returns [0,0,1,1]
+<br>196864 	Toolbar should support animated gifs
+<br>198192 	Setting font on TableItem to same font (but different Font object) causes crash
+<br>199495 	in Device.getFontList() every FontData has height=0
+<br>205713 	It displays a wrong character when input "1" character by display.post() method on Mac OS X
+<br>210756 	Closing context menu programmatically does not work on the Mac
+<br>211224 	[Browser] MouseMove and MouseUp events not fired on Safari
+<br>211531 	[Browser] Stop calling HIJavaViewCreateWithCocoaView
+<br>216137 	[Linux] DateTime does not render correctly values < 10.
+<br>216287 	Compiler warnings in N20080123-0010 in swt tests
+<br>216340 	Display.readAndDispatch() always returns true
+<br>216431 	SWT_AWT: sun.awt.EmbeddedFrame is activated incorrectly
+<br>216482 	Different table behaviour after SWT.MeasureItem/SWT.PaintItem event under Windows XP and Vista
+<br>216593 	[browser] unavailable Safari events crash Eclipse
+<br>216614 	NPE in image
+</blockquote>
+
+<h2> SWT Build 3.4 25 - Tuesday January 22, 2008</h2>
+<blockquote>
+16987   [CCombo] does not respond to MouseWheel
+<br>47783 	Jpeg encoding (image height =1)
+<br>86457 	ImageLoader.save() doesn't save images 1 pixel wide
+<br>91317 	Spinner should support negative values
+<br>142965 	[64] Blank splitter dialogs until resized
+<br>166187 	TableItem#getBounds(0) incorrect when adding columns in asyncExec
+<br>182196 	[CCombo] Mouse Listener Support for CCombo
+<br>184063 	Logitech Revolution mouse doesn't scroll down editor when in "free-spinning" mode
+<br>191093 	[Dialogs] FileDialog missing default filter selection
+<br>191413 	Control's tooltip displays abnormally on linux platform.
+<br>193433 	[Combo] Incorrect initial focus in Generate constructor using fields
+<br>197224 	Annoying Message Box "prohibit running ActiveX controls" appear in browser when accessing page with applet
+<br>204127 	[Browser] SWT browser eats eclipse shortcuts when in edit mode
+<br>205351 	[CCombo] Adding a KeyListener changes expected traversal behavior
+<br>206743 	Tree with columns has drawing errors when resizing to a minimum
+<br>207613 	[Leopard] Progress dialog does not properly close on Leopard
+<br>210845 	SWT.Wrap for text labels doesn't wrap
+<br>211188 	Looks like squiggle and error_underline style have fat dash at end
+<br>211865 	Tooltip always prompt up in the wrong place
+<br>212366 	Mac OS X Context menu invocation is mouse down, not mouse up
+<br>213426 	Slow response for SWT Virtual Table Selection
+<br>215431 	Label: SWT.LEFT, SWT.CENTER, SWT.RIGHT not implemented
+<br>215592 	Breaking change in Eclipse 3.4M4 - Images loaded as type SWT.ICON cannot be rendered by GC.drawImage()
+<br>215875 	Table/TreeEditor broken on OS-X since at least I20071218
+<br>215881 	download links on swt main page broken
+</blockquote>
+
+<h2> SWT Build 3.4 24 - Tuesday January 15, 2008</h2>
+<blockquote>
+22261    	SWT should support a tri-state check box
+<br>42488 	Mouse cursor does not hide when typing on Windows
+<br>120192 	org.eclipse.swt.ole.win32.OleAutomation has a reference leak
+<br>139871 	Spinner does not support floating point data entry correctly
+<br>152822 	Incorrect key events reported when NO_FOCUS style used
+<br>158542 	StyledText: background not fully filled when using multi-font
+<br>172784 	FileDialog should provide access to selected filter after closing
+<br>177589 	up/down arrows don't work in a combobox on Linux
+<br>200956 	WinXP: Shell draws focus on setVisible(true)
+<br>210925 	Display.post() with german Umlaut does not work
+<br>211685 	DateTime fires spurious SelectionEvents
+<br>213923 	popup menu has bunch of empty items if it contains many items
+<br>214160 	Issues with transparent images when advanced graphics is on
+<br>214754 	ControlExample's "Select Listeners" has sizing problems
+<br>215148 	Inconsistent Spinner behaviour across platforms
+</blockquote>
+
+
+<h2> SWT Build 3.4 23 - Tuesday January 08, 2008</h2>
+<blockquote>
+49696   [browser] Mouse event listeners does not work in SWT Browser Widget
+<br>73019 	ImageLoader NPE
+<br>194393 	LocationListener#changed is not notified for local links
+<br>205264 	Path.addArc method does not work as expected on Apple OS X
+<br>205736 	[OLE] MS Word OLE Crash
+<br>205866 	SWT.Settings - no notification on Vista
+<br>210063 	[Browser] XGL enabled Suse : Blurred ConfirmEx dialog with long long URL string
+<br>211757 	[Leopard] SWT arrow buttons up and left point down and right in Mac OS X Leopard
+<br>211949 	[Browser] Linux(SLED10), Eclipse crash when XPCOM error in Mozilla OnStateChange callback
+<br>212851 	StyledText - getStyleRanges(int start, int length) returns wrong style range
+<br>212989 	[DateTime] Changing the month and showing a MessageBox leads to infinite SelectionEvents
+<br>213017 	Rollover tooltip for owner-drawn Tree appears behind detached Shell
+<br>213200 	[Leopard] errors logged to console by CGPathGetCurrentPoint
+<br>213247 	Combo box in CVS commit wizard leaves garbage behind on resize
+<br>214037 	Excel + org.eclipse.ui.PartInitException: Invalid Input
+</blockquote>
+
+<h2> SWT Build 3.4 22a - Tuesday December 11, 2007</h2>
+<blockquote>
+187039 Temporary screen cheese in trees when scrolling
+<br>191655 Table#getItem(Point) inconsitent on OSX when used without FULLSELECTION
+<br> 212610 Cannot delete text in Combo box
+<br>212671 table.setToolTipText("") does not disable native tooltips
+</blockquote>
+
+<h2> SWT Build 3.4 22 - Monday December 10, 2007</h2>
+<blockquote>
+21619    	Programmatically dropdown a combo
+<br>37031 	Full screen exclusive (not maximized) support for SWT
+<br>102570 	GTK-BIDI: Coordinate mirroring in GC
+<br>177589 	up/down arrows don't work in a combobox on Linux
+<br>200322 	[Leopard] setRegion of shell doesn't work with the new region on Mac OS X 10.5
+<br>206682 	Combo with SWT.READ_ONLY doesn't fire mouseevents
+<br>210995 	SWT Combo doesn't gain focus during choice selection in Eclipse 3.3/GTK
+<br>211623 	Server editor opens when project node is selected in server view
+<br>211678 	Compiler warnings in N20071201-0010
+<br>212366 	Mac OS X Context menu invocation is mouse down, not mouse up
+</blockquote>
+
+<h2> SWT Build 3.4 21 - Tuesday December 04, 2007</h2>
+<blockquote>
+111259    	[DND] Insertion mark in TreeViewer does not go away on GTK
+<br>143382 	Tree fails to register double-click while tool tip visible
+<br>144907 	[OLE] OLE int->short change to test and apply post-3.2
+<br>191655 	Table#getItem(Point) inconsitent on OSX when used without FULLSELECTION
+<br>197839 	removing paint and erase listeners from Tree don't re-enable native rollover tooltips
+<br>200322 	[Leopard] setRegion of shell doesn't work with the new region on Mac OS X 10.5
+<br>206346 	GTK-BIDI: RTL support in ExpandBar
+<br>208427 	GTK-BIDI: RTL support in MenuItems
+<br>210847 	SWT.ON_TOP on Shell doesn't appear to work
+<br>210861 	Text alignment for text box doesn't work
+<br>210869 	Enabled on toolbar has no effect
+<br>210873 	Icons for tooltip balloons don't work
+<br>210894 	Examples that use StyledText crash on startup
+<br>210942 	Some convenience methods for StyledText
+<br>211194 	Rollover tooltips in owner-drawn Tree only shown after delay
+<br>211195 	Shell decorations flicker when clicking into rollover tooltips in owner-drawn Tree
+<br>211196 	Rollover tooltips displaced in owner-drawn Tree without icons
+<br>211197 	Doubleclick does not work on owner-drawn TreeItem with rollover tooltip
+<br>211220 	Add Browser to ControlExample
+<br>211361 	GraphicsExample crashes
+</blockquote>
+
+<h2> SWT Build 3.4 20 - Tuesday November 27, 2007</h2>
+<blockquote>
+82206    	Solaris SWT GTK 3.1M4 has dependancy on libgcc_s.so
+<br>85699 	[64] Better error message required when running x86-64 SWT on a 32-bit VM
+<br>109888 	Browser fails to load when Mozilla compiled against libstdc++.so.6
+<br>114036 	[build] Support building libswt-awt-XXXX.so on Solaris/Motif
+<br>199292 	[leopard] Snippet260 fails (9A527)
+<br>204289 	Closing context menu programmatically does not work when shell not active
+<br>207394 	[OLE] getLicenseInfo in OleControlSite causes Program Compatibility Error in Vista with some Active X Controls which do not implement IClassFactory2 interface
+<br>208837 	[Browser] On Linux, Browser does not send focus/activation events
+<br>209960 	Combo widgets cause area beneath them to flicker when resized
+<br>210359 	Shouldn't crash VM if running on pre-Objective C 2.0 systems
+<br>210412 	GC.setLineAttributes() uses "join" as "cap"
+</blockquote>
+
+<h2> SWT Build 3.4 19 - Tuesday November 20, 2007</h2>
+<blockquote>
+82295    	properties http.proxyPort and http.proxyHost ignored by SWT browser
+<br>100095 	[DND] Consider making URLTransfer public
+<br>124965 	SWT Table scrolling performance degrades as the number of columns increases
+<br>165468 	INHERIT_FORCE and editable Text produces garbage on scroll
+<br>206432 	[Browser] Linux: SSL navigation is disabled when Mozilla profile directory does not exist
+<br>206894 	Linux - Control.setEnabled disables more than it should
+<br>207181 	FAQ needed to describe: "Modal dialogs do not stay on top on Solaris 10 with CDE / dtwm"
+<br>209014 	GTK-BIDI: RTL BIDI problems in SWT StyledText
+<br>209339 	Modal shell loses focus when a second shell is opened.
+<br>209417 	Please add files intended for Win64 on Itanium support.
+<br>209650 	Cleanup after Windows browser control dispose is flawed
+<br>209752 	MenuItem#toString() behaves differently across platforms.
+<br>209854 	SWTException when loading large win32 ICO files
+<br>209863 	Path leaks currentFigure and currentPoint when disposed
+<br>210214 	[OLE] Snippet265 leaks
+<br>210284 	Auto hide scrollbars in Tree/Table/List
+<br>210303 	bad release in NSBezierPath
+</blockquote>
+
+<h2> SWT Build 3.4 18 - Tuesday November 13, 2007</h2>
+<blockquote>
+42730    	[Clipboard] NPE while closing workbench on calling Clipboard.dispose
+<br>141282 	DnD doesn't support special characters
+<br>188271 	Ampersand not shown in tooltips
+<br>191484 	move initial build scripts from build project into swt
+<br>194143 	WM_MOUSEWHEEL can send fractional deltas
+<br>205648 	Vertical Scrolling with Mouse Wheel not working in Editors
+<br>205745 	NullPointerException in TableItem.getBounds because of SWT.EraseItem listener
+<br>206714 	Combo#toString() behaves differently on linux/gtk/x86_64 and windows
+<br>206715 	DateTime#toString() behaves differently on linux/gtk/x86_64 and windows
+<br>207052 	Tree Listening to MeasureItem returns incorrect Client Area
+<br>207628 	Keyboard selection does not work with context menus on Leopard
+<br>208503 	SWT_AWT bridge on OS X reports incorrect message with failure
+<br>208571 	[leopard] Crash when using Eclipse 3.3.1.1 and Instantiation's SWT Designer
+<br>208649 	cannot input china punctuation
+<br>208675 	Image cheese when width of TreeColumn = 0
+<br>208816 	Update custom build.xml for source generation
+<br>208975 	Unable to enter vertical bar (|) in Eclipse for mac OS X with French Canadian keyboard
+<br>209014 	GTK-BIDI: RTL BIDI problems in SWT StyledText
+<br>209022 	DateTime cannot be shown without a border
+<br>209028 	Table and List test failures
+<br>209039 	display.getMonitors() not implemented
+<br>209088 	Shell.getAlpha() returns inconsistent values
+<br>209225  Program.findProgram returns null
+<br>209256 	[website] Update links to IBM docs
+<br>209468 	StyledText#setSelection() does not reveal caret at end of line
+<br>209543 	Call Shell.setFullScreen(true) make the shell invisible
+</blockquote>
+
+<h2> SWT Build 3.4 17 - Tuesday November 06, 2007</h2>
+<blockquote>
+168979    	transparent shell
+<br>184507 	Tree#setItemCount and Table#remove are slow when removing items
+<br>202328 	investigate OpenGL support on Solaris
+<br>204393 	TitleAreaDialog's banner image has extraneous white borders
+<br>204561 	Table Javadoc is conflicting with TableEditor
+<br>205794 	Provide SWT.UNDERLINE_SQUIGGLE text style
+<br>207827 	[Leopard] VM crash while dismissing dialog
+<br>207927 	ITALIC and BORDER_* unreadable
+<br>208027 	Printer prints one page too much when page range restricted
+<br>208356 	[Browser] Inactive scroll bar for Browser widget
+<br>208566 	[64] cheese can appear if SetPoint is running
+</blockquote>
+
+
+<h2> SWT Build 3.4 16b - Thursday November 01, 2007</h2>
+<blockquote>
+208007 	line wrap at page end makes page number disapear when printing
+<br>208188 	MenuItem#isEnabled() works differently across platforms
+<br>208209 	Combo immediately closes
+</blockquote>
+
+<h2> SWT Build 3.4 16a - Thursday November 01, 2007</h2>
+<blockquote>
+78856    	[Clipboard] SWT has no support for Image copy to clipboard
+<br>205937 	borderStyle and underlineStyle flags need clarification
+<br>207558 	Line numbers are printed too low
+</blockquote>
+
+<h2> SWT Build 3.4 16 - Wednesday October 31, 2007</h2>
+<blockquote>
+202782  Indent in Column Header when sorting on Windows Vista
+<br>204571 	Eclipse process halted when interacting with tree.
+<br>204953 	[64] New project wizard does not work on Vista 64 bits
+<br>206315 	GTK-BIDI: RTL support in CoolBar.
+<br>207744 	[Contributions] Debug toolbar dropdown menu closes when submenu hidden
+<br>207852 	Widget disposed error when running UI test suite on WinXP
+<br>207901 	custom drawn tree: 1st selection behaves oddly
+</blockquote>
+
+<h2> SWT Build 3.4 15a - Monday October 29, 2007</h2>
+<blockquote>
+206315    	GTK-BIDI: RTL support in CoolBar.
+<br>207266 	Target editor's content tab buttons disappear completely
+<br>207744 	[Contributions] Debug toolbar dropdown menu closes when submenu hidden
+<br>207852 	Widget disposed error when running UI test suite on WinXP
+</blockquote>
+
+<h2> SWT Build 3.4 15 - Monday October 29, 2007</h2>
+<blockquote>
+19602    	[Printing] Line numbers aren't printed
+<br>57151 	[64] 64 bit support needed for Windows XP 64-Bit Edition
+<br>117580 	Modal behavior on GTK when I ask for modeless
+<br>205795 	UNDERLINE_ERROR text style does not work for IME strings
+<br>206602 	GTK-BIDI: RTL support in ColorDialog
+<br>206609 	GTK-BIDI: RTL support in FontDialog
+<br>206661 	GTK-BIDI: RTL support in DirectoryDialog.
+<br>206722 	GTK-BIDI: RTL support in FileDialog.
+<br>206743 	Tree with columns has drawing errors when resizing to a minimum
+<br>206749 	GTK-BIDI: RTL support in MessageBox
+<br>206786 	GTK-BIDI: RTL support in ScrollBar.
+<br>207165 	org.eclipse.swt.win32.win32.x86 version not incremented for 3.3.1.1
+<br>207263 	NPE in org.eclipse.swt.widgets.Control.WM_MENUSELECT
+<br>207266 	Target editor's content tab buttons disappear completely
+<br>207347 	Snippet279 draws bad (draw icon with GDI+ gc)
+<br>207472 	"Dancing Scrollbar" in Tree
+<br>207605 	GTK-BIDI: RTL support in PrintDialog
+</blockquote>
+
+<h2> SWT Build 3.4 14 - Tuesday October 23, 2007</h2>
+<blockquote>
+205818 Adherent TextStyles must be continuous
+<br>205928 underline text style needs clarification
+<br>206743 Tree with columns has drawing errors when resizing to a minimum
+<br>206806 getItemCount() incorrect in Vista for VIRTUAL trees
+</blockquote>
+
+<h2> SWT Build 3.4 13 - Tuesday October 16, 2007</h2>
+<blockquote>
+41364 GTK-BIDI: RTL support in Combo
+<br>206095 	swt-3.3-gtk-linux-x86 Printer crash under Ubuntu Gutsy
+</blockquote>
+
+<h2> SWT Build 3.4 12 - Tuesday October 09, 2007</h2>
+<blockquote>
+57151  		[64] 64 bit support needed for Windows XP 64-Bit Edition  
+<br>142965  [64] Blank splitter dialogs until resized  
+<br>198673  SWT: Program.getImageData() returns null when icon name has quotes.  
+<br>198981  ppc/motif Xdefaults not honored on version 3.3  
+<br>205130  Expanding/Collapsing tree nodes in Quick Windows closes window  
+<br>205459  Exception in Mozilla browser code not caught, leads to crash  
+</blockquote>
+
+<h2> SWT Build 3.4 11 - Tuesday October 02, 2007</h2>
+<blockquote>
+73645    	Custom caret problems
+<br>115666 	BIDI mirroring not implemented on GTK
+<br>203571 	Key event still gets response when ModalDialog is up
+<br>205063 	Compare viewer does not draw background colors for changes (StyledText)
+<br>205099 	Creating a button clears mnemonics
+</blockquote>
+
+<h2> SWT Build 3.4 10c - Monday September 24, 2007</h2>
+<blockquote>
+204330 [Launcher] JVM crash on splash teardown on linux.gtk.x86
+</blockquote>
+
+<h2> SWT Build 3.4 10a - Wednesday September 19, 2007</h2>
+<blockquote>
+199137 Debug view scrolls right when thread suspends
+<br>203648 Icon above cursor on drag and drop
+<br>203817 Scrolled custom draw trees not drawn correctly in RTL
+</blockquote>
+
+<h2> SWT Build 3.4 10 - Monday September 17, 2007</h2>
+<blockquote>
+165108    	Spinner can not apply the value that input to text-box.
+<br>171909 	[DND] SWT.Expanded Event not given from DND-Feedback sometimes
+<br>195254 	[consistency] Left Mouse Down is Not recieved on TabFolder on Linux.Works fine on Windows
+<br>196810 	Compiler warnings in N200707170010
+<br>203491 	SWT pre-built libraries in org.eclipse.swt.carbon.macosx not universal
+</blockquote>
+
+<h2> SWT Build 3.4 09 - Tuesday September 11, 2007</h2>
+<blockquote>
+139647    	StyledText.getOffsetAtLocation can't return offset at end of a line
+<br>201853 	Caret position is incorrect when clearing full selection by clicking left mouse button in Text widget
+</blockquote>
+
+<h2> SWT Build 3.4 08a - Tuesday September 04, 2007</h2>
+<blockquote>
+179168 	Focus change will make the uncomposed text lost in IME
+<br>187125 [DND] Image effect not showing in RTL
+<br>193515 	[DND] Cannot drag a single character selection in StyledText
+<br>196487 	Korean input text does not display correctly with C4EB
+<br>199099 	ExpandBar is not high contrast complient. Cannot manually fix this issue.
+<br>199156 	ExpandBar does not scroll properly
+<br>201326 	computeSize on empty Link widget returns 0 for height
+</blockquote>
+
+<h2> SWT Build 3.4 08 - Tuesday August 28, 2007</h2>
+<blockquote>
+108591    	SWT StyledText does not support inline Input method
+<br>148530 	Text SWT.MULTI with backgroundimage don't show deleted characters
+<br>165108 	Spinner can not apply the value that input to text-box.
+<br>180686 	DBCS3.3: strikeout rendering issue on WindowsVista
+<br>189292 	[DND] FileTransfer disables image feedback
+<br>192861 	VM crash opening browser widget with much html
+<br>196791 	SWT ToolTip does not render Arabian text tooltip correctly on SLED10 Linux
+<br>200101 	TableColumn sets image when SWT.CENTER alignment is used.
+<br>200153 	Provide AllowSetForegroundWindow in org.eclipse.swt.internal.win32.OS
+<br>200694 	TableItem.getBounds() wrong.
+<br>201181 	Basic Authentication of XMLHttpRequest crashes Eclipse
+<br>201217 	NPE in Canvas.kEventControlSetFocusPart(Canvas.java:150)
+</blockquote>
+
+<h2> SWT Build 3.4 07 - Tuesday August 21, 2007</h2>
+<blockquote>
+37031 	Full screen exclusive (not maximized) support for SWT
+<br>45294 	[Jobs] NPE in .log using 1021
+<br>76182 	Display.setSynchronizer considered harmful
+<br>140270 	Mouse wheel does not fire selection event on Scale
+<br>150365 	setImeInputMode() is not correct with MS-IME2000
+<br>164755  Inconsistent z-order for ON_TOP shells between win32 and MacOS
+<br>189149 	Scale widget freaks out if layout() is called from a selection listener.
+<br>194707 	Display.getDefault() deadlocks with Display constructor
+<br>199109 	Changing foreground color on Canvas does not work
+<br>194146 	CVSUIPlugin.stop not being called
+<br>196979 	Shell.getBounds() wrong when shell is maximized.
+<br>197964 	Table.setBackground() fails if TableItem.setBackground() was used
+</blockquote>
+
+
+<h2> SWT Build 3.4 06b - Tuesday August 14, 2007</h2>
+<blockquote>
+TextLayout improvements
+<br>199463 	org.eclipse.swt.List is not keyboard-only accessable
+</blockquote>
+
+<h2> SWT Build 3.4 06a - Wednesday August 08, 2007</h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+7747    Arrow keys should switch focus between buttons
+<br>198922    	CTabFolder code causes Widget is disposed exception
+<br>199133 	Combo#cut() does not place deleted text to clipboard
+</blockquote>
+
+<h2> SWT Build 3.4 06 - Thursday August 02, 2007</h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+165108  Spinner can not apply the value that input to text-box.
+<br>178100 	Spinner.getSelection does not return correct value within Modify listener
+<br>180686 	DBCS3.3: strikeout rendering issue on WindowsVista
+<br>194275 	CTabFolder close box should highlight without needing mouse move
+</blockquote>
+
+<h2> SWT Build 3.4 05 - Tuesday July 31, 2007</h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+121978  spinner's listener problem on Mac
+<br>153936  Eclipse freezes when opening an editor
+<br>165108 	Spinner can not apply the value that input to text-box.
+<br>189292 	[DND] FileTransfer disables image feedback
+<br>195650 	Multiselection with Shifht ARROW_UP/DOWN not working on MAC
+<br>197431 	Spinner.getSelection() doesn't return the correct value if it has been updated by typing
+<br>198053 	Invoking spinner.getSelection() in a modify event causes infinite loop
+</blockquote>
+
+<h2> SWT Build 3.4 04 - Tuesday July 24, 2007</h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+49724    	Tree computeSize different between platforms
+<br>167562 	SIGSEGV in Tree#destroyItem()
+<br>179464 	Combo doesn't allow to change background color more than once
+<br>179773 	TreeViewer setSelection does not scroll horizontally to show selection
+<br>191260 	NPE in Display.readImageRef
+<br>192700 	CCombo does not loose focus when hidden
+<br>193181 	Gdip.Graphics_FillRectangle needs to flip the rect if width < 0 or height < 0
+<br>193213 	ArrayIndexOutOfBounds when initializing GC
+<br>193561 	public Image (Device device, String filename) fails on WinCe
+<br>194702 	[browser]Click URL linked to a new window, pop up two browser window
+<br>195650 	Multiselection with Shifht ARROW_UP/DOWN not working on MAC
+<br>197336 	Negative values not displaying with Read-Only style combo.
+</blockquote>
+
+<h2> SWT Build 3.4 03 - Tuesday July 17, 2007</h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+177578    	ExpandItem (of the ExpandBar) returns wrong header height in Gnome (Debian Linux)
+<br>192861    	VM crash opening browser widget with much html
+</blockquote>
+
+
+<h2> SWT Build 3.4 02 - Tuesday July 10, 2007</h2>
+
+
+<h2> SWT Build 3.4 01 - Tuesday July 3, 2007</h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+110092 - [WorkbenchLauncher] Progress in splash cannot render in Chinese
+<br>161863 - Execution flag for build.sh in src.zip missing
+</blockquote>
+
+<h2> SWT Build 3.3 045g - Friday June 8, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+191741 - cheese in java editor
+</blockquote>
+
+<h2> SWT Build 3.3 045f - Thursday June 7, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+191412 - FocusIn and FocusOut events are processed with different cases in Shell.
+</blockquote>
+
+<h2> SWT Build 3.3 045e - Thursday June 7, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+191372 - Cannot unminimize eclipse from dock
+</blockquote>
+
+<h2> SWT Build 3.3 045d - Thursday June 7, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+179945 - GC constructor thread invalid access missing from API Javadoc  
+<br>179946 - GC dispose thread invalid access missing from API Javadoc  
+<br>191072 - Existing shell window title gets overwritten  
+</blockquote>
+
+<h2> SWT Build 3.3 045c - Tuesday June 5, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+180482 - Synchronize view sometimes goes deafult color when ctrl adding files
+</blockquote>
+
+<h2> SWT Build 3.3 045b - Friday June 1, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+190262 - CCombo doesn't receive key-events  
+<br>190480 - regression: FocusOut not fired for Texts in an SWT.APPLICATION_MODAL shell  
+</blockquote>
+
+<h2> SWT Build 3.3 045a - Thursday May 31, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+129456 - SWTSpy code has no license specified  
+<br>149040 - Change javadoc for Table addSelectionListener  
+<br>189992 - Column in problem view not properly refreshed when resizing the column width  
+</blockquote>
+<h3><a NAME="Other changes in this build"></a>Other changes in this build</h3>
+<ul>
+<li>Javadoc bash</li>
+<li>Copyright update</li>
+</ul>
+
+<h2> SWT Build 3.3 045 - Thursday May 31, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+158043 - [Mac] Right clicking on app in Dock and selecting Quit does nothing if file needs to be saved  
+<br>173559 - Javadoc for GC methods requiring advanced graphics  
+<br>178758 - SWT.MOVEMENT_* needs better Javadoc  
+<br>185862 - AIX 5.3 motif - Characters above \u007f show as "iso8859" in some swt widgets  
+<br>189339 - SWT event loop doesn't dispatch Apple Event.  
+<br>189465 - Browser can crash on RHEL3 if xulrunner is present (motif only)  
+<br>189862 - Link to wrong file on Snippets page  
+<br>189960 - [browser] executing window.print() does not print  
+<br>189970 - GC drawImage fails on bidi + icon + double buffered  
+<br>190033 - add library build support for s390  
+</blockquote>
+
+<h2> SWT Build 3.3 044g - Friday May 25, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+183430 - [DND] Drag and Drop between groups causes Eclipse thread to hang in COM.DoDragDrop() indefinitely.  
+<br>188932 - Can't enter paths in Text fields on Red Hat Workstation 5  
+</blockquote>
+
+<h2> SWT Build 3.3 044f - Friday May 25, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+188859 - [render] colored labels shifted to the right and margin smaller between icon and text  
+</blockquote>
+
+<h2> SWT Build 3.3 044e - Thursday May 24, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+181410 - [Browser] browser steal focus on IE7  
+<br>186722 - Foreground color not used from EraseItem callback  
+<br>187273 - Dialog package explorer on move reorg user input page scrolled  
+</blockquote>
+
+<h2> SWT Build 3.3 044d - Thursday May 24, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+185607 - Can't copy and paste into dialog text fields from some applications
+<br>187971 - Custom Draw Tree brings cheese when using Image and Bold  
+<br>188265 - Trees flicker when focus changes  
+<br>188381 - Tree Viewer Collapse Extremely Slow on Vista  
+<br>188567 - TreeEditor closes CCombo after 500ms  
+</blockquote>
+
+<h2> SWT Build 3.3 044b - Thursday May 17, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+185559 - Eclipse crashes with "JVM terminated. Exit Code=1  
+<br>187560 - READ_ONLY combos not tall enough  
+<br>187597 - BeginBufferedPaint does not work in RTL and advanced  
+</blockquote>
+
+<h2> SWT Build 3.3 044a - Wednesday May 16, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+183503 - Text formatting finishes too early when pasted
+</blockquote>
+
+<h2> SWT Build 3.3 044 - Wednesday May 16, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+185916 - StyledText.setSelectionForeground(Color) has no effect  
+<br>186843 - [OLE] IlegalArgumentException while closing a dialog 
+<br>187215 - Enabling owner draw removes horizontal scrollbar  
+</blockquote>
+
+<h2> SWT Build 3.3 043 - Wednesday May 16, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+55142 - Horizontal scrollbar disabled with editor content horizontally scrolled  
+<br>66101 - [browser] Embedded browser makes annoying "click" sound  
+<br>182083 - Redraw artifacts using GlyphMetrics  
+<br>183528 - Editor goes bezerk when pasting Indian script  
+<br>184916 - Variables view not painted correctly after column resize  
+<br>184950 - cheese in the console  
+<br>185231 - Mac: Cannot get rid of native tooltip in a table with columns  
+<br>185910 - Custom drawing listeners produce display artifacts when used with virtual TreeViewer  
+<br>186378 - To input Japanese character in Java editor causes dot garbages ONLY at first.  
+</blockquote>
+
+<h2> SWT Build 3.3 042 - Tuesday May 15, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+67652 - some GC calls are off by one pixel in mirrored mode  
+<br>158122 - BIDI: StyledText does not paint selection well when mirrored  
+<br>186580 - GC#drawRoundRectangle looks ugly on advance mode  
+<br>186611 - Alpha channels being lost on Windows XP classic theme  
+<br>186757 - No context menus in tables  
+</blockquote>
+
+<h2> SWT Build 3.3 041 - Friday May 11, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+75813 - [browser] StatusTextEvent not fired when hovering over link on the mac  
+<br>120725 - [DND] Drag and Drop - Snippet185 fails  
+<br>154036 - [Browser] Cannot Edit a Html IFrame which is in swt  
+<br>163716 - Benchmark difference between SWT-GTK Linux and SWT windows  
+<br>164120 - StyledText can open out of sync with scrollbar  
+<br>177156 - [Browser] The javascript 'top.close() ' crashes eclipse  
+<br>182547 - tree tooltip problems with "activation follows mouse" (tweakui/x-mouse)  
+<br>183640 - Combo on Linux missing, doesn't show up. FormData  
+<br>184111 - [DND] Not possible to drag multiple classes to a new package  
+<br>184592 - Calling List#setTopIndex() on Lists created with SWT.V_SCROLL scrambles the widget  
+<br>185089 - Compile error in org.eclipse.swt.examples/plugin.xml  
+<br>185313 - Inconsistency with focus on selected action  
+<br>185529 - horizontal scrollbar missing in owner drawn tree  
+<br>185532 - wrong selection length in owner drawn table  
+<br>185534 - Table sends MenuDetect twice  
+<br>186028 - BIDI: GC.getStyle() never returns SWT.RIGHT_TO_LEFT in SWT.DOUBLE_BUFFERED mode on Vista  
+<br>186034 - NPE in Shell.filterProc  
+<br>186054 - [DND] Combo Drag-and-drop performed twice  
+<br>186335 - Eclipse active without shell activation events  
+<br>186448 - Exceptions selecting tree items  
+<br>186557 - No Deactivate events from ON_TOP shells  
+</blockquote>
+
+<h2> SWT Build 3.3 040 - Tuesday May 8, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+150357 - [Linux] [cairo] GC.setAdvance(true) and subsequent drawing of images fails  
+<br>178779 - [typing] IAE in JFaceTextUtil.getPartialTopIndex()  
+<br>180511 - [typing] Editor flashes when extending selection by word with Ctrl+Shift+Right  
+<br>181843 - On Mac, Widget.kEventControlTrack(int, int, int) inserts unacceptable delays into asyncExec message processing  
+<br>185263 - Link widget calculates incorrect width when "&" is part of text  
+<br>185617 - [Presentations] AIOBE on CTabFolder setSelectionBackground  
+</blockquote>
+
+<h2> SWT Build 3.3 039b - Wednesday May 2, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+184266 - [Viewers] Tree on Extensions page initially scrolled to the right
+<br>185090 - Cannot Start (VM crash)
+</blockquote>
+
+<h2> SWT Build 3.3 039a - Wednesday May 2, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+184922 - GTK: crash when calling Table.getItemHeight()
+</blockquote>
+
+<h2> SWT Build 3.3 039 - Tuesday May 1, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+184774 - Copy-paste error in SWT.RIGHT javadoc  
+<br>184836 - Missing shell activation events
+</blockquote>
+
+<h2> SWT Build 3.3 038 - Monday April 30, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+127839 - many ControlExample example widgets never lose their background  
+<br>127979 - backgroundimage bug in gnome  
+<br>136332 - Shell.getSize is wrong for non-decorated shells  
+<br>136739 - SWT Table always has lines visible in GTK  
+<br>141687 - Background with INHERIT_DEFAULT has wrong origin for children  
+<br>149208 - Link widget foreground color not set  
+<br>150751 - In GTK, setBackgroundImage and setBackgroundMode failed when children setForeground  
+<br>153191 - setting NO_BACKGROUND style on Canvas turns it fully black  
+<br>153197 - Canvas' parent does not lose background image  
+<br>160292 - NPE when opening existing workspace on Motif  
+<br>166956 - [Browser] SSL Security Panel doesn't response after shown on XULRunner1801 at SuSe Linux 10  
+<br>167686 - Background/Foreground Color style bit not respected without a border/scroll bar  
+<br>168034 - Deadlock in browser control (IE?)  
+<br>169290 - [browser] Different behavor of opening a PDF file when setting URL and clicking the URL  
+<br>169292 - [Browser] Download same file fails after cancel twice  
+<br>169293 - [browser] AD pop-up doesn't show if flash plug-in not installed.(No OpenWindow listener)  
+<br>169664 - On platforms other than Windows, setting background color to Composites inside TabFolder doesn't work as expected (like in Windows)  
+<br>172757 - popups close on resize  
+<br>172792 - Pressing Ctrl+PageUp or PageDown in Search Window crashes JVM  
+<br>174454 - StyledText advanced text services not working for IBM Korean C4EB  
+<br>175259 - SWTException stacktrace misleading when in Display.syncExec  
+<br>176491 - MessageBox consumes 100% CPU on Linux/GTK  
+<br>177374 - SEGV in libswt-pi-gtk-3330  
+<br>178008 - Offsets when rendering text in a tree/table item  
+<br>178388 - CTabItem gets clipped on right hand side  
+<br>178495 - [Browser] Control-N from Browser causes multiple errors.  
+<br>179105 - Revert CTabItem unselected tab separator style for simple tabs  
+<br>179209 - Gray box surrounding help icon looks awful in manifest editors (Linux)  
+<br>179266 - [Presentations] DBCS3.3: tab label "..." isn't added in 3.0 presentation  
+<br>179465 - [Browser]Crash on Linux when visiting www.cnn.com in swt 3.3m6  
+<br>180621 - overlap image transparency failure in 16bits color quality  
+<br>181931 - double-click after opening brace does not select all block  
+<br>182906 - Table selection with CTRL+SHIFT does not send events  
+<br>183368 - [64] JVM crash during startup on Linux x86_64 with I20070418-1012  
+<br>183830 - "Xlib: unexpected async reply" and deadlock in GLX.glXMakeCurrent(int, int, int)  
+<br>184385 - SetItemCount() in Table extremly slow on MacOSX when lowering itemcount  
+</blockquote>
+
+<h2> SWT Build 3.3 036a - Tuesday April 24, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+82500 - TabFolder should not use PtCalcCanvas in getClientArea  
+<br>119109 - KeyEvent.doit does not work for a CCombo  
+<br>133597 - column resize cursor shows at wrong position  
+<br>154101 - GTK Printing  
+<br>162942 - [Browser] Textbox on webpage locks up after pushing "Back"  
+<br>169291 - [DnD] Combo: Incorrect DragStart when mouse hover still inside combo region  
+<br>176307 - [Browser] SWT Browser crashes Eclipse if page contents set by setText contains a named anchor  
+<br>179203 - [OSX] GC(Printer).getClipping() is always [0,0,0,0]  
+<br>179204 - [OSX] Printer instance unusable after cancelJob()  
+<br>179368 - Need to draw text selection using native functionality  
+<br>181956 - Program.findProgram(String) unexpectedly returns null  
+<br>182498 - org.eclipse.swt.widgets.Text is not editable and set a _foreground_ color, the background color changes to default.  
+<br>182748 - StyledText cheese when redrawing selection in FULL_SELECTION mode  
+<br>182777 - Image.getImageData crashes VM in win32.OS.MoveMemory  
+<br>182810 - [OpenGL] GLCanvas.isCurrent() always returns false on Windows  
+<br>182990 - NullPointerException in monitorEnumProc() in Class Display  
+<br>182991 - widget is disposed exception when disposing TableEditor  
+<br>183253 - protected methods in wpf version of TextTransfer are public in others  
+<br>183254 - Mac: calling TreeItem.setText can cause a SetData callback  
+<br>183280 - TableCursor.paint() uses string != "", should be string.length() > 0  
+</blockquote>
+
+<h2> SWT Build 3.3 036 - Tuesday April 17, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+61023 - [Program] Program.getImageData() returns null for executables (*.exe files)  
+<br>81467 - Draw2D fails to print on Mac OSX 10.3
+<br>86785 - [Program] Program.findProgram(<Extension>) doesn't find Icons for IconHandlers  
+<br>96244 - [Program] Program.findProgram does not pick up customized applications for file extensions  
+<br>143707 - sorted Table column background overrides TableItem background  
+<br>148891 - [Program] Program.getImageData() fails for Adobe Acrobat and others.  
+<br>153936 - Eclipse freezes when opening an editor  
+<br>156817 - Background-Color of TreeItem should override Sort-Column-Color  
+<br>164822 - clicking behind selected text in Text widget misplaces the cursor  
+<br>167728 - Vista has cheese when resizing a column  
+<br>177401 - SWT will not build on QNX Neutrino 6.3 and greater  
+<br>178294 - UnsatisfiedLinkError: no swt-com-wpf-3332 or swt-com-wpf  
+<br>178639 - DateTime and Spinner preferred height wrong on Vista  
+<br>178748 - Sort-Column draws over customownerdrawn selection color in Tree  
+<br>178766 - ToolTip jumps around  
+<br>180818 - [Browser] getWebBrowser() method of SWT.Mozilla returns null when called for a browser embedded within a page of a MultiPageEditor  
+<br>181302 - [Linux] SWT Deactivate event no longer fired when a Shell is deactivated  
+<br>181405 - [Browser] Opening web page with applet causes Eclipse to hang  
+<br>182001 - Whacky behaviour in the update manager with WPF drop of Eclipse on Windows Vista  
+</blockquote>
+
+<h2> SWT Build 3.3 035 - Tuesday April 10, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+14654 - [typing] Single line selection on triple-click  
+<br>43746 - [DND] Null Transfer for DND listener causes VM to hang  
+<br>141569 - opening TableEditor on partially-visible item appears twice  
+<br>151891 - Table.computeSize returns wrong value on GTK  
+<br>162578 - [Browser] Changing status message in Ubuntu's built-in Firefox browser doesn't work  
+<br>167301 - AddFontResourceEx missing for ANSI in OS  
+<br>176167 - Form's BusyIndicator hangs workbench on GTK  
+<br>176379 - [64] Memory corruption on Windows x64 in SWT when calling GdiplusStartup  
+<br>176792 - [OLE] org.eclipse.swt.internal.ole.win32.ComObject misbehavior in multithreaded application  
+<br>177123 - Disposed TableEditor recieves resize event and crashes  
+<br>178757 - [consistency] TableColum/TreeColumns last resize listener called when control is resized  
+<br>180031 - [browser] NPE if browser field in WindowEvent not filled in  
+<br>180204 - Tree with style SWT.VIRTUAL | SWT.CHECK doesn't correctly check nodes without children  
+<br>180376 - Eclipse/SWT crashes the JVM  
+<br>180540 - Default behaviour for FileDialog different on Vista  
+<br>180615 - too many paint events have been sent out when key down in Canvas  
+<br>180773 - CTabFolder's getSelection() javadocs is incorrect  
+<br>180821 - Eclipse won't start due to error in System.Windows.FontStretch.FromOpenTypeStretch  
+<br>180863 - Top menus can be populated by accelerators after shell is disabled  
+<br>180997 - Tree: Right aligned columns squish too far to the right.  
+</blockquote>
+
+<h2> SWT Build 3.3 034 - Tuesday March 27, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+150079 - Table/Tree.getItem() returns null when Table/Tree is horizontally scrolled.  
+<br>166198 - Image transparency problem in tree  
+<br>172832 - GC.getClipping( ) difference GTK / Windows  
+<br>174180 - Table.getItem(Point) always returns null when first column is 0 pixels wide  
+<br>177210 - Stack overflow in StyledTextRenderer
+<br>178134 - [browser] Mozilla: reimplement hooking of DOM listeners    
+<br>178426 - [DND] DragSourceEffect creates cheese  
+<br>178597 - Error Message in Console (gtkcellview.c)  
+<br>178735 - [DND] Stops working by simply adding an EraseItem Listener in Tree  
+<br>178767 - CTabFolder with SWT.BOTTOM draws too many tab borders  
+<br>178820 - Suspicious code in CTabItem.drawLeftUnselectedBorder()  
+<br>178907 - CTabItem draws extra vertical separator one pixel too far at bottom  
+<br>179161 - Program.findProgram(String extension) should gracefully handle long input  
+<br>179314 - Error in BIDI screenshot  
+</blockquote>
+
+<h2> SWT Build 3.3 033g - Thursday March 22, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+160703 - Truncations in Preferences panel of Install/Update
+<br>177389 - CTabItem: Tabs on bottom draw with a diagonal line  
+<br>178814 - Tree Selection weird for first column when custom-owner-drawn is used
+</blockquote>
+
+<h2> SWT Build 3.3 033f - Thursday March 22, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+178326 - Last tab on the right of CTabFolder draws badly.  
+<br>178705 - Javadoc warnings in I20070321-1800  
+</blockquote>
+
+<h2> SWT Build 3.3 033b - Wednesday March 21, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+177885 - DBCS3.3: corruptions in editor on WindowsVista  
+<br>178325 - ControlExample Tree tab forgets "Moveable Columns" attribute  
+<br>178466 - Compiler warning in I20070320-1620  
+</blockquote>
+
+<h2> SWT Build 3.3 033a - Wednesday March 21, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+178180 - SWT browser in linux should load plugins under MOZ_PLUGIN_PATH
+</blockquote>
+
+<h2> SWT Build 3.3 033 - Tuesday March 20, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+177927 - Triple-Click broken if drag source installed on StyledText  
+<br>178115 - Javadoc warnings in I20070319-1005  
+<br>178185 - Tabs in Debug configurations are messed up  
+<br>178337 - Cursor selecting text provides no feedback  
+<br>178364 - Type-o in Snippet260  
+</blockquote>
+
+<h2> SWT Build 3.3 032 - Tuesday March 20, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+99564 - Advanced graphics does not support mirrored mode  
+<br>138579 - StyledText: Support for custom double-click (+drag) behavior  
+<br>162015 - infinite loop of repaint events on canvas view in plugin  
+<br>165106 - [consistency] Combo.setItems(...)  
+<br>171562 - IllegalArgumentException when resizing a sashform with a table within  
+<br>173117 - [Browser] add support for binding JavaXPCOM to Browser  
+<br>173573 - Disposing image during printing crashes SWT on MacOS  
+<br>173658 - Transform + SWT.DOUBLE_BUFFERED + SWT.RIGHT_TO_LEFT - not drawn mirrored  
+<br>173684 - TabFolder displayed improperly at small sizes  
+<br>174569 - Baseline for new Search field text doesn't match Mac platform  
+<br>176719 - Display.getActiveShell() returns different results on Windows compared to Linux  
+<br>177858 - Contributions to CTabFolder, CTabItem: add highlight, remove ellipses, icon always showing, right edge of tab rounded  
+<br>178098 - Compiler warnings in 3.3M6 warmup build  
+</blockquote>
+
+<h2> SWT Build 3.3 031 - Monday March 19, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+157797 - Improve javadoc of Control#addKeyListener(..) to tell about changed traversal behavior  
+<br>168107 - CTabFolder - SWT.BORDER + SWT.FLAT = cheese  
+<br>170393 - CTabFolder display bugs  
+<br>175870 - Eclipse gets SIGSEGV  
+<br>176115 - Combo with SWT.READ_ONLY does not trigger ModifyEvent  
+<br>176417 - SWT Tree#setTopItem(TreeItem) on Mac OS X doesn't take the header height into account  
+<br>176510 - SWT (vertical) ScrollBar of Tree on Mac OS X will not fire SWT.Selection on mouse-wheel movements  
+<br>176609 - custom drawn Table with SWT.Virtual items performs to much paint-events  
+<br>177065 - ToolItem Image not painted disabled on Mac OS X (when the ToolItem is set to be disabled)  
+<br>177223 - [DND] DropTargetEffect API  
+<br>177531 - Custom draw problems with focus item in Tree and Table  
+<br>177616 - NullPointerException in Mozilla.Deactivate()  
+</blockquote>
+
+<h2> SWT Build 3.3 030 - Tuesday March 13, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+163934 - [Mac] Eclipse 3.X on Mac OS X TreeEditor Problem  
+<br>175707 - removing MeasureItem listener and clearing items inverts table  
+<br>176594 - Crash with an SWT program  
+</blockquote>
+
+<h2> SWT Build 3.3 029 - Tuesday March 6, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+77174 - Reparenting support on MacOS X  
+<br>108407 - [Contributions] widgets: Context menu too small at borders  
+<br>108651 - DCR - Add API to make a single line text control be a Search field  
+<br>111718 - G2X: Print dialog of Help Contents doesn't function properly on Linux  
+<br>151454 - custom draw resulting from checkbox click does not appear (motif)  
+<br>162687 - SWT_AWT: Crash on Mac when disposing and then creating a new Composite containing an embedded Frame  
+<br>174395 - [Browser] SWTError (XPCOM error -2147467259) when using the SWT 3.3 Broswer widget on Linux with Mozilla 1.7.8  
+<br>175697 - vm is crashing during mac tests for N20070227-0010  
+<br>176032 - NPE in Mozilla create  
+</blockquote>
+
+<h2> SWT Build 3.3 028 - Tuesday February 27, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+28842 - Need a way to turn on/off the focus ring  
+<br>171776 - Printing across multiple pages creates incorrect output when advanced graphics (antialiasing) is used  
+<br>173371 - [OLE] OleClientSite fails open document if Microsoft Word is not installed  
+<br>173764 - Mac OS X icon changes from 'nice' to 'nasty' during launch of 3.3M5  
+<br>173782 - [Browser] Excessive memory from Browser widget on GTK  
+<br>174547 - [Browser] [64] Mozilla XPCOM broken in 3.2.2  
+</blockquote>
+
+<h2> SWT Build 3.3 027 - Tuesday February 20, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+49098 - [OLE] Scrollbars (do not show/behavior not consistent) in OleEditor for Excel  
+<br>112724 - [OLE] OleClientSite.doVerb cause JVM crash  
+<br>132444 - Tree: Selection not properly redrawn when background image set  
+<br>133161 - Table/Tree inconsistency with sorted column bg color when adding PaintItem listeners  
+<br>138165 - [OLE] Cannot move focus to Excel when OleClientSite(..."Excel.Sheet") is running  
+<br>150990 - Table selection drawing incorrectly when custom draw  
+<br>170907 - Right click a shell of SWT.NO_FOCUS and ON_TOP to bring up a context menu will trigger a shell deactivated event  
+<br>173666 - Expandbar treats any mouse click as a left click  
+<br>174130 - Transparent PNG corruption with SWT 3.2  
+<br>174467 - Drag source image effect does not appear on OSX  
+</blockquote>
+
+<h2> SWT Build 3.3 026 - Tuesday February 13, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+132304 - Table: FULL_SELECTION focus outline too short when background image set  
+<br>132828 - Internal Web Browser doesn't work with SeaMonkey 1.0/Firefox 1.5 on AMD64  
+<br>153664 - Double click on finder icon does not bring Eclipse to the foreground  
+<br>172583 - Cairo implementation needed for drawBackground  
+<br>172843 - [Program] Notes bookmark URL cannot be launched by swt for Linux-GTK  
+<br>173089 - SWT Toggle Buttons on CoolBar keep pressed.  
+<br>173273 - setLinesVisible(true) does not work on Fedora Core 6  
+<br>173427 - Missing documentation for SWT.CANCEL in Text  
+<br>173670 - Disabling Controls does not prevent popup menu from functioning  
+<br>173846 - Table's FULL_SELECTION does not work correctly on custom draw table with background color  
+</blockquote>
+
+<h2> SWT Build 3.3 025c - Wednesday February 7, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+172590 - [Browser] can't compile embedded browser with firefox using N20070201-0010 (v3324)  
+<br>172888 - Caret disapears on 'Go to Line...'  
+<br>172918 - Drag not working in I20070205-0009  
+</blockquote>
+
+<h2> SWT Build 3.3 025a - Tuesday February 6, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+26605 - SWT Table Mouse Down event not firing properly  
+<br>79213 - Support Mozilla on all platforms (if already installed)  
+<br>144709 - toolkit.createText for SWT.MULTI widgets don't draw a border as they should on OS X  
+<br>154944 - Holding mouse down on Table blocks Display.asyncExec and syncExec  
+<br>166958 - swt file open dialog fails to open on FC6 with gnome  
+<br>170877 - Editor viewport not correct after restart  
+<br>172754 - [DND] Drag n drop of classes shouldn't let package nodes open  
+</blockquote>
+
+<h2> SWT Build 3.3 025 - Monday February 5, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+158746 - Canvas#scroll forces an update - any way around this besides setRedraw(false)  
+<br>162253 - SWT SystemTray support on OSX - TrayItems not appearing  
+<br>166483 - [Progress] Random shells come to the front when compare editor shows progress dialog  
+<br>166760 - [browser]RedHat EL4Update4, swt.browser cannot show with installed xulrunner 1.8.0.1  
+<br>167744 - Vista Tracker incredibly slow  
+<br>169048 - NullPointerException in Scrollable when parent=null  
+<br>170623 - [browser] Fails to find xulrunner on 64-bit systems  
+<br>171691 - controls on hijacked splash shell disappear  
+<br>171995 - SWT Labels does not show accelerator characters when thier parent is a TabFolder  
+<br>172001 - Javadoc warnings in N20070129-0010  
+<br>172175 - [DND] StyledText.getSelection() not valid during DnD?  
+<br>172179 - Display.post(Event) with SWT.MouseMove moves to wrong location  
+<br>172265 - [DND] unpredicable caret motion  
+<br>172537 - No coloured cursor on GTK  
+</blockquote>
+
+<h2> SWT Build 3.3 024 - Tuesday January 30, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+163339 - Unexpected results when using drawFocus with advanced graphics is enabled and DOUBLE_BUFFERED  
+<br>168384 - Problem with grayed disabled button image  
+<br>170571 - Warnings in SWT launcher sample  
+<br>170973 - [Program] Error when opening word and excel documents  
+<br>171105 - View using SWT_AWT crashes on Mac if open at startup  
+<br>171278 - patch for org.eclipse.swt.win32.wce_ppc.arm/build_custom.xml  
+<br>171358 - [browser] exception thrown when JS call "confirm" in a frameset structure  
+<br>171484 - javadoc warning in I20070123-1030  
+</blockquote>
+
+<h2> SWT Build 3.3 023 - Tuesday January 23, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+103898 - JVELAYT10 - Spinners text don't work in FillLayout Customize window  
+<br>118709 - Support Windows mnemonic (and focus) hiding options  
+<br>128212 - Tooltips appear off right edge of screen  
+<br>142947 - [DND] Classes to provide drag under feedback should be public  
+<br>155817 - [Viewers] Treeview expand/collapse ignores somewhat quick + and - clicks (doubleclicks)  
+<br>166548 - SashForm no longer working on OSX  
+<br>166923 - Spinner.getSelection() returns a wrong value  
+<br>167656 - Text widget has inconsistent font sizes on the mac  
+<br>167748 - Program class incorrectly escapes already-escaped characters on Mac  
+<br>167831 - check box table images contain extra pixels  
+<br>168429 - StyledText: selection and scroll bar thumbs not correct  
+<br>168444 - NPE when using mouse to select next editor  
+<br>168700 - [OpenModes] Double clicks not working in N20061220-0010  
+<br>168821 - Eclipse will crash with message "Widget is disposed".  
+<br>170785 - Table Headers getting random images on Vista when cycling through sort indicator  
+<br>170813 - getSelection() method for VIRTUAL Tree returns max. eight items  
+<br>170849 - Provide an API for custom controls to detect a drag operation  
+<br>170900 - javadoc warnings in N200701180010  
+<br>171048 - Resizing on Vista causes black bars to appear  
+</blockquote>
+
+<h2> SWT Build 3.3 022 - Tuesday January 16, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+163629 - [MAC]SWT_AWT: Eclipse crashes when embed SWT_AWT.new_Frame in a ViewPart.
+<br>167124 - [AWT] SWT_AWT bridge doesn't run on AIX  
+<br>167799 - DirectoryChooser causes eclipse to freeze.  
+<br>168483 - On SLED10, context menu does not display on a popup shell with SWT.ON_TOP style bit
+<br>169784 - org.eclipse.swt.widgets.Link does not fire SelectionEvents  
+<br>169845 - Mac OS X SWT: extremely slow behavior of Table with larger numbers of items
+<br>170463 - javadoc warning in N20070115-0010
+</blockquote>
+
+<h2> SWT Build 3.3 021 - Tuesday January 9, 2007 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+104779 - ScrollBar SelectionEvent detail field not being set correctly at end of a drag  
+<br>141652 - Shell does not always restore focus after dialog closed  
+<br>147518 - StyledText down arrow (cursor) broken  
+<br>164355 - Horizontal scrolling occurs when calling Tree.setTopItem()  
+<br>167124 - [AWT] SWT_AWT bridge doesn't run on AIX  
+<br>167391 - Accessible.get_accSelection(int pvarChildren) has error when multiple items are selected  
+<br>168043 - SWT_AWT not working in CTabFolder with JDK 6 on Linux  
+<br>169413  [Viewers] SWT/JFace TableEditors don't work in 3.3M4 on OSX  
+<br>169569 - Child Shell's Image changes dock icon on OS X  
+<br>169712 - [Launcher] Eclipse won't launch in Mac OS X 10.5  
+</blockquote>
+
+<h2> SWT Build 3.3 020d - Thursday December 14, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+146171 - JVM crash using SWT_AWT  
+<br>164493 - StyledText doesn't support advanced text services for Korean IME
+<br>166935 - Accesibility - JAWS does not read out keyboard shortcuts  
+<br>167257 - open file menu not working on fedora core  
+<br>167476 - Text verify event fields different between GTK and every other platform  
+<br>167491 - inconsistent versioning for swt fragments  
+<br>167872 - HandleLeak in Font.getFontData()  
+<br>167925 - org.eclipse.swt.win32.win32.x86 still has 3.2.1 version numbers  
+<br>167991 - Javadoc warnings in I20061213-1800  
+</blockquote>
+
+<h2> SWT Build 3.3 020 - Tuesday December 12, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+109253 - Support gre64.conf  
+<br>132876 - List control documention is vague  
+<br>158982 - Table Headers getting random images on Vista  
+<br>161310 - [Browser] Re-examine need for swt-profile  
+<br>165033 - Table vertical lines always showing  
+<br>166793 - Custom-Drawing Selection-Color not working on col = 0 with sorting  
+<br>166942 - Application does not start maximized if setMaximized called before Shell.open()  
+<br>166971 - Read only text widget renders background differently with WIN XP Theme  
+<br>167219 - NPE in org.eclipse.swt.widgets.Menu._setVisible  
+</blockquote>
+
+<h2> SWT Build 3.3 019 - Tuesday December 5, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+39596 - [Accessibility] Should inform user when there is no help for a control  
+<br>75812 - [browser] Cursor over Safari Browser does not change  
+<br>82272 - List returned by Device#getFontList(...) has a lot of repetition  
+<br>102099 - NPE at org.eclipse.swt.widgets.Table.getColumns(Table.java:1223)  
+<br>114007 - The GC line width must not be an int  
+<br>146626 - VM crash when setting a font.  
+<br>146632 - Can't select font "American Typewriter Regular".  
+<br>158903 - org.eclipse.swt.internal.Library needs a way to override java.library.path  
+<br>165036 - Strange table coloring on Vista  
+<br>165091 - Eclipse 3.2.x consistently crashes on Vista  
+<br>165712 - Create wrapper Shell around existing handle  
+<br>166264 - CTabItem unnecessarily redraws entire Tab on setImage()  
+<br>166479 - Javadoc warnings in N20061130-2300  
+</blockquote>
+
+<h2> SWT Build 3.3 018 - Tuesday November 28, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+155655 - [DND] 'Alt' does not request DROP_LINK
+<br>165108 - Spinner can not apply the value that input to text-box
+</blockquote>
+
+<h2> SWT Build 3.3 017 - Tuesday November 21, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+150169 - Incorrect Tab Title for HTML File without &lt;title&gt; Tag
+<br>158796 - MessageBox blocks display thread on linux
+<br>161830 - incorrect SWT.NO_FOCUS behaviour for Shell windows on Linux
+<br>162198 - DnD removes selection and moves caret
+</blockquote>
+
+<h2> SWT Build 3.3 016 - Tuesday November 14, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+36070 - no mouse move in button when dragging  
+<br>68069 - Copy unreliable after longer useage  
+<br>78550 - [consistency] mac doesn't fire MouseUp very often  
+<br>79084 - Load TrueType fonts directly from a file..  
+<br>90820 - Canvas setSize don't work for sizes > 32767 without trhwoing any exception  
+<br>105750 - Multiple Mouse Listener Bug  
+<br>125222 - Unable to reorder perspective icons via drag and drop  
+<br>158831 - SWT Spinner selection value error  
+<br>163587 - Resource leak in quick access dialog leads to eventual crash  
+<br>163594 - Program.launch doesn't work on OSX  
+<br>163729 - GC.setLineDash corrupts internal data on exception  
+<br>163824 - When expanding tree in variables view, icon does not show expanded  
+<br>164131 - Table columns widths too small on Vista  
+<br>164328 - pserver URL is incorrect  
+</blockquote>
+
+<h2> SWT Build 3.3 015 - Tuesday November 7, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+151151 - Tree should have "twisties" on vista  
+<br>161511 - Thai: Unable to display Thai characters on SWT Widgets under Linux environment  
+<br>161550 - Expanding a TreeItem on Mac OS X fires MouseUp-MouseDown in the wrong order  
+<br>161809 - [OpenGL] Mac GLCanvas does not immediately update GL state upon resize  
+<br>162353 - Image set to ToolItem not properly alpha-blending  
+<br>162598 - Multiple JVM terminations  
+</blockquote>
+
+<h2> SWT Build 3.3 014d - Wednesday November 1, 2006 </h2>
+<h3><a NAME="New API"></a>New API</h3>
+<blockquote>
+New <code>DateTime</code> control.
+</blockquote>
+
+<h2> SWT Build 3.3 014b - Tuesday October 31, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+19945 - DCR: date/time widget would be useful
+<br>139711 - Eclipse loses keyboard shortcuts on OSX
+<br>162967 - Last element of a tree doesn't expand on double-click
+</blockquote>
+
+<h2> SWT Build 3.3 014 - Monday October 30, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+155404 - [Browser] embedded Mozilla crashes with SIGSEGV when opening binary files
+<br>158175 - Java core [WM_BUTTONDOWN] when selecting a tree in Vista  
+<br>159568 - Large system.out statements crash system  
+<br>161533 - JVM crash [Tree.setSelection] because SWT (Vista?) error  
+<br>162084 - Tree.setRedraw(true) doesn't redraw  
+<br>162146 - [Browser] Appending to stream hangs the SWT Browser  
+<br>162170 - Tree items shifted to the left when collapsing  
+<br>162411 - setExpanded(false) doesn't work when tree item is not visible (regression)
+</blockquote>
+
+<h2> SWT Build 3.3 013 - Tuesday October 24, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+9401 - Still get resize cursor even when Table not resizable  
+<br>133943 - [DCR] Provide way to query a previously set Cursor  
+<br>139509 - Tables with SWT.VIRTUAL cause MeasureItem, PaintItem and EraseItem to fire repeatedly on mouse movement  
+<br>153448 - Tree.setRedraw(true) causes the drawing operations to be ignored on solaris  
+<br>154429 - [64] HotSpot Virtual Machine error while starting eclipse3.3M1  
+<br>156985 - Invoking COM methods of type INVOKE_FUNC have different behavior in Eclipse 3.1.2 and Eclipse 3.2  
+<br>159586 - Need a way to expand TreeItems without causing scrolling  
+<br>161259 - Embedded Browser does not appear to get mouse move/capture (WebKit/Mac OS X)  
+</blockquote>
+
+<h2> SWT Build 3.3 012 - Tuesday October 17, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+105101 - Transform translations not accounted for in GC.drawFocus()  
+<br>105764 - org.eclipse.swt.custom.ControlEditor.computeBounds() is package private  
+<br>150782 - SWT cause JVM crash  
+<br>151142 - pixel corruptions in table with Check flag and Images  
+<br>153196 - Paint example draws lots of garbage on mac  
+<br>155389 - Cursors don't show coloured if created from Image  
+<br>160498 - Need the Tracker class to accept empty Rectangle lists  
+<br>160647 - Table widget leaks  
+<br>160667 - The example doesnt up to date.....  
+</blockquote>
+
+<h2> SWT Build 3.3 011 - Tuesday October 3, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+103809 - WinCE: VM crash on Display.dispose() call  
+<br>155451 - Bad drawing in Tree and Table  
+<br>156445 - Shell initialization too slow  
+<br>156754 - tooltips not read by screen reader/MSAA for toolbar items w/ image  
+<br>157544 - List: preferred width incorrect after items are removed  
+<br>158212 - [64] Highlight Colors all appear black and Fortran Formating Offset  
+<br>158742 - Eclipse terminates with jvm exit code=1 when trying to run dynamic web project  
+<br>158790 - external browser can't be found on Redhat  
+<br>158797 - FileDialog limit on multi-select  
+<br>158970 - Disabling parent Composite doesn't throw FocusOut for the focused child control  
+</blockquote>
+
+<h2> SWT Build 3.3 010a - Tuesday September 26, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+JUnit failure - throw SWT.ERROR_IO instead of SWT.ERROR_NO_HANDLES when image filename does not exist
+</blockquote>
+
+<h2> SWT Build 3.3 010 - Tuesday September 26, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+9953 - When the window is launched Maximized, it doesn't  
+<br>93938 - Combo displays selection range without focus  
+<br>115291 - [Program] Program.execute fails when command or filename contains whitespace  
+<br>149774 - [Program] Improve command handling of Program#execute(String) on Win32  
+<br>156675 - Repaint issue with radio buttons in preference page  
+<br>156943 - TootlTip display error for negative location  
+<br>157292 - MouseWheel event provides wrong coordinates in case of negative x coordinate (event outside widget)  
+<br>157634 - Sibling decorations traversed in wrong order when decorations disposed  
+<br>157635 - BIDI:StyledText Selection of text, and BIDI formating not correct  
+<br>157670 - Problem loading BMP  
+<br>157689 - Problem loading BMP with negative height (bottom-up)  
+<br>157846 - Decorations disappear in Tree when adding Columns  
+<br>157865 - moving column can lose sort indicator  
+<br>158411 - Regression: Alt+Numpad keystrokes broken (Part 2)  
+<br>158462 - cleanup VerifyEvent constructor  
+<br>158472 - AnimateWindow call makes SWT unusable on NT4.  
+<br>158577 - combo.setItem dispatchs a ModifyListener event with empty text  
+</blockquote>
+
+<h2> SWT Build 3.3 009a - Thurssday September 21, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+157914 - Unable to open external Safari browser
+</blockquote>
+
+<h2> SWT Build 3.3 009 - Tuesday September 19, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+21009 - ArrayIndexOutOfBoundsException in CTabFolder  
+<br>108175 - TableColumn sort indicator not updating to new Font properly  
+<br>114244 - CCombo computeSize needs to max item width with text width  
+<br>117752 - CCombo text drawn too high  
+<br>137786 - new 'default' drag & drop feedback interferes with other feedback  
+<br>151348 - drop text in Text widget duplicates text  
+<br>151633 - [KeyBindings] 2 popups displayed on Linux  
+<br>155212 - Misprints in SWT Win32 code ?  
+<br>157440 - On Mac, can't drawText after setBackgroundPattern() is called.  
+<br>157478 - Web services wizard scale and graph all weird  
+<br>157557 - SWT.Settings javadoc states incorrect value  
+</blockquote>
+
+<h2> SWT Build 3.3 008 - Tuesday September 12, 2006 </h2>
+<h3><a NAME="New API"></a>New API</h3>
+<blockquote>
+CCombo now fires <code>SWT.Verify</code> events
+<br><code>CCombo.addVerifyListener(VerifyListener)</code>
+<br><code>CCombo.removeVerifyListener(VerifyListener)</code>
+<br><code>StyledTextPrintOptions.printLineNumbers</code> field
+<br><code>Variant.getByte()</code>
+<br><code>Variant.getChar()</code>
+</blockquote>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+32683 - "up" arrow button displays as "right".  
+<br>110163 - X Window System error, using Swing system look and feel, rendering SVG using SWT_AWT in non-top stack layout
+<br>114169 - [Program] Program.getImageData() not implemented on Mac  
+<br>150300 - path.close() has no effect  
+<br>150304 - cubicTo and quadTo methods of Path not working  
+<br>150306 - trouble with drawing a string  
+<br>151150 - Multi Selection Tree only last 2 items are 'really' selected  
+<br>152769 - StackOverflowError (recursive callWindowProc)  
+<br>153841 - Macintosh only: values in some text fields of launch configuration dialog are slightly shifted, obscuring first character
+<br>153939 - Problem with gc.drawString()  
+<br>154052 - Table tooltip does not show after selection of a table item  
+<br>154736 - All Fonts appear the same  
+<br>154746 - Path Clipping does not work properly on Mac, GTK and Motif  
+<br>154928 - CCombo should fire Verify events  
+<br>154943 - JavaScript error with generated content from GWT  
+<br>155162 - Alt+Numpad_Divide issues two key events  
+<br>155224 - NPE in CCombo.setVisible(false) if some of affected listeners has disposed it
+<br>155390 - Cursor ignores horizontal hotspot location and uses vertical instead
+<br>155624 - SWT Table column resize issue  
+<br>155801 - Table column tooltip disappears after scrolling  
+<br>155916 - Classes in org.eclipse.swt.opengl have warning comments in Javadoc
+<br>156027 - VerifyEvent e.doit inconsistent behavior on Linux GTK  
+<br>156213 - BDI: Styledetxt setOrientation does not work, on the fly  
+</blockquote>
+
+<h2> SWT Build 3.3 007a - Wednesday August 30, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+155679 - VirtualTableTests failing on the Mac
+</blockquote>
+
+<h2> SWT Build 3.3 007 - Tuesday August 29, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+18377 - Tree.getSelection() could be better ordered  
+<br>134269 - Adding column to var view causes VM to GP  
+<br>145498 - Cannot start Eclipse 3.1.2 under AIX 5.3  
+<br>147418 - Control.getMonitor does not properly set client area  
+<br>149649 - Cannot grab scrollbar thumb in ON_TOP shell on gnome 2.14  
+<br>153885 - TreeItem.getExpanded() does not work on Windows Mobile 2003  
+<br>154023 - Can't get a Dialog truely on TOP  
+<br>154198 - Flicker while scrolling scale widget  
+<br>154310 - [browser] cannot click into text field and type  
+<br>154611 - ComboViewerTest dies with BadMatch error  
+<br>154961 - The ToolTip object is not disposed appropriately and prevents from creating another ToolTip on the same shell  
+</blockquote>
+
+<h2> SWT Build 3.3 006 - Tuesday August 22, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+24451 - Reading JPEG images slow in SWT  
+<br>42457 - Invalid image exception while loading JPEG image  
+<br>133164 - JPEGFileFormat converts colors in rgb jpeg (when it shouldn't)
+<br>139485 - [Drag & Drop] DnD auto-scroll support in StyledText is too slow
+<br>144765 - Layout on Labels generates a size that cuts off characters  
+<br>146402 - Content assist popup shows ellipsis for selected item on Windows Vista beta 2
+<br>147673 - Quick-Type hierarchy's treeviewer cannot be collapsed with mouse
+<br>147808 - CCombo dropdown doesn't have keyboard focus in GTK  
+<br>151635 - [browser] cannot tab between fields on page  
+<br>151767 - Table throws ArrayOutOfBounds Exception upon TableColumn.dispose()
+<br>151916 - Browser auto-detect should check for XULRunner first  
+<br>152129 - cannot set enabled state on Vista  
+<br>152800 - FileDialog crashing  
+<br>152936 - Regression: GC.drawRectangle fills background in some cases  
+<br>152937 - Regression: Line dash style is ignored  
+<br>153034 - Invalid image exception while loading PNG image  
+<br>153367 - eclipse 3.3 stream builds broken on Solaris GTK  
+<br>153398 - Invalid thread access in Snippet133  
+<br>153423 - Text and Spinner initially report incorrect preferred size  
+<br>153567 - Custom cursor has wrong colours  
+</blockquote>
+
+<h2> SWT Build 3.3 005 - Tuesday August 8, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+62627 - "Next Word" definition  
+<br>83451 - Mouse Behaviour breaks UI (low resources, grab stuck?)  
+<br>104750 - GTK FileDialog ignores setFileName() for SWT.OPEN dialogs if no filterPath set
+<br>124836 - CLabel.shortenText(...) takes almost forever for long text  
+<br>137621 - License Agreement Does Not Display on HP-UX  
+<br>138528 - Tooltips do not show after tool button pressed  
+<br>139854 - swt dependecy on msvfw32.dll  
+<br>141254 - Linux GTK and TableEditor Failure Assertion  
+<br>145704 - Previous Word commands are too 'greedy'  
+<br>146303 - Label Tooltip text not visible on Intel Mac  
+<br>147228 - Table column tooltip disappears after clicking the header  
+<br>148522 - Table.showSelection() doesn't show selection with images  
+<br>149870 - multiple widgets report focus  
+<br>150155 - Clicking in textfield sets cursor to one before last char  
+<br>151136 - Tree with TreeColumn loops forever if setWidth not called  
+<br>151137 - thumb doesn't work for Tree with column  
+<br>151893 - Issue with background images and CLabels  
+<br>152385 - Tooltip is not shown all the time  
+<br>152718 - StyledText printing feature doesn't work  
+</blockquote>
+
+<h2> SWT Build 3.3 004 - Tuesday July 25, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+19602 - [Printing] Line numbers aren't printed  
+<br>24697 - DCR - Request for PNG write support  
+<br>26436 - Spec PrinterData.startPage/endPage  
+<br>63226 - Undocumented error thrown in Image code  
+<br>81834 - BIDI:  StyledText does not convert European Number to Arabic Number
+<br>142335 - Perf Fix for: org.eclipse.swt.internal.image.PngHuffmanTable.generateTable
+<br>150099 - Menu class has a public '_setVisible(boolean)' method.  
+<br>150274 - Flicker with the new WinXP border  
+<br>150407 - PNG Load Speed Terrible for medium to large images  
+<br>150764 - [PATCH] fix compiler warnings for GCC 4.x  
+<br>151228 - three-button Mozilla "confirm" dialog has same label on all three buttons
+<br>151330 - Browser not supported on linux ppc  
+</blockquote>
+
+<h2> SWT Build 3.3 003 - Tuesday July 18, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+24796 - DCR - No printing on Linux GTK
+<br>80033 - SWT Browser does not display https.  
+<br>87279 - 6 different methods cause pens to be constructed and selected
+<br>91348 - [Browser] Embedded web browser doesn't render visited links
+<br>102756 - Use GtkComboBox instead of GtkCombo  
+<br>105044 - Inefficient use of Pens and Brushes causing poor performance  
+<br>105618 - Graphics.setLineDash causes ruler guide redraw problems  
+<br>109843 - Non-resizable table columns resized by CTRL+KEYPAD_ADD  
+<br>112570 - Cairo incorrectly computes text extent  
+<br>125288 - GC.textExtent does not accurately predict text size  
+<br>127469 - When a GC uses advanced and alphas the clipping is ignored in some cases.
+<br>128200 - TextLayout ignores transformations on GC  
+<br>132500 - [Browser] Eclipse abended at the operation on WS Explorer with the internal web browser
+<br>133183 - Button widget with SWT.CHECK style is not showing foreground color when it is in selected/checked state
+<br>133928 - Program#getProgram(String) fails if the program doesn't have a \\DefaultIcon
+<br>134760 - Performance of GC.fill* methods on GTK  
+<br>140132 - GC.setLineDash no-op affects line drawing  
+<br>140244 - Eclipse 3.2 gtk RC2 dumps core on Solaris 9  
+<br>141138 - Pixel corruption involving SWT.DOUBLE_BUFFERED, GC.setAdvanced() and TextLayout
+<br>146250 - [SWT] Columns of Table widget cannot be resized, except for by dragging a mouse
+<br>149493 - UI-Thread blocked while Menu is visible  
+<br>149749 - MANIFEST.MF files must be up-to-date  
+<br>149952 - First TableColumn in a Table always left justified  
+<br>150086 - Eclipse execution problem.  
+<br>150314 - NullPointerException while creating a pattern  
+</blockquote>
+
+<h2> SWT Build 3.3 002 - Tuesday June 27, 2006 </h2>
+<h3><a NAME="New API"></a>New API</h3>
+<blockquote>
+<code>MouseEvent.count</code> field
+</blockquote>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+23614 - [DCR] Allow triple mouse click events  
+<br>62555 - Group border renders badly  
+<br>77321 - StyledText's font appears inconsistent with GC.drawString(..) font
+<br>85783 - Editor font issues  
+<br>90856 - segfault while clicking in browser  
+<br>99697 - Can't navigate to external web sites  
+<br>115172 - Text clipped in editors if size reduced from platform default
+<br>115947 - Accessibility : Cannot set tooltip Text for image in Table Column
+<br>121114 - Inconsistent measurements from empty TextLayouts  
+<br>139790 - Print Margin shows up in the wrong place  
+<br>140519 - StyledText error in getTextBounds (Does not count last newline)
+<br>141282 - DnD doesn't support special characters  
+<br>146575 - setCursor is ignored in the SWT Text under gtk-linux  
+<br>147423 - NPE when removing an item from a Table with custom draw hooks
+<br>147550 - VerifyEvent.doit=false does not work for Text  
+<br>148354 - Regression: Radio buttons fail to redraw background  
+</blockquote>
+
+<h2> SWT Build 3.3 001 - Tuesday June 13, 2006 </h2>
+<h3><a NAME="New API"></a>New API</h3>
+<blockquote>
+CCombo methods cut(), copy() and paste()
+</blockquote>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+56116 - System Tray not implemented for MAC  
+<br>108573 - Make Objective-C  Runtime APIs  public in  SWT WebKit.java  for MacOS X
+<br>110555 - Draw2d Graphics line style setting not consistent  
+<br>120118 - "xxx.getDisplay().update" does..."xxx.getShell().update" doesn't
+<br>124425 - GC.drawText does not work when setAdvanced(true)  
+<br>136323 - Shell.getClientArea has side effect  
+<br>136472 - GC#drawText doesn't work with arabic text when advance is on  
+<br>137911 - Browser widgets turn to ghosts if their construction fails.  
+<br>139329 - NullPointerException in ExpandBar
+<br>141678 - [Browser] JavaDoc Hover/Browser-Widget doesn`t show Text
+<br>142880 - The point down behavior of the DropTargetEvent.item
+<br>143732 - add cut/copy/paste api on CCombo  
+<br>145347 - Warnings with Fedora 5 compiler (gcc)  
+<br>145662 - Group control borders disappear when tabbing between child widgets
+<br>146264 - StyledText with SWT.WRAP flag does not shape arabic letters  
+</blockquote>
+
+<h2> SWT Build 3.2 032o - Friday June 9, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+145526 - CTRL+F crashes JVM in Search panel
+</blockquote>
+
+<h2> SWT Build 3.2 032m - Monday June 5, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+143661 - MouseUp incorrectly fired on Tree  
+</blockquote>
+
+<h2> SWT Build 3.2 032k - Friday May 26, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+143236 - setItemCount(0) leaking TreeItems  
+<br>143482 - CHIViewEmbeddedFrame not found in Eclipse  
+</blockquote>
+
+<h2> SWT Build 3.2 032j - Friday May 19, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+140843 - JVM crash when running RCP application on HP-UX  
+<br>141395 - Selected item lost in Tree  
+<br>141489 - TableEditor background color artifacts on scrolling  
+<br>142193 - Launchers feature fails without inheritall in gather.bin.parts
+</blockquote>
+
+<h2> SWT Build 3.2 032h - Friday May 12, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+128545 - BIDI: Cursor is stays in the beginning of the Hebrew text segment
+<br>134353 - Table/Tree: Columns pack on table.clear for no reason with a lot of flashing
+<br>138907 - Cheese in Tree with text that spans columns  
+<br>141293 - about.html needs to updated in swt examples, tests and tools
+<br>141552 - Unexpected popup menu  
+<br>141589 - SWT.MenuDetect sent 3 times for toolbars  
+</blockquote>
+
+<h2> SWT Build 3.2 032 - Friday May 5, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+67384 - SWT_AWT not implemented for Mac
+<br>96378 - gc.setTransform() makes fonts scale strangely when printing  
+<br>128373 - Virtual Tree needs documentation  
+<br>130173 - Tree Column does not respond to DefaultSelection event as it did in 3.1
+<br>133962 - SWTException closing GLCanvas in an RCP application on Mac OS X
+<br>138319 - SWTException: Failed to execute runnable (IllegalArgumentException: Index out of bounds)
+<br>139226 - Using the mouse to page down auto completion choices closes completion window
+<br>139262 - 'set data' callback not sent after all items are cleared in virtual tree
+<br>139505 - Update manifest to compile against Foundation 1.0: org.eclipse.swt
+<br>139964 - Use of 1.4 APIs in SWT_AWT
+<br>140052 - [CTabFolder] losing focus problem?
+<br>140272 - Editing OS.java really slow
+</blockquote>
+
+<h2> SWT Build 3.2 031 - Friday April 28, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+60273 - Toolbar background colour doesn't match background (XP/Silver)
+<br>95634 - [Tree] TreeColumn misses tooltips  
+<br>96615 - StyledText and Text keybindings differ on Mac  
+<br>99145 - Link widget only disables link, not text  
+<br>99984 - Sync view toolbar buttons are bigger with SWT manifest  
+<br>114850 - Eclipse 3.2M2 crashes just after startup  
+<br>123922 - [Patch] SWT Javadoc: Some typos/minor errors  
+<br>127216 - [Patch] Table check boxes should have shade when selected  
+<br>127716 - GC.drawPoint() calls aren't affected by a Transform  
+<br>127813 - CCombo.computeSize returning incorrect values when using wHint/hHint
+<br>129564 - StyledText should render tabs exactly 4 spaces wide  
+<br>129609 - [browser] unable to enter text in &lt;textarea&gt;
+<br>131017 - HTML forms displayed in SWT Browser does not accept accented characters input
+<br>131265 - Make ExpandBar background changeable by users  
+<br>133672 - GC construction is very slow on the Mac when a Display is passed in
+<br>134088 - DnD support in StyledText doesn't auto-scroll  
+<br>134091 - Drop in StyledText does not work at the end of a line  
+<br>134112 - DnD in StyledText: dropping on an empty line is hard  
+<br>134417 - Browser Cannot Be Disposed (Intel Carbon SWT)  
+<br>134925 - Table/Tree Columns don't align SWT.RIGHT and SWT.CENTER text properly (regression) (GTK)
+<br>136272 - Combo on Mac incorrectly sends KeyDown event before Traverse when arrow up/down keys used
+<br>136451 - ToolItem is not visible if bounds set before text  
+<br>136473 - Image capture is purple on Mac  
+<br>136633 - Failed to execute runnable (java.lang.ArrayIndexOutOfBoundException) in debug mode
+<br>136641 - Scrollbars not excluded from client area  
+<br>136675 - No scrollbar events for Text  
+<br>136890 - [Patch] SWT Javadoc: Some typos/minor errors (Part 2)  
+<br>136931 - Regression in right-mouse button behavior  
+<br>137236 - Macintel: setEchoChar cause StringIndexOutOfBoundsException  
+<br>137320 - [StyledText] caret does not move correctly when inserted text wraps
+<br>137524 - NPE in AsynchronousViewer  
+<br>137714 - WinCE: setClipping(x,y,w,h) throws NullPointerException  
+<br>138062 - NPE in getData  
+<br>138076 - Browser does not start on Debian  
+<br>138461 - [Workbench] Perspective popup menu doesn't show up on Mac  
+<br>138499 - Label DropTarget is "too small" on Motif  
+<br>138630 - Icons being drawn on top of text in tabbed folder
+<br>138724 - Use of 1.4 APIs
+<br>139060 - Regression: Tree: Selection lost when collapsing unrelated item
+</blockquote>
+
+<h2> SWT Build 3.2 030 - Tuesday April 12, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+45918 - eclipse should enable XP visual styles if available (from comctl32.dll)
+<br>76740 - [painting] Ctrl+End brings StyledText into strange state
+<br>82769 - [Contributions] Disabled menu items have enabled images when armed
+<br>83016 - [browser] Use Mozilla 1.8 nsIWebBrowserStream API
+<br>110794 - [64] Crash when pressing ENTER after having entered value in "Search" form
+<br>113559 - [build] Dependency on  libstdc++.so.5
+<br>125113 - Printing document with long lines loses text at the bottom of the page
+<br>127132 - TableColumn#pack does not work for virtual table
+<br>127902 - Focus gets stuck in Expandbar
+<br>128273 - TableCursor not working properly on Linux GTK
+<br>128286 - Table#SetTopIndex has no effect for virtual table
+<br>133304 - [Browser] Eclipse fails to start
+<br>134175 - Not consistenly getting control resize event from table column
+<br>134356 - Walkback turning on wrap in StyledText. 
+<br>134482 - [64] SWT Snippet24 (default selection) does not work on amd64
+<br>134837 - Tree- Random foreground color appears for Tree when selecting items and subitems
+<br>135303 - CBanner draws unwanted gradient line at bottom when it has more height than the default
+<br>135533 - remove solaris-motif-sparc downloads from build
+<br>135649 - Mouse wheel scrolls invisible scrollbars
+<br>136064 - Snippet 225 (balloon tool tip) should say @since 3.2
+</blockquote>
+
+<h2> SWT Build 3.2 029a - Monday March 27, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+94691 - Code Style Page crops "Configure Project Specific" message  
+<br>115234 - [DnD] [WorkbenchParts] Resizing tiled editors incorrectly sizes editor parts at start of drag
+<br>116749 - Some widgets don't match default background inside Group  
+<br>118953 - setForeground/Background color does not work for SWT.READ_ONLY Text widgets on a Mac
+<br>120051 - Some font names on OS X have null (\0) characters between every character
+<br>120241 - MouseListener on Sash does not receive mouseUp events  
+<br>122049 - crash when clicking on yellow javadoc popup window  
+<br>124415 - Browser causes blank white box on OSX  
+<br>127821 - ControlExample crash when setting background image on SEPARATOR Label
+<br>130971 - TreeItem not showing text  
+<br>132874 - List control does not allow 0th item to be deselected.  
+</blockquote>
+
+<h2> SWT Build 3.2 029 - Tuesday March 21, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+32310 - Left click followed by right click results in double click  
+<br>51020 - SWT.ON_TOP does not work on Mac OS X  
+<br>66615 - SWT_AWT.new_Frame occasionally hangs  
+<br>77371 - [browser] Browser widget not using correct language settings  
+<br>77456 - DBCS3.2: SWT Browser sends improper Accept-Language, Accept-Charset
+<br>83133 - Exposé causes dialog to move behind shell.  
+<br>83431 - Support an "expandable group"  
+<br>104150 - [Patch] Table cursor separated from table selection when clicking on grid lines or empty space
+<br>113019 - Browser.setText() sometimes appends dust characters after html
+<br>116975 - SWT_AWT bridge with JDialog cannot use Tab within dialog. focus is lost
+<br>122379 - SWTException when deleting text from StyledText, if selection larger than visible part
+<br>125131 - Keys fail in JDialog after SWT_AWT.new_Frame in WorkspacePart
+<br>127827 - Implement background image in Table and Tree  
+<br>128400 - Class ST misuses javadoc comments as category headers  
+<br>128662 - SWT Browser crashes if URL contains special characters  
+<br>128719 - [StyledText] A lot of cheese displaying Japaneese and Chinese
+<br>128750 - Error occurs when delete text in StyledText  
+<br>129526 - Proposal for new snippet : Non-rectangular Shell using transparent images
+<br>129999 - EraseItem event's gc does not have the item's colours or font set
+<br>131393 - Adding TableColumn at index 0 makes cell disappear  
+<br>131623 - Tree selected column bgcolour does not draw on empty rows when setting a tree background colour
+<br>131625 - Tree adds useless vertical scrollbar  
+<br>131626 - Tree selected background colour in column 0 overrides cell colour, but not in any other column
+<br>131627 - Tree: Empty tree does not show selected column background colour, unlike Table
+<br>131654 - Decorations.computeTrim can cause program to hang  
+<br>131724 - Adding PaintItemListener to Table causes NPE  
+<br>131727 - SWT_AWT frames in task bar  
+<br>131739 - adding EraseItem listener to Tree causes major drawing problem
+<br>131743 - adding an EraseItem listener to a Tree can lead to selection cheese
+<br>131805 - Tree: Sorted background column colour does not move with movable columns
+<br>131867 - Incorrect GC.fillPath() behavior  
+<br>131906 - StackOverflowError in StyledText  
+<br>132089 - Tree: Text corruption in cells after moving column 0 and resizing column
+<br>132376 - Table background colors are wrong in GTK
+</blockquote>
+
+<h2> SWT Build 3.2 028 - Tuesday March 14, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+67642 - StyledText: Graphic bug displaying bengali chars
+<br>91454 - [browser] RH EL4 - need way to locate firefox build
+<br>92548 - GB18030: Part of Uigur characters(4-bytes) cause whole line sinkage to 1/3.
+<br>97404 - add support for VT_I8 and VT_R8
+<br>108996 - Support gradient backgrounds for StyledText widgets
+<br>121351 - Alpha channel ignored when Image is disabled or greyed out
+<br>125656 - Eclipse freezes dismissing popup windows (Quick Fix, Spell Check, etc)
+<br>129908 - BIDI: Output text have contextual order layout
+<br>129972 - adding MeasureItemListener to Table causes NPE
+<br>130756 - Tree does not use the OSs selected column background color
+<br>130113 - eclipse (64-bit) crashes as soon as code complete is invoke (ctrl-space) in java files
+<br>130346 - Adding MeasureItem listener on Table can lead to divide by 0 in getItem()
+<br>130876 - Background Image not inherited running w/o manifest
+<br>131159 - ExpandItem needs getHeaderHeight()
+<br>131160 - background color problems in tree with columns
+<br>131585 - notifed is not a word
+</blockquote>
+
+<h2> SWT Build 3.2 027 - Tuesday March 07, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+58009 - Need API to add notifications on system tray
+<br>79391 - ControlExample - tab items are truncated
+<br>98265 - more fixing
+<br>106372 - Provide DND support for the StyledText widget
+<br>114662 - Spinner setSelection prints X warning
+<br>123827 - Outline "crazy-scrolls" when it gets focus
+<br>127168 - Spinner generates bogus ModifyText events
+<br>129590 - Event.index == 0 all the time
+<br>129967 - System Settings being fired too often
+<br>130037 - Cheese after dropping TreeItem that has Image set
+<br>130120 - cell custom background colour appears in adjacent cells
+<br>130159 - ImageLoader.save(filename, format) should close the OutputStream.
+<br>130375 - Background Inheritance Incorrect in Composite Hierarchies
+</blockqoute>
+
+<h2> SWT Build 3.2 026a - Tuesday February 28, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+129607 - Display.getShells() returns disposed shell Part 2
+</blockqoute>
+
+<h2> SWT Build 3.2 026 - Tuesday February 28, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+124004 - Drop enabled on Text Widget
+<br>126818 - Horizontal ScrollBar not ReSized When Table Contents Changed
+<br>126996 - Can't asyncExec setting of text in virtual Tree
+<br>128378 - TreeItem and TableItem constructors should state precondition on index
+<br>128598 - 3.2 M5 delta pack not generated correctly
+<br>128845 - ExpandBar Widget not painting controls
+<br>129054 - Text widget VerifyListener causes characters to be inserted backwards if you change them
+<br>129126 - When VerifyListener is added in org.eclipse.swt.widgets.Text, StringIndexOutOfBoundsException might be occurred by UNDO operation.
+<br>129501 - Tree FULL_SELECTION doesn't redraw item background in selection color
+<br>129535 - GridData/GridLayout is showing abnormal layout
+<br>129607 - Display.getShells() returns disposed shell
+</blockquote>
+
+<h2> SWT Build 3.2 025 - Tuesday February 21, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+13969 - Accessibility : No visual focus is provided in Table
+<br>47872 - [SWT Examples] broken link in swt_launcher_ex.html
+<br>87213 - Unable to run eclipse: undefined symbol: atk_object_add_relationship
+<br>127095 - NPE when trying to dispose columns
+<br>127266 - Text.getCaretLocation() on GTK with style = SWT.SINGLE
+<br>127516 -Warnings in SWT samples
+<br>127960 - Native crash in SWT when brower JavaScript closes the window
+<br>128267 - No longer possible to capture screen with new GC(display)
+<br>128408 - JPEGQuantizationTable precision=8 values can be negative
+<br>128448 - [Browser] No javascript confirm dialog.
+<br>128476 - Regression: Tree with columns does not reset horizontal scroll bar
+</blockquote>
+
 <h2> SWT Build 3.2 024k - Thursday February 16, 2006 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 128244 - Table Row Overdraws Table Headers
-</blockquote
+</blockquote>
 
 <h2> SWT Build 3.2 024k - Thursday February 16, 2006 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
@@ -804,7 +4126,7 @@ NoPR  Sort indicator stuck up on Windows
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 26902:  GTK: mouse wheel doesn't work on the compare editor  
-<br>64393:  Forgot to close <code> tag in SWT javadocs  
+<br>64393:  Forgot to close &lt;code&gt; tag in SWT javadocs  
 <br>77540:  typo in import org.eclipse.swt.custom.StyledText.setOrien...  
 <br>77617:  Brief "page not found" message on startup  
 <br>81064:  [Browser] HTML set via setText() not showing in most cas...  
@@ -1027,7 +4349,6 @@ NoPR  Sort indicator stuck up on Windows
 <br>90152:  resizing Label flashes  
 <br>90222:  Device constructor  
 <br>90258:  Table item not updated when item count == 1  
-<br>90856:  segfault while clicking in browser  
 <br>90899:  Using PaintListener on Table destroys repainting (Button is the same case)  
 <br>90946:  gtk_entry_set_text crashes when passed a zero-length buffer  
 <br>91019:  SWT Rendering Problems  
@@ -1299,7 +4620,6 @@ int[] Table.getColumnOrder()
 <h2> SWT Build 3.1 022 - Tuesday February 8th, 2005 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
-<br>80033:  SWT Browser does not display https.  
 <br>54973:  [browser] Default WindowEvent to handle normal window open case - feature request  
 <br>81463:  [launcher] Launcher and Core issues regarding -showSplash  
 <br>81969:  [launcher] Launcher should be independent of startup.jar location  

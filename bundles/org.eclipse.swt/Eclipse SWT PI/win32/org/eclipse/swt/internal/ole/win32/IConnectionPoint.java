@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IConnectionPoint extends IUnknown
 {
-public IConnectionPoint(int address) {
+public IConnectionPoint(int /*long*/ address) {
 	super(address);
 }
-public int Advise(int pUnk, int[] pdwCookie) {
+public int Advise(int /*long*/ pUnk, int[] pdwCookie) {
 	return COM.VtblCall(5, address, pUnk, pdwCookie);
 }
 public int Unadvise(int dwCookie) {

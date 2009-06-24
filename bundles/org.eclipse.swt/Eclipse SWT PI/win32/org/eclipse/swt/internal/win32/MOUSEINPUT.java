@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,6 @@ public class MOUSEINPUT {
 	public int mouseData;
 	public int dwFlags;
 	public int time;
-	public int dwExtraInfo;
-	public static final int sizeof = 24;
+	public int /*long*/ dwExtraInfo;
+	public static final int sizeof = OS.MOUSEINPUT_sizeof ();
 }

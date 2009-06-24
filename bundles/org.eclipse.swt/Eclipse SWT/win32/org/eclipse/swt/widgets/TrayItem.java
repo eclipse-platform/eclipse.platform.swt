@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,23 +19,28 @@ import org.eclipse.swt.internal.win32.*;
 /**
  * Instances of this class represent icons that can be placed on the
  * system tray or task bar status area.
- *
+ * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, MenuDetect, Selection</dd>
  * </dl>
- * <p>
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tray">Tray, TrayItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TrayItem extends Item {
 	Tray parent;
 	int id;
 	Image image2;
+	ToolTip toolTip;
 	String toolTipText;
 	boolean visible = true;
 	
@@ -78,7 +83,7 @@ public TrayItem (Tray parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver is selected, by sending
+ * be notified when the receiver is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -86,7 +91,7 @@ public TrayItem (Tray parent, int style) {
  * <code>widgetDefaultSelected</code> is called when the receiver is double-clicked
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the receiver is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -106,6 +111,34 @@ public void addSelectionListener(SelectionListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the platform-specific context menu trigger
+ * has occurred, by sending it one of the messages defined in
+ * the <code>MenuDetectListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #removeMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void addMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MenuDetect, typedListener);
 }
 
 protected void checkSubclass () {
@@ -145,6 +178,24 @@ public Tray getParent () {
 }
 
 /**
+ * Returns the receiver's tool tip, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public ToolTip getToolTip () {
+	checkWidget ();
+	return toolTip;
+}
+
+/**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
  *
@@ -176,7 +227,7 @@ public boolean getVisible () {
 	return visible;
 }
 
-int messageProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ messageProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When the user clicks on the tray
 	* icon, another application may be the foreground window.
@@ -188,7 +239,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	* menu is not hidden.  The fix is to force the tray icon
 	* message window to the foreground when sending an event.
 	*/
-	switch (lParam) {
+	switch ((int)/*64*/lParam) {
 		case OS.WM_LBUTTONDOWN:
 			if (hooks (SWT.Selection)) {
 				OS.SetForegroundWindow (hwnd);
@@ -211,6 +262,40 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			break;
 		}
+		case OS.NIN_BALLOONSHOW:
+			if (toolTip != null && !toolTip.visible) {
+				toolTip.visible = true;
+				if (toolTip.hooks (SWT.Show)) {
+					OS.SetForegroundWindow (hwnd);
+					toolTip.sendEvent (SWT.Show);
+					// widget could be disposed at this point
+					if (isDisposed()) return 0;
+				}
+			}
+			break;
+		case OS.NIN_BALLOONHIDE:
+		case OS.NIN_BALLOONTIMEOUT:
+		case OS.NIN_BALLOONUSERCLICK:
+			if (toolTip != null) {
+				if (toolTip.visible) {
+					toolTip.visible = false;
+					if (toolTip.hooks (SWT.Hide)) {
+						OS.SetForegroundWindow (hwnd);
+						toolTip.sendEvent (SWT.Hide);
+						// widget could be disposed at this point
+						if (isDisposed()) return 0;
+					}
+				}
+				if (lParam == OS.NIN_BALLOONUSERCLICK) {
+					if (toolTip.hooks (SWT.Selection)) {
+						OS.SetForegroundWindow (hwnd);
+						toolTip.postEvent (SWT.Selection);
+						// widget could be disposed at this point
+						if (isDisposed()) return 0;
+					}
+				}
+			}
+			break;
 	}
 	display.wakeThread ();
 	return 0;
@@ -231,6 +316,8 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (toolTip != null) toolTip.item = null;
+	toolTip = null;
 	if (image2 != null) image2.dispose ();
 	image2 = null;
 	toolTipText = null;
@@ -243,7 +330,7 @@ void releaseWidget () {
 	
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver is selected.
+ * be notified when the receiver is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -267,6 +354,33 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 /**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the platform-specific context menu trigger has
+ * occurred.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #addMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void removeMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MenuDetect, listener);
+}
+
+/**
  * Sets the receiver's image.
  *
  * @param image the new image
@@ -285,7 +399,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	if (image2 != null) image2.dispose ();
 	image2 = null;
-	int hIcon = 0;
+	int /*long*/ hIcon = 0;
 	Image icon = image;
 	if (icon != null) {
 		switch (icon.type) {
@@ -308,19 +422,49 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
+ * Sets the receiver's tool tip to the argument, which
+ * may be null indicating that no tool tip should be shown.
  *
- * @param value the new tool tip text (or null)
+ * @param toolTip the new tool tip (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setToolTip (ToolTip toolTip) {
+	checkWidget ();
+	ToolTip oldTip = this.toolTip, newTip = toolTip;
+	if (oldTip != null) oldTip.item = null;
+	this.toolTip = newTip;
+	if (newTip != null) newTip.item = this;
+}
+
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
+ * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setToolTipText (String value) {
+public void setToolTipText (String string) {
 	checkWidget ();
-	toolTipText = value;
+	toolTipText = string;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
 	/*

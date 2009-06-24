@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,28 +16,33 @@ import java.lang.reflect.Method;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.internal.Library;
 
 /* AWT Imports */
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Frame;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.FocusEvent;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
- * is possible to embedded AWT components in SWT and vice versa.
+ * is possible to embed AWT components in SWT and vice versa.
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#awt">Swing/AWT snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */
@@ -55,16 +60,16 @@ public class SWT_AWT {
 	 */
 	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 
-	static boolean loaded, swingInitialized;
+static boolean loaded, swingInitialized;
 
-static native final int getAWTHandle (Canvas canvas);
+static native final int /*long*/ getAWTHandle (Canvas canvas);
 
 static synchronized void loadLibrary () {
 	if (loaded) return;
 	loaded = true;
 	Toolkit.getDefaultToolkit();
 	/*
-	* Note that the jawt library is loaded explicitily
+	* Note that the jawt library is loaded explicitly
 	* because it cannot be found by the library loader.
 	* All exceptions are caught because the library may
 	* have been loaded already.
@@ -89,7 +94,7 @@ static synchronized void initializeSwing() {
 }
 
 /**
- * Answers a <code>java.awt.Frame</code> which is the embedded frame
+ * Returns a <code>java.awt.Frame</code> which is the embedded frame
  * associated with the specified composite.
  * 
  * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>
@@ -135,45 +140,98 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int handle = parent.handle;
-	/*
-	 * Some JREs have implemented the embedded frame constructor to take an integer
-	 * and other JREs take a long.  To handle this binary incompatability, use
-	 * reflection to create the embedded frame.
-	 */
-	Class clazz = null;
-	try {
-		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-		clazz = Class.forName(className);
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
-	}
-	Constructor constructor = null;
-	try {
-		constructor = clazz.getConstructor (new Class [] {int.class});
-	} catch (Throwable e1) {
-		try {
-			constructor = clazz.getConstructor (new Class [] {long.class});
-		} catch (Throwable e2) {
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
+	final int /*long*/ handle = parent.handle;
+	final Frame[] result = new Frame[1];
+	final Throwable[] exception = new Throwable[1];
+	Runnable runnable = new Runnable () {
+		public void run () {
+			try {
+				/*
+				 * Some JREs have implemented the embedded frame constructor to take an integer
+				 * and other JREs take a long.  To handle this binary incompatibility, use
+				 * reflection to create the embedded frame.
+				 */
+				Class clazz = null;
+				try {
+					String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
+					clazz = Class.forName(className);
+				} catch (Throwable e) {
+					exception[0] = e;
+					return;
+				}
+				initializeSwing ();
+				Object value = null;
+				Constructor constructor = null;
+				try {
+					constructor = clazz.getConstructor (new Class [] {int.class});
+					value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle)});
+				} catch (Throwable e1) {
+					try {
+						constructor = clazz.getConstructor (new Class [] {long.class});
+						value = constructor.newInstance (new Object [] {new Long (handle)});
+					} catch (Throwable e2) {
+						exception[0] = e2;
+						return;
+					}
+				}
+				final Frame frame = (Frame) value;
+				/*
+				 * This is necessary to make lightweight components
+				 * directly added to the frame receive mouse events
+				 * properly.
+				 */
+				frame.addNotify();
+				
+				/*
+				* TEMPORARY CODE
+				* 
+				* For some reason, the graphics configuration of the embedded
+				* frame is not initialized properly. This causes an exception
+				* when the depth of the screen is changed.
+				*/
+				try {
+					clazz = Class.forName("sun.awt.windows.WComponentPeer");
+					Field field = clazz.getDeclaredField("winGraphicsConfig");
+					field.setAccessible(true);
+					field.set(frame.getPeer(), frame.getGraphicsConfiguration());
+				} catch (Throwable e) {}
+				
+				result[0] = frame;
+			} finally {
+				synchronized(result) {
+					result.notify();
+				}
+			}
+		}
+	};
+	if (EventQueue.isDispatchThread() || parent.getDisplay().getSyncThread() != null) {
+		runnable.run();
+	} else {
+		EventQueue.invokeLater(runnable);
+		OS.ReplyMessage(0);
+		boolean interrupted = false;
+		MSG msg = new MSG ();
+		int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
+		while (result[0] == null && exception[0] == null) {
+			OS.PeekMessage (msg, 0, 0, 0, flags);
+			try {
+				synchronized (result) {
+					result.wait(50);
+				}
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+		}
+		if (interrupted) {
+			Compatibility.interrupt();
 		}
 	}
-	initializeSwing ();
-	Object value = null;
-	try {
-		value = constructor.newInstance (new Object [] {new Integer (handle)});
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+	if (exception[0] != null) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, exception[0]);
 	}
-	final Frame frame = (Frame) value;
-	parent.setData(EMBEDDED_FRAME_KEY, frame);
-	
-	/*
-	* This is necessary to make lightweight components
-	* directly added to the frame receive mouse events
-	* properly.
-	*/
-	frame.addNotify();
+	final Frame frame = result[0];
+
+	parent.setData(EMBEDDED_FRAME_KEY, frame);	
 	
 	/* Forward the iconify and deiconify events */
 	final Listener shellListener = new Listener () {
@@ -215,19 +273,29 @@ public static Frame new_Frame (final Composite parent) {
 					parent.setVisible(false);
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
-							frame.dispose ();
+							try {
+								frame.dispose ();
+							} catch (Throwable e) {}
 						}
 					});
 					break;
+				case SWT.FocusIn:
 				case SWT.Activate:
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
 							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
-							} else {
+							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
+								frame.dispatchEvent (new WindowEvent (frame, 207 /*WindowEvent.WINDOW_GAINED_FOCUS*/));
+							} else {
+								if (frame.isActive()) return;
+								try {
+									Class clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
+									if (method != null) method.invoke(frame, new Object[]{new Boolean(true)});
+								} catch (Throwable e) {}
 							}
 						}
 					});
@@ -238,9 +306,16 @@ public static Frame new_Frame (final Composite parent) {
 							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
-							} else {
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
+							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
+								frame.dispatchEvent (new WindowEvent (frame, 208 /*WindowEvent.WINDOW_LOST_FOCUS*/));
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+							} else {
+								if (!frame.isActive()) return;
+								try {
+									Class clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
+									if (method != null) method.invoke(frame, new Object[]{new Boolean(false)});
+								} catch (Throwable e) {}
 							}
 						}
 					});
@@ -248,7 +323,11 @@ public static Frame new_Frame (final Composite parent) {
 			}
 		}
 	};
-	parent.addListener (SWT.Activate, listener);
+	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
+		parent.addListener (SWT.Activate, listener);
+	} else {
+		parent.addListener (SWT.FocusIn, listener);
+	}
 	parent.addListener (SWT.Deactivate, listener);
 	parent.addListener (SWT.Dispose, listener);
 	
@@ -262,23 +341,6 @@ public static Frame new_Frame (final Composite parent) {
 					frame.validate ();
 				}
 			});
-		}
-	});
-	/*
-	* TEMPORARY CODE
-	* 
-	* For some reason, the graphics configuration of the embedded
-	* frame is not initialized properly. This causes an exception
-	* when the depth of the screen is changed.
-	*/
-	EventQueue.invokeLater(new Runnable () {
-		public void run () {
-			try {
-				Class clazz = Class.forName("sun.awt.windows.WComponentPeer");
-				Field field = clazz.getDeclaredField("winGraphicsConfig");
-				field.setAccessible(true);
-				field.set(frame.getPeer(), frame.getGraphicsConfiguration());
-			} catch (Throwable e) {}
 		}
 	});
 	return frame;
@@ -303,7 +365,7 @@ public static Frame new_Frame (final Composite parent) {
 public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int handle = 0;
+	int /*long*/ handle = 0;
 	try {
 		loadLibrary ();
 		handle = getAWTHandle (parent);
@@ -313,14 +375,21 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 
 	final Shell shell = Shell.win32_new (display, handle);
-	parent.addComponentListener(new ComponentAdapter () {
+	final ComponentListener listener = new ComponentAdapter () {
 		public void componentResized (ComponentEvent e) {
 			display.syncExec (new Runnable () {
 				public void run () {
+					if (shell.isDisposed()) return;
 					Dimension dim = parent.getSize ();
 					shell.setSize (dim.width, dim.height);
 				}
 			});
+		}
+	};
+	parent.addComponentListener(listener);
+	shell.addListener(SWT.Dispose, new Listener() {
+		public void handleEvent(Event event) {
+			parent.removeComponentListener(listener);
 		}
 	});
 	shell.setVisible (true);

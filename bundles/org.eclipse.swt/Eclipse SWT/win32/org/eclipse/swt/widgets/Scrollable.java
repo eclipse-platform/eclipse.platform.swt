@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,9 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public abstract class Scrollable extends Control {
@@ -72,7 +75,7 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -106,7 +109,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	int scrolledHandle = scrolledHandle ();
+	int /*long*/ scrolledHandle = scrolledHandle ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int bits1 = OS.GetWindowLong (scrolledHandle, OS.GWL_STYLE);
@@ -133,6 +136,20 @@ void createWidget () {
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
 
+void destroyScrollBar (int type) {
+	int /*long*/ hwnd = scrolledHandle ();
+	int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+	if ((type & SWT.HORIZONTAL) != 0) {
+		style &= ~SWT.H_SCROLL;
+		bits &= ~OS.WS_HSCROLL;
+	}
+	if ((type & SWT.VERTICAL) != 0) {
+		style &= ~SWT.V_SCROLL;
+		bits &= ~OS.WS_VSCROLL;
+	}
+	OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits);
+}
+
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
@@ -151,7 +168,7 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
 	RECT rect = new RECT ();
-	int scrolledHandle = scrolledHandle ();
+	int /*long*/ scrolledHandle = scrolledHandle ();
 	OS.GetClientRect (scrolledHandle, rect);
 	int x = rect.left, y = rect.top;
 	int width = rect.right - rect.left;
@@ -209,7 +226,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
-int scrolledHandle () {
+int /*long*/ scrolledHandle () {
 	return handle;
 }
 
@@ -238,11 +255,11 @@ TCHAR windowClass () {
 	return display.windowClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return display.windowProc;
 }
 
-LRESULT WM_HSCROLL (int wParam, int lParam) {
+LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (result != null) return result;
 	
@@ -259,38 +276,133 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
+LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
+	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam);
+}
+
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
+	super.WM_SIZE (wParam, lParam);
+	// widget may be disposed at this point
+	if (code == 0) return LRESULT.ZERO;
+	return new LRESULT (code);
+}
+
+LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_VSCROLL (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug on WinCE.  lParam should be NULL when the message is not sent
+	* by a scroll bar control, but it contains the handle to the window.
+	* When the message is sent by a scroll bar control, it correctly
+	* contains the handle to the scroll bar.  The fix is to check for
+	* both.
+	*/
+	if (verticalBar != null && (lParam == 0 || lParam == handle)) {
+		return wmScroll (verticalBar, (state & CANVAS) != 0, handle, OS.WM_VSCROLL, wParam, lParam);
+	}
+	return result;
+}
+
+LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  On XP only (not Vista), Windows sometimes
+	* does not redraw the bottom right corner of a window that
+	* has scroll bars, causing pixel corruption.  The fix is to
+	* always draw the corner.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+			if ((bits1 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
+				RECT windowRect = new RECT ();
+				OS.GetWindowRect (hwnd, windowRect);
+				RECT trimRect = new RECT ();
+				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+				OS.AdjustWindowRectEx (trimRect, bits1, false, bits2);
+				boolean hVisible = false, vVisible = false;
+				SCROLLBARINFO psbi = new SCROLLBARINFO ();
+				psbi.cbSize = SCROLLBARINFO.sizeof;
+				if (OS.GetScrollBarInfo (hwnd, OS.OBJID_HSCROLL, psbi)) {
+					hVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+				}
+				if (OS.GetScrollBarInfo (hwnd, OS.OBJID_VSCROLL, psbi)) {
+					vVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+				}
+				RECT cornerRect = new RECT ();
+				cornerRect.right = windowRect.right - windowRect.left - trimRect.right;
+				cornerRect.bottom = windowRect.bottom - windowRect.top - trimRect.bottom;
+				cornerRect.left = cornerRect.right - (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
+				cornerRect.top = cornerRect.bottom - (vVisible ? OS.GetSystemMetrics (OS.SM_CYHSCROLL) : 0);
+				if (cornerRect.left != cornerRect.right && cornerRect.top != cornerRect.bottom) {
+					int /*long*/ hDC = OS.GetWindowDC (hwnd);
+					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
+					Decorations shell = menuShell ();
+					if ((shell.style & SWT.RESIZE) != 0) {
+						int /*long*/ hwndScroll = shell.scrolledHandle ();
+						boolean drawGripper = hwnd == hwndScroll;
+						if (!drawGripper) {
+							RECT shellRect = new RECT ();
+							OS.GetClientRect (hwndScroll, shellRect);
+							OS.MapWindowPoints (hwndScroll, 0, shellRect, 2);
+							drawGripper = shellRect.right == windowRect.right && shellRect.bottom == windowRect.bottom;
+						}
+						if (drawGripper) {
+							OS.DrawThemeBackground (display.hScrollBarTheme(), hDC, OS.SBP_SIZEBOX, 0, cornerRect, null);
+						}
+					}
+					OS.ReleaseDC (hwnd, hDC);
+				}
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT wmScrollWheel (boolean update, int /*long*/ wParam, int /*long*/ lParam) {
+	int scrollRemainder = display.scrollRemainder;
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;
-	
 	/*
 	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
 	*/
-	if ((state & CANVAS) != 0) {
+	if (update) {
 		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return result;
 		boolean vertical = verticalBar != null && verticalBar.getEnabled ();
 		boolean horizontal = horizontalBar != null && horizontalBar.getEnabled ();
-		int msg = (vertical) ? OS.WM_VSCROLL : (horizontal) ? OS.WM_HSCROLL : 0;
+		int msg = vertical ? OS.WM_VSCROLL : horizontal ? OS.WM_HSCROLL : 0;
 		if (msg == 0) return result;
-		int [] value = new int [1];
-		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
-		int delta = (short) (wParam >> 16);
-		int code = 0, count = 0;
-  		if (value [0] == OS.WHEEL_PAGESCROLL) {	
-   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
-   			count = Math.abs (delta / OS.WHEEL_DELTA);
-  		} else {
-  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
-  			delta = Math.abs (delta);
-  			if (delta < OS.WHEEL_DELTA) return result;
-  			if (msg == OS.WM_VSCROLL) {
-  				count = value [0] * delta / OS.WHEEL_DELTA;
-  			} else {
-  				count = delta / OS.WHEEL_DELTA;
-  			}
-  		}
-		for (int i=0; i<count; i++) {
-			OS.SendMessage (handle, msg, code, 0);
+		int [] linesToScroll = new int [1];
+		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
+		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
+		boolean pageScroll = linesToScroll [0] == OS.WHEEL_PAGESCROLL;
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+			ScrollBar bar = vertical ? verticalBar : horizontalBar;
+			SCROLLINFO info = new SCROLLINFO ();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_POS;
+			OS.GetScrollInfo (handle, bar.scrollBarType (), info);
+			if (vertical && !pageScroll) delta *= linesToScroll [0];
+			int increment = pageScroll ? bar.getPageIncrement () : bar.getIncrement ();
+			info.nPos -=  increment * delta / OS.WHEEL_DELTA;
+			OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
+			OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
+		} else {
+			int code = 0;
+	  		if (pageScroll) {
+	   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
+	  		} else {
+	  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
+	  			if (msg == OS.WM_VSCROLL) delta *= linesToScroll [0];
+	  		}
+	  		/* Check if the delta and the remainder have the same direction (sign) */
+	  		if ((delta ^ scrollRemainder) >= 0) delta += scrollRemainder;
+			int count = Math.abs (delta) / OS.WHEEL_DELTA;
+			for (int i=0; i<count; i++) {
+				OS.SendMessage (handle, msg, code, 0);
+			}
 		}
 		return LRESULT.ZERO;
 	}
@@ -304,11 +416,11 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	* scroll bar position before and after the WM_MOUSEWHEEL.
 	* If the native control sends a WM_VSCROLL or WM_HSCROLL,
 	* then the application has already been notified.  If not
-	* explicity send the event.
+	* explicitly send the event.
 	*/
 	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
-	int code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
 	if (verticalBar != null) {
 		int position = verticalBar.getSelection ();
 		if (position != vPosition) {
@@ -328,31 +440,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
-	int code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
-	super.WM_SIZE (wParam, lParam);
-	// widget may be disposed at this point
-	if (code == 0) return LRESULT.ZERO;
-	return new LRESULT (code);
-}
-
-LRESULT WM_VSCROLL (int wParam, int lParam) {
-	LRESULT result = super.WM_VSCROLL (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Bug on WinCE.  lParam should be NULL when the message is not sent
-	* by a scroll bar control, but it contains the handle to the window.
-	* When the message is sent by a scroll bar control, it correctly
-	* contains the handle to the scroll bar.  The fix is to check for
-	* both.
-	*/
-	if (verticalBar != null && (lParam == 0 || lParam == handle)) {
-		return wmScroll (verticalBar, (state & CANVAS) != 0, handle, OS.WM_VSCROLL, wParam, lParam);
-	}
-	return result;
-}
-
-LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, int lParam) {
+LRESULT wmScroll (ScrollBar bar, boolean update, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	if (update) {
 		int type = msg == OS.WM_HSCROLL ? OS.SB_HORZ : OS.SB_VERT;
@@ -361,7 +449,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, 
 		info.fMask = OS.SIF_TRACKPOS | OS.SIF_POS | OS.SIF_RANGE;
 		OS.GetScrollInfo (hwnd, type, info);
 		info.fMask = OS.SIF_POS;
-		int code = wParam & 0xFFFF;
+		int code = OS.LOWORD (wParam);
 		switch (code) {
 			case OS.SB_ENDSCROLL:  return null;
 			case OS.SB_THUMBPOSITION:
@@ -397,7 +485,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, 
 		}
 		OS.SetScrollInfo (hwnd, type, info, true);
 	} else {
-		int code = callWindowProc (hwnd, msg, wParam, lParam);
+		int /*long*/ code = callWindowProc (hwnd, msg, wParam, lParam);
 		result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	}
 	bar.wmScrollChild (wParam, lParam);

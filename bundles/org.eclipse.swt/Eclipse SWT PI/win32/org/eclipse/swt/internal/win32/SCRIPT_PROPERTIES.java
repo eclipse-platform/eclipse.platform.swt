@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,5 +26,5 @@ public class SCRIPT_PROPERTIES {
 	public boolean fAmbiguousCharSet;
 	public boolean fClusterSizeVaries;
 	public boolean fRejectInvalid;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.SCRIPT_PROPERTIES_sizeof ();
 }

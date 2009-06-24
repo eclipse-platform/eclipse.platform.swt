@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,9 @@ import org.eclipse.swt.*;
  * <p>
  * Note: Only one of the above styles may be specified.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#cursor">Cursor snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class Cursor extends Resource {
@@ -51,7 +54,7 @@ public final class Cursor extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 	boolean isIcon;
 	
@@ -136,7 +139,8 @@ public final class Cursor extends Resource {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Cursor() {
+Cursor(Device device) {
+	super(device);
 }
 
 /**	 
@@ -181,10 +185,8 @@ Cursor() {
  * @see SWT#CURSOR_HAND
  */
 public Cursor(Device device, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
-	int lpCursorName = 0;
+	super(device);
+	int /*long*/ lpCursorName = 0;
 	switch (style) {
 		case SWT.CURSOR_HAND: 		lpCursorName = OS.IDC_HAND; break;
 		case SWT.CURSOR_ARROW: 		lpCursorName = OS.IDC_ARROW; break;
@@ -220,14 +222,14 @@ public Cursor(Device device, int style) {
 		int width = OS.GetSystemMetrics(OS.SM_CXCURSOR);
 		int height = OS.GetSystemMetrics(OS.SM_CYCURSOR);
 		if (width == 32 && height == 32) {
-			int hInst = OS.GetModuleHandle(null);
+			int /*long*/ hInst = OS.GetModuleHandle(null);
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			handle = OS.CreateCursor(hInst, 5, 0, 32, 32, HAND_SOURCE, HAND_MASK);
 
 		}
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**	 
@@ -262,9 +264,7 @@ public Cursor(Device device, int style) {
  * </ul>
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -290,11 +290,11 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
 	
 	/* Create the cursor */
-	int hInst = OS.GetModuleHandle(null);
+	int /*long*/ hInst = OS.GetModuleHandle(null);
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**	 
@@ -325,9 +325,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  * @since 3.0
  */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
@@ -335,9 +333,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	ImageData mask = source.getTransparencyMask();
-	int[] result = Image.init(device, null, source, mask);
-	int hBitmap = result[0];
-	int hMask = result[1];
+	int /*long*/ [] result = Image.init(this.device, null, source, mask);
+	int /*long*/ hBitmap = result[0];
+	int /*long*/ hMask = result[1];
 	/* Create the icon */
 	ICONINFO info = new ICONINFO();
 	info.fIcon = false;
@@ -350,18 +348,10 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	OS.DeleteObject(hBitmap);
 	OS.DeleteObject(hMask);
 	isIcon = true;
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the cursor. Applications must dispose of all cursors which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
-	
+void destroy () {
 	/*
 	* It is an error in Windows to destroy the current
 	* cursor.  Check that the cursor that is about to
@@ -389,8 +379,6 @@ public void dispose () {
 		if (!OS.IsWinCE) OS.DestroyCursor(handle);
 	}
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -421,7 +409,7 @@ public boolean equals (Object object) {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 /**
@@ -464,10 +452,8 @@ public String toString () {
  * @return a new cursor object containing the specified device and handle
  */
 public static Cursor win32_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Cursor cursor = new Cursor();
+	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;
-	cursor.device = device;
 	return cursor;
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -78,9 +78,13 @@ import org.eclipse.swt.events.*;
  * @see Scrollable
  * @see Scrollable#getHorizontalBar
  * @see Scrollable#getVerticalBar
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ScrollBar extends Widget {
 	Scrollable parent;
+	boolean dragSent = false;
 ScrollBar () {
 	/* Do Nothing */
 }
@@ -91,7 +95,7 @@ ScrollBar (Scrollable parent, int style) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -107,7 +111,7 @@ ScrollBar (Scrollable parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's value
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -141,6 +145,14 @@ void createHandle (int index) {
 	int parentHandle = parent.scrolledHandle;
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+}
+void destroyHandle () {
+	super.destroyWidget ();
+}
+void destroyWidget () {
+	parent.destroyScrollBar (this);
+	releaseHandle ();
+	//parent.sendEvent (SWT.Resize);
 }
 /**
  * Returns <code>true</code> if the receiver is enabled, and
@@ -282,7 +294,7 @@ public Point getSize () {
 	return new Point (argList [1] + borders, argList [3] + borders);
 }
 /**
- * Answers the size of the receiver's thumb relative to the
+ * Returns the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
  *
  * @return the thumb value
@@ -331,6 +343,7 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNdecrementCallback, windowProc, DECREMENT_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNpageIncrementCallback, windowProc, PAGE_INCREMENT_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNpageDecrementCallback, windowProc, PAGE_DECREMENT_CALLBACK);
+	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
 }
 /**
  * Returns <code>true</code> if the receiver is enabled and all
@@ -394,18 +407,18 @@ void manageChildren () {
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle, OS.None);
 }
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+}
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
 }
-void releaseWidget () {
-	super.releaseWidget ();
-	parent = null;
-}
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -608,7 +621,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>
@@ -664,13 +677,23 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	parent.setScrollBarVisible (this, visible);
+	if (parent.setScrollBarVisible (this, visible)) {
+		sendEvent (visible ? SWT.Show : SWT.Hide);
+		parent.sendEvent (SWT.Resize);
+	}
+}
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	dragSent = false;
+	return result;
 }
 int XmNdecrementCallback (int w, int client_data, int call_data) {
 	sendScrollEvent (SWT.ARROW_UP);
 	return 0;
 }
 int XmNdragCallback (int w, int client_data, int call_data) {
+	dragSent = true;
 	sendScrollEvent (SWT.DRAG);
 	return 0;
 }
@@ -695,6 +718,10 @@ int XmNtoTopCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	if (!dragSent){
+		sendScrollEvent (SWT.DRAG);
+		dragSent = false;
+	}
 	sendScrollEvent (SWT.NONE);
 	return 0;
 }

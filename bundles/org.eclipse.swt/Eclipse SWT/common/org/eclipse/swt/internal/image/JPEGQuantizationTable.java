@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -93,7 +93,7 @@ public int[][] getQuantizationTablesValues() {
 		int pq = (reference[ofs] & 0xFF) >> 4;
 		if (pq == 0) {
 			for (int i = 0; i < qk.length; i++) {
-				qk[i] = reference[ofs + i + 1];
+				qk[i] = reference[ofs + i + 1] & 0xFF;
 			}
 			ofs += 65;
 			totalLength -= 65;

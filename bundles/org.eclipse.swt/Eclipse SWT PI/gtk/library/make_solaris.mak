@@ -1,10 +1,10 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2005 IBM Corporation and others.
+# Copyright (c) 2000, 2008 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
@@ -61,7 +61,6 @@ GLXLIBS = -G -K PIC -L/usr/X11R6/lib -lGL -lGLU -lm
 #NATIVE_STATS = -DNATIVE_STATS
 
 MOZILLACFLAGS = -O \
-	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
 	-fno-rtti \
 	-fno-exceptions \
@@ -70,20 +69,20 @@ MOZILLACFLAGS = -O \
 	-Wno-non-virtual-dtor \
 	-fPIC \
 	-I. \
-	-I$(GECKO_SDK)	\
-	-include $(GECKO_SDK)/mozilla-config.h \
-	-I$(GECKO_SDK)/nspr/include \
-	-I$(GECKO_SDK)/xpcom/include \
-	-I$(GECKO_SDK)/string/include \
-	-I$(GECKO_SDK)/embed_base/include \
-	-I$(GECKO_SDK)/embedstring/include
+	-I$(MOZILLA_SDK)	\
+	-include $(MOZILLA_SDK)/mozilla-config.h \
+	-I$(MOZILLA_SDK)/nspr/include \
+	-I$(MOZILLA_SDK)/xpcom/include \
+	-I$(MOZILLA_SDK)/string/include \
+	-I$(MOZILLA_SDK)/embed_base/include \
+	-I$(MOZILLA_SDK)/embedstring/include
 MOZILLALIBS = -G -s -Wl,--version-script=mozilla_exports -Bsymbolic \
-	-L$(GECKO_SDK)/embedstring/bin -lembedstring \
-	-L$(GECKO_SDK)/embed_base/bin -lembed_base_s \
-	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
-	-L$(GECKO_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
+	-L$(MOZILLA_SDK)/embedstring/bin -lembedstring \
+	-L$(MOZILLA_SDK)/embed_base/bin -lembed_base_s \
+	-L$(MOZILLA_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
+	-L$(MOZILLA_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
 
-SWT_OBJECTS = swt.o callback.o
+SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
@@ -96,6 +95,7 @@ GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 CFLAGS = -O \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
+		-DDTACTION_WARNING_DISABLED \
 		-DSOLARIS -DGTK -DCDE \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/solaris \
@@ -105,7 +105,7 @@ CFLAGS = -O \
 LIBS = -G -K PIC -s
 
 
-all: make_swt make_atk make_awt make_cde
+all: make_swt make_atk make_awt make_glx make_cde
 
 #
 # SWT libs
@@ -201,7 +201,7 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 #
 # Mozilla lib
 #
-make_mozilla:$(MOZILLA_LIB)
+make_mozilla:#$(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
 	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)

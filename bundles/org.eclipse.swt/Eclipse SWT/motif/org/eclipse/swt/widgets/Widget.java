@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,11 +41,18 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see #checkSubclass
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
 	/**
-	 * the handle to the OS resource
-	 * (WARNING: This field is platform dependend)
+	 * the handle to the OS resource 
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int handle;
 	int style, state;
@@ -75,7 +82,9 @@ public abstract class Widget {
 	/* More global state flags */
 	static final int RELEASED = 1<<11;
 	static final int DISPOSE_SENT = 1<<12;
-	
+	static final int FOREIGN_HANDLE = 1<<13;
+	static final int DRAG_DETECT = 1<<14;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -155,9 +164,10 @@ public Widget (Widget parent, int style) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
+ * be notified when an event of the given type occurs. When the
  * event does occur in the widget, the listener is notified by
- * sending it the <code>handleEvent()</code> message.
+ * sending it the <code>handleEvent()</code> message. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
@@ -171,7 +181,10 @@ public Widget (Widget parent, int style) {
  * </ul>
  *
  * @see Listener
- * @see #removeListener
+ * @see SWT
+ * @see #getListeners(int)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
  */
 public void addListener (int eventType, Listener handler) {
 	checkWidget();
@@ -181,7 +194,7 @@ public void addListener (int eventType, Listener handler) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when the widget is disposed. When the widget is
+ * be notified when the widget is disposed. When the widget is
  * disposed, the listener is notified by sending it the
  * <code>widgetDisposed()</code> message.
  *
@@ -316,13 +329,13 @@ void destroyWidget () {
 }
 /**
  * Disposes of the operating system resources associated with
- * the receiver and all its descendents. After this method has
- * been invoked, the receiver and all descendents will answer
+ * the receiver and all its descendants. After this method has
+ * been invoked, the receiver and all descendants will answer
  * <code>true</code> when sent the message <code>isDisposed()</code>.
  * Any internal connections between the widgets in the tree will
  * have been removed to facilitate garbage collection.
  * <p>
- * NOTE: This method is not called recursively on the descendents
+ * NOTE: This method is not called recursively on the descendants
  * of the receiver. This means that, widget implementers can not
  * detect when a widget is being disposed of by re-implementing
  * this method, but should instead listen for the <code>Dispose</code>
@@ -356,7 +369,7 @@ void error (int code) {
 boolean filters (int eventType) {
 	return display.filters (eventType);
 }
-char fixMnemonic (char [] buffer) {
+static char fixMnemonic (char [] buffer) {
 	int i=0, j=0;
 	char mnemonic=0;
 	while (i < buffer.length) {
@@ -459,6 +472,32 @@ public Display getDisplay () {
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return display;
 }
+/**
+ * Returns an array of listeners who will be notified when an event 
+ * of the given type occurs. The event type is one of the event constants 
+ * defined in class <code>SWT</code>.
+ *
+ * @param eventType the type of event to listen for
+ * @return an array of listeners that will be notified when the event occurs
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see SWT
+ * @see #addListener(int, Listener)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
+ * 
+ * @since 3.4
+ */
+public Listener[] getListeners (int eventType) {
+	checkWidget();
+	if (eventTable == null) return new Listener[0];
+	return eventTable.getListeners(eventType);
+}
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
@@ -516,15 +555,18 @@ public boolean isDisposed () {
 /**
  * Returns <code>true</code> if there are any listeners
  * for the specified event type associated with the receiver,
- * and <code>false</code> otherwise.
+ * and <code>false</code> otherwise. The event type is one of
+ * the event constants defined in class <code>SWT</code>.
  *
- * @param	eventType the type of event
+ * @param eventType the type of event
  * @return true if the event is hooked
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see SWT
  */
 public boolean isListening (int eventType) {
 	checkWidget();
@@ -542,7 +584,9 @@ void manageChildren () {
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
- * invoking their <code>handleEvent()</code> method.
+ * invoking their <code>handleEvent()</code> method.  The
+ * event type is one of the event constants defined in class
+ * <code>SWT</code>.
  *
  * @param eventType the type of event which has occurred
  * @param event the event data
@@ -551,6 +595,11 @@ void manageChildren () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see SWT
+ * @see #addListener
+ * @see #getListeners(int)
+ * @see #removeListener(int, Listener)
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
@@ -655,10 +704,11 @@ void releaseWidget () {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -669,7 +719,10 @@ void releaseWidget () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
+ * @see #getListeners(int)
+ * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener handler) {
 	checkWidget();
@@ -679,7 +732,7 @@ public void removeListener (int eventType, Listener handler) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
@@ -688,7 +741,7 @@ public void removeListener (int eventType, Listener handler) {
  * </p>
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -709,9 +762,9 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when the widget is disposed.
+ * be notified when the widget is disposed.
  *
- * @param listener the listener which should no longer be notified when the receiver is disposed
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

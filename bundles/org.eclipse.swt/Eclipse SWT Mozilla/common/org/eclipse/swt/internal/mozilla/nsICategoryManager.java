@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -45,11 +45,11 @@ public class nsICategoryManager extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aCategory, aEntry, _retval);
 	}
 
-	public int AddCategoryEntry(byte[] aCategory, byte[] aEntry, byte[] aValue, boolean aPersist, boolean aReplace, int /*long*/[] _retval) {
+	public int AddCategoryEntry(byte[] aCategory, byte[] aEntry, byte[] aValue, int aPersist, int aReplace, int /*long*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCategory, aEntry, aValue, aPersist, aReplace, _retval);
 	}
 
-	public int DeleteCategoryEntry(byte[] aCategory, byte[] aEntry, boolean aPersist) {
+	public int DeleteCategoryEntry(byte[] aCategory, byte[] aEntry, int aPersist) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aCategory, aEntry, aPersist);
 	}
 

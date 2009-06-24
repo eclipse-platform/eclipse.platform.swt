@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,11 +30,18 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#filedialog">FileDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String filterPath = "", fileName = "";
+	int filterIndex = -1;
+	boolean overwrite = false;
 	static final String FILTER = "*";
 	
 /**
@@ -51,7 +58,7 @@ public class FileDialog extends Dialog {
  * </ul>
  */
 public FileDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**
@@ -77,9 +84,13 @@ public FileDialog (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#SAVE
+ * @see SWT#OPEN
+ * @see SWT#MULTI
  */
 public FileDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
@@ -116,6 +127,26 @@ public String [] getFilterExtensions () {
 }
 
 /**
+ * Get the 0-based index of the file extension filter
+ * which was selected by the user, or -1 if no filter
+ * was selected.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @return index the file extension filter index
+ * 
+ * @see #getFilterExtensions
+ * @see #getFilterNames
+ * 
+ * @since 3.4
+ */
+public int getFilterIndex () {
+	return filterIndex;
+}
+
+/**
  * Returns the names that describe the filter extensions
  * which the dialog will use to filter the files it shows.
  *
@@ -136,6 +167,19 @@ public String [] getFilterNames () {
  */
 public String getFilterPath () {
 	return filterPath;
+}
+
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwrite () {
+	return overwrite;
 }
 
 /**
@@ -213,6 +257,7 @@ public String open () {
 		while (index >= 0 && (fullPath.charAt (index) != '/')) --index;
 		fileName = fullPath.substring (index + 1, length);
 		filterPath = fullPath.substring (0, index);
+		filterIndex = filterExtensions == null || filterExtensions.length == 0 ? -1 : 0;
 	}
 	return fullPath;
 }
@@ -235,22 +280,54 @@ public void setFileName (String string) {
  * which may be null.
  * <p>
  * The strings are platform specific. For example, on
- * Windows, an extension filter string is typically of
- * the form "*.extension", where "*.*" matches all files.
+ * some platforms, an extension filter string is typically
+ * of the form "*.extension", where "*.*" matches all files.
+ * For filters with multiple extensions, use semicolon as
+ * a separator, e.g. "*.jpg;*.png".
  * </p>
  *
  * @param extensions the file extension filter
+ * 
+ * @see #setFilterNames to specify the user-friendly
+ * names corresponding to the extensions
  */
 public void setFilterExtensions (String [] extensions) {
 	filterExtensions = extensions;
 }
 
 /**
- * Sets the the names that describe the filter extensions
+ * Set the 0-based index of the file extension filter
+ * which the dialog will use initially to filter the files
+ * it shows to the argument.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @param index the file extension filter index
+ * 
+ * @see #setFilterExtensions
+ * @see #setFilterNames
+ * 
+ * @since 3.4
+ */
+public void setFilterIndex (int index) {
+	filterIndex = index;
+}
+
+/**
+ * Sets the names that describe the filter extensions
  * which the dialog will use to filter the files it shows
  * to the argument, which may be null.
+ * <p>
+ * Each name is a user-friendly short description shown for
+ * its corresponding filter. The <code>names</code> array must
+ * be the same length as the <code>extensions</code> array.
+ * </p>
  *
- * @param names the list of filter names
+ * @param names the list of filter names, or null for no filter names
+ * 
+ * @see #setFilterExtensions
  */
 public void setFilterNames (String [] names) {
 	filterNames = names;
@@ -277,4 +354,16 @@ public void setFilterPath (String string) {
 	filterPath = string;
 }
 
+/**
+ * Sets the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public void setOverwrite (boolean overwrite) {
+	//this.overwrite = overwrite;
+}
 }

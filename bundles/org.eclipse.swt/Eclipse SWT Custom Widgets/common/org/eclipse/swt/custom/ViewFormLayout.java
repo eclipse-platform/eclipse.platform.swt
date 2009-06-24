@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -193,9 +193,18 @@ protected void layout(Composite composite, boolean flushCache) {
 		}
 		 content.setBounds(rect.x + form.marginWidth + form.highlight, y, rect.width - 2 * form.marginWidth - 2*form.highlight, rect.y + rect.height - y - form.marginHeight - form.highlight);
 	}
-	if (oldSeperator != -1 && form.separator != -1) {
-		int t = Math.min(form.separator, oldSeperator);
-		int b = Math.max(form.separator, oldSeperator);
+	if (oldSeperator != form.separator) {
+		int t, b;
+		if (oldSeperator == -1) {
+			t = form.separator;
+			b = form.separator + 1;
+		} else if (form.separator == -1) {
+			t = oldSeperator;
+			b = oldSeperator + 1;
+		} else {
+			t = Math.min(form.separator, oldSeperator);
+			b = Math.max(form.separator, oldSeperator);
+		}
 		form.redraw(form.borderLeft, t, form.getSize().x - form.borderLeft - form.borderRight, b - t, false);
 	}
 }

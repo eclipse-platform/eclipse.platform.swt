@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,9 +33,13 @@ import org.eclipse.swt.graphics.*;
  * </p>
  *
  * @see Composite
+ * @see <a href="http://www.eclipse.org/swt/snippets/#canvas">Canvas snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Canvas extends Composite {
 	Caret caret;
+	IME ime;
 	
 Canvas () {
 	/* Do nothing */
@@ -68,8 +72,29 @@ Canvas () {
  * @see Widget#getStyle
  */
 public Canvas (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (style));
 }
+/** 
+ * Fills the interior of the rectangle specified by the arguments,
+ * with the receiver's background. 
+ *
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -87,7 +112,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
  * drawing in the window any other time.
  * </p>
  *
- * @return the caret
+ * @return the caret for the receiver, may be null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -97,6 +122,22 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 public Caret getCaret () {
 	checkWidget();
 	return caret;
+}
+/**
+ * Returns the IME.
+ *
+ * @return the IME
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public IME getIME () {
+	checkWidget ();
+	return ime;
 }
 Caret getIMCaret () {
 	return caret;
@@ -112,6 +153,10 @@ void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);
 		caret = null;
+	}
+	if (ime != null) {
+		ime.release (false);
+		ime = null;
 	}
 	super.releaseChildren (destroy);
 }
@@ -243,6 +288,26 @@ public void setFont (Font font) {
 	checkWidget();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+/**
+ * Sets the receiver's IME.
+ * 
+ * @param ime the new IME for the receiver, may be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the IME has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();

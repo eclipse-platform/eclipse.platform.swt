@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -53,11 +53,11 @@ public class nsIHelperAppLauncher extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSuggestedFileName);
 	}
 
-	public int SaveToDisk(int /*long*/ aNewFileLocation, boolean aRememberThisPreference) {
+	public int SaveToDisk(int /*long*/ aNewFileLocation, int aRememberThisPreference) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
 	}
 
-	public int LaunchWithApplication(int /*long*/ aApplication, boolean aRememberThisPreference) {
+	public int LaunchWithApplication(int /*long*/ aApplication, int aRememberThisPreference) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aApplication, aRememberThisPreference);
 	}
 

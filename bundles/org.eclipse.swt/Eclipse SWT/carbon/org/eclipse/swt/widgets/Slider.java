@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,6 @@ package org.eclipse.swt.widgets;
 
  
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGPoint;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -66,9 +64,13 @@ import org.eclipse.swt.graphics.*;
  * </p>
  *
  * @see ScrollBar
+ * @see <a href="http://www.eclipse.org/swt/snippets/#slider">Slider snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Slider extends Control {
-	boolean dragging, tracking;
+	boolean dragging;
 	int increment = 1;
 	int pageIncrement = 10;
 
@@ -107,7 +109,7 @@ public Slider (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -123,7 +125,7 @@ public Slider (Composite parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's value
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -150,6 +152,8 @@ static int checkStyle (int style) {
 }
 
 int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
+	if (result == OS.noErr) return result;
 	Event event = new Event ();
 	int value = OS.GetControl32BitValue (handle);
     switch (partCode) {
@@ -174,15 +178,11 @@ int actionProc (int theControl, int partCode) {
 			event.detail = SWT.DRAG;
 	        break;
 		default:
-			return 0;
+			return result;
 	}
 	OS.SetControl32BitValue (handle, value);
 	sendEvent (SWT.Selection, event);
-	if (!OS.HIVIEW) {
-		Shell shell = getShell ();
-		shell.update (true);
-	}
-	return 0;
+	return result;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -312,69 +312,22 @@ public int getThumb () {
     return OS.GetControlViewSize (handle);
 }
 
-int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	tracking = true;
-	return OS.eventNotHandledErr;
-}
-
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int status = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (status == OS.noErr) return status;
-	/*
-	* Feature in the Macintosh.  Some controls call TrackControl() or
-	* HandleControlClick() to track the mouse.  Unfortunately, mouse move
-	* events and the mouse up events are consumed.  The fix is to call the
-	* default handler and send a fake mouse up when tracking is finished.
-	* 
-	* NOTE: No mouse move events are sent while tracking.  There is no
-	* fix for this at this time.
-	*/
-	display.grabControl = null;
-	display.runDeferredEvents ();
-	dragging = tracking = false;
+	dragging = false;
 	status = OS.CallNextEventHandler (nextHandler, theEvent);
 	if (dragging) {
 		Event event = new Event ();
 		sendEvent (SWT.Selection, event);
 	}
 	dragging = false;
-	if (tracking) {
-		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetGlobalMouse (outPt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		int x, y;
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			pt.x = outPt.h;
-			pt.y = outPt.v;
-			OS.HIViewConvertPoint (pt, 0, handle);
-			x = (int) pt.x;
-			y = (int) pt.y;
-			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		} else {
-			OS.GetControlBounds (handle, rect);
-			x = outPt.h - rect.left;
-			y = outPt.v - rect.top;
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		}
-		x -= rect.left;
-		y -=  rect.top;
-		short [] button = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-		int chord = OS.GetCurrentEventButtonState ();
-		int modifiers = OS.GetCurrentEventKeyModifiers ();
-		sendMouseEvent (SWT.MouseUp, button [0], true, chord, (short)x, (short)y, modifiers);
-	}
-	tracking = false;
 	return status;
 }
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -534,7 +487,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>

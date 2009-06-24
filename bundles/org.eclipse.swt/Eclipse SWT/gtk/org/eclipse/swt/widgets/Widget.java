@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,6 +41,7 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see #checkSubclass
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
 	/**
@@ -90,6 +91,8 @@ public abstract class Widget {
 	/* More global state flags */
 	static final int RELEASED = 1<<20;
 	static final int DISPOSE_SENT = 1<<21;
+	static final int FOREIGN_HANDLE = 1<<22;
+	static final int DRAG_DETECT = 1<<23;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -132,30 +135,37 @@ public abstract class Widget {
 	static final int MOTION_NOTIFY_EVENT_INVERSE = 34;
 	static final int MOVE_FOCUS = 35;
 	static final int OUTPUT = 36;
-	static final int POPUP_MENU = 37;
-	static final int PREEDIT_CHANGED = 38;
-	static final int REALIZE = 39;
-	static final int ROW_ACTIVATED = 40;
-	static final int SCROLL_CHILD = 41;
-	static final int SCROLL_EVENT = 42;
-	static final int SELECT = 43;
-	static final int SHOW = 44;
-	static final int SHOW_HELP = 45;
-	static final int SIZE_ALLOCATE = 46;
-	static final int STYLE_SET = 47;
-	static final int SWITCH_PAGE = 48;
-	static final int TEST_COLLAPSE_ROW = 49;
-	static final int TEST_EXPAND_ROW = 50;
-	static final int TEXT_BUFFER_INSERT_TEXT = 51;
-	static final int TOGGLED = 52;
-	static final int UNMAP = 53;
-	static final int UNMAP_EVENT = 54;
-	static final int UNREALIZE = 55;
-	static final int VALUE_CHANGED = 56;
-	static final int VISIBILITY_NOTIFY_EVENT = 57;
-	static final int WINDOW_STATE_EVENT = 58;
-	static final int ACTIVATE_INVERSE = 59;
-	static final int LAST_SIGNAL = 60;
+	static final int POPULATE_POPUP = 37;
+	static final int POPUP_MENU = 38;
+	static final int PREEDIT_CHANGED = 39;
+	static final int REALIZE = 40;
+	static final int ROW_ACTIVATED = 41;
+	static final int SCROLL_CHILD = 42;
+	static final int SCROLL_EVENT = 43;
+	static final int SELECT = 44;
+	static final int SHOW = 45;
+	static final int SHOW_HELP = 46;
+	static final int SIZE_ALLOCATE = 47;
+	static final int STYLE_SET = 48;
+	static final int SWITCH_PAGE = 49;
+	static final int TEST_COLLAPSE_ROW = 50;
+	static final int TEST_EXPAND_ROW = 51;
+	static final int TEXT_BUFFER_INSERT_TEXT = 52;
+	static final int TOGGLED = 53;
+	static final int UNMAP = 54;
+	static final int UNMAP_EVENT = 55;
+	static final int UNREALIZE = 56;
+	static final int VALUE_CHANGED = 57;
+	static final int VISIBILITY_NOTIFY_EVENT = 58;
+	static final int WINDOW_STATE_EVENT = 59;
+	static final int ACTIVATE_INVERSE = 60;
+	static final int DAY_SELECTED = 61;
+	static final int MONTH_CHANGED = 62;
+	static final int STATUS_ICON_POPUP_MENU = 63;
+	static final int ROW_INSERTED = 64;
+	static final int ROW_DELETED = 65;
+	static final int DAY_SELECTED_DOUBLE_CLICK = 66;
+	static final int LAST_SIGNAL = 67;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -205,9 +215,10 @@ void _addListener (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
+ * be notified when an event of the given type occurs. When the
  * event does occur in the widget, the listener is notified by
- * sending it the <code>handleEvent()</code> message.
+ * sending it the <code>handleEvent()</code> message. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
@@ -221,7 +232,10 @@ void _addListener (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
- * @see #removeListener
+ * @see SWT
+ * @see #getListeners(int)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
  */
 public void addListener (int eventType, Listener listener) {
 	checkWidget ();
@@ -231,7 +245,7 @@ public void addListener (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when the widget is disposed. When the widget is
+ * be notified when the widget is disposed. When the widget is
  * disposed, the listener is notified by sending it the
  * <code>widgetDisposed()</code> message.
  *
@@ -288,6 +302,11 @@ void checkOrientation (Widget parent) {
 		}
 	}
 	style = checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
+	/* Versions of GTK prior to 2.8 do not render RTL text properly */
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
+		style &= ~SWT.RIGHT_TO_LEFT;
+		style |= SWT.LEFT_TO_RIGHT;			
+	}
 }
 
 /**
@@ -396,13 +415,13 @@ void destroyWidget () {
 
 /**
  * Disposes of the operating system resources associated with
- * the receiver and all its descendents. After this method has
- * been invoked, the receiver and all descendents will answer
+ * the receiver and all its descendants. After this method has
+ * been invoked, the receiver and all descendants will answer
  * <code>true</code> when sent the message <code>isDisposed()</code>.
  * Any internal connections between the widgets in the tree will
  * have been removed to facilitate garbage collection.
  * <p>
- * NOTE: This method is not called recursively on the descendents
+ * NOTE: This method is not called recursively on the descendants
  * of the receiver. This means that, widget implementers can not
  * detect when a widget is being disposed of by re-implementing
  * this method, but should instead listen for the <code>Dispose</code>
@@ -514,6 +533,33 @@ public Display getDisplay () {
 	return display;
 }
 
+/**
+ * Returns an array of listeners who will be notified when an event 
+ * of the given type occurs. The event type is one of the event constants 
+ * defined in class <code>SWT</code>.
+ *
+ * @param eventType the type of event to listen for
+ * @return an array of listeners that will be notified when the event occurs
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see SWT
+ * @see #addListener(int, Listener)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
+ * 
+ * @since 3.4
+ */
+public Listener[] getListeners (int eventType) {
+	checkWidget();
+	if (eventTable == null) return new Listener[0];
+	return eventTable.getListeners(eventType);
+}
+
 String getName () {
 //	String string = getClass ().getName ();
 //	int index = string.lastIndexOf ('.');
@@ -583,6 +629,14 @@ int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 }
 
 int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
+	return 0;
+}
+
+int /*long*/ gtk_day_selected (int /*long*/ widget) {
+	return 0;
+}
+
+int /*long*/ gtk_day_selected_double_click (int /*long*/ widget) {
 	return 0;
 }
 
@@ -674,6 +728,10 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return 0;
 }
 
+int /*long*/ gtk_month_changed (int /*long*/ widget) {
+	return 0;
+}
+
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
@@ -683,6 +741,10 @@ int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_output (int /*long*/ widget) {
+	return 0;
+}
+
+int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
 	return 0;
 }
 
@@ -699,6 +761,14 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long*/ column) {
+	return 0;
+}
+
+int /*long*/ gtk_row_deleted (int /*long*/ model, int /*long*/ path) {
+	return 0;
+}
+
+int /*long*/ gtk_row_inserted (int /*long*/ model, int /*long*/ path, int /*long*/ iter) {
 	return 0;
 }
 
@@ -723,6 +793,10 @@ int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 }
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+	return 0;
+}
+
+int /*long*/ gtk_status_icon_popup_menu (int /*long*/ handle, int /*long*/ button, int /*long*/ activate_time) {
 	return 0;
 }
 
@@ -788,19 +862,27 @@ int fontHeight (int /*long*/ font, int /*long*/ widgetHandle) {
 	return OS.PANGO_PIXELS (ascent + descent);
 }
 
-boolean filters (int eventType) {
-	return display.filters (eventType);
+int /*long*/ filterProc(int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data2) {
+	return 0;
 }
 
-int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data) {
-	return 0;
+boolean filters (int eventType) {
+	return display.filters (eventType);
 }
 
 int /*long*/ fixedMapProc (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ fixedSizeAllocateProc(int /*long*/ widget, int /*long*/ allocationPtr) {
+	return OS.Call (Display.oldFixedSizeAllocateProc, widget, allocationPtr);
+}
+
 char [] fixMnemonic (String string) {
+	return fixMnemonic (string, true);
+}
+
+char [] fixMnemonic (String string, boolean replace) {
 	int length = string.length ();
 	char [] text = new char [length];
 	string.getChars (0, length, text, 0);
@@ -810,16 +892,18 @@ char [] fixMnemonic (String string) {
 		switch (text [i]) {
 			case '&':
 				if (i + 1 < length && text [i + 1] == '&') {
-					i++; 
+					result [j++] = text [i++];
 				} else {
-					text [i] = '_';
+					if (replace) result [j++] = '_';
 				}
+				i++;
 				break;
 			case '_':
-				result [j++] = '_';
-				break;
+				if (replace) result [j++] = '_';
+				//FALL THROUGH
+			default:
+				result [j++] = text [i++];
 		}
-		result [j++] = text [i++];
 	}
 	return result;
 }
@@ -842,15 +926,18 @@ public boolean isDisposed () {
 /**
  * Returns <code>true</code> if there are any listeners
  * for the specified event type associated with the receiver,
- * and <code>false</code> otherwise.
+ * and <code>false</code> otherwise. The event type is one of
+ * the event constants defined in class <code>SWT</code>.
  *
- * @param	eventType the type of event
+ * @param eventType the type of event
  * @return true if the event is hooked
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see SWT
  */
 public boolean isListening (int eventType) {
 	checkWidget ();
@@ -908,10 +995,16 @@ boolean mnemonicMatch (int /*long*/ mnemonicHandle, char key) {
 	return keyval1 == keyval2;
 }
 
+void modifyStyle (int /*long*/ handle, int /*long*/ style) {
+	OS.gtk_widget_modify_style (handle, style);
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
- * invoking their <code>handleEvent()</code> method.
+ * invoking their <code>handleEvent()</code> method.  The
+ * event type is one of the event constants defined in class
+ * <code>SWT</code>.
  *
  * @param eventType the type of event which has occurred
  * @param event the event data
@@ -920,6 +1013,11 @@ boolean mnemonicMatch (int /*long*/ mnemonicHandle, char key) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see SWT
+ * @see #addListener
+ * @see #getListeners(int)
+ * @see #removeListener(int, Listener)
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
@@ -982,10 +1080,11 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -996,7 +1095,10 @@ void releaseWidget () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
+ * @see #getListeners(int)
+ * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener handler) {
 	checkWidget ();
@@ -1007,7 +1109,7 @@ public void removeListener (int eventType, Listener handler) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
@@ -1016,7 +1118,7 @@ public void removeListener (int eventType, Listener handler) {
  * </p>
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1046,9 +1148,9 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when the widget is disposed.
+ * be notified when the widget is disposed.
  *
- * @param listener the listener which should no longer be notified when the receiver is disposed
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1125,7 +1227,7 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 	return sendIMKeyEvent (type, keyEvent, chars) != null;
 }
 
-char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
+char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char [] chars) {
 	int index = 0, count = 0, state = 0;
 	int /*long*/ ptr = 0;
 	if (keyEvent == null) {
@@ -1282,6 +1384,36 @@ public void setData (String key, Object value) {
 	}
 }
 
+void setForegroundColor (int /*long*/ handle, GdkColor color) {
+	int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
+	OS.gtk_rc_style_set_fg (style, OS.GTK_STATE_NORMAL, color);
+	OS.gtk_rc_style_set_fg (style, OS.GTK_STATE_ACTIVE, color);
+	OS.gtk_rc_style_set_fg (style, OS.GTK_STATE_PRELIGHT, color);
+	int flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL);
+	flags = (color == null) ? flags & ~OS.GTK_RC_FG: flags | OS.GTK_RC_FG;
+	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_NORMAL, flags);
+	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_ACTIVE);
+	flags = (color == null) ? flags & ~OS.GTK_RC_FG: flags | OS.GTK_RC_FG;
+	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_ACTIVE, flags);
+	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_PRELIGHT);
+	flags = (color == null) ? flags & ~OS.GTK_RC_FG: flags | OS.GTK_RC_FG;
+	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_PRELIGHT, flags);
+
+	OS.gtk_rc_style_set_text (style, OS.GTK_STATE_NORMAL, color);
+	OS.gtk_rc_style_set_text (style, OS.GTK_STATE_ACTIVE, color);
+	OS.gtk_rc_style_set_text (style, OS.GTK_STATE_PRELIGHT, color);
+	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL);
+	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
+	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_NORMAL, flags);
+	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_PRELIGHT);	
+	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
+	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_PRELIGHT, flags);	
+	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_ACTIVE);
+	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
+	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_ACTIVE, flags);
+	modifyStyle (handle, style);	
+}
+
 boolean setInputState (Event event, int state) {
 	if ((state & OS.GDK_MOD1_MASK) != 0) event.stateMask |= SWT.ALT;
 	if ((state & OS.GDK_SHIFT_MASK) != 0) event.stateMask |= SWT.SHIFT;
@@ -1333,11 +1465,23 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 void setOrientation () {
 }
 
+boolean setTabGroupFocus (boolean next) {
+	return setTabItemFocus (next);
+}
+
+boolean setTabItemFocus (boolean next) {
+	return false;
+}
+
 int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	return 0;
 }
 
 int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+	return 0;
+}
+
+int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	return 0;
 }
 
@@ -1377,9 +1521,12 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case ACTIVATE: return gtk_activate (handle);
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
+		case DAY_SELECTED: return gtk_day_selected (handle);
+		case DAY_SELECTED_DOUBLE_CLICK: return gtk_day_selected_double_click (handle);
 		case HIDE: return gtk_hide (handle);
 		case GRAB_FOCUS: return gtk_grab_focus (handle);
 		case MAP: return gtk_map (handle);
+		case MONTH_CHANGED: return gtk_month_changed (handle);
 		case OUTPUT: return gtk_output (handle);
 		case POPUP_MENU: return gtk_popup_menu (handle);
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
@@ -1428,6 +1575,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
 		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
 		case MOVE_FOCUS: return gtk_move_focus (handle, arg0);
+		case POPULATE_POPUP: return gtk_populate_popup (handle, arg0);
 		case SCROLL_EVENT:	return gtk_scroll_event (handle, arg0);
 		case SHOW_HELP: return gtk_show_help (handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
@@ -1436,6 +1584,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
 		case VISIBILITY_NOTIFY_EVENT: return gtk_visibility_notify_event (handle, arg0);
 		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);
+		case ROW_DELETED: return gtk_row_deleted (handle, arg0);
 		default: return 0;
 	}
 }
@@ -1446,9 +1595,11 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
 		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
 		case SCROLL_CHILD: return gtk_scroll_child (handle, arg0, arg1);
+		case STATUS_ICON_POPUP_MENU: return gtk_status_icon_popup_menu (handle, arg0, arg1);
 		case SWITCH_PAGE: return gtk_switch_page (handle, arg0, arg1);
 		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
+		case ROW_INSERTED: return gtk_row_inserted (handle, arg0, arg1);
 		default: return 0;
 	}
 }
@@ -1462,6 +1613,5 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 		default: return 0;
 	}
 }
-
 
 }

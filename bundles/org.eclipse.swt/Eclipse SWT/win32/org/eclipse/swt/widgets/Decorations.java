@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -91,6 +91,8 @@ import org.eclipse.swt.graphics.*;
  * @see #getMaximized
  * @see Shell
  * @see SWT
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class Decorations extends Canvas {
@@ -100,7 +102,8 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int swFlags, hAccel, nAccel;
+	int swFlags, nAccel;
+	int /*long*/ hAccel;
 	boolean moved, resized, opened;
 	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
@@ -151,6 +154,50 @@ Decorations () {
  */
 public Decorations (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+void _setMaximized (boolean maximized) {
+	swFlags = maximized ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
+	if (OS.IsWinCE) {
+		/*
+		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
+		* workaround is to resize the window to fit the parent client area.
+		*/
+		if (maximized) {
+			RECT rect = new RECT ();
+			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+			int width = rect.right - rect.left, height = rect.bottom - rect.top;
+			if (OS.IsPPC) {
+				/* Leave space for the menu bar */
+				if (menuBar != null) {
+					int /*long*/ hwndCB = menuBar.hwndCB;
+					RECT rectCB = new RECT ();
+					OS.GetWindowRect (hwndCB, rectCB);
+					height -= rectCB.bottom - rectCB.top;
+				}
+			}
+			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+			SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
+		}
+	} else {
+		if (!OS.IsWindowVisible (handle)) return;
+		if (maximized == OS.IsZoomed (handle)) return;
+		OS.ShowWindow (handle, swFlags);
+		OS.UpdateWindow (handle);
+	}
+}
+
+void _setMinimized (boolean minimized) {
+	if (OS.IsWinCE) return;
+	swFlags = minimized ? OS.SW_SHOWMINNOACTIVE : OS.SW_RESTORE;
+	if (!OS.IsWindowVisible (handle)) return;
+	if (minimized == OS.IsIconic (handle)) return;
+	int flags = swFlags;
+	if (flags == OS.SW_SHOWMINNOACTIVE && handle == OS.GetActiveWindow ()) {
+		flags = OS.SW_MINIMIZE;
+	}
+	OS.ShowWindow (handle, flags);
+	OS.UpdateWindow (handle);
 }
 
 void addMenu (Menu menu) {
@@ -239,6 +286,10 @@ void checkBorder () {
 	/* Do nothing */
 }
 
+void checkComposited (Composite parent) {
+	/* Do nothing */
+}
+
 void checkOpened () {
 	if (!opened) resized = false;
 }
@@ -247,7 +298,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefMDIChildProc (hwnd, msg, wParam, lParam);
 }
@@ -280,7 +331,7 @@ int compare (ImageData data1, ImageData data2, int width, int height, int depth)
 	return value1 < value2 ? -1 : 1;
 }
 
-Control computeTabGroup () {
+Widget computeTabGroup () {
 	return this;
 }
 
@@ -303,14 +354,15 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 
-	/* Get the height of the menu bar */
+	/* Compute the height of the menu bar */
 	if (hasMenu) {
 		RECT testRect = new RECT ();
 		OS.SetRect (testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
 		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
 		while ((testRect.bottom - testRect.top) < height) {
+			if (testRect.bottom - testRect.top == 0) break;
 			rect.top -= OS.GetSystemMetrics (OS.SM_CYMENU) - OS.GetSystemMetrics (OS.SM_CYBORDER);
-			OS.SetRect(testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+			OS.SetRect (testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
 			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
 		}
 	}
@@ -339,8 +391,7 @@ void createAccelerators () {
 					while (menu != null && menu != menuBar) {
 						menu = menu.getParentMenu ();
 					}
-					if (menu == menuBar) {
-						item.fillAccel (accel);
+					if (menu == menuBar && item.fillAccel (accel)) {
 						OS.MoveMemory (buffer1, accel, ACCEL.sizeof);
 						System.arraycopy (buffer1, 0, buffer2, nAccel * ACCEL.sizeof, ACCEL.sizeof);
 						nAccel++;
@@ -387,16 +438,16 @@ public void dispose () {
 	if (isDisposed()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!(this instanceof Shell)) {
-		setVisible (false);
-		if (!traverseDecorations (false)) {
+		if (!traverseDecorations (true)) {
 			Shell shell = getShell ();
 			shell.setFocus ();
 		}
+		setVisible (false);
 	}
 	super.dispose ();
 }
 
-Menu findMenu (int hMenu) {
+Menu findMenu (int /*long*/ hMenu) {
 	if (menus == null) return null;
 	for (int i=0; i<menus.length; i++) {
 		Menu menu = menus [i];
@@ -452,7 +503,7 @@ public Rectangle getClientArea () {
 	if (OS.IsHPC) {
 		Rectangle rect = super.getClientArea ();
 		if (menuBar != null) {
-			int hwndCB = menuBar.hwndCB;
+			int /*long*/ hwndCB = menuBar.hwndCB;
 			int height = OS.CommandBar_Height (hwndCB);
 			rect.y += height;
 			rect.height = Math.max (0, rect.height - height);
@@ -503,7 +554,7 @@ public Rectangle getClientArea () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #setDefaultButton
+ * @see #setDefaultButton(Button)
  */
 public Button getDefaultButton () {
 	checkWidget ();
@@ -775,6 +826,7 @@ void saveFocus () {
 }
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	swFlags = OS.SW_SHOWNOACTIVATE;
 	if (OS.IsWinCE) {
 		swFlags = OS.SW_RESTORE;
 	} else {
@@ -800,7 +852,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 		if (OS.IsZoomed (handle)) {
 			if (sameOrigin && sameExtent) return;
 			setPlacement (x, y, width, height, flags);
-			setMaximized (false);
+			_setMaximized (false);
 			return;
 		}
 	}
@@ -900,7 +952,7 @@ void setImages (Image image, Image [] images) {
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
 	smallImage = largeImage = null;
-	int hSmallIcon = 0, hLargeIcon = 0;
+	int /*long*/ hSmallIcon = 0, hLargeIcon = 0;
 	Image smallIcon = null, largeIcon = null;
 	if (image != null) {
 		smallIcon = largeIcon = image;
@@ -1024,34 +1076,8 @@ public void setImages (Image [] images) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
-	swFlags = maximized ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
-	if (OS.IsWinCE) {
-		/*
-		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
-		* workaround is to resize the window to fit the parent client area.
-		*/
-		if (maximized) {
-			RECT rect = new RECT ();
-			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-			int width = rect.right - rect.left, height = rect.bottom - rect.top;
-			if (OS.IsPPC) {
-				/* Leave space for the menu bar */
-				if (menuBar != null) {
-					int hwndCB = menuBar.hwndCB;
-					RECT rectCB = new RECT ();
-					OS.GetWindowRect (hwndCB, rectCB);
-					height -= rectCB.bottom - rectCB.top;
-				}
-			}
-			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-			SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
-		}
-	} else {
-		if (!OS.IsWindowVisible (handle)) return;
-		if (maximized == OS.IsZoomed (handle)) return;
-		OS.ShowWindow (handle, swFlags);
-		OS.UpdateWindow (handle);
-	}
+	Display.lpStartupInfo = null;
+	_setMaximized (maximized);
 }
 
 /**
@@ -1102,7 +1128,7 @@ public void setMenuBar (Menu menu) {
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
 				menuBar = menu;
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
-				if (resize) setMaximized (true);
+				if (resize) _setMaximized (true);
 			}
 			if (OS.IsSP) {
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
@@ -1113,7 +1139,7 @@ public void setMenuBar (Menu menu) {
 	} else {
 		if (menu != null) display.removeBar (menu);
 		menuBar = menu;
-		int hMenu = menuBar != null ? menuBar.handle: 0;
+		int /*long*/ hMenu = menuBar != null ? menuBar.handle: 0;
 		OS.SetMenu (handle, hMenu);
 	}
 	destroyAccelerators ();
@@ -1144,16 +1170,8 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
-	if (OS.IsWinCE) return;
-	swFlags = minimized ? OS.SW_SHOWMINNOACTIVE : OS.SW_RESTORE;
-	if (!OS.IsWindowVisible (handle)) return;
-	if (minimized == OS.IsIconic (handle)) return;
-	int flags = swFlags;
-	if (flags == OS.SW_SHOWMINNOACTIVE && handle == OS.GetActiveWindow ()) {
-		flags = OS.SW_MINIMIZE;
-	}
-	OS.ShowWindow (handle, flags);
-	OS.UpdateWindow (handle);
+	Display.lpStartupInfo = null;
+	_setMinimized (minimized);
 }
 
 void setParent () {
@@ -1165,7 +1183,7 @@ void setParent () {
 	* undocumented and possibly dangerous Windows
 	* feature.
 	*/
-	int hwndParent = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
 	display.lockActiveWindow = true;
 	OS.SetParent (handle, hwndParent);
 	if (!OS.IsWindowVisible (hwndParent)) {
@@ -1174,7 +1192,7 @@ void setParent () {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	bits &= ~OS.WS_CHILD;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.WS_POPUP);
-	OS.SetWindowLong (handle, OS.GWL_ID, 0);
+	OS.SetWindowLongPtr (handle, OS.GWLP_ID, 0);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	display.lockActiveWindow = false;
@@ -1237,7 +1255,7 @@ void setSavedFocus (Control control) {
 
 void setSystemMenu () {
 	if (OS.IsWinCE) return;
-	int hMenu = OS.GetSystemMenu (handle, false);
+	int /*long*/ hMenu = OS.GetSystemMenu (handle, false);
 	if (hMenu == 0) return;
 	int oldCount = OS.GetMenuItemCount (hMenu);
 	if ((style & SWT.RESIZE) == 0) {
@@ -1294,12 +1312,22 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	/* Use the character encoding for the default locale */
 	TCHAR buffer = new TCHAR (0, string, true);
-	OS.SetWindowText (handle, buffer);
+	/* Ensure that the title appears in the task bar.*/
+	if ((state & FOREIGN_HANDLE) != 0) {
+		int /*long*/ hHeap = OS.GetProcessHeap ();
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (pszText, buffer, byteCount);
+		OS.DefWindowProc (handle, OS.WM_SETTEXT, 0, pszText);
+		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	} else {
+		OS.SetWindowText (handle, buffer);
+	}
 }
 
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (drawCount != 0) {
+	if (!getDrawing()) {
 		if (((state & HIDDEN) == 0) == visible) return;
 	} else {
 		if (visible == OS.IsWindowVisible (handle)) return;
@@ -1314,11 +1342,11 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 		if (OS.IsHPC) {
 			if (menuBar != null) {
-				int hwndCB = menuBar.hwndCB;
+				int /*long*/ hwndCB = menuBar.hwndCB;
 				OS.CommandBar_DrawMenuBar (hwndCB, 0);
 			}
 		}
-		if (drawCount != 0) {
+		if (!getDrawing()) {
 			state &= ~HIDDEN;
 		} else {
 			if (OS.IsWinCE) {
@@ -1328,7 +1356,12 @@ public void setVisible (boolean visible) {
 					display.removeBar (menuBar);
 					OS.DrawMenuBar (handle);
 				}
-				OS.ShowWindow (handle, swFlags);
+				STARTUPINFO lpStartUpInfo = Display.lpStartupInfo;
+				if (lpStartUpInfo != null && (lpStartUpInfo.dwFlags & OS.STARTF_USESHOWWINDOW) != 0) {
+					OS.ShowWindow (handle, lpStartUpInfo.wShowWindow);
+				} else {
+					OS.ShowWindow (handle, swFlags);
+				}
 			}
 			if (isDisposed ()) return;
 			opened = true;
@@ -1344,7 +1377,18 @@ public void setVisible (boolean visible) {
 				oldWidth = rect.width;
 				oldHeight = rect.height;
 			}
-			OS.UpdateWindow (handle);
+			/*
+			* Bug in Windows.  On Vista using the Classic theme, 
+			* when the window is hung and UpdateWindow() is called,
+			* nothing is drawn, and outstanding WM_PAINTs are cleared.
+			* This causes pixel corruption.  The fix is to avoid calling
+			* update on hung windows.  
+			*/
+			boolean update = true;
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && !OS.IsAppThemed ()) {
+				update = !OS.IsHungAppWindow (handle);
+			}
+			if (update) OS.UpdateWindow (handle);
 		}
 	} else {
 		if (!OS.IsWinCE) {
@@ -1354,15 +1398,11 @@ public void setVisible (boolean visible) {
 				if (OS.IsZoomed (handle)) {
 					swFlags = OS.SW_SHOWMAXIMIZED;
 				} else {
-					if (handle == OS.GetActiveWindow ()) {
-						swFlags = OS.SW_RESTORE;
-					} else {
-						swFlags = OS.SW_SHOWNOACTIVATE;
-					}
+					swFlags = OS.SW_SHOWNOACTIVATE;
 				}
 			}
 		}
-		if (drawCount != 0) {
+		if (!getDrawing()) {
 			state |= HIDDEN;
 		} else {
 			OS.ShowWindow (handle, OS.SW_HIDE);
@@ -1408,13 +1448,13 @@ boolean translateMenuAccelerator (MSG msg) {
 boolean translateMDIAccelerator (MSG msg) {
 	if (!(this instanceof Shell)) {
 		Shell shell = getShell ();
-		int hwndMDIClient = shell.hwndMDIClient;
+		int /*long*/ hwndMDIClient = shell.hwndMDIClient;
 		if (hwndMDIClient != 0 && OS.TranslateMDISysAccel (hwndMDIClient, msg)) {
 			return true;
 		}
 		if (msg.message == OS.WM_KEYDOWN) {
 			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
-			switch (msg.wParam) {
+			switch ((int)/*64*/(msg.wParam)) {
 				case OS.VK_F4:
 					OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 					return true;
@@ -1424,7 +1464,7 @@ boolean translateMDIAccelerator (MSG msg) {
 			return false;
 		}
 		if (msg.message == OS.WM_SYSKEYDOWN) {
-			switch (msg.wParam) {
+			switch ((int)/*64*/(msg.wParam)) {
 				case OS.VK_F4:
 					OS.PostMessage (shell.handle, OS.WM_CLOSE, 0, 0);
 					return true;
@@ -1486,7 +1526,7 @@ int widgetExtStyle () {
 	return bits;
 }
 
-int widgetParent () {
+int /*long*/ widgetParent () {
 	Shell shell = getShell ();
 	return shell.hwndMDIClient ();
 }
@@ -1528,7 +1568,7 @@ int widgetStyle () {
 	return bits;
 }
 
-int windowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (msg) {
 		case Display.SWT_GETACCEL:
 		case Display.SWT_GETACCELCOUNT:
@@ -1538,7 +1578,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_ACTIVATE (int wParam, int lParam) {
+LRESULT WM_ACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1561,14 +1601,14 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 			return LRESULT.ZERO;
 		}
 	}
-	if ((wParam & 0xFFFF) != 0) {
+	if (OS.LOWORD (wParam) != 0) {
 		/*
 		* When the high word of wParam is non-zero, the activation
 		* state of the window is being changed while the window is
 		* minimized. If this is the case, do not report activation
 		* events or restore the focus.
 		*/
-		if ((wParam >> 16) != 0) return result;
+		if (OS.HIWORD (wParam) != 0) return result;
 		Control control = display.findControl (lParam);
 		if (control == null || control instanceof Shell) {
 			if (this instanceof Shell) {
@@ -1599,14 +1639,14 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_CLOSE (int wParam, int lParam) {
+LRESULT WM_CLOSE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_CLOSE (wParam, lParam);
 	if (result != null) return result;
 	if (isEnabled () && isActive ()) closeWidget ();
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_HOTKEY (int wParam, int lParam) {
+LRESULT WM_HOTKEY (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_HOTKEY (wParam, lParam);
 	if (result != null) return result;
 	if (OS.IsSP) {
@@ -1620,7 +1660,7 @@ LRESULT WM_HOTKEY (int wParam, int lParam) {
 		* If the Shell has the SWT.CLOSE style, close the Shell.
 		* Otherwise, send the Back key to the window with focus.
 		*/
-		if (((lParam >> 16) & 0xFFFF) == OS.VK_ESCAPE) {
+		if (OS.HIWORD (lParam) == OS.VK_ESCAPE) {
 			if ((style & SWT.CLOSE) != 0) {
 				OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 			} else {
@@ -1632,13 +1672,13 @@ LRESULT WM_HOTKEY (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	saveFocus ();
 	return result;
 }
 
-LRESULT WM_MOVE (int wParam, int lParam) {
+LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (moved) {
 		Point location = getLocation ();
 		if (location.x == oldX && location.y == oldY) {
@@ -1650,7 +1690,7 @@ LRESULT WM_MOVE (int wParam, int lParam) {
 	return super.WM_MOVE (wParam, lParam);
 }
 
-LRESULT WM_NCACTIVATE (int wParam, int lParam) {
+LRESULT WM_NCACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_NCACTIVATE (wParam, lParam);
 	if (result != null) return result;
 	if (wParam == 0) {
@@ -1670,13 +1710,13 @@ LRESULT WM_NCACTIVATE (int wParam, int lParam) {
 		}
 	}
 	if (!(this instanceof Shell)) {
-		int hwndShell = getShell().handle;
+		int /*long*/ hwndShell = getShell().handle;
 		OS.SendMessage (hwndShell, OS.WM_NCACTIVATE, wParam, lParam);
 	}
 	return result;
 }
 
-LRESULT WM_QUERYOPEN (int wParam, int lParam) {
+LRESULT WM_QUERYOPEN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_QUERYOPEN (wParam, lParam);
 	if (result != null) return result;
 	sendEvent (SWT.Deiconify);
@@ -1684,22 +1724,22 @@ LRESULT WM_QUERYOPEN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (savedFocus != this) restoreFocus ();
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	boolean changed = true;
 	if (resized) {
 		int newWidth = 0, newHeight = 0;
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case OS.SIZE_RESTORED:
 			case OS.SIZE_MAXIMIZED:
-				newWidth = lParam & 0xFFFF;
-				newHeight = lParam >> 16;
+				newWidth = OS.LOWORD (lParam);
+				newHeight = OS.HIWORD (lParam);
 				break;
 			case OS.SIZE_MINIMIZED:
 				Rectangle rect = getClientArea ();
@@ -1724,11 +1764,11 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+LRESULT WM_SYSCOMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
 	if (!(this instanceof Shell)) {
-		int cmd = wParam & 0xFFF0;
+		int cmd = (int)/*64*/wParam & 0xFFF0;
 		switch (cmd) {
 			case OS.SC_CLOSE: {
 				OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
@@ -1743,7 +1783,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	if (display.lockActiveWindow) {

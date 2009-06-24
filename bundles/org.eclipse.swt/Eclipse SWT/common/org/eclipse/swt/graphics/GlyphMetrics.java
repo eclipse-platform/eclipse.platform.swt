@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,7 @@ import org.eclipse.swt.*;
  * 
  * @see TextStyle
  * @see TextLayout
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2
  */
@@ -52,13 +53,17 @@ public final class GlyphMetrics {
  * Constructs an instance of this class with the given
  * ascent, descent and width values.
  *
+ * @param ascent the GlyphMetrics ascent
+ * @param descent the GlyphMetrics descent
+ * @param width the GlyphMetrics width
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the ascent, descent or width argument is negative</li>
  * </ul>
  */
 public GlyphMetrics(int ascent, int descent, int width) {
 	if (ascent < 0 || descent < 0 || width < 0) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.ascent = ascent;
 	this.descent = descent;
@@ -100,7 +105,7 @@ public int hashCode () {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the <code>RGB</code>
+ * @return a string representation of the <code>GlyphMetrics</code>
  */
 public String toString () {
 	return "GlyphMetrics {" + ascent + ", " + descent + ", " + width + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$

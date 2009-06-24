@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -59,11 +59,11 @@ public class nsIEmbeddingSiteWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
 	}
 
-	public int GetVisibility(boolean[] aVisibility) {
+	public int GetVisibility(int[] aVisibility) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aVisibility);
 	}
 
-	public int SetVisibility(boolean aVisibility) {
+	public int SetVisibility(int aVisibility) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aVisibility);
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,6 +43,11 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tabfolder">TabFolder, TabItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabFolder extends Composite {
 	TabItem [] items;
@@ -73,6 +78,8 @@ public class TabFolder extends Composite {
  * </ul>
  *
  * @see SWT
+ * @see SWT#TOP
+ * @see SWT#BOTTOM
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -82,7 +89,7 @@ public TabFolder (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -90,7 +97,7 @@ public TabFolder (Composite parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -124,6 +131,24 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	/*
+	* Bug in the Macintosh.  The tab folder tabs draw outside the widget
+	* bounds when they do not fit.  The fix is to clip the output to the
+	* widget bounds.
+	*/
+	int [] context = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+	OS.CGContextSaveGState (context[0]);
+	CGRect rect = new CGRect ();
+	OS.HIViewGetBounds (handle, rect);
+	OS.CGContextAddRect (context[0], rect);
+	OS.CGContextClip (context [0]);
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	OS.CGContextRestoreGState (context[0]);
+	return result;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -147,56 +172,31 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	if (OS.HIVIEW) {
-		CGRect oldBounds = new CGRect (), bounds = oldBounds;
-		OS.HIViewGetFrame (handle, oldBounds);
-		int MIN_SIZE = 100;
-		if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-			OS.HIViewSetDrawingEnabled (handle, false);
-			bounds = new CGRect ();
-			bounds.width = bounds.height = 100;
-			OS.HIViewSetFrame (handle, bounds);
-		}
-		Rect client = new Rect ();
-		OS.GetTabContentRect (handle, client);
-		if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-			OS.HIViewSetFrame (handle, oldBounds);
-			OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
-		}
-		x -= client.left;
-		y -= client.top;
-		width += (int) bounds.width - (client.right - client.left);
-		height += (int) bounds.height - (client.bottom - client.top);
-		Rect inset = getInset ();
-		x -= inset.left;
-		y -= inset.top;
-		width += inset.left + inset.right;
-		height += inset.top + inset.bottom;
-		return new Rectangle (-client.left, -client.top, width, height);
-	}
-	Rect bounds, oldBounds = new Rect ();
-	OS.GetControlBounds (handle, oldBounds);
-	boolean fixBounds = (oldBounds.right - oldBounds.left) < 100 || (oldBounds.bottom - oldBounds.top) < 100;
-	if (fixBounds) {
-		bounds = new Rect ();
-		bounds.right = bounds.bottom = 100;
-		OS.SetControlBounds (handle, bounds);
-	} else {
-		bounds = oldBounds;
+	CGRect oldBounds = new CGRect (), bounds = oldBounds;
+	OS.HIViewGetFrame (handle, oldBounds);
+	int MIN_SIZE = 100;
+	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+		OS.HIViewSetDrawingEnabled (handle, false);
+		bounds = new CGRect ();
+		bounds.width = bounds.height = 100;
+		OS.HIViewSetFrame (handle, bounds);
 	}
 	Rect client = new Rect ();
 	OS.GetTabContentRect (handle, client);
-	if (fixBounds) OS.SetControlBounds (handle, oldBounds);
-	x -= client.left - bounds.left;
-	y -= client.top - bounds.top;
-	width += (bounds.right - bounds.left) - (client.right - client.left);
-	height += (bounds.bottom - bounds.top) - (client.bottom - client.top);
+	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+		OS.HIViewSetFrame (handle, oldBounds);
+		OS.HIViewSetDrawingEnabled (handle, getDrawing ());
+	}
+	x -= client.left;
+	y -= client.top;
+	width += (int) bounds.width - (client.right - client.left);
+	height += (int) bounds.height - (client.bottom - client.top);
 	Rect inset = getInset ();
 	x -= inset.left;
 	y -= inset.top;
 	width += inset.left + inset.right;
 	height += inset.top + inset.bottom;
-	return new Rectangle (x, y, width, height);
+	return new Rectangle (-client.left, -client.top, width, height);
 }
 
 void createHandle () {
@@ -261,32 +261,19 @@ void destroyItem (TabItem item) {
 		items [i].update ();
 	}
 	if (count > 0 && index == selectionIndex) {
-		setSelection (Math.max (0, selectionIndex - 1), true);
+		setSelection (Math.max (0, selectionIndex - 1), true, true);
 	}
 	invalidateVisibleRegion (handle);
 }
 
 public Rectangle getClientArea () {
 	checkWidget ();
-	if (OS.HIVIEW) {
-		Rect client = new Rect ();
-		if (OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null) != OS.noErr) {
-			return new Rectangle(0, 0, 0, 0);
-		}
-		int x = Math.max (0, client.left);
-		int y = Math.max (0, client.top);
-		int width = Math.max (0, client.right - client.left);
-		int height = Math.max (0, client.bottom - client.top);
-		return new Rectangle (x, y, width, height);
-	}
-	Rect bounds = new Rect ();
-	OS.GetControlBounds (handle, bounds);
 	Rect client = new Rect ();
 	if (OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null) != OS.noErr) {
 		return new Rectangle(0, 0, 0, 0);
 	}
-	int x = Math.max (0, client.left - bounds.left);
-	int y = Math.max (0, client.top - bounds.top);
+	int x = Math.max (0, client.left);
+	int y = Math.max (0, client.top);
 	int width = Math.max (0, client.right - client.left);
 	int height = Math.max (0, client.bottom - client.top);
 	return new Rectangle (x, y, width, height);
@@ -312,6 +299,36 @@ public TabItem getItem (int index) {
 	int count = OS.GetControl32BitMaximum (handle);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	return items [index];
+}
+
+/**
+ * Returns the tab item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the tab item at the given point, or null if the point is not in a tab item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public TabItem getItem(Point point) {
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = OS.GetControl32BitMaximum (handle);
+	for (int index = 0; index < count; index++) {
+		TabItem item = items[index];
+		Rectangle bounds = item.getBounds();
+		if (bounds.contains(point)) return item;
+	}
+	return null;
 }
 
 /**
@@ -392,6 +409,10 @@ public int getSelectionIndex () {
 	return OS.GetControl32BitValue (handle) - 1;
 }
 
+float getThemeAlpha () {
+	return (background != null ? 1 : 0.25f) * parent.getThemeAlpha ();
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -402,7 +423,7 @@ public int getSelectionIndex () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -444,6 +465,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 
 Rect getInset () {
+	if (OS.VERSION >= 0x1020) return super.getInset();
 	return (style & SWT.BOTTOM) != 0 ? display.tabFolderSouthInset : display.tabFolderNorthInset;
 }
 
@@ -518,7 +540,7 @@ void removeControl (Control control) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -556,6 +578,23 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
+/**
+ * Sets the receiver's selection to the given item.
+ * The current selected is first cleared, then the new item is
+ * selected.
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setSelection (TabItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -581,11 +620,11 @@ public void setSelection (TabItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (items.length == 0) {
-		setSelection (-1, false);
+		setSelection (-1, false, false);
 	} else {
 		for (int i=items.length - 1; i>=0; --i) {
 			int index = indexOf (items [i]);
-			if (index != -1) setSelection (index, false);
+			if (index != -1) setSelection (index, false, false);
 		}
 	}
 }
@@ -607,12 +646,13 @@ public void setSelection (int index) {
 	checkWidget ();
 	int count = OS.GetControl32BitMaximum (handle);
 	if (!(0 <= index && index < count)) return;
-	setSelection (index, false);
+	setSelection (index, false, false);
 }
 
-void setSelection (int index, boolean notify) {
+void setSelection (int index, boolean notify, boolean force) {
 	if (index >= OS.GetControl32BitMaximum (handle)) return;
 	int currentIndex = OS.GetControl32BitValue (handle) - 1;
+	if (!force && currentIndex == index) return;
 	if (currentIndex != -1) {
 		TabItem item = items [currentIndex];
 		if (item != null) {
@@ -624,6 +664,10 @@ void setSelection (int index, boolean notify) {
 	}
 	OS.SetControl32BitValue (handle, index+1);
 	index = OS.GetControl32BitValue (handle) - 1;
+	if (hasFocus ()) {
+		int window = OS.GetControlOwner (handle);
+		OS.SetKeyboardFocus (window, handle, (short) (index + 1));
+	}
 	lastSelected = index;
 	if (index != -1) {
 		TabItem item = items [index];
@@ -652,7 +696,7 @@ boolean traversePage (boolean next) {
 		int offset = (next) ? 1 : -1;
 		index = (index + offset + count) % count;
 	}
-	setSelection (index, true);
+	setSelection (index, true, false);
 	return index == getSelectionIndex ();
 }
 }

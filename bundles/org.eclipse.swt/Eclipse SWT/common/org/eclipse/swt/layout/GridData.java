@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @see GridLayout
  * @see Control#setLayoutData
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class GridData {
 	/**
@@ -422,8 +423,10 @@ public GridData (int style) {
 /**
  * Constructs a new instance of GridData according to the parameters.
  * 
- * @param horizontalAlignment how control will be positioned horizontally within a cell
- * @param verticalAlignment how control will be positioned vertically within a cell
+ * @param horizontalAlignment how control will be positioned horizontally within a cell,
+ * 		one of: SWT.BEGINNING (or SWT.LEFT), SWT.CENTER, SWT.END (or SWT.RIGHT), or SWT.FILL
+ * @param verticalAlignment how control will be positioned vertically within a cell,
+ * 		one of: SWT.BEGINNING (or SWT.TOP), SWT.CENTER, SWT.END (or SWT.BOTTOM), or SWT.FILL
  * @param grabExcessHorizontalSpace whether cell will be made wide enough to fit the remaining horizontal space
  * @param grabExcessVerticalSpace whether cell will be made high enough to fit the remaining vertical space
  * 
@@ -436,8 +439,10 @@ public GridData (int horizontalAlignment, int verticalAlignment, boolean grabExc
 /**
  * Constructs a new instance of GridData according to the parameters.
  *  
- * @param horizontalAlignment how control will be positioned horizontally within a cell
- * @param verticalAlignment how control will be positioned vertically within a cell
+ * @param horizontalAlignment how control will be positioned horizontally within a cell,
+ * 		one of: SWT.BEGINNING (or SWT.LEFT), SWT.CENTER, SWT.END (or SWT.RIGHT), or SWT.FILL
+ * @param verticalAlignment how control will be positioned vertically within a cell,
+ * 		one of: SWT.BEGINNING (or SWT.TOP), SWT.CENTER, SWT.END (or SWT.BOTTOM), or SWT.FILL
  * @param grabExcessHorizontalSpace whether cell will be made wide enough to fit the remaining horizontal space
  * @param grabExcessVerticalSpace whether cell will be made high enough to fit the remaining vertical space
  * @param horizontalSpan the number of column cells that the control will take up
@@ -458,7 +463,7 @@ public GridData (int horizontalAlignment, int verticalAlignment, boolean grabExc
 /**
  * Constructs a new instance of GridData according to the parameters.
  * A value of SWT.DEFAULT indicates that no minimum width or
- * no minumum height is specified.
+ * no minimum height is specified.
  * 
  * @param width a minimum width for the column
  * @param height a minimum height for the row
@@ -513,7 +518,7 @@ String getName () {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the GridData object
  */
 public String toString () {
 	String hAlign = "";

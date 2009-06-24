@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,13 @@
 package org.eclipse.swt.internal.image;
 
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 
-public class PngDecodingDataStream {
-	PngIdatChunk currentChunk;
-	PngChunkReader chunkReader;
+public class PngDecodingDataStream extends InputStream {
+	InputStream stream;
 	byte currentByte;
-	int nextByteIndex;
 	int nextBitIndex;
 	
 	PngLzBlockReader lzBlockReader;
@@ -26,11 +26,9 @@ public class PngDecodingDataStream {
 	static final int PRIME = 65521;
 	static final int MAX_BIT = 7;		
 	
-PngDecodingDataStream(PngIdatChunk idatChunk, PngChunkReader chunkReader) {
+PngDecodingDataStream(InputStream stream) throws IOException {
 	super();
-	this.currentChunk = idatChunk;
-	this.chunkReader = chunkReader;
-	nextByteIndex = 0;
+	this.stream = stream;
 	nextBitIndex = MAX_BIT + 1;
 	adlerValue = 1;
 	lzBlockReader = new PngLzBlockReader(this);
@@ -45,11 +43,16 @@ PngDecodingDataStream(PngIdatChunk idatChunk, PngChunkReader chunkReader) {
  * block marker. If there are more blocks after this one,
  * the method will read them and ensure that they are empty.
  */
-void assertImageDataAtEnd() {
+void assertImageDataAtEnd() throws IOException {
 	lzBlockReader.assertCompressedDataAtEnd();
 }
 
-int getNextIdatBits(int length) {
+public void close() throws IOException {
+	assertImageDataAtEnd();
+	checkAdler();
+}
+
+int getNextIdatBits(int length) throws IOException {
 	int value = 0;
 	for (int i = 0; i < length; i++) {
 		value |= (getNextIdatBit() << i);
@@ -57,30 +60,16 @@ int getNextIdatBits(int length) {
 	return value;
 }
 
-byte getNextIdatBit() {
+int getNextIdatBit() throws IOException {
 	if (nextBitIndex > MAX_BIT) {
 		currentByte = getNextIdatByte();
 		nextBitIndex = 0;
-	}	
-	int mask = 1 << nextBitIndex;
-	nextBitIndex++;
-	return ((currentByte & mask) > 0) ? (byte) 1 : (byte) 0;	
-}
-
-private PngIdatChunk getNextChunk() {
-	PngChunk chunk = chunkReader.readNextChunk();
-	if (chunk == null) error();
-	if (chunk.getChunkType() != PngChunk.CHUNK_IDAT) error(); 
-	return (PngIdatChunk) chunk;
-}
-
-byte getNextIdatByte() {
-	if (nextByteIndex > currentChunk.getLength() - 1) {
-		currentChunk = getNextChunk();
-		nextByteIndex = 0;
 	}
-	byte nextByte = currentChunk.getDataByteAtOffset(nextByteIndex);
-	nextByteIndex++;
+	return (currentByte & (1 << nextBitIndex)) >> nextBitIndex++;
+}
+
+byte getNextIdatByte() throws IOException {	
+	byte nextByte = (byte)stream.read();
 	nextBitIndex = MAX_BIT + 1;
 	return nextByte;
 }
@@ -94,17 +83,26 @@ void updateAdler(byte value) {
 	adlerValue = (high << 16) | low;
 }
 
-byte getNextDecodedByte() {
+public int read() throws IOException {
 	byte nextDecodedByte = lzBlockReader.getNextByte();
 	updateAdler(nextDecodedByte);
-	return nextDecodedByte;
+	return nextDecodedByte & 0xFF;
+}
+
+public int read(byte[] buffer, int off, int len) throws IOException {
+	for (int i = 0; i < len; i++) {
+		int b = read();
+		if (b == -1) return i;
+		buffer[off + i] = (byte)b;
+	}
+	return len;
 }
 
 void error() {
 	SWT.error(SWT.ERROR_INVALID_IMAGE);
 }
 
-private void readCompressedDataHeader() {
+private void readCompressedDataHeader() throws IOException {
 	byte headerByte1 = getNextIdatByte();
 	byte headerByte2 = getNextIdatByte();
 	
@@ -125,7 +123,7 @@ private void readCompressedDataHeader() {
 //	int compressionLevel = (headerByte2 & 0xC0) >> 6;
 }
 
-void checkAdler() {
+void checkAdler() throws IOException {
 	int storedAdler = ((getNextIdatByte() & 0xFF) << 24)
 		| ((getNextIdatByte() & 0xFF) << 16)
 		| ((getNextIdatByte() & 0xFF) << 8)

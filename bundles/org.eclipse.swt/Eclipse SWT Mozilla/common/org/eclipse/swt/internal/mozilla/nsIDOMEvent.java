@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -63,11 +63,11 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aEventPhase);
 	}
 
-	public int GetBubbles(boolean[] aBubbles) {
+	public int GetBubbles(int[] aBubbles) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aBubbles);
 	}
 
-	public int GetCancelable(boolean[] aCancelable) {
+	public int GetCancelable(int[] aCancelable) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCancelable);
 	}
 
@@ -83,7 +83,7 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress());
 	}
 
-	public int InitEvent(int /*long*/ eventTypeArg, boolean canBubbleArg, boolean cancelableArg) {
+	public int InitEvent(int /*long*/ eventTypeArg, int canBubbleArg, int cancelableArg) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), eventTypeArg, canBubbleArg, cancelableArg);
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,9 @@ import org.eclipse.swt.*;
  * <p>
  * Note: Only one of the above styles may be specified.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#cursor">Cursor snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Cursor extends Resource {
 	/**
@@ -77,7 +80,8 @@ public final class Cursor extends Resource {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-Cursor () {
+Cursor (Device device) {
+	super(device);
 }
 /**	 
  * Constructs a new cursor given a device and a style
@@ -121,9 +125,7 @@ Cursor () {
  * @see SWT#CURSOR_HAND
  */
 public Cursor (Device device, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	int shape = 0;
 	switch (style) {
 		case SWT.CURSOR_APPSTARTING: break;
@@ -154,10 +156,10 @@ public Cursor (Device device, int style) {
 	if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
 		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2, true);
 	} else {
-		handle = OS.XCreateFontCursor(device.xDisplay, shape);
+		handle = OS.XCreateFontCursor(this.device.xDisplay, shape);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 /**	 
  * Constructs a new cursor given a device, image and mask
@@ -191,9 +193,7 @@ public Cursor (Device device, int style) {
  * </ul>
  */
 public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -247,7 +247,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	/* Note that the mask and source are reversed */
 	handle = createCursor(maskData, sourceData, source.width, source.height, hotspotX, hotspotY, true);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 /**	 
  * Constructs a new cursor given a device, image data describing
@@ -277,9 +277,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
  * @since 3.0
  */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (hotspotX >= source.width || hotspotX < 0 ||
 		hotspotY >= source.height || hotspotY < 0) {
@@ -292,21 +290,37 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		/* Create a destination image with no data */
 		ImageData newSource = new ImageData(
 			source.width, source.height, 1, ImageData.bwPalette(),
-			1, null, 0, null, null, -1, -1, source.type,
-			source.x, source.y, source.disposalMethod, source.delayTime);
+			1, null, 0, null, null, -1, -1, 0, 0, 0, 0, 0);
+
+		byte[] newReds = new byte[]{0, (byte)255}, newGreens = newReds, newBlues = newReds;
 
 		/* Convert the source to a black and white image of depth 1 */
 		PaletteData palette = source.palette;
-		if (palette.isDirect) ImageData.blit(ImageData.BLIT_SRC,
-			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, 0, 0, 0,
-			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, 0, 0, 0,
-			false, false);
-		else ImageData.blit(ImageData.BLIT_SRC,
-			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, null, null, null,
-			false, false);
+		if (palette.isDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+					false, false);
+		} else {
+			RGB[] rgbs = palette.getRGBs();
+			int length = rgbs.length;
+			byte[] srcReds = new byte[length];
+			byte[] srcGreens = new byte[length];
+			byte[] srcBlues = new byte[length];
+			for (int i = 0; i < rgbs.length; i++) {
+				RGB rgb = rgbs[i];
+				if (rgb == null) continue;
+				srcReds[i] = (byte)rgb.red;
+				srcGreens[i] = (byte)rgb.green;
+				srcBlues[i] = (byte)rgb.blue;
+			}
+			ImageData.blit(ImageData.BLIT_SRC,
+					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+					false, false);
+		}
 		source = newSource;
 	}
 
@@ -341,7 +355,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
 	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY, false);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 int createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
 	int xDisplay = device.xDisplay;
@@ -363,18 +377,9 @@ int createCursor(byte[] sourceData, byte[] maskData, int width, int height, int 
 	if (maskPixmap != 0) OS.XFreePixmap(xDisplay, maskPixmap);
 	return cursor;
 }
-/**
- * Disposes of the operating system resources associated with
- * the cursor. Applications must dispose of all cursors which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.XFreeCursor(device.xDisplay, handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -419,9 +424,7 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 public static Cursor motif_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Cursor cursor = new Cursor();
-	cursor.device = device;
+	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;
 	return cursor;
 }

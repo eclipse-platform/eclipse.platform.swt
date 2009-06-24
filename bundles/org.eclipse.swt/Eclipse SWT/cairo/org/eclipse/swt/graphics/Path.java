@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,14 @@ import org.eclipse.swt.internal.cairo.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */
@@ -41,33 +49,129 @@ public class Path extends Resource {
 	 */
 	public int /*long*/ handle;
 	
-	boolean move;
+	boolean moved, closed = true;
 
 /**
  * Constructs a new empty Path.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the path
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
  */
 public Path (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
-	device.checkCairo();
+	super(device);
+	this.device.checkCairo();
 	int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
+}
+
+/**
+ * Constructs a new Path that is a copy of <code>path</code>. If
+ * <code>flatness</code> is less than or equal to zero, an unflatten
+ * copy of the path is created. Otherwise, it specifies the maximum
+ * error between the path and its flatten copy. Smaller numbers give
+ * better approximation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param path the path to make a copy
+ * @param flatness the flatness value
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the path has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, Path path, float flatness) {
+	super(device);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
+	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	handle = Cairo.cairo_create(surface);
+	Cairo.cairo_surface_destroy(surface);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int /*long*/ copy;
+	flatness = Math.max(0, flatness);
+	if (flatness == 0) {
+		copy = Cairo.cairo_copy_path(path.handle);		
+	} else {
+		double tolerance = Cairo.cairo_get_tolerance(path.handle);
+		Cairo.cairo_set_tolerance(path.handle, flatness);
+		copy = Cairo.cairo_copy_path_flat(path.handle);
+		Cairo.cairo_set_tolerance(path.handle, tolerance);
+	}
+	if (copy == 0) {
+		Cairo.cairo_destroy(handle);
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
+	Cairo.cairo_append_path(handle, copy);
+	Cairo.cairo_path_destroy(copy);
+	init();
+}
+
+/**
+ * Constructs a new Path with the specifed PathData.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param data the data for the path
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, PathData data) {
+	this(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(data);
 }
 
 /**
@@ -101,24 +205,30 @@ public Path (Device device) {
  */
 public void addArc(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	move = true;
+	moved = true;
 	if (width == height) {
+		float angle = -startAngle * (float)Compatibility.PI / 180;
+		if (closed) Cairo.cairo_move_to(handle, (x + width / 2f) + width / 2f * Math.cos(angle), (y + height / 2f) + height / 2f * Math.sin(angle));
 		if (arcAngle >= 0) {
-			Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
 		} else {
-			Cairo.cairo_arc(handle, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
 		}
 	} else {
 		Cairo.cairo_save(handle);
 		Cairo.cairo_translate(handle, x + width / 2f, y + height / 2f);
 		Cairo.cairo_scale(handle, width / 2f, height / 2f);
+		float angle = -startAngle * (float)Compatibility.PI / 180;
+		if (closed) Cairo.cairo_move_to(handle, Math.cos(angle), Math.sin(angle));
 		if (arcAngle >= 0) {
-			Cairo.cairo_arc_negative(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc_negative(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
 		} else {
-			Cairo.cairo_arc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_arc(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
 		}
 		Cairo.cairo_restore(handle);
 	}
+	closed = false;
+	if (Math.abs(arcAngle) >= 360) close();
 }
 
 /**
@@ -138,11 +248,12 @@ public void addPath(Path path) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	move = false;
+	moved = false;
 	int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(handle, copy);
 	Cairo.cairo_path_destroy(copy);
+	closed = path.closed;
 }
 
 /**
@@ -159,8 +270,9 @@ public void addPath(Path path) {
  */
 public void addRectangle(float x, float y, float width, float height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	move = false;
+	moved = false;
 	Cairo.cairo_rectangle(handle, x, y, width, height);
+	closed = true;
 }
 
 /**
@@ -184,14 +296,9 @@ public void addString(String string, float x, float y, Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	move = false;
-	GC.setCairoFont(handle, font);
-	cairo_font_extents_t extents = new cairo_font_extents_t();
-	Cairo.cairo_font_extents(handle, extents);
-	double baseline = y + extents.ascent;
-	Cairo.cairo_move_to(handle, x, baseline);
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	Cairo.cairo_text_path(handle, buffer);
+	moved = false;
+	GC.addCairoString(handle, string, x, y, font);
+	closed = true;
 }
 
 /**
@@ -206,7 +313,8 @@ public void addString(String string, float x, float y, Font font) {
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Cairo.cairo_close_path(handle);
-	move = false;
+	moved = false;
+	closed = true;
 }
 
 /**
@@ -221,7 +329,7 @@ public void close() {
  * @param x the x coordinate of the point to test for containment
  * @param y the y coordinate of the point to test for containment
  * @param gc the GC to use when testing for containment
- * @param outline controls wether to check the outline or contained area of the path
+ * @param outline controls whether to check the outline or contained area of the path
  * @return <code>true</code> if the path contains the point and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
@@ -238,6 +346,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - see Windows
 	gc.initCairo();
+	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	boolean result = false;
 	int /*long*/ cairo = gc.data.cairo;
 	int /*long*/ copy = Cairo.cairo_copy_path(handle);
@@ -269,13 +378,14 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
  */
 public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (!move) {
+	if (!moved) {
 		double[] currentX = new double[1], currentY = new double[1];
 		Cairo.cairo_get_current_point(handle, currentX, currentY);
 		Cairo.cairo_move_to(handle, currentX[0], currentY[0]);
+		moved = true;
 	}
-	move = true;
 	Cairo.cairo_curve_to(handle, cx1, cy1, cx2, cy2, x, y);
+	closed = false;
 }
 
 /**
@@ -303,6 +413,8 @@ public void getBounds(float[] bounds) {
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
 	double minX = 0, minY = 0, maxX = 0, maxY = 0;
 	if (path.num_data > 0) {
+		minX = minY = Double.POSITIVE_INFINITY;
+		maxX = maxY = Double.NEGATIVE_INFINITY;
 		int i = 0;
 		double[] points = new double[6]; 
 		cairo_path_data_t data = new cairo_path_data_t();
@@ -462,13 +574,14 @@ public PathData getPathData() {
  */
 public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (!move) {
+	if (!moved) {
 		double[] currentX = new double[1], currentY = new double[1];
 		Cairo.cairo_get_current_point(handle, currentX, currentY);
 		Cairo.cairo_move_to(handle, currentX[0], currentY[0]);
+		moved = true;
 	}
-	move = true;
 	Cairo.cairo_line_to(handle, x, y);
+	closed = false;
 }
 
 /**
@@ -490,10 +603,11 @@ public void moveTo(float x, float y) {
 	* begining of a subpath, the first cairo_line_to() or
 	* cairo_curve_to() segment do not output anything.  The fix
 	* is to detect that the app did not call cairo_move_to()
-	* before those calls and call them explicitly. 
+	* before those calls and call it explicitly. 
 	*/
-	move = true;
+	moved = true;
 	Cairo.cairo_move_to(handle, x, y);
+	closed = true;
 }
 
 /**
@@ -512,10 +626,10 @@ public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	double[] currentX = new double[1], currentY = new double[1];
 	Cairo.cairo_get_current_point(handle, currentX, currentY);
-	if (!move) {
+	if (!moved) {
 		Cairo.cairo_move_to(handle, currentX[0], currentY[0]);
+		moved = true;
 	}
-	move = true;
 	float x0 = (float)currentX[0];
 	float y0 = (float)currentY[0];
 	float cx1 = x0 + 2 * (cx - x0) / 3;
@@ -523,19 +637,39 @@ public void quadTo(float cx, float cy, float x, float y) {
 	float cx2 = cx1 + (x - x0) / 3;
 	float cy2 = cy1 + (y - y0) / 3;
 	Cairo.cairo_curve_to(handle, cx1, cy1, cx2, cy2, x, y);
+	closed = false;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Path. Applications must dispose of all Paths that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
+void destroy() {
 	Cairo.cairo_destroy(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
+}
+
+void init(PathData data) {
+	byte[] types = data.types;
+	float[] points = data.points;
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				moveTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_LINE_TO:
+				lineTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_QUAD_TO:
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_CLOSE:
+				close();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**

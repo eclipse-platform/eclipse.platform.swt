@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -61,7 +61,7 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), x, y);
 	}
 
-	public int SetSize(int cx, int cy, boolean fRepaint) {
+	public int SetSize(int cx, int cy, int fRepaint) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), cx, cy, fRepaint);
 	}
 
@@ -69,7 +69,7 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), cx, cy);
 	}
 
-	public int SetPositionAndSize(int x, int y, int cx, int cy, boolean fRepaint) {
+	public int SetPositionAndSize(int x, int y, int cx, int cy, int fRepaint) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), x, y, cx, cy, fRepaint);
 	}
 
@@ -77,7 +77,7 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), x, y, cx, cy);
 	}
 
-	public int Repaint(boolean force) {
+	public int Repaint(int force) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), force);
 	}
 
@@ -97,27 +97,27 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aParentNativeWindow);
 	}
 
-	public int GetVisibility(boolean[] aVisibility) {
+	public int GetVisibility(int[] aVisibility) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), aVisibility);
 	}
 
-	public int SetVisibility(boolean aVisibility) {
+	public int SetVisibility(int aVisibility) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aVisibility);
 	}
 
-	public int GetEnabled(boolean[] aEnabled) {
+	public int GetEnabled(int[] aEnabled) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aEnabled);
 	}
 
-	public int SetEnabled(boolean aEnabled) {
+	public int SetEnabled(int aEnabled) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aEnabled);
 	}
 
-	public int GetBlurSuppression(boolean[] aBlurSuppression) {
+	public int GetBlurSuppression(int[] aBlurSuppression) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), aBlurSuppression);
 	}
 
-	public int SetBlurSuppression(boolean aBlurSuppression) {
+	public int SetBlurSuppression(int aBlurSuppression) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), aBlurSuppression);
 	}
 

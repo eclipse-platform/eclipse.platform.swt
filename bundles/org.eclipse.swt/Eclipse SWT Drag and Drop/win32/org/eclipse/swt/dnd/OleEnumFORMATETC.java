@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
 
 final class OleEnumFORMATETC {
@@ -34,17 +35,17 @@ int AddRef() {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iUnknown = new COMObject(new int[] {2, 0, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	iEnumFORMATETC = new COMObject(new int[] {2, 0, 0, 3, 1, 0, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return Next(args[0], args[1], args[2]);}
-		public int method4(int[] args) {return Skip(args[0]);}
-		public int method5(int[] args) {return Reset();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
+		public int /*long*/ method4(int /*long*/[] args) {return Skip((int)/*64*/args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return Reset();}
 		// method6 Clone - not implemented
 	};
 }
@@ -58,7 +59,7 @@ private void disposeCOMInterfaces() {
 		iEnumFORMATETC.dispose();
 	iEnumFORMATETC = null;
 }
-int getAddress() {
+int /*long*/ getAddress() {
 	return iEnumFORMATETC.getAddress();
 }
 private FORMATETC[] getNextItems(int numItems){
@@ -77,7 +78,7 @@ private FORMATETC[] getNextItems(int numItems){
 
 	return items;
 }
-private int Next(int celt, int rgelt, int pceltFetched) {
+private int Next(int celt, int /*long*/ rgelt, int /*long*/ pceltFetched) {
 	/* Retrieves the next celt items in the enumeration sequence. 
 	   If there are fewer than the requested number of elements left in the sequence, 
 	   it retrieves the remaining elements. 
@@ -107,7 +108,7 @@ private int Next(int celt, int rgelt, int pceltFetched) {
 	}
 	return COM.S_FALSE;
 }
-private int QueryInterface(int riid, int ppvObject) {
+private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	
 	if (riid == 0 || ppvObject == 0) return COM.E_NOINTERFACE;
 	
@@ -115,16 +116,16 @@ private int QueryInterface(int riid, int ppvObject) {
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		COM.MoveMemory(ppvObject, new int[] {iUnknown.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iUnknown.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIEnumFORMATETC)) {
-		COM.MoveMemory(ppvObject, new int[] {iEnumFORMATETC.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iEnumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new int[] {0}, 4);
+	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

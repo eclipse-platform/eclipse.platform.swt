@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,16 +11,12 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGPoint;
-import org.eclipse.swt.internal.carbon.ThemeButtonDrawInfo;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -44,12 +40,17 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#button">Button snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Button extends Control {
 	String text = "";
 	Image image;
 	int cIcon;
-	boolean isImage, tracking;
+	boolean isImage, grayed;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -81,6 +82,8 @@ public class Button extends Control {
  * @see SWT#RADIO
  * @see SWT#TOGGLE
  * @see SWT#FLAT
+ * @see SWT#UP
+ * @see SWT#DOWN
  * @see SWT#LEFT
  * @see SWT#RIGHT
  * @see SWT#CENTER
@@ -93,11 +96,11 @@ public Button (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -142,6 +145,30 @@ void click () {
 	postEvent (SWT.Selection);
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	int [] context = null;
+	if ((style & SWT.ARROW) != 0) {
+		boolean invert = false;
+		if (OS.VERSION < 0x1050) {
+			invert = (style & SWT.UP) != 0;
+		} else {
+			invert = (style & SWT.UP) != 0 || (style & SWT.LEFT) != 0;
+		}
+		if (invert) {
+			context = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+			OS.CGContextSaveGState (context[0]);
+			CGRect rect = new CGRect();
+			OS.HIViewGetBounds (handle, rect);
+			OS.CGContextRotateCTM (context[0], (float)Compatibility.PI);
+			OS.CGContextTranslateCTM (context[0], -rect.width, -rect.height);
+		}
+	}
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (context != null) OS.CGContextRestoreGState (context[0]);
+	return result;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	// NEEDS WORK - empty string
@@ -164,21 +191,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int [] ptr = new int [1];
 	OS.CopyControlTitleAsCFString (handle, ptr);
 	if (ptr [0] != 0) {
-		org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-		if (font == null) {
-			OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
-		} else {
-			int [] currentPort = new int [1];
-			OS.GetPort (currentPort);
-			OS.SetPortWindowPort (OS.GetControlOwner (handle));
-			OS.TextFont (font.id);
-			OS.TextFace (font.style);
-			OS.TextSize (font.size);
-			OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
-			OS.SetPort (currentPort [0]);
-		}
-		width += ioBounds.h;
-		height = Math.max (height, ioBounds.v);
+		Point size = textExtent (ptr [0], 0);
+		width += size.x;
+		height = Math.max (height, size.y);
 		OS.CFRelease (ptr [0]);
 		if (image != null && isImage) width += 3;
 	} else {
@@ -230,7 +245,7 @@ void createHandle () {
 				
 	if ((style & SWT.ARROW) != 0) {
 		int orientation = OS.kThemeDisclosureRight;
-		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
 		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
@@ -352,6 +367,26 @@ public int getAlignment () {
 }
 
 /**
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the widget does not have
+ * the <code>CHECK</code> style, return false.
+ *
+ * @return the grayed state of the checkbox
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
+/**
  * Returns the receiver's image if it has one, or null
  * if it does not.
  *
@@ -414,6 +449,46 @@ Rect getInset () {
 	return display.buttonInset;
 }
 
+boolean isDescribedByLabel () {
+	return false;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.eventNotHandledErr;
+	if ((style & SWT.RADIO) != 0) {
+		int [] stringRef = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+		int length = 0;
+		if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+		char [] buffer = new char [length];
+		CFRange range = new CFRange ();
+		range.length = length;
+		OS.CFStringGetCharacters (stringRef [0], range, buffer);
+		String attributeName = new String(buffer);
+		if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+			String roleText = OS.kAXRadioButtonRole;
+			buffer = new char [roleText.length ()];
+			roleText.getChars (0, buffer.length, buffer, 0);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (stringRef [0] != 0) {
+				if (attributeName.equals (OS.kAXRoleAttribute)) {
+					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				} else { // kAXRoleDescriptionAttribute
+					int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+					OS.CFRelease(stringRef2);
+				}
+				OS.CFRelease(stringRef [0]);
+				code = OS.noErr;
+			}
+		}
+	}
+	if (accessible != null) {
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
+	}
+	return code;
+}
+
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -421,63 +496,24 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
 			selectRadio ();
 		}
+	} else {
+		if ((style & SWT.CHECK) != 0) {
+			if (grayed) {
+				switch (OS.GetControl32BitValue (handle)) {
+					case 0: 
+						OS.SetControl32BitMaximum (handle, 2);
+						OS.SetControl32BitValue (handle, 2);
+						break;
+					case 1:
+					case 2:
+						OS.SetControl32BitMaximum (handle, 0);
+						OS.SetControl32BitValue (handle, 0);
+						break;
+				}
+			}
+		}
 	}
 	postEvent (SWT.Selection);
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	/*
-	* Feature in the Macintosh.  Some controls call TrackControl() or
-	* HandleControlClick() to track the mouse.  Unfortunately, mouse move
-	* events and the mouse up events are consumed.  The fix is to call the
-	* default handler and send a fake mouse up when tracking is finished.
-	* 
-	* NOTE: No mouse move events are sent while tracking.  There is no
-	* fix for this at this time.
-	*/
-	display.grabControl = null;
-	display.runDeferredEvents ();
-	tracking = false;
-	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	if (tracking) {
-		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetGlobalMouse (outPt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		int x, y;
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			pt.x = outPt.h;
-			pt.y = outPt.v;
-			OS.HIViewConvertPoint (pt, 0, handle);
-			x = (int) pt.x;
-			y = (int) pt.y;
-			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		} else {
-			OS.GetControlBounds (handle, rect);
-			x = outPt.h - rect.left;
-			y = outPt.v - rect.top;
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		}
-		x -= rect.left;
-		y -=  rect.top;
-		short [] button = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-		int chord = OS.GetCurrentEventButtonState ();
-		int modifiers = OS.GetCurrentEventKeyModifiers ();
-		sendMouseEvent (SWT.MouseUp, button [0], true, chord, (short)x, (short)y, modifiers);
-	}
-	tracking = false;
-	return result;
-}
-
-int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	tracking = true;
 	return OS.eventNotHandledErr;
 }
 
@@ -491,7 +527,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -567,7 +603,7 @@ void _setAlignment (int alignment) {
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		int orientation = OS.kThemeDisclosureRight;
-		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
 		OS.SetControl32BitValue (handle, orientation);
@@ -622,9 +658,48 @@ void setDefault (boolean value) {
 }
 
 /**
+ * Sets the grayed state of the receiver.  This state change 
+ * only applies if the control was created with the SWT.CHECK
+ * style.
+ *
+ * @param grayed the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setGrayed (boolean grayed) {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
+	if (grayed) {
+		if (OS.GetControl32BitValue (handle) != 0) {
+			OS.SetControl32BitMaximum (handle, 2);
+			OS.SetControl32BitValue (handle, 2);
+		} else {
+			OS.SetControl32BitMaximum (handle, 0);
+			OS.SetControl32BitValue (handle, 0);
+		}
+	} else {
+		if (OS.GetControl32BitValue (handle) != 0) {
+			OS.SetControl32BitValue (handle, 1);
+		}
+		OS.SetControl32BitMaximum (handle, 1);
+	}
+}
+
+/**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
- *
+ * <p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
+ * </p>
  * @param image the image to display on the receiver (may be <code>null</code>)
  *
  * @exception IllegalArgumentException <ul>
@@ -675,7 +750,7 @@ public void setImage (Image image) {
 		inContent.contentType = (short)OS.kControlContentTextOnly;
 	}
 	OS.SetBevelButtonContentInfo (handle, inContent);
-	setAlignment (style);
+	_setAlignment (style);
 	redraw ();
 }
 
@@ -707,6 +782,19 @@ boolean setRadioSelection (boolean value){
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
+	if ((style & SWT.CHECK) != 0) {
+		if (grayed) {
+			if (selected) {
+				OS.SetControl32BitMaximum (handle, 2);
+				OS.SetControl32BitValue (handle, 2);
+			} else {
+				OS.SetControl32BitMaximum (handle, 0);
+				OS.SetControl32BitValue (handle, 0);
+			}
+			return;
+		}
+		OS.SetControl32BitMaximum (handle, 1);
+	}
 	OS.SetControl32BitValue (handle, selected ? 1 : 0);
 }
 
@@ -717,16 +805,20 @@ public void setSelection (boolean selected) {
  * the mnemonic character but must not contain line delimiters.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
- * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * underlined but may be emphasized in a platform specific
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
+ * </p><p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
  * </p>
- * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -759,12 +851,13 @@ public void setText (String string) {
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
-	setAlignment (style);
+	_setAlignment (style);
 	redraw ();
 }
 
 int traversalCode (int key, int theEvent) {
 	int code = super.traversalCode (key, theEvent);
+	if ((style & SWT.ARROW) != 0) code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	return code;
 }

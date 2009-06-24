@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,22 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.CloneableCompatibility;
 
+/**
+ * <code>StyleRange</code> defines a set of styles for a specified
+ * range of text.
+ * <p>
+ * The hashCode() method in this class uses the values of the public
+ * fields to compute the hash value. When storing instances of the
+ * class in hashed collections, do not modify these fields after the
+ * object has been inserted.
+ * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ */
 public class StyleRange extends TextStyle implements CloneableCompatibility {
 	
 	/**
-	 * the start offset of the range. zero-based from the document start
+	 * the start offset of the range, zero-based from the document start
 	 */
 	public int start;
 	
@@ -35,13 +47,27 @@ public class StyleRange extends TextStyle implements CloneableCompatibility {
 	 */
 	public int fontStyle = SWT.NORMAL;
 	
+/**
+ * Create a new style range with no styles
+ * 
+ * @since 3.2
+ */
 public StyleRange() {
-	super(null, null, null);
+}
+
+/** 
+ * Create a new style range from an existing text style.
+ *
+ * @param style the text style to copy
+ *
+ * @since 3.4
+ */
+public StyleRange(TextStyle style) {
+	super(style);
 }
 
 /** 
  * Create a new style range.
- * <p>
  *
  * @param start start offset of the style
  * @param length length of the style 
@@ -56,7 +82,6 @@ public StyleRange(int start, int length, Color foreground, Color background) {
 
 /** 
  * Create a new style range.
- * <p>
  *
  * @param start start offset of the style
  * @param length length of the style 
@@ -109,12 +134,10 @@ boolean isVariableHeight() {
 /**
  * Returns whether or not the receiver is unstyled (i.e., does not have any 
  * style attributes specified).
- * <p>
  *
  * @return true if the receiver is unstyled, false otherwise.
  */
 public boolean isUnstyled() {
-	//BAD
 	if (font != null) return false;
 	if (rise != 0) return false;
 	if (metrics != null) return false;
@@ -123,6 +146,7 @@ public boolean isUnstyled() {
 	if (fontStyle != SWT.NORMAL) return false;
 	if (underline) return false;
 	if (strikeout) return false;
+	if (borderStyle != SWT.NONE) return false;
 	return true;
 }
 
@@ -130,7 +154,6 @@ public boolean isUnstyled() {
  * Compares the specified object to this StyleRange and answer if the two 
  * are similar. The object must be an instance of StyleRange and have the
  * same field values for except for start and length.
- * <p>
  *
  * @param style the object to compare with this object
  * @return true if the objects are similar, false otherwise
@@ -142,8 +165,7 @@ public boolean similarTo(StyleRange style) {
 }
 
 /**
- * Answers a new StyleRange with the same values as this StyleRange.
- * <p>
+ * Returns a new StyleRange with the same values as this StyleRange.
  *
  * @return a shallow copy of this StyleRange
  */	
@@ -159,7 +181,7 @@ public Object clone() {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the StyleRange
  */
 public String toString() {
 	StringBuffer buffer = new StringBuffer();

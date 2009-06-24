@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,10 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
- * is possible to embedded AWT components in SWT and vice versa.
+ * is possible to embed AWT components in SWT and vice versa.
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#awt">Swing/AWT snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */
@@ -38,6 +41,19 @@ public class SWT_AWT {
 	 */
 	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 
+/**
+ * Returns a <code>java.awt.Frame</code> which is the embedded frame
+ * associated with the specified composite.
+ * 
+ * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>
+ * @return a <code>java.awt.Frame</code> the embedded frame or <code>null</code>.
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public static Frame getFrame (Composite parent) {
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;

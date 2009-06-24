@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,8 +30,13 @@ import org.eclipse.swt.accessibility.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Link extends Control {
 	String text;
@@ -79,11 +84,11 @@ public Link (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -143,6 +148,7 @@ void createHandle(int index) {
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	layout = new TextLayout (display);
+	layout.setOrientation((style & SWT.RIGHT_TO_LEFT) != 0? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT);
 	linkColor = new Color (display, LINK_FOREGROUND);
 	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
@@ -169,6 +175,10 @@ void enableWidget (boolean enabled) {
 		layout.setStyle (linkStyle, point.x, point.y);
 	}
 	redraw ();
+}
+
+void fixStyle () {
+	fixStyle (handle);
 }
 
 void initAccessible () {
@@ -252,10 +262,13 @@ Rectangle [] getRectangles (int linkIndex) {
 	return rects;
 }
 
+int getClientWidth () {
+	return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (handle);
+}
+
 /**
  * Returns the receiver's text, which will be an empty
- * string if it has never been set or if the receiver is
- * a <code>SEPARATOR</code> label.
+ * string if it has never been set.
  *
  * @return the receiver's text
  *
@@ -278,6 +291,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 		if (focusIndex != -1) setFocus ();
 		int x = (int) gdkEvent.x;
 		int y = (int) gdkEvent.y;
+		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 		int offset = layout.getOffset (x, y, null);
 		int oldSelectionX = selection.x;
 		int oldSelectionY = selection.y;
@@ -316,6 +330,7 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 	if (gdkEvent.button == 1) {
 		int x = (int) gdkEvent.x;
 		int y = (int) gdkEvent.y;
+		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 		Rectangle [] rects = getRectangles (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
@@ -374,6 +389,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		event.y = gdkEvent.area_y;
 		event.width = gdkEvent.area_width;
 		event.height = gdkEvent.area_height;
+		if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
 		event.gc = gc;
 		sendEvent (SWT.Paint, event);
 		event.gc = null;
@@ -419,6 +435,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 	int x = (int) gdkEvent.x;
 	int y = (int) gdkEvent.y;	
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
 		selection.y = layout.getOffset (x, y, null);
@@ -464,7 +481,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -598,7 +615,7 @@ String parse (String string) {
 	}
 	if (start < length) {
 		int tmp = parseMnemonics (buffer, start, tagStart, result);
-		int mnemonic = parseMnemonics (buffer, linkStart, index, result);
+		int mnemonic = parseMnemonics (buffer, Math.max (tagStart, linkStart), length, result);
 		if (mnemonic == -1) mnemonic = tmp;
 		mnemonics [linkIndex] = mnemonic;
 	} else {
@@ -659,8 +676,9 @@ void setFontDescription (int /*long*/ font) {
  * selected, the text field of the selection event contains either the
  * text of the hyperlink or the value of its HREF, if one was specified.
  * In the rare case of identical hyperlinks within the same string, the
- * HREF tag can be used to distinguish between them.  The string may
- * include the mnemonic character and line delimiters.
+ * HREF attribute can be used to distinguish between them.  The string may
+ * include the mnemonic character and line delimiters. The only delimiter
+ * the HREF attribute supports is the quotation mark (").
  * </p>
  * 
  * @param string the new text
@@ -684,10 +702,14 @@ public void setText (String string) {
 	boolean enabled = (state & DISABLED) == 0;
 	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
 	linkStyle.underline = true;
+	int [] bidiSegments = new int [offsets.length*2];
 	for (int i = 0; i < offsets.length; i++) {
 		Point point = offsets [i];
 		layout.setStyle (linkStyle, point.x, point.y);
+		bidiSegments[i*2] = point.x;
+		bidiSegments[i*2+1] = point.y+1;
 	}
+	layout.setSegments (bidiSegments);
 	TextStyle mnemonicStyle = new TextStyle (null, null, null);
 	mnemonicStyle.underline = true;
 	for (int i = 0; i < mnemonics.length; i++) {

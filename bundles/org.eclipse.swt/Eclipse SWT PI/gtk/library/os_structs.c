@@ -1,17 +1,17 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
-* The contents of this file are made available under the terms
-* of the GNU Lesser General Public License (LGPL) Version 2.1 that
-* accompanies this distribution (lgpl-v21.txt).  The LGPL is also
-* available at http://www.gnu.org/licenses/lgpl.html.  If the version
-* of the LGPL at http://www.gnu.org is different to the version of
-* the LGPL accompanying this distribution and there is any conflict
-* between the two license versions, the terms of the LGPL accompanying
-* this distribution shall govern.
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * The contents of this file are made available under the terms
+ * of the GNU Lesser General Public License (LGPL) Version 2.1 that
+ * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
+ * available at http://www.gnu.org/licenses/lgpl.html.  If the version
+ * of the LGPL at http://www.gnu.org is different to the version of
+ * the LGPL accompanying this distribution and there is any conflict
+ * between the two license versions, the terms of the LGPL accompanying
+ * this distribution shall govern.
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -29,27 +29,27 @@ void cacheGInterfaceInfoFields(JNIEnv *env, jobject lpObject)
 {
 	if (GInterfaceInfoFc.cached) return;
 	GInterfaceInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GInterfaceInfoFc.interface_init = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_init", "I");
-	GInterfaceInfoFc.interface_finalize = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_finalize", "I");
-	GInterfaceInfoFc.interface_data = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_data", "I");
+	GInterfaceInfoFc.interface_init = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_init", I_J);
+	GInterfaceInfoFc.interface_finalize = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_finalize", I_J);
+	GInterfaceInfoFc.interface_data = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_data", I_J);
 	GInterfaceInfoFc.cached = 1;
 }
 
 GInterfaceInfo *getGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct)
 {
 	if (!GInterfaceInfoFc.cached) cacheGInterfaceInfoFields(env, lpObject);
-	lpStruct->interface_init = (GInterfaceInitFunc)(*env)->GetIntField(env, lpObject, GInterfaceInfoFc.interface_init);
-	lpStruct->interface_finalize = (GInterfaceFinalizeFunc)(*env)->GetIntField(env, lpObject, GInterfaceInfoFc.interface_finalize);
-	lpStruct->interface_data = (gpointer)(*env)->GetIntField(env, lpObject, GInterfaceInfoFc.interface_data);
+	lpStruct->interface_init = (GInterfaceInitFunc)(*env)->GetIntLongField(env, lpObject, GInterfaceInfoFc.interface_init);
+	lpStruct->interface_finalize = (GInterfaceFinalizeFunc)(*env)->GetIntLongField(env, lpObject, GInterfaceInfoFc.interface_finalize);
+	lpStruct->interface_data = (gpointer)(*env)->GetIntLongField(env, lpObject, GInterfaceInfoFc.interface_data);
 	return lpStruct;
 }
 
 void setGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct)
 {
 	if (!GInterfaceInfoFc.cached) cacheGInterfaceInfoFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GInterfaceInfoFc.interface_init, (jint)lpStruct->interface_init);
-	(*env)->SetIntField(env, lpObject, GInterfaceInfoFc.interface_finalize, (jint)lpStruct->interface_finalize);
-	(*env)->SetIntField(env, lpObject, GInterfaceInfoFc.interface_data, (jint)lpStruct->interface_data);
+	(*env)->SetIntLongField(env, lpObject, GInterfaceInfoFc.interface_init, (jintLong)lpStruct->interface_init);
+	(*env)->SetIntLongField(env, lpObject, GInterfaceInfoFc.interface_finalize, (jintLong)lpStruct->interface_finalize);
+	(*env)->SetIntLongField(env, lpObject, GInterfaceInfoFc.interface_data, (jintLong)lpStruct->interface_data);
 }
 #endif
 
@@ -66,39 +66,39 @@ void cacheGObjectClassFields(JNIEnv *env, jobject lpObject)
 {
 	if (GObjectClassFc.cached) return;
 	GObjectClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GObjectClassFc.constructor = (*env)->GetFieldID(env, GObjectClassFc.clazz, "constructor", "I");
-	GObjectClassFc.set_property = (*env)->GetFieldID(env, GObjectClassFc.clazz, "set_property", "I");
-	GObjectClassFc.get_property = (*env)->GetFieldID(env, GObjectClassFc.clazz, "get_property", "I");
-	GObjectClassFc.dispose = (*env)->GetFieldID(env, GObjectClassFc.clazz, "dispose", "I");
-	GObjectClassFc.finalize = (*env)->GetFieldID(env, GObjectClassFc.clazz, "finalize", "I");
-	GObjectClassFc.dispatch_properties_changed = (*env)->GetFieldID(env, GObjectClassFc.clazz, "dispatch_properties_changed", "I");
-	GObjectClassFc.notify = (*env)->GetFieldID(env, GObjectClassFc.clazz, "notify", "I");
+	GObjectClassFc.constructor = (*env)->GetFieldID(env, GObjectClassFc.clazz, "constructor", I_J);
+	GObjectClassFc.set_property = (*env)->GetFieldID(env, GObjectClassFc.clazz, "set_property", I_J);
+	GObjectClassFc.get_property = (*env)->GetFieldID(env, GObjectClassFc.clazz, "get_property", I_J);
+	GObjectClassFc.dispose = (*env)->GetFieldID(env, GObjectClassFc.clazz, "dispose", I_J);
+	GObjectClassFc.finalize = (*env)->GetFieldID(env, GObjectClassFc.clazz, "finalize", I_J);
+	GObjectClassFc.dispatch_properties_changed = (*env)->GetFieldID(env, GObjectClassFc.clazz, "dispatch_properties_changed", I_J);
+	GObjectClassFc.notify = (*env)->GetFieldID(env, GObjectClassFc.clazz, "notify", I_J);
 	GObjectClassFc.cached = 1;
 }
 
 GObjectClass *getGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct)
 {
 	if (!GObjectClassFc.cached) cacheGObjectClassFields(env, lpObject);
-	lpStruct->constructor = (GObject *(*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.constructor);
-	lpStruct->set_property = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.set_property);
-	lpStruct->get_property = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.get_property);
-	lpStruct->dispose = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.dispose);
-	lpStruct->finalize = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.finalize);
-	lpStruct->dispatch_properties_changed = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.dispatch_properties_changed);
-	lpStruct->notify = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.notify);
+	lpStruct->constructor = (GObject *(*)())(*env)->GetIntLongField(env, lpObject, GObjectClassFc.constructor);
+	lpStruct->set_property = (void (*)())(*env)->GetIntLongField(env, lpObject, GObjectClassFc.set_property);
+	lpStruct->get_property = (void (*)())(*env)->GetIntLongField(env, lpObject, GObjectClassFc.get_property);
+	lpStruct->dispose = (void (*)())(*env)->GetIntLongField(env, lpObject, GObjectClassFc.dispose);
+	lpStruct->finalize = (void (*)())(*env)->GetIntLongField(env, lpObject, GObjectClassFc.finalize);
+	lpStruct->dispatch_properties_changed = (void (*)())(*env)->GetIntLongField(env, lpObject, GObjectClassFc.dispatch_properties_changed);
+	lpStruct->notify = (void (*)())(*env)->GetIntLongField(env, lpObject, GObjectClassFc.notify);
 	return lpStruct;
 }
 
 void setGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct)
 {
 	if (!GObjectClassFc.cached) cacheGObjectClassFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GObjectClassFc.constructor, (jint)lpStruct->constructor);
-	(*env)->SetIntField(env, lpObject, GObjectClassFc.set_property, (jint)lpStruct->set_property);
-	(*env)->SetIntField(env, lpObject, GObjectClassFc.get_property, (jint)lpStruct->get_property);
-	(*env)->SetIntField(env, lpObject, GObjectClassFc.dispose, (jint)lpStruct->dispose);
-	(*env)->SetIntField(env, lpObject, GObjectClassFc.finalize, (jint)lpStruct->finalize);
-	(*env)->SetIntField(env, lpObject, GObjectClassFc.dispatch_properties_changed, (jint)lpStruct->dispatch_properties_changed);
-	(*env)->SetIntField(env, lpObject, GObjectClassFc.notify, (jint)lpStruct->notify);
+	(*env)->SetIntLongField(env, lpObject, GObjectClassFc.constructor, (jintLong)lpStruct->constructor);
+	(*env)->SetIntLongField(env, lpObject, GObjectClassFc.set_property, (jintLong)lpStruct->set_property);
+	(*env)->SetIntLongField(env, lpObject, GObjectClassFc.get_property, (jintLong)lpStruct->get_property);
+	(*env)->SetIntLongField(env, lpObject, GObjectClassFc.dispose, (jintLong)lpStruct->dispose);
+	(*env)->SetIntLongField(env, lpObject, GObjectClassFc.finalize, (jintLong)lpStruct->finalize);
+	(*env)->SetIntLongField(env, lpObject, GObjectClassFc.dispatch_properties_changed, (jintLong)lpStruct->dispatch_properties_changed);
+	(*env)->SetIntLongField(env, lpObject, GObjectClassFc.notify, (jintLong)lpStruct->notify);
 }
 #endif
 
@@ -116,15 +116,15 @@ void cacheGTypeInfoFields(JNIEnv *env, jobject lpObject)
 	if (GTypeInfoFc.cached) return;
 	GTypeInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GTypeInfoFc.class_size = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_size", "S");
-	GTypeInfoFc.base_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "base_init", "I");
-	GTypeInfoFc.base_finalize = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "base_finalize", "I");
-	GTypeInfoFc.class_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_init", "I");
-	GTypeInfoFc.class_finalize = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_finalize", "I");
-	GTypeInfoFc.class_data = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_data", "I");
+	GTypeInfoFc.base_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "base_init", I_J);
+	GTypeInfoFc.base_finalize = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "base_finalize", I_J);
+	GTypeInfoFc.class_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_init", I_J);
+	GTypeInfoFc.class_finalize = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_finalize", I_J);
+	GTypeInfoFc.class_data = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_data", I_J);
 	GTypeInfoFc.instance_size = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "instance_size", "S");
 	GTypeInfoFc.n_preallocs = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "n_preallocs", "S");
-	GTypeInfoFc.instance_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "instance_init", "I");
-	GTypeInfoFc.value_table = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "value_table", "I");
+	GTypeInfoFc.instance_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "instance_init", I_J);
+	GTypeInfoFc.value_table = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "value_table", I_J);
 	GTypeInfoFc.cached = 1;
 }
 
@@ -132,15 +132,15 @@ GTypeInfo *getGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct
 {
 	if (!GTypeInfoFc.cached) cacheGTypeInfoFields(env, lpObject);
 	lpStruct->class_size = (guint16)(*env)->GetShortField(env, lpObject, GTypeInfoFc.class_size);
-	lpStruct->base_init = (GBaseInitFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.base_init);
-	lpStruct->base_finalize = (GBaseFinalizeFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.base_finalize);
-	lpStruct->class_init = (GClassInitFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.class_init);
-	lpStruct->class_finalize = (GClassFinalizeFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.class_finalize);
-	lpStruct->class_data = (gconstpointer)(*env)->GetIntField(env, lpObject, GTypeInfoFc.class_data);
+	lpStruct->base_init = (GBaseInitFunc)(*env)->GetIntLongField(env, lpObject, GTypeInfoFc.base_init);
+	lpStruct->base_finalize = (GBaseFinalizeFunc)(*env)->GetIntLongField(env, lpObject, GTypeInfoFc.base_finalize);
+	lpStruct->class_init = (GClassInitFunc)(*env)->GetIntLongField(env, lpObject, GTypeInfoFc.class_init);
+	lpStruct->class_finalize = (GClassFinalizeFunc)(*env)->GetIntLongField(env, lpObject, GTypeInfoFc.class_finalize);
+	lpStruct->class_data = (gconstpointer)(*env)->GetIntLongField(env, lpObject, GTypeInfoFc.class_data);
 	lpStruct->instance_size = (guint16)(*env)->GetShortField(env, lpObject, GTypeInfoFc.instance_size);
 	lpStruct->n_preallocs = (guint16)(*env)->GetShortField(env, lpObject, GTypeInfoFc.n_preallocs);
-	lpStruct->instance_init = (GInstanceInitFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.instance_init);
-	lpStruct->value_table = (GTypeValueTable *)(*env)->GetIntField(env, lpObject, GTypeInfoFc.value_table);
+	lpStruct->instance_init = (GInstanceInitFunc)(*env)->GetIntLongField(env, lpObject, GTypeInfoFc.instance_init);
+	lpStruct->value_table = (GTypeValueTable *)(*env)->GetIntLongField(env, lpObject, GTypeInfoFc.value_table);
 	return lpStruct;
 }
 
@@ -148,15 +148,15 @@ void setGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct)
 {
 	if (!GTypeInfoFc.cached) cacheGTypeInfoFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, GTypeInfoFc.class_size, (jshort)lpStruct->class_size);
-	(*env)->SetIntField(env, lpObject, GTypeInfoFc.base_init, (jint)lpStruct->base_init);
-	(*env)->SetIntField(env, lpObject, GTypeInfoFc.base_finalize, (jint)lpStruct->base_finalize);
-	(*env)->SetIntField(env, lpObject, GTypeInfoFc.class_init, (jint)lpStruct->class_init);
-	(*env)->SetIntField(env, lpObject, GTypeInfoFc.class_finalize, (jint)lpStruct->class_finalize);
-	(*env)->SetIntField(env, lpObject, GTypeInfoFc.class_data, (jint)lpStruct->class_data);
+	(*env)->SetIntLongField(env, lpObject, GTypeInfoFc.base_init, (jintLong)lpStruct->base_init);
+	(*env)->SetIntLongField(env, lpObject, GTypeInfoFc.base_finalize, (jintLong)lpStruct->base_finalize);
+	(*env)->SetIntLongField(env, lpObject, GTypeInfoFc.class_init, (jintLong)lpStruct->class_init);
+	(*env)->SetIntLongField(env, lpObject, GTypeInfoFc.class_finalize, (jintLong)lpStruct->class_finalize);
+	(*env)->SetIntLongField(env, lpObject, GTypeInfoFc.class_data, (jintLong)lpStruct->class_data);
 	(*env)->SetShortField(env, lpObject, GTypeInfoFc.instance_size, (jshort)lpStruct->instance_size);
 	(*env)->SetShortField(env, lpObject, GTypeInfoFc.n_preallocs, (jshort)lpStruct->n_preallocs);
-	(*env)->SetIntField(env, lpObject, GTypeInfoFc.instance_init, (jint)lpStruct->instance_init);
-	(*env)->SetIntField(env, lpObject, GTypeInfoFc.value_table, (jint)lpStruct->value_table);
+	(*env)->SetIntLongField(env, lpObject, GTypeInfoFc.instance_init, (jintLong)lpStruct->instance_init);
+	(*env)->SetIntLongField(env, lpObject, GTypeInfoFc.value_table, (jintLong)lpStruct->value_table);
 }
 #endif
 
@@ -174,7 +174,7 @@ void cacheGTypeQueryFields(JNIEnv *env, jobject lpObject)
 	if (GTypeQueryFc.cached) return;
 	GTypeQueryFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GTypeQueryFc.type = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "type", "I");
-	GTypeQueryFc.type_name = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "type_name", "I");
+	GTypeQueryFc.type_name = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "type_name", I_J);
 	GTypeQueryFc.class_size = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "class_size", "I");
 	GTypeQueryFc.instance_size = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "instance_size", "I");
 	GTypeQueryFc.cached = 1;
@@ -184,7 +184,7 @@ GTypeQuery *getGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStr
 {
 	if (!GTypeQueryFc.cached) cacheGTypeQueryFields(env, lpObject);
 	lpStruct->type = (GType)(*env)->GetIntField(env, lpObject, GTypeQueryFc.type);
-	lpStruct->type_name = (const gchar *)(*env)->GetIntField(env, lpObject, GTypeQueryFc.type_name);
+	lpStruct->type_name = (const gchar *)(*env)->GetIntLongField(env, lpObject, GTypeQueryFc.type_name);
 	lpStruct->class_size = (guint)(*env)->GetIntField(env, lpObject, GTypeQueryFc.class_size);
 	lpStruct->instance_size = (guint)(*env)->GetIntField(env, lpObject, GTypeQueryFc.instance_size);
 	return lpStruct;
@@ -194,7 +194,7 @@ void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct)
 {
 	if (!GTypeQueryFc.cached) cacheGTypeQueryFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, GTypeQueryFc.type, (jint)lpStruct->type);
-	(*env)->SetIntField(env, lpObject, GTypeQueryFc.type_name, (jint)lpStruct->type_name);
+	(*env)->SetIntLongField(env, lpObject, GTypeQueryFc.type_name, (jintLong)lpStruct->type_name);
 	(*env)->SetIntField(env, lpObject, GTypeQueryFc.class_size, (jint)lpStruct->class_size);
 	(*env)->SetIntField(env, lpObject, GTypeQueryFc.instance_size, (jint)lpStruct->instance_size);
 }
@@ -255,9 +255,9 @@ void cacheGdkDragContextFields(JNIEnv *env, jobject lpObject)
 	GdkDragContextFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GdkDragContextFc.protocol = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "protocol", "I");
 	GdkDragContextFc.is_source = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "is_source", "Z");
-	GdkDragContextFc.source_window = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "source_window", "I");
-	GdkDragContextFc.dest_window = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "dest_window", "I");
-	GdkDragContextFc.targets = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "targets", "I");
+	GdkDragContextFc.source_window = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "source_window", I_J);
+	GdkDragContextFc.dest_window = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "dest_window", I_J);
+	GdkDragContextFc.targets = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "targets", I_J);
 	GdkDragContextFc.actions = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "actions", "I");
 	GdkDragContextFc.suggested_action = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "suggested_action", "I");
 	GdkDragContextFc.action = (*env)->GetFieldID(env, GdkDragContextFc.clazz, "action", "I");
@@ -270,9 +270,9 @@ GdkDragContext *getGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragCo
 	if (!GdkDragContextFc.cached) cacheGdkDragContextFields(env, lpObject);
 	lpStruct->protocol = (GdkDragProtocol)(*env)->GetIntField(env, lpObject, GdkDragContextFc.protocol);
 	lpStruct->is_source = (gboolean)(*env)->GetBooleanField(env, lpObject, GdkDragContextFc.is_source);
-	lpStruct->source_window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkDragContextFc.source_window);
-	lpStruct->dest_window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkDragContextFc.dest_window);
-	lpStruct->targets = (GList *)(*env)->GetIntField(env, lpObject, GdkDragContextFc.targets);
+	lpStruct->source_window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkDragContextFc.source_window);
+	lpStruct->dest_window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkDragContextFc.dest_window);
+	lpStruct->targets = (GList *)(*env)->GetIntLongField(env, lpObject, GdkDragContextFc.targets);
 	lpStruct->actions = (GdkDragAction)(*env)->GetIntField(env, lpObject, GdkDragContextFc.actions);
 	lpStruct->suggested_action = (GdkDragAction)(*env)->GetIntField(env, lpObject, GdkDragContextFc.suggested_action);
 	lpStruct->action = (GdkDragAction)(*env)->GetIntField(env, lpObject, GdkDragContextFc.action);
@@ -285,9 +285,9 @@ void setGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpSt
 	if (!GdkDragContextFc.cached) cacheGdkDragContextFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, GdkDragContextFc.protocol, (jint)lpStruct->protocol);
 	(*env)->SetBooleanField(env, lpObject, GdkDragContextFc.is_source, (jboolean)lpStruct->is_source);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.source_window, (jint)lpStruct->source_window);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.dest_window, (jint)lpStruct->dest_window);
-	(*env)->SetIntField(env, lpObject, GdkDragContextFc.targets, (jint)lpStruct->targets);
+	(*env)->SetIntLongField(env, lpObject, GdkDragContextFc.source_window, (jintLong)lpStruct->source_window);
+	(*env)->SetIntLongField(env, lpObject, GdkDragContextFc.dest_window, (jintLong)lpStruct->dest_window);
+	(*env)->SetIntLongField(env, lpObject, GdkDragContextFc.targets, (jintLong)lpStruct->targets);
 	(*env)->SetIntField(env, lpObject, GdkDragContextFc.actions, (jint)lpStruct->actions);
 	(*env)->SetIntField(env, lpObject, GdkDragContextFc.suggested_action, (jint)lpStruct->suggested_action);
 	(*env)->SetIntField(env, lpObject, GdkDragContextFc.action, (jint)lpStruct->action);
@@ -340,7 +340,7 @@ void cacheGdkEventAnyFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventAnyFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventAnyFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventAnyFc.window = (*env)->GetFieldID(env, GdkEventAnyFc.clazz, "window", "I");
+	GdkEventAnyFc.window = (*env)->GetFieldID(env, GdkEventAnyFc.clazz, "window", I_J);
 	GdkEventAnyFc.send_event = (*env)->GetFieldID(env, GdkEventAnyFc.clazz, "send_event", "B");
 	GdkEventAnyFc.cached = 1;
 }
@@ -349,7 +349,7 @@ GdkEventAny *getGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lp
 {
 	if (!GdkEventAnyFc.cached) cacheGdkEventAnyFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventAnyFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventAnyFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventAnyFc.send_event);
 	return lpStruct;
 }
@@ -358,7 +358,7 @@ void setGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct)
 {
 	if (!GdkEventAnyFc.cached) cacheGdkEventAnyFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventAnyFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventAnyFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventAnyFc.send_event, (jbyte)lpStruct->send_event);
 }
 #endif
@@ -377,15 +377,15 @@ void cacheGdkEventButtonFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventButtonFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventButtonFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventButtonFc.window = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "window", "I");
+	GdkEventButtonFc.window = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "window", I_J);
 	GdkEventButtonFc.send_event = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "send_event", "B");
 	GdkEventButtonFc.time = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "time", "I");
 	GdkEventButtonFc.x = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "x", "D");
 	GdkEventButtonFc.y = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "y", "D");
-	GdkEventButtonFc.axes = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "axes", "I");
+	GdkEventButtonFc.axes = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "axes", I_J);
 	GdkEventButtonFc.state = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "state", "I");
 	GdkEventButtonFc.button = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "button", "I");
-	GdkEventButtonFc.device = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "device", "I");
+	GdkEventButtonFc.device = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "device", I_J);
 	GdkEventButtonFc.x_root = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "x_root", "D");
 	GdkEventButtonFc.y_root = (*env)->GetFieldID(env, GdkEventButtonFc.clazz, "y_root", "D");
 	GdkEventButtonFc.cached = 1;
@@ -395,15 +395,15 @@ GdkEventButton *getGdkEventButtonFields(JNIEnv *env, jobject lpObject, GdkEventB
 {
 	if (!GdkEventButtonFc.cached) cacheGdkEventButtonFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventButtonFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventButtonFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventButtonFc.send_event);
 	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventButtonFc.time);
 	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventButtonFc.x);
 	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventButtonFc.y);
-	lpStruct->axes = (gdouble *)(*env)->GetIntField(env, lpObject, GdkEventButtonFc.axes);
+	lpStruct->axes = (gdouble *)(*env)->GetIntLongField(env, lpObject, GdkEventButtonFc.axes);
 	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventButtonFc.state);
 	lpStruct->button = (guint)(*env)->GetIntField(env, lpObject, GdkEventButtonFc.button);
-	lpStruct->device = (GdkDevice *)(*env)->GetIntField(env, lpObject, GdkEventButtonFc.device);
+	lpStruct->device = (GdkDevice *)(*env)->GetIntLongField(env, lpObject, GdkEventButtonFc.device);
 	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventButtonFc.x_root);
 	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventButtonFc.y_root);
 	return lpStruct;
@@ -413,15 +413,15 @@ void setGdkEventButtonFields(JNIEnv *env, jobject lpObject, GdkEventButton *lpSt
 {
 	if (!GdkEventButtonFc.cached) cacheGdkEventButtonFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventButtonFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventButtonFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventButtonFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, GdkEventButtonFc.time, (jint)lpStruct->time);
 	(*env)->SetDoubleField(env, lpObject, GdkEventButtonFc.x, (jdouble)lpStruct->x);
 	(*env)->SetDoubleField(env, lpObject, GdkEventButtonFc.y, (jdouble)lpStruct->y);
-	(*env)->SetIntField(env, lpObject, GdkEventButtonFc.axes, (jint)lpStruct->axes);
+	(*env)->SetIntLongField(env, lpObject, GdkEventButtonFc.axes, (jintLong)lpStruct->axes);
 	(*env)->SetIntField(env, lpObject, GdkEventButtonFc.state, (jint)lpStruct->state);
 	(*env)->SetIntField(env, lpObject, GdkEventButtonFc.button, (jint)lpStruct->button);
-	(*env)->SetIntField(env, lpObject, GdkEventButtonFc.device, (jint)lpStruct->device);
+	(*env)->SetIntLongField(env, lpObject, GdkEventButtonFc.device, (jintLong)lpStruct->device);
 	(*env)->SetDoubleField(env, lpObject, GdkEventButtonFc.x_root, (jdouble)lpStruct->x_root);
 	(*env)->SetDoubleField(env, lpObject, GdkEventButtonFc.y_root, (jdouble)lpStruct->y_root);
 }
@@ -441,9 +441,9 @@ void cacheGdkEventCrossingFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventCrossingFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventCrossingFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventCrossingFc.window = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "window", "I");
+	GdkEventCrossingFc.window = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "window", I_J);
 	GdkEventCrossingFc.send_event = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "send_event", "B");
-	GdkEventCrossingFc.subwindow = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "subwindow", "I");
+	GdkEventCrossingFc.subwindow = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "subwindow", I_J);
 	GdkEventCrossingFc.time = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "time", "I");
 	GdkEventCrossingFc.x = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "x", "D");
 	GdkEventCrossingFc.y = (*env)->GetFieldID(env, GdkEventCrossingFc.clazz, "y", "D");
@@ -460,9 +460,9 @@ GdkEventCrossing *getGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEv
 {
 	if (!GdkEventCrossingFc.cached) cacheGdkEventCrossingFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventCrossingFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventCrossingFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventCrossingFc.send_event);
-	lpStruct->subwindow = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventCrossingFc.subwindow);
+	lpStruct->subwindow = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventCrossingFc.subwindow);
 	lpStruct->time = (*env)->GetIntField(env, lpObject, GdkEventCrossingFc.time);
 	lpStruct->x = (*env)->GetDoubleField(env, lpObject, GdkEventCrossingFc.x);
 	lpStruct->y = (*env)->GetDoubleField(env, lpObject, GdkEventCrossingFc.y);
@@ -479,9 +479,9 @@ void setGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *
 {
 	if (!GdkEventCrossingFc.cached) cacheGdkEventCrossingFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventCrossingFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventCrossingFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventCrossingFc.send_event, (jbyte)lpStruct->send_event);
-	(*env)->SetIntField(env, lpObject, GdkEventCrossingFc.subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntLongField(env, lpObject, GdkEventCrossingFc.subwindow, (jintLong)lpStruct->subwindow);
 	(*env)->SetIntField(env, lpObject, GdkEventCrossingFc.time, (jint)lpStruct->time);
 	(*env)->SetDoubleField(env, lpObject, GdkEventCrossingFc.x, (jdouble)lpStruct->x);
 	(*env)->SetDoubleField(env, lpObject, GdkEventCrossingFc.y, (jdouble)lpStruct->y);
@@ -508,13 +508,13 @@ void cacheGdkEventExposeFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventExposeFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventExposeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventExposeFc.window = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "window", "I");
+	GdkEventExposeFc.window = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "window", I_J);
 	GdkEventExposeFc.send_event = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "send_event", "B");
 	GdkEventExposeFc.area_x = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_x", "I");
 	GdkEventExposeFc.area_y = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_y", "I");
 	GdkEventExposeFc.area_width = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_width", "I");
 	GdkEventExposeFc.area_height = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "area_height", "I");
-	GdkEventExposeFc.region = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "region", "I");
+	GdkEventExposeFc.region = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "region", I_J);
 	GdkEventExposeFc.count = (*env)->GetFieldID(env, GdkEventExposeFc.clazz, "count", "I");
 	GdkEventExposeFc.cached = 1;
 }
@@ -523,13 +523,13 @@ GdkEventExpose *getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventE
 {
 	if (!GdkEventExposeFc.cached) cacheGdkEventExposeFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventExposeFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventExposeFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventExposeFc.send_event);
 	lpStruct->area.x = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_x);
 	lpStruct->area.y = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_y);
 	lpStruct->area.width = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_width);
 	lpStruct->area.height = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_height);
-	lpStruct->region = (GdkRegion *)(*env)->GetIntField(env, lpObject, GdkEventExposeFc.region);
+	lpStruct->region = (GdkRegion *)(*env)->GetIntLongField(env, lpObject, GdkEventExposeFc.region);
 	lpStruct->count = (gint)(*env)->GetIntField(env, lpObject, GdkEventExposeFc.count);
 	return lpStruct;
 }
@@ -538,13 +538,13 @@ void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventExpose *lpSt
 {
 	if (!GdkEventExposeFc.cached) cacheGdkEventExposeFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventExposeFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventExposeFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_x, (jint)lpStruct->area.x);
 	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_y, (jint)lpStruct->area.y);
 	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_width, (jint)lpStruct->area.width);
 	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.area_height, (jint)lpStruct->area.height);
-	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.region, (jint)lpStruct->region);
+	(*env)->SetIntLongField(env, lpObject, GdkEventExposeFc.region, (jintLong)lpStruct->region);
 	(*env)->SetIntField(env, lpObject, GdkEventExposeFc.count, (jint)lpStruct->count);
 }
 #endif
@@ -563,7 +563,7 @@ void cacheGdkEventFocusFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventFocusFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventFocusFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventFocusFc.window = (*env)->GetFieldID(env, GdkEventFocusFc.clazz, "window", "I");
+	GdkEventFocusFc.window = (*env)->GetFieldID(env, GdkEventFocusFc.clazz, "window", I_J);
 	GdkEventFocusFc.send_event = (*env)->GetFieldID(env, GdkEventFocusFc.clazz, "send_event", "B");
 	GdkEventFocusFc.in = (*env)->GetFieldID(env, GdkEventFocusFc.clazz, "in", "S");
 	GdkEventFocusFc.cached = 1;
@@ -573,7 +573,7 @@ GdkEventFocus *getGdkEventFocusFields(JNIEnv *env, jobject lpObject, GdkEventFoc
 {
 	if (!GdkEventFocusFc.cached) cacheGdkEventFocusFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventFocusFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventFocusFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventFocusFc.send_event);
 	lpStruct->in = (gint16)(*env)->GetShortField(env, lpObject, GdkEventFocusFc.in);
 	return lpStruct;
@@ -583,7 +583,7 @@ void setGdkEventFocusFields(JNIEnv *env, jobject lpObject, GdkEventFocus *lpStru
 {
 	if (!GdkEventFocusFc.cached) cacheGdkEventFocusFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventFocusFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventFocusFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventFocusFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetShortField(env, lpObject, GdkEventFocusFc.in, (jshort)lpStruct->in);
 }
@@ -603,13 +603,13 @@ void cacheGdkEventKeyFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventKeyFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventKeyFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventKeyFc.window = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "window", "I");
+	GdkEventKeyFc.window = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "window", I_J);
 	GdkEventKeyFc.send_event = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "send_event", "B");
 	GdkEventKeyFc.time = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "time", "I");
 	GdkEventKeyFc.state = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "state", "I");
 	GdkEventKeyFc.keyval = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "keyval", "I");
 	GdkEventKeyFc.length = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "length", "I");
-	GdkEventKeyFc.string = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "string", "I");
+	GdkEventKeyFc.string = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "string", I_J);
 	GdkEventKeyFc.hardware_keycode = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "hardware_keycode", "S");
 	GdkEventKeyFc.group = (*env)->GetFieldID(env, GdkEventKeyFc.clazz, "group", "B");
 	GdkEventKeyFc.cached = 1;
@@ -619,13 +619,13 @@ GdkEventKey *getGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lp
 {
 	if (!GdkEventKeyFc.cached) cacheGdkEventKeyFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventKeyFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventKeyFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventKeyFc.send_event);
 	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventKeyFc.time);
 	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventKeyFc.state);
 	lpStruct->keyval = (guint)(*env)->GetIntField(env, lpObject, GdkEventKeyFc.keyval);
 	lpStruct->length = (gint)(*env)->GetIntField(env, lpObject, GdkEventKeyFc.length);
-	lpStruct->string = (gchar *)(*env)->GetIntField(env, lpObject, GdkEventKeyFc.string);
+	lpStruct->string = (gchar *)(*env)->GetIntLongField(env, lpObject, GdkEventKeyFc.string);
 	lpStruct->hardware_keycode = (guint16)(*env)->GetShortField(env, lpObject, GdkEventKeyFc.hardware_keycode);
 	lpStruct->group = (guint8)(*env)->GetByteField(env, lpObject, GdkEventKeyFc.group);
 	return lpStruct;
@@ -635,13 +635,13 @@ void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct)
 {
 	if (!GdkEventKeyFc.cached) cacheGdkEventKeyFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventKeyFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventKeyFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventKeyFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, GdkEventKeyFc.time, (jint)lpStruct->time);
 	(*env)->SetIntField(env, lpObject, GdkEventKeyFc.state, (jint)lpStruct->state);
 	(*env)->SetIntField(env, lpObject, GdkEventKeyFc.keyval, (jint)lpStruct->keyval);
 	(*env)->SetIntField(env, lpObject, GdkEventKeyFc.length, (jint)lpStruct->length);
-	(*env)->SetIntField(env, lpObject, GdkEventKeyFc.string, (jint)lpStruct->string);
+	(*env)->SetIntLongField(env, lpObject, GdkEventKeyFc.string, (jintLong)lpStruct->string);
 	(*env)->SetShortField(env, lpObject, GdkEventKeyFc.hardware_keycode, (jshort)lpStruct->hardware_keycode);
 	(*env)->SetByteField(env, lpObject, GdkEventKeyFc.group, (jbyte)lpStruct->group);
 }
@@ -661,15 +661,15 @@ void cacheGdkEventMotionFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventMotionFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventMotionFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventMotionFc.window = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "window", "I");
+	GdkEventMotionFc.window = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "window", I_J);
 	GdkEventMotionFc.send_event = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "send_event", "B");
 	GdkEventMotionFc.time = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "time", "I");
 	GdkEventMotionFc.x = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "x", "D");
 	GdkEventMotionFc.y = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "y", "D");
-	GdkEventMotionFc.axes = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "axes", "I");
+	GdkEventMotionFc.axes = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "axes", I_J);
 	GdkEventMotionFc.state = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "state", "I");
 	GdkEventMotionFc.is_hint = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "is_hint", "S");
-	GdkEventMotionFc.device = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "device", "I");
+	GdkEventMotionFc.device = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "device", I_J);
 	GdkEventMotionFc.x_root = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "x_root", "D");
 	GdkEventMotionFc.y_root = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "y_root", "D");
 	GdkEventMotionFc.cached = 1;
@@ -679,15 +679,15 @@ GdkEventMotion *getGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventM
 {
 	if (!GdkEventMotionFc.cached) cacheGdkEventMotionFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventMotionFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventMotionFc.send_event);
 	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.time);
 	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.x);
 	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.y);
-	lpStruct->axes = (gdouble *)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.axes);
+	lpStruct->axes = (gdouble *)(*env)->GetIntLongField(env, lpObject, GdkEventMotionFc.axes);
 	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.state);
 	lpStruct->is_hint = (gint16)(*env)->GetShortField(env, lpObject, GdkEventMotionFc.is_hint);
-	lpStruct->device = (GdkDevice *)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.device);
+	lpStruct->device = (GdkDevice *)(*env)->GetIntLongField(env, lpObject, GdkEventMotionFc.device);
 	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.x_root);
 	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.y_root);
 	return lpStruct;
@@ -697,15 +697,15 @@ void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpSt
 {
 	if (!GdkEventMotionFc.cached) cacheGdkEventMotionFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventMotionFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventMotionFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.time, (jint)lpStruct->time);
 	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.x, (jdouble)lpStruct->x);
 	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.y, (jdouble)lpStruct->y);
-	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.axes, (jint)lpStruct->axes);
+	(*env)->SetIntLongField(env, lpObject, GdkEventMotionFc.axes, (jintLong)lpStruct->axes);
 	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.state, (jint)lpStruct->state);
 	(*env)->SetShortField(env, lpObject, GdkEventMotionFc.is_hint, (jshort)lpStruct->is_hint);
-	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.device, (jint)lpStruct->device);
+	(*env)->SetIntLongField(env, lpObject, GdkEventMotionFc.device, (jintLong)lpStruct->device);
 	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.x_root, (jdouble)lpStruct->x_root);
 	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.y_root, (jdouble)lpStruct->y_root);
 }
@@ -725,14 +725,14 @@ void cacheGdkEventScrollFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventScrollFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventScrollFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventScrollFc.window = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "window", "I");
+	GdkEventScrollFc.window = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "window", I_J);
 	GdkEventScrollFc.send_event = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "send_event", "B");
 	GdkEventScrollFc.time = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "time", "I");
 	GdkEventScrollFc.x = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "x", "D");
 	GdkEventScrollFc.y = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "y", "D");
 	GdkEventScrollFc.state = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "state", "I");
 	GdkEventScrollFc.direction = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "direction", "I");
-	GdkEventScrollFc.device = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "device", "I");
+	GdkEventScrollFc.device = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "device", I_J);
 	GdkEventScrollFc.x_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "x_root", "D");
 	GdkEventScrollFc.y_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "y_root", "D");
 	GdkEventScrollFc.cached = 1;
@@ -742,14 +742,14 @@ GdkEventScroll *getGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventS
 {
 	if (!GdkEventScrollFc.cached) cacheGdkEventScrollFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventScrollFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventScrollFc.send_event);
 	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.time);
 	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.x);
 	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.y);
 	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.state);
 	lpStruct->direction = (GdkScrollDirection)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.direction);
-	lpStruct->device = (GdkDevice *)(*env)->GetIntField(env, lpObject, GdkEventScrollFc.device);
+	lpStruct->device = (GdkDevice *)(*env)->GetIntLongField(env, lpObject, GdkEventScrollFc.device);
 	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.x_root);
 	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.y_root);
 	return lpStruct;
@@ -759,14 +759,14 @@ void setGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpSt
 {
 	if (!GdkEventScrollFc.cached) cacheGdkEventScrollFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventScrollFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventScrollFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.time, (jint)lpStruct->time);
 	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.x, (jdouble)lpStruct->x);
 	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.y, (jdouble)lpStruct->y);
 	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.state, (jint)lpStruct->state);
 	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.direction, (jint)lpStruct->direction);
-	(*env)->SetIntField(env, lpObject, GdkEventScrollFc.device, (jint)lpStruct->device);
+	(*env)->SetIntLongField(env, lpObject, GdkEventScrollFc.device, (jintLong)lpStruct->device);
 	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.x_root, (jdouble)lpStruct->x_root);
 	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.y_root, (jdouble)lpStruct->y_root);
 }
@@ -786,7 +786,7 @@ void cacheGdkEventVisibilityFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventVisibilityFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventVisibilityFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventVisibilityFc.window = (*env)->GetFieldID(env, GdkEventVisibilityFc.clazz, "window", "I");
+	GdkEventVisibilityFc.window = (*env)->GetFieldID(env, GdkEventVisibilityFc.clazz, "window", I_J);
 	GdkEventVisibilityFc.send_event = (*env)->GetFieldID(env, GdkEventVisibilityFc.clazz, "send_event", "B");
 	GdkEventVisibilityFc.state = (*env)->GetFieldID(env, GdkEventVisibilityFc.clazz, "state", "I");
 	GdkEventVisibilityFc.cached = 1;
@@ -796,7 +796,7 @@ GdkEventVisibility *getGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, G
 {
 	if (!GdkEventVisibilityFc.cached) cacheGdkEventVisibilityFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventVisibilityFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventVisibilityFc.window);
 	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventVisibilityFc.send_event);
 	lpStruct->state = (GdkVisibilityState)(*env)->GetIntField(env, lpObject, GdkEventVisibilityFc.state);
 	return lpStruct;
@@ -806,7 +806,7 @@ void setGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibili
 {
 	if (!GdkEventVisibilityFc.cached) cacheGdkEventVisibilityFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventVisibilityFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventVisibilityFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventVisibilityFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, GdkEventVisibilityFc.state, (jint)lpStruct->state);
 }
@@ -826,7 +826,7 @@ void cacheGdkEventWindowStateFields(JNIEnv *env, jobject lpObject)
 	if (GdkEventWindowStateFc.cached) return;
 	cacheGdkEventFields(env, lpObject);
 	GdkEventWindowStateFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventWindowStateFc.window = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "window", "I");
+	GdkEventWindowStateFc.window = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "window", I_J);
 	GdkEventWindowStateFc.send_event = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "send_event", "B");
 	GdkEventWindowStateFc.changed_mask = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "changed_mask", "I");
 	GdkEventWindowStateFc.new_window_state = (*env)->GetFieldID(env, GdkEventWindowStateFc.clazz, "new_window_state", "I");
@@ -837,7 +837,7 @@ GdkEventWindowState *getGdkEventWindowStateFields(JNIEnv *env, jobject lpObject,
 {
 	if (!GdkEventWindowStateFc.cached) cacheGdkEventWindowStateFields(env, lpObject);
 	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventWindowStateFc.window);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventWindowStateFc.window);
 	lpStruct->send_event = (*env)->GetByteField(env, lpObject, GdkEventWindowStateFc.send_event);
 	lpStruct->changed_mask = (*env)->GetIntField(env, lpObject, GdkEventWindowStateFc.changed_mask);
 	lpStruct->new_window_state = (*env)->GetIntField(env, lpObject, GdkEventWindowStateFc.new_window_state);
@@ -848,7 +848,7 @@ void setGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowS
 {
 	if (!GdkEventWindowStateFc.cached) cacheGdkEventWindowStateFields(env, lpObject);
 	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, GdkEventWindowStateFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, GdkEventWindowStateFc.window, (jintLong)lpStruct->window);
 	(*env)->SetByteField(env, lpObject, GdkEventWindowStateFc.send_event, (jbyte)lpStruct->send_event);
 	(*env)->SetIntField(env, lpObject, GdkEventWindowStateFc.changed_mask, (jint)lpStruct->changed_mask);
 	(*env)->SetIntField(env, lpObject, GdkEventWindowStateFc.new_window_state, (jint)lpStruct->new_window_state);
@@ -876,12 +876,12 @@ void cacheGdkGCValuesFields(JNIEnv *env, jobject lpObject)
 	GdkGCValuesFc.background_red = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "background_red", "S");
 	GdkGCValuesFc.background_green = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "background_green", "S");
 	GdkGCValuesFc.background_blue = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "background_blue", "S");
-	GdkGCValuesFc.font = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "font", "I");
-	GdkGCValuesFc.function = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "function", "I");
+	GdkGCValuesFc.font = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "font", I_J);
+	GdkGCValuesFc.function = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "function", I_J);
 	GdkGCValuesFc.fill = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "fill", "I");
-	GdkGCValuesFc.tile = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "tile", "I");
-	GdkGCValuesFc.stipple = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "stipple", "I");
-	GdkGCValuesFc.clip_mask = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "clip_mask", "I");
+	GdkGCValuesFc.tile = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "tile", I_J);
+	GdkGCValuesFc.stipple = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "stipple", I_J);
+	GdkGCValuesFc.clip_mask = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "clip_mask", I_J);
 	GdkGCValuesFc.subwindow_mode = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "subwindow_mode", "I");
 	GdkGCValuesFc.ts_x_origin = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "ts_x_origin", "I");
 	GdkGCValuesFc.ts_y_origin = (*env)->GetFieldID(env, GdkGCValuesFc.clazz, "ts_y_origin", "I");
@@ -906,12 +906,12 @@ GdkGCValues *getGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lp
 	lpStruct->background.red = (guint16)(*env)->GetShortField(env, lpObject, GdkGCValuesFc.background_red);
 	lpStruct->background.green = (guint16)(*env)->GetShortField(env, lpObject, GdkGCValuesFc.background_green);
 	lpStruct->background.blue = (guint16)(*env)->GetShortField(env, lpObject, GdkGCValuesFc.background_blue);
-	lpStruct->font = (GdkFont *)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.font);
-	lpStruct->function = (GdkFunction)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.function);
+	lpStruct->font = (GdkFont *)(*env)->GetIntLongField(env, lpObject, GdkGCValuesFc.font);
+	lpStruct->function = (GdkFunction)(*env)->GetIntLongField(env, lpObject, GdkGCValuesFc.function);
 	lpStruct->fill = (GdkFill)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.fill);
-	lpStruct->tile = (GdkPixmap *)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.tile);
-	lpStruct->stipple = (GdkPixmap *)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.stipple);
-	lpStruct->clip_mask = (GdkPixmap *)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.clip_mask);
+	lpStruct->tile = (GdkPixmap *)(*env)->GetIntLongField(env, lpObject, GdkGCValuesFc.tile);
+	lpStruct->stipple = (GdkPixmap *)(*env)->GetIntLongField(env, lpObject, GdkGCValuesFc.stipple);
+	lpStruct->clip_mask = (GdkPixmap *)(*env)->GetIntLongField(env, lpObject, GdkGCValuesFc.clip_mask);
 	lpStruct->subwindow_mode = (GdkSubwindowMode)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.subwindow_mode);
 	lpStruct->ts_x_origin = (gint)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.ts_x_origin);
 	lpStruct->ts_y_origin = (gint)(*env)->GetIntField(env, lpObject, GdkGCValuesFc.ts_y_origin);
@@ -936,12 +936,12 @@ void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct)
 	(*env)->SetShortField(env, lpObject, GdkGCValuesFc.background_red, (jshort)lpStruct->background.red);
 	(*env)->SetShortField(env, lpObject, GdkGCValuesFc.background_green, (jshort)lpStruct->background.green);
 	(*env)->SetShortField(env, lpObject, GdkGCValuesFc.background_blue, (jshort)lpStruct->background.blue);
-	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.font, (jint)lpStruct->font);
-	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.function, (jint)lpStruct->function);
+	(*env)->SetIntLongField(env, lpObject, GdkGCValuesFc.font, (jintLong)lpStruct->font);
+	(*env)->SetIntLongField(env, lpObject, GdkGCValuesFc.function, (jintLong)lpStruct->function);
 	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.fill, (jint)lpStruct->fill);
-	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.tile, (jint)lpStruct->tile);
-	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.stipple, (jint)lpStruct->stipple);
-	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.clip_mask, (jint)lpStruct->clip_mask);
+	(*env)->SetIntLongField(env, lpObject, GdkGCValuesFc.tile, (jintLong)lpStruct->tile);
+	(*env)->SetIntLongField(env, lpObject, GdkGCValuesFc.stipple, (jintLong)lpStruct->stipple);
+	(*env)->SetIntLongField(env, lpObject, GdkGCValuesFc.clip_mask, (jintLong)lpStruct->clip_mask);
 	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.subwindow_mode, (jint)lpStruct->subwindow_mode);
 	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.ts_x_origin, (jint)lpStruct->ts_x_origin);
 	(*env)->SetIntField(env, lpObject, GdkGCValuesFc.ts_y_origin, (jint)lpStruct->ts_y_origin);
@@ -1030,7 +1030,7 @@ void cacheGdkImageFields(JNIEnv *env, jobject lpObject)
 	if (GdkImageFc.cached) return;
 	GdkImageFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GdkImageFc.type = (*env)->GetFieldID(env, GdkImageFc.clazz, "type", "I");
-	GdkImageFc.visual = (*env)->GetFieldID(env, GdkImageFc.clazz, "visual", "I");
+	GdkImageFc.visual = (*env)->GetFieldID(env, GdkImageFc.clazz, "visual", I_J);
 	GdkImageFc.byte_order = (*env)->GetFieldID(env, GdkImageFc.clazz, "byte_order", "I");
 	GdkImageFc.width = (*env)->GetFieldID(env, GdkImageFc.clazz, "width", "I");
 	GdkImageFc.height = (*env)->GetFieldID(env, GdkImageFc.clazz, "height", "I");
@@ -1038,9 +1038,9 @@ void cacheGdkImageFields(JNIEnv *env, jobject lpObject)
 	GdkImageFc.bpp = (*env)->GetFieldID(env, GdkImageFc.clazz, "bpp", "S");
 	GdkImageFc.bpl = (*env)->GetFieldID(env, GdkImageFc.clazz, "bpl", "S");
 	GdkImageFc.bits_per_pixel = (*env)->GetFieldID(env, GdkImageFc.clazz, "bits_per_pixel", "S");
-	GdkImageFc.mem = (*env)->GetFieldID(env, GdkImageFc.clazz, "mem", "I");
-	GdkImageFc.colormap = (*env)->GetFieldID(env, GdkImageFc.clazz, "colormap", "I");
-	GdkImageFc.windowing_data = (*env)->GetFieldID(env, GdkImageFc.clazz, "windowing_data", "I");
+	GdkImageFc.mem = (*env)->GetFieldID(env, GdkImageFc.clazz, "mem", I_J);
+	GdkImageFc.colormap = (*env)->GetFieldID(env, GdkImageFc.clazz, "colormap", I_J);
+	GdkImageFc.windowing_data = (*env)->GetFieldID(env, GdkImageFc.clazz, "windowing_data", I_J);
 	GdkImageFc.cached = 1;
 }
 
@@ -1048,7 +1048,7 @@ GdkImage *getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
 {
 	if (!GdkImageFc.cached) cacheGdkImageFields(env, lpObject);
 	lpStruct->type = (GdkImageType)(*env)->GetIntField(env, lpObject, GdkImageFc.type);
-	lpStruct->visual = (GdkVisual *)(*env)->GetIntField(env, lpObject, GdkImageFc.visual);
+	lpStruct->visual = (GdkVisual *)(*env)->GetIntLongField(env, lpObject, GdkImageFc.visual);
 	lpStruct->byte_order = (GdkByteOrder)(*env)->GetIntField(env, lpObject, GdkImageFc.byte_order);
 	lpStruct->width = (gint)(*env)->GetIntField(env, lpObject, GdkImageFc.width);
 	lpStruct->height = (gint)(*env)->GetIntField(env, lpObject, GdkImageFc.height);
@@ -1056,9 +1056,9 @@ GdkImage *getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
 	lpStruct->bpp = (guint16)(*env)->GetShortField(env, lpObject, GdkImageFc.bpp);
 	lpStruct->bpl = (guint16)(*env)->GetShortField(env, lpObject, GdkImageFc.bpl);
 	lpStruct->bits_per_pixel = (guint16)(*env)->GetShortField(env, lpObject, GdkImageFc.bits_per_pixel);
-	lpStruct->mem = (gpointer)(*env)->GetIntField(env, lpObject, GdkImageFc.mem);
-	lpStruct->colormap = (GdkColormap *)(*env)->GetIntField(env, lpObject, GdkImageFc.colormap);
-	lpStruct->windowing_data = (gpointer)(*env)->GetIntField(env, lpObject, GdkImageFc.windowing_data);
+	lpStruct->mem = (gpointer)(*env)->GetIntLongField(env, lpObject, GdkImageFc.mem);
+	lpStruct->colormap = (GdkColormap *)(*env)->GetIntLongField(env, lpObject, GdkImageFc.colormap);
+	lpStruct->windowing_data = (gpointer)(*env)->GetIntLongField(env, lpObject, GdkImageFc.windowing_data);
 	return lpStruct;
 }
 
@@ -1066,7 +1066,7 @@ void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
 {
 	if (!GdkImageFc.cached) cacheGdkImageFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, GdkImageFc.type, (jint)lpStruct->type);
-	(*env)->SetIntField(env, lpObject, GdkImageFc.visual, (jint)lpStruct->visual);
+	(*env)->SetIntLongField(env, lpObject, GdkImageFc.visual, (jintLong)lpStruct->visual);
 	(*env)->SetIntField(env, lpObject, GdkImageFc.byte_order, (jint)lpStruct->byte_order);
 	(*env)->SetIntField(env, lpObject, GdkImageFc.width, (jint)lpStruct->width);
 	(*env)->SetIntField(env, lpObject, GdkImageFc.height, (jint)lpStruct->height);
@@ -1074,9 +1074,9 @@ void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
 	(*env)->SetShortField(env, lpObject, GdkImageFc.bpp, (jshort)lpStruct->bpp);
 	(*env)->SetShortField(env, lpObject, GdkImageFc.bpl, (jshort)lpStruct->bpl);
 	(*env)->SetShortField(env, lpObject, GdkImageFc.bits_per_pixel, (jshort)lpStruct->bits_per_pixel);
-	(*env)->SetIntField(env, lpObject, GdkImageFc.mem, (jint)lpStruct->mem);
-	(*env)->SetIntField(env, lpObject, GdkImageFc.colormap, (jint)lpStruct->colormap);
-	(*env)->SetIntField(env, lpObject, GdkImageFc.windowing_data, (jint)lpStruct->windowing_data);
+	(*env)->SetIntLongField(env, lpObject, GdkImageFc.mem, (jintLong)lpStruct->mem);
+	(*env)->SetIntLongField(env, lpObject, GdkImageFc.colormap, (jintLong)lpStruct->colormap);
+	(*env)->SetIntLongField(env, lpObject, GdkImageFc.windowing_data, (jintLong)lpStruct->windowing_data);
 }
 #endif
 
@@ -1203,19 +1203,19 @@ void cacheGdkWindowAttrFields(JNIEnv *env, jobject lpObject)
 {
 	if (GdkWindowAttrFc.cached) return;
 	GdkWindowAttrFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkWindowAttrFc.title = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "title", "I");
+	GdkWindowAttrFc.title = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "title", I_J);
 	GdkWindowAttrFc.event_mask = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "event_mask", "I");
 	GdkWindowAttrFc.x = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "x", "I");
 	GdkWindowAttrFc.y = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "y", "I");
 	GdkWindowAttrFc.width = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "width", "I");
 	GdkWindowAttrFc.height = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "height", "I");
 	GdkWindowAttrFc.wclass = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wclass", "I");
-	GdkWindowAttrFc.visual = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "visual", "I");
-	GdkWindowAttrFc.colormap = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "colormap", "I");
+	GdkWindowAttrFc.visual = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "visual", I_J);
+	GdkWindowAttrFc.colormap = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "colormap", I_J);
 	GdkWindowAttrFc.window_type = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "window_type", "I");
-	GdkWindowAttrFc.cursor = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "cursor", "I");
-	GdkWindowAttrFc.wmclass_name = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wmclass_name", "I");
-	GdkWindowAttrFc.wmclass_class = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wmclass_class", "I");
+	GdkWindowAttrFc.cursor = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "cursor", I_J);
+	GdkWindowAttrFc.wmclass_name = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wmclass_name", I_J);
+	GdkWindowAttrFc.wmclass_class = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wmclass_class", I_J);
 	GdkWindowAttrFc.override_redirect = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "override_redirect", "Z");
 	GdkWindowAttrFc.cached = 1;
 }
@@ -1223,19 +1223,19 @@ void cacheGdkWindowAttrFields(JNIEnv *env, jobject lpObject)
 GdkWindowAttr *getGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStruct)
 {
 	if (!GdkWindowAttrFc.cached) cacheGdkWindowAttrFields(env, lpObject);
-	lpStruct->title = (gchar *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.title);
+	lpStruct->title = (gchar *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.title);
 	lpStruct->event_mask = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.event_mask);
 	lpStruct->x = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.x);
 	lpStruct->y = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.y);
 	lpStruct->width = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.width);
 	lpStruct->height = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.height);
 	lpStruct->wclass = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.wclass);
-	lpStruct->visual = (GdkVisual *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.visual);
-	lpStruct->colormap = (GdkColormap *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.colormap);
+	lpStruct->visual = (GdkVisual *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.visual);
+	lpStruct->colormap = (GdkColormap *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.colormap);
 	lpStruct->window_type = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.window_type);
-	lpStruct->cursor = (GdkCursor *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.cursor);
-	lpStruct->wmclass_name = (gchar *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.wmclass_name);
-	lpStruct->wmclass_class = (gchar *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.wmclass_class);
+	lpStruct->cursor = (GdkCursor *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.cursor);
+	lpStruct->wmclass_name = (gchar *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.wmclass_name);
+	lpStruct->wmclass_class = (gchar *)(*env)->GetIntLongField(env, lpObject, GdkWindowAttrFc.wmclass_class);
 	lpStruct->override_redirect = (*env)->GetBooleanField(env, lpObject, GdkWindowAttrFc.override_redirect);
 	return lpStruct;
 }
@@ -1243,19 +1243,19 @@ GdkWindowAttr *getGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAt
 void setGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStruct)
 {
 	if (!GdkWindowAttrFc.cached) cacheGdkWindowAttrFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.title, (jint)lpStruct->title);
+	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.title, (jintLong)lpStruct->title);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.event_mask, (jint)lpStruct->event_mask);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.x, (jint)lpStruct->x);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.y, (jint)lpStruct->y);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.width, (jint)lpStruct->width);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.height, (jint)lpStruct->height);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.wclass, (jint)lpStruct->wclass);
-	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.visual, (jint)lpStruct->visual);
-	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.colormap, (jint)lpStruct->colormap);
+	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.visual, (jintLong)lpStruct->visual);
+	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.colormap, (jintLong)lpStruct->colormap);
 	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.window_type, (jint)lpStruct->window_type);
-	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.cursor, (jint)lpStruct->cursor);
-	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.wmclass_name, (jint)lpStruct->wmclass_name);
-	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.wmclass_class, (jint)lpStruct->wmclass_class);
+	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.cursor, (jintLong)lpStruct->cursor);
+	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.wmclass_name, (jintLong)lpStruct->wmclass_name);
+	(*env)->SetIntLongField(env, lpObject, GdkWindowAttrFc.wmclass_class, (jintLong)lpStruct->wmclass_class);
 	(*env)->SetBooleanField(env, lpObject, GdkWindowAttrFc.override_redirect, (jboolean)lpStruct->override_redirect);
 }
 #endif
@@ -1399,24 +1399,24 @@ void cacheGtkCellRendererClassFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkCellRendererClassFc.cached) return;
 	GtkCellRendererClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkCellRendererClassFc.render = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "render", "I");
-	GtkCellRendererClassFc.get_size = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "get_size", "I");
+	GtkCellRendererClassFc.render = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "render", I_J);
+	GtkCellRendererClassFc.get_size = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "get_size", I_J);
 	GtkCellRendererClassFc.cached = 1;
 }
 
 GtkCellRendererClass *getGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct)
 {
 	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
-	lpStruct->render = (void(*)())(*env)->GetIntField(env, lpObject, GtkCellRendererClassFc.render);
-	lpStruct->get_size = (void(*)())(*env)->GetIntField(env, lpObject, GtkCellRendererClassFc.get_size);
+	lpStruct->render = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.render);
+	lpStruct->get_size = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.get_size);
 	return lpStruct;
 }
 
 void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct)
 {
 	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkCellRendererClassFc.render, (jint)lpStruct->render);
-	(*env)->SetIntField(env, lpObject, GtkCellRendererClassFc.get_size, (jint)lpStruct->get_size);
+	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.render, (jintLong)lpStruct->render);
+	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.get_size, (jintLong)lpStruct->get_size);
 }
 #endif
 
@@ -1433,30 +1433,30 @@ void cacheGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkColorSelectionDialogFc.cached) return;
 	GtkColorSelectionDialogFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkColorSelectionDialogFc.colorsel = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "colorsel", "I");
-	GtkColorSelectionDialogFc.ok_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "ok_button", "I");
-	GtkColorSelectionDialogFc.cancel_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "cancel_button", "I");
-	GtkColorSelectionDialogFc.help_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "help_button", "I");
+	GtkColorSelectionDialogFc.colorsel = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "colorsel", I_J);
+	GtkColorSelectionDialogFc.ok_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "ok_button", I_J);
+	GtkColorSelectionDialogFc.cancel_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "cancel_button", I_J);
+	GtkColorSelectionDialogFc.help_button = (*env)->GetFieldID(env, GtkColorSelectionDialogFc.clazz, "help_button", I_J);
 	GtkColorSelectionDialogFc.cached = 1;
 }
 
 GtkColorSelectionDialog *getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct)
 {
 	if (!GtkColorSelectionDialogFc.cached) cacheGtkColorSelectionDialogFields(env, lpObject);
-	lpStruct->colorsel = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkColorSelectionDialogFc.colorsel);
-	lpStruct->ok_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkColorSelectionDialogFc.ok_button);
-	lpStruct->cancel_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkColorSelectionDialogFc.cancel_button);
-	lpStruct->help_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkColorSelectionDialogFc.help_button);
+	lpStruct->colorsel = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.colorsel);
+	lpStruct->ok_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.ok_button);
+	lpStruct->cancel_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.cancel_button);
+	lpStruct->help_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkColorSelectionDialogFc.help_button);
 	return lpStruct;
 }
 
 void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct)
 {
 	if (!GtkColorSelectionDialogFc.cached) cacheGtkColorSelectionDialogFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkColorSelectionDialogFc.colorsel, (jint)lpStruct->colorsel);
-	(*env)->SetIntField(env, lpObject, GtkColorSelectionDialogFc.ok_button, (jint)lpStruct->ok_button);
-	(*env)->SetIntField(env, lpObject, GtkColorSelectionDialogFc.cancel_button, (jint)lpStruct->cancel_button);
-	(*env)->SetIntField(env, lpObject, GtkColorSelectionDialogFc.help_button, (jint)lpStruct->help_button);
+	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.colorsel, (jintLong)lpStruct->colorsel);
+	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.ok_button, (jintLong)lpStruct->ok_button);
+	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.cancel_button, (jintLong)lpStruct->cancel_button);
+	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.help_button, (jintLong)lpStruct->help_button);
 }
 #endif
 
@@ -1473,24 +1473,24 @@ void cacheGtkComboFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkComboFc.cached) return;
 	GtkComboFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkComboFc.entry = (*env)->GetFieldID(env, GtkComboFc.clazz, "entry", "I");
-	GtkComboFc.list = (*env)->GetFieldID(env, GtkComboFc.clazz, "list", "I");
+	GtkComboFc.entry = (*env)->GetFieldID(env, GtkComboFc.clazz, "entry", I_J);
+	GtkComboFc.list = (*env)->GetFieldID(env, GtkComboFc.clazz, "list", I_J);
 	GtkComboFc.cached = 1;
 }
 
 GtkCombo *getGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct)
 {
 	if (!GtkComboFc.cached) cacheGtkComboFields(env, lpObject);
-	lpStruct->entry = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkComboFc.entry);
-	lpStruct->list = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkComboFc.list);
+	lpStruct->entry = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkComboFc.entry);
+	lpStruct->list = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkComboFc.list);
 	return lpStruct;
 }
 
 void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct)
 {
 	if (!GtkComboFc.cached) cacheGtkComboFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkComboFc.entry, (jint)lpStruct->entry);
-	(*env)->SetIntField(env, lpObject, GtkComboFc.list, (jint)lpStruct->list);
+	(*env)->SetIntLongField(env, lpObject, GtkComboFc.entry, (jintLong)lpStruct->entry);
+	(*env)->SetIntLongField(env, lpObject, GtkComboFc.list, (jintLong)lpStruct->list);
 }
 #endif
 
@@ -1507,78 +1507,78 @@ void cacheGtkFileSelectionFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkFileSelectionFc.cached) return;
 	GtkFileSelectionFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkFileSelectionFc.dir_list = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "dir_list", "I");
-	GtkFileSelectionFc.file_list = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "file_list", "I");
-	GtkFileSelectionFc.selection_entry = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "selection_entry", "I");
-	GtkFileSelectionFc.selection_text = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "selection_text", "I");
-	GtkFileSelectionFc.main_vbox = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "main_vbox", "I");
-	GtkFileSelectionFc.ok_button = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "ok_button", "I");
-	GtkFileSelectionFc.cancel_button = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "cancel_button", "I");
-	GtkFileSelectionFc.help_button = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "help_button", "I");
-	GtkFileSelectionFc.history_pulldown = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "history_pulldown", "I");
-	GtkFileSelectionFc.history_menu = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "history_menu", "I");
-	GtkFileSelectionFc.history_list = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "history_list", "I");
-	GtkFileSelectionFc.fileop_dialog = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_dialog", "I");
-	GtkFileSelectionFc.fileop_entry = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_entry", "I");
-	GtkFileSelectionFc.fileop_file = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_file", "I");
-	GtkFileSelectionFc.cmpl_state = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "cmpl_state", "I");
-	GtkFileSelectionFc.fileop_c_dir = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_c_dir", "I");
-	GtkFileSelectionFc.fileop_del_file = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_del_file", "I");
-	GtkFileSelectionFc.fileop_ren_file = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_ren_file", "I");
-	GtkFileSelectionFc.button_area = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "button_area", "I");
-	GtkFileSelectionFc.action_area = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "action_area", "I");
+	GtkFileSelectionFc.dir_list = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "dir_list", I_J);
+	GtkFileSelectionFc.file_list = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "file_list", I_J);
+	GtkFileSelectionFc.selection_entry = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "selection_entry", I_J);
+	GtkFileSelectionFc.selection_text = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "selection_text", I_J);
+	GtkFileSelectionFc.main_vbox = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "main_vbox", I_J);
+	GtkFileSelectionFc.ok_button = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "ok_button", I_J);
+	GtkFileSelectionFc.cancel_button = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "cancel_button", I_J);
+	GtkFileSelectionFc.help_button = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "help_button", I_J);
+	GtkFileSelectionFc.history_pulldown = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "history_pulldown", I_J);
+	GtkFileSelectionFc.history_menu = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "history_menu", I_J);
+	GtkFileSelectionFc.history_list = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "history_list", I_J);
+	GtkFileSelectionFc.fileop_dialog = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_dialog", I_J);
+	GtkFileSelectionFc.fileop_entry = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_entry", I_J);
+	GtkFileSelectionFc.fileop_file = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_file", I_J);
+	GtkFileSelectionFc.cmpl_state = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "cmpl_state", I_J);
+	GtkFileSelectionFc.fileop_c_dir = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_c_dir", I_J);
+	GtkFileSelectionFc.fileop_del_file = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_del_file", I_J);
+	GtkFileSelectionFc.fileop_ren_file = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "fileop_ren_file", I_J);
+	GtkFileSelectionFc.button_area = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "button_area", I_J);
+	GtkFileSelectionFc.action_area = (*env)->GetFieldID(env, GtkFileSelectionFc.clazz, "action_area", I_J);
 	GtkFileSelectionFc.cached = 1;
 }
 
 GtkFileSelection *getGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct)
 {
 	if (!GtkFileSelectionFc.cached) cacheGtkFileSelectionFields(env, lpObject);
-	lpStruct->dir_list = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.dir_list);
-	lpStruct->file_list = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.file_list);
-	lpStruct->selection_entry = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.selection_entry);
-	lpStruct->selection_text = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.selection_text);
-	lpStruct->main_vbox = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.main_vbox);
-	lpStruct->ok_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.ok_button);
-	lpStruct->cancel_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.cancel_button);
-	lpStruct->help_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.help_button);
-	lpStruct->history_pulldown = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.history_pulldown);
-	lpStruct->history_menu = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.history_menu);
-	lpStruct->history_list = (GList *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.history_list);
-	lpStruct->fileop_dialog = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.fileop_dialog);
-	lpStruct->fileop_entry = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.fileop_entry);
-	lpStruct->fileop_file = (gchar *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.fileop_file);
-	lpStruct->cmpl_state = (gpointer)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.cmpl_state);
-	lpStruct->fileop_c_dir = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.fileop_c_dir);
-	lpStruct->fileop_del_file = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.fileop_del_file);
-	lpStruct->fileop_ren_file = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.fileop_ren_file);
-	lpStruct->button_area = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.button_area);
-	lpStruct->action_area = (GtkWidget *)(*env)->GetIntField(env, lpObject, GtkFileSelectionFc.action_area);
+	lpStruct->dir_list = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.dir_list);
+	lpStruct->file_list = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.file_list);
+	lpStruct->selection_entry = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.selection_entry);
+	lpStruct->selection_text = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.selection_text);
+	lpStruct->main_vbox = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.main_vbox);
+	lpStruct->ok_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.ok_button);
+	lpStruct->cancel_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.cancel_button);
+	lpStruct->help_button = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.help_button);
+	lpStruct->history_pulldown = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.history_pulldown);
+	lpStruct->history_menu = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.history_menu);
+	lpStruct->history_list = (GList *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.history_list);
+	lpStruct->fileop_dialog = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_dialog);
+	lpStruct->fileop_entry = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_entry);
+	lpStruct->fileop_file = (gchar *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_file);
+	lpStruct->cmpl_state = (gpointer)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.cmpl_state);
+	lpStruct->fileop_c_dir = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_c_dir);
+	lpStruct->fileop_del_file = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_del_file);
+	lpStruct->fileop_ren_file = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_ren_file);
+	lpStruct->button_area = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.button_area);
+	lpStruct->action_area = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkFileSelectionFc.action_area);
 	return lpStruct;
 }
 
 void setGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct)
 {
 	if (!GtkFileSelectionFc.cached) cacheGtkFileSelectionFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.dir_list, (jint)lpStruct->dir_list);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.file_list, (jint)lpStruct->file_list);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.selection_entry, (jint)lpStruct->selection_entry);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.selection_text, (jint)lpStruct->selection_text);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.main_vbox, (jint)lpStruct->main_vbox);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.ok_button, (jint)lpStruct->ok_button);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.cancel_button, (jint)lpStruct->cancel_button);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.help_button, (jint)lpStruct->help_button);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.history_pulldown, (jint)lpStruct->history_pulldown);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.history_menu, (jint)lpStruct->history_menu);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.history_list, (jint)lpStruct->history_list);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.fileop_dialog, (jint)lpStruct->fileop_dialog);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.fileop_entry, (jint)lpStruct->fileop_entry);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.fileop_file, (jint)lpStruct->fileop_file);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.cmpl_state, (jint)lpStruct->cmpl_state);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.fileop_c_dir, (jint)lpStruct->fileop_c_dir);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.fileop_del_file, (jint)lpStruct->fileop_del_file);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.fileop_ren_file, (jint)lpStruct->fileop_ren_file);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.button_area, (jint)lpStruct->button_area);
-	(*env)->SetIntField(env, lpObject, GtkFileSelectionFc.action_area, (jint)lpStruct->action_area);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.dir_list, (jintLong)lpStruct->dir_list);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.file_list, (jintLong)lpStruct->file_list);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.selection_entry, (jintLong)lpStruct->selection_entry);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.selection_text, (jintLong)lpStruct->selection_text);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.main_vbox, (jintLong)lpStruct->main_vbox);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.ok_button, (jintLong)lpStruct->ok_button);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.cancel_button, (jintLong)lpStruct->cancel_button);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.help_button, (jintLong)lpStruct->help_button);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.history_pulldown, (jintLong)lpStruct->history_pulldown);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.history_menu, (jintLong)lpStruct->history_menu);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.history_list, (jintLong)lpStruct->history_list);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_dialog, (jintLong)lpStruct->fileop_dialog);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_entry, (jintLong)lpStruct->fileop_entry);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_file, (jintLong)lpStruct->fileop_file);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.cmpl_state, (jintLong)lpStruct->cmpl_state);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_c_dir, (jintLong)lpStruct->fileop_c_dir);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_del_file, (jintLong)lpStruct->fileop_del_file);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.fileop_ren_file, (jintLong)lpStruct->fileop_ren_file);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.button_area, (jintLong)lpStruct->button_area);
+	(*env)->SetIntLongField(env, lpObject, GtkFileSelectionFc.action_area, (jintLong)lpStruct->action_area);
 }
 #endif
 
@@ -1595,21 +1595,21 @@ void cacheGtkFixedFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkFixedFc.cached) return;
 	GtkFixedFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkFixedFc.children = (*env)->GetFieldID(env, GtkFixedFc.clazz, "children", "I");
+	GtkFixedFc.children = (*env)->GetFieldID(env, GtkFixedFc.clazz, "children", I_J);
 	GtkFixedFc.cached = 1;
 }
 
 GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct)
 {
 	if (!GtkFixedFc.cached) cacheGtkFixedFields(env, lpObject);
-	lpStruct->children = (GList *)(*env)->GetIntField(env, lpObject, GtkFixedFc.children);
+	lpStruct->children = (GList *)(*env)->GetIntLongField(env, lpObject, GtkFixedFc.children);
 	return lpStruct;
 }
 
 void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct)
 {
 	if (!GtkFixedFc.cached) cacheGtkFixedFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkFixedFc.children, (jint)lpStruct->children);
+	(*env)->SetIntLongField(env, lpObject, GtkFixedFc.children, (jintLong)lpStruct->children);
 }
 #endif
 
@@ -1660,11 +1660,11 @@ void cacheGtkSelectionDataFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkSelectionDataFc.cached) return;
 	GtkSelectionDataFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkSelectionDataFc.selection = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "selection", "I");
-	GtkSelectionDataFc.target = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "target", "I");
-	GtkSelectionDataFc.type = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "type", "I");
+	GtkSelectionDataFc.selection = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "selection", I_J);
+	GtkSelectionDataFc.target = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "target", I_J);
+	GtkSelectionDataFc.type = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "type", I_J);
 	GtkSelectionDataFc.format = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "format", "I");
-	GtkSelectionDataFc.data = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "data", "I");
+	GtkSelectionDataFc.data = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "data", I_J);
 	GtkSelectionDataFc.length = (*env)->GetFieldID(env, GtkSelectionDataFc.clazz, "length", "I");
 	GtkSelectionDataFc.cached = 1;
 }
@@ -1672,11 +1672,11 @@ void cacheGtkSelectionDataFields(JNIEnv *env, jobject lpObject)
 GtkSelectionData *getGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct)
 {
 	if (!GtkSelectionDataFc.cached) cacheGtkSelectionDataFields(env, lpObject);
-	lpStruct->selection = (GdkAtom)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.selection);
-	lpStruct->target = (GdkAtom)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.target);
-	lpStruct->type = (GdkAtom)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.type);
+	lpStruct->selection = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.selection);
+	lpStruct->target = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.target);
+	lpStruct->type = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.type);
 	lpStruct->format = (gint)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.format);
-	lpStruct->data = (guchar *)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.data);
+	lpStruct->data = (guchar *)(*env)->GetIntLongField(env, lpObject, GtkSelectionDataFc.data);
 	lpStruct->length = (gint)(*env)->GetIntField(env, lpObject, GtkSelectionDataFc.length);
 	return lpStruct;
 }
@@ -1684,11 +1684,11 @@ GtkSelectionData *getGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSe
 void setGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct)
 {
 	if (!GtkSelectionDataFc.cached) cacheGtkSelectionDataFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.selection, (jint)lpStruct->selection);
-	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.target, (jint)lpStruct->target);
-	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.type, (jint)lpStruct->type);
+	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.selection, (jintLong)lpStruct->selection);
+	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.target, (jintLong)lpStruct->target);
+	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.type, (jintLong)lpStruct->type);
 	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.format, (jint)lpStruct->format);
-	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.data, (jint)lpStruct->data);
+	(*env)->SetIntLongField(env, lpObject, GtkSelectionDataFc.data, (jintLong)lpStruct->data);
 	(*env)->SetIntField(env, lpObject, GtkSelectionDataFc.length, (jint)lpStruct->length);
 }
 #endif
@@ -1706,7 +1706,7 @@ void cacheGtkTargetEntryFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkTargetEntryFc.cached) return;
 	GtkTargetEntryFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkTargetEntryFc.target = (*env)->GetFieldID(env, GtkTargetEntryFc.clazz, "target", "I");
+	GtkTargetEntryFc.target = (*env)->GetFieldID(env, GtkTargetEntryFc.clazz, "target", I_J);
 	GtkTargetEntryFc.flags = (*env)->GetFieldID(env, GtkTargetEntryFc.clazz, "flags", "I");
 	GtkTargetEntryFc.info = (*env)->GetFieldID(env, GtkTargetEntryFc.clazz, "info", "I");
 	GtkTargetEntryFc.cached = 1;
@@ -1715,7 +1715,7 @@ void cacheGtkTargetEntryFields(JNIEnv *env, jobject lpObject)
 GtkTargetEntry *getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct)
 {
 	if (!GtkTargetEntryFc.cached) cacheGtkTargetEntryFields(env, lpObject);
-	lpStruct->target = (gchar *)(*env)->GetIntField(env, lpObject, GtkTargetEntryFc.target);
+	lpStruct->target = (gchar *)(*env)->GetIntLongField(env, lpObject, GtkTargetEntryFc.target);
 	lpStruct->flags = (guint)(*env)->GetIntField(env, lpObject, GtkTargetEntryFc.flags);
 	lpStruct->info = (guint)(*env)->GetIntField(env, lpObject, GtkTargetEntryFc.info);
 	return lpStruct;
@@ -1724,7 +1724,7 @@ GtkTargetEntry *getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTarget
 void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct)
 {
 	if (!GtkTargetEntryFc.cached) cacheGtkTargetEntryFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkTargetEntryFc.target, (jint)lpStruct->target);
+	(*env)->SetIntLongField(env, lpObject, GtkTargetEntryFc.target, (jintLong)lpStruct->target);
 	(*env)->SetIntField(env, lpObject, GtkTargetEntryFc.flags, (jint)lpStruct->flags);
 	(*env)->SetIntField(env, lpObject, GtkTargetEntryFc.info, (jint)lpStruct->info);
 }
@@ -1743,7 +1743,7 @@ void cacheGtkTargetPairFields(JNIEnv *env, jobject lpObject)
 {
 	if (GtkTargetPairFc.cached) return;
 	GtkTargetPairFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkTargetPairFc.target = (*env)->GetFieldID(env, GtkTargetPairFc.clazz, "target", "I");
+	GtkTargetPairFc.target = (*env)->GetFieldID(env, GtkTargetPairFc.clazz, "target", I_J);
 	GtkTargetPairFc.flags = (*env)->GetFieldID(env, GtkTargetPairFc.clazz, "flags", "I");
 	GtkTargetPairFc.info = (*env)->GetFieldID(env, GtkTargetPairFc.clazz, "info", "I");
 	GtkTargetPairFc.cached = 1;
@@ -1752,7 +1752,7 @@ void cacheGtkTargetPairFields(JNIEnv *env, jobject lpObject)
 GtkTargetPair *getGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStruct)
 {
 	if (!GtkTargetPairFc.cached) cacheGtkTargetPairFields(env, lpObject);
-	lpStruct->target = (GdkAtom)(*env)->GetIntField(env, lpObject, GtkTargetPairFc.target);
+	lpStruct->target = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkTargetPairFc.target);
 	lpStruct->flags = (guint)(*env)->GetIntField(env, lpObject, GtkTargetPairFc.flags);
 	lpStruct->info = (guint)(*env)->GetIntField(env, lpObject, GtkTargetPairFc.info);
 	return lpStruct;
@@ -1761,7 +1761,7 @@ GtkTargetPair *getGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPa
 void setGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStruct)
 {
 	if (!GtkTargetPairFc.cached) cacheGtkTargetPairFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.target, (jint)lpStruct->target);
+	(*env)->SetIntLongField(env, lpObject, GtkTargetPairFc.target, (jintLong)lpStruct->target);
 	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.flags, (jint)lpStruct->flags);
 	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.info, (jint)lpStruct->info);
 }
@@ -1783,68 +1783,68 @@ void cacheGtkWidgetClassFields(JNIEnv *env, jobject lpObject)
 	GtkWidgetClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GtkWidgetClassFc.activate_signal = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "activate_signal", "I");
 	GtkWidgetClassFc.set_scroll_adjustments_signal = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "set_scroll_adjustments_signal", "I");
-	GtkWidgetClassFc.dispatch_child_properties_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "dispatch_child_properties_changed", "I");
-	GtkWidgetClassFc.show = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show", "I");
-	GtkWidgetClassFc.show_all = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show_all", "I");
-	GtkWidgetClassFc.hide = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hide", "I");
-	GtkWidgetClassFc.hide_all = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hide_all", "I");
-	GtkWidgetClassFc.map = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "map", "I");
-	GtkWidgetClassFc.unmap = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unmap", "I");
-	GtkWidgetClassFc.realize = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "realize", "I");
-	GtkWidgetClassFc.unrealize = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unrealize", "I");
-	GtkWidgetClassFc.size_request = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "size_request", "I");
-	GtkWidgetClassFc.size_allocate = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "size_allocate", "I");
-	GtkWidgetClassFc.state_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "state_changed", "I");
-	GtkWidgetClassFc.parent_set = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "parent_set", "I");
-	GtkWidgetClassFc.hierarchy_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hierarchy_changed", "I");
-	GtkWidgetClassFc.style_set = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "style_set", "I");
-	GtkWidgetClassFc.direction_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "direction_changed", "I");
-	GtkWidgetClassFc.grab_notify = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "grab_notify", "I");
-	GtkWidgetClassFc.child_notify = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "child_notify", "I");
-	GtkWidgetClassFc.mnemonic_activate = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "mnemonic_activate", "I");
-	GtkWidgetClassFc.grab_focus = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "grab_focus", "I");
-	GtkWidgetClassFc.focus = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus", "I");
-	GtkWidgetClassFc.event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "event", "I");
-	GtkWidgetClassFc.button_press_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "button_press_event", "I");
-	GtkWidgetClassFc.button_release_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "button_release_event", "I");
-	GtkWidgetClassFc.scroll_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "scroll_event", "I");
-	GtkWidgetClassFc.motion_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "motion_notify_event", "I");
-	GtkWidgetClassFc.delete_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "delete_event", "I");
-	GtkWidgetClassFc.destroy_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "destroy_event", "I");
-	GtkWidgetClassFc.expose_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "expose_event", "I");
-	GtkWidgetClassFc.key_press_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "key_press_event", "I");
-	GtkWidgetClassFc.key_release_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "key_release_event", "I");
-	GtkWidgetClassFc.enter_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "enter_notify_event", "I");
-	GtkWidgetClassFc.leave_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "leave_notify_event", "I");
-	GtkWidgetClassFc.configure_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "configure_event", "I");
-	GtkWidgetClassFc.focus_in_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus_in_event", "I");
-	GtkWidgetClassFc.focus_out_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus_out_event", "I");
-	GtkWidgetClassFc.map_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "map_event", "I");
-	GtkWidgetClassFc.unmap_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unmap_event", "I");
-	GtkWidgetClassFc.property_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "property_notify_event", "I");
-	GtkWidgetClassFc.selection_clear_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_clear_event", "I");
-	GtkWidgetClassFc.selection_request_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_request_event", "I");
-	GtkWidgetClassFc.selection_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_notify_event", "I");
-	GtkWidgetClassFc.proximity_in_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "proximity_in_event", "I");
-	GtkWidgetClassFc.proximity_out_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "proximity_out_event", "I");
-	GtkWidgetClassFc.visibility_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "visibility_notify_event", "I");
-	GtkWidgetClassFc.client_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "client_event", "I");
-	GtkWidgetClassFc.no_expose_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "no_expose_event", "I");
-	GtkWidgetClassFc.window_state_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "window_state_event", "I");
-	GtkWidgetClassFc.selection_get = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_get", "I");
-	GtkWidgetClassFc.selection_received = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_received", "I");
-	GtkWidgetClassFc.drag_begin = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_begin", "I");
-	GtkWidgetClassFc.drag_end = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_end", "I");
-	GtkWidgetClassFc.drag_data_get = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_get", "I");
-	GtkWidgetClassFc.drag_data_delete = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_delete", "I");
-	GtkWidgetClassFc.drag_leave = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_leave", "I");
-	GtkWidgetClassFc.drag_motion = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_motion", "I");
-	GtkWidgetClassFc.drag_drop = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_drop", "I");
-	GtkWidgetClassFc.drag_data_received = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_received", "I");
-	GtkWidgetClassFc.popup_menu = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "popup_menu", "I");
-	GtkWidgetClassFc.show_help = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show_help", "I");
-	GtkWidgetClassFc.get_accessible = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "get_accessible", "I");
-	GtkWidgetClassFc.screen_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "screen_changed", "I");
+	GtkWidgetClassFc.dispatch_child_properties_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "dispatch_child_properties_changed", I_J);
+	GtkWidgetClassFc.show = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show", I_J);
+	GtkWidgetClassFc.show_all = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show_all", I_J);
+	GtkWidgetClassFc.hide = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hide", I_J);
+	GtkWidgetClassFc.hide_all = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hide_all", I_J);
+	GtkWidgetClassFc.map = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "map", I_J);
+	GtkWidgetClassFc.unmap = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unmap", I_J);
+	GtkWidgetClassFc.realize = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "realize", I_J);
+	GtkWidgetClassFc.unrealize = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unrealize", I_J);
+	GtkWidgetClassFc.size_request = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "size_request", I_J);
+	GtkWidgetClassFc.size_allocate = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "size_allocate", I_J);
+	GtkWidgetClassFc.state_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "state_changed", I_J);
+	GtkWidgetClassFc.parent_set = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "parent_set", I_J);
+	GtkWidgetClassFc.hierarchy_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hierarchy_changed", I_J);
+	GtkWidgetClassFc.style_set = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "style_set", I_J);
+	GtkWidgetClassFc.direction_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "direction_changed", I_J);
+	GtkWidgetClassFc.grab_notify = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "grab_notify", I_J);
+	GtkWidgetClassFc.child_notify = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "child_notify", I_J);
+	GtkWidgetClassFc.mnemonic_activate = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "mnemonic_activate", I_J);
+	GtkWidgetClassFc.grab_focus = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "grab_focus", I_J);
+	GtkWidgetClassFc.focus = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus", I_J);
+	GtkWidgetClassFc.event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "event", I_J);
+	GtkWidgetClassFc.button_press_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "button_press_event", I_J);
+	GtkWidgetClassFc.button_release_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "button_release_event", I_J);
+	GtkWidgetClassFc.scroll_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "scroll_event", I_J);
+	GtkWidgetClassFc.motion_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "motion_notify_event", I_J);
+	GtkWidgetClassFc.delete_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "delete_event", I_J);
+	GtkWidgetClassFc.destroy_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "destroy_event", I_J);
+	GtkWidgetClassFc.expose_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "expose_event", I_J);
+	GtkWidgetClassFc.key_press_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "key_press_event", I_J);
+	GtkWidgetClassFc.key_release_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "key_release_event", I_J);
+	GtkWidgetClassFc.enter_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "enter_notify_event", I_J);
+	GtkWidgetClassFc.leave_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "leave_notify_event", I_J);
+	GtkWidgetClassFc.configure_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "configure_event", I_J);
+	GtkWidgetClassFc.focus_in_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus_in_event", I_J);
+	GtkWidgetClassFc.focus_out_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus_out_event", I_J);
+	GtkWidgetClassFc.map_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "map_event", I_J);
+	GtkWidgetClassFc.unmap_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unmap_event", I_J);
+	GtkWidgetClassFc.property_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "property_notify_event", I_J);
+	GtkWidgetClassFc.selection_clear_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_clear_event", I_J);
+	GtkWidgetClassFc.selection_request_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_request_event", I_J);
+	GtkWidgetClassFc.selection_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_notify_event", I_J);
+	GtkWidgetClassFc.proximity_in_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "proximity_in_event", I_J);
+	GtkWidgetClassFc.proximity_out_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "proximity_out_event", I_J);
+	GtkWidgetClassFc.visibility_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "visibility_notify_event", I_J);
+	GtkWidgetClassFc.client_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "client_event", I_J);
+	GtkWidgetClassFc.no_expose_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "no_expose_event", I_J);
+	GtkWidgetClassFc.window_state_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "window_state_event", I_J);
+	GtkWidgetClassFc.selection_get = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_get", I_J);
+	GtkWidgetClassFc.selection_received = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_received", I_J);
+	GtkWidgetClassFc.drag_begin = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_begin", I_J);
+	GtkWidgetClassFc.drag_end = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_end", I_J);
+	GtkWidgetClassFc.drag_data_get = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_get", I_J);
+	GtkWidgetClassFc.drag_data_delete = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_delete", I_J);
+	GtkWidgetClassFc.drag_leave = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_leave", I_J);
+	GtkWidgetClassFc.drag_motion = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_motion", I_J);
+	GtkWidgetClassFc.drag_drop = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_drop", I_J);
+	GtkWidgetClassFc.drag_data_received = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_received", I_J);
+	GtkWidgetClassFc.popup_menu = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "popup_menu", I_J);
+	GtkWidgetClassFc.show_help = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show_help", I_J);
+	GtkWidgetClassFc.get_accessible = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "get_accessible", I_J);
+	GtkWidgetClassFc.screen_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "screen_changed", I_J);
 	GtkWidgetClassFc.cached = 1;
 }
 
@@ -1854,68 +1854,68 @@ GtkWidgetClass *getGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidget
 	getGObjectClassFields(env, lpObject, (GObjectClass *)lpStruct);
 	lpStruct->activate_signal = (*env)->GetIntField(env, lpObject, GtkWidgetClassFc.activate_signal);
 	lpStruct->set_scroll_adjustments_signal = (*env)->GetIntField(env, lpObject, GtkWidgetClassFc.set_scroll_adjustments_signal);
-	lpStruct->dispatch_child_properties_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.dispatch_child_properties_changed);
-	lpStruct->show = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.show);
-	lpStruct->show_all = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.show_all);
-	lpStruct->hide = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.hide);
-	lpStruct->hide_all = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.hide_all);
-	lpStruct->map = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.map);
-	lpStruct->unmap = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.unmap);
-	lpStruct->realize = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.realize);
-	lpStruct->unrealize = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.unrealize);
-	lpStruct->size_request = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.size_request);
-	lpStruct->size_allocate = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.size_allocate);
-	lpStruct->state_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.state_changed);
-	lpStruct->parent_set = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.parent_set);
-	lpStruct->hierarchy_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.hierarchy_changed);
-	lpStruct->style_set = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.style_set);
-	lpStruct->direction_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.direction_changed);
-	lpStruct->grab_notify = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.grab_notify);
-	lpStruct->child_notify = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.child_notify);
-	lpStruct->mnemonic_activate = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.mnemonic_activate);
-	lpStruct->grab_focus = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.grab_focus);
-	lpStruct->focus = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.focus);
-	lpStruct->event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.event);
-	lpStruct->button_press_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.button_press_event);
-	lpStruct->button_release_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.button_release_event);
-	lpStruct->scroll_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.scroll_event);
-	lpStruct->motion_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.motion_notify_event);
-	lpStruct->delete_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.delete_event);
-	lpStruct->destroy_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.destroy_event);
-	lpStruct->expose_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.expose_event);
-	lpStruct->key_press_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.key_press_event);
-	lpStruct->key_release_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.key_release_event);
-	lpStruct->enter_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.enter_notify_event);
-	lpStruct->leave_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.leave_notify_event);
-	lpStruct->configure_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.configure_event);
-	lpStruct->focus_in_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.focus_in_event);
-	lpStruct->focus_out_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.focus_out_event);
-	lpStruct->map_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.map_event);
-	lpStruct->unmap_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.unmap_event);
-	lpStruct->property_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.property_notify_event);
-	lpStruct->selection_clear_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_clear_event);
-	lpStruct->selection_request_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_request_event);
-	lpStruct->selection_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_notify_event);
-	lpStruct->proximity_in_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.proximity_in_event);
-	lpStruct->proximity_out_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.proximity_out_event);
-	lpStruct->visibility_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.visibility_notify_event);
-	lpStruct->client_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.client_event);
-	lpStruct->no_expose_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.no_expose_event);
-	lpStruct->window_state_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.window_state_event);
-	lpStruct->selection_get = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_get);
-	lpStruct->selection_received = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_received);
-	lpStruct->drag_begin = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_begin);
-	lpStruct->drag_end = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_end);
-	lpStruct->drag_data_get = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_data_get);
-	lpStruct->drag_data_delete = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_data_delete);
-	lpStruct->drag_leave = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_leave);
-	lpStruct->drag_motion = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_motion);
-	lpStruct->drag_drop = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_drop);
-	lpStruct->drag_data_received = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_data_received);
-	lpStruct->popup_menu = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.popup_menu);
-	lpStruct->show_help = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.show_help);
-	lpStruct->get_accessible = (AtkObject*(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.get_accessible);
-	lpStruct->screen_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.screen_changed);
+	lpStruct->dispatch_child_properties_changed = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.dispatch_child_properties_changed);
+	lpStruct->show = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.show);
+	lpStruct->show_all = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.show_all);
+	lpStruct->hide = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.hide);
+	lpStruct->hide_all = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.hide_all);
+	lpStruct->map = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.map);
+	lpStruct->unmap = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.unmap);
+	lpStruct->realize = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.realize);
+	lpStruct->unrealize = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.unrealize);
+	lpStruct->size_request = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.size_request);
+	lpStruct->size_allocate = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.size_allocate);
+	lpStruct->state_changed = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.state_changed);
+	lpStruct->parent_set = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.parent_set);
+	lpStruct->hierarchy_changed = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.hierarchy_changed);
+	lpStruct->style_set = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.style_set);
+	lpStruct->direction_changed = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.direction_changed);
+	lpStruct->grab_notify = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.grab_notify);
+	lpStruct->child_notify = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.child_notify);
+	lpStruct->mnemonic_activate = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.mnemonic_activate);
+	lpStruct->grab_focus = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.grab_focus);
+	lpStruct->focus = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.focus);
+	lpStruct->event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.event);
+	lpStruct->button_press_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.button_press_event);
+	lpStruct->button_release_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.button_release_event);
+	lpStruct->scroll_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.scroll_event);
+	lpStruct->motion_notify_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.motion_notify_event);
+	lpStruct->delete_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.delete_event);
+	lpStruct->destroy_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.destroy_event);
+	lpStruct->expose_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.expose_event);
+	lpStruct->key_press_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.key_press_event);
+	lpStruct->key_release_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.key_release_event);
+	lpStruct->enter_notify_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.enter_notify_event);
+	lpStruct->leave_notify_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.leave_notify_event);
+	lpStruct->configure_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.configure_event);
+	lpStruct->focus_in_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.focus_in_event);
+	lpStruct->focus_out_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.focus_out_event);
+	lpStruct->map_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.map_event);
+	lpStruct->unmap_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.unmap_event);
+	lpStruct->property_notify_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.property_notify_event);
+	lpStruct->selection_clear_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.selection_clear_event);
+	lpStruct->selection_request_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.selection_request_event);
+	lpStruct->selection_notify_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.selection_notify_event);
+	lpStruct->proximity_in_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.proximity_in_event);
+	lpStruct->proximity_out_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.proximity_out_event);
+	lpStruct->visibility_notify_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.visibility_notify_event);
+	lpStruct->client_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.client_event);
+	lpStruct->no_expose_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.no_expose_event);
+	lpStruct->window_state_event = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.window_state_event);
+	lpStruct->selection_get = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.selection_get);
+	lpStruct->selection_received = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.selection_received);
+	lpStruct->drag_begin = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_begin);
+	lpStruct->drag_end = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_end);
+	lpStruct->drag_data_get = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_data_get);
+	lpStruct->drag_data_delete = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_data_delete);
+	lpStruct->drag_leave = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_leave);
+	lpStruct->drag_motion = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_motion);
+	lpStruct->drag_drop = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_drop);
+	lpStruct->drag_data_received = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.drag_data_received);
+	lpStruct->popup_menu = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.popup_menu);
+	lpStruct->show_help = (gboolean(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.show_help);
+	lpStruct->get_accessible = (AtkObject*(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.get_accessible);
+	lpStruct->screen_changed = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkWidgetClassFc.screen_changed);
 	return lpStruct;
 }
 
@@ -1925,68 +1925,142 @@ void setGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpSt
 	setGObjectClassFields(env, lpObject, (GObjectClass *)lpStruct);
 	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.activate_signal, (jint)lpStruct->activate_signal);
 	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.set_scroll_adjustments_signal, (jint)lpStruct->set_scroll_adjustments_signal);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.dispatch_child_properties_changed, (jint)lpStruct->dispatch_child_properties_changed);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.show, (jint)lpStruct->show);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.show_all, (jint)lpStruct->show_all);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.hide, (jint)lpStruct->hide);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.hide_all, (jint)lpStruct->hide_all);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.map, (jint)lpStruct->map);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.unmap, (jint)lpStruct->unmap);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.realize, (jint)lpStruct->realize);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.unrealize, (jint)lpStruct->unrealize);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.size_request, (jint)lpStruct->size_request);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.size_allocate, (jint)lpStruct->size_allocate);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.state_changed, (jint)lpStruct->state_changed);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.parent_set, (jint)lpStruct->parent_set);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.hierarchy_changed, (jint)lpStruct->hierarchy_changed);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.style_set, (jint)lpStruct->style_set);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.direction_changed, (jint)lpStruct->direction_changed);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.grab_notify, (jint)lpStruct->grab_notify);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.child_notify, (jint)lpStruct->child_notify);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.mnemonic_activate, (jint)lpStruct->mnemonic_activate);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.grab_focus, (jint)lpStruct->grab_focus);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.focus, (jint)lpStruct->focus);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.event, (jint)lpStruct->event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.button_press_event, (jint)lpStruct->button_press_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.button_release_event, (jint)lpStruct->button_release_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.scroll_event, (jint)lpStruct->scroll_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.motion_notify_event, (jint)lpStruct->motion_notify_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.delete_event, (jint)lpStruct->delete_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.destroy_event, (jint)lpStruct->destroy_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.expose_event, (jint)lpStruct->expose_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.key_press_event, (jint)lpStruct->key_press_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.key_release_event, (jint)lpStruct->key_release_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.enter_notify_event, (jint)lpStruct->enter_notify_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.leave_notify_event, (jint)lpStruct->leave_notify_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.configure_event, (jint)lpStruct->configure_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.focus_in_event, (jint)lpStruct->focus_in_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.focus_out_event, (jint)lpStruct->focus_out_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.map_event, (jint)lpStruct->map_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.unmap_event, (jint)lpStruct->unmap_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.property_notify_event, (jint)lpStruct->property_notify_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_clear_event, (jint)lpStruct->selection_clear_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_request_event, (jint)lpStruct->selection_request_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_notify_event, (jint)lpStruct->selection_notify_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.proximity_in_event, (jint)lpStruct->proximity_in_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.proximity_out_event, (jint)lpStruct->proximity_out_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.visibility_notify_event, (jint)lpStruct->visibility_notify_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.client_event, (jint)lpStruct->client_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.no_expose_event, (jint)lpStruct->no_expose_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.window_state_event, (jint)lpStruct->window_state_event);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_get, (jint)lpStruct->selection_get);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_received, (jint)lpStruct->selection_received);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_begin, (jint)lpStruct->drag_begin);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_end, (jint)lpStruct->drag_end);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_data_get, (jint)lpStruct->drag_data_get);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_data_delete, (jint)lpStruct->drag_data_delete);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_leave, (jint)lpStruct->drag_leave);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_motion, (jint)lpStruct->drag_motion);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_drop, (jint)lpStruct->drag_drop);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_data_received, (jint)lpStruct->drag_data_received);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.popup_menu, (jint)lpStruct->popup_menu);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.show_help, (jint)lpStruct->show_help);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.get_accessible, (jint)lpStruct->get_accessible);
-	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.screen_changed, (jint)lpStruct->screen_changed);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.dispatch_child_properties_changed, (jintLong)lpStruct->dispatch_child_properties_changed);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.show, (jintLong)lpStruct->show);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.show_all, (jintLong)lpStruct->show_all);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.hide, (jintLong)lpStruct->hide);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.hide_all, (jintLong)lpStruct->hide_all);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.map, (jintLong)lpStruct->map);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.unmap, (jintLong)lpStruct->unmap);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.realize, (jintLong)lpStruct->realize);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.unrealize, (jintLong)lpStruct->unrealize);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.size_request, (jintLong)lpStruct->size_request);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.size_allocate, (jintLong)lpStruct->size_allocate);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.state_changed, (jintLong)lpStruct->state_changed);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.parent_set, (jintLong)lpStruct->parent_set);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.hierarchy_changed, (jintLong)lpStruct->hierarchy_changed);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.style_set, (jintLong)lpStruct->style_set);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.direction_changed, (jintLong)lpStruct->direction_changed);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.grab_notify, (jintLong)lpStruct->grab_notify);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.child_notify, (jintLong)lpStruct->child_notify);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.mnemonic_activate, (jintLong)lpStruct->mnemonic_activate);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.grab_focus, (jintLong)lpStruct->grab_focus);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.focus, (jintLong)lpStruct->focus);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.event, (jintLong)lpStruct->event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.button_press_event, (jintLong)lpStruct->button_press_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.button_release_event, (jintLong)lpStruct->button_release_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.scroll_event, (jintLong)lpStruct->scroll_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.motion_notify_event, (jintLong)lpStruct->motion_notify_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.delete_event, (jintLong)lpStruct->delete_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.destroy_event, (jintLong)lpStruct->destroy_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.expose_event, (jintLong)lpStruct->expose_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.key_press_event, (jintLong)lpStruct->key_press_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.key_release_event, (jintLong)lpStruct->key_release_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.enter_notify_event, (jintLong)lpStruct->enter_notify_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.leave_notify_event, (jintLong)lpStruct->leave_notify_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.configure_event, (jintLong)lpStruct->configure_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.focus_in_event, (jintLong)lpStruct->focus_in_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.focus_out_event, (jintLong)lpStruct->focus_out_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.map_event, (jintLong)lpStruct->map_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.unmap_event, (jintLong)lpStruct->unmap_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.property_notify_event, (jintLong)lpStruct->property_notify_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.selection_clear_event, (jintLong)lpStruct->selection_clear_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.selection_request_event, (jintLong)lpStruct->selection_request_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.selection_notify_event, (jintLong)lpStruct->selection_notify_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.proximity_in_event, (jintLong)lpStruct->proximity_in_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.proximity_out_event, (jintLong)lpStruct->proximity_out_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.visibility_notify_event, (jintLong)lpStruct->visibility_notify_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.client_event, (jintLong)lpStruct->client_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.no_expose_event, (jintLong)lpStruct->no_expose_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.window_state_event, (jintLong)lpStruct->window_state_event);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.selection_get, (jintLong)lpStruct->selection_get);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.selection_received, (jintLong)lpStruct->selection_received);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_begin, (jintLong)lpStruct->drag_begin);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_end, (jintLong)lpStruct->drag_end);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_data_get, (jintLong)lpStruct->drag_data_get);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_data_delete, (jintLong)lpStruct->drag_data_delete);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_leave, (jintLong)lpStruct->drag_leave);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_motion, (jintLong)lpStruct->drag_motion);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_drop, (jintLong)lpStruct->drag_drop);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.drag_data_received, (jintLong)lpStruct->drag_data_received);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.popup_menu, (jintLong)lpStruct->popup_menu);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.show_help, (jintLong)lpStruct->show_help);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.get_accessible, (jintLong)lpStruct->get_accessible);
+	(*env)->SetIntLongField(env, lpObject, GtkWidgetClassFc.screen_changed, (jintLong)lpStruct->screen_changed);
+}
+#endif
+
+#ifndef NO_PangoAttrColor
+typedef struct PangoAttrColor_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID color_red, color_green, color_blue;
+} PangoAttrColor_FID_CACHE;
+
+PangoAttrColor_FID_CACHE PangoAttrColorFc;
+
+void cachePangoAttrColorFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoAttrColorFc.cached) return;
+	cachePangoAttributeFields(env, lpObject);
+	PangoAttrColorFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoAttrColorFc.color_red = (*env)->GetFieldID(env, PangoAttrColorFc.clazz, "color_red", "S");
+	PangoAttrColorFc.color_green = (*env)->GetFieldID(env, PangoAttrColorFc.clazz, "color_green", "S");
+	PangoAttrColorFc.color_blue = (*env)->GetFieldID(env, PangoAttrColorFc.clazz, "color_blue", "S");
+	PangoAttrColorFc.cached = 1;
+}
+
+PangoAttrColor *getPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct)
+{
+	if (!PangoAttrColorFc.cached) cachePangoAttrColorFields(env, lpObject);
+	getPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	lpStruct->color.red = (*env)->GetShortField(env, lpObject, PangoAttrColorFc.color_red);
+	lpStruct->color.green = (*env)->GetShortField(env, lpObject, PangoAttrColorFc.color_green);
+	lpStruct->color.blue = (*env)->GetShortField(env, lpObject, PangoAttrColorFc.color_blue);
+	return lpStruct;
+}
+
+void setPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct)
+{
+	if (!PangoAttrColorFc.cached) cachePangoAttrColorFields(env, lpObject);
+	setPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	(*env)->SetShortField(env, lpObject, PangoAttrColorFc.color_red, (jshort)lpStruct->color.red);
+	(*env)->SetShortField(env, lpObject, PangoAttrColorFc.color_green, (jshort)lpStruct->color.green);
+	(*env)->SetShortField(env, lpObject, PangoAttrColorFc.color_blue, (jshort)lpStruct->color.blue);
+}
+#endif
+
+#ifndef NO_PangoAttrInt
+typedef struct PangoAttrInt_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID value;
+} PangoAttrInt_FID_CACHE;
+
+PangoAttrInt_FID_CACHE PangoAttrIntFc;
+
+void cachePangoAttrIntFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoAttrIntFc.cached) return;
+	cachePangoAttributeFields(env, lpObject);
+	PangoAttrIntFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoAttrIntFc.value = (*env)->GetFieldID(env, PangoAttrIntFc.clazz, "value", "I");
+	PangoAttrIntFc.cached = 1;
+}
+
+PangoAttrInt *getPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct)
+{
+	if (!PangoAttrIntFc.cached) cachePangoAttrIntFields(env, lpObject);
+	getPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	lpStruct->value = (*env)->GetIntField(env, lpObject, PangoAttrIntFc.value);
+	return lpStruct;
+}
+
+void setPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct)
+{
+	if (!PangoAttrIntFc.cached) cachePangoAttrIntFields(env, lpObject);
+	setPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	(*env)->SetIntField(env, lpObject, PangoAttrIntFc.value, (jint)lpStruct->value);
 }
 #endif
 
@@ -2003,7 +2077,7 @@ void cachePangoAttributeFields(JNIEnv *env, jobject lpObject)
 {
 	if (PangoAttributeFc.cached) return;
 	PangoAttributeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	PangoAttributeFc.klass = (*env)->GetFieldID(env, PangoAttributeFc.clazz, "klass", "I");
+	PangoAttributeFc.klass = (*env)->GetFieldID(env, PangoAttributeFc.clazz, "klass", I_J);
 	PangoAttributeFc.start_index = (*env)->GetFieldID(env, PangoAttributeFc.clazz, "start_index", "I");
 	PangoAttributeFc.end_index = (*env)->GetFieldID(env, PangoAttributeFc.clazz, "end_index", "I");
 	PangoAttributeFc.cached = 1;
@@ -2012,7 +2086,7 @@ void cachePangoAttributeFields(JNIEnv *env, jobject lpObject)
 PangoAttribute *getPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpStruct)
 {
 	if (!PangoAttributeFc.cached) cachePangoAttributeFields(env, lpObject);
-	lpStruct->klass = (const PangoAttrClass *)(*env)->GetIntField(env, lpObject, PangoAttributeFc.klass);
+	lpStruct->klass = (const PangoAttrClass *)(*env)->GetIntLongField(env, lpObject, PangoAttributeFc.klass);
 	lpStruct->start_index = (*env)->GetIntField(env, lpObject, PangoAttributeFc.start_index);
 	lpStruct->end_index = (*env)->GetIntField(env, lpObject, PangoAttributeFc.end_index);
 	return lpStruct;
@@ -2021,7 +2095,7 @@ PangoAttribute *getPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttr
 void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpStruct)
 {
 	if (!PangoAttributeFc.cached) cachePangoAttributeFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, PangoAttributeFc.klass, (jint)lpStruct->klass);
+	(*env)->SetIntLongField(env, lpObject, PangoAttributeFc.klass, (jintLong)lpStruct->klass);
 	(*env)->SetIntField(env, lpObject, PangoAttributeFc.start_index, (jint)lpStruct->start_index);
 	(*env)->SetIntField(env, lpObject, PangoAttributeFc.end_index, (jint)lpStruct->end_index);
 }
@@ -2043,12 +2117,12 @@ void cachePangoItemFields(JNIEnv *env, jobject lpObject)
 	PangoItemFc.offset = (*env)->GetFieldID(env, PangoItemFc.clazz, "offset", "I");
 	PangoItemFc.length = (*env)->GetFieldID(env, PangoItemFc.clazz, "length", "I");
 	PangoItemFc.num_chars = (*env)->GetFieldID(env, PangoItemFc.clazz, "num_chars", "I");
-	PangoItemFc.analysis_shape_engine = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_shape_engine", "I");
-	PangoItemFc.analysis_lang_engine = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_lang_engine", "I");
-	PangoItemFc.analysis_font = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_font", "I");
+	PangoItemFc.analysis_shape_engine = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_shape_engine", I_J);
+	PangoItemFc.analysis_lang_engine = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_lang_engine", I_J);
+	PangoItemFc.analysis_font = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_font", I_J);
 	PangoItemFc.analysis_level = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_level", "B");
-	PangoItemFc.analysis_language = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_language", "I");
-	PangoItemFc.analysis_extra_attrs = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_extra_attrs", "I");
+	PangoItemFc.analysis_language = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_language", I_J);
+	PangoItemFc.analysis_extra_attrs = (*env)->GetFieldID(env, PangoItemFc.clazz, "analysis_extra_attrs", I_J);
 	PangoItemFc.cached = 1;
 }
 
@@ -2058,12 +2132,12 @@ PangoItem *getPangoItemFields(JNIEnv *env, jobject lpObject, PangoItem *lpStruct
 	lpStruct->offset = (*env)->GetIntField(env, lpObject, PangoItemFc.offset);
 	lpStruct->length = (*env)->GetIntField(env, lpObject, PangoItemFc.length);
 	lpStruct->num_chars = (*env)->GetIntField(env, lpObject, PangoItemFc.num_chars);
-	lpStruct->analysis.shape_engine = (PangoEngineShape *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_shape_engine);
-	lpStruct->analysis.lang_engine = (PangoEngineLang *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_lang_engine);
-	lpStruct->analysis.font = (PangoFont *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_font);
+	lpStruct->analysis.shape_engine = (PangoEngineShape *)(*env)->GetIntLongField(env, lpObject, PangoItemFc.analysis_shape_engine);
+	lpStruct->analysis.lang_engine = (PangoEngineLang *)(*env)->GetIntLongField(env, lpObject, PangoItemFc.analysis_lang_engine);
+	lpStruct->analysis.font = (PangoFont *)(*env)->GetIntLongField(env, lpObject, PangoItemFc.analysis_font);
 	lpStruct->analysis.level = (*env)->GetByteField(env, lpObject, PangoItemFc.analysis_level);
-	lpStruct->analysis.language = (PangoLanguage *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_language);
-	lpStruct->analysis.extra_attrs = (GSList *)(*env)->GetIntField(env, lpObject, PangoItemFc.analysis_extra_attrs);
+	lpStruct->analysis.language = (PangoLanguage *)(*env)->GetIntLongField(env, lpObject, PangoItemFc.analysis_language);
+	lpStruct->analysis.extra_attrs = (GSList *)(*env)->GetIntLongField(env, lpObject, PangoItemFc.analysis_extra_attrs);
 	return lpStruct;
 }
 
@@ -2073,12 +2147,12 @@ void setPangoItemFields(JNIEnv *env, jobject lpObject, PangoItem *lpStruct)
 	(*env)->SetIntField(env, lpObject, PangoItemFc.offset, (jint)lpStruct->offset);
 	(*env)->SetIntField(env, lpObject, PangoItemFc.length, (jint)lpStruct->length);
 	(*env)->SetIntField(env, lpObject, PangoItemFc.num_chars, (jint)lpStruct->num_chars);
-	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_shape_engine, (jint)lpStruct->analysis.shape_engine);
-	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_lang_engine, (jint)lpStruct->analysis.lang_engine);
-	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_font, (jint)lpStruct->analysis.font);
+	(*env)->SetIntLongField(env, lpObject, PangoItemFc.analysis_shape_engine, (jintLong)lpStruct->analysis.shape_engine);
+	(*env)->SetIntLongField(env, lpObject, PangoItemFc.analysis_lang_engine, (jintLong)lpStruct->analysis.lang_engine);
+	(*env)->SetIntLongField(env, lpObject, PangoItemFc.analysis_font, (jintLong)lpStruct->analysis.font);
 	(*env)->SetByteField(env, lpObject, PangoItemFc.analysis_level, (jbyte)lpStruct->analysis.level);
-	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_language, (jint)lpStruct->analysis.language);
-	(*env)->SetIntField(env, lpObject, PangoItemFc.analysis_extra_attrs, (jint)lpStruct->analysis.extra_attrs);
+	(*env)->SetIntLongField(env, lpObject, PangoItemFc.analysis_language, (jintLong)lpStruct->analysis.language);
+	(*env)->SetIntLongField(env, lpObject, PangoItemFc.analysis_extra_attrs, (jintLong)lpStruct->analysis.extra_attrs);
 }
 #endif
 
@@ -2095,30 +2169,30 @@ void cachePangoLayoutLineFields(JNIEnv *env, jobject lpObject)
 {
 	if (PangoLayoutLineFc.cached) return;
 	PangoLayoutLineFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	PangoLayoutLineFc.layout = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "layout", "I");
+	PangoLayoutLineFc.layout = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "layout", I_J);
 	PangoLayoutLineFc.start_index = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "start_index", "I");
 	PangoLayoutLineFc.length = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "length", "I");
-	PangoLayoutLineFc.runs = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "runs", "I");
+	PangoLayoutLineFc.runs = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "runs", I_J);
 	PangoLayoutLineFc.cached = 1;
 }
 
 PangoLayoutLine *getPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLayoutLine *lpStruct)
 {
 	if (!PangoLayoutLineFc.cached) cachePangoLayoutLineFields(env, lpObject);
-	lpStruct->layout = (PangoLayout *)(*env)->GetIntField(env, lpObject, PangoLayoutLineFc.layout);
+	lpStruct->layout = (PangoLayout *)(*env)->GetIntLongField(env, lpObject, PangoLayoutLineFc.layout);
 	lpStruct->start_index = (*env)->GetIntField(env, lpObject, PangoLayoutLineFc.start_index);
 	lpStruct->length = (*env)->GetIntField(env, lpObject, PangoLayoutLineFc.length);
-	lpStruct->runs = (GSList *)(*env)->GetIntField(env, lpObject, PangoLayoutLineFc.runs);
+	lpStruct->runs = (GSList *)(*env)->GetIntLongField(env, lpObject, PangoLayoutLineFc.runs);
 	return lpStruct;
 }
 
 void setPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLayoutLine *lpStruct)
 {
 	if (!PangoLayoutLineFc.cached) cachePangoLayoutLineFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.layout, (jint)lpStruct->layout);
+	(*env)->SetIntLongField(env, lpObject, PangoLayoutLineFc.layout, (jintLong)lpStruct->layout);
 	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.start_index, (jint)lpStruct->start_index);
 	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.length, (jint)lpStruct->length);
-	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.runs, (jint)lpStruct->runs);
+	(*env)->SetIntLongField(env, lpObject, PangoLayoutLineFc.runs, (jintLong)lpStruct->runs);
 }
 #endif
 
@@ -2135,24 +2209,24 @@ void cachePangoLayoutRunFields(JNIEnv *env, jobject lpObject)
 {
 	if (PangoLayoutRunFc.cached) return;
 	PangoLayoutRunFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	PangoLayoutRunFc.item = (*env)->GetFieldID(env, PangoLayoutRunFc.clazz, "item", "I");
-	PangoLayoutRunFc.glyphs = (*env)->GetFieldID(env, PangoLayoutRunFc.clazz, "glyphs", "I");
+	PangoLayoutRunFc.item = (*env)->GetFieldID(env, PangoLayoutRunFc.clazz, "item", I_J);
+	PangoLayoutRunFc.glyphs = (*env)->GetFieldID(env, PangoLayoutRunFc.clazz, "glyphs", I_J);
 	PangoLayoutRunFc.cached = 1;
 }
 
 PangoLayoutRun *getPangoLayoutRunFields(JNIEnv *env, jobject lpObject, PangoLayoutRun *lpStruct)
 {
 	if (!PangoLayoutRunFc.cached) cachePangoLayoutRunFields(env, lpObject);
-	lpStruct->item = (PangoItem *)(*env)->GetIntField(env, lpObject, PangoLayoutRunFc.item);
-	lpStruct->glyphs = (PangoGlyphString *)(*env)->GetIntField(env, lpObject, PangoLayoutRunFc.glyphs);
+	lpStruct->item = (PangoItem *)(*env)->GetIntLongField(env, lpObject, PangoLayoutRunFc.item);
+	lpStruct->glyphs = (PangoGlyphString *)(*env)->GetIntLongField(env, lpObject, PangoLayoutRunFc.glyphs);
 	return lpStruct;
 }
 
 void setPangoLayoutRunFields(JNIEnv *env, jobject lpObject, PangoLayoutRun *lpStruct)
 {
 	if (!PangoLayoutRunFc.cached) cachePangoLayoutRunFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, PangoLayoutRunFc.item, (jint)lpStruct->item);
-	(*env)->SetIntField(env, lpObject, PangoLayoutRunFc.glyphs, (jint)lpStruct->glyphs);
+	(*env)->SetIntLongField(env, lpObject, PangoLayoutRunFc.item, (jintLong)lpStruct->item);
+	(*env)->SetIntLongField(env, lpObject, PangoLayoutRunFc.glyphs, (jintLong)lpStruct->glyphs);
 }
 #endif
 
@@ -2268,10 +2342,10 @@ void cacheXAnyEventFields(JNIEnv *env, jobject lpObject)
 	if (XAnyEventFc.cached) return;
 	cacheXEventFields(env, lpObject);
 	XAnyEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	XAnyEventFc.serial = (*env)->GetFieldID(env, XAnyEventFc.clazz, "serial", "I");
+	XAnyEventFc.serial = (*env)->GetFieldID(env, XAnyEventFc.clazz, "serial", I_J);
 	XAnyEventFc.send_event = (*env)->GetFieldID(env, XAnyEventFc.clazz, "send_event", "I");
-	XAnyEventFc.display = (*env)->GetFieldID(env, XAnyEventFc.clazz, "display", "I");
-	XAnyEventFc.window = (*env)->GetFieldID(env, XAnyEventFc.clazz, "window", "I");
+	XAnyEventFc.display = (*env)->GetFieldID(env, XAnyEventFc.clazz, "display", I_J);
+	XAnyEventFc.window = (*env)->GetFieldID(env, XAnyEventFc.clazz, "window", I_J);
 	XAnyEventFc.cached = 1;
 }
 
@@ -2279,10 +2353,10 @@ XAnyEvent *getXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct
 {
 	if (!XAnyEventFc.cached) cacheXAnyEventFields(env, lpObject);
 	getXEventFields(env, lpObject, (XEvent *)lpStruct);
-	lpStruct->serial = (*env)->GetIntField(env, lpObject, XAnyEventFc.serial);
+	lpStruct->serial = (*env)->GetIntLongField(env, lpObject, XAnyEventFc.serial);
 	lpStruct->send_event = (*env)->GetIntField(env, lpObject, XAnyEventFc.send_event);
-	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XAnyEventFc.display);
-	lpStruct->window = (Window)(*env)->GetIntField(env, lpObject, XAnyEventFc.window);
+	lpStruct->display = (Display *)(*env)->GetIntLongField(env, lpObject, XAnyEventFc.display);
+	lpStruct->window = (Window)(*env)->GetIntLongField(env, lpObject, XAnyEventFc.window);
 	return lpStruct;
 }
 
@@ -2290,10 +2364,10 @@ void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
 {
 	if (!XAnyEventFc.cached) cacheXAnyEventFields(env, lpObject);
 	setXEventFields(env, lpObject, (XEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, XAnyEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntLongField(env, lpObject, XAnyEventFc.serial, (jintLong)lpStruct->serial);
 	(*env)->SetIntField(env, lpObject, XAnyEventFc.send_event, (jint)lpStruct->send_event);
-	(*env)->SetIntField(env, lpObject, XAnyEventFc.display, (jint)lpStruct->display);
-	(*env)->SetIntField(env, lpObject, XAnyEventFc.window, (jint)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, XAnyEventFc.display, (jintLong)lpStruct->display);
+	(*env)->SetIntLongField(env, lpObject, XAnyEventFc.window, (jintLong)lpStruct->window);
 }
 #endif
 
@@ -2372,13 +2446,13 @@ void cacheXClientMessageEventFields(JNIEnv *env, jobject lpObject)
 	if (XClientMessageEventFc.cached) return;
 	XClientMessageEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	XClientMessageEventFc.type = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "type", "I");
-	XClientMessageEventFc.serial = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "serial", "I");
+	XClientMessageEventFc.serial = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "serial", I_J);
 	XClientMessageEventFc.send_event = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "send_event", "Z");
-	XClientMessageEventFc.display = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "display", "I");
-	XClientMessageEventFc.window = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "window", "I");
-	XClientMessageEventFc.message_type = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "message_type", "I");
+	XClientMessageEventFc.display = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "display", I_J);
+	XClientMessageEventFc.window = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "window", I_J);
+	XClientMessageEventFc.message_type = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "message_type", I_J);
 	XClientMessageEventFc.format = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "format", "I");
-	XClientMessageEventFc.data = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "data", "[I");
+	XClientMessageEventFc.data = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "data", I_JArray);
 	XClientMessageEventFc.cached = 1;
 }
 
@@ -2386,15 +2460,15 @@ XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject,
 {
 	if (!XClientMessageEventFc.cached) cacheXClientMessageEventFields(env, lpObject);
 	lpStruct->type = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.type);
-	lpStruct->serial = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.serial);
+	lpStruct->serial = (*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.serial);
 	lpStruct->send_event = (*env)->GetBooleanField(env, lpObject, XClientMessageEventFc.send_event);
-	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XClientMessageEventFc.display);
-	lpStruct->window = (Window)(*env)->GetIntField(env, lpObject, XClientMessageEventFc.window);
-	lpStruct->message_type = (Atom)(*env)->GetIntField(env, lpObject, XClientMessageEventFc.message_type);
+	lpStruct->display = (Display *)(*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.display);
+	lpStruct->window = (Window)(*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.window);
+	lpStruct->message_type = (Atom)(*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.message_type);
 	lpStruct->format = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.format);
 	{
-	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (jint *)lpStruct->data.l);
+	jintLongArray lpObject1 = (jintLongArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
+	(*env)->GetIntLongArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / sizeof(jintLong), (jintLong *)lpStruct->data.l);
 	}
 	return lpStruct;
 }
@@ -2403,15 +2477,15 @@ void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageE
 {
 	if (!XClientMessageEventFc.cached) cacheXClientMessageEventFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.type, (jint)lpStruct->type);
-	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.serial, (jintLong)lpStruct->serial);
 	(*env)->SetBooleanField(env, lpObject, XClientMessageEventFc.send_event, (jboolean)lpStruct->send_event);
-	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.display, (jint)lpStruct->display);
-	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.window, (jint)lpStruct->window);
-	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.message_type, (jint)lpStruct->message_type);
+	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.display, (jintLong)lpStruct->display);
+	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.window, (jintLong)lpStruct->window);
+	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.message_type, (jintLong)lpStruct->message_type);
 	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.format, (jint)lpStruct->format);
 	{
-	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (jint *)lpStruct->data.l);
+	jintLongArray lpObject1 = (jintLongArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
+	(*env)->SetIntLongArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / sizeof(jintLong), (jintLong *)lpStruct->data.l);
 	}
 }
 #endif
@@ -2430,8 +2504,8 @@ void cacheXCrossingEventFields(JNIEnv *env, jobject lpObject)
 	if (XCrossingEventFc.cached) return;
 	cacheXAnyEventFields(env, lpObject);
 	XCrossingEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	XCrossingEventFc.root = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "root", "I");
-	XCrossingEventFc.subwindow = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "subwindow", "I");
+	XCrossingEventFc.root = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "root", I_J);
+	XCrossingEventFc.subwindow = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "subwindow", I_J);
 	XCrossingEventFc.time = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "time", "I");
 	XCrossingEventFc.x = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "x", "I");
 	XCrossingEventFc.y = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "y", "I");
@@ -2449,8 +2523,8 @@ XCrossingEvent *getXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossing
 {
 	if (!XCrossingEventFc.cached) cacheXCrossingEventFields(env, lpObject);
 	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
-	lpStruct->root = (Window)(*env)->GetIntField(env, lpObject, XCrossingEventFc.root);
-	lpStruct->subwindow = (Window)(*env)->GetIntField(env, lpObject, XCrossingEventFc.subwindow);
+	lpStruct->root = (Window)(*env)->GetIntLongField(env, lpObject, XCrossingEventFc.root);
+	lpStruct->subwindow = (Window)(*env)->GetIntLongField(env, lpObject, XCrossingEventFc.subwindow);
 	lpStruct->time = (Time)(*env)->GetIntField(env, lpObject, XCrossingEventFc.time);
 	lpStruct->x = (*env)->GetIntField(env, lpObject, XCrossingEventFc.x);
 	lpStruct->y = (*env)->GetIntField(env, lpObject, XCrossingEventFc.y);
@@ -2468,8 +2542,8 @@ void setXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpSt
 {
 	if (!XCrossingEventFc.cached) cacheXCrossingEventFields(env, lpObject);
 	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, XCrossingEventFc.root, (jint)lpStruct->root);
-	(*env)->SetIntField(env, lpObject, XCrossingEventFc.subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntLongField(env, lpObject, XCrossingEventFc.root, (jintLong)lpStruct->root);
+	(*env)->SetIntLongField(env, lpObject, XCrossingEventFc.subwindow, (jintLong)lpStruct->subwindow);
 	(*env)->SetIntField(env, lpObject, XCrossingEventFc.time, (jint)lpStruct->time);
 	(*env)->SetIntField(env, lpObject, XCrossingEventFc.x, (jint)lpStruct->x);
 	(*env)->SetIntField(env, lpObject, XCrossingEventFc.y, (jint)lpStruct->y);
@@ -2611,17 +2685,17 @@ void cacheXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject)
 	if (XRenderPictureAttributesFc.cached) return;
 	XRenderPictureAttributesFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	XRenderPictureAttributesFc.repeat = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "repeat", "Z");
-	XRenderPictureAttributesFc.alpha_map = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_map", "I");
+	XRenderPictureAttributesFc.alpha_map = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_map", I_J);
 	XRenderPictureAttributesFc.alpha_x_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_x_origin", "I");
 	XRenderPictureAttributesFc.alpha_y_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "alpha_y_origin", "I");
 	XRenderPictureAttributesFc.clip_x_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_x_origin", "I");
 	XRenderPictureAttributesFc.clip_y_origin = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_y_origin", "I");
-	XRenderPictureAttributesFc.clip_mask = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_mask", "I");
+	XRenderPictureAttributesFc.clip_mask = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "clip_mask", I_J);
 	XRenderPictureAttributesFc.graphics_exposures = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "graphics_exposures", "Z");
 	XRenderPictureAttributesFc.subwindow_mode = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "subwindow_mode", "I");
 	XRenderPictureAttributesFc.poly_edge = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "poly_edge", "I");
 	XRenderPictureAttributesFc.poly_mode = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "poly_mode", "I");
-	XRenderPictureAttributesFc.dither = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "dither", "I");
+	XRenderPictureAttributesFc.dither = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "dither", I_J);
 	XRenderPictureAttributesFc.component_alpha = (*env)->GetFieldID(env, XRenderPictureAttributesFc.clazz, "component_alpha", "Z");
 	XRenderPictureAttributesFc.cached = 1;
 }
@@ -2630,17 +2704,17 @@ XRenderPictureAttributes *getXRenderPictureAttributesFields(JNIEnv *env, jobject
 {
 	if (!XRenderPictureAttributesFc.cached) cacheXRenderPictureAttributesFields(env, lpObject);
 	lpStruct->repeat = (*env)->GetBooleanField(env, lpObject, XRenderPictureAttributesFc.repeat);
-	lpStruct->alpha_map = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_map);
+	lpStruct->alpha_map = (*env)->GetIntLongField(env, lpObject, XRenderPictureAttributesFc.alpha_map);
 	lpStruct->alpha_x_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_x_origin);
 	lpStruct->alpha_y_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_y_origin);
 	lpStruct->clip_x_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.clip_x_origin);
 	lpStruct->clip_y_origin = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.clip_y_origin);
-	lpStruct->clip_mask = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.clip_mask);
+	lpStruct->clip_mask = (*env)->GetIntLongField(env, lpObject, XRenderPictureAttributesFc.clip_mask);
 	lpStruct->graphics_exposures = (*env)->GetBooleanField(env, lpObject, XRenderPictureAttributesFc.graphics_exposures);
 	lpStruct->subwindow_mode = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.subwindow_mode);
 	lpStruct->poly_edge = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.poly_edge);
 	lpStruct->poly_mode = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.poly_mode);
-	lpStruct->dither = (*env)->GetIntField(env, lpObject, XRenderPictureAttributesFc.dither);
+	lpStruct->dither = (*env)->GetIntLongField(env, lpObject, XRenderPictureAttributesFc.dither);
 	lpStruct->component_alpha = (*env)->GetBooleanField(env, lpObject, XRenderPictureAttributesFc.component_alpha);
 	return lpStruct;
 }
@@ -2649,17 +2723,17 @@ void setXRenderPictureAttributesFields(JNIEnv *env, jobject lpObject, XRenderPic
 {
 	if (!XRenderPictureAttributesFc.cached) cacheXRenderPictureAttributesFields(env, lpObject);
 	(*env)->SetBooleanField(env, lpObject, XRenderPictureAttributesFc.repeat, (jboolean)lpStruct->repeat);
-	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_map, (jint)lpStruct->alpha_map);
+	(*env)->SetIntLongField(env, lpObject, XRenderPictureAttributesFc.alpha_map, (jintLong)lpStruct->alpha_map);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_x_origin, (jint)lpStruct->alpha_x_origin);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.alpha_y_origin, (jint)lpStruct->alpha_y_origin);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.clip_x_origin, (jint)lpStruct->clip_x_origin);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.clip_y_origin, (jint)lpStruct->clip_y_origin);
-	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.clip_mask, (jint)lpStruct->clip_mask);
+	(*env)->SetIntLongField(env, lpObject, XRenderPictureAttributesFc.clip_mask, (jintLong)lpStruct->clip_mask);
 	(*env)->SetBooleanField(env, lpObject, XRenderPictureAttributesFc.graphics_exposures, (jboolean)lpStruct->graphics_exposures);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.subwindow_mode, (jint)lpStruct->subwindow_mode);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.poly_edge, (jint)lpStruct->poly_edge);
 	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.poly_mode, (jint)lpStruct->poly_mode);
-	(*env)->SetIntField(env, lpObject, XRenderPictureAttributesFc.dither, (jint)lpStruct->dither);
+	(*env)->SetIntLongField(env, lpObject, XRenderPictureAttributesFc.dither, (jintLong)lpStruct->dither);
 	(*env)->SetBooleanField(env, lpObject, XRenderPictureAttributesFc.component_alpha, (jboolean)lpStruct->component_alpha);
 }
 #endif
@@ -2716,7 +2790,7 @@ void cacheXWindowChangesFields(JNIEnv *env, jobject lpObject)
 	XWindowChangesFc.width = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "width", "I");
 	XWindowChangesFc.height = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "height", "I");
 	XWindowChangesFc.border_width = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "border_width", "I");
-	XWindowChangesFc.sibling = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "sibling", "I");
+	XWindowChangesFc.sibling = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "sibling", I_J);
 	XWindowChangesFc.stack_mode = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "stack_mode", "I");
 	XWindowChangesFc.cached = 1;
 }
@@ -2729,7 +2803,7 @@ XWindowChanges *getXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowCh
 	lpStruct->width = (*env)->GetIntField(env, lpObject, XWindowChangesFc.width);
 	lpStruct->height = (*env)->GetIntField(env, lpObject, XWindowChangesFc.height);
 	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XWindowChangesFc.border_width);
-	lpStruct->sibling = (*env)->GetIntField(env, lpObject, XWindowChangesFc.sibling);
+	lpStruct->sibling = (*env)->GetIntLongField(env, lpObject, XWindowChangesFc.sibling);
 	lpStruct->stack_mode = (*env)->GetIntField(env, lpObject, XWindowChangesFc.stack_mode);
 	return lpStruct;
 }
@@ -2742,7 +2816,7 @@ void setXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpSt
 	(*env)->SetIntField(env, lpObject, XWindowChangesFc.width, (jint)lpStruct->width);
 	(*env)->SetIntField(env, lpObject, XWindowChangesFc.height, (jint)lpStruct->height);
 	(*env)->SetIntField(env, lpObject, XWindowChangesFc.border_width, (jint)lpStruct->border_width);
-	(*env)->SetIntField(env, lpObject, XWindowChangesFc.sibling, (jint)lpStruct->sibling);
+	(*env)->SetIntLongField(env, lpObject, XWindowChangesFc.sibling, (jintLong)lpStruct->sibling);
 	(*env)->SetIntField(env, lpObject, XWindowChangesFc.stack_mode, (jint)lpStruct->stack_mode);
 }
 #endif

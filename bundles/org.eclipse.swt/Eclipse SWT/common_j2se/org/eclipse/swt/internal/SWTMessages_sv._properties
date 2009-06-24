@@ -1,0 +1,25 @@
+# Copyright by many contributors; see http://babel.eclipse.org/
+SWT_Yes=Ja
+SWT_No=Nej
+SWT_OK=OK
+SWT_Cancel=Avbryt
+SWT_Abort=Avbryt
+SWT_Ignore=Ignorera
+SWT_Sample=Exempel
+SWT_Selection=Urval
+SWT_Font=Teckensnitt
+SWT_Color=F\u00e4rg
+SWT_Size=Storlek
+SWT_Style=Format
+SWT_Save=Spara
+SWT_FontDialog_Title=Teckensnitt
+SWT_Remove=Ta bort
+SWT_Up=Upp
+SWT_Down=Ned
+SWT_Charset_ASCII=ASCII
+SWT_Password=L\u00f6senord:
+SWT_Open=\u00d6ppna
+SWT_Close=St\u00e4ng
+SWT_Minimize=Minimera
+SWT_Maximize=Maximera
+SWT_Restore=\u00c5terst\u00e4ll

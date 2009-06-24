@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,8 @@ import org.eclipse.swt.events.*;
  * {@link TitleListener}'s when the title of the current document
  * is available or when it is modified.
  * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.0
  */
 public class TitleEvent extends TypedEvent {
@@ -26,7 +28,27 @@ public class TitleEvent extends TypedEvent {
 	
 	static final long serialVersionUID = 4121132532906340919L;
 
-TitleEvent(Widget w) {
-	super(w);
+/**
+ * Constructs a new instance of this class.
+ *
+ * @param widget the widget that fired the event
+ *
+ * @since 3.5
+ */
+public TitleEvent(Widget widget) {
+	super(widget);
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	return string.substring (0, string.length() - 1) // remove trailing '}'
+		+ " title=" + title
+		+ "}";
 }
 }

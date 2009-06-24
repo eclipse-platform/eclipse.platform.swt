@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,9 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * 
+ * This event is sent when an event is generated in the CTabFolder.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
  */
 public class CTabFolderEvent extends TypedEvent {
 	/**
@@ -46,7 +48,7 @@ public class CTabFolderEvent extends TypedEvent {
 	public int y;
 	/**
 	 * The width of the chevron button at the time of the event.
-	 * Applies to the showList event.  Applies to the showList event.
+	 * Applies to the showList event.
 	 * 
 	 * @since 3.0
 	 */

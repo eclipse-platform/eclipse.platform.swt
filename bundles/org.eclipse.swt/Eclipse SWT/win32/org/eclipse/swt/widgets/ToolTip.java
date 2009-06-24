@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent popup windows that are used
- * used to inform or warn the user.
- *
+ * to inform or warn the user.
+ * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BALLOON, ICON_ERROR, ICON_INFORMATION, ICON_WARNING</dd>
@@ -27,11 +27,19 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * </p><p>
+ * Note: Only one of the styles ICON_ERROR, ICON_INFORMATION,
+ * and ICON_WARNING may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tooltips">Tool Tips snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class ToolTip extends Widget {
@@ -66,6 +74,7 @@ public class ToolTip extends Widget {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
+ * @see SWT#BALLOON
  * @see SWT#ICON_ERROR
  * @see SWT#ICON_INFORMATION
  * @see SWT#ICON_WARNING
@@ -87,11 +96,15 @@ static int checkStyle (int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the receiver is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the receiver is selected.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the receiver is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -203,7 +216,7 @@ public boolean getVisible () {
 	checkWidget();
 	if (OS.IsWinCE) return false;
 	if (item != null) return visible;
-	int hwndToolTip = hwndToolTip ();
+	int /*long*/ hwndToolTip = hwndToolTip ();
 	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
@@ -214,7 +227,7 @@ public boolean getVisible () {
 	return false;
 }
 
-int hwndToolTip () {
+int /*long*/ hwndToolTip () {
 	return (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
 }
 
@@ -249,13 +262,17 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (item == null) {
 		if (autoHide) {
-			int hwndToolTip = hwndToolTip ();
+			int /*long*/ hwndToolTip = hwndToolTip ();
 			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 				TOOLINFO lpti = new TOOLINFO ();
 				lpti.cbSize = TOOLINFO.sizeof;
 				if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
 					if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
-						if (lpti.uId == id) OS.KillTimer (hwndToolTip, TIMER_ID);
+						if (lpti.uId == id) {
+							OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
+							OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
+							OS.KillTimer (hwndToolTip, TIMER_ID);
+						}
 					}
 				}
 			}
@@ -270,7 +287,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the receiver is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -314,7 +331,7 @@ public void setAutoHide (boolean autoHide) {
 }
 
 /**
- * Sets the location of the receiver, which must be a tooltips,
+ * Sets the location of the receiver, which must be a tooltip,
  * to the point specified by the arguments which are relative
  * to the display.
  * <p>
@@ -427,21 +444,21 @@ public void setVisible (boolean visible) {
 	if (OS.IsWinCE) return;
 	if (visible == getVisible ()) return;
 	if (item == null) {
-		int hwnd = parent.handle;
+		int /*long*/ hwnd = parent.handle;
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		lpti.uId = id;
 		lpti.hwnd = hwnd;
-		int hwndToolTip = hwndToolTip ();
+		int /*long*/ hwndToolTip = hwndToolTip ();
+		Shell shell = parent.getShell ();
 		if (text.length () != 0) {
 			int icon = OS.TTI_NONE;
 			if ((style & SWT.ICON_INFORMATION) != 0) icon = OS.TTI_INFO;
 			if ((style & SWT.ICON_WARNING) != 0) icon = OS.TTI_WARNING;
 			if ((style & SWT.ICON_ERROR) != 0) icon = OS.TTI_ERROR;
-			TCHAR pszTitle = new TCHAR (parent.getCodePage (), text, true);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
+			shell.setToolTipTitle (hwndToolTip, text, icon);
 		} else {
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+			shell.setToolTipTitle (hwndToolTip, null, 0);
 		}
 		int maxWidth = 0;
 		if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
@@ -449,7 +466,7 @@ public void setVisible (boolean visible) {
 			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 			maxWidth = (rect.right - rect.left) / 4;
 		} else {
-			int hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
+			int /*long*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
 			MONITORINFO lpmi = new MONITORINFO ();
 			lpmi.cbSize = MONITORINFO.sizeof;
 			OS.GetMonitorInfo (hmonitor, lpmi);
@@ -465,7 +482,7 @@ public void setVisible (boolean visible) {
 					nY = pt.y;
 				}
 			}
-			int lParam = nX | (nY << 16);
+			int /*long*/ lParam = OS.MAKELPARAM (nX, nY);
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
 			
 			/*
@@ -481,7 +498,7 @@ public void setVisible (boolean visible) {
 			OS.GetClientRect (hwnd, rect);
 			OS.MapWindowPoints (hwnd, 0, rect, 2);
 			if (!OS.PtInRect (rect, pt)) {
-				int hCursor = OS.GetCursor ();
+				int /*long*/ hCursor = OS.GetCursor ();
 				OS.SetCursor (0);
 				OS.SetCursorPos (rect.left, rect.top);
 				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
@@ -491,12 +508,10 @@ public void setVisible (boolean visible) {
 				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
 			}
 			
-			int time = OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
+			int time = (int)/*64*/OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
 			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
 		} else {
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 			OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
 			OS.KillTimer (hwndToolTip, TIMER_ID);
 		}

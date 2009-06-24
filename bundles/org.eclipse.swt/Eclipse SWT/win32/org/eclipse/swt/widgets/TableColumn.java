@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,17 +18,21 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a column in a table widget.
- *  <dl>
+ * <p><dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, CENTER</dd>
  * <dt><b>Events:</b></dt>
  * <dd> Move, Resize, Selection</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#table">Table, TableItem, TableColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TableColumn extends Item {
 	Table parent;
@@ -89,13 +93,17 @@ public TableColumn (Table parent, int style) {
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
  * </p>
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -144,7 +152,7 @@ public void addControlListener(ControlListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -152,7 +160,7 @@ public void addControlListener(ControlListener listener) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -300,8 +308,8 @@ public int getWidth () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
-	int hwnd = parent.handle;
-	return OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	int /*long*/ hwnd = parent.handle;
+	return (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 }
 
 /**
@@ -319,16 +327,16 @@ public void pack () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	int hwnd = parent.handle;
-	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	int /*long*/ hwnd = parent.handle;
+	int oldWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
+	int headerWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
 	boolean hasHeaderImage = false;
 	if (image != null || parent.sortColumn == this) {
 		hasHeaderImage = true;
 		Image headerImage = null;
-		if (parent.sortColumn == this && parent.sortDirection != SWT.NULL) {
+		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
 			if (OS.COMCTL32_MAJOR < 6) {
 				headerImage = display.getSortImage (parent.sortDirection);
 			} else {
@@ -343,8 +351,8 @@ public void pack () {
 		}
 		int margin = 0;
 		if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
-			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
+			int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+			margin = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		} else {
 			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
 		}
@@ -354,41 +362,20 @@ public void pack () {
 	int columnWidth = 0;
 	if (parent.hooks (SWT.MeasureItem)) {
 		RECT headerRect = new RECT ();
-		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-		int hDC = OS.GetDC (hwnd);
-		int oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+		OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+		int /*long*/ hDC = OS.GetDC (hwnd);
+		int /*long*/ oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		int count = OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
+		int count = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			TableItem item = parent.items [i];
 			if (item != null) {
-				int hFont = item.cellFont != null ? item.cellFont [index] : -1;
-				if (hFont == -1) hFont = item.font;
+				int /*long*/ hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-				RECT itemRect = item.getBounds (i, index, true, true, false, false, hDC);
-				if (hFont != -1) OS.SelectObject (hDC, hFont);
-				int nSavedDC = OS.SaveDC (hDC);
-				GCData data = new GCData ();
-				data.device = display;
-				data.hFont = hFont;
-				GC gc = GC.win32_new (hDC, data);
-				Event event = new Event ();
-				event.item = item;
-				event.gc = gc;
-				event.index = index;
-				event.x = itemRect.left;
-				event.y = itemRect.top;
-				event.width = itemRect.right - itemRect.left;
-				event.height = itemRect.bottom - itemRect.top;
-				parent.sendEvent (SWT.MeasureItem, event);
-				if (!parent.ignoreItemHeight) {
-					if (event.height > parent.getItemHeight ()) parent.setItemHeight (event.height);
-					parent.ignoreItemHeight = true;
-				}
-				event.gc = null;
-				gc.dispose ();
-				OS.RestoreDC (hDC, nSavedDC);
+				Event event = parent.sendMeasureItemEvent (item, i, index, hDC);
+				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
 				columnWidth = Math.max (columnWidth, event.x + event.width - headerRect.left);
 			}
@@ -398,7 +385,7 @@ public void pack () {
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
 	} else {
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
-		columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		columnWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 		if (index == 0) {
 			/*
 			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
@@ -409,13 +396,32 @@ public void pack () {
 			*/
 			if (parent.imageList == null) columnWidth += 2;
 			/*
+			* Bug in Windows.  When the first column of a table does not
+			* have an image and the user double clicks on the divider,
+			* Windows packs the column but does not take into account
+			* the empty space left for the image.  The fix is to increase
+			* the column width by the width of the image list.
+			* 
+			* NOTE:  This bug does not happen on Vista.
+			*/
+			if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+				if (!parent.firstColumnImage) {
+					int /*long*/ hImageList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+					if (hImageList != 0) {
+						int [] cx = new int [1], cy = new int [1];
+						OS.ImageList_GetIconSize (hImageList, cx, cy);
+						columnWidth += cx [0];
+					}
+				}
+			}
+			/*
 			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
 			* for a table with a state image list, the column is width does not
 			* include space for the state icon.  The fix is to increase the column
 			* width by the width of the image list.
 			*/
 			if ((parent.style & SWT.CHECK) != 0) {
-				int hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+				int /*long*/ hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 				if (hStateList != 0) {
 					int [] cx = new int [1], cy = new int [1];
 					OS.ImageList_GetIconSize (hStateList, cx, cy);
@@ -456,7 +462,7 @@ public void pack () {
 		}
 	}
 	parent.ignoreColumnResize = false;
-	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	int newWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
 		updateToolTip (index);
 		sendEvent (SWT.Resize);
@@ -514,7 +520,7 @@ public void removeControlListener (ControlListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -541,7 +547,10 @@ public void removeSelectionListener(SelectionListener listener) {
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
  * or <code>CENTER</code>.
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param alignment the new alignment 
  *
  * @exception SWTException <ul>
@@ -556,9 +565,9 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	LVCOLUMN lvColumn = new LVCOLUMN ();
-	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
+	lvColumn.mask = OS.LVCF_FMT;
 	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
 	lvColumn.fmt &= ~OS.LVCFMT_JUSTIFYMASK;
 	int fmt = 0;
@@ -574,12 +583,14 @@ public void setAlignment (int alignment) {
 	* visible rectangle for the column and redraw it.
 	*/
 	if (index != 0) {
-		RECT rect = new RECT (), itemRect = new RECT ();
+		parent.forceResize ();
+		RECT rect = new RECT (), headerRect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
-		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-		rect.left = itemRect.left;
-		rect.right = itemRect.right;
+		int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+		OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+		rect.left = headerRect.left;
+		rect.right = headerRect.right;
 		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
@@ -590,7 +601,7 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	super.setImage (image);
-	if (parent.sortColumn != this || parent.sortDirection != SWT.NULL) {
+	if (parent.sortColumn != this || parent.sortDirection != SWT.NONE) {
 		setImage (image, false, false);
 	}
 }
@@ -598,9 +609,9 @@ public void setImage (Image image) {
 void setImage (Image image, boolean sort, boolean right) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	if (OS.COMCTL32_MAJOR < 6) {
-		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		HDITEM hdItem = new HDITEM ();
 		hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
@@ -631,6 +642,7 @@ void setImage (Image image, boolean sort, boolean right) {
 			lvColumn.iImage = parent.imageIndexHeader (image);
 			if (right) lvColumn.fmt |= OS.LVCFMT_BITMAP_ON_RIGHT;
 		} else {
+			lvColumn.mask &= ~OS.LVCF_IMAGE;
 			lvColumn.fmt &= ~(OS.LVCFMT_IMAGE | OS.LVCFMT_BITMAP_ON_RIGHT);
 		}
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
@@ -687,8 +699,8 @@ void setSortDirection (int direction) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		int index = parent.indexOf (this);
 		if (index == -1) return;
-		int hwnd = parent.handle;
-		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		int /*long*/ hwnd = parent.handle;
+		int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		HDITEM hdItem = new HDITEM ();
 		hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
@@ -696,10 +708,12 @@ void setSortDirection (int direction) {
 			case SWT.UP:
 				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
 				hdItem.fmt |= OS.HDF_SORTUP;
+				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
 				break;
 			case SWT.DOWN:
 				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTUP);
 				hdItem.fmt |= OS.HDF_SORTDOWN;
+				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
 				break;
 			case SWT.NONE:
 				hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN);
@@ -708,10 +722,48 @@ void setSortDirection (int direction) {
 					hdItem.iImage = parent.imageIndexHeader (image);
 				} else {
 					hdItem.fmt &= ~OS.HDF_IMAGE;
+					hdItem.mask &= ~OS.HDI_IMAGE;
 				}
 				break;
 		}
 		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+		/* 
+		* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
+		* specify a selected column, Windows does not redraw either
+		* the new or the previous selected column.  The fix is to
+		* force a redraw of both.
+		* 
+		* Feature in Windows.  When LVM_SETBKCOLOR is used with
+		* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
+		* a column, Windows fills the column with the selection
+		* color, drawing on top of the background image and any
+		* other custom drawing.  The fix is to avoid setting the
+		* selected column.
+		*/
+		parent.forceResize ();
+		RECT rect = new RECT ();
+		OS.GetClientRect (hwnd, rect);
+		if ((int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+			int oldColumn = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+			int newColumn = direction == SWT.NONE ? -1 : index;
+			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
+			RECT headerRect = new RECT ();
+			if (oldColumn != -1) {
+				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, headerRect) != 0) {
+					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+					rect.left = headerRect.left;
+					rect.right = headerRect.right;
+					OS.InvalidateRect (hwnd, rect, true);
+				}
+			}
+		}
+		RECT headerRect = new RECT ();
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) != 0) {
+			OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+			rect.left = headerRect.left;
+			rect.right = headerRect.right;
+			OS.InvalidateRect (hwnd, rect, true);
+		}
 	} else {
 		switch (direction) {
 			case SWT.UP:
@@ -728,6 +780,7 @@ void setSortDirection (int direction) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string.equals (text)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
@@ -739,7 +792,7 @@ public void setText (String string) {
 	* text does not draw.  The fix is to query and then
 	* set the alignment.
 	*/
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	LVCOLUMN lvColumn = new LVCOLUMN ();
 	lvColumn.mask = OS.LVCF_FMT;
 	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
@@ -752,22 +805,31 @@ public void setText (String string) {
 	* mnemonic characters and replace doubled mnemonics
 	* with spaces.
 	*/
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
+	int /*long*/ hHeap = OS.GetProcessHeap ();
+	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string, true), true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);
 	lvColumn.mask |= OS.LVCF_TEXT;
 	lvColumn.pszText = pszText;
-	int result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+	int /*long*/ result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (result == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 }
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -780,7 +842,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	int hwndHeaderToolTip = parent.headerToolTipHandle;
+	int /*long*/ hwndHeaderToolTip = parent.headerToolTipHandle;
 	if (hwndHeaderToolTip == 0) {
 		parent.createHeaderToolTips ();
 		parent.updateHeaderToolTips ();
@@ -799,17 +861,20 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	if (width < 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	int hwnd = parent.handle;
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, width);
+	int /*long*/ hwnd = parent.handle;
+	if (width != (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0)) {
+		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, width);
+	}
 }
 
 void updateToolTip (int index) {
-	int hwndHeaderToolTip = parent.headerToolTipHandle;
+	int /*long*/ hwndHeaderToolTip = parent.headerToolTipHandle;
 	if (hwndHeaderToolTip != 0) {
-		int hwnd = parent.handle;
-		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		int /*long*/ hwnd = parent.handle;
+		int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		RECT rect = new RECT ();
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
 			TOOLINFO lpti = new TOOLINFO ();

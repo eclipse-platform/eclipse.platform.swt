@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,12 +20,21 @@ import org.eclipse.swt.internal.gtk.*;
  * such as the Display device and the Printer device. Devices
  * can have a graphics context (GC) created for them, and they
  * can be drawn on by sending messages to the associated GC.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Device implements Drawable {
 	/**
 	 * the handle to the X Display
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked protected only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
-	int /*long*/ xDisplay;
+	protected int /*long*/ xDisplay;
 	int /*long*/ shellHandle;
 
 	/* Debugging */
@@ -34,6 +43,7 @@ public abstract class Device implements Drawable {
 	boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
+	Object trackingLock;
 	
 	/* Colormap and reference count */
 	GdkColor [] gdkColors;
@@ -73,8 +83,6 @@ public abstract class Device implements Drawable {
 
 	static boolean CAIRO_LOADED;
 
-	static final Object CREATE_LOCK = new Object();
-
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -84,15 +92,13 @@ public abstract class Device implements Drawable {
 	* fix is to remove this feature. Unfortunately,
 	* too many application programs rely on this
 	* feature.
-	*
-	* This code will be removed in the future.
 	*/
 	protected static Device CurrentDevice;
 	protected static Runnable DeviceFinder;
 	static {
 		try {
 			Class.forName ("org.eclipse.swt.widgets.Display");
-		} catch (Throwable e) {}
+		} catch (ClassNotFoundException e) {}
 	}	
 
 /*
@@ -133,7 +139,7 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	synchronized (CREATE_LOCK) {
+	synchronized (Device.class) {
 		if (data != null) {
 			debug = data.debug;
 			tracking = data.tracking;
@@ -141,13 +147,11 @@ public Device(DeviceData data) {
 		if (tracking) {
 			errors = new Error [128];
 			objects = new Object [128];
+			trackingLock = new Object ();
 		}
 		create (data);
 		init ();
 		register (this);
-	
-		/* Initialize the system font slot */
-		systemFont = getSystemFont ();
 	}
 }
 
@@ -225,25 +229,32 @@ protected void create (DeviceData data) {
  * @see #checkDevice
  */
 public void dispose () {
-	if (isDisposed()) return;
-	checkDevice ();
-	release ();
-	destroy ();
-	deregister (this);
-	xDisplay = 0;
-	disposed = true;
-	if (tracking) {
-		objects = null;
-		errors = null;
+	synchronized (Device.class) {
+		if (isDisposed()) return;
+		checkDevice ();
+		release ();
+		destroy ();
+		deregister (this);
+		xDisplay = 0;
+		disposed = true;
+		if (tracking) {
+			synchronized (trackingLock) {
+				objects = null;
+				errors = null;
+				trackingLock = null;
+			}
+		}
 	}
 }
 
 void dispose_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == object) {
-			objects [i] = null;
-			errors [i] = null;
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == object) {
+				objects [i] = null;
+				errors [i] = null;
+				return;
+			}
 		}
 	}
 }
@@ -313,20 +324,26 @@ public DeviceData getDeviceData () {
 	DeviceData data = new DeviceData ();
 	data.debug = debug;
 	data.tracking = tracking;
-	int count = 0, length = 0;
-	if (tracking) length = objects.length;
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) count++;
-	}
-	int index = 0;
-	data.objects = new Object [count];
-	data.errors = new Error [count];
-	for (int i=0; i<length; i++) {
-		if (objects [i] != null) {
-			data.objects [index] = objects [i];
-			data.errors [index] = errors [i];
-			index++;
+	if (tracking) {
+		synchronized (trackingLock) {
+			int count = 0, length = objects.length;
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) count++;
+			}
+			int index = 0;
+			data.objects = new Object [count];
+			data.errors = new Error [count];
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) {
+					data.objects [index] = objects [i];
+					data.errors [index] = errors [i];
+					index++;
+				}
+			}
 		}
+	} else {
+		data.objects = new Object [0];
+		data.errors = new Error [0];
 	}
 	return data;
 }
@@ -540,15 +557,17 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
-	if (OS.GDK_WINDOWING_X11()) {
-		xDisplay = OS.GDK_DISPLAY ();
-
+	if (xDisplay != 0) {
 		int[] event_basep = new int[1], error_basep = new int [1];
-		useXRender = OS.XRenderQueryExtension (xDisplay, event_basep, error_basep);
+		if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {
+			int[] major_versionp = new int[1], minor_versionp = new int [1];
+			OS.XRenderQueryVersion (xDisplay, major_versionp, minor_versionp);
+			useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
+		}
 	}
 
 	if (debug) {
-		if (OS.GDK_WINDOWING_X11()) {
+		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
 			Class clazz = getClass ();
 			synchronized (clazz) {
@@ -573,16 +592,18 @@ protected void init () {
 	}
 	
 	/* Create GTK warnings and error callbacks */
-	logCallback = new Callback (this, "logProc", 4);
-	logProc = logCallback.getAddress ();
-	if (logProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
-	/* Set GTK warning and error handlers */
-	if (debug) {
-		int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
-		for (int i=0; i<log_domains.length; i++) {
-			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-			handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+	if (xDisplay != 0) {
+		logCallback = new Callback (this, "logProc", 4);
+		logProc = logCallback.getAddress ();
+		if (logProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		
+		/* Set GTK warning and error handlers */
+		if (debug) {
+			int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
+			for (int i=0; i<log_domains.length; i++) {
+				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+				handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+			}
 		}
 	}
 	
@@ -611,6 +632,9 @@ protected void init () {
 	shellHandle = OS.gtk_window_new(OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize(shellHandle);
+
+	/* Initialize the system font slot */
+	systemFont = getSystemFont ();
 }
 
 /**	 
@@ -654,7 +678,32 @@ public abstract void internal_dispose_GC (int /*long*/ handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return disposed;
+	synchronized (Device.class) {
+		return disposed;
+	}
+}
+
+/**
+ * Loads the font specified by a file.  The font will be
+ * present in the list of fonts available to the application.
+ *
+ * @param path the font file path
+ * @return whether the font was successfully loaded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if path is null</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see Font
+ * 
+ * @since 3.3
+ */
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	byte [] buffer = Converter.wcsToMbcs (null, path, true);
+	return OS.FcConfigAppFontAddFile (0, buffer);
 }
 
 int /*long*/ logProc (int /*long*/ log_domain, int /*long*/ log_level, int /*long*/ message, int /*long*/ user_data) {
@@ -668,21 +717,23 @@ int /*long*/ logProc (int /*long*/ log_domain, int /*long*/ log_level, int /*lon
 }
 
 void new_Object (Object object) {
-	for (int i=0; i<objects.length; i++) {
-		if (objects [i] == null) {
-			objects [i] = object;
-			errors [i] = new Error ();
-			return;
+	synchronized (trackingLock) {
+		for (int i=0; i<objects.length; i++) {
+			if (objects [i] == null) {
+				objects [i] = object;
+				errors [i] = new Error ();
+				return;
+			}
 		}
+		Object [] newObjects = new Object [objects.length + 128];
+		System.arraycopy (objects, 0, newObjects, 0, objects.length);
+		newObjects [objects.length] = object;
+		objects = newObjects;
+		Error [] newErrors = new Error [errors.length + 128];
+		System.arraycopy (errors, 0, newErrors, 0, errors.length);
+		newErrors [errors.length] = new Error ();
+		errors = newErrors;
 	}
-	Object [] newObjects = new Object [objects.length + 128];
-	System.arraycopy (objects, 0, newObjects, 0, objects.length);
-	newObjects [objects.length] = object;
-	objects = newObjects;
-	Error [] newErrors = new Error [errors.length + 128];
-	System.arraycopy (errors, 0, newErrors, 0, errors.length);
-	newErrors [errors.length] = new Error ();
-	errors = newErrors;
 }
 
 static synchronized void register (Device device) {
@@ -739,6 +790,23 @@ protected void release () {
 	}
 	gdkColors = null;
 	colorRefCount = null;
+
+	if (COLOR_BLACK != null) COLOR_BLACK.dispose();
+	if (COLOR_DARK_RED != null) COLOR_DARK_RED.dispose();
+	if (COLOR_DARK_GREEN != null) COLOR_DARK_GREEN.dispose();
+	if (COLOR_DARK_YELLOW != null) COLOR_DARK_YELLOW.dispose();
+	if (COLOR_DARK_BLUE != null) COLOR_DARK_BLUE.dispose();
+	if (COLOR_DARK_MAGENTA != null) COLOR_DARK_MAGENTA.dispose();
+	if (COLOR_DARK_CYAN != null) COLOR_DARK_CYAN.dispose();
+	if (COLOR_GRAY != null) COLOR_GRAY.dispose();
+	if (COLOR_DARK_GRAY != null) COLOR_DARK_GRAY.dispose();
+	if (COLOR_RED != null) COLOR_RED.dispose();
+	if (COLOR_GREEN != null) COLOR_GREEN.dispose();
+	if (COLOR_YELLOW != null) COLOR_YELLOW.dispose();
+	if (COLOR_BLUE != null) COLOR_BLUE.dispose();
+	if (COLOR_MAGENTA != null) COLOR_MAGENTA.dispose();
+	if (COLOR_CYAN != null) COLOR_CYAN.dispose();
+	if (COLOR_WHITE != null) COLOR_WHITE.dispose();
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
@@ -747,16 +815,18 @@ protected void release () {
 	emptyTab = 0;
 
 	/* Free the GTK error and warning handler */
-	for (int i=0; i<handler_ids.length; i++) {
-		if (handler_ids [i] != 0) {
-			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-			OS.g_log_remove_handler (log_domain, handler_ids [i]);
-			handler_ids [i] = 0;
+	if (xDisplay != 0) {
+		for (int i=0; i<handler_ids.length; i++) {
+			if (handler_ids [i] != 0) {
+				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+				OS.g_log_remove_handler (log_domain, handler_ids [i]);
+				handler_ids [i] = 0;
+			}
 		}
+		logCallback.dispose ();  logCallback = null;
+		handler_ids = null;  log_domains = null;
+		logProc = 0;
 	}
-	logCallback.dispose ();  logCallback = null;
-	handler_ids = null;  log_domains = null;
-	logProc = 0;
 }
 
 /**
@@ -776,21 +846,25 @@ public void setWarnings (boolean warnings) {
 	if (warnings) {
 		if (--warningLevel == 0) {
 			if (debug) return;
-			for (int i=0; i<handler_ids.length; i++) {
-				if (handler_ids [i] != 0) {
-					byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-					OS.g_log_remove_handler (log_domain, handler_ids [i]);
-					handler_ids [i] = 0;
+			if (logProc != 0) {
+				for (int i=0; i<handler_ids.length; i++) {
+					if (handler_ids [i] != 0) {
+						byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+						OS.g_log_remove_handler (log_domain, handler_ids [i]);
+						handler_ids [i] = 0;
+					}
 				}
 			}
 		}
 	} else {
 		if (warningLevel++ == 0) {
 			if (debug) return;
-			int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
-			for (int i=0; i<log_domains.length; i++) {
-				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-				handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+			if (logProc != 0) {
+				int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
+				for (int i=0; i<log_domains.length; i++) {
+					byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+					handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+				}
 			}
 		}
 	}

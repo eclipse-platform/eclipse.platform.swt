@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Compatibility;
 
 /**
  * Instances of this class allow the user to select a font
@@ -29,6 +28,10 @@ import org.eclipse.swt.internal.Compatibility;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class FontDialog extends Dialog {
 	FontData fontData;
@@ -48,7 +51,7 @@ public class FontDialog extends Dialog {
  * </ul>
  */
 public FontDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**
@@ -76,7 +79,7 @@ public FontDialog (Shell parent) {
  * </ul>
  */
 public FontDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
@@ -106,9 +109,10 @@ public FontData [] getFontList () {
 }
 
 /**
- * Returns the currently selected color in the receiver.
+ * Returns an RGB describing the color that was selected
+ * in the dialog, or null if none is available.
  *
- * @return the RGB value for the selected color, may be null
+ * @return the RGB value for the selected color, or null
  *
  * @see PaletteData#getRGBs
  * 
@@ -134,21 +138,49 @@ public FontData open () {
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	
 	/* Get the owner HWND for the dialog */
-	int hwndOwner = 0;
-	if (parent != null) hwndOwner = parent.handle;
-
+	int /*long*/ hwndOwner = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
+	
+	/*
+	* Feature in Windows.  There is no API to set the orientation of a
+	* font dialog.  It is always inherited from the parent.  The fix is
+	* to create a hidden parent and set the orientation in the hidden
+	* parent for the dialog to inherit.
+	*/
+	boolean enabled = false;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		if (dialogOrientation != parentOrientation) {
+			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+			hwndOwner = OS.CreateWindowEx (
+				exStyle,
+				Shell.DialogClass,
+				null,
+				0,
+				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+				hwndParent,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			enabled = OS.IsWindowEnabled (hwndParent);
+			if (enabled) OS.EnableWindow (hwndParent, false);
+		}
+	}
+		
 	/* Open the dialog */
-	int hHeap = OS.GetProcessHeap ();
+	int /*long*/ hHeap = OS.GetProcessHeap ();
 	CHOOSEFONT lpcf = new CHOOSEFONT ();
 	lpcf.lStructSize = CHOOSEFONT.sizeof;
 	lpcf.hwndOwner = hwndOwner;
 	lpcf.Flags = OS.CF_SCREENFONTS | OS.CF_EFFECTS;
-	int lpLogFont = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
+	int /*long*/ lpLogFont = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
 	if (fontData != null && fontData.data != null) {
 		LOGFONT logFont = fontData.data;
 		int lfHeight = logFont.lfHeight;
-		int hDC = OS.GetDC (0);
-		int pixels = -Compatibility.round (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY), 72);
+		int /*long*/ hDC = OS.GetDC (0);
+		int pixels = -(int)(0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72));
 		OS.ReleaseDC (0, hDC);
 		logFont.lfHeight = pixels;
 		lpcf.Flags |= OS.CF_INITTOLOGFONTSTRUCT;
@@ -164,12 +196,12 @@ public FontData open () {
 	}
 	
 	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
+	Dialog oldModal = null;
 	Display display = null;
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display = parent.getDisplay ();
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 
 	/* Open the dialog */
@@ -177,7 +209,7 @@ public FontData open () {
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 	
 	/* Compute the result */
@@ -189,7 +221,7 @@ public FontData open () {
 		 * This will not work on multiple screens or
 		 * for printing. Should use DC for the proper device.
 		 */
-		int hDC = OS.GetDC(0);
+		int /*long*/ hDC = OS.GetDC(0);
 		int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 		int pixels = 0; 
 		if (logFont.lfHeight > 0) {
@@ -201,8 +233,8 @@ public FontData open () {
 			 * we must subtract the internal leading, which requires a TEXTMETRIC,
 			 * which in turn requires font creation.
 			 */
-			int hFont = OS.CreateFontIndirect(logFont);
-			int oldFont = OS.SelectObject(hDC, hFont);
+			int /*long*/ hFont = OS.CreateFontIndirect(logFont);
+			int /*long*/ oldFont = OS.SelectObject(hDC, hFont);
 			TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 			OS.GetTextMetrics(hDC, lptm);
 			OS.SelectObject(hDC, oldFont);
@@ -213,7 +245,7 @@ public FontData open () {
 		}
 		OS.ReleaseDC(0, hDC);
 
-		int points = Compatibility.round(pixels * 72, logPixelsY);
+		float points = pixels * 72f /logPixelsY;
 		fontData = FontData.win32_new (logFont, points);
 		int red = lpcf.rgbColors & 0xFF;
 		int green = (lpcf.rgbColors >> 8) & 0xFF;
@@ -223,6 +255,13 @@ public FontData open () {
 		
 	/* Free the OS memory */
 	if (lpLogFont != 0) OS.HeapFree (hHeap, 0, lpLogFont);
+
+	/* Destroy the BIDI orientation window */
+	if (hwndParent != hwndOwner) {
+		if (enabled) OS.EnableWindow (hwndParent, true);
+		OS.SetActiveWindow (hwndParent);
+		OS.DestroyWindow (hwndOwner);
+	}
 
 	/*
 	* This code is intentionally commented.  On some
@@ -249,11 +288,15 @@ public void setFontData (FontData fontData) {
 }
 
 /**
- * Sets a set of FontData objects describing the font to
+ * Sets the set of FontData objects describing the font to
  * be selected by default in the dialog, or null to let
  * the platform choose one.
  * 
  * @param fontData the set of FontData objects to use initially, or null
+ *        to let the platform select a default when open() is called
+ *
+ * @see Font#getFontData
+ * 
  * @since 2.1.1
  */
 public void setFontList (FontData [] fontData) {
@@ -265,11 +308,11 @@ public void setFontList (FontData [] fontData) {
 }
 
 /**
- * Sets the receiver's selected color to be the argument.
+ * Sets the RGB describing the color to be selected by default
+ * in the dialog, or null to let the platform choose one.
  *
- * @param rgb the new RGB value for the selected color, may be
- *        null to let the platform to select a default when
- *        open() is called
+ * @param rgb the RGB value to use initially, or null to let
+ *        the platform select a default when open() is called
  *
  * @see PaletteData#getRGBs
  * 

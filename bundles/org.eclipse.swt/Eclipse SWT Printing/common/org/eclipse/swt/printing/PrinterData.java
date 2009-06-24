@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,8 @@ import org.eclipse.swt.graphics.*;
  * @see Printer
  * @see Printer#getPrinterList
  * @see PrintDialog#open
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class PrinterData extends DeviceData {
@@ -35,15 +37,18 @@ public final class PrinterData extends DeviceData {
 	/**
 	 * the printer driver
 	 * On Windows systems, this is the name of the driver (often "winspool").
+	 * On Mac OSX, this is the destination type ("Printer", "Fax", "File", or "Preview").
 	 * On X/Window systems, this is the name of a display connection to the
 	 * Xprt server (the default is ":1").
+	 * On GTK+, this is the backend type name (eg. GtkPrintBackendCups).
 	 */
+	// TODO: note that this api is not finalized for GTK+
 	public String driver;
 	
 	/**
 	 * the name of the printer
 	 * On Windows systems, this is the name of the 'device'.
-	 * On X/Window systems, this is the printer's 'name'.
+	 * On Mac OSX, X/Window systems, and GTK+, this is the printer's 'name'.
 	 */
 	public String name;
 	
@@ -61,12 +66,14 @@ public final class PrinterData extends DeviceData {
 	public int scope = ALL_PAGES;
 	
 	/**
-	 * the start page of a page range, used when scope is PAGE_RANGE
+	 * the start page of a page range, used when scope is PAGE_RANGE.
+	 * This value can be from 1 to the maximum number of pages for the platform.
 	 */
 	public int startPage = 0;
 
 	/**
-	 * the end page of a page range, used when scope is PAGE_RANGE
+	 * the end page of a page range, used when scope is PAGE_RANGE.
+	 * This value can be from 1 to the maximum number of pages for the platform.
 	 */
 	public int endPage = 0;
 	
@@ -98,6 +105,14 @@ public final class PrinterData extends DeviceData {
 	public boolean collate = false;
 	
 	/**
+	 * The orientation of the paper, which can be either PORTRAIT
+	 * or LANDSCAPE.
+	 * 
+	 * @since 3.5
+	 */
+	public int orientation = PORTRAIT;
+
+	/**
 	 * <code>scope</code> field value indicating that
 	 * all pages should be printed
 	 */	
@@ -115,10 +130,30 @@ public final class PrinterData extends DeviceData {
 	 * the current selection should be printed
 	 */	
 	public static final int SELECTION = 2;
+		
+	/**
+	 * <code>orientation</code> field value indicating
+	 * portrait paper orientation
+	 * 
+	 * @since 3.5
+	 */
+	public static final int PORTRAIT = 1;
+	
+	/**
+	 * <code>orientation</code> field value indicating
+	 * landscape paper orientation
+	 * 
+	 * @since 3.5
+	 */
+	public static final int LANDSCAPE = 2;
 	
 	/**
 	 * private, platform-specific data
 	 * On Windows, this contains a copy of the DEVMODE struct
+	 * returned from the <code>PrintDialog</code>.
+	 * On GTK, this contains a copy of the print_settings and page_setup
+	 * returned from the <code>PrintDialog</code>.
+	 * On OS X Carbon, this contains a copy of the PrintSettings and PageFormat
 	 * returned from the <code>PrintDialog</code>.
 	 * This field is not currently used on the X/Window System.
 	 */	

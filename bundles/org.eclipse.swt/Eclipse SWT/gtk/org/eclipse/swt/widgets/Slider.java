@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,10 +63,14 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see ScrollBar
+ * @see <a href="http://www.eclipse.org/swt/snippets/#slider">Slider snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Slider extends Control {
 	int detail;
-
+	boolean dragSent;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -102,7 +106,7 @@ public Slider (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -118,7 +122,7 @@ public Slider (Composite parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's value
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -157,8 +161,26 @@ void createHandle (int index) {
 		handle = OS.gtk_vscrollbar_new (hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	/*
+	* Bug in GTK. In GTK 2.10, the buttons on either end of
+	* a horizontal slider are created taller then the slider bar
+	* when the GTK_CAN_FOCUS flag is set. The fix is not to set
+	* the flag for horizontal bars in all versions of 2.10. Note
+	* that a bug has been logged with GTK about this issue.
+	* (http://bugzilla.gnome.org/show_bug.cgi?id=475909) 
+	*/
+	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || (style & SWT.VERTICAL) != 0) {
+		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	}
 	OS.gtk_container_add (fixedHandle, handle);
+}
+
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ result = super.gtk_button_press_event (widget, eventPtr);
+	if (result != 0) return result;
+	detail = OS.GTK_SCROLL_NONE;
+	dragSent = false;
+	return result;
 }
 
 int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value1, int /*long*/ value2) {
@@ -168,6 +190,7 @@ int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*l
 
 int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	Event event = new Event ();
+	dragSent = detail == OS.GTK_SCROLL_JUMP;
 	switch (detail) {
 		case OS.GTK_SCROLL_NONE:			event.detail = SWT.NONE; break;
 		case OS.GTK_SCROLL_JUMP:			event.detail = SWT.DRAG; break;
@@ -186,9 +209,32 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 		case OS.GTK_SCROLL_STEP_LEFT:
 		case OS.GTK_SCROLL_STEP_BACKWARD:	event.detail = SWT.ARROW_UP; break;
 	}
-	detail = OS.GTK_SCROLL_NONE;
+	if (!dragSent) detail = OS.GTK_SCROLL_NONE;
 	postEvent (SWT.Selection, event);
 	return 0;
+}
+
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+	GdkEvent gtkEvent = new GdkEvent ();
+	OS.memmove (gtkEvent, gdkEvent, GdkEvent.sizeof);
+	switch (gtkEvent.type) {
+		case OS.GDK_BUTTON_RELEASE: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 1 && detail == SWT.DRAG) {
+				if (!dragSent) {
+					Event event = new Event ();
+					event.detail = SWT.DRAG;
+					postEvent (SWT.Selection, event);
+				}
+				postEvent (SWT.Selection);
+			}
+			detail = OS.GTK_SCROLL_NONE;
+			dragSent = false;
+			break;
+		}
+	}
+	return super.gtk_event_after (widget, gdkEvent);
 }
 
 void hookEvents () {
@@ -339,7 +385,7 @@ public int getThumb () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -524,7 +570,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>

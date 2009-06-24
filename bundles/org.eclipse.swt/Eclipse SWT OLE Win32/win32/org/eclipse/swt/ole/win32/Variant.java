@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,26 +21,68 @@ import org.eclipse.swt.internal.win32.*;
  * a method on an OLE Control or OLE Document.
  *
  */
-public final class Variant
-{
+public final class Variant {
 	/**
-	 * A variant always takes up 16 bytes, no matter what you 
-	 * store in it. Objects, strings, and arrays are not physically 
-	 * stored in the Variant; in these cases, four bytes of the 
-	 * Variant are used to hold either an object reference, or a 
-	 * pointer to the string or array. The actual data are stored elsewhere.
-	 */
-	public static final int sizeof = 16;
+	* The size in bytes of a native VARIANT struct.
+	*/
+	public static final int sizeof = VARIANT.sizeof;
+
 	private short type; // OLE.VT_* type
-	
 	private boolean booleanData;
-	private float   floatData;
-	private int     intData;
+	private byte    byteData;
 	private short   shortData;
+	private char    charData;
+	private int     intData;
+	private long    longData;
+	private float   floatData;
+	private double  doubleData;
 	private String  stringData;
-	private int     byRefPtr;
+	private int /*long*/     byRefPtr;
 	private IDispatch dispatchData;
 	private IUnknown unknownData;
+
+/**	 
+ * Invokes platform specific functionality to copy a variant
+ * into operating system memory.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Variant</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param pVarDest destination pointer to a variant
+ * @param varSrc source <code>Variant</code>
+ *
+ * @since 3.3
+ */
+public static void win32_copy (int /*long*/ pVarDest, Variant varSrc) {
+	varSrc.getData (pVarDest);
+}
+
+/**	 
+ * Invokes platform specific functionality to wrap a variant
+ * that was allocated in operating system memory.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Variant</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param pVariant pointer to a variant
+ *
+ * @return a new <code>Variant</code>
+ *
+ * @since 3.3
+ */
+public static Variant win32_new (int /*long*/ pVariant) {
+	Variant variant = new Variant ();
+	variant.setData (pVariant);
+	return variant;
+}
 
 /**
  * Create an empty Variant object with type VT_EMPTY.
@@ -60,6 +102,17 @@ public Variant(float val) {
 	type = COM.VT_R4;
 	floatData = val;
 	
+}
+/**
+ * Create a Variant object which represents a Java double as a VT_R8.
+ *
+ * @param val the Java double value that this Variant represents
+ *
+ * @since 3.2
+ */
+public Variant(double val) {
+	type = COM.VT_R8;
+	doubleData = val;
 }
 /**
  * Create a Variant object which represents a Java int as a VT_I4.
@@ -83,7 +136,7 @@ public Variant(float val) {
  * @param byRefType the type of the data being transferred such as OLE.VT_BSTR | OLE.VT_BYREF
  *
  */
-public Variant(int ptr, short byRefType) {
+public Variant(int /*long*/ ptr, short byRefType) {
 	type = byRefType;
 	byRefPtr = ptr;
 }
@@ -123,6 +176,17 @@ public Variant(IDispatch idispatch) {
 public Variant(IUnknown unknown) {
 	type = COM.VT_UNKNOWN;
 	unknownData = unknown;
+}
+/**
+ * Create a Variant object which represents a Java long as a VT_I8.
+ *
+ * @param val the Java long value that this Variant represents
+ *
+ * @since 3.2
+ */
+ public Variant(long val) {
+	type = COM.VT_I8;
+	longData = val;
 }
 /**
  * Create a Variant object which represents a Java String as a VT_BSTR.
@@ -168,13 +232,6 @@ public void dispose() {
 	}
 		
 	switch (type) {
-		case COM.VT_EMPTY :
-		case COM.VT_BOOL :
-		case COM.VT_R4 :
-		case COM.VT_I4 :
-		case COM.VT_I2 :
-		case COM.VT_BSTR :
-			break;
 		case COM.VT_DISPATCH :
 			dispatchData.Release();
 			break;
@@ -206,8 +263,8 @@ public OleAutomation getAutomation() {
 		return new OleAutomation(dispatchData);
 	}
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_DISPATCH);
@@ -249,8 +306,8 @@ public IDispatch getDispatch() {
 		return dispatchData;
 	}
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_DISPATCH);
@@ -291,8 +348,8 @@ public boolean getBoolean() {
 	}
 
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_BOOL);
@@ -316,7 +373,7 @@ public boolean getBoolean() {
  * @return a pointer to the referenced data represented by this Variant or 0
  *
  */
-public int getByRef() {
+public int /*long*/ getByRef() {
 	if (type == COM.VT_EMPTY) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
 	}
@@ -326,57 +383,197 @@ public int getByRef() {
 		
 	return 0;
 }
-void getData(int pData){
+/**
+ * Returns the Java byte represented by this Variant.
+ *
+ * <p>If this Variant does not contain a Java byte, an attempt is made to
+ * coerce the Variant type into a Java byte.  If this fails, an error is thrown.
+ *
+ * @return the Java byte represented by this Variant
+ *
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a byte</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public byte getByte() {
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_I1) {
+		return byteData;
+	}
+		
+	// try to coerce the value to the desired type
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	try {
+		getData(oldPtr);
+		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I1);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+		Variant byteVar = new Variant();
+		byteVar.setData(newPtr);
+		return byteVar.getByte();
+	} finally {
+		COM.VariantClear(oldPtr);
+		OS.GlobalFree(oldPtr);
+		COM.VariantClear(newPtr);
+		OS.GlobalFree(newPtr);
+	}
+}
+/**
+ * Returns the Java char represented by this Variant.
+ *
+ * <p>If this Variant does not contain a Java char, an attempt is made to
+ * coerce the Variant type into a Java char.  If this fails, an error is thrown.
+ *
+ * @return the Java char represented by this Variant
+ *
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a char</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public char getChar() {
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_UI2) {
+		return charData;
+	}
+		
+	// try to coerce the value to the desired type
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	try {
+		getData(oldPtr);
+		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_UI2);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+		Variant charVar = new Variant();
+		charVar.setData(newPtr);
+		return charVar.getChar();
+	} finally {
+		COM.VariantClear(oldPtr);
+		OS.GlobalFree(oldPtr);
+		COM.VariantClear(newPtr);
+		OS.GlobalFree(newPtr);
+	}
+}
+void getData(int /*long*/ pData){
 	if (pData == 0) OLE.error(OLE.ERROR_OUT_OF_MEMORY);
 	
 	COM.VariantInit(pData);
 
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
+		//TODO - use VARIANT structure
 		COM.MoveMemory(pData, new short[] {type}, 2);
-		COM.MoveMemory(pData + 8, new int[]{byRefPtr}, 4);
+		COM.MoveMemory(pData + 8, new int /*long*/[]{byRefPtr}, OS.PTR_SIZEOF);
 		return;
 	}
 
 	switch (type) {
 		case COM.VT_EMPTY :
+		case COM.VT_NULL :
+            COM.MoveMemory(pData, new short[] {type}, 2);
 			break;
 		case COM.VT_BOOL :
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int[]{(booleanData) ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
+			COM.MoveMemory(pData + 8, new short[]{(booleanData) ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
 			break;
-		case COM.VT_R4 :
+		case COM.VT_I1 :
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new float[]{floatData}, 4);
-			break;
-		case COM.VT_I4 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int[]{intData}, 4);
-			break;
-		case COM.VT_DISPATCH :
-			dispatchData.AddRef();
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int[]{dispatchData.getAddress()}, 4);
-			break;
-		case COM.VT_UNKNOWN :
-			unknownData.AddRef();
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int[]{unknownData.getAddress()}, 4);
+			COM.MoveMemory(pData + 8, new byte[]{byteData}, 1);
 			break;
 		case COM.VT_I2 :
 			COM.MoveMemory(pData, new short[] {type}, 2);
 			COM.MoveMemory(pData + 8, new short[]{shortData}, 2);
 			break;
+		case COM.VT_UI2 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new char[]{charData}, 2);
+			break;
+		case COM.VT_I4 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new int[]{intData}, 4);
+			break;
+		case COM.VT_I8 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new long[]{longData}, 8);
+			break;
+		case COM.VT_R4 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new float[]{floatData}, 4);
+			break;
+		case COM.VT_R8 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new double[]{doubleData}, 8);
+			break;
+		case COM.VT_DISPATCH :
+			dispatchData.AddRef();
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new int /*long*/[]{dispatchData.getAddress()}, OS.PTR_SIZEOF);
+			break;
+		case COM.VT_UNKNOWN :
+			unknownData.AddRef();
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new int /*long*/[]{unknownData.getAddress()}, OS.PTR_SIZEOF);
+			break;
 		case COM.VT_BSTR :
 			COM.MoveMemory(pData, new short[] {type}, 2);
 			char[] data = (stringData+"\0").toCharArray();
-			int ptr = COM.SysAllocString(data);
-			COM.MoveMemory(pData + 8, new int[] {ptr}, 4);
+			int /*long*/ ptr = COM.SysAllocString(data);
+			COM.MoveMemory(pData + 8, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
 			break;
 	
 		default :
 			OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
 	}
 }
+/**
+ * Returns the Java double represented by this Variant.
+ *
+ * <p>If this Variant does not contain a Java double, an attempt is made to
+ * coerce the Variant type into a Java double.  If this fails, an error is thrown.
+ *
+ * @return the Java double represented by this Variant
+ *
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a double</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public double getDouble() {
+    if (type == COM.VT_EMPTY) {
+        OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+    }
+    if (type == COM.VT_R8) {
+        return doubleData;
+    }
+    
+    // try to coerce the value to the desired type
+    int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+    int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+    try {
+        getData(oldPtr);
+        int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_R8);
+        if (result != COM.S_OK)
+            OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+        Variant doubleVar = new Variant();
+        doubleVar.setData(newPtr);
+        return doubleVar.getDouble();
+    } finally {
+        COM.VariantClear(oldPtr);
+        OS.GlobalFree(oldPtr);
+        COM.VariantClear(newPtr);
+        OS.GlobalFree(newPtr);
+    } 
+}
+
 /**
  * Returns the Java float represented by this Variant.
  *
@@ -398,8 +595,8 @@ public float getFloat() {
 	}
 
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_R4);
@@ -437,8 +634,8 @@ public int getInt() {
 	}
 		
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I4);
@@ -447,6 +644,46 @@ public int getInt() {
 		Variant intVar = new Variant();
 		intVar.setData(newPtr);
 		return intVar.getInt();
+	} finally {
+		COM.VariantClear(oldPtr);
+		OS.GlobalFree(oldPtr);
+		COM.VariantClear(newPtr);
+		OS.GlobalFree(newPtr);
+	}
+}
+/**
+ * Returns the Java long represented by this Variant.
+ *
+ * <p>If this Variant does not contain a Java long, an attempt is made to
+ * coerce the Variant type into a Java long.  If this fails, an error is thrown.
+ *
+ * @return the Java long represented by this Variant
+ *
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a long</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+public long getLong() {
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_I8) {
+		return longData;
+	}
+		
+	// try to coerce the value to the desired type
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	try {
+		getData(oldPtr);
+		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I8);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+		Variant longVar = new Variant();
+		longVar.setData(newPtr);
+		return longVar.getLong();
 	} finally {
 		COM.VariantClear(oldPtr);
 		OS.GlobalFree(oldPtr);
@@ -475,8 +712,8 @@ public short getShort() {
 	}
 		
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I2);
@@ -514,8 +751,8 @@ public String getString() {
 	}
 
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_BSTR);
@@ -568,8 +805,8 @@ public IUnknown getUnknown() {
 	}
 
 	// try to coerce the value to the desired type
-	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_UNKNOWN);
@@ -635,11 +872,11 @@ public void setByRef(float val) {
  *
  * @since 2.1
  */
-public void setByRef(int val) {
+public void setByRef(int /*long*/ val) {
 	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_I4) == 0) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
-	COM.MoveMemory(byRefPtr, new int[]{val}, 4);
+	COM.MoveMemory(byRefPtr, new int /*long*/[]{val}, OS.PTR_SIZEOF);
 }
 /**
  * Update the by reference value of this variant with a new short value.
@@ -659,41 +896,68 @@ public void setByRef(short val) {
 	COM.MoveMemory(byRefPtr, new short[]{val}, 2);
 }
 
-void setData(int pData){
+void setData(int /*long*/ pData){
 	if (pData == 0) OLE.error(OLE.ERROR_INVALID_ARGUMENT);
 
+	//TODO - use VARIANT structure
 	short[] dataType = new short[1];
 	COM.MoveMemory(dataType, pData, 2);
 	type = dataType[0];
 
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
-		int[] newByRefPtr = new int[1];
-		OS.MoveMemory(newByRefPtr, pData + 8, 4);
+		int /*long*/[] newByRefPtr = new int /*long*/[1];
+		OS.MoveMemory(newByRefPtr, pData + 8, OS.PTR_SIZEOF);
 		byRefPtr = newByRefPtr[0];
 		return;
 	}
 	
 	switch (type) {
 		case COM.VT_EMPTY :
+		case COM.VT_NULL :
 			break;
 		case COM.VT_BOOL :
 			short[] newBooleanData = new short[1];
 			COM.MoveMemory(newBooleanData, pData + 8, 2);
 			booleanData = (newBooleanData[0] != COM.VARIANT_FALSE);
 			break;
-		case COM.VT_R4 :
-			float[] newFloatData = new float[1];
-			COM.MoveMemory(newFloatData, pData + 8, 4);
-			floatData = newFloatData[0];
+		case COM.VT_I1 :
+			byte[] newByteData = new byte[1];
+			COM.MoveMemory(newByteData, pData + 8, 1);
+			byteData = newByteData[0];
+			break;
+		case COM.VT_I2 :
+			short[] newShortData = new short[1];
+			COM.MoveMemory(newShortData, pData + 8, 2);
+			shortData = newShortData[0];
+			break;
+		case COM.VT_UI2 :
+			char[] newCharData = new char[1];
+			COM.MoveMemory(newCharData, pData + 8, 2);
+			charData = newCharData[0];
 			break;
 		case COM.VT_I4 :
 			int[] newIntData = new int[1];
 			OS.MoveMemory(newIntData, pData + 8, 4);
 			intData = newIntData[0];
 			break;
+		case COM.VT_I8 :
+			long[] newLongData = new long[1];
+			OS.MoveMemory(newLongData, pData + 8, 8);
+			longData = newLongData[0];
+			break;
+		case COM.VT_R4 :
+			float[] newFloatData = new float[1];
+			COM.MoveMemory(newFloatData, pData + 8, 4);
+			floatData = newFloatData[0];
+			break;
+		case COM.VT_R8 :
+			double[] newDoubleData = new double[1];
+			COM.MoveMemory(newDoubleData, pData + 8, 8);
+ 			doubleData = newDoubleData[0];
+			break;
 		case COM.VT_DISPATCH : {
-			int[] ppvObject = new int[1];
-			OS.MoveMemory(ppvObject, pData + 8, 4);
+			int /*long*/[] ppvObject = new int /*long*/[1];
+			OS.MoveMemory(ppvObject, pData + 8, OS.PTR_SIZEOF);
 			if (ppvObject[0] == 0) {
 				type = COM.VT_EMPTY;
 				break;
@@ -703,8 +967,8 @@ void setData(int pData){
 			break;
 		}
 		case COM.VT_UNKNOWN : {
-			int[] ppvObject = new int[1];
-			OS.MoveMemory(ppvObject, pData + 8, 4);
+			int /*long*/[] ppvObject = new int /*long*/[1];
+			OS.MoveMemory(ppvObject, pData + 8, OS.PTR_SIZEOF);
 			if (ppvObject[0] == 0) {
 				type = COM.VT_EMPTY;
 				break;
@@ -713,15 +977,10 @@ void setData(int pData){
 			unknownData.AddRef();
 			break;
 		}
-		case COM.VT_I2 :
-			short[] newShortData = new short[1];
-			COM.MoveMemory(newShortData, pData + 8, 2);
-			shortData = newShortData[0];
-			break;
 		case COM.VT_BSTR :
 			// get the address of the memory in which the string resides
-			int[] hMem = new int[1];
-			OS.MoveMemory(hMem, pData + 8, 4);
+			int /*long*/[] hMem = new int /*long*/[1];
+			OS.MoveMemory(hMem, pData + 8, OS.PTR_SIZEOF);
 			if (hMem[0] == 0) {
 				type = COM.VT_EMPTY;
 				break;
@@ -741,7 +1000,7 @@ void setData(int pData){
 	
 		default :
 			// try coercing it into one of the known forms
-			int newPData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
+			int /*long*/ newPData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, sizeof);
 			if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_R4) == COM.S_OK) {
 				setData(newPData);
 			} else if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_I4) == COM.S_OK) {
@@ -759,18 +1018,26 @@ void setData(int pData){
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the Variant
  */
 public String toString () {
     switch (type) {
 	    case COM.VT_BOOL :
 	        return "VT_BOOL{"+booleanData+"}";
+	    case COM.VT_I1 :
+	        return "VT_I1{"+byteData+"}";
 	    case COM.VT_I2 :
 	        return "VT_I2{"+shortData+"}";
+	    case COM.VT_UI2 :
+	        return "VT_UI2{"+charData+"}";
 	    case COM.VT_I4 :
 	        return "VT_I4{"+intData+"}";
+	    case COM.VT_I8 :
+	        return "VT_I8{"+longData+"}";
 	    case COM.VT_R4 :
 	        return "VT_R4{"+floatData+"}";
+   	    case COM.VT_R8 :
+	        return "VT_R8{"+doubleData+"}";
 	    case COM.VT_BSTR :
 	        return "VT_BSTR{"+stringData+"}";
 	    case COM.VT_DISPATCH :
@@ -779,6 +1046,8 @@ public String toString () {
 	        return "VT_UNKNOWN{"+(unknownData == null ? 0 : unknownData.getAddress())+"}";
 	    case COM.VT_EMPTY :
 	        return "VT_EMPTY";
+	    case COM.VT_NULL :
+	        return "VT_NULL";
 	 }
     if ((type & COM.VT_BYREF) != 0) {
         return "VT_BYREF|"+(type & ~COM.VT_BYREF)+"{"+byRefPtr+"}";

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,8 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public abstract class Item extends Widget {
@@ -79,10 +81,11 @@ public Item (Widget parent, int style) {
  *
  * @param parent a widget which will be the parent of the new instance (cannot be null)
  * @param style the style of item to construct
- * @param index the index at which to store the receiver in its parent
+ * @param index the zero-relative index at which to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>

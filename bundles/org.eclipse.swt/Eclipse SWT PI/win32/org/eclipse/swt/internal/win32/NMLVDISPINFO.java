@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,15 +12,31 @@ package org.eclipse.swt.internal.win32;
 
 public class NMLVDISPINFO extends NMHDR {
 //	LVITEM item;
+	/** @field accessor=item.mask */
 	public int mask;
+	/** @field accessor=item.iItem */
 	public int iItem;
+	/** @field accessor=item.iSubItem */
 	public int iSubItem;
+	/** @field accessor=item.state */
 	public int state;
+	/** @field accessor=item.stateMask */
 	public int stateMask;
-	public int pszText;
+	/** @field accessor=item.pszText,cast=(LPTSTR) */
+	public int /*long*/ pszText;
+	/** @field accessor=item.cchTextMax */
 	public int cchTextMax;
+	/** @field accessor=item.iImage */
 	public int iImage;
-	public int lParam;
+	/** @field accessor=item.lParam */
+	public int /*long*/ lParam;
+	/** @field accessor=item.iIndent */
 	public int iIndent;
-	public static final int sizeof = 52;
+	/** @field accessor=item.iGroupId,flags=no_wince */
+	public int iGroupId;
+	/** @field accessor=item.cColumns,flags=no_wince */
+	public int cColumns;
+	/** @field accessor=item.puColumns,cast=(PUINT),flags=no_wince */
+	public int /*long*/ puColumns;
+	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.NMLVDISPINFO_sizeof () : 52;
 }

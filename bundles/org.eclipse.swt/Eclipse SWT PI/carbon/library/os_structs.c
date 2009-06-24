@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -43,6 +43,79 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
 	if (!AEDescFc.cached) cacheAEDescFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, AEDescFc.descriptorType, (jint)lpStruct->descriptorType);
 	(*env)->SetIntField(env, lpObject, AEDescFc.dataHandle, (jint)lpStruct->dataHandle);
+}
+#endif
+
+#ifndef NO_ATSFontMetrics
+typedef struct ATSFontMetrics_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, ascent, descent, leading, avgAdvanceWidth, maxAdvanceWidth, minLeftSideBearing, minRightSideBearing, stemWidth, stemHeight, capHeight, xHeight, italicAngle, underlinePosition, underlineThickness;
+} ATSFontMetrics_FID_CACHE;
+
+ATSFontMetrics_FID_CACHE ATSFontMetricsFc;
+
+void cacheATSFontMetricsFields(JNIEnv *env, jobject lpObject)
+{
+	if (ATSFontMetricsFc.cached) return;
+	ATSFontMetricsFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ATSFontMetricsFc.version = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "version", "I");
+	ATSFontMetricsFc.ascent = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "ascent", "F");
+	ATSFontMetricsFc.descent = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "descent", "F");
+	ATSFontMetricsFc.leading = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "leading", "F");
+	ATSFontMetricsFc.avgAdvanceWidth = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "avgAdvanceWidth", "F");
+	ATSFontMetricsFc.maxAdvanceWidth = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "maxAdvanceWidth", "F");
+	ATSFontMetricsFc.minLeftSideBearing = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "minLeftSideBearing", "F");
+	ATSFontMetricsFc.minRightSideBearing = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "minRightSideBearing", "F");
+	ATSFontMetricsFc.stemWidth = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "stemWidth", "F");
+	ATSFontMetricsFc.stemHeight = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "stemHeight", "F");
+	ATSFontMetricsFc.capHeight = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "capHeight", "F");
+	ATSFontMetricsFc.xHeight = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "xHeight", "F");
+	ATSFontMetricsFc.italicAngle = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "italicAngle", "F");
+	ATSFontMetricsFc.underlinePosition = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "underlinePosition", "F");
+	ATSFontMetricsFc.underlineThickness = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "underlineThickness", "F");
+	ATSFontMetricsFc.cached = 1;
+}
+
+ATSFontMetrics *getATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct)
+{
+	if (!ATSFontMetricsFc.cached) cacheATSFontMetricsFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, ATSFontMetricsFc.version);
+	lpStruct->ascent = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.ascent);
+	lpStruct->descent = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.descent);
+	lpStruct->leading = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.leading);
+	lpStruct->avgAdvanceWidth = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.avgAdvanceWidth);
+	lpStruct->maxAdvanceWidth = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.maxAdvanceWidth);
+	lpStruct->minLeftSideBearing = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.minLeftSideBearing);
+	lpStruct->minRightSideBearing = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.minRightSideBearing);
+	lpStruct->stemWidth = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.stemWidth);
+	lpStruct->stemHeight = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.stemHeight);
+	lpStruct->capHeight = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.capHeight);
+	lpStruct->xHeight = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.xHeight);
+	lpStruct->italicAngle = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.italicAngle);
+	lpStruct->underlinePosition = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.underlinePosition);
+	lpStruct->underlineThickness = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.underlineThickness);
+	return lpStruct;
+}
+
+void setATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct)
+{
+	if (!ATSFontMetricsFc.cached) cacheATSFontMetricsFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ATSFontMetricsFc.version, (jint)lpStruct->version);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.ascent, (jfloat)lpStruct->ascent);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.descent, (jfloat)lpStruct->descent);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.leading, (jfloat)lpStruct->leading);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.avgAdvanceWidth, (jfloat)lpStruct->avgAdvanceWidth);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.maxAdvanceWidth, (jfloat)lpStruct->maxAdvanceWidth);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.minLeftSideBearing, (jfloat)lpStruct->minLeftSideBearing);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.minRightSideBearing, (jfloat)lpStruct->minRightSideBearing);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.stemWidth, (jfloat)lpStruct->stemWidth);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.stemHeight, (jfloat)lpStruct->stemHeight);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.capHeight, (jfloat)lpStruct->capHeight);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.xHeight, (jfloat)lpStruct->xHeight);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.italicAngle, (jfloat)lpStruct->italicAngle);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.underlinePosition, (jfloat)lpStruct->underlinePosition);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.underlineThickness, (jfloat)lpStruct->underlineThickness);
 }
 #endif
 
@@ -393,6 +466,64 @@ void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 }
 #endif
 
+#ifndef NO_CFRunLoopSourceContext
+typedef struct CFRunLoopSourceContext_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, info, retain, release, copyDescription, equal, hash, schedule, cancel, perform;
+} CFRunLoopSourceContext_FID_CACHE;
+
+CFRunLoopSourceContext_FID_CACHE CFRunLoopSourceContextFc;
+
+void cacheCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject)
+{
+	if (CFRunLoopSourceContextFc.cached) return;
+	CFRunLoopSourceContextFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CFRunLoopSourceContextFc.version = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "version", "I");
+	CFRunLoopSourceContextFc.info = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "info", "I");
+	CFRunLoopSourceContextFc.retain = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "retain", "I");
+	CFRunLoopSourceContextFc.release = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "release", "I");
+	CFRunLoopSourceContextFc.copyDescription = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "copyDescription", "I");
+	CFRunLoopSourceContextFc.equal = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "equal", "I");
+	CFRunLoopSourceContextFc.hash = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "hash", "I");
+	CFRunLoopSourceContextFc.schedule = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "schedule", "I");
+	CFRunLoopSourceContextFc.cancel = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "cancel", "I");
+	CFRunLoopSourceContextFc.perform = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "perform", "I");
+	CFRunLoopSourceContextFc.cached = 1;
+}
+
+CFRunLoopSourceContext *getCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct)
+{
+	if (!CFRunLoopSourceContextFc.cached) cacheCFRunLoopSourceContextFields(env, lpObject);
+	lpStruct->version = (CFIndex)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.version);
+	lpStruct->info = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.info);
+	lpStruct->retain = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.retain);
+	lpStruct->release = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.release);
+	lpStruct->copyDescription = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.copyDescription);
+	lpStruct->equal = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.equal);
+	lpStruct->hash = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.hash);
+	lpStruct->schedule = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.schedule);
+	lpStruct->cancel = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.cancel);
+	lpStruct->perform = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.perform);
+	return lpStruct;
+}
+
+void setCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct)
+{
+	if (!CFRunLoopSourceContextFc.cached) cacheCFRunLoopSourceContextFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.info, (jint)lpStruct->info);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.retain, (jint)lpStruct->retain);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.release, (jint)lpStruct->release);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.copyDescription, (jint)lpStruct->copyDescription);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.equal, (jint)lpStruct->equal);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.hash, (jint)lpStruct->hash);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.schedule, (jint)lpStruct->schedule);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.cancel, (jint)lpStruct->cancel);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.perform, (jint)lpStruct->perform);
+}
+#endif
+
 #ifndef NO_CGFunctionCallbacks
 typedef struct CGFunctionCallbacks_FID_CACHE {
 	int cached;
@@ -572,6 +703,40 @@ void setCGRectFields(JNIEnv *env, jobject lpObject, CGRect *lpStruct)
 	(*env)->SetFloatField(env, lpObject, CGRectFc.y, (jfloat)lpStruct->origin.y);
 	(*env)->SetFloatField(env, lpObject, CGRectFc.width, (jfloat)lpStruct->size.width);
 	(*env)->SetFloatField(env, lpObject, CGRectFc.height, (jfloat)lpStruct->size.height);
+}
+#endif
+
+#ifndef NO_CGSize
+typedef struct CGSize_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID width, height;
+} CGSize_FID_CACHE;
+
+CGSize_FID_CACHE CGSizeFc;
+
+void cacheCGSizeFields(JNIEnv *env, jobject lpObject)
+{
+	if (CGSizeFc.cached) return;
+	CGSizeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CGSizeFc.width = (*env)->GetFieldID(env, CGSizeFc.clazz, "width", "F");
+	CGSizeFc.height = (*env)->GetFieldID(env, CGSizeFc.clazz, "height", "F");
+	CGSizeFc.cached = 1;
+}
+
+CGSize *getCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
+{
+	if (!CGSizeFc.cached) cacheCGSizeFields(env, lpObject);
+	lpStruct->width = (*env)->GetFloatField(env, lpObject, CGSizeFc.width);
+	lpStruct->height = (*env)->GetFloatField(env, lpObject, CGSizeFc.height);
+	return lpStruct;
+}
+
+void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
+{
+	if (!CGSizeFc.cached) cacheCGSizeFields(env, lpObject);
+	(*env)->SetFloatField(env, lpObject, CGSizeFc.width, (jfloat)lpStruct->width);
+	(*env)->SetFloatField(env, lpObject, CGSizeFc.height, (jfloat)lpStruct->height);
 }
 #endif
 
@@ -964,6 +1129,49 @@ void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 }
 #endif
 
+#ifndef NO_DataBrowserAccessibilityItemInfo
+typedef struct DataBrowserAccessibilityItemInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, v0_container, v0_item, v0_columnProperty, v0_propertyPart;
+} DataBrowserAccessibilityItemInfo_FID_CACHE;
+
+DataBrowserAccessibilityItemInfo_FID_CACHE DataBrowserAccessibilityItemInfoFc;
+
+void cacheDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (DataBrowserAccessibilityItemInfoFc.cached) return;
+	DataBrowserAccessibilityItemInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DataBrowserAccessibilityItemInfoFc.version = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "version", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_container = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_container", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_item = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_item", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_columnProperty = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_columnProperty", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_propertyPart = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_propertyPart", "I");
+	DataBrowserAccessibilityItemInfoFc.cached = 1;
+}
+
+DataBrowserAccessibilityItemInfo *getDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct)
+{
+	if (!DataBrowserAccessibilityItemInfoFc.cached) cacheDataBrowserAccessibilityItemInfoFields(env, lpObject);
+	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.version);
+	lpStruct->u.v0.container = (DataBrowserItemID)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_container);
+	lpStruct->u.v0.item = (DataBrowserItemID)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_item);
+	lpStruct->u.v0.columnProperty = (DataBrowserPropertyID)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_columnProperty);
+	lpStruct->u.v0.propertyPart = (DataBrowserPropertyPart)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_propertyPart);
+	return lpStruct;
+}
+
+void setDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct)
+{
+	if (!DataBrowserAccessibilityItemInfoFc.cached) cacheDataBrowserAccessibilityItemInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_container, (jint)lpStruct->u.v0.container);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_item, (jint)lpStruct->u.v0.item);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_columnProperty, (jint)lpStruct->u.v0.columnProperty);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_propertyPart, (jint)lpStruct->u.v0.propertyPart);
+}
+#endif
+
 #ifndef NO_DataBrowserCallbacks
 typedef struct DataBrowserCallbacks_FID_CACHE {
 	int cached;
@@ -1308,101 +1516,6 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
 }
 #endif
 
-#ifndef NO_FontInfo
-typedef struct FontInfo_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID ascent, descent, widMax, leading;
-} FontInfo_FID_CACHE;
-
-FontInfo_FID_CACHE FontInfoFc;
-
-void cacheFontInfoFields(JNIEnv *env, jobject lpObject)
-{
-	if (FontInfoFc.cached) return;
-	FontInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	FontInfoFc.ascent = (*env)->GetFieldID(env, FontInfoFc.clazz, "ascent", "S");
-	FontInfoFc.descent = (*env)->GetFieldID(env, FontInfoFc.clazz, "descent", "S");
-	FontInfoFc.widMax = (*env)->GetFieldID(env, FontInfoFc.clazz, "widMax", "S");
-	FontInfoFc.leading = (*env)->GetFieldID(env, FontInfoFc.clazz, "leading", "S");
-	FontInfoFc.cached = 1;
-}
-
-FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
-{
-	if (!FontInfoFc.cached) cacheFontInfoFields(env, lpObject);
-	lpStruct->ascent = (*env)->GetShortField(env, lpObject, FontInfoFc.ascent);
-	lpStruct->descent = (*env)->GetShortField(env, lpObject, FontInfoFc.descent);
-	lpStruct->widMax = (*env)->GetShortField(env, lpObject, FontInfoFc.widMax);
-	lpStruct->leading = (*env)->GetShortField(env, lpObject, FontInfoFc.leading);
-	return lpStruct;
-}
-
-void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
-{
-	if (!FontInfoFc.cached) cacheFontInfoFields(env, lpObject);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.ascent, (jshort)lpStruct->ascent);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.descent, (jshort)lpStruct->descent);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.widMax, (jshort)lpStruct->widMax);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.leading, (jshort)lpStruct->leading);
-}
-#endif
-
-#ifndef NO_FontSelectionQDStyle
-typedef struct FontSelectionQDStyle_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID version, instance_fontFamily, instance_fontStyle, size, hasColor, reserved, color_red, color_green, color_blue;
-} FontSelectionQDStyle_FID_CACHE;
-
-FontSelectionQDStyle_FID_CACHE FontSelectionQDStyleFc;
-
-void cacheFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject)
-{
-	if (FontSelectionQDStyleFc.cached) return;
-	FontSelectionQDStyleFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	FontSelectionQDStyleFc.version = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "version", "I");
-	FontSelectionQDStyleFc.instance_fontFamily = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "instance_fontFamily", "S");
-	FontSelectionQDStyleFc.instance_fontStyle = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "instance_fontStyle", "S");
-	FontSelectionQDStyleFc.size = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "size", "S");
-	FontSelectionQDStyleFc.hasColor = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "hasColor", "Z");
-	FontSelectionQDStyleFc.reserved = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "reserved", "B");
-	FontSelectionQDStyleFc.color_red = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_red", "S");
-	FontSelectionQDStyleFc.color_green = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_green", "S");
-	FontSelectionQDStyleFc.color_blue = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_blue", "S");
-	FontSelectionQDStyleFc.cached = 1;
-}
-
-FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
-{
-	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFields(env, lpObject);
-	lpStruct->version = (*env)->GetIntField(env, lpObject, FontSelectionQDStyleFc.version);
-	lpStruct->instance.fontFamily = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily);
-	lpStruct->instance.fontStyle = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle);
-	lpStruct->size = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.size);
-	lpStruct->hasColor = (*env)->GetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor);
-	lpStruct->reserved = (*env)->GetByteField(env, lpObject, FontSelectionQDStyleFc.reserved);
-	lpStruct->color.red = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_red);
-	lpStruct->color.green = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_green);
-	lpStruct->color.blue = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue);
-	return lpStruct;
-}
-
-void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
-{
-	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, FontSelectionQDStyleFc.version, (jint)lpStruct->version);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily, (jshort)lpStruct->instance.fontFamily);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle, (jshort)lpStruct->instance.fontStyle);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.size, (jshort)lpStruct->size);
-	(*env)->SetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor, (jboolean)lpStruct->hasColor);
-	(*env)->SetByteField(env, lpObject, FontSelectionQDStyleFc.reserved, (jbyte)lpStruct->reserved);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_red, (jshort)lpStruct->color.red);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_green, (jshort)lpStruct->color.green);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue, (jshort)lpStruct->color.blue);
-}
-#endif
-
 #ifndef NO_GDevice
 typedef struct GDevice_FID_CACHE {
 	int cached;
@@ -1494,6 +1607,144 @@ void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
 }
 #endif
 
+#ifndef NO_HIAxisPosition
+typedef struct HIAxisPosition_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID toView, kind, offset;
+} HIAxisPosition_FID_CACHE;
+
+HIAxisPosition_FID_CACHE HIAxisPositionFc;
+
+void cacheHIAxisPositionFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIAxisPositionFc.cached) return;
+	HIAxisPositionFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIAxisPositionFc.toView = (*env)->GetFieldID(env, HIAxisPositionFc.clazz, "toView", "I");
+	HIAxisPositionFc.kind = (*env)->GetFieldID(env, HIAxisPositionFc.clazz, "kind", "S");
+	HIAxisPositionFc.offset = (*env)->GetFieldID(env, HIAxisPositionFc.clazz, "offset", "F");
+	HIAxisPositionFc.cached = 1;
+}
+
+HIAxisPosition *getHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct)
+{
+	if (!HIAxisPositionFc.cached) cacheHIAxisPositionFields(env, lpObject);
+	lpStruct->toView = (HIViewRef)(*env)->GetIntField(env, lpObject, HIAxisPositionFc.toView);
+	lpStruct->kind = (*env)->GetShortField(env, lpObject, HIAxisPositionFc.kind);
+	lpStruct->offset = (*env)->GetFloatField(env, lpObject, HIAxisPositionFc.offset);
+	return lpStruct;
+}
+
+void setHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct)
+{
+	if (!HIAxisPositionFc.cached) cacheHIAxisPositionFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIAxisPositionFc.toView, (jint)lpStruct->toView);
+	(*env)->SetShortField(env, lpObject, HIAxisPositionFc.kind, (jshort)lpStruct->kind);
+	(*env)->SetFloatField(env, lpObject, HIAxisPositionFc.offset, (jfloat)lpStruct->offset);
+}
+#endif
+
+#ifndef NO_HIAxisScale
+typedef struct HIAxisScale_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID toView, kind, ratio;
+} HIAxisScale_FID_CACHE;
+
+HIAxisScale_FID_CACHE HIAxisScaleFc;
+
+void cacheHIAxisScaleFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIAxisScaleFc.cached) return;
+	HIAxisScaleFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIAxisScaleFc.toView = (*env)->GetFieldID(env, HIAxisScaleFc.clazz, "toView", "I");
+	HIAxisScaleFc.kind = (*env)->GetFieldID(env, HIAxisScaleFc.clazz, "kind", "S");
+	HIAxisScaleFc.ratio = (*env)->GetFieldID(env, HIAxisScaleFc.clazz, "ratio", "F");
+	HIAxisScaleFc.cached = 1;
+}
+
+HIAxisScale *getHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct)
+{
+	if (!HIAxisScaleFc.cached) cacheHIAxisScaleFields(env, lpObject);
+	lpStruct->toView = (HIViewRef)(*env)->GetIntField(env, lpObject, HIAxisScaleFc.toView);
+	lpStruct->kind = (*env)->GetShortField(env, lpObject, HIAxisScaleFc.kind);
+	lpStruct->ratio = (*env)->GetFloatField(env, lpObject, HIAxisScaleFc.ratio);
+	return lpStruct;
+}
+
+void setHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct)
+{
+	if (!HIAxisScaleFc.cached) cacheHIAxisScaleFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIAxisScaleFc.toView, (jint)lpStruct->toView);
+	(*env)->SetShortField(env, lpObject, HIAxisScaleFc.kind, (jshort)lpStruct->kind);
+	(*env)->SetFloatField(env, lpObject, HIAxisScaleFc.ratio, (jfloat)lpStruct->ratio);
+}
+#endif
+
+#ifndef NO_HIBinding
+typedef struct HIBinding_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID top, left, bottom, right;
+} HIBinding_FID_CACHE;
+
+HIBinding_FID_CACHE HIBindingFc;
+
+void cacheHIBindingFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIBindingFc.cached) return;
+	HIBindingFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIBindingFc.top = (*env)->GetFieldID(env, HIBindingFc.clazz, "top", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.left = (*env)->GetFieldID(env, HIBindingFc.clazz, "left", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.bottom = (*env)->GetFieldID(env, HIBindingFc.clazz, "bottom", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.right = (*env)->GetFieldID(env, HIBindingFc.clazz, "right", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.cached = 1;
+}
+
+HIBinding *getHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct)
+{
+	if (!HIBindingFc.cached) cacheHIBindingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.top);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->top);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.left);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->left);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.bottom);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->bottom);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.right);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->right);
+	}
+	return lpStruct;
+}
+
+void setHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct)
+{
+	if (!HIBindingFc.cached) cacheHIBindingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.top);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->top);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.left);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->left);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.bottom);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->bottom);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.right);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->right);
+	}
+}
+#endif
+
 #ifndef NO_HICommand
 typedef struct HICommand_FID_CACHE {
 	int cached;
@@ -1534,6 +1785,156 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
 }
 #endif
 
+#ifndef NO_HILayoutInfo
+typedef struct HILayoutInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, binding, scale, position;
+} HILayoutInfo_FID_CACHE;
+
+HILayoutInfo_FID_CACHE HILayoutInfoFc;
+
+void cacheHILayoutInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HILayoutInfoFc.cached) return;
+	HILayoutInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HILayoutInfoFc.version = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "version", "I");
+	HILayoutInfoFc.binding = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "binding", "Lorg/eclipse/swt/internal/carbon/HIBinding;");
+	HILayoutInfoFc.scale = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "scale", "Lorg/eclipse/swt/internal/carbon/HIScaling;");
+	HILayoutInfoFc.position = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "position", "Lorg/eclipse/swt/internal/carbon/HIPositioning;");
+	HILayoutInfoFc.cached = 1;
+}
+
+HILayoutInfo *getHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct)
+{
+	if (!HILayoutInfoFc.cached) cacheHILayoutInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HILayoutInfoFc.version);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.binding);
+	if (lpObject1 != NULL) getHIBindingFields(env, lpObject1, &lpStruct->binding);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.scale);
+	if (lpObject1 != NULL) getHIScalingFields(env, lpObject1, &lpStruct->scale);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.position);
+	if (lpObject1 != NULL) getHIPositioningFields(env, lpObject1, &lpStruct->position);
+	}
+	return lpStruct;
+}
+
+void setHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct)
+{
+	if (!HILayoutInfoFc.cached) cacheHILayoutInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HILayoutInfoFc.version, (jint)lpStruct->version);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.binding);
+	if (lpObject1 != NULL) setHIBindingFields(env, lpObject1, &lpStruct->binding);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.scale);
+	if (lpObject1 != NULL) setHIScalingFields(env, lpObject1, &lpStruct->scale);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.position);
+	if (lpObject1 != NULL) setHIPositioningFields(env, lpObject1, &lpStruct->position);
+	}
+}
+#endif
+
+#ifndef NO_HIPositioning
+typedef struct HIPositioning_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y;
+} HIPositioning_FID_CACHE;
+
+HIPositioning_FID_CACHE HIPositioningFc;
+
+void cacheHIPositioningFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIPositioningFc.cached) return;
+	HIPositioningFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIPositioningFc.x = (*env)->GetFieldID(env, HIPositioningFc.clazz, "x", "Lorg/eclipse/swt/internal/carbon/HIAxisPosition;");
+	HIPositioningFc.y = (*env)->GetFieldID(env, HIPositioningFc.clazz, "y", "Lorg/eclipse/swt/internal/carbon/HIAxisPosition;");
+	HIPositioningFc.cached = 1;
+}
+
+HIPositioning *getHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct)
+{
+	if (!HIPositioningFc.cached) cacheHIPositioningFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.x);
+	if (lpObject1 != NULL) getHIAxisPositionFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.y);
+	if (lpObject1 != NULL) getHIAxisPositionFields(env, lpObject1, &lpStruct->y);
+	}
+	return lpStruct;
+}
+
+void setHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct)
+{
+	if (!HIPositioningFc.cached) cacheHIPositioningFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.x);
+	if (lpObject1 != NULL) setHIAxisPositionFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.y);
+	if (lpObject1 != NULL) setHIAxisPositionFields(env, lpObject1, &lpStruct->y);
+	}
+}
+#endif
+
+#ifndef NO_HIScaling
+typedef struct HIScaling_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y;
+} HIScaling_FID_CACHE;
+
+HIScaling_FID_CACHE HIScalingFc;
+
+void cacheHIScalingFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIScalingFc.cached) return;
+	HIScalingFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIScalingFc.x = (*env)->GetFieldID(env, HIScalingFc.clazz, "x", "Lorg/eclipse/swt/internal/carbon/HIAxisScale;");
+	HIScalingFc.y = (*env)->GetFieldID(env, HIScalingFc.clazz, "y", "Lorg/eclipse/swt/internal/carbon/HIAxisScale;");
+	HIScalingFc.cached = 1;
+}
+
+HIScaling *getHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct)
+{
+	if (!HIScalingFc.cached) cacheHIScalingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.x);
+	if (lpObject1 != NULL) getHIAxisScaleFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.y);
+	if (lpObject1 != NULL) getHIAxisScaleFields(env, lpObject1, &lpStruct->y);
+	}
+	return lpStruct;
+}
+
+void setHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct)
+{
+	if (!HIScalingFc.cached) cacheHIScalingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.x);
+	if (lpObject1 != NULL) setHIAxisScaleFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.y);
+	if (lpObject1 != NULL) setHIAxisScaleFields(env, lpObject1, &lpStruct->y);
+	}
+}
+#endif
+
 #ifndef NO_HIScrollBarTrackInfo
 typedef struct HIScrollBarTrackInfo_FID_CACHE {
 	int cached;
@@ -1571,6 +1972,43 @@ void setHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTra
 	(*env)->SetByteField(env, lpObject, HIScrollBarTrackInfoFc.enableState, (jbyte)lpStruct->enableState);
 	(*env)->SetByteField(env, lpObject, HIScrollBarTrackInfoFc.pressState, (jbyte)lpStruct->pressState);
 	(*env)->SetFloatField(env, lpObject, HIScrollBarTrackInfoFc.viewsize, (jfloat)lpStruct->viewsize);
+}
+#endif
+
+#ifndef NO_HISideBinding
+typedef struct HISideBinding_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID toView, kind, offset;
+} HISideBinding_FID_CACHE;
+
+HISideBinding_FID_CACHE HISideBindingFc;
+
+void cacheHISideBindingFields(JNIEnv *env, jobject lpObject)
+{
+	if (HISideBindingFc.cached) return;
+	HISideBindingFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HISideBindingFc.toView = (*env)->GetFieldID(env, HISideBindingFc.clazz, "toView", "I");
+	HISideBindingFc.kind = (*env)->GetFieldID(env, HISideBindingFc.clazz, "kind", "S");
+	HISideBindingFc.offset = (*env)->GetFieldID(env, HISideBindingFc.clazz, "offset", "F");
+	HISideBindingFc.cached = 1;
+}
+
+HISideBinding *getHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct)
+{
+	if (!HISideBindingFc.cached) cacheHISideBindingFields(env, lpObject);
+	lpStruct->toView = (HIViewRef)(*env)->GetIntField(env, lpObject, HISideBindingFc.toView);
+	lpStruct->kind = (*env)->GetShortField(env, lpObject, HISideBindingFc.kind);
+	lpStruct->offset = (*env)->GetFloatField(env, lpObject, HISideBindingFc.offset);
+	return lpStruct;
+}
+
+void setHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct)
+{
+	if (!HISideBindingFc.cached) cacheHISideBindingFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HISideBindingFc.toView, (jint)lpStruct->toView);
+	(*env)->SetShortField(env, lpObject, HISideBindingFc.kind, (jshort)lpStruct->kind);
+	(*env)->SetFloatField(env, lpObject, HISideBindingFc.offset, (jfloat)lpStruct->offset);
 }
 #endif
 
@@ -1935,7 +2373,7 @@ void setHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeSep
 typedef struct HIThemeTabDrawInfo_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID version, style, direction, size, adornment;
+	jfieldID version, style, direction, size, adornment, kind, position;
 } HIThemeTabDrawInfo_FID_CACHE;
 
 HIThemeTabDrawInfo_FID_CACHE HIThemeTabDrawInfoFc;
@@ -1949,6 +2387,8 @@ void cacheHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject)
 	HIThemeTabDrawInfoFc.direction = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "direction", "S");
 	HIThemeTabDrawInfoFc.size = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "size", "I");
 	HIThemeTabDrawInfoFc.adornment = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "adornment", "I");
+	HIThemeTabDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "kind", "I");
+	HIThemeTabDrawInfoFc.position = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "position", "I");
 	HIThemeTabDrawInfoFc.cached = 1;
 }
 
@@ -1960,6 +2400,12 @@ HIThemeTabDrawInfo *getHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, H
 	lpStruct->direction = (*env)->GetShortField(env, lpObject, HIThemeTabDrawInfoFc.direction);
 	lpStruct->size = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.size);
 	lpStruct->adornment = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.adornment);
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.kind);
+#endif
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	lpStruct->position = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.position);
+#endif
 	return lpStruct;
 }
 
@@ -1971,6 +2417,12 @@ void setHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawIn
 	(*env)->SetShortField(env, lpObject, HIThemeTabDrawInfoFc.direction, (jshort)lpStruct->direction);
 	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.size, (jint)lpStruct->size);
 	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.adornment, (jint)lpStruct->adornment);
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.kind, (jint)lpStruct->kind);
+#endif
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.position, (jint)lpStruct->position);
+#endif
 }
 #endif
 
@@ -1978,7 +2430,7 @@ void setHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawIn
 typedef struct HIThemeTabPaneDrawInfo_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID version, state, direction, size;
+	jfieldID version, state, direction, size, kind, adornment;
 } HIThemeTabPaneDrawInfo_FID_CACHE;
 
 HIThemeTabPaneDrawInfo_FID_CACHE HIThemeTabPaneDrawInfoFc;
@@ -1991,6 +2443,8 @@ void cacheHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject)
 	HIThemeTabPaneDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "state", "I");
 	HIThemeTabPaneDrawInfoFc.direction = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "direction", "S");
 	HIThemeTabPaneDrawInfoFc.size = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "size", "I");
+	HIThemeTabPaneDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "kind", "I");
+	HIThemeTabPaneDrawInfoFc.adornment = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "adornment", "I");
 	HIThemeTabPaneDrawInfoFc.cached = 1;
 }
 
@@ -2001,6 +2455,12 @@ HIThemeTabPaneDrawInfo *getHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpO
 	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.state);
 	lpStruct->direction = (*env)->GetShortField(env, lpObject, HIThemeTabPaneDrawInfoFc.direction);
 	lpStruct->size = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.size);
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.kind);
+#endif
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	lpStruct->adornment = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.adornment);
+#endif
 	return lpStruct;
 }
 
@@ -2011,6 +2471,12 @@ void setHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabPa
 	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.state, (jint)lpStruct->state);
 	(*env)->SetShortField(env, lpObject, HIThemeTabPaneDrawInfoFc.direction, (jshort)lpStruct->direction);
 	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.size, (jint)lpStruct->size);
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.kind, (jint)lpStruct->kind);
+#endif
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.adornment, (jint)lpStruct->adornment);
+#endif
 }
 #endif
 
@@ -2221,6 +2687,125 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 }
 #endif
 
+#ifndef NO_LSApplicationParameters
+typedef struct LSApplicationParameters_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, flags, application, asyncLaunchRefCon, environment, argv, initialEvent;
+} LSApplicationParameters_FID_CACHE;
+
+LSApplicationParameters_FID_CACHE LSApplicationParametersFc;
+
+void cacheLSApplicationParametersFields(JNIEnv *env, jobject lpObject)
+{
+	if (LSApplicationParametersFc.cached) return;
+	LSApplicationParametersFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	LSApplicationParametersFc.version = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "version", "I");
+	LSApplicationParametersFc.flags = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "flags", "I");
+	LSApplicationParametersFc.application = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "application", "I");
+	LSApplicationParametersFc.asyncLaunchRefCon = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "asyncLaunchRefCon", "I");
+	LSApplicationParametersFc.environment = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "environment", "I");
+	LSApplicationParametersFc.argv = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "argv", "I");
+	LSApplicationParametersFc.initialEvent = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "initialEvent", "I");
+	LSApplicationParametersFc.cached = 1;
+}
+
+LSApplicationParameters *getLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct)
+{
+	if (!LSApplicationParametersFc.cached) cacheLSApplicationParametersFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, LSApplicationParametersFc.version);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, LSApplicationParametersFc.flags);
+	lpStruct->application = (const FSRef *)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.application);
+	lpStruct->asyncLaunchRefCon = (void *)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.asyncLaunchRefCon);
+	lpStruct->environment = (CFDictionaryRef)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.environment);
+	lpStruct->argv = (CFArrayRef)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.argv);
+	lpStruct->initialEvent = (AppleEvent *)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.initialEvent);
+	return lpStruct;
+}
+
+void setLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct)
+{
+	if (!LSApplicationParametersFc.cached) cacheLSApplicationParametersFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.flags, (jint)lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.application, (jint)lpStruct->application);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.asyncLaunchRefCon, (jint)lpStruct->asyncLaunchRefCon);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.environment, (jint)lpStruct->environment);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.argv, (jint)lpStruct->argv);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.initialEvent, (jint)lpStruct->initialEvent);
+}
+#endif
+
+#ifndef NO_LongDateRec
+typedef struct LongDateRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID era, year, month, day, hour, minute, second, dayOfWeek, dayOfYear, weekOfYear, pm, res1, res2, res3;
+} LongDateRec_FID_CACHE;
+
+LongDateRec_FID_CACHE LongDateRecFc;
+
+void cacheLongDateRecFields(JNIEnv *env, jobject lpObject)
+{
+	if (LongDateRecFc.cached) return;
+	LongDateRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	LongDateRecFc.era = (*env)->GetFieldID(env, LongDateRecFc.clazz, "era", "S");
+	LongDateRecFc.year = (*env)->GetFieldID(env, LongDateRecFc.clazz, "year", "S");
+	LongDateRecFc.month = (*env)->GetFieldID(env, LongDateRecFc.clazz, "month", "S");
+	LongDateRecFc.day = (*env)->GetFieldID(env, LongDateRecFc.clazz, "day", "S");
+	LongDateRecFc.hour = (*env)->GetFieldID(env, LongDateRecFc.clazz, "hour", "S");
+	LongDateRecFc.minute = (*env)->GetFieldID(env, LongDateRecFc.clazz, "minute", "S");
+	LongDateRecFc.second = (*env)->GetFieldID(env, LongDateRecFc.clazz, "second", "S");
+	LongDateRecFc.dayOfWeek = (*env)->GetFieldID(env, LongDateRecFc.clazz, "dayOfWeek", "S");
+	LongDateRecFc.dayOfYear = (*env)->GetFieldID(env, LongDateRecFc.clazz, "dayOfYear", "S");
+	LongDateRecFc.weekOfYear = (*env)->GetFieldID(env, LongDateRecFc.clazz, "weekOfYear", "S");
+	LongDateRecFc.pm = (*env)->GetFieldID(env, LongDateRecFc.clazz, "pm", "S");
+	LongDateRecFc.res1 = (*env)->GetFieldID(env, LongDateRecFc.clazz, "res1", "S");
+	LongDateRecFc.res2 = (*env)->GetFieldID(env, LongDateRecFc.clazz, "res2", "S");
+	LongDateRecFc.res3 = (*env)->GetFieldID(env, LongDateRecFc.clazz, "res3", "S");
+	LongDateRecFc.cached = 1;
+}
+
+LongDateRec *getLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct)
+{
+	if (!LongDateRecFc.cached) cacheLongDateRecFields(env, lpObject);
+	lpStruct->ld.era = (*env)->GetShortField(env, lpObject, LongDateRecFc.era);
+	lpStruct->ld.year = (*env)->GetShortField(env, lpObject, LongDateRecFc.year);
+	lpStruct->ld.month = (*env)->GetShortField(env, lpObject, LongDateRecFc.month);
+	lpStruct->ld.day = (*env)->GetShortField(env, lpObject, LongDateRecFc.day);
+	lpStruct->ld.hour = (*env)->GetShortField(env, lpObject, LongDateRecFc.hour);
+	lpStruct->ld.minute = (*env)->GetShortField(env, lpObject, LongDateRecFc.minute);
+	lpStruct->ld.second = (*env)->GetShortField(env, lpObject, LongDateRecFc.second);
+	lpStruct->ld.dayOfWeek = (*env)->GetShortField(env, lpObject, LongDateRecFc.dayOfWeek);
+	lpStruct->ld.dayOfYear = (*env)->GetShortField(env, lpObject, LongDateRecFc.dayOfYear);
+	lpStruct->ld.weekOfYear = (*env)->GetShortField(env, lpObject, LongDateRecFc.weekOfYear);
+	lpStruct->ld.pm = (*env)->GetShortField(env, lpObject, LongDateRecFc.pm);
+	lpStruct->ld.res1 = (*env)->GetShortField(env, lpObject, LongDateRecFc.res1);
+	lpStruct->ld.res2 = (*env)->GetShortField(env, lpObject, LongDateRecFc.res2);
+	lpStruct->ld.res3 = (*env)->GetShortField(env, lpObject, LongDateRecFc.res3);
+	return lpStruct;
+}
+
+void setLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct)
+{
+	if (!LongDateRecFc.cached) cacheLongDateRecFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.era, (jshort)lpStruct->ld.era);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.year, (jshort)lpStruct->ld.year);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.month, (jshort)lpStruct->ld.month);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.day, (jshort)lpStruct->ld.day);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.hour, (jshort)lpStruct->ld.hour);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.minute, (jshort)lpStruct->ld.minute);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.second, (jshort)lpStruct->ld.second);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.dayOfWeek, (jshort)lpStruct->ld.dayOfWeek);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.dayOfYear, (jshort)lpStruct->ld.dayOfYear);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.weekOfYear, (jshort)lpStruct->ld.weekOfYear);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.pm, (jshort)lpStruct->ld.pm);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.res1, (jshort)lpStruct->ld.res1);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.res2, (jshort)lpStruct->ld.res2);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.res3, (jshort)lpStruct->ld.res3);
+}
+#endif
+
 #ifndef NO_MenuTrackingData
 typedef struct MenuTrackingData_FID_CACHE {
 	int cached;
@@ -2273,6 +2858,82 @@ void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *
 	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.right, (jshort)lpStruct->itemRect.right);
 	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuTop, (jint)lpStruct->virtualMenuTop);
 	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuBottom, (jint)lpStruct->virtualMenuBottom);
+}
+#endif
+
+#ifndef NO_NavCBRec
+typedef struct NavCBRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, context, window, customRect, previewRect, eventData, userAction, reserved;
+} NavCBRec_FID_CACHE;
+
+NavCBRec_FID_CACHE NavCBRecFc;
+
+void cacheNavCBRecFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavCBRecFc.cached) return;
+	NavCBRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavCBRecFc.version = (*env)->GetFieldID(env, NavCBRecFc.clazz, "version", "S");
+	NavCBRecFc.context = (*env)->GetFieldID(env, NavCBRecFc.clazz, "context", "I");
+	NavCBRecFc.window = (*env)->GetFieldID(env, NavCBRecFc.clazz, "window", "I");
+	NavCBRecFc.customRect = (*env)->GetFieldID(env, NavCBRecFc.clazz, "customRect", "Lorg/eclipse/swt/internal/carbon/Rect;");
+	NavCBRecFc.previewRect = (*env)->GetFieldID(env, NavCBRecFc.clazz, "previewRect", "Lorg/eclipse/swt/internal/carbon/Rect;");
+	NavCBRecFc.eventData = (*env)->GetFieldID(env, NavCBRecFc.clazz, "eventData", "Lorg/eclipse/swt/internal/carbon/NavEventData;");
+	NavCBRecFc.userAction = (*env)->GetFieldID(env, NavCBRecFc.clazz, "userAction", "I");
+	NavCBRecFc.reserved = (*env)->GetFieldID(env, NavCBRecFc.clazz, "reserved", "[B");
+	NavCBRecFc.cached = 1;
+}
+
+NavCBRec *getNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct)
+{
+	if (!NavCBRecFc.cached) cacheNavCBRecFields(env, lpObject);
+	lpStruct->version = (*env)->GetShortField(env, lpObject, NavCBRecFc.version);
+	lpStruct->context = (NavDialogRef)(*env)->GetIntField(env, lpObject, NavCBRecFc.context);
+	lpStruct->window = (WindowRef)(*env)->GetIntField(env, lpObject, NavCBRecFc.window);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.customRect);
+	if (lpObject1 != NULL) getRectFields(env, lpObject1, &lpStruct->customRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.previewRect);
+	if (lpObject1 != NULL) getRectFields(env, lpObject1, &lpStruct->previewRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.eventData);
+	if (lpObject1 != NULL) getNavEventDataFields(env, lpObject1, &lpStruct->eventData);
+	}
+	lpStruct->userAction = (NavUserAction)(*env)->GetIntField(env, lpObject, NavCBRecFc.userAction);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavCBRecFc.reserved);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
+	return lpStruct;
+}
+
+void setNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct)
+{
+	if (!NavCBRecFc.cached) cacheNavCBRecFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, NavCBRecFc.version, (jshort)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, NavCBRecFc.context, (jint)lpStruct->context);
+	(*env)->SetIntField(env, lpObject, NavCBRecFc.window, (jint)lpStruct->window);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.customRect);
+	if (lpObject1 != NULL) setRectFields(env, lpObject1, &lpStruct->customRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.previewRect);
+	if (lpObject1 != NULL) setRectFields(env, lpObject1, &lpStruct->previewRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.eventData);
+	if (lpObject1 != NULL) setNavEventDataFields(env, lpObject1, &lpStruct->eventData);
+	}
+	(*env)->SetIntField(env, lpObject, NavCBRecFc.userAction, (jint)lpStruct->userAction);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavCBRecFc.reserved);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
 }
 #endif
 
@@ -2343,6 +3004,178 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.popupExtension, (jint)lpStruct->popupExtension);
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.modality, (jint)lpStruct->modality);
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.parentWindow, (jint)lpStruct->parentWindow);
+}
+#endif
+
+#ifndef NO_NavEventData
+typedef struct NavEventData_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID eventDataParms, itemHit;
+} NavEventData_FID_CACHE;
+
+NavEventData_FID_CACHE NavEventDataFc;
+
+void cacheNavEventDataFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavEventDataFc.cached) return;
+	NavEventDataFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavEventDataFc.eventDataParms = (*env)->GetFieldID(env, NavEventDataFc.clazz, "eventDataParms", "Lorg/eclipse/swt/internal/carbon/NavEventDataInfo;");
+	NavEventDataFc.itemHit = (*env)->GetFieldID(env, NavEventDataFc.clazz, "itemHit", "S");
+	NavEventDataFc.cached = 1;
+}
+
+NavEventData *getNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct)
+{
+	if (!NavEventDataFc.cached) cacheNavEventDataFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavEventDataFc.eventDataParms);
+	if (lpObject1 != NULL) getNavEventDataInfoFields(env, lpObject1, &lpStruct->eventDataParms);
+	}
+	lpStruct->itemHit = (*env)->GetShortField(env, lpObject, NavEventDataFc.itemHit);
+	return lpStruct;
+}
+
+void setNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct)
+{
+	if (!NavEventDataFc.cached) cacheNavEventDataFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavEventDataFc.eventDataParms);
+	if (lpObject1 != NULL) setNavEventDataInfoFields(env, lpObject1, &lpStruct->eventDataParms);
+	}
+	(*env)->SetShortField(env, lpObject, NavEventDataFc.itemHit, (jshort)lpStruct->itemHit);
+}
+#endif
+
+#ifndef NO_NavEventDataInfo
+typedef struct NavEventDataInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID event, param;
+} NavEventDataInfo_FID_CACHE;
+
+NavEventDataInfo_FID_CACHE NavEventDataInfoFc;
+
+void cacheNavEventDataInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavEventDataInfoFc.cached) return;
+	NavEventDataInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavEventDataInfoFc.event = (*env)->GetFieldID(env, NavEventDataInfoFc.clazz, "event", "I");
+	NavEventDataInfoFc.param = (*env)->GetFieldID(env, NavEventDataInfoFc.clazz, "param", "I");
+	NavEventDataInfoFc.cached = 1;
+}
+
+NavEventDataInfo *getNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct)
+{
+	if (!NavEventDataInfoFc.cached) cacheNavEventDataInfoFields(env, lpObject);
+	lpStruct->event = (EventRecord *)(*env)->GetIntField(env, lpObject, NavEventDataInfoFc.event);
+	lpStruct->param = (void *)(*env)->GetIntField(env, lpObject, NavEventDataInfoFc.param);
+	return lpStruct;
+}
+
+void setNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct)
+{
+	if (!NavEventDataInfoFc.cached) cacheNavEventDataInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NavEventDataInfoFc.event, (jint)lpStruct->event);
+	(*env)->SetIntField(env, lpObject, NavEventDataInfoFc.param, (jint)lpStruct->param);
+}
+#endif
+
+#ifndef NO_NavFileOrFolderInfo
+typedef struct NavFileOrFolderInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, isFolder, visible, creationDate, modificationDate;
+} NavFileOrFolderInfo_FID_CACHE;
+
+NavFileOrFolderInfo_FID_CACHE NavFileOrFolderInfoFc;
+
+void cacheNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavFileOrFolderInfoFc.cached) return;
+	NavFileOrFolderInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavFileOrFolderInfoFc.version = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "version", "S");
+	NavFileOrFolderInfoFc.isFolder = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "isFolder", "Z");
+	NavFileOrFolderInfoFc.visible = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "visible", "Z");
+	NavFileOrFolderInfoFc.creationDate = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "creationDate", "I");
+	NavFileOrFolderInfoFc.modificationDate = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "modificationDate", "I");
+	NavFileOrFolderInfoFc.cached = 1;
+}
+
+NavFileOrFolderInfo *getNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct)
+{
+	if (!NavFileOrFolderInfoFc.cached) cacheNavFileOrFolderInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetShortField(env, lpObject, NavFileOrFolderInfoFc.version);
+	lpStruct->isFolder = (*env)->GetBooleanField(env, lpObject, NavFileOrFolderInfoFc.isFolder);
+	lpStruct->visible = (*env)->GetBooleanField(env, lpObject, NavFileOrFolderInfoFc.visible);
+	lpStruct->creationDate = (*env)->GetIntField(env, lpObject, NavFileOrFolderInfoFc.creationDate);
+	lpStruct->modificationDate = (*env)->GetIntField(env, lpObject, NavFileOrFolderInfoFc.modificationDate);
+	return lpStruct;
+}
+
+void setNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct)
+{
+	if (!NavFileOrFolderInfoFc.cached) cacheNavFileOrFolderInfoFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, NavFileOrFolderInfoFc.version, (jshort)lpStruct->version);
+	(*env)->SetBooleanField(env, lpObject, NavFileOrFolderInfoFc.isFolder, (jboolean)lpStruct->isFolder);
+	(*env)->SetBooleanField(env, lpObject, NavFileOrFolderInfoFc.visible, (jboolean)lpStruct->visible);
+	(*env)->SetIntField(env, lpObject, NavFileOrFolderInfoFc.creationDate, (jint)lpStruct->creationDate);
+	(*env)->SetIntField(env, lpObject, NavFileOrFolderInfoFc.modificationDate, (jint)lpStruct->modificationDate);
+}
+#endif
+
+#ifndef NO_NavMenuItemSpec
+typedef struct NavMenuItemSpec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, menuCreator, menuType, menuItemName, reserved;
+} NavMenuItemSpec_FID_CACHE;
+
+NavMenuItemSpec_FID_CACHE NavMenuItemSpecFc;
+
+void cacheNavMenuItemSpecFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavMenuItemSpecFc.cached) return;
+	NavMenuItemSpecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavMenuItemSpecFc.version = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "version", "S");
+	NavMenuItemSpecFc.menuCreator = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "menuCreator", "I");
+	NavMenuItemSpecFc.menuType = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "menuType", "I");
+	NavMenuItemSpecFc.menuItemName = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "menuItemName", "[B");
+	NavMenuItemSpecFc.reserved = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "reserved", "[B");
+	NavMenuItemSpecFc.cached = 1;
+}
+
+NavMenuItemSpec *getNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct)
+{
+	if (!NavMenuItemSpecFc.cached) cacheNavMenuItemSpecFields(env, lpObject);
+	lpStruct->version = (*env)->GetShortField(env, lpObject, NavMenuItemSpecFc.version);
+	lpStruct->menuCreator = (*env)->GetIntField(env, lpObject, NavMenuItemSpecFc.menuCreator);
+	lpStruct->menuType = (*env)->GetIntField(env, lpObject, NavMenuItemSpecFc.menuType);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.menuItemName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->menuItemName), (jbyte *)lpStruct->menuItemName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.reserved);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
+	return lpStruct;
+}
+
+void setNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct)
+{
+	if (!NavMenuItemSpecFc.cached) cacheNavMenuItemSpecFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, NavMenuItemSpecFc.version, (jshort)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, NavMenuItemSpecFc.menuCreator, (jint)lpStruct->menuCreator);
+	(*env)->SetIntField(env, lpObject, NavMenuItemSpecFc.menuType, (jint)lpStruct->menuType);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.menuItemName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->menuItemName), (jbyte *)lpStruct->menuItemName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.reserved);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
 }
 #endif
 
@@ -2813,46 +3646,6 @@ void setTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStru
 }
 #endif
 
-#ifndef NO_TXNLongRect
-typedef struct TXNLongRect_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID top, left, bottom, right;
-} TXNLongRect_FID_CACHE;
-
-TXNLongRect_FID_CACHE TXNLongRectFc;
-
-void cacheTXNLongRectFields(JNIEnv *env, jobject lpObject)
-{
-	if (TXNLongRectFc.cached) return;
-	TXNLongRectFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	TXNLongRectFc.top = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "top", "I");
-	TXNLongRectFc.left = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "left", "I");
-	TXNLongRectFc.bottom = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "bottom", "I");
-	TXNLongRectFc.right = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "right", "I");
-	TXNLongRectFc.cached = 1;
-}
-
-TXNLongRect *getTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
-{
-	if (!TXNLongRectFc.cached) cacheTXNLongRectFields(env, lpObject);
-	lpStruct->top = (*env)->GetIntField(env, lpObject, TXNLongRectFc.top);
-	lpStruct->left = (*env)->GetIntField(env, lpObject, TXNLongRectFc.left);
-	lpStruct->bottom = (*env)->GetIntField(env, lpObject, TXNLongRectFc.bottom);
-	lpStruct->right = (*env)->GetIntField(env, lpObject, TXNLongRectFc.right);
-	return lpStruct;
-}
-
-void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
-{
-	if (!TXNLongRectFc.cached) cacheTXNLongRectFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.top, (jint)lpStruct->top);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.left, (jint)lpStruct->left);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.bottom, (jint)lpStruct->bottom);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.right, (jint)lpStruct->right);
-}
-#endif
-
 #ifndef NO_TXNTab
 typedef struct TXNTab_FID_CACHE {
 	int cached;
@@ -2887,6 +3680,43 @@ void setTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct)
 	(*env)->SetShortField(env, lpObject, TXNTabFc.value, (jshort)lpStruct->value);
 	(*env)->SetByteField(env, lpObject, TXNTabFc.tabType, (jbyte)lpStruct->tabType);
 	(*env)->SetByteField(env, lpObject, TXNTabFc.filler, (jbyte)lpStruct->filler);
+}
+#endif
+
+#ifndef NO_TextRange
+typedef struct TextRange_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID fStart, fEnd, fHiliteStyle;
+} TextRange_FID_CACHE;
+
+TextRange_FID_CACHE TextRangeFc;
+
+void cacheTextRangeFields(JNIEnv *env, jobject lpObject)
+{
+	if (TextRangeFc.cached) return;
+	TextRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TextRangeFc.fStart = (*env)->GetFieldID(env, TextRangeFc.clazz, "fStart", "I");
+	TextRangeFc.fEnd = (*env)->GetFieldID(env, TextRangeFc.clazz, "fEnd", "I");
+	TextRangeFc.fHiliteStyle = (*env)->GetFieldID(env, TextRangeFc.clazz, "fHiliteStyle", "S");
+	TextRangeFc.cached = 1;
+}
+
+TextRange *getTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct)
+{
+	if (!TextRangeFc.cached) cacheTextRangeFields(env, lpObject);
+	lpStruct->fStart = (*env)->GetIntField(env, lpObject, TextRangeFc.fStart);
+	lpStruct->fEnd = (*env)->GetIntField(env, lpObject, TextRangeFc.fEnd);
+	lpStruct->fHiliteStyle = (*env)->GetShortField(env, lpObject, TextRangeFc.fHiliteStyle);
+	return lpStruct;
+}
+
+void setTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct)
+{
+	if (!TextRangeFc.cached) cacheTextRangeFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, TextRangeFc.fStart, (jint)lpStruct->fStart);
+	(*env)->SetIntField(env, lpObject, TextRangeFc.fEnd, (jint)lpStruct->fEnd);
+	(*env)->SetShortField(env, lpObject, TextRangeFc.fHiliteStyle, (jshort)lpStruct->fHiliteStyle);
 }
 #endif
 

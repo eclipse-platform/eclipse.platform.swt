@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -17,8 +17,11 @@ public class AlertStdCFStringAlertParamRec {
 	public int version;
 	public boolean movable;
 	public boolean helpButton;
+	/** @field cast=(CFStringRef) */
 	public int defaultText;
+	/** @field cast=(CFStringRef) */
 	public int cancelText;
+	/** @field cast=(CFStringRef) */
 	public int otherText;
 	public short defaultButton;
 	public short cancelButton;

@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #ifdef NATIVE_STATS
 extern int CDE_nativeFunctionCount;
@@ -16,8 +16,12 @@ extern char* CDE_nativeFunctionNames[];
 #define CDE_NATIVE_ENTER(env, that, func) CDE_nativeFunctionCallCount[func]++;
 #define CDE_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef CDE_NATIVE_ENTER
 #define CDE_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef CDE_NATIVE_EXIT
 #define CDE_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

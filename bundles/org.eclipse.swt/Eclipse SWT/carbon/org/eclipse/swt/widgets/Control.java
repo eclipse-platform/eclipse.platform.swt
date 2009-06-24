@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.ATSFontMetrics;
+import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.CGPoint;
@@ -32,16 +35,20 @@ import org.eclipse.swt.accessibility.Accessible;
  * <dd>BORDER</dd>
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
- * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
- *     DragDetect, MenuDetect</dd>
+ * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
  * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Control extends Widget implements Drawable {
 	/**
@@ -64,8 +71,12 @@ public abstract class Control extends Widget implements Drawable {
 	Image backgroundImage;
 	Font font;
 	Cursor cursor;
+	Region region;
 	GCData gcs[];
 	Accessible accessible;
+
+	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion"; //$NON-NLS-1$
+
 
 Control () {
 	/* Do nothing */
@@ -96,6 +107,8 @@ Control () {
  * </ul>
  *
  * @see SWT#BORDER
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -103,6 +116,14 @@ public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	createWidget ();
+}
+
+int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
+	if (result == OS.noErr) return result;
+	if (isDisposed ()) return OS.noErr;
+	sendTrackEvents ();
+	return result;
 }
 
 /**
@@ -130,6 +151,34 @@ public void addControlListener(ControlListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when a drag gesture occurs, by sending it
+ * one of the messages defined in the <code>DragDetectListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #removeDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
 }
 
 /**
@@ -190,7 +239,18 @@ public void addHelpListener (HelpListener listener) {
  * be notified when keys are pressed and released on the system keyboard, by sending
  * it one of the messages defined in the <code>KeyListener</code>
  * interface.
- *
+ * <p>
+ * When a key listener is added to a control, the control
+ * will take part in widget traversal.  By default, all
+ * traversal keys (such as the tab key and so on) are
+ * delivered to the control.  In order for a control to take
+ * part in traversal, it should listen for traversal events.
+ * Otherwise, the user can traverse into a control but not
+ * out.  Note that native controls such as table and tree
+ * implement key traversal in the operating system.  It is
+ * not necessary to add traversal listeners for these controls,
+ * unless you want to override the default traversal.
+ * </p>
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -210,6 +270,34 @@ public void addKeyListener(KeyListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener(SWT.KeyUp,typedListener);
 	addListener(SWT.KeyDown,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the platform-specific context menu trigger
+ * has occurred, by sending it one of the messages defined in
+ * the <code>MenuDetectListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #removeMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void addMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MenuDetect, typedListener);
 }
 
 /**
@@ -292,6 +380,37 @@ public void addMouseMoveListener(MouseMoveListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener(SWT.MouseMove,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the mouse wheel is scrolled, by sending
+ * it one of the messages defined in the
+ * <code>MouseWheelListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #removeMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void addMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MouseWheel, typedListener);
+}
+
+void addRelation (Control control) {
 }
 
 /**
@@ -508,13 +627,24 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
+boolean contains (String [] array, String element) {
+	for (int i = 0; i < array.length; i++) {
+		if (array [i].equals (element)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void createWidget () {
+	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget ();
 	checkBackground ();
 	checkBuffered ();
 	setDefaultFont ();
 	setZOrder ();
+	setRelations ();
 }
 
 Color defaultBackground () {
@@ -529,7 +659,7 @@ Font defaultFont () {
 	short id = OS.FMGetFontFamilyFromName (family);
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	return Font.carbon_new (display, font [0], id, style [0], size [0]);
+	return Font.carbon_new (display, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0]);
 }
 
 Color defaultForeground () {
@@ -547,85 +677,151 @@ void deregister () {
 }
 
 void destroyWidget () {
+	Display display = this.display;
 	int theControl = topHandle ();
 	releaseHandle ();
 	if (theControl != 0) {
-		OS.DisposeControl (theControl);
+		if (display.delayDispose) {
+			display.addToDisposeWindow (theControl);
+		} else {
+			OS.DisposeControl (theControl);
+		}
 	}
 }
 
-void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, Rect inset) {
-	fillBackground (control, context, null);
-	if (OS.HIVIEW) {
-		CGRect rect = new CGRect ();
-		OS.HIViewGetBounds (control, rect);
-		rect.x += inset.left;
-		rect.y += inset.top;
-		rect.width -= inset.right + inset.left;
-		rect.height -= inset.bottom + inset.top;
-		int state;
-		if (OS.IsControlEnabled (control)) {
-			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		} else {
-			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-		}
-		if (hasBorder) {
-			HIThemeFrameDrawInfo info = new HIThemeFrameDrawInfo ();
-			info.state = state;
-			info.kind = OS.kHIThemeFrameTextFieldSquare;
-			info.isFocused = hasFocus;
-			OS.HIThemeDrawFrame (rect, info, context, OS.kHIThemeOrientationNormal);
-		} else {
-			OS.HIThemeDrawFocusRect (rect, hasFocus, context, OS.kHIThemeOrientationNormal);
-		}
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *  
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (MouseEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
+	if (button != 1 || count != 1) return false;
+	if (!dragDetect (x, y, false, null)) return false;
+	return sendDragEvent (button, stateMask, x, y);
+}
+
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, handle, 0);
+	x += (int) pt.x;
+	y += (int) pt.y;
+	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	x += rect.left;
+	y += rect.top;
+	org.eclipse.swt.internal.carbon.Point pt1 = new org.eclipse.swt.internal.carbon.Point ();
+	pt1.h = (short) x;
+	pt1.v = (short) y;
+	return OS.WaitMouseMoved (pt1);
+}
+
+void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, boolean drawBackground, Rect inset) {
+	if (drawBackground) fillBackground (control, context, null);
+	CGRect rect = new CGRect ();
+	OS.HIViewGetBounds (control, rect);
+	rect.x += inset.left;
+	rect.y += inset.top;
+	rect.width -= inset.right + inset.left;
+	rect.height -= inset.bottom + inset.top;
+	int state;
+	if (OS.IsControlEnabled (control)) {
+		state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
 	} else {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (control, rect);
-		rect.left += inset.left;
-		rect.top += inset.top;
-		rect.right -= inset.right;
-		rect.bottom -= inset.bottom;
-		int state;
-		if (OS.IsControlEnabled (control)) {
-			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		} else {
-			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-		}
-		if (hasFocus) {
-			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
-			OS.DrawThemeFocusRect (rect, true);
-		} else {
-			/*
-			* This code is intentionaly commented.
-			*  
-			* NOTE: the focus ring is erased by drawBackground() above. 
-			*/
-	//		OS.DrawThemeFocusRect (rect, false);
-			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
-		}
+		state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
 	}
-}
-
-void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
-	int visibleRgn = getVisibleRegion (control, true);
-	if (!OS.EmptyRgn (visibleRgn)) {
-		int [] currentPort = new int [1];
-		OS.GetPort (currentPort);
-		int window = OS.GetControlOwner (control);
-		int port = OS.GetWindowPort (window);
-		OS.SetPort (port);
-		int oldClip = OS.NewRgn ();
-		OS.GetClip (oldClip);
-		OS.SetClip (visibleRgn);
-		drawFocus (control, 0, hasFocus, hasBorder, inset);
-		OS.SetClip (oldClip);
-		OS.SetPort (currentPort [0]);
+	if (hasBorder) {
+		HIThemeFrameDrawInfo info = new HIThemeFrameDrawInfo ();
+		info.state = state;
+		info.kind = OS.kHIThemeFrameTextFieldSquare;
+		info.isFocused = hasFocus;
+		OS.HIThemeDrawFrame (rect, info, context, OS.kHIThemeOrientationNormal);
+	} else {
+		OS.HIThemeDrawFocusRect (rect, hasFocus, context, OS.kHIThemeOrientationNormal);
 	}
-	OS.DisposeRgn (visibleRgn);
 }
 
 boolean drawFocusRing () {
-	return !display.noFocusRing || getShell ().parent != null;
+	return hasBorder ();
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
@@ -639,11 +835,6 @@ void drawWidget (int control, int context, int damageRgn, int visibleRgn, int th
 	/* Retrieve the damage rect */
 	Rect rect = new Rect ();
 	OS.GetRegionBounds (visibleRgn, rect);
-	if (!OS.HIVIEW) {
-		Rect bounds = new Rect ();
-		OS.GetControlBounds (handle, bounds);
-		OS.OffsetRect (rect, (short) -bounds.left, (short) -bounds.top);
-	}
 
 	/* Send paint event */
 	int [] port = new int [1];
@@ -673,69 +864,64 @@ void enableWidget (boolean enabled) {
 	}
 }
 
+boolean equals(float[] color1, float[] color2) {
+	if (color1 == color2) return true;
+	if (color1 == null) return color2 == null;
+	if (color2 == null) return color1 == null;	
+	for (int i = 0; i < color1.length; i++) {
+		if (color1 [i] != color2 [i]) return false;
+	}	
+	return true;
+}
+
 void fillBackground (int control, int context, Rectangle bounds) {
-	if (OS.HIVIEW) {
-		OS.CGContextSaveGState (context);
-		CGRect rect = new CGRect ();
-		if (bounds != null) {
-			rect.x = bounds.x;
-			rect.y = bounds.y;
-			rect.width = bounds.width;
-			rect.height = bounds.height;
-		} else {
-			OS.HIViewGetBounds (control, rect);
-		}
-		Control widget = findBackgroundControl ();
-		if (widget != null && widget.backgroundImage != null) {
-			CGPoint pt = new CGPoint();
-			OS.HIViewConvertPoint (pt, control, widget.handle);
-			OS.CGContextTranslateCTM (context, -pt.x, -pt.y);
-			Pattern pattern = new Pattern (display, widget.backgroundImage);
-			GCData data = new GCData ();
-			data.device = display;
-			data.background = widget.getBackgroundColor ().handle;
-			GC gc = GC.carbon_new (context, data);
-			gc.setBackgroundPattern (pattern);
-			gc.fillRectangle ((int) (rect.x + pt.x), (int) (rect.y + pt.y), (int) rect.width, (int) rect.height);
-			gc.dispose ();
-			pattern.dispose();
-		} else if (widget != null && widget.background != null) {
-			int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
-			OS.CGContextSetFillColorSpace (context, colorspace);
-			OS.CGContextSetFillColor (context, widget.background);
-			OS.CGColorSpaceRelease (colorspace);
+	OS.CGContextSaveGState (context);
+	CGRect rect = new CGRect ();
+	if (bounds != null) {
+		rect.x = bounds.x;
+		rect.y = bounds.y;
+		rect.width = bounds.width;
+		rect.height = bounds.height;
+	} else {
+		OS.HIViewGetBounds (control, rect);
+	}
+	Control widget = findBackgroundControl ();
+	if (widget != null && widget.backgroundImage != null) {
+		CGPoint pt = new CGPoint();
+		OS.HIViewConvertPoint (pt, control, widget.handle);
+		OS.CGContextTranslateCTM (context, -pt.x, -pt.y);
+		Pattern pattern = new Pattern (display, widget.backgroundImage);
+		GCData data = new GCData ();
+		data.device = display;
+		data.background = widget.getBackgroundColor ().handle;
+		GC gc = GC.carbon_new (context, data);
+		gc.setBackgroundPattern (pattern);
+		gc.fillRectangle ((int) (rect.x + pt.x), (int) (rect.y + pt.y), (int) rect.width, (int) rect.height);
+		gc.dispose ();
+		pattern.dispose();
+	} else if (widget != null && widget.background != null) {
+		int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+		OS.CGContextSetFillColorSpace (context, colorspace);
+		OS.CGContextSetFillColor (context, widget.background);
+		OS.CGColorSpaceRelease (colorspace);
+		OS.CGContextSetAlpha (context, getThemeAlpha ());
+		OS.CGContextFillRect (context, rect);
+	} else {
+		if (OS.VERSION >= 0x1040) {
+			OS.HIThemeSetFill (OS.kThemeBrushDialogBackgroundActive, 0, context, OS.kHIThemeOrientationNormal);
+			OS.CGContextSetAlpha (context, getThemeAlpha ());
 			OS.CGContextFillRect (context, rect);
 		} else {
-			if (OS.VERSION >= 0x1040) {
-				OS.HIThemeSetFill (OS.kThemeBrushDialogBackgroundActive, 0, context, OS.kHIThemeOrientationNormal);
-				OS.CGContextFillRect (context, rect);
-			} else {
-				Rect rect1 = new Rect ();
-				rect1.left = (short) rect.x;
-				rect1.top = (short) rect.y;
-				rect1.right = (short) (rect.x + rect.width);
-				rect1.bottom = (short) (rect.y + rect.height);
-				OS.SetThemeBackground ((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
-				OS.EraseRect (rect1);
-			}
-		}
-		OS.CGContextRestoreGState (context);
-	} else {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (control, rect);
-		if (OS.HIVIEW) {
-			rect.right += rect.left;
-			rect.bottom += rect.top;
-			rect.left = rect.top = 0;
-		}
-		if (background != null) {
-			OS.RGBForeColor (toRGBColor (background));
-			OS.PaintRect (rect);
-		} else {
-			OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
-			OS.EraseRect (rect);
+			Rect rect1 = new Rect ();
+			rect1.left = (short) rect.x;
+			rect1.top = (short) rect.y;
+			rect1.right = (short) (rect.x + rect.width);
+			rect1.bottom = (short) (rect.y + rect.height);
+			OS.SetThemeBackground ((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
+			OS.EraseRect (rect1);
 		}
 	}
+	OS.CGContextRestoreGState (context);
 }
 
 Cursor findCursor () {
@@ -746,6 +932,16 @@ Cursor findCursor () {
 Control findBackgroundControl () {
 	if (backgroundImage != null || background != null) return this;
 	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
+}
+
+Menu [] findMenus (Control control) {
+	if (menu != null && this != control) return new Menu [] {menu};
+	return new Menu [0];
+}
+
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
+	oldShell.fixShell (newShell, this);
+	oldDecorations.fixDecorations (newDecorations, this, menus);
 }
 
 void fixFocus (Control focusControl) {
@@ -761,6 +957,10 @@ void fixFocus (Control focusControl) {
 
 int focusHandle () {
 	return handle;
+}
+
+int focusPart () {
+	return OS.kControlFocusNextPart;
 }
 
 /**
@@ -796,11 +996,12 @@ public boolean forceFocus () {
 	* focus events to happen.  The fix is to ignore focus events and issue them only
 	* if the focus control changed.
 	*/
-	Control oldFocus = display.getFocusControl ();
-	display.ignoreFocus = true;
 	int focusHandle = focusHandle ();
 	int window = OS.GetControlOwner (focusHandle);
-	OS.SetKeyboardFocus (window, focusHandle, (short) OS.kControlFocusNextPart);
+	Control oldFocus = display.getFocusControl (window, true);
+	if (oldFocus == this) return true;
+	display.ignoreFocus = true;
+	OS.SetKeyboardFocus (window, focusHandle, (short) focusPart ());
 	display.ignoreFocus = false;
 	Control newFocus = display.getFocusControl ();
 	if (oldFocus != newFocus) {
@@ -831,15 +1032,21 @@ public boolean forceFocus () {
  */
 public Accessible getAccessible () {
 	checkWidget ();
-	if (accessible == null) {
-		accessible = Accessible.internal_new_Accessible (this);
-	}
+	if (accessible == null) accessible = new_Accessible (this);
 	return accessible;
 }
 	
+String [] getAxAttributes () {
+	return null;
+}
+
 /**
  * Returns the receiver's background color.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on some versions of Windows the background of a TabFolder,
+ * is a gradient rather than a solid color.
+ * </p>
  * @return the background color
  *
  * @exception SWTException <ul>
@@ -858,6 +1065,18 @@ Color getBackgroundColor () {
 	return background != null ? Color.carbon_new (display, background) : defaultBackground ();
 }
 
+/**
+ * Returns the receiver's background image.
+ *
+ * @return the background image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public Image getBackgroundImage () {
 	checkWidget();
 	Control control = findBackgroundControl ();
@@ -898,9 +1117,47 @@ public Rectangle getBounds () {
 	return getControlBounds (topHandle ());
 }
 
-int getDrawCount (int control) {
-	if (!isTrimHandle (control) && drawCount > 0) return drawCount;
-	return parent.getDrawCount (control);
+/**
+ * Returns <code>true</code> if the receiver is detecting
+ * drag gestures, and  <code>false</code> otherwise. 
+ *
+ * @return the receiver's drag detect state
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
+}
+
+boolean getDrawing () {
+	return drawCount <= 0;
+}
+
+/**
+ * Returns the receiver's cursor, or null if it has not been set.
+ * <p>
+ * When the mouse pointer passes over a control its appearance
+ * is changed to match the control's cursor.
+ * </p>
+ *
+ * @return the receiver's cursor or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Cursor getCursor () {
+	checkWidget();
+	return cursor;
 }
 
 /**
@@ -1092,6 +1349,24 @@ Control [] getPath () {
 	return result;
 }
 
+/** 
+ * Returns the region that defines the shape of the control,
+ * or null if the control has the default shape.
+ *
+ * @return the region that defines the shape of the shell (or null)
+ *	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public Region getRegion () {
+	checkWidget ();
+	return region;
+}
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -1146,6 +1421,10 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+float getThemeAlpha () {
+	return 1 * parent.getThemeAlpha ();
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -1179,6 +1458,10 @@ int getVisibleRegion (int control, boolean clipChildren) {
 	return result;
 }
 
+boolean hasBorder () {
+	return (style & SWT.BORDER) != 0;
+}
+
 boolean hasFocus () {
 	return this == display.getFocusControl ();
 }
@@ -1186,7 +1469,7 @@ boolean hasFocus () {
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
     switch (inRequest) {
 		case OS.kHMSupplyContent: {
-			int [] contentProvided = new int [] {OS.kHMContentNotProvidedDontPropagate};
+			short [] contentProvided = {OS.kHMContentNotProvidedDontPropagate};
 			if (toolTipText != null && toolTipText.length () != 0) {
 				char [] buffer = new char [toolTipText.length ()];
 				toolTipText.getChars (0, buffer.length, buffer, 0);
@@ -1194,7 +1477,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				if (display.helpString != 0) OS.CFRelease (display.helpString);
 				display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 				HMHelpContentRec helpContent = new HMHelpContentRec ();
-				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+				OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 				helpContent.version = OS.kMacHelpVersion;
 
 				/*
@@ -1210,9 +1493,11 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				*/
 				int cursorHeight = 16;
 				helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
-				int x = (short) (inGlobalMouse & 0xFFFF);
-				int y = (short) (inGlobalMouse >> 16);
-				if (display.helpControl != this) {
+				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+				OS.memmove(pt, new int[] {inGlobalMouse}, 4);
+				int x = pt.h;
+				int y = pt.v;
+				if (display.helpWidget != this) {
 					display.lastHelpX = x + cursorHeight / 2;
 					display.lastHelpY = y + cursorHeight + cursorHeight / 2;			
 				}
@@ -1223,7 +1508,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				y = display.lastHelpY - deltaY;
 				int width = deltaX * 2;
 				int height = deltaY * 2;
-				display.helpControl = this;
+				display.helpWidget = this;
 				helpContent.absHotRect_left = (short) x;
 				helpContent.absHotRect_top = (short) y;
 				helpContent.absHotRect_right = (short) (x + width);
@@ -1233,15 +1518,15 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				helpContent.content0_tagCFString = display.helpString;
 				helpContent.content1_contentType = OS.kHMCFStringContent;
 				helpContent.content1_tagCFString = display.helpString;
-				OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+				OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
 				contentProvided [0] = OS.kHMContentProvided;
 			}
-			OS.memcpy (outContentProvided, contentProvided, 4);
+			OS.memmove (outContentProvided, contentProvided, 2);
 			break;
 		}
 		case OS.kHMDisposeContent: {
 			if (display.helpString != 0) OS.CFRelease (display.helpString);
-			display.helpControl = null;
+			display.helpWidget = null;
 			display.helpString = 0;
 			break;
 		}
@@ -1260,18 +1545,32 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 		OS.kEventClassControl, OS.kEventControlDeactivate,
 		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlGetClickActivation,
+		OS.kEventClassControl, OS.kEventControlGetFocusPart,
+		OS.kEventClassControl, OS.kEventControlGetPartRegion,
 		OS.kEventClassControl, OS.kEventControlHit,
+		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
-		OS.kEventClassControl, OS.kEventControlGetFocusPart,
 		OS.kEventClassControl, OS.kEventControlTrack,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+	int accessibilityProc = display.accessibilityProc;
+	mask = new int [] {
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetChildAtPoint,
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetFocusedChild,
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetAllAttributeNames,
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetNamedAttribute,
+	};
+	OS.InstallEventHandler (controlTarget, accessibilityProc, mask.length / 2, mask, handle, null);
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
 	int colorProc = display.colorProc;
 	OS.SetControlColorProc (handle, colorProc);
+	if (OS.GetControlAction (handle) == 0) {
+		OS.SetControlAction (handle, display.actionProc);
+	}
 }
 
 /**	 
@@ -1294,7 +1593,7 @@ public int internal_new_GC (GCData data) {
 	if (port == 0) port = OS.GetWindowPort (window);
 	int context;
 	int [] buffer = new int [1];
-	boolean isPaint = OS.HIVIEW && data != null && data.paintEvent != 0; 
+	boolean isPaint = data != null && data.paintEvent != 0; 
 	if (isPaint) {
 		OS.GetEventParameter (data.paintEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
 	} else {
@@ -1306,10 +1605,10 @@ public int internal_new_GC (GCData data) {
 	if (data != null && data.paintEvent != 0) {
 		visibleRgn = data.visibleRgn;
 	} else {
-		if (getDrawCount (handle) > 0) {
-			visibleRgn = OS.NewRgn ();
-		} else {
+		if (isDrawing()) {
 			visibleRgn = getVisibleRegion (handle, true);
+		} else {
+			visibleRgn = OS.NewRgn ();
 		}
 	}
 	Rect rect = new Rect ();
@@ -1321,16 +1620,14 @@ public int internal_new_GC (GCData data) {
 		rect.bottom += rect.top;
 		rect.left = rect.top = 0;
 	} else {
-		if (OS.HIVIEW) {
-			int [] contentView = new int [1];
-			OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
-			CGPoint pt = new CGPoint ();
-			OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
-			rect.left += (int) pt.x;
-			rect.top += (int) pt.y;
-			rect.right += (int) pt.x;
-			rect.bottom += (int) pt.y;
-		}
+		int [] contentView = new int [1];
+		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
+		rect.left += (int) pt.x;
+		rect.top += (int) pt.y;
+		rect.right += (int) pt.x;
+		rect.bottom += (int) pt.y;
 		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
 		int portHeight = portRect.bottom - portRect.top;
 		OS.CGContextScaleCTM (context, 1, -1);
@@ -1400,12 +1697,12 @@ public void internal_dispose_GC (int context, GCData data) {
 				if (index == gcs.length) gcs = null;
 			}
 		} else {
-			if (OS.HIVIEW) return;
+			return;
 		}
 	}
 	
 	/*
-	* This code is intentionaly commented. Use CGContextSynchronize
+	* This code is intentionally commented. Use CGContextSynchronize
 	* instead of CGContextFlush to improve performance.
 	*/
 //	OS.CGContextFlush (context);
@@ -1430,6 +1727,18 @@ void invalidateVisibleRegion (int control) {
 
 void invalWindowRgn (int window, int rgn) {
 	parent.invalWindowRgn (window, rgn);
+}
+
+/*
+ * Answers a boolean indicating whether a Label that precedes the receiver in
+ * a layout should be read by screen readers as the recevier's label.
+ */
+boolean isDescribedByLabel () {
+	return true;
+}
+
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing();
 }
 
 /**
@@ -1484,7 +1793,7 @@ boolean isEnabledModal () {
 }
 
 boolean isFocusAncestor (Control control) {
-	while (control != null && control != this) {
+	while (control != null && control != this && !(control instanceof Shell)) {
 		control = control.parent;
 	}
 	return control == this;
@@ -1503,7 +1812,10 @@ boolean isFocusAncestor (Control control) {
  */
 public boolean isFocusControl () {
 	checkWidget();
-	if (this == display.focusControl) return true;
+	Control focusControl = display.focusControl;
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return this == focusControl;
+	}
 	return hasFocus ();
 }
 
@@ -1520,7 +1832,7 @@ public boolean isFocusControl () {
  */
 public boolean isReparentable () {
 	checkWidget();
-	return false;
+	return true;
 }
 
 boolean isShowing () {
@@ -1579,46 +1891,157 @@ boolean isTabItem () {
  */
 public boolean isVisible () {
 	checkWidget();
-	return OS.IsControlVisible (topHandle ());
+	return getVisible () && parent.isVisible ();
 }
 
 Decorations menuShell () {
 	return parent.menuShell ();
 }
 
+int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetFocusedChild (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	int code = OS.eventNotHandledErr;
+	String [] attributes = getAxAttributes ();
+	if (attributes != null) {
+		OS.CallNextEventHandler (nextHandler, theEvent);
+		int [] arrayRef = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
+		int attributesArrayRef = arrayRef [0];
+		int length = OS.CFArrayGetCount (attributesArrayRef);
+		String[] osAttributes = new String [length];
+		for (int i = 0; i < length; i++) {
+			int stringRef = OS.CFArrayGetValueAtIndex (attributesArrayRef, i);
+			int strLength = OS.CFStringGetLength (stringRef);
+			char [] buffer = new char [strLength];
+			CFRange range = new CFRange ();
+			range.length = strLength;
+			OS.CFStringGetCharacters (stringRef, range, buffer);
+			osAttributes [i] = new String (buffer);
+		}
+		for (int i = 0; i < attributes.length; i++) {
+			if (!contains (osAttributes, attributes [i])) {
+				String string = attributes [i];
+				char [] buffer = new char [string.length ()];
+				string.getChars (0, buffer.length, buffer, 0);
+				int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+				OS.CFArrayAppendValue (attributesArrayRef, stringRef);
+				OS.CFRelease (stringRef);
+			}
+		}
+		code = OS.noErr;
+	}
+	if (accessible != null) {
+		code = accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, code);
+	}
+	return code;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, OS.eventNotHandledErr);
+	}
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
-	int x, y;
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	if (OS.HIVIEW) {
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	Widget widget = display.getWidget (theControl [0]);
+	while (widget != null && !(widget instanceof Control)) {
+		OS.GetSuperControl (theControl [0], theControl);
+		widget = display.getWidget (theControl [0]);
+	}
+	if (widget == this && isEnabled ()) {
+		int x, y;
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
 		CGPoint pt = new CGPoint ();
 		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
 		x = (int) pt.x;
 		y = (int) pt.y;
 		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	} else {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		x = pt.h;
-		y = pt.v;
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	}
-	x += rect.left;
-	y += rect.top;
-	Event event = new Event ();
-	event.x = x;
-	event.y = y;
-	sendEvent (SWT.MenuDetect, event);
-	if (event.doit) {
-		if (menu != null && !menu.isDisposed ()) {
-			if (event.x != x || event.y != y) {
-				menu.setLocation (event.x, event.y);
+		x += rect.left;
+		y += rect.top;
+		Event event = new Event ();
+		event.x = x;
+		event.y = y;
+		sendEvent (SWT.MenuDetect, event);
+		// widget could be disposed at this point
+		if (isDisposed ()) return OS.noErr;
+		if (event.doit) {
+			if (menu != null && !menu.isDisposed ()) {
+				if (event.x != x || event.y != y) {
+					menu.setLocation (event.x, event.y);
+				}
+				menu.setVisible (true);
 			}
-			menu.setVisible (true);
 		}
 	}
 	return OS.eventNotHandledErr;
+}
+
+int kEventControlGetClickActivation (int nextHandler, int theEvent, int userData) {
+	if ((getShell ().style & SWT.ON_TOP) != 0) {
+		OS.SetEventParameter (theEvent, OS.kEventParamClickActivation, OS.typeClickActivationResult, 4, new int [] {OS.kActivateAndHandleClick});
+		return OS.noErr;
+	}
+	return super.kEventControlGetClickActivation (nextHandler, theEvent, userData);
+}
+
+int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlGetPartRegion (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (region != null && this != getShell ()) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode , null, 2, null, part);
+		if (part [0] == OS.kControlStructureMetaPart || part [0] == OS.kControlClickableMetaPart) {
+			int [] rgn = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamControlRegion, OS.typeQDRgnHandle , null, 4, null, rgn);
+			OS.CopyRgn (region.handle, rgn[0]);
+			Rect rect = getInset ();
+			OS.OffsetRgn (rgn [0], (short)-rect.left, (short)-rect.top);
+			return OS.noErr;
+		}
+	}
+	return result;
+}
+
+int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlHitTest (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (region != null && this != getShell ()) {
+		result = OS.CallNextEventHandler (nextHandler, theEvent);
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		if (!region.contains ((int) pt.x, (int) pt.y)) {
+			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short []{0});
+			return result;
+		}
+	}
+	if ((state & GRAB) != 0) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (handle, rect);
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		if (OS.CGRectContainsPoint (rect, pt) != 0) {
+			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{1});
+		}
+		return OS.noErr;
+	}
+	return result;
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
@@ -1642,11 +2065,14 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 				OS.GetKeyboardFocus (window, focusControl);
 				short [] part = new short [1];
 				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+				Display display = this.display;
+				display.delayDispose = true;
 				if (part [0] == OS.kControlFocusNoPart) {
 					if (focusControl [0] == focusHandle) sendFocusEvent (SWT.FocusOut, false);
 				} else {
 					if (focusControl [0] != focusHandle) sendFocusEvent (SWT.FocusIn, false);
 				}
+				display.delayDispose = false;
 			}
 			// widget could be disposed at this point
 			if (isDisposed ()) return OS.noErr;
@@ -1656,39 +2082,87 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }	
 
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-//	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
-	return OS.eventNotHandledErr;
+	/*
+	* Feature in the Macintosh.  The default handler of kEventControlTrack
+	* calls TrackControl() which consumes key and mouse events until the
+	* tracking is canceled.  The fix is to send those events from the
+	* action proc of the widget by diffing the mouse and modifier keys
+	* state.
+	*/
+	Display display = this.display;	
+//	display.runDeferredEvents ();
+	if (isDisposed ()) return OS.noErr;
+	if (display.runPopups ()) return OS.noErr;
+	if (isDisposed ()) return OS.noErr;
+	display.lastState = OS.GetCurrentEventButtonState ();
+	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
+	display.grabControl = this; 
+	int timer = 0;
+	if (pollTrackEvent ()) {
+		if (display.pollingTimer == 0) {
+			int [] id = new int [1];
+			int eventLoop = OS.GetCurrentEventLoop ();
+			OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, display.pollingProc, 0, id);
+			display.pollingTimer = timer = id [0];
+		}
+	}
+	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
+	if (timer != 0) {
+		OS.RemoveEventLoopTimer (timer);
+		display.pollingTimer = 0;
+	}
+	display.grabControl = null;
+	if (isDisposed ()) return OS.noErr;
+	sendTrackEvents ();
+	return result;
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
+	display.dragging = false;
+	boolean [] consume = new boolean [1];
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	int [] clickCount = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
-	if (isDisposed ()) return OS.noErr;
-	if (clickCount [0] == 2) {
-		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	if (button [0] == 1 && clickCount [0] == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		OS.HIViewConvertPoint (pt, 0, handle);
+		int x = (int) pt.x;
+		int y = (int) pt.y;
+		if (dragDetect (x, y, true, consume)) {
+			display.dragging = true;
+			display.dragButton = button [0];
+			display.dragX = x;
+			display.dragY = y;
+			int [] chord = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+			display.dragState = chord [0];
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			display.dragModifiers = modifiers [0];
+		}
 		if (isDisposed ()) return OS.noErr;
 	}
-	if (hooks (SWT.DragDetect)) {
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		display.dragMouseStart = pt;
-		display.dragging = false;
+	if (!sendMouseEvent (SWT.MouseDown, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
+	if (isDisposed ()) return OS.noErr;
+	if (display.clickCount == 2) {
+		if (!sendMouseEvent (SWT.MouseDoubleClick, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
+		if (isDisposed ()) return OS.noErr;
 	}
-	if ((state & GRAB) != 0) display.grabControl = this;
 	if (!shell.isDisposed ()) shell.setActiveControl (this);
-	return result;
+	return consume [0] ? OS.noErr : OS.eventNotHandledErr;
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if (isEnabledModal ()) {
+		if (display.dragging) {
+			display.dragging = false;
+			sendDragEvent (display.dragButton, display.dragState, display.dragModifiers, display.dragX, display.dragY);
+			if (isDisposed ()) return OS.noErr;
+		}
 		int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
-		if (isDisposed ()) return OS.noErr;
-		display.dragDetect (this);
 		if (isDisposed ()) return OS.noErr;
 		return result;
 	}
@@ -1705,11 +2179,43 @@ int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	return sendMouseEvent (SWT.MouseUp, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	return sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	if ((state & IGNORE_WHEEL) != 0) return OS.eventNotHandledErr;
+	
+	/*
+	* Bug in the Macintosh.  Mouse Wheel events are still processed when the
+	* window is not enabled due to a modal dialog.  The fix is to not let the
+	* default handlers run when window is modal disabled.
+	*/
+	int window = OS.GetControlOwner (handle);
+	if (OS.HIWindowIsDocumentModalTarget (window, null)) {
+		return OS.noErr;
+	}	
+	int[] event = new int[1];
+	OS.CreateEvent (0, OS.kEventClassWindow, OS.kEventWindowGetClickModality, 0.0, 0, event);
+	if (event [0] != 0) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowPartCode, OS.typeWindowPartCode, null, 2, null, part);
+		int [] modifiers = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
+		OS.SetEventParameter (event [0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[]{window});
+		OS.SetEventParameter (event [0], OS.kEventParamWindowPartCode, OS.typeWindowPartCode, 2, part);
+		OS.SetEventParameter (event [0], OS.kEventParamKeyModifiers, OS.typeUInt32, 4, modifiers);
+		OS.SetEventParameter (event [0], OS.kEventParamEventRef, OS.typeEventRef, 4, new int[]{theEvent});
+		OS.SendEventToEventTarget (event [0], OS.GetApplicationEventTarget ());
+		int [] clickResult = new int [1];
+		OS.GetEventParameter (event [0], OS.kEventParamModalClickResult, OS.typeModalClickResult, null, 4, null, clickResult);
+		OS.ReleaseEvent (event [0]);
+		if ((clickResult [0] & OS.kHIModalClickIsModal) != 0) {
+			if ((clickResult [0] & OS.kHIModalClickAllowEvent) == 0) {
+				return OS.noErr;
+			}
+		}
+	}
+	
 	short [] wheelAxis = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelAxis, OS.typeMouseWheelAxis, null, 2, null, wheelAxis);
 	int [] wheelDelta = new int [1];
@@ -1759,6 +2265,36 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	}
 	int result = kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
 	if (result == OS.noErr || consume [0]) return OS.noErr;
+	/*
+	* Feature in the Macintosh.  If the focus target is changed
+	* before the default handler for the widget has run, the key
+	* goes to the new focus widget.  The fix is to explicitly
+	* send the event to the original focus widget and stop
+	* the chain of handlers.
+	*/
+	if (!isDisposed ()) {
+		Control focusControl = display.getFocusControl ();
+		if (focusControl != this) {
+			int window = OS.GetControlOwner (handle), newWindow = 0;
+			if (focusControl != null) {
+				newWindow = OS.GetControlOwner (focusControl.handle);
+			}
+			display.ignoreFocus = true;
+			if (window != newWindow) OS.SetUserFocusWindow (window);
+			OS.SetKeyboardFocus (window, focusHandle (), (short) focusPart ());
+			display.ignoreFocus = false;
+			result = OS.CallNextEventHandler (nextHandler, theEvent);
+			display.ignoreFocus = true;
+			if (window != newWindow && newWindow != 0) OS.SetUserFocusWindow (newWindow);
+			if (window == newWindow && focusControl != null) {
+				OS.SetKeyboardFocus (window, focusControl.focusHandle (), (short) focusControl.focusPart ());
+			} else {
+				OS.ClearKeyboardFocus (window);
+			}
+			display.ignoreFocus = false;
+			return OS.noErr;
+		}
+	}
 	return result;
 }
 
@@ -1831,6 +2367,10 @@ public void moveBelow (Control control) {
 	setZOrder (control, false);
 }
 
+Accessible new_Accessible (Control control) {
+	return Accessible.internal_new_Accessible (this);
+}
+
 /**
  * Causes the receiver to be resized to its preferred size.
  * For a composite, this involves computing the preferred size
@@ -1875,6 +2415,46 @@ public void pack (boolean changed) {
 }
 
 /**
+ * Prints the receiver and all children.
+ * 
+ * @param gc the gc where the drawing occurs
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] outImage = new int [1];
+	CGRect outFrame = new CGRect ();
+	if (OS.HIViewCreateOffscreenImage (handle, 0, outFrame, outImage) == OS.noErr) {
+		int width = OS.CGImageGetWidth (outImage [0]);
+		int height = OS.CGImageGetHeight (outImage [0]);
+	 	CGRect rect = new CGRect();
+	 	rect.width = width;
+		rect.height = height;
+		//TODO - does not draw the browser (cocoa widgets?)
+		OS.HIViewDrawCGImage (gc.handle, rect, outImage [0]);
+		OS.CGImageRelease (outImage [0]);
+	}
+	return true;
+}
+
+boolean pollTrackEvent() {
+	return false;
+}
+
+/**
  * Causes the entire bounds of the receiver to be marked
  * as needing to be redrawn. The next time a paint request
  * is processed, the control will be completely painted,
@@ -1885,12 +2465,13 @@ public void pack (boolean changed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#DOUBLE_BUFFERED
  */
 public void redraw () {
 	checkWidget();
@@ -1899,7 +2480,7 @@ public void redraw () {
 
 void redraw (boolean children) {
 //	checkWidget();
-	redrawWidget (handle, true);
+	redrawWidget (handle, children);
 }
 
 /**
@@ -1924,12 +2505,13 @@ void redraw (boolean children) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#DOUBLE_BUFFERED
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
@@ -1940,6 +2522,27 @@ void register () {
 	super.register ();
 	display.addWidget (handle, this);
 }
+
+void release (boolean destroy) {
+	Control next = null, previous = null;
+	if (destroy && parent != null) {
+		Control[] children = parent._getChildren ();
+		int index = 0;
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		if (0 < index && (index + 1) < children.length) {
+			next = children [index + 1];
+			previous = children [index - 1];
+		}
+	}
+	super.release (destroy);
+	if (destroy) {
+		if (previous != null) previous.addRelation (next);
+	}
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
@@ -1960,6 +2563,11 @@ void releaseWidget () {
 	visibleRgn = 0;
 	menu = null;
 	layoutData = null;
+	if (accessible != null) {
+		accessible.internal_dispose_Accessible ();
+	}
+	accessible = null;
+	region = null;
 }
 
 /**
@@ -1985,6 +2593,32 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when a drag gesture occurs.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
 }
 
 /**
@@ -2059,6 +2693,33 @@ public void removeKeyListener(KeyListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.KeyUp, listener);
 	eventTable.unhook(SWT.KeyDown, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the platform-specific context menu trigger has
+ * occurred.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #addMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void removeMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MenuDetect, listener);
 }
 
 /**
@@ -2139,6 +2800,32 @@ public void removeMouseTrackListener(MouseTrackListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when the mouse wheel is scrolled.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #addMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void removeMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MouseWheel, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when the receiver needs to be painted.
  *
  * @param listener the listener which should no longer be notified
@@ -2159,6 +2846,19 @@ public void removePaintListener(PaintListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Paint, listener);
+}
+
+/*
+ * Remove "Labeled by" relations from the receiver.
+ */
+void removeRelation () {
+	if (!isDescribedByLabel ()) return;		/* there will not be any */
+	String string = OS.kAXTitleUIElementAttribute;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.HIObjectSetAuxiliaryAccessibilityAttribute(handle, 0, stringRef, 0);
+	OS.CFRelease(stringRef);
 }
 
 /**
@@ -2201,15 +2901,35 @@ void resetVisibleRegion (int control) {
 		}
 		OS.DisposeRgn (visibleRgn);
 	}
+	Object runnable = getData (RESET_VISIBLE_REGION);
+	if (runnable != null && runnable instanceof Runnable) {
+		((Runnable) runnable).run ();
+	}
 }
 
-boolean sendDragEvent (int x, int y) {
+boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
+	event.button = button;
 	event.x = x;
 	event.y = y;
-	//postEvent (SWT.DragDetect, event); 
-	sendEvent (SWT.DragDetect, event);
-	if (isDisposed ()) return false;
+	event.stateMask = stateMask;
+	postEvent (SWT.DragDetect, event);
+	return event.doit;
+}
+
+boolean sendDragEvent (int button, int chord, int modifiers, int x, int y) {
+	Event event = new Event ();
+	switch (button) {
+		case 1: event.button = 1; break;
+		case 2: event.button = 3; break;
+		case 3: event.button = 2; break;
+		case 4: event.button = 4; break;
+		case 5: event.button = 5; break;
+	}
+	event.x = x;
+	event.y = y;
+	setInputState (event, SWT.DragDetect, chord, modifiers);
+	postEvent (SWT.DragDetect, event);
 	return event.doit;
 }
 
@@ -2252,27 +2972,13 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int theEvent) {
-	if (!hooks (type) && !filters (type)) return true;
-	int x, y;
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		OS.HIViewConvertPoint (pt, 0, handle);
-		x = (int) pt.x;
-		y = (int) pt.y;
-	} else {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		x = pt.h - rect.left;
-		y = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
+	CGPoint pt = new CGPoint ();
+	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+	OS.HIViewConvertPoint (pt, 0, handle);
+	int x = (int) pt.x;
+	int y = (int) pt.y;
+	display.lastX = x;
+	display.lastY = y;
 	int [] chord = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
 	int [] modifiers = new int [1];
@@ -2280,13 +2986,25 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 	return sendMouseEvent (type, button, count, detail, send, chord [0], (short) x, (short) y, modifiers [0]);
 }
 
-boolean sendMouseEvent (int type, short button, boolean send, int chord, short x, short y, int modifiers) {
-	if (!hooks (type) && !filters (type)) return true;
-	return sendMouseEvent (type, button, 0, 0, send, chord, x, y, modifiers);
+boolean sendMouseEvent (int type, short button, int count, boolean send, int chord, short x, short y, int modifiers) {
+	return sendMouseEvent (type, button, count, 0, send, chord, x, y, modifiers);
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
-//	if (!hooks (type) && !filters (type)) return true;
+	if (!hooks (type) && !filters (type)) return true;
+	if ((state & SAFARI_EVENTS_FIX) != 0) {
+		switch (type) {
+			case SWT.MouseUp:
+			case SWT.MouseMove:
+			case SWT.MouseDoubleClick: {
+				return true;
+			}
+			case SWT.MouseDown: {
+				if (button == 1) return true;
+				break;
+			}
+		}
+	}
 	Event event = new Event ();
 	switch (button) {
 		case 1: event.button = 1; break;
@@ -2313,6 +3031,92 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 	return false;
 }
 
+void sendTrackEvents () {
+	Display display = this.display;
+	display.runDeferredEvents ();
+	if (isDisposed ()) return;
+	boolean events = false;
+	if (display.dragging) {
+		display.dragging = false;
+		sendDragEvent (display.dragButton, display.dragState, display.dragModifiers, display.dragX, display.dragY);
+		if (isDisposed ()) return;
+		events = true;
+	}
+	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (outPt);
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	int newX, newY;
+	CGPoint pt = new CGPoint ();
+	pt.x = outPt.h;
+	pt.y = outPt.v;
+	OS.HIViewConvertPoint (pt, 0, handle);
+	newX = (int) pt.x;
+	newY = (int) pt.y;
+	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	newX -= rect.left;
+	newY -= rect.top;
+	int newModifiers = OS.GetCurrentEventKeyModifiers ();
+	int newState = OS.GetCurrentEventButtonState ();
+	int oldX = display.lastX;
+	int oldY = display.lastY;
+	int oldState = display.lastState;
+	int oldModifiers = display.lastModifiers;
+	display.lastX = newX;
+	display.lastY = newY;
+	display.lastModifiers = newModifiers;
+	display.lastState = newState;
+	if (newState != oldState) {
+		int button = 0, type = SWT.MouseDown;
+		if ((oldState & 0x1) == 0 && (newState & 0x1) != 0) button = 1;
+		if ((oldState & 0x2) == 0 && (newState & 0x2) != 0) button = 2;
+		if ((oldState & 0x4) == 0 && (newState & 0x4) != 0) button = 3;
+		if ((oldState & 0x8) == 0 && (newState & 0x8) != 0) button = 4;
+		if ((oldState & 0x10) == 0 && (newState & 0x10) != 0) button = 5;
+		if (button == 0) {
+			type = SWT.MouseUp;
+			if ((oldState & 0x1) != 0 && (newState & 0x1) == 0) button = 1;
+			if ((oldState & 0x2) != 0 && (newState & 0x2) == 0) button = 2;
+			if ((oldState & 0x4) != 0 && (newState & 0x4) == 0) button = 3;
+			if ((oldState & 0x8) != 0 && (newState & 0x8) == 0) button = 4;
+			if ((oldState & 0x10) != 0 && (newState & 0x10) == 0) button = 5;
+		}
+		if (button != 0) {
+			sendMouseEvent (type, (short)button, 1, false, newState, (short)newX, (short)newY, newModifiers);
+			events = true;
+		}
+	}
+	if (newModifiers != oldModifiers && !isDisposed ()) {
+		int key = 0, type = SWT.KeyDown;
+		if ((newModifiers & OS.alphaLock) != 0 && (oldModifiers & OS.alphaLock) == 0) key = SWT.CAPS_LOCK;
+		if ((newModifiers & OS.shiftKey) != 0 && (oldModifiers & OS.shiftKey) == 0) key = SWT.SHIFT;
+		if ((newModifiers & OS.controlKey) != 0 && (oldModifiers & OS.controlKey) == 0) key = SWT.CONTROL;
+		if ((newModifiers & OS.cmdKey) != 0 && (oldModifiers & OS.cmdKey) == 0)  key = SWT.COMMAND;
+		if ((newModifiers & OS.optionKey) != 0 && (oldModifiers & OS.optionKey) == 0) key = SWT.ALT;
+		if (key == 0) {
+			type = SWT.KeyUp;
+			if ((newModifiers & OS.alphaLock) == 0 && (oldModifiers & OS.alphaLock) != 0) key = SWT.CAPS_LOCK;
+			if ((newModifiers & OS.shiftKey) == 0 && (oldModifiers & OS.shiftKey) != 0) key = SWT.SHIFT;
+			if ((newModifiers & OS.controlKey) == 0 && (oldModifiers & OS.controlKey) != 0) key = SWT.CONTROL;
+			if ((newModifiers & OS.cmdKey) == 0 && (oldModifiers & OS.cmdKey) != 0)  key = SWT.COMMAND;
+			if ((newModifiers & OS.optionKey) == 0 && (oldModifiers & OS.optionKey) != 0) key = SWT.ALT;
+		}
+		if (key != 0) {
+			Event event = new Event ();
+			event.keyCode = key;
+			setInputState (event, type, newState, newModifiers);
+			sendKeyEvent (type, event);
+			events = true;
+		}
+	}
+	if (newX != oldX || newY != oldY && !isDisposed ()) {
+		display.mouseMoved = true;
+		sendMouseEvent (SWT.MouseMove, (short)0, 0, false, newState, (short)newX, (short)newY, newModifiers);
+		events = true;
+	}
+	if (events) display.runDeferredEvents ();
+}
+
 void setBackground () {
 	redrawWidget (handle, false);
 }
@@ -2321,7 +3125,10 @@ void setBackground () {
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2337,11 +3144,35 @@ public void setBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	background = color != null ? color.handle : null;
+	float[] background = color != null ? color.handle : null;
+	if (equals (background, this.background)) return;
+	this.background = background;
 	setBackground (background);
 	redrawWidget (handle, false);
 }
 
+/**
+ * Sets the receiver's background image to the image specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.  The background image is tiled to fill
+ * the available space.
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
+ * @param image the new image (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setBackgroundImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2427,7 +3258,8 @@ public void setBounds (Rectangle rect) {
 /**
  * If the argument is <code>true</code>, causes the receiver to have
  * all mouse events delivered to it until the method is called with
- * <code>false</code> as the argument.
+ * <code>false</code> as the argument.  Note that on some platforms,
+ * a mouse button must currently be down for capture to be assigned.
  *
  * @param capture <code>true</code> to capture the mouse, and <code>false</code> to release it
  *
@@ -2474,7 +3306,7 @@ public void setCursor (Cursor cursor) {
 		if (theWindow [0] == 0) return;
 	}
 	Rect rect = new Rect ();
-	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
 	int [] theControl = new int [1];
 	if (display.grabControl == this) {
 		theControl [0] = handle;
@@ -2484,7 +3316,11 @@ public void setCursor (Cursor cursor) {
 		inPoint.y = where.v - rect.top;
 		int [] theRoot = new int [1];
 		OS.GetRootControl (theWindow [0], theRoot);
-		OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+		int[] event = new int[1];
+		OS.CreateEvent (0, OS.kEventClassMouse, OS.kEventMouseDown, 0.0, 0, event);
+		OS.SetEventParameter (event[0], OS.kEventParamWindowMouseLocation, OS.typeHIPoint, CGPoint.sizeof, inPoint);
+		OS.HIViewGetViewForMouseEvent (theRoot [0], event [0], theControl);
+		OS.ReleaseEvent(event[0]);
 		int cursorControl = theControl [0];
 		while (theControl [0] != 0 && theControl [0] != handle) {
 			OS.GetSuperControl (theControl [0], theControl);
@@ -2510,6 +3346,10 @@ public void setCursor (Cursor cursor) {
 			}
 		}
 	}
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, theControl [0], 0);
+	where.h -= (int) pt.x;
+	where.v -= (int) pt.y;
 	where.h -= rect.left;
 	where.v -= rect.top;
 	int modifiers = OS.GetCurrentEventKeyModifiers ();
@@ -2520,6 +3360,29 @@ public void setCursor (Cursor cursor) {
 
 void setDefaultFont () {
 	if (display.smallFonts) setFontStyle (defaultFont ());
+}
+
+/**
+ * Sets the receiver's drag detect state. If the argument is
+ * <code>true</code>, the receiver will detect drag gestures,
+ * otherwise these gestures will be ignored.
+ *
+ * @param dragDetect the new drag detect state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;	
+	} else {
+		state &= ~DRAG_DETECT;
+	}
 }
 
 /**
@@ -2609,10 +3472,12 @@ void setFontStyle (int control, Font font) {
 	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
 	fontStyle.flags &= ~(OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask | OS.kControlUseThemeFontIDMask);
 	if (font != null) {
+		short [] family = new short [1], style = new short [1];
+		OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
 		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
-		fontStyle.font = font.id;
-		fontStyle.style = font.style;
-		fontStyle.size = font.size;
+		fontStyle.font = family [0];
+		fontStyle.style = (short) (style [0] | font.style);
+		fontStyle.size = (short) font.size;
 	}
 	OS.SetControlFontStyle (control, fontStyle);
 }
@@ -2621,7 +3486,9 @@ void setFontStyle (int control, Font font) {
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2637,7 +3504,9 @@ public void setForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	foreground = color != null ? color.handle : null;
+	float[] foreground = color != null ? color.handle : null;
+	if (equals (foreground, this.foreground)) return;
+	this.foreground = foreground;
 	setForeground (foreground);
 	redrawWidget (handle, false);
 }
@@ -2722,6 +3591,11 @@ public void setLocation (Point location) {
  * the control. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pop up
  * menu is platform specific.
+ * <p>
+ * Note: Disposing of a control that has a pop up menu will
+ * dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the control is disposed.
+ * </p>
  *
  * @param menu the new pop up menu
  *
@@ -2752,7 +3626,7 @@ public void setMenu (Menu menu) {
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
- * Answers <code>true</code> if the parent is successfully changed.
+ * Returns <code>true</code> if the parent is successfully changed.
  *
  * @param parent the new parent for the control.
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
@@ -2768,8 +3642,23 @@ public void setMenu (Menu menu) {
  */
 public boolean setParent (Composite parent) {
 	checkWidget();
+	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	return false;
+	if (this.parent == parent) return true;
+	if (!isReparentable ()) return false;
+	releaseParent ();
+	Shell newShell = parent.getShell (), oldShell = getShell ();
+	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
+	if (oldShell != newShell || oldDecorations != newDecorations) {
+		Menu [] menus = oldShell.findMenus (this);
+		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	}
+	int topHandle = topHandle ();
+	OS.HIViewAddSubview (parent.handle, topHandle);
+	OS.HIViewSetVisible (topHandle, (state & HIDDEN) == 0);
+	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+	this.parent = parent;
+	return true;
 }
 
 /**
@@ -2793,31 +3682,70 @@ public boolean setParent (Composite parent) {
  * </ul>
  * 
  * @see #redraw(int, int, int, int, boolean)
- * @see #update
+ * @see #update()
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
-			if (OS.HIVIEW) {
-				OS.HIViewSetDrawingEnabled (handle, true);
-			}
-			invalidateVisibleRegion (handle);
-			redrawWidget (handle, true);
+			int topHandle = topHandle ();
+			OS.HIViewSetDrawingEnabled (topHandle, true);
+			invalidateVisibleRegion (topHandle);
+			redrawWidget (topHandle, true);
 		}
 	} else {
 		if (drawCount == 0) {
-			if (OS.HIVIEW) {
-				OS.HIViewSetDrawingEnabled (handle, false);
-			}
-			invalidateVisibleRegion (handle);
+			int topHandle = topHandle ();
+			OS.HIViewSetDrawingEnabled (topHandle, false);
+			invalidateVisibleRegion (topHandle);
 		}
 		drawCount++;
 	}
 }
 
+/**
+ * Sets the shape of the control to the region specified
+ * by the argument.  When the argument is null, the
+ * default shape of the control is restored.
+ *
+ * @param region the region that defines the shape of the control (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
+ * </ul>  
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setRegion (Region region) {
+	checkWidget ();
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	this.region = region;
+	OS.HIViewRegionChanged (handle, OS.kControlStructureMetaPart);
+	redrawWidget (handle, true);
+}
+
 boolean setRadioSelection (boolean value){
 	return false;
+}
+
+void setRelations () {
+	if (parent == null) return;
+	Control [] children = parent._getChildren ();
+	int count = children.length;
+	if (count > 1) {
+		/*
+		 * the receiver is the last item in the list, so its predecessor will
+		 * be the second-last item in the list
+		 */
+		Control child = children [count - 2];
+		if (child != this) {
+			child.addRelation (this);
+		}
+	}
 }
 
 /**
@@ -2876,8 +3804,17 @@ boolean setTabItemFocus () {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -2888,8 +3825,8 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	if (display.helpControl == this) {
-		display.helpControl = null;
+	if (display.helpWidget == this) {
+		display.helpWidget = null;
 		OS.HMInstallControlContentCallback (handle, 0);
 		OS.HMInstallControlContentCallback (handle, display.helpProc);
 	}
@@ -2963,28 +3900,76 @@ void setZOrder () {
 	int topHandle = topHandle ();
 	int parentHandle = parent.handle;
 	OS.HIViewAddSubview (parentHandle, topHandle);
-	if (OS.HIVIEW) {
-		OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
-	} else {
-		//OS.EmbedControl (topHandle, parentHandle);
-		/* Place the child at (0, 0) in the parent */
-		Rect parentRect = new Rect ();
-		OS.GetControlBounds (parentHandle, parentRect);
-		Rect inset = getInset ();
-		Rect newBounds = new Rect ();
-		newBounds.left = (short) (parentRect.left + inset.left);
-		newBounds.top = (short) (parentRect.top + inset.top);
-		newBounds.right = (short) (newBounds.left - inset.right - inset.left);
-		newBounds.bottom = (short) (newBounds.top - inset.bottom - inset.top);
-		if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
-		if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
-		OS.SetControlBounds (topHandle, newBounds);
-	}
+	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+	Rect inset = getInset ();
+	Rect rect = new Rect ();
+	rect.left = rect.right = inset.left;
+	rect.top = rect.bottom = inset.top;
+	OS.SetControlBounds (topHandle, rect);
 }
 
-void setZOrder (Control control, boolean above) {
-	int otherControl = control == null ? 0 : control.topHandle ();
-	setZOrder (topHandle (), otherControl, above);
+void setZOrder (Control sibling, boolean above) {
+	int siblingHandle = sibling == null ? 0 : sibling.topHandle ();
+	int index = 0, siblingIndex = 0, oldNextIndex = -1;
+	Control[] children = null;
+	/* determine the receiver's and sibling's indexes in the parent */
+	children = parent._getChildren ();
+	while (index < children.length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	if (sibling != null) {
+		while (siblingIndex < children.length) {
+			if (children [siblingIndex] == sibling) break;
+			siblingIndex++;
+		}
+	}
+	/* remove "Labeled by" relationships that will no longer be valid */
+	removeRelation ();
+	if (index + 1 < children.length) {
+		oldNextIndex = index + 1;
+		children [oldNextIndex].removeRelation ();
+	}
+	if (sibling != null) {
+		if (above) {
+			sibling.removeRelation ();
+		} else {
+			if (siblingIndex + 1 < children.length) {
+				children [siblingIndex + 1].removeRelation ();
+			}
+		}
+	}
+	setZOrder (topHandle (), siblingHandle, above);
+	/* determine the receiver's new index in the parent */
+	if (sibling != null) {
+		if (above) {
+			index = siblingIndex - (index < siblingIndex ? 1 : 0);
+		} else {
+			index = siblingIndex + (siblingIndex < index ? 1 : 0);
+		}
+	} else {
+		if (above) {
+			index = 0;
+		} else {
+			index = children.length - 1;
+		}
+	}
+
+	/* add new "Labeled by" relations as needed */
+	children = parent._getChildren ();
+	if (0 < index) {
+		children [index - 1].addRelation (this);
+	}
+	if (index + 1 < children.length) {
+		addRelation (children [index + 1]);
+	}
+	if (oldNextIndex != -1) {
+		if (oldNextIndex <= index) oldNextIndex--;
+		/* the last two conditions below ensure that duplicate relations are not hooked */
+		if (0 < oldNextIndex && oldNextIndex != index && oldNextIndex != index + 1) {
+			children [oldNextIndex - 1].addRelation (children [oldNextIndex]);
+		}
+	}
 }
 
 void sort (int [] items) {
@@ -3001,6 +3986,39 @@ void sort (int [] items) {
 	    	}
 	    }
 	}
+}
+
+Point textExtent (int ptr, int wHint) {
+	if (ptr != 0 && OS.CFStringGetLength (ptr) > 0) {		
+		float [] w = new float [1], h = new float [1];
+		HIThemeTextInfo info = new HIThemeTextInfo ();
+		info.state = OS.kThemeStateActive;
+		if (font != null) {
+			short [] family = new short [1], style = new short [1];
+			OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
+			OS.TextFont (family [0]);
+			OS.TextFace ((short) (style [0] | font.style));
+			OS.TextSize ((short) font.size);
+			info.fontID = (short) OS.kThemeCurrentPortFont; 
+		} else {
+			info.fontID = (short) defaultThemeFont ();
+		}
+		OS.HIThemeGetTextDimensions (ptr, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
+		return new Point((int) w [0], (int) h [0]);
+	} else {
+		Font font = getFont ();
+		ATSFontMetrics metrics = new ATSFontMetrics();
+		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		return new Point(0, (int)(0.5f + (metrics.ascent -metrics.descent + metrics.leading) * font.size));
+	}
+}
+
+Point textExtent(char[] chars, int wHint) {
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+	Point result = textExtent (ptr, wHint);
+	if (ptr != 0) OS.CFRelease (ptr);
+	return result;
 }
 
 /**
@@ -3023,18 +4041,11 @@ public Point toControl (int x, int y) {
 	checkWidget();
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.HIViewConvertPoint (pt, handle, 0);
-		x -= (int) pt.x;
-		y -= (int) pt.y;
-		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	} else {
-		OS.GetControlBounds (handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	}
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, handle, 0);
+	x -= (int) pt.x;
+	y -= (int) pt.y;
+	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 	x -= rect.left;
 	y -= rect.top;
 	Rect inset = getInset ();
@@ -3085,18 +4096,11 @@ public Point toDisplay (int x, int y) {
 	checkWidget();
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.HIViewConvertPoint (pt, handle, 0);
-		x += (int) pt.x;
-		y += (int) pt.y;
-		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	} else {
-		OS.GetControlBounds (handle, rect);
-		x += rect.left;
-		y += rect.top;
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	}
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, handle, 0);
+	x += (int) pt.x;
+	y += (int) pt.y;
+	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 	x += rect.left;
 	y += rect.top;
 	Rect inset = getInset ();
@@ -3315,13 +4319,19 @@ boolean traverseMnemonic (Event event) {
 
 /**
  * Forces all outstanding paint requests for the widget
- * to be processed before this method returns.
+ * to be processed before this method returns. If there
+ * are no outstanding paint request, this method does
+ * nothing.
+ * <p>
+ * Note: This method does not cause a redraw.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see #redraw()
  * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint
@@ -3333,46 +4343,11 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget();
-	if (OS.HIVIEW) {
-		//TODO - not all
-		OS.HIViewRender (handle);
-		return;
-	}
-	if (!isDrawing (handle)) return;
-	int window = OS.GetControlOwner (handle);
-	int port = OS.GetWindowPort (window);
-	int portRgn = OS.NewRgn ();
-	OS.GetPortVisibleRegion (port, portRgn);
-	if (!OS.EmptyRgn (portRgn)) {
-		int updateRgn = OS.NewRgn ();
-		OS.GetWindowRegion (window, (short)OS.kWindowUpdateRgn, updateRgn);
-		if (!OS.EmptyRgn (updateRgn)) {
-			Rect rect = new Rect ();
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			OS.OffsetRgn (updateRgn, (short)-rect.left, (short)-rect.top);
-			OS.SectRgn (portRgn, updateRgn, updateRgn);
-			if (!OS.EmptyRgn (updateRgn)) {
-				int visibleRgn = getVisibleRegion (handle, !all);
-				if (!OS.EmptyRgn (visibleRgn)) {
-					OS.SectRgn (updateRgn, visibleRgn, visibleRgn);
-					if (!OS.EmptyRgn (visibleRgn)) {	
-						int [] currentPort = new int[1];
-						OS.GetPort (currentPort);
-						OS.SetPort (port);
-						OS.BeginUpdate (window);	
-						OS.DiffRgn (updateRgn, visibleRgn, updateRgn);
-						invalWindowRgn (window, updateRgn);
-						OS.UpdateControls (window, visibleRgn);
-						OS.EndUpdate (window);
-						OS.SetPort (currentPort [0]);
-					}
-				}
-				OS.DisposeRgn (visibleRgn);
-			}
-		}
-		OS.DisposeRgn (updateRgn);
-	}
-	OS.DisposeRgn (portRgn);
+	//TODO - not all
+	if (display.inPaint) return;
+	OS.HIViewRender (handle);
+	if (isDisposed()) return;
+	OS.HIWindowFlush (OS.GetControlOwner (handle));
 }
 
 void updateBackgroundMode () {
@@ -3388,3 +4363,4 @@ void updateLayout (boolean all) {
 }
 
 }
+

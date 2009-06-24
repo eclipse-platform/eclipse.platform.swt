@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,10 +31,14 @@ import org.eclipse.swt.internal.carbon.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int accelerator;
+	boolean acceleratorSet;
 //	int x, y, width, height;
 
 /**
@@ -94,10 +98,11 @@ public MenuItem (Menu parent, int style) {
  *
  * @param parent a menu control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -172,7 +177,7 @@ public void addHelpListener (HelpListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the menu item is selected, by sending
+ * be notified when the menu item is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -180,7 +185,7 @@ public void addHelpListener (HelpListener listener) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the menu item is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -261,7 +266,7 @@ public int getAccelerator () {
 		int outMenuRef [] = new int [1];
 		if (OS.GetMenuItemHierarchicalMenu (menu.handle, (short)(index + 1), outMenuRef) != OS.noErr) {
 			return new Rectangle (0 ,0, 0, 0);
-		};
+		}
 		Rect rect = new Rect ();
 		//TODO - get the bounds of the menu item from the menu title
 //		if (... code needed to do this ... != OS.noErr) {
@@ -421,6 +426,9 @@ int keyGlyph (int key) {
 		case SWT.ARROW_RIGHT: return OS.kMenuRightArrowGlyph;
 		case SWT.PAGE_UP: return OS.kMenuPageUpGlyph;
 		case SWT.PAGE_DOWN: return OS.kMenuPageDownGlyph;
+		case SWT.KEYPAD_CR: return OS.kMenuEnterGlyph;
+		case SWT.HELP: return OS.kMenuHelpGlyph;
+//		case SWT.CAPS_LOCK: return OS.kMenuCapsLockGlyph;
 		case SWT.F1: return OS.kMenuF1Glyph;
 		case SWT.F2: return OS.kMenuF2Glyph;
 		case SWT.F3: return OS.kMenuF3Glyph;
@@ -433,6 +441,16 @@ int keyGlyph (int key) {
 		case SWT.F10: return OS.kMenuF10Glyph;
 		case SWT.F11: return OS.kMenuF11Glyph;
 		case SWT.F12: return OS.kMenuF12Glyph;
+		case SWT.F13: return OS.kMenuF13Glyph;
+		case SWT.F14: return OS.kMenuF14Glyph;
+		case SWT.F15: return OS.kMenuF15Glyph;
+		case SWT.HOME: return OS.kMenuNorthwestArrowGlyph;
+		case SWT.END: return OS.kMenuSoutheastArrowGlyph;	
+		/*
+		* The following lines are intentionally commented.
+		* The Mac does not (currently) have glyphs for these keys.
+		*/
+//		case SWT.INSERT: return OS.kMenuNullGlyph;
 	}
 	return OS.kMenuNullGlyph;
 }
@@ -506,7 +524,7 @@ public void removeHelpListener (HelpListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -583,6 +601,7 @@ public void setAccelerator (int accelerator) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	if (this.accelerator == accelerator) return;
 	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
 	this.accelerator = accelerator;
 	boolean inSetVirtualKey = false;
@@ -647,6 +666,9 @@ public void setEnabled (boolean enabled) {
  * <p>
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept (for example, Windows NT).
+ * Furthermore, some platforms (such as GTK), cannot display both
+ * a check box and an image at the same time.  Instead, they hide
+ * the image and display the check box.
  * </p>
  *
  * @param image the image to display
@@ -673,6 +695,11 @@ public void setImage (Image image) {
  * pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
+ * <p>
+ * Note: Disposing of a menu item that has a pull down menu
+ * will dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the menu item is disposed.
+ * </p>
  *
  * @param menu the new pull down menu
  *
@@ -771,14 +798,14 @@ public void setSelection (boolean selected) {
  * Sets the receiver's text. The string may include
  * the mnemonic character and accelerator text.
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
  * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
  * </p>
  * <p>
  * Accelerator text is indicated by the '\t' character.
@@ -834,7 +861,116 @@ void updateText (short menuIndex) {
 	int [] outHierMenu = new int [1];
 	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outHierMenu);
 	if (outHierMenu [0] != 0) OS.SetMenuTitleWithCFString (outHierMenu [0], str);
+	/*
+	* Feature in the Macintosh.  Setting text that starts with "-" makes the
+	* menu item a separator.  The fix is to clear the separator attribute. 
+	*/
+	if (text.startsWith ("-")) {
+		OS.ChangeMenuItemAttributes (parent.handle, menuIndex, 0, OS.kMenuItemAttrSeparator);
+	}
 	OS.CFRelease (str);
-}
-}
+	
+	acceleratorSet = accelerator != 0;
+	if (!acceleratorSet) {
+		int inModifiers = OS.kMenuNoCommandModifier, inGlyph = OS.kMenuNullGlyph, inKey = 0, swtKey = 0;
+		boolean inSetVirtualKey = false;
+		if (i + 1 < buffer.length && buffer [i] == '\t') {
+			for (j = i + 1; j < buffer.length; j++) {
+				switch (buffer [j]) {
+					case '\u2303': inModifiers |= OS.kMenuControlModifier; i++; break;
+					case '\u2325': inModifiers |= OS.kMenuOptionModifier; i++; break;
+					case '\u21E7': inModifiers |= OS.kMenuShiftModifier; i++; break;
+					case '\u2318': inModifiers &= ~OS.kMenuNoCommandModifier; i++; break;
+					default:
+						j = buffer.length;
+						break;
+				}
+			}
+			switch (buffer.length - i - 1) {
+				case 1:
+					inKey = buffer [i + 1];
+					switch (inKey) {
+						case '\u232B': swtKey = SWT.BS; break;
+						case '\u21A9': swtKey = SWT.CR; break;
+						case '\u2326': swtKey = SWT.DEL; break;
+						case '\u238B': swtKey = SWT.ESC; break;
+						case '\u21E5': swtKey = SWT.TAB; break;
+						case ' ': swtKey = ' '; break;
+						case '\u2423': swtKey = ' '; break;
+						case '\u2191': swtKey = SWT.ARROW_UP; break;
+						case '\u2193': swtKey = SWT.ARROW_DOWN; break;
+						case '\u2190': swtKey = SWT.ARROW_LEFT; break;
+						case '\u2192': swtKey = SWT.ARROW_RIGHT; break;
+						case '\u21DE': swtKey = SWT.PAGE_UP; break;
+						case '\u21DF': swtKey = SWT.PAGE_DOWN; break;
+						case '\u0003': swtKey = SWT.KEYPAD_CR; break;
+						case '\uF746': swtKey = SWT.HELP; break;
+						case '\uF729': swtKey = SWT.HOME; break;
+						case '\uF72B': swtKey = SWT.END; break;
+//						case '\u21EA': swtKey = SWT.CAPS_LOCK; break;
+						case '\uF704': swtKey = SWT.F1; break;
+						case '\uF705': swtKey = SWT.F2; break;
+						case '\uF706': swtKey = SWT.F3; break;
+						case '\uF707': swtKey = SWT.F4; break;
+						case '\uF708': swtKey = SWT.F5; break;
+						case '\uF709': swtKey = SWT.F6; break;
+						case '\uF70A': swtKey = SWT.F7; break;
+						case '\uF70B': swtKey = SWT.F8; break;
+						case '\uF70C': swtKey = SWT.F9; break;
+						case '\uF70D': swtKey = SWT.F10; break;
+						case '\uF70E': swtKey = SWT.F11; break;
+						case '\uF70F': swtKey = SWT.F12; break;
+						case '\uF710': swtKey = SWT.F13; break;
+						case '\uF711': swtKey = SWT.F14; break;
+						case '\uF712': swtKey = SWT.F15; break;
+					}
+					break;
+				case 2:
+					if (buffer [i + 1] == 'F') {
+						switch (buffer [i + 2]) {
+							case '1': swtKey = SWT.F1; break;
+							case '2': swtKey = SWT.F2; break;
+							case '3': swtKey = SWT.F3; break;
+							case '4': swtKey = SWT.F4; break;
+							case '5': swtKey = SWT.F5; break;
+							case '6': swtKey = SWT.F6; break;
+							case '7': swtKey = SWT.F7; break;
+							case '8': swtKey = SWT.F8; break;
+							case '9': swtKey = SWT.F9; break;
+						}
+					}
+					break;
+				case 3:
+					if (buffer [i + 1] == 'F' && buffer [i + 2] == '1') {
+						switch (buffer [i + 3]) {
+							case '0': swtKey = SWT.F10; break;
+							case '1': swtKey = SWT.F11; break;
+							case '2': swtKey = SWT.F12; break;
+							case '3': swtKey = SWT.F13; break;
+							case '4': swtKey = SWT.F14; break;
+							case '5': swtKey = SWT.F15; break;
+						}
+					}
+					break;
+			}
 
+			inGlyph = keyGlyph (swtKey);
+			int virtualKey = Display.untranslateKey (swtKey);
+			if (swtKey == ' ') {
+				virtualKey = 49;
+				inGlyph = OS.kMenuSpaceGlyph;
+			}
+			if (virtualKey != 0) {
+				inSetVirtualKey = true;
+				inKey = virtualKey;
+			} else {
+				inKey = Character.toUpperCase ((char)inKey);
+			}
+		}
+		acceleratorSet = inKey != 0 || inGlyph != OS.kMenuNullGlyph;
+		OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
+		OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
+		OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
+	}
+}
+}

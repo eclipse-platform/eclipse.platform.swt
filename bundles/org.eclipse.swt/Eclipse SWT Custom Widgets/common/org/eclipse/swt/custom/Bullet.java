@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.*;
 
 /**
- * Instances of this class represent bullet in the <code>StyledText</code>.
+ * Instances of this class represent bullets in the <code>StyledText</code>.
  * <p>
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the
@@ -27,18 +27,39 @@ import org.eclipse.swt.*;
  * </p>
  * 
  * @see StyledText#setLineBullet(int, int, Bullet)
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2
  */
 public class Bullet {
+	/**
+	* The bullet type.  Possible values are:
+	* <ul>
+	* <li><code>ST.BULLET_DOT</code></li>
+	* <li><code>ST.BULLET_NUMBER</code></li>
+	* <li><code>ST.BULLET_LETTER_LOWER</code></li>
+	* <li><code>ST.BULLET_LETTER_UPPER</code></li>
+	* <li><code>ST.BULLET_TEXT</code></li>
+	* <li><code>ST.BULLET_CUSTOM</code></li>
+	* </ul>
+	*/
 	public int type;
+
+	/**
+	* The bullet style.
+	*/
 	public StyleRange style;
-	public String text;	
+
+	/**
+	* The bullet text.
+	*/
+	public String text;
+
 	int[] linesIndices;
 	int count;
 
 /** 
- * Create a new bullet the specified style, the type is set to ST.BULLET_DOT. 
+ * Create a new bullet with the specified style, and type <code>ST.BULLET_DOT</code>. 
  * The style must have a glyph metrics set.
  *
  * @param style the style 
@@ -54,6 +75,7 @@ public Bullet(StyleRange style) {
  * Create a new bullet the specified style and type. 
  * The style must have a glyph metrics set.
  *
+ * @param type the bullet type
  * @param style the style 
  * 
  * @exception IllegalArgumentException <ul>

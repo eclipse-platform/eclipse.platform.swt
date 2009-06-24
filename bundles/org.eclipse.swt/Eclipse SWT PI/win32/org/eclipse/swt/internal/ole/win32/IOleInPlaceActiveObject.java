@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,14 +14,20 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IOleInPlaceActiveObject extends IOleWindow
 {
-public IOleInPlaceActiveObject(int address) {
+public IOleInPlaceActiveObject(int /*long*/ address) {
 	super(address);
 }
 public int TranslateAccelerator(MSG lpmsg) {
 	  //lpmsg - Pointer to message that may need translating
 	  return COM.VtblCall(5, address, lpmsg);
 }
-public int ResizeBorder(RECT prcBorder, int pUIWindow, boolean fFrameWindow) {
+public void OnFrameWindowActivate(boolean fActivate) {
+	COM.VtblCall(6, getAddress(), fActivate);
+}
+public void OnDocWindowActivate(boolean fActivate) {
+	COM.VtblCall(7, getAddress(), fActivate);
+}
+public int ResizeBorder(RECT prcBorder, int /*long*/ pUIWindow, boolean fFrameWindow) {
 	return COM.VtblCall(8, address, prcBorder, pUIWindow, fFrameWindow);
 }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,7 @@ import org.eclipse.swt.*;
  * required, and thus no <code>dispose()</code> method is provided.
  *
  * @see Font
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontData {
 	/**
@@ -60,7 +61,7 @@ public final class FontData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int height;
+	public float height;
 
 	/**
 	 * the font style
@@ -92,7 +93,7 @@ public final class FontData {
 	String lang, country, variant;
 	
 /**	 
- * Constructs a new un-initialized font data.
+ * Constructs a new uninitialized font data.
  */
 public FontData () {
 	this("", 12, SWT.NORMAL);
@@ -137,9 +138,9 @@ public FontData(String string) {
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int height = 0;
+	float height = 0;
 	try {
-		height = Integer.parseInt(string.substring(start, end));
+		height = Float.parseFloat(string.substring(start, end));
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -192,6 +193,12 @@ public FontData(String name, int height, int style) {
 	setStyle(style);
 }
 
+/*public*/ FontData(String name, float height, int style) {
+	setName(name);
+	setHeight(height);
+	setStyle(style);
+}
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -214,9 +221,13 @@ public boolean equals (Object object) {
  *
  * @return the height of this FontData
  *
- * @see #setHeight
+ * @see #setHeight(int)
  */
 public int getHeight() {
+	return (int)(0.5f + height);
+}
+
+/*public*/ float getHeightF() {
 	return height;
 }
 
@@ -299,7 +310,7 @@ public int getStyle() {
  * @see #equals
  */
 public int hashCode () {
-	return name.hashCode() ^ height ^ style;
+	return name.hashCode() ^ getHeight() ^ style;
 }
 
 /**
@@ -316,6 +327,12 @@ public int hashCode () {
  * @see #getHeight
  */
 public void setHeight(int height) {
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.height = height;
+	this.string = null;
+}
+
+/*public*/ void setHeight(float height) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
 	this.string = null;
@@ -414,11 +431,11 @@ public void setStyle(int style) {
  * @see FontData
  */
 public String toString() {
-	StringBuffer buffer = new StringBuffer();
+	StringBuffer buffer = new StringBuffer(128);
 	buffer.append("1|");
 	buffer.append(getName());
 	buffer.append("|");
-	buffer.append(getHeight());
+	buffer.append(getHeightF());
 	buffer.append("|");
 	buffer.append(getStyle());
 	buffer.append("|");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,6 +59,8 @@ import org.eclipse.swt.widgets.*;
 * editor.minimumHeight = size.y;
 * editor.setEditor (button);
 * </pre></code>
+*
+* @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
 public class ControlEditor {
 
@@ -78,7 +80,7 @@ public class ControlEditor {
 	/**
 	* Specifies the minimum width the editor can have.  This is used in association with
 	* a true value of grabHorizontal.  If the cell becomes smaller than the minimumWidth, the 
-	* editor will not made smaller than the minumum width value.  The default value is 0.
+	* editor will not made smaller than the minimum width value.  The default value is 0.
 	*/
 	public int minimumWidth = 0;
 	
@@ -98,15 +100,17 @@ public class ControlEditor {
 	/**
 	* Specifies the minimum height the editor can have.  This is used in association with
 	* a true value of grabVertical.  If the control becomes smaller than the minimumHeight, the 
-	* editor will not made smaller than the minumum height value.  The default value is 0.
+	* editor will not made smaller than the minimum height value.  The default value is 0.
 	*/
 	public int minimumHeight = 0;
 
 	Composite parent;
 	Control editor;
 	private boolean hadFocus;
-	private Listener tableListener;
+	private Listener controlListener;
 	private Listener scrollbarListener;
+	
+	private final static int [] EVENTS = {SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.Resize};
 /**
 * Creates a ControlEditor for the specified Composite.
 *
@@ -116,12 +120,14 @@ public class ControlEditor {
 public ControlEditor (Composite parent) {
 	this.parent = parent;
 
-	tableListener = new Listener() {
+	controlListener = new Listener() {
 		public void handleEvent(Event e) {
-			resize ();
+			layout ();
 		}
-	};	
-	parent.addListener (SWT.Resize, tableListener);
+	};
+	for (int i=0; i<EVENTS.length; i++) {
+		parent.addListener (EVENTS [i], controlListener);
+	}
 	
 	scrollbarListener = new Listener() {
 		public void handleEvent(Event e) {
@@ -176,8 +182,10 @@ Rectangle computeBounds () {
  * composite and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	if (!parent.isDisposed()) {
-		parent.removeListener (SWT.Resize, tableListener);
+	if (parent != null && !parent.isDisposed()) {
+		for (int i=0; i<EVENTS.length; i++) {
+			parent.removeListener (EVENTS [i], controlListener);
+		}
 		ScrollBar hBar = parent.getHorizontalBar ();
 		if (hBar != null) hBar.removeListener (SWT.Selection, scrollbarListener);
 		ScrollBar vBar = parent.getVerticalBar ();
@@ -187,7 +195,7 @@ public void dispose () {
 	parent = null;
 	editor = null;
 	hadFocus = false;
-	tableListener = null;
+	controlListener = null;
 	scrollbarListener = null;
 }
 /**
@@ -206,9 +214,6 @@ public Control getEditor () {
  * @since 2.1
  */
 public void layout () {
-	resize();
-}
-void resize () {
 	if (editor == null || editor.isDisposed()) return;
 	if (editor.getVisible ()) {
 		hadFocus = editor.isFocusControl();
@@ -223,7 +228,7 @@ void resize () {
 }
 void scroll (Event e) {
 	if (editor == null || editor.isDisposed()) return;
-	editor.setBounds (computeBounds ());
+	layout();
 }
 /**
 * Specify the Control that is to be displayed.
@@ -243,8 +248,8 @@ public void setEditor (Control editor) {
 	}
 	
 	this.editor = editor;
-	resize();
-	if (editor == null || editor.isDisposed()) return;
+	layout();
+	if (this.editor == null || this.editor.isDisposed()) return;
 	editor.setVisible(true);
 }
 }

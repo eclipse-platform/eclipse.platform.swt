@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,12 @@ import org.eclipse.swt.graphics.*;
  * user interface object that displays a string or image.
  * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
+ * <p>
+ * Shadow styles are hints and may not be honored
+ * by the platform.  To create a separator label
+ * with the default shadow style for the platform,
+ * do not specify a shadow style.
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
@@ -36,13 +42,18 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#label">Label snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Label extends Control {
 	String text = "";
 	Image image;
 	static final int MARGIN = 4;
-	static final boolean IMAGE_AND_TEXT = false;
-	static final int LabelProc;
+	static /*final*/ boolean IMAGE_AND_TEXT = false;
+	static final int /*long*/ LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -91,7 +102,7 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (LabelProc, hwnd, msg, wParam, lParam);
 }
@@ -136,9 +147,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 	}
 	if (drawText) {
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		int oldFont = OS.SelectObject (hDC, newFont);
+		int /*long*/ hDC = OS.GetDC (handle);
+		int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		int /*long*/ oldFont = OS.SelectObject (hDC, newFont);
 		int length = OS.GetWindowTextLength (handle);
 		if (length == 0) {
 			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
@@ -341,14 +352,14 @@ public void setImage (Image image) {
  * the mnemonic character and line delimiters.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, focus is assigned
  * to the control that follows the label. On most platforms,
  * the mnemonic appears underlined but may be emphasised in a
  * platform specific manner.  The mnemonic indicator character
- *'&amp' can be escaped by doubling it in the string, causing
- * a single '&amp' to be displayed.
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text
@@ -380,7 +391,7 @@ public void setText (String string) {
 			if ((style & SWT.WRAP) != 0) {
 				newBits |= OS.SS_LEFT;
 			} else {
-			newBits |= OS.SS_LEFTNOWORDWRAP;
+				newBits |= OS.SS_LEFTNOWORDWRAP;
 			}
 		}
 		if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
@@ -390,6 +401,17 @@ public void setText (String string) {
 	string = Display.withCrLf (string);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the label uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	if (OS.COMCTL32_MAJOR < 6) {
+		if (findImageControl () != null) OS.InvalidateRect (handle, null, true);
+	}
 }
 
 int widgetExtStyle () {
@@ -414,21 +436,35 @@ TCHAR windowClass () {
 	return LabelClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return LabelProc;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
 		return LRESULT.ONE;
 	}
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the label uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	if (OS.COMCTL32_MAJOR < 6) {
+		if (findImageControl () != null) {
+			drawBackground (wParam);
+			return LRESULT.ONE;
+		}
+	}
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -454,13 +490,14 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
 	/*
 	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
 	* a static control, it sends WM_CTLCOLORSTATIC to get the
 	* foreground and background.  If any drawing happens in
-	* WM_CTLCOLORBTN, it overwrites the contents of the control.
+	* WM_CTLCOLORSTATIC, it overwrites the contents of the control.
 	* The fix is draw the static without drawing the background
 	* and avoid the static window proc.
 	*/
@@ -474,12 +511,99 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	}
 	if (redraw) {
 		OS.InvalidateRect (handle, null, false);
-		return LRESULT.ZERO;
+		int /*long*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+		return new LRESULT (code);
 	}
 	return result;
 }
 
-LRESULT wmDrawChild (int wParam, int lParam) {
+LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the label uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	if (OS.COMCTL32_MAJOR < 6) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
+			if (findImageControl () != null) {
+				OS.SetBkMode (wParam, OS.TRANSPARENT);
+				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
+	if (OS.IsWinCE) {
+		boolean drawImage = image != null;
+		boolean drawSeparator = (style & SWT.SEPARATOR) != 0 && (style & SWT.SHADOW_NONE) == 0;
+		if (drawImage || drawSeparator) {
+			LRESULT result = null;
+			PAINTSTRUCT ps = new PAINTSTRUCT ();
+			GCData data = new GCData ();
+			data.ps = ps;
+			data.hwnd = handle;
+			GC gc = new_GC (data);
+			if (gc != null) {
+				drawBackground (gc.handle);
+				RECT clientRect = new RECT();
+				OS.GetClientRect (handle, clientRect);
+				if (drawSeparator) {
+					RECT rect = new RECT ();
+					int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
+					int flags = (style & SWT.SHADOW_IN) != 0 ? OS.EDGE_SUNKEN : OS.EDGE_ETCHED;
+					if ((style & SWT.HORIZONTAL) != 0) {
+						int bottom = clientRect.top + Math.max (lineWidth * 2, (clientRect.bottom - clientRect.top) / 2);
+						OS.SetRect (rect, clientRect.left, clientRect.top, clientRect.right, bottom);
+						OS.DrawEdge (gc.handle, rect, flags, OS.BF_BOTTOM);
+					} else {
+						int right = clientRect.left + Math.max (lineWidth * 2, (clientRect.right - clientRect.left) / 2);
+						OS.SetRect (rect, clientRect.left, clientRect.top, right, clientRect.bottom);
+						OS.DrawEdge (gc.handle, rect, flags, OS.BF_RIGHT);
+					}
+					result = LRESULT.ONE;
+				}
+				if (drawImage) {
+					Rectangle imageBounds = image.getBounds ();
+					int x = 0;
+					if ((style & SWT.CENTER) != 0) {
+						x = Math.max (0, (clientRect.right - imageBounds.width) / 2);
+					} else {
+						if ((style & SWT.RIGHT) != 0) {
+							x = Math.max (0, (clientRect.right - imageBounds.width));
+						}
+					}
+					gc.drawImage (image, x, Math.max (0, (clientRect.bottom - imageBounds.height) / 2));
+					result = LRESULT.ONE;
+				}
+				int width = ps.right - ps.left;
+				int height = ps.bottom - ps.top;
+				if (width != 0 && height != 0) {
+					Event event = new Event ();
+					event.gc = gc;
+					event.x = ps.left;
+					event.y = ps.top;
+					event.width = width;
+					event.height = height;
+					sendEvent (SWT.Paint, event);
+					// widget could be disposed at this point
+					event.gc = null;
+				}
+				gc.dispose ();
+			}
+			return result;
+		}
+	}
+	return super.WM_PAINT(wParam, lParam);
+}
+
+LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	drawBackground (struct.hDC);
@@ -540,9 +664,9 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 				GCData data = new GCData();
 				data.device = display;
 				GC gc = GC.win32_new (struct.hDC, data);
-				Image drawnImage = getEnabled () ? image : new Image (display, image, SWT.IMAGE_DISABLE);
-				gc.drawImage (drawnImage, x, Math.max (0, (height - imageHeight) / 2));
-				if (drawnImage != image) drawnImage.dispose ();
+				Image image = getEnabled () ? this.image : new Image (display, this.image, SWT.IMAGE_DISABLE);
+				gc.drawImage (image, x, Math.max (0, (height - imageHeight) / 2));
+				if (image != this.image) image.dispose ();
 				gc.dispose ();
 				x += imageWidth + margin;
 			}
@@ -555,7 +679,6 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 				OS.DrawText (struct.hDC, buffer, -1, rect, flags);
 			}
 		}
-
 	}
 	return null;
 }

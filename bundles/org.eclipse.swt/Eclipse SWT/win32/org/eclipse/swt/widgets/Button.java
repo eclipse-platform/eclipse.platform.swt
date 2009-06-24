@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -38,20 +39,26 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#button">Button snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class Button extends Control {
-	String text = "";
+	String text = "", message = "";
 	Image image, image2, disabledImage;
 	ImageList imageList;
-	boolean ignoreMouse;
+	boolean ignoreMouse, grayed;
 	static final int MARGIN = 4;
 	static final int CHECK_WIDTH, CHECK_HEIGHT;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
-	static final int ButtonProc;
+	static /*final*/ boolean COMMAND_LINK = false;
+	static final int /*long*/ ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0, "BUTTON", true);
 	static {
-		int hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
+		int /*long*/ hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
 			CHECK_WIDTH = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CXSMICON : OS.SM_CXVSCROLL);
 			CHECK_HEIGHT = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CYSMICON : OS.SM_CYVSCROLL);
@@ -97,6 +104,8 @@ public class Button extends Control {
  * @see SWT#RADIO
  * @see SWT#TOGGLE
  * @see SWT#FLAT
+ * @see SWT#UP
+ * @see SWT#DOWN
  * @see SWT#LEFT
  * @see SWT#RIGHT
  * @see SWT#CENTER
@@ -108,6 +117,7 @@ public Button (Composite parent, int style) {
 }
 
 void _setImage (Image image) {
+	if ((style & SWT.COMMAND) != 0) return;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if (imageList != null) imageList.dispose ();
 		imageList = null;
@@ -155,7 +165,8 @@ void _setImage (Image image) {
 	} else {
 		if (image2 != null) image2.dispose ();
 		image2 = null;
-		int hImage = 0, imageBits = 0, fImageType = 0;
+		int /*long*/ hImage = 0;
+		int imageBits = 0, fImageType = 0;
 		if (image != null) {
 			switch (image.type) {
 				case SWT.BITMAP: {
@@ -205,14 +216,14 @@ void _setImage (Image image) {
 			if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 					Rectangle rect = image.getBounds ();
-					int hDC = OS.GetDC (handle);
-					int dstHdc = OS.CreateCompatibleDC (hDC);
-					int hBitmap = OS.CreateCompatibleBitmap (hDC, rect.width, rect.height);
-					int oldBitmap = OS.SelectObject (dstHdc, hBitmap);
+					int /*long*/ hDC = OS.GetDC (handle);
+					int /*long*/ dstHdc = OS.CreateCompatibleDC (hDC);
+					int /*long*/ hBitmap = OS.CreateCompatibleBitmap (hDC, rect.width, rect.height);
+					int /*long*/ oldBitmap = OS.SelectObject (dstHdc, hBitmap);
 					OS.SetLayout (dstHdc, OS.LAYOUT_RTL);
 					if (fImageType == OS.IMAGE_BITMAP) {
-						int srcHdc = OS.CreateCompatibleDC (hDC);
-						int oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
+						int /*long*/ srcHdc = OS.CreateCompatibleDC (hDC);
+						int /*long*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
 						OS.SetLayout (dstHdc, 0);
 						OS.BitBlt (dstHdc, 0, 0, rect.width, rect.height, srcHdc, 0, 0, OS.SRCCOPY);
 						OS.SelectObject (srcHdc, oldSrcBitmap);
@@ -220,8 +231,8 @@ void _setImage (Image image) {
 					} else {
 						Control control = findBackgroundControl ();
 						if (control == null) control = this;
-						int newBrush = OS.CreateSolidBrush (control.getBackgroundPixel ());
-						int oldBrush = OS.SelectObject (dstHdc, newBrush);
+						int /*long*/ newBrush = OS.CreateSolidBrush (control.getBackgroundPixel ());
+						int /*long*/ oldBrush = OS.SelectObject (dstHdc, newBrush);
 						OS.PatBlt (dstHdc, 0, 0, rect.width, rect.height, OS.PATCOPY);
 						OS.DrawIconEx (dstHdc, 0, 0, hImage, 0, 0, 0, 0, OS.DI_NORMAL);
 						OS.SelectObject (dstHdc, oldBrush);
@@ -278,12 +289,12 @@ void _setText (String text) {
 	}
 	/*
 	* Bug in Windows.  When a Button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The fix
-	* is to append a space to the text.
+	* is disabled, the first pixel of the text is clipped.  The
+	* fix is to add a space to both sides of the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			text = OS.IsWindowEnabled (handle) ? text : text + " ";
+			text = OS.IsWindowEnabled (handle) ? text : " " + text + " ";
 		}
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
@@ -292,11 +303,11 @@ void _setText (String text) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -322,13 +333,13 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
 }
 
 static int checkStyle (int style) {
-	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, 0);
+	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, COMMAND_LINK ? SWT.COMMAND : 0);
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		return checkBits (style, SWT.CENTER, SWT.LEFT, SWT.RIGHT, 0, 0, 0);
 	}
@@ -361,9 +372,9 @@ int computeLeftMargin () {
 	if (image != null && text.length () != 0) {
 		Rectangle bounds = image.getBounds ();
 		margin += bounds.width + MARGIN * 2;
-		int oldFont = 0;
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		int /*long*/ oldFont = 0;
+		int /*long*/ hDC = OS.GetDC (handle);
+		int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		TCHAR buffer = new TCHAR (getCodePage (), text, true);
 		RECT rect = new RECT ();
@@ -389,69 +400,146 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width += OS.GetSystemMetrics (OS.SM_CXHSCROLL);
 			height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 		}
-		if (wHint != SWT.DEFAULT) width = wHint;
-		if (hHint != SWT.DEFAULT) height = hHint;
-		width += border * 2; height += border * 2;
-		return new Point (width, height);
-	}
-	int extra = 0;
-	boolean hasImage = image != null, hasText = true;
-	if (OS.COMCTL32_MAJOR < 6) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
-		if (hasImage) hasText = false;
-	}
-	if (hasImage) {
-		if (image != null) {
-			Rectangle rect = image.getBounds ();
-			width = rect.width;
-			if (hasText && text.length () != 0) {
-				width += MARGIN * 2;
+	} else {
+		if ((style & SWT.COMMAND) != 0) {
+			SIZE size = new SIZE ();
+			if (wHint != SWT.DEFAULT) {
+				size.cx = wHint;
+				OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, size);
+				width = size.cx;
+				height = size.cy;
+			} else {
+				OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, size);
+				width = size.cy;
+				height = size.cy;
+				size.cy = 0;
+				while (size.cy != height) {
+					size.cx = width++;
+					size.cy = 0;
+					OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, size);
+				}
 			}
-			height = rect.height;
-			extra = MARGIN * 2;
-		}
-	}
-	if (hasText) {
-		int oldFont = 0;
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-		OS.GetTextMetrics (hDC, lptm);
-		int length = text.length ();
-		if (length == 0) {
-			height = Math.max (height, lptm.tmHeight);
 		} else {
-			extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
-			TCHAR buffer = new TCHAR (getCodePage (), text, true);
-			RECT rect = new RECT ();
-			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-			OS.DrawText (hDC, buffer, -1, rect, flags);
-			width += rect.right - rect.left;
-			height = Math.max (height, rect.bottom - rect.top);
+			int extra = 0;
+			boolean hasImage = image != null, hasText = true;
+			if (OS.COMCTL32_MAJOR < 6) {
+				if ((style & SWT.PUSH) == 0) {
+					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+					hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
+					if (hasImage) hasText = false;
+				}
+			}
+			if (hasImage) {
+				if (image != null) {
+					Rectangle rect = image.getBounds ();
+					width = rect.width;
+					if (hasText && text.length () != 0) {
+						width += MARGIN * 2;
+					}
+					height = rect.height;
+					extra = MARGIN * 2;
+				}
+			}
+			if (hasText) {
+				int /*long*/ oldFont = 0;
+				int /*long*/ hDC = OS.GetDC (handle);
+				int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+				OS.GetTextMetrics (hDC, lptm);
+				int length = text.length ();
+				if (length == 0) {
+					height = Math.max (height, lptm.tmHeight);
+				} else {
+					extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
+					TCHAR buffer = new TCHAR (getCodePage (), text, true);
+					RECT rect = new RECT ();
+					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
+					OS.DrawText (hDC, buffer, -1, rect, flags);
+					width += rect.right - rect.left;
+					height = Math.max (height, rect.bottom - rect.top);
+				}
+				if (newFont != 0) OS.SelectObject (hDC, oldFont);
+				OS.ReleaseDC (handle, hDC);
+			}
+			if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+				width += CHECK_WIDTH + extra;
+				height = Math.max (height, CHECK_HEIGHT + 3);
+			}
+			if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+				width += 12;  height += 10;
+			}
 		}
-		if (newFont != 0) OS.SelectObject (hDC, oldFont);
-		OS.ReleaseDC (handle, hDC);
-	}
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		width += CHECK_WIDTH + extra;
-		height = Math.max (height, CHECK_HEIGHT + 3);
-	}
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-		width += 12;  height += 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	width += border * 2; height += border * 2;
+	width += border * 2; 
+	height += border * 2;
 	return new Point (width, height);
 }
 
 void createHandle () {
+	/*
+	* Feature in Windows.  When a button is created,
+	* it clears the UI state for all controls in the
+	* shell by sending WM_CHANGEUISTATE with UIS_SET,
+	* UISF_HIDEACCEL and UISF_HIDEFOCUS to the parent.
+	* This is undocumented and unexpected.  The fix
+	* is to ignore the WM_CHANGEUISTATE, when sent
+	* from CreateWindowEx().
+	*/
+	parent.state |= IGNORE_WM_CHANGEUISTATE;
 	super.createHandle ();
-	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
-	if (OS.COMCTL32_MAJOR >= 6) {
+	parent.state &= ~IGNORE_WM_CHANGEUISTATE;
+	
+	/* Set the theme background */
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		/* 
+		* NOTE: On Vista this causes problems when the tab
+		* key is pressed for push buttons so disable the
+		* theme background drawing for these widgets for
+		* now.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+			state |= THEME_BACKGROUND;
+		} else {
+			if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
+				state |= THEME_BACKGROUND;
+			}
+		}
+	}
+	
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the button uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_CTRLCOLOR.
+	* 
+	* NOTE: For comctl32.dll 6.0 with themes disabled,
+	* drawing in WM_ERASEBKGND will draw on top of the
+	* text of the control.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
+	}
+	
+	/*
+	* Feature in Windows.  Push buttons draw border around
+	* the button using the default background color instead
+	* of using the color provided by WM_CTRLCOLOR.  The fix
+	* is to draw the background in WM_CTRLCOLOR.
+	* 
+	* NOTE: On Vista this causes problems when the tab key
+	* is pressed for push buttons so disable the fix for now.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+			if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+				state |= DRAW_BACKGROUND;
+			}
+		}
 	}
 }
 
@@ -469,16 +557,16 @@ int defaultForeground () {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
-	* Bug in Windows.  When a Button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The fix
-	* is to append a space to the text.
+	* Bug in Windows.  When a button control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.   The
+	* fix is to add a space to both sides of the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			boolean hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
 			if (!hasImage) {
-				String string = enabled ? text : text + " ";
+				String string = enabled ? text : " " + text + " ";
 				TCHAR buffer = new TCHAR (getCodePage (), string, true);
 				OS.SetWindowText (handle, buffer);
 			}
@@ -557,6 +645,26 @@ boolean getDefault () {
 }
 
 /**
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the widget does not have
+ * the <code>CHECK</code> style, return false.
+ *
+ * @return the grayed state of the checkbox
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
+/**
  * Returns the receiver's image if it has one, or null
  * if it does not.
  *
@@ -570,6 +678,25 @@ boolean getDefault () {
 public Image getImage () {
 	checkWidget ();
 	return image;
+}
+
+/**
+ * Returns the widget message. When the widget is created
+ * with the style <code>SWT.COMMAND</code>, the message text
+ * is displayed to provide further information for the user.
+ * 
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 String getNameText () {
@@ -595,8 +722,8 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	int state = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
-	return (state & OS.BST_CHECKED) != 0;
+	int /*long*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
+	return flags != OS.BST_UNCHECKED;
 }
 
 /**
@@ -618,8 +745,7 @@ public String getText () {
 }
 
 boolean isTabItem () {
-	//TEMPORARY CODE
-	//if ((style & SWT.PUSH) != 0) return true;
+	if ((style & SWT.PUSH) != 0) return isTabGroup ();
 	return super.isTabItem ();
 }
 
@@ -655,7 +781,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -762,7 +888,7 @@ public void setAlignment (int alignment) {
 
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
-	int hwndShell = menuShell ().handle;
+	int /*long*/ hwndShell = menuShell ().handle;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if (value) {
 		bits |= OS.BS_DEFPUSHBUTTON;
@@ -787,7 +913,12 @@ boolean setFixedFocus () {
 /**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
- *
+ * <p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
+ * </p>
  * @param image the image to display on the receiver (may be <code>null</code>)
  *
  * @exception IllegalArgumentException <ul>
@@ -813,9 +944,66 @@ public void setImage (Image image) {
 	_setImage (image);
 }
 
-boolean setRadioFocus () {
+/**
+ * Sets the grayed state of the receiver.  This state change 
+ * only applies if the control was created with the SWT.CHECK
+ * style.
+ *
+ * @param grayed the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setGrayed (boolean grayed) {
+	checkWidget ();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
+	int /*long*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
+	if (grayed) {
+		if (flags == OS.BST_CHECKED) updateSelection (OS.BST_INDETERMINATE);
+	} else {
+		if (flags == OS.BST_INDETERMINATE) updateSelection (OS.BST_CHECKED);
+	}
+}
+
+/**
+ * Sets the widget message. When the widget is created
+ * with the style <code>SWT.COMMAND</code>, the message text
+ * is displayed to provide further information for the user.
+ * 
+ * @param message the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
+	if (OS.COMCTL32_VERSION >= OS.VERSION (6, 1)) {
+		if ((style & SWT.COMMAND) != 0) {
+			int length = message.length ();
+			char [] chars = new char [length + 1];
+			message.getChars(0, length, chars, 0);
+			OS.SendMessage (handle, OS.BCM_SETNOTE, 0, chars);
+		}
+	}
+}
+
+boolean setRadioFocus (boolean tabbing) {
 	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
-	return setFocus ();
+	return tabbing ? setTabItemFocus () : setFocus ();
 }
 
 boolean setRadioSelection (boolean value) {
@@ -860,16 +1048,10 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int flags = selected ? OS.BST_CHECKED : OS.BST_UNCHECKED;
-	/*
-	* Feature in Windows. When BM_SETCHECK is used
-	* to set the checked state of a radio or check
-	* button, it sets the WM_TABSTOP style.  This
-	* is undocumented and unwanted.  The fix is
-	* to save and restore the window style bits.
-	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	OS.SendMessage (handle, OS.BM_SETCHECK, flags, 0);
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);     
+	if ((style & SWT.CHECK) != 0) {
+		if (selected && grayed) flags = OS.BST_INDETERMINATE;
+	}
+	updateSelection (flags);
 }
 
 /**
@@ -879,16 +1061,20 @@ public void setSelection (boolean selected) {
  * the mnemonic character but must not contain line delimiters.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
- * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * underlined but may be emphasized in a platform specific
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
+ * </p><p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
  * </p>
- * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -914,6 +1100,35 @@ public void setText (String string) {
 	_setText (string);
 }
 
+void updateSelection (int flags) {
+	if (flags != OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0)) {
+		/*
+		* Feature in Windows. When BM_SETCHECK is used
+		* to set the checked state of a radio or check
+		* button, it sets the WM_TABSTOP style.  This
+		* is undocumented and unwanted.  The fix is
+		* to save and restore the window style bits.
+		*/
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((style & SWT.CHECK) != 0) {
+			if (flags == OS.BST_INDETERMINATE) {
+				bits &= ~OS.BS_CHECKBOX;
+				bits |= OS.BS_3STATE;
+			} else {
+				bits |= OS.BS_CHECKBOX;
+				bits &= ~OS.BS_3STATE;
+			}
+			if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			}
+		}
+		OS.SendMessage (handle, OS.BM_SETCHECK, flags, 0);
+		if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		}
+	}
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle ();
 	if ((style & SWT.FLAT) != 0) bits |= OS.BS_FLAT;
@@ -925,6 +1140,7 @@ int widgetStyle () {
 	if ((style & SWT.CHECK) != 0) return bits | OS.BS_CHECKBOX | OS.WS_TABSTOP;
 	if ((style & SWT.RADIO) != 0) return bits | OS.BS_RADIOBUTTON;
 	if ((style & SWT.TOGGLE) != 0) return bits | OS.BS_PUSHLIKE | OS.BS_CHECKBOX | OS.WS_TABSTOP;
+	if ((style & SWT.COMMAND) != 0) return bits | OS.BS_COMMANDLINK | OS.WS_TABSTOP;
 	return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 }
 
@@ -932,11 +1148,34 @@ TCHAR windowClass () {
 	return ButtonClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return ButtonProc;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the button uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	if (OS.COMCTL32_MAJOR < 6) {
+		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
+			if (findImageControl () != null) {
+				drawBackground (wParam);
+				return LRESULT.ONE;
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	if ((style & SWT.ARROW) != 0) {
@@ -945,7 +1184,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if ((style & SWT.PUSH) != 0 && getDefault ()) {
 		menuShell ().setDefaultButton (null, false);
@@ -953,17 +1192,17 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONDOWN (wParam, lParam);
 }
 
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows. When Windows sets focus to
 	* a radio button, it sets the WM_TABSTOP style.
@@ -984,7 +1223,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -1002,15 +1241,60 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
 	if (image2 != null) _setImage (image);
 	return result;
 }
 
-LRESULT wmCommandChild (int wParam, int lParam) {
-	int code = wParam >> 16;
+LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
+	* a button, it sends WM_CTLCOLORBTN to get the foreground
+	* and background.  If drawing happens in WM_CTLCOLORBTN,
+	* it will overwrite the contents of the control.  The
+	* fix is draw the button without drawing the background
+	* and avoid the button window proc.
+	* 
+	* NOTE:  This only happens for radio, check and toggle
+	* buttons.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if ((style & (SWT.RADIO | SWT.CHECK | SWT.TOGGLE)) != 0) {
+			boolean redraw = findImageControl () != null;
+			if (!redraw) {
+				if ((state & THEME_BACKGROUND) != 0) {
+					if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+						redraw = findThemeControl () != null;
+					}
+				}
+				if (!redraw) redraw = findBackgroundControl () != null;
+			}
+			if (redraw) {
+				OS.InvalidateRect (handle, null, false);
+				int /*long*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+				return new LRESULT (code);
+			}
+		}
+	}
+	/*
+	* Feature in Windows.  Push and toggle buttons draw directly
+	* in WM_UPDATEUISTATE rather than damaging and drawing later
+	* in WM_PAINT.  This means that clients who hook WM_PAINT
+	* expecting to get all the drawing will not.  The fix is to
+	* redraw the control when paint events are hooked.
+	*/
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+		if (hooks (SWT.Paint) || filters (SWT.Paint)) OS.InvalidateRect (handle, null, true);
+	}
+	return result;
+}
+
+LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
+	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.BN_CLICKED:
 		case OS.BN_DOUBLECLICKED:
@@ -1030,14 +1314,34 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
-LRESULT wmDrawChild (int wParam, int lParam) {
+LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the button uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	if (OS.COMCTL32_MAJOR < 6) {
+		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
+			if (findImageControl () != null) {
+				OS.SetBkMode (wParam, OS.TRANSPARENT);
+				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.ARROW) == 0) return super.wmDrawChild (wParam, lParam);
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int hTheme = OS.OpenThemeData (handle, SCROLLBAR);
 		int iStateId = OS.ABS_LEFTNORMAL;
 		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
 			case SWT.UP: iStateId = OS.ABS_UPNORMAL; break;
@@ -1046,14 +1350,25 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 			case SWT.RIGHT: iStateId = OS.ABS_RIGHTNORMAL; break;
 		}
 		/*
+		* Feature in Windows.  On Vista only, DrawThemeBackground()
+		* does not mirror the drawing. The fix is switch left to right
+		* and right to left.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			if ((style & SWT.MIRRORED) != 0) {
+				if ((style & (SWT.LEFT | SWT.RIGHT)) != 0) {
+					iStateId = iStateId == OS.ABS_RIGHTNORMAL ? OS.ABS_LEFTNORMAL : OS.ABS_RIGHTNORMAL; 
+				}
+			}
+		}
+		/*
 		* NOTE: The normal, hot, pressed and disabled state is
 		* computed relying on the fact that the increment between
 		* the direction states is invariant (always separated by 4).
 		*/
 		if (!getEnabled ()) iStateId += OS.ABS_UPDISABLED - OS.ABS_UPNORMAL;
 		if ((struct.itemState & OS.ODS_SELECTED) != 0) iStateId += OS.ABS_UPPRESSED - OS.ABS_UPNORMAL;
-		OS.DrawThemeBackground (hTheme, struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
-		OS.CloseThemeData (hTheme);
+		OS.DrawThemeBackground (display.hScrollBarTheme (), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
 	} else {
 		int uState = OS.DFCS_SCROLLLEFT;
 		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {

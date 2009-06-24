@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,12 @@ import org.eclipse.swt.graphics.*;
  * user interface object that displays a string or image.
  * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
+ * <p>
+ * Shadow styles are hints and may not be honored
+ * by the platform.  To create a separator label
+ * with the default shadow style for the platform,
+ * do not specify a shadow style.
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
@@ -38,6 +44,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#label">Label snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Label extends Control {
 	int formHandle;
@@ -406,11 +417,13 @@ void realizeChildren () {
 }
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren, boolean trim) {
 	super.redrawWidget (x, y, width, height, redrawAll, allChildren, trim);
-	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
-	short [] label_x = new short [1], label_y = new short [1];
-	OS.XtTranslateCoords (formHandle, (short) 0, (short) 0, label_x, label_y);
-	redrawHandle (root_x [0] - label_x [0], root_y [0] - label_y [0], width, height, redrawAll, formHandle);
+	if (formHandle != 0) { 
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
+		short [] label_x = new short [1], label_y = new short [1];
+		OS.XtTranslateCoords (formHandle, (short) 0, (short) 0, label_x, label_y);
+		redrawHandle (root_x [0] - label_x [0], root_y [0] - label_y [0], width, height, redrawAll, formHandle);
+	}
 }
 void register () {
 	super.register ();
@@ -590,14 +603,14 @@ void setParentBackground () {
  * the mnemonic character and line delimiters.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, focus is assigned
  * to the control that follows the label. On most platforms,
  * the mnemonic appears underlined but may be emphasised in a
  * platform specific manner.  The mnemonic indicator character
- *'&amp' can be escaped by doubling it in the string, causing
- * a single '&amp' to be displayed.
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text

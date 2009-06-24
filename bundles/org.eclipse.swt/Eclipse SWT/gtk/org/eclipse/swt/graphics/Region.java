@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,9 @@ import org.eclipse.swt.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Region extends Resource {
 	/**
@@ -68,16 +71,14 @@ public Region() {
  * @since 3.0
  */
 public Region(Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	handle = OS.gdk_region_new();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 Region(Device device, int /*long*/ handle) {
-	this.device = device;
+	super(device);
 	this.handle = handle;
 }
 
@@ -100,6 +101,12 @@ Region(Device device, int /*long*/ handle) {
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Bug in GTK. If gdk_region_polygon() is called with one point,
+	* it segment faults. The fix is to make sure that it is called 
+	* with enough points for a polygon.
+	*/
+	if (pointArray.length < 6) return;
 	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_union(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);
@@ -214,18 +221,9 @@ public boolean contains(Point pt) {
 	return contains(pt.x, pt.y);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the region. Applications must dispose of all regions which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.gdk_region_destroy(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -456,6 +454,12 @@ public boolean isEmpty() {
 public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Bug in GTK. If gdk_region_polygon() is called with one point,
+	* it segment faults. The fix is to make sure that it is called 
+	* with enough points for a polygon.
+	*/
+	if (pointArray.length < 6) return;
 	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_subtract(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);

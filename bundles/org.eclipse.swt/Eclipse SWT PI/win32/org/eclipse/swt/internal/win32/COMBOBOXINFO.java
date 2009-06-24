@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,17 +12,28 @@ package org.eclipse.swt.internal.win32;
 
 public class COMBOBOXINFO {
 	public int cbSize;
+	/** @field accessor=rcItem.left */
 	public int itemLeft;
+	/** @field accessor=rcItem.top */
 	public int itemTop;
+	/** @field accessor=rcItem.right */
 	public int itemRight;
+	/** @field accessor=rcItem.bottom */
 	public int itemBottom;
+	/** @field accessor=rcButton.left */
 	public int buttonLeft;
+	/** @field accessor=rcButton.top */
 	public int buttonTop;
+	/** @field accessor=rcButton.right */
 	public int buttonRight;
+	/** @field accessor=rcButton.bottom */
 	public int buttonBottom;
 	public int stateButton;
-	public int hwndCombo;
-	public int hwndItem;
-	public int hwndList;
-	public static final int sizeof = 52;    
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndCombo;
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndItem;
+	/** @field cast=(HWND) */
+	public int /*long*/ hwndList;
+	public static final int sizeof = OS.COMBOBOXINFO_sizeof ();
 }

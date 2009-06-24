@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,6 +52,7 @@ public void dragStart(DragSourceEvent event);
  * <li>(in)time
  * <li>(in)dataType - the type of data requested.
  * <li>(out)data    - the application inserts the actual data here (must match the dataType)
+ * <li>(out)doit    - set this to cancel the drag
  * </ul></p>
  *
  * @param event the information associated with the drag set data event

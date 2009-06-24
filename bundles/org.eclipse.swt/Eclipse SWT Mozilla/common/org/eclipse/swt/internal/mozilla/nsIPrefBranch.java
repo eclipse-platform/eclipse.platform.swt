@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -57,7 +57,7 @@ public class nsIPrefBranch extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aPrefName, _retval);
 	}
 
-	public int GetBoolPref(byte[] aPrefName, boolean[] _retval) {
+	public int GetBoolPref(byte[] aPrefName, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aPrefName, _retval);
 	}
 
@@ -97,11 +97,11 @@ public class nsIPrefBranch extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aPrefName);
 	}
 
-	public int PrefHasUserValue(byte[] aPrefName, boolean[] _retval) {
+	public int PrefHasUserValue(byte[] aPrefName, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aPrefName, _retval);
 	}
 
-	public int PrefIsLocked(byte[] aPrefName, boolean[] _retval) {
+	public int PrefIsLocked(byte[] aPrefName, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aPrefName, _retval);
 	}
 

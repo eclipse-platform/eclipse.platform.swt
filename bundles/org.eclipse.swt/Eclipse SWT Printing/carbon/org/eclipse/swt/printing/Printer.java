@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,8 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.PMRect;
-import org.eclipse.swt.internal.carbon.PMResolution;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -36,6 +34,8 @@ import org.eclipse.swt.internal.carbon.PMResolution;
  *
  * @see PrinterData
  * @see PrintDialog
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Printer extends Device {
 	PrinterData data;
@@ -52,9 +52,10 @@ public final class Printer extends Device {
 
 /**
  * Returns an array of <code>PrinterData</code> objects
- * representing all available printers.
+ * representing all available printers.  If there are no
+ * printers, the array will be empty.
  *
- * @return the list of available printers
+ * @return an array of PrinterData objects representing the available printers
  */
 public static PrinterData[] getPrinterList() {
 	PrinterData[] result = null;
@@ -80,7 +81,7 @@ public static PrinterData[] getPrinterList() {
 /**
  * Returns a <code>PrinterData</code> object representing
  * the default printer or <code>null</code> if there is no 
- * printer available on the System.
+ * default printer.
  *
  * @return the default printer data or null
  * 
@@ -110,6 +111,9 @@ static String getCurrentPrinterName(int printSession) {
 	}
 	return result;
 }
+Point getIndependentDPI() {
+	return super.getDPI();
+}
 static String getString(int ptr) {
 	int length = OS.CFStringGetLength(ptr);
 	char [] buffer = new char[length];
@@ -126,9 +130,9 @@ static int packData(int handle, byte[] buffer, int offset) {
 	buffer[offset++] = (byte)((length & 0xFF000000) >> 24);
 	int [] ptr = new int [1];
 	OS.HLock(handle);
-	OS.memcpy(ptr, handle, 4);
+	OS.memmove(ptr, handle, 4);
 	byte[] buffer1 = new byte[length];
-	OS.memcpy(buffer1, ptr [0], length);
+	OS.memmove(buffer1, ptr [0], length);
 	OS.HUnlock(handle);
 	System.arraycopy(buffer1, 0, buffer, offset, length);
 	return offset + length;
@@ -143,10 +147,10 @@ static int unpackData(int[] handle, byte[] buffer, int offset) {
 	if (handle[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] ptr = new int[1];
 	OS.HLock(handle[0]);
-	OS.memcpy(ptr, handle[0], 4);
+	OS.memmove(ptr, handle[0], 4);
 	byte[] buffer1 = new byte[length];
 	System.arraycopy(buffer, offset, buffer1, 0, length);
-	OS.memcpy(ptr[0], buffer1, length);
+	OS.memmove(ptr[0], buffer1, length);
 	OS.HUnlock(handle[0]);
 	return offset + length;
 }
@@ -154,7 +158,7 @@ static int unpackData(int[] handle, byte[] buffer, int offset) {
 /**
  * Constructs a new printer representing the default printer.
  * <p>
- * You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required. 
  * </p>
  *
  * @exception SWTError <ul>
@@ -169,12 +173,13 @@ public Printer() {
 
 /**
  * Constructs a new printer given a <code>PrinterData</code>
- * object representing the desired printer.
+ * object representing the desired printer. If the argument
+ * is null, then the default printer will be used.
  * <p>
- * You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required. 
  * </p>
  *
- * @param data the printer data for the specified printer
+ * @param data the printer data for the specified printer, or null to use the default printer
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the specified printer data does not represent a valid printer
@@ -190,27 +195,32 @@ public Printer(PrinterData data) {
 }
 
 /**
- * Given a desired <em>client area</em> for the receiver
- * (as described by the arguments), returns the bounding
- * rectangle which would be required to produce that client
- * area.
+ * Given a <em>client area</em> (as described by the arguments),
+ * returns a rectangle, relative to the client area's coordinates,
+ * that is the client area expanded by the printer's trim (or minimum margins).
  * <p>
- * In other words, it returns a rectangle such that, if the
- * receiver's bounds were set to that rectangle, the area
- * of the receiver which is capable of displaying data
- * (that is, not covered by the "trimmings") would be the
- * rectangle described by the arguments (relative to the
- * receiver's parent).
+ * Most printers have a minimum margin on each edge of the paper where the
+ * printer device is unable to print.  This margin is known as the "trim."
+ * This method can be used to calculate the printer's minimum margins
+ * by passing in a client area of 0, 0, 0, 0 and then using the resulting
+ * x and y coordinates (which will be <= 0) to determine the minimum margins
+ * for the top and left edges of the paper, and the resulting width and height
+ * (offset by the resulting x and y) to determine the minimum margins for the
+ * bottom and right edges of the paper, as follows:
+ * <ul>
+ * 		<li>The left trim width is -x pixels</li>
+ * 		<li>The top trim height is -y pixels</li>
+ * 		<li>The right trim width is (x + width) pixels</li>
+ * 		<li>The bottom trim height is (y + height) pixels</li>
+ * </ul>
  * </p>
- * Note that there is no setBounds for a printer. This method
- * is usually used by passing in the client area (the 'printable
- * area') of the printer. It can also be useful to pass in 0, 0, 0, 0.
  * 
- * @param x the desired x coordinate of the client area
- * @param y the desired y coordinate of the client area
- * @param width the desired width of the client area
- * @param height the desired height of the client area
- * @return the required bounds to produce the given client area
+ * @param x the x coordinate of the client area
+ * @param y the y coordinate of the client area
+ * @param width the width of the client area
+ * @param height the height of the client area
+ * @return a rectangle, relative to the client area's coordinates, that is
+ * 		the client area expanded by the printer's trim (or minimum margins)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -225,7 +235,12 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 	PMRect paperRect = new PMRect();
 	OS.PMGetAdjustedPageRect(pageFormat, pageRect);
 	OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-	return new Rectangle(x+(int)paperRect.left, y+(int)paperRect.top, width+(int)(paperRect.right-pageRect.right), height+(int)(paperRect.bottom-pageRect.bottom));
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	x += paperRect.left * dpi.x / screenDPI.x;
+	y += paperRect.top * dpi.y / screenDPI.y;
+	width += ((paperRect.right-paperRect.left)-(pageRect.right-pageRect.left)) * dpi.x / screenDPI.x;
+	height += ((paperRect.bottom-paperRect.top)-(pageRect.bottom-pageRect.top)) * dpi.y / screenDPI.y;
+	return new Rectangle(x, y, width, height);
 }
 
 /**	 
@@ -277,9 +292,14 @@ protected void create(DeviceData deviceData) {
 	char[] buffer1 = new char[name.length ()];
 	name.getChars(0, buffer1.length, buffer1, 0);
 	int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer1, buffer1.length);
-	if (ptr != 0) OS.PMSessionSetCurrentPrinter(printSession, ptr); 
-	OS.CFRelease(ptr);
+	if (ptr != 0) {
+		OS.PMSessionSetCurrentPrinter(printSession, ptr); 
+		OS.CFRelease(ptr);
+	}
 	
+	if (data.copyCount != 1) OS.PMSetCopies(printSettings, data.copyCount, false);
+	if (data.collate != false) OS.PMSetCollate(printSettings, data.collate);
+	if (data.orientation == PrinterData.LANDSCAPE) OS.PMSetOrientation(pageFormat, OS.kPMLandscape, false);
 	OS.PMSessionValidatePrintSettings(printSession, printSettings, null);
 	OS.PMSessionValidatePageFormat(printSession, pageFormat, null);	
 	
@@ -327,6 +347,15 @@ public int internal_new_GC(GCData data) {
 		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
+		PMRect paperRect= new PMRect();
+		OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
+		Point dpi = getDPI(), screenDPI = getIndependentDPI();
+		Rect portRect = new Rect();
+		portRect.left = (short)(paperRect.left * dpi.x / screenDPI.x);
+		portRect.right = (short)(paperRect.right * dpi.x / screenDPI.x);
+		portRect.top = (short)(paperRect.top * dpi.y / screenDPI.y);
+		portRect.bottom = (short)(paperRect.bottom * dpi.y / screenDPI.y);
+		data.portRect = portRect;
 		isGCCreated = true;
 	}
 	return context;
@@ -393,8 +422,10 @@ public boolean startJob(String jobName) {
 		char[] buffer = new char[jobName.length ()];
 		jobName.getChars(0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr != 0) OS.PMSetJobNameCFString(printSettings, ptr); 
-		OS.CFRelease (ptr);
+		if (ptr != 0) {
+			OS.PMSetJobNameCFString(printSettings, ptr); 
+			OS.CFRelease (ptr);
+		}
 	}
 	return OS.PMSessionBeginDocumentNoDialog(printSession, printSettings, pageFormat) == OS.noErr;
 }
@@ -417,6 +448,7 @@ public void endJob() {
 		inPage = false;
 	}
 	OS.PMSessionEndDocumentNoDialog(printSession);
+	context = 0;
 }
 
 /**
@@ -429,6 +461,12 @@ public void endJob() {
 public void cancelJob() {
 	checkDevice();
 	OS.PMSessionSetError(printSession, OS.kPMCancel);
+	if (inPage) {
+		OS.PMSessionEndPageNoDialog(printSession);
+		inPage = false;
+	}
+	OS.PMSessionEndDocumentNoDialog(printSession);
+	context = 0;
 }
 
 static DeviceData checkNull (PrinterData data) {
@@ -500,13 +538,22 @@ public void endPage() {
 public Point getDPI() {
 	checkDevice();
 	PMResolution resolution = new PMResolution();
-	OS.PMGetResolution(pageFormat, resolution);
+	if (OS.VERSION >= 0x1050) {
+		int[] printer = new int[1]; 
+		OS.PMSessionGetCurrentPrinter(printSession, printer);
+		OS.PMPrinterGetOutputResolution(printer[0], printSettings, resolution);
+	}
+	if (resolution.hRes == 0 || resolution.vRes == 0) {
+		OS.PMGetResolution(pageFormat, resolution);
+	}
 	return new Point((int)resolution.hRes, (int)resolution.vRes);
 }
 
 /**
  * Returns a rectangle describing the receiver's size and location.
- * For a printer, this is the size of a page, in pixels.
+ * <p>
+ * For a printer, this is the size of the physical page, in pixels.
+ * </p>
  *
  * @return the bounding rectangle
  *
@@ -521,14 +568,17 @@ public Rectangle getBounds() {
 	checkDevice();
 	PMRect paperRect = new PMRect();
 	OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-	return new Rectangle(0, 0, (int)(paperRect.right-paperRect.left), (int)(paperRect.bottom-paperRect.top));
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	return new Rectangle(0, 0, (int)((paperRect.right-paperRect.left) * dpi.x / screenDPI.x), (int)((paperRect.bottom-paperRect.top) * dpi.x / screenDPI.x));
 }
 
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
+ * <p>
  * For a printer, this is the size of the printable area
- * of a page, in pixels.
+ * of the page, in pixels.
+ * </p>
  * 
  * @return the client area
  *
@@ -543,7 +593,8 @@ public Rectangle getClientArea() {
 	checkDevice();
 	PMRect pageRect = new PMRect();
 	OS.PMGetAdjustedPageRect(pageFormat, pageRect);
-	return new Rectangle(0, 0, (int)(pageRect.right-pageRect.left), (int)(pageRect.bottom-pageRect.top));
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	return new Rectangle(0, 0, (int)((pageRect.right-pageRect.left) * dpi.x / screenDPI.x), (int)((pageRect.bottom-pageRect.top) * dpi.x / screenDPI.x));
 }
 
 /**
@@ -605,9 +656,13 @@ void setupNewPage() {
 			if (context != buffer[0]) SWT.error(SWT.ERROR_UNSPECIFIED);
 		}
 		PMRect paperRect= new PMRect();
+		PMRect pageRect= new PMRect();
 		OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
+		OS.PMGetAdjustedPageRect(pageFormat, pageRect);
+		OS.CGContextTranslateCTM(context, (float)-paperRect.left, (float)(paperRect.bottom-paperRect.top) + (float)paperRect.top);
 		OS.CGContextScaleCTM(context, 1, -1);
-		OS.CGContextTranslateCTM(context, 0, -(float)(paperRect.bottom-paperRect.top));
+		Point dpi = getDPI(), screenDPI = getIndependentDPI();
+		OS.CGContextScaleCTM(context, screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
 		OS.CGContextSetStrokeColorSpace(context, colorspace);
 		OS.CGContextSetFillColorSpace(context, colorspace);
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -40,11 +41,16 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tabfolder">TabFolder, TabItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
-	static final int TabFolderProc;
+	static final int /*long*/ TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
 	
 	/*
@@ -77,16 +83,16 @@ public class TabFolder extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int hInstance = OS.GetModuleHandle (null);
-		int hHeap = OS.GetProcessHeap ();
+		int /*long*/ hInstance = OS.GetModuleHandle (null);
+		int /*long*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW | OS.CS_GLOBALCLASS);
 		int byteCount = TabFolderClass.length () * TCHAR.sizeof;
-		int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
-//		OS.HeapFree (hHeap, 0, lpszClassName);	
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**
@@ -114,6 +120,8 @@ public class TabFolder extends Composite {
  * </ul>
  *
  * @see SWT
+ * @see SWT#TOP
+ * @see SWT#BOTTOM
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -123,7 +131,7 @@ public TabFolder (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -131,7 +139,7 @@ public TabFolder (Composite parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -153,7 +161,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TabFolderProc, hwnd, msg, wParam, lParam);
 }
@@ -188,7 +196,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	RECT insetRect = new RECT (), itemRect = new RECT ();
 	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, insetRect);
 	int width = insetRect.left - insetRect.right;
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	if (count != 0) {
 		OS.SendMessage (handle, OS.TCM_GETITEMRECT, count - 1, itemRect);
 		width = Math.max (width, itemRect.right - insetRect.right);
@@ -217,7 +225,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createItem (TabItem item, int index) {
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
 		TabItem [] newItems = new TabItem [items.length + 4];
@@ -260,7 +268,7 @@ void createHandle () {
 	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
 	* a large value.
 	*/
-	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);	
 }
 
@@ -270,14 +278,14 @@ void createWidget () {
 }
 
 void destroyItem (TabItem item) {
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	int index = 0;
 	while (index < count) {
 		if (items [index] == item) break;
 		index++;
 	}
 	if (index == count) return;
-	int selectionIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	int selectionIndex = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	if (OS.SendMessage (handle, OS.TCM_DELETEITEM, index, 0) == 0) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
@@ -296,13 +304,13 @@ void destroyItem (TabItem item) {
 	}
 }
 
-void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+void drawThemeBackground (int /*long*/ hDC, int /*long*/ hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
-	int hTheme = OS.OpenThemeData (handle, TAB);
-	OS.DrawThemeBackground (hTheme, hDC, OS.TABP_BODY, 0, rect2, null);
-	OS.CloseThemeData (hTheme);	
+	if (OS.IntersectRect (new RECT (), rect2, rect)) {
+		OS.DrawThemeBackground (display.hTabTheme (), hDC, OS.TABP_BODY, 0, rect2, null);
+	}
 }
 
 Control findThemeControl () {
@@ -338,8 +346,37 @@ public Rectangle getClientArea () {
  */
 public TabItem getItem (int index) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	return items [index];
+}
+
+/**
+ * Returns the tab item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the tab item at the given point, or null if the point is not in a tab item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public TabItem getItem (Point point) {
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TCHITTESTINFO pinfo = new TCHITTESTINFO ();
+	pinfo.x = point.x;
+	pinfo.y = point.y;
+	int index = (int)/*64*/OS.SendMessage (handle, OS.TCM_HITTEST, 0, pinfo);
+	if (index == -1) return null;
 	return items [index];
 }
 
@@ -355,7 +392,7 @@ public TabItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 }
 
 /**
@@ -376,7 +413,7 @@ public int getItemCount () {
  */
 public TabItem [] getItems () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	TabItem [] result = new TabItem [count];
 	System.arraycopy (items, 0, result, 0, count);
 	return result;
@@ -400,7 +437,7 @@ public TabItem [] getItems () {
  */
 public TabItem [] getSelection () {
 	checkWidget ();
-	int index = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	int index = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	if (index == -1) return new TabItem [0];
 	return new TabItem [] {items [index]};
 }
@@ -418,7 +455,7 @@ public TabItem [] getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 }
 
 int imageIndex (Image image) {
@@ -427,7 +464,7 @@ int imageIndex (Image image) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.add (image);
-		int hImageList = imageList.getHandle ();
+		int /*long*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -450,7 +487,7 @@ int imageIndex (Image image) {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -460,7 +497,7 @@ int imageIndex (Image image) {
 public int indexOf (TabItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
 		if (items [i] == item) return i;
 	}
@@ -473,7 +510,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		int index = 0;	
-		int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+		int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 		while (index < count) {
 			if (items [index].control == child) break;
 			index++;
@@ -522,7 +559,7 @@ boolean mnemonicMatch (char key) {
 
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+		int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			TabItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
@@ -545,7 +582,7 @@ void releaseWidget () {
 
 void removeControl (Control control) {
 	super.removeControl (control);
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
 		TabItem item = items [i];
 		if (item.control == control) item.setControl (null);
@@ -554,7 +591,7 @@ void removeControl (Control control) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -628,6 +665,24 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
+public void setFont (Font font) {
+	checkWidget ();
+	Rectangle oldRect = getClientArea ();
+	super.setFont (font);
+	Rectangle newRect = getClientArea ();
+	if (!oldRect.equals (newRect)) {
+		sendResize ();
+		int index = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+		if (index != -1) {
+			TabItem item = items [index];
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+			}
+		}
+	}
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
@@ -643,13 +698,14 @@ public void setSelection (TabItem [] items) {
  */
 public void setSelection (int index) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) return;
 	setSelection (index, false);
 }
 
 void setSelection (int index, boolean notify) {
-	int oldIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	int oldIndex = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	if (oldIndex == index) return;
 	if (oldIndex != -1) {
 		TabItem item = items [oldIndex];
 		Control control = item.control;
@@ -658,7 +714,7 @@ void setSelection (int index, boolean notify) {
 		}
 	}
 	OS.SendMessage (handle, OS.TCM_SETCURSEL, index, 0);
-	int newIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	int newIndex = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	if (newIndex != -1) {
 		TabItem item = items [newIndex];
 		Control control = item.control;
@@ -678,9 +734,21 @@ String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
 	}
-	int index = hdr.idFrom;
-	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+	int index = (int)/*64*/hdr.idFrom;
+	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
+		/*
+		* Bug in Windows. For some reason the reading order
+		* in NMTTDISPINFO is sometimes set incorrectly.  The
+		* reading order seems to change every time the mouse
+		* enters the control from the top edge.  The fix is
+		* to explicitly set TTF_RTLREADING.
+		*/
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			hdr.uFlags |= OS.TTF_RTLREADING;
+		} else {
+			hdr.uFlags &= ~OS.TTF_RTLREADING;
+		}
 		if (toolTipText != null) return "";
 		if (0 <= index && index < items.length) {
 			TabItem item = items [index];
@@ -726,11 +794,11 @@ TCHAR windowClass () {
 	return TabFolderClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return TabFolderProc;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	/*
 	* Return DLGC_BUTTON so that mnemonics will be
@@ -738,10 +806,38 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	* when the widget has focus.
 	*/
 	if (result != null) return result;
-	return new LRESULT (OS.DLGC_BUTTON);
+	return new LRESULT (OS.DLGC_BUTTON | OS.DLGC_WANTARROWS);
 }
 
-LRESULT WM_NCHITTEST (int wParam, int lParam) {
+LRESULT WM_MOUSELEAVE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  On XP, when a tooltip is
+	* hidden due to a time out or mouse press,
+	* the tooltip remains active although no
+	* longer visible and won't show again until
+	* another tooltip becomes active.  If there
+	* is only one tooltip in the window,  it will
+	* never show again.  The fix is to remove the
+	* current tooltip and add it again every time
+	* the mouse leaves the control.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+				OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
+				OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -756,11 +852,11 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	* default window proc that returns HTCLIENT when
 	* the mouse is in the client area.	
 	*/
-	int hittest = OS.DefWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+	int /*long*/ hittest = OS.DefWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 	return new LRESULT (hittest);
 }
 
-LRESULT WM_NOTIFY (int wParam, int lParam) {
+LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When the tab folder window
 	* proc processes WM_NOTIFY, it forwards this
@@ -784,7 +880,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
+LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_PARENTNOTIFY (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -799,10 +895,11 @@ LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 	*/
 	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return result;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		int code = wParam & 0xFFFF;
+		int code = OS.LOWORD (wParam);
 		switch (code) {
 			case OS.WM_CREATE: {
-				int id = (wParam >> 16), hwnd = lParam;
+				int id = OS.HIWORD (wParam);
+ 				int /*long*/ hwnd = lParam;
 				if (id == ID_UPDOWN) {
 					int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 					OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE,	bits | OS.WS_EX_LAYOUTRTL);
@@ -814,7 +911,7 @@ LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*
 	* It is possible (but unlikely), that application
@@ -824,7 +921,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
-	int index = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	int index = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	if (index != -1) {
 		TabItem item = items [index];
 		Control control = item.control;
@@ -835,7 +932,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
@@ -884,15 +981,13 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	int code = hdr.code;
 	switch (code) {
 		case OS.TCN_SELCHANGE: 
 		case OS.TCN_SELCHANGING:
 			TabItem item = null;
-			int index = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+			int index = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 			if (index != -1) item = items [index];
 			if (item != null) {
 				Control control = item.control;
@@ -909,7 +1004,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				postEvent (SWT.Selection, event);
 			}
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
 }

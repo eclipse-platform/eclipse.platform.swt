@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,72 +13,71 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IAccessible extends IDispatch {
 
-public IAccessible(int address) {
+public IAccessible(int /*long*/ address) {
 	super(address);
 }
 
-public int get_accParent(int ppdispParent) {
+public int get_accParent(int /*long*/ ppdispParent) {
 	return COM.VtblCall(7, address, ppdispParent);
 }
-public int get_accChildCount(int pcountChildren) {
+public int get_accChildCount(int /*long*/ pcountChildren) {
 	return COM.VtblCall(8, address, pcountChildren);
 }
-public int get_accChild(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int ppdispChild) {
-	return COM.VtblCall(9, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, ppdispChild);
+public int get_accChild(int /*long*/ variant, int /*long*/ ppdispChild) {
+	return COM.VtblCall_VARIANTP(9, address, variant, ppdispChild);
 }
-public int get_accName(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszName) {
-	return COM.VtblCall(10, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pszName);
+public int get_accName(int /*long*/ variant, int /*long*/ pszName) {
+	return COM.VtblCall_VARIANTP(10, address, variant, pszName);
 }
-public int get_accValue(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszValue) {
-	return COM.VtblCall(11, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pszValue);
+public int get_accValue(int /*long*/ variant, int /*long*/ pszValue) {
+	return COM.VtblCall_VARIANTP(11, address, variant, pszValue);
 }
-public int get_accDescription(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszDescription) {
-	return COM.VtblCall(12, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pszDescription);
+public int get_accDescription(int /*long*/ variant, int /*long*/ pszDescription) {
+	return COM.VtblCall_VARIANTP(12, address, variant, pszDescription);
 }
-public int get_accRole(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pvarRole) {
-	return COM.VtblCall(13, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarRole);
+public int get_accRole(int /*long*/ variant, int /*long*/ pvarRole) {
+	return COM.VtblCall_VARIANTP(13, address, variant, pvarRole);
 }
-public int get_accState(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pvarState) {
-	return COM.VtblCall(14, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarState);
+public int get_accState(int /*long*/ variant, int /*long*/ pvarState) {
+	return COM.VtblCall_VARIANTP(14, address, variant, pvarState);
 }
-public int get_accHelp(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszHelp) {
-	return COM.VtblCall(15, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pszHelp);
+public int get_accHelp(int /*long*/ variant, int /*long*/ pszHelp) {
+	return COM.VtblCall_VARIANTP(15, address, variant, pszHelp);
 }
-public int get_accHelpTopic(int pszHelpFile, int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pidTopic) {
-	return COM.VtblCall(16, address, pszHelpFile, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pidTopic);
+public int get_accHelpTopic(int /*long*/ pszHelpFile, int /*long*/ variant, int /*long*/ pidTopic) {
+	return COM.VtblCall_PVARIANTP(16, address, pszHelpFile, variant, pidTopic);
 }
-public int get_accKeyboardShortcut(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszKeyboardShortcut) {
-	return COM.VtblCall(17, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pszKeyboardShortcut);
+public int get_accKeyboardShortcut(int /*long*/ variant, int /*long*/ pszKeyboardShortcut) {
+	return COM.VtblCall_VARIANTP(17, address, variant, pszKeyboardShortcut);
 }
-public int get_accFocus(int pvarChild) {
+public int get_accFocus(int /*long*/ pvarChild) {
 	return COM.VtblCall(18, address, pvarChild);
 }
-public int get_accSelection(int pvarChildren) {
+public int get_accSelection(int /*long*/ pvarChildren) {
 	return COM.VtblCall(19, address, pvarChildren);
 }
-public int get_accDefaultAction(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pszDefaultAction) {
-	return COM.VtblCall(20, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pszDefaultAction);
+public int get_accDefaultAction(int /*long*/ variant, int /*long*/ pszDefaultAction) {
+	return COM.VtblCall_VARIANTP(20, address, variant, pszDefaultAction);
 }
-public int accSelect(int flagsSelect, int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
-	return COM.VtblCall(21, address, flagsSelect, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2);
+public int accSelect(int flagsSelect, int /*long*/ variant) {
+	return COM.VtblCall_IVARIANT(21, address, flagsSelect, variant);
 }
-public int accLocation(int pxLeft, int pyTop, int pcxWidth, int pcyHeight,
-	int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
-	return COM.VtblCall(22, address, pxLeft, pyTop, pcxWidth, pcyHeight, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2);
+public int accLocation(int /*long*/ pxLeft, int /*long*/ pyTop, int /*long*/ pcxWidth, int /*long*/ pcyHeight, int /*long*/ variant) {
+	return COM.VtblCall_PPPPVARIANT(22, address, pxLeft, pyTop, pcxWidth, pcyHeight, variant);
 }
-public int accNavigate(int navDir, int varStart_vt, int varStart_reserved1, int varStart_lVal, int varStart_reserved2, int pvarEndUpAt) {
-	return COM.VtblCall(23, address, navDir, varStart_vt, varStart_reserved1, varStart_lVal, varStart_reserved2, pvarEndUpAt);
+public int accNavigate(int navDir, int /*long*/ variant, int /*long*/ pvarEndUpAt) {
+	return COM.VtblCall_IVARIANTP(23, address, navDir, variant, pvarEndUpAt);
 }
-public int accHitTest(int xLeft, int yTop, int pvarChild) {
+public int accHitTest(int xLeft, int yTop, int /*long*/ pvarChild) {
 	return COM.VtblCall(24, address, xLeft, yTop, pvarChild);
 }
-public int accDoDefaultAction(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2) {
-	return COM.VtblCall(25, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2);
+public int accDoDefaultAction(int /*long*/ variant) {
+	return COM.VtblCall_VARIANT(25, address, variant);
 }
-public int put_accName(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int szName) {
-	return COM.VtblCall(26, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, szName);
+public int put_accName(int /*long*/ variant, int /*long*/ szName) {
+	return COM.VtblCall_VARIANTP(26, address, variant, szName);
 }
-public int put_accValue(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int szValue) {
-	return COM.VtblCall(27, address, varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, szValue);
+public int put_accValue(int /*long*/ variant, int /*long*/ szValue) {
+	return COM.VtblCall_VARIANTP(27, address, variant, szValue);
 }
 }

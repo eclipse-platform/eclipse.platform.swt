@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "wgl_structs.h"
@@ -17,7 +17,7 @@
 
 #ifndef NO_ChoosePixelFormat
 JNIEXPORT jint JNICALL WGL_NATIVE(ChoosePixelFormat)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
 {
 	PIXELFORMATDESCRIPTOR _arg1, *lparg1=NULL;
 	jint rc = 0;
@@ -33,7 +33,7 @@ fail:
 
 #ifndef NO_DescribePixelFormat
 JNIEXPORT jint JNICALL WGL_NATIVE(DescribePixelFormat)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jobject arg3)
 {
 	PIXELFORMATDESCRIPTOR _arg3, *lparg3=NULL;
 	jint rc = 0;
@@ -49,7 +49,7 @@ fail:
 
 #ifndef NO_GetPixelFormat
 JNIEXPORT jint JNICALL WGL_NATIVE(GetPixelFormat)
-	(JNIEnv *env, jclass that, jint arg0)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	jint rc = 0;
 	WGL_NATIVE_ENTER(env, that, GetPixelFormat_FUNC);
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL WGL_NATIVE(GetPixelFormat)
 
 #ifndef NO_SetPixelFormat
 JNIEXPORT jboolean JNICALL WGL_NATIVE(SetPixelFormat)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
 {
 	PIXELFORMATDESCRIPTOR _arg2, *lparg2=NULL;
 	jboolean rc = 0;
@@ -77,7 +77,7 @@ fail:
 
 #ifndef NO_SwapBuffers
 JNIEXPORT jboolean JNICALL WGL_NATIVE(SwapBuffers)
-	(JNIEnv *env, jclass that, jint arg0)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	jboolean rc = 0;
 	WGL_NATIVE_ENTER(env, that, SwapBuffers_FUNC);
@@ -89,7 +89,7 @@ JNIEXPORT jboolean JNICALL WGL_NATIVE(SwapBuffers)
 
 #ifndef NO_wglCopyContext
 JNIEXPORT jboolean JNICALL WGL_NATIVE(wglCopyContext)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
 {
 	jboolean rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglCopyContext_FUNC);
@@ -100,24 +100,24 @@ JNIEXPORT jboolean JNICALL WGL_NATIVE(wglCopyContext)
 #endif
 
 #ifndef NO_wglCreateContext
-JNIEXPORT jint JNICALL WGL_NATIVE(wglCreateContext)
-	(JNIEnv *env, jclass that, jint arg0)
+JNIEXPORT jintLong JNICALL WGL_NATIVE(wglCreateContext)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglCreateContext_FUNC);
-	rc = (jint)wglCreateContext((HDC)arg0);
+	rc = (jintLong)wglCreateContext((HDC)arg0);
 	WGL_NATIVE_EXIT(env, that, wglCreateContext_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_wglCreateLayerContext
-JNIEXPORT jint JNICALL WGL_NATIVE(wglCreateLayerContext)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+JNIEXPORT jintLong JNICALL WGL_NATIVE(wglCreateLayerContext)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglCreateLayerContext_FUNC);
-	rc = (jint)wglCreateLayerContext((HDC)arg0, arg1);
+	rc = (jintLong)wglCreateLayerContext((HDC)arg0, arg1);
 	WGL_NATIVE_EXIT(env, that, wglCreateLayerContext_FUNC);
 	return rc;
 }
@@ -125,7 +125,7 @@ JNIEXPORT jint JNICALL WGL_NATIVE(wglCreateLayerContext)
 
 #ifndef NO_wglDeleteContext
 JNIEXPORT jboolean JNICALL WGL_NATIVE(wglDeleteContext)
-	(JNIEnv *env, jclass that, jint arg0)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	jboolean rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglDeleteContext_FUNC);
@@ -137,7 +137,7 @@ JNIEXPORT jboolean JNICALL WGL_NATIVE(wglDeleteContext)
 
 #ifndef NO_wglDescribeLayerPlane
 JNIEXPORT jboolean JNICALL WGL_NATIVE(wglDescribeLayerPlane)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
 {
 	LAYERPLANEDESCRIPTOR _arg4, *lparg4=NULL;
 	jboolean rc = 0;
@@ -152,24 +152,24 @@ fail:
 #endif
 
 #ifndef NO_wglGetCurrentContext
-JNIEXPORT jint JNICALL WGL_NATIVE(wglGetCurrentContext)
+JNIEXPORT jintLong JNICALL WGL_NATIVE(wglGetCurrentContext)
 	(JNIEnv *env, jclass that)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglGetCurrentContext_FUNC);
-	rc = (jint)wglGetCurrentContext();
+	rc = (jintLong)wglGetCurrentContext();
 	WGL_NATIVE_EXIT(env, that, wglGetCurrentContext_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_wglGetCurrentDC
-JNIEXPORT jint JNICALL WGL_NATIVE(wglGetCurrentDC)
+JNIEXPORT jintLong JNICALL WGL_NATIVE(wglGetCurrentDC)
 	(JNIEnv *env, jclass that)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglGetCurrentDC_FUNC);
-	rc = (jint)wglGetCurrentDC();
+	rc = (jintLong)wglGetCurrentDC();
 	WGL_NATIVE_EXIT(env, that, wglGetCurrentDC_FUNC);
 	return rc;
 }
@@ -177,13 +177,13 @@ JNIEXPORT jint JNICALL WGL_NATIVE(wglGetCurrentDC)
 
 #ifndef NO_wglGetLayerPaletteEntries
 JNIEXPORT jint JNICALL WGL_NATIVE(wglGetLayerPaletteEntries)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
 {
 	jint *lparg4=NULL;
 	jint rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglGetLayerPaletteEntries_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)wglGetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, lparg4);
+	rc = (jint)wglGetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, (COLORREF *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	WGL_NATIVE_EXIT(env, that, wglGetLayerPaletteEntries_FUNC);
@@ -192,14 +192,14 @@ fail:
 #endif
 
 #ifndef NO_wglGetProcAddress
-JNIEXPORT jint JNICALL WGL_NATIVE(wglGetProcAddress)
+JNIEXPORT jintLong JNICALL WGL_NATIVE(wglGetProcAddress)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
-	jint rc = 0;
+	jintLong rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglGetProcAddress_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)wglGetProcAddress(lparg0);
+	rc = (jintLong)wglGetProcAddress(lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	WGL_NATIVE_EXIT(env, that, wglGetProcAddress_FUNC);
@@ -209,7 +209,7 @@ fail:
 
 #ifndef NO_wglMakeCurrent
 JNIEXPORT jboolean JNICALL WGL_NATIVE(wglMakeCurrent)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	jboolean rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglMakeCurrent_FUNC);
@@ -221,7 +221,7 @@ JNIEXPORT jboolean JNICALL WGL_NATIVE(wglMakeCurrent)
 
 #ifndef NO_wglRealizeLayerPalette
 JNIEXPORT jboolean JNICALL WGL_NATIVE(wglRealizeLayerPalette)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jboolean arg2)
 {
 	jboolean rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglRealizeLayerPalette_FUNC);
@@ -233,13 +233,13 @@ JNIEXPORT jboolean JNICALL WGL_NATIVE(wglRealizeLayerPalette)
 
 #ifndef NO_wglSetLayerPaletteEntries
 JNIEXPORT jint JNICALL WGL_NATIVE(wglSetLayerPaletteEntries)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
 {
 	jint *lparg4=NULL;
 	jint rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglSetLayerPaletteEntries_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)wglSetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, lparg4);
+	rc = (jint)wglSetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, (COLORREF *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	WGL_NATIVE_EXIT(env, that, wglSetLayerPaletteEntries_FUNC);
@@ -249,7 +249,7 @@ fail:
 
 #ifndef NO_wglShareLists
 JNIEXPORT jboolean JNICALL WGL_NATIVE(wglShareLists)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	jboolean rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglShareLists_FUNC);
@@ -261,7 +261,7 @@ JNIEXPORT jboolean JNICALL WGL_NATIVE(wglShareLists)
 
 #ifndef NO_wglSwapLayerBuffers
 JNIEXPORT jboolean JNICALL WGL_NATIVE(wglSwapLayerBuffers)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	jboolean rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglSwapLayerBuffers_FUNC);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
  * two fields, <code>detail</code> and <code>doit</code>.
  * </p><p>
  * When a control is traversed, a traverse event is sent.  The detail
- * describes the type of traversal and the doit indicates the default
+ * describes the type of traversal and the doit field indicates the default
  * behavior of the system.  For example, when a right arrow key is pressed
  * in a text control, the detail field is <code>TRAVERSE_ARROW_NEXT</code>
  * and the doit field is <code>false</code>, indicating that the system
@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.*;
  * <code>TRAVERSE_TAB_NEXT</code> and the doit field will be
  * <code>false</code>.  The default behavior of the system is to
  * provide no traversal for canvas controls.  This means that by
- * default in a canvas, a key listener will see every key that
+ * default in a canvas, a key listener will see every key that the
  * user types, including traversal keys.  To understand why this
  * is so, it is important to understand that only the widget implementor
  * can decide which traversal is appropriate for the widget.  Returning
@@ -75,6 +75,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * 
  * @see TraverseListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class TraverseEvent extends KeyEvent {
@@ -98,7 +99,7 @@ public final class TraverseEvent extends KeyEvent {
 	 * For example, setting the detail to <code>TRAVERSE_NONE</code>
 	 * causes no traversal action to be taken.
 	 * 
-	 * When used in conjuction with the <code>doit</code> field, the
+	 * When used in conjunction with the <code>doit</code> field, the
 	 * traversal detail field can be useful when overriding the default
 	 * traversal mechanism for a control. For example, setting the doit
 	 * field to <code>false</code> will cancel the operation and allow

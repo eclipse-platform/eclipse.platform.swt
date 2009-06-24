@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ public class XImage {
 	public int height;
 	public int xoffset;
 	public int format;
+	/** @field cast=(char *) */
 	public int data;
 	public int byte_order;
 	public int bitmap_unit;
@@ -27,14 +28,21 @@ public class XImage {
 	public int red_mask;
 	public int green_mask;
 	public int blue_mask;
+	/** @field cast=(XPointer) */
 	public int obdata;
 //	struct funcs {
-		public int create_image;
-		public int destroy_image;
-		public int get_pixel;
-		public int put_pixel;
-		public int sub_image;
-		public int add_pixel;
+		/** @field accessor=f.create_image,cast=(XImage *(*)()) */
+	public int create_image;
+		/** @field accessor=f.destroy_image,cast=(int(*)()) */
+	public int destroy_image;
+		/** @field accessor=f.get_pixel,cast=(unsigned long(*)()) */
+	public int get_pixel;
+		/** @field accessor=f.put_pixel,cast=(int(*)()) */
+	public int put_pixel;
+		/** @field accessor=f.sub_image,cast=(XImage *(*)()) */
+	public int sub_image;
+		/** @field accessor=f.add_pixel,cast=(int(*)()) */
+	public int add_pixel;
 // } f;
 	public static final int sizeof = 88;
 }

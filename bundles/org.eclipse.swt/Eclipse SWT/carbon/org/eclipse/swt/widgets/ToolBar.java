@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
  
 import org.eclipse.swt.*;
@@ -38,6 +39,11 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#toolbar">ToolBar, ToolItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolBar extends Composite {
 	int itemCount;
@@ -125,6 +131,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	state |= GRAB | THEME_BACKGROUND;
 	super.createHandle (parent.handle);
+	OS.HIObjectSetAccessibilityIgnored (handle, false);
 }
 
 void createItem (ToolItem item, int index) {
@@ -312,6 +319,40 @@ void invalidateChildrenVisibleRegion (int control) {
 	}
 }
 
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.eventNotHandledErr;
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer = new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	String attributeName = new String(buffer);
+	if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+		String roleText = OS.kAXToolbarRole;
+		buffer = new char [roleText.length ()];
+		roleText.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (stringRef [0] != 0) {
+			if (attributeName.equals (OS.kAXRoleAttribute)) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+			} else { // kAXRoleDescriptionAttribute
+				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+				OS.CFRelease(stringRef2);
+			}
+			OS.CFRelease(stringRef [0]);
+			code = OS.noErr;
+		}
+	}
+	if (accessible != null) {
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
+	}
+	return code;
+}
+
 int [] layoutHorizontal (int width, int height, boolean resize) {
 	int xSpacing = 0, ySpacing = 2;
 	int marginWidth = 0, marginHeight = 0;
@@ -335,7 +376,7 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 		if (resize) {
 			item.setBounds (x, y, size.x, itemHeight);
 			boolean visible = x + size.x <= width && y + itemHeight <= height;
-			item.setVisible (item.handle, visible);
+			item.setVisible (visible);
 			Control control = item.control;
 			if (control != null) {
 				int controlY = y + (itemHeight - size.y) / 2;
@@ -375,7 +416,7 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		if (resize) {
 			item.setBounds (x, y, itemWidth, size.y);
 			boolean visible = x + itemWidth <= width && y + size.y <= height;
-			item.setVisible (item.handle, visible);
+			item.setVisible (visible);
 			Control control = item.control;
 			if (control != null) {
 				int controlX = x + (itemWidth - size.x) / 2;
@@ -401,7 +442,7 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 }
 
 void relayout () {
-	if (drawCount > 0) return;
+	if (!getDrawing ()) return;
 	Rectangle rect = getClientArea ();
 	layout (rect.width, rect.height, true);
 }

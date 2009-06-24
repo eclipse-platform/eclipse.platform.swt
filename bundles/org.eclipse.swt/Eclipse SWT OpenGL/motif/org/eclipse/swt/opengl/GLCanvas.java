@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,10 @@ import org.eclipse.swt.internal.opengl.glx.*;
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
  * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
+ * @see GLData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.2
  */
 
@@ -43,10 +45,6 @@ public class GLCanvas extends Canvas {
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null
  *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);	
@@ -119,9 +117,8 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	vinfo = new XVisualInfo ();
 	GLX.memmove (vinfo, infoPtr, XVisualInfo.sizeof);
 	OS.XFree (infoPtr);
-	//FIXME- share lists
-	//context = GLX.glXCreateContext (xdisplay, info, share == null ? 0 : share.context, true);
-	context = GLX.glXCreateContext (xDisplay, vinfo, 0, true);
+	int /*long*/ share = data.shareContext != null ? data.shareContext.context : 0;
+	context = GLX.glXCreateContext (xDisplay, vinfo, share, true);
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 
 	int xParent = OS.XtWindow (handle);
@@ -199,10 +196,6 @@ public GLCanvas (Composite parent, int style, GLData data) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLData getGLData () {
 	checkWidget ();
@@ -250,10 +243,6 @@ public GLData getGLData () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public boolean isCurrent () {
 	checkWidget ();
@@ -268,10 +257,6 @@ public boolean isCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void setCurrent () {
 	checkWidget ();
@@ -287,10 +272,6 @@ public void setCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void swapBuffers () {
 	checkWidget ();

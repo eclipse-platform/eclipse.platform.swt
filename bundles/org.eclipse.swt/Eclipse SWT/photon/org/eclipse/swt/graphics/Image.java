@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -61,12 +61,21 @@ import java.io.*;
  * @see Color
  * @see ImageData
  * @see ImageLoader
+ * @see <a href="http://www.eclipse.org/swt/snippets/#image">Image snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, ImageAnalyzer</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Image extends Resource implements Drawable {
 
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int type;
 
@@ -97,7 +106,8 @@ public final class Image extends Resource implements Drawable {
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
-Image () {
+Image (Device device) {
+	super(device);
 }
 
 /**
@@ -131,10 +141,9 @@ Image () {
  * </ul>
  */
 public Image(Device device, int width, int height) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, width, height);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(width, height);
+	init();
 }
 
 /**
@@ -142,11 +151,11 @@ public Image(Device device, int width, int height) {
  * provided image, with an appearance that varies depending
  * on the value of the flag. The possible flag values are:
  * <dl>
- * <dt><b>IMAGE_COPY</b></dt>
+ * <dt><b>{@link SWT#IMAGE_COPY}</b></dt>
  * <dd>the result is an identical copy of srcImage</dd>
- * <dt><b>IMAGE_DISABLE</b></dt>
+ * <dt><b>{@link SWT#IMAGE_DISABLE}</b></dt>
  * <dd>the result is a copy of srcImage which has a <em>disabled</em> look</dd>
- * <dt><b>IMAGE_GRAY</b></dt>
+ * <dt><b>{@link SWT#IMAGE_GRAY}</b></dt>
  * <dd>the result is a copy of srcImage which has a <em>gray scale</em> look</dd>
  * </dl>
  *
@@ -161,18 +170,15 @@ public Image(Device device, int width, int height) {
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
- *          is otherwise in an invalid state</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the Image is not supported</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or is otherwise in an invalid state</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the image is not supported</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, Image srcImage, int flag) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
@@ -225,8 +231,7 @@ public Image(Device device, Image srcImage, int flag) {
 				OS.memmove (newHandle, phImage, PhImage_t.sizeof);
 			}
 			handle = newHandle;
-			if (device.tracking) device.new_Object(this);	
-			return;
+			break;
 		case SWT.IMAGE_GRAY:
 			Rectangle r = srcImage.getBounds();
 			ImageData data = srcImage.getImageData();
@@ -253,6 +258,8 @@ public Image(Device device, Image srcImage, int flag) {
 					rgbs[i] = new RGB(i, i, i);
 				}
 				newData = new ImageData(r.width, r.height, 8, new PaletteData(rgbs));
+				newData.alpha = data.alpha;
+				newData.alphaData = data.alphaData;
 				newData.maskData = data.maskData;
 				newData.maskPad = data.maskPad;
 				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
@@ -287,12 +294,12 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 				}
 			}
-			init (device, newData);
-			if (device.tracking) device.new_Object(this);	
-			return;
+			init (newData);
+			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	init();
 }
 
 /**
@@ -326,11 +333,10 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, bounds.width, bounds.height);
-	if (device.tracking) device.new_Object(this);	
+	init(bounds.width, bounds.height);
+	init();	
 }
 
 /**
@@ -352,10 +358,9 @@ public Image(Device device, Rectangle bounds) {
  * </ul>
  */
 public Image(Device device, ImageData data) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, data);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(data);
+	init();
 }
 
 /**
@@ -384,8 +389,7 @@ public Image(Device device, ImageData data) {
  * </ul>
  */
 public Image(Device device, ImageData source, ImageData mask) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -395,8 +399,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
-	init(device, image);
-	if (device.tracking) device.new_Object(this);	
+	init(image);
+	init();
 }
 
 /**
@@ -438,20 +442,19 @@ public Image(Device device, ImageData source, ImageData mask) {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the InputStream describes an image with an unsupported depth</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
- *  * </ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image stream describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image (Device device, InputStream stream) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(stream));
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(new ImageData(stream));
+	init();
 }
 
 /**
@@ -472,9 +475,9 @@ public Image (Device device, InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file has an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  * @exception SWTError <ul>
@@ -482,26 +485,16 @@ public Image (Device device, InputStream stream) {
  * </ul>
  */
 public Image (Device device, String filename) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(filename));
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(new ImageData(filename));
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the image. Applications must dispose of all images which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (memGC != null) memGC.dispose();
 	destroyImage(handle);
 	handle = 0;
 	memGC = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -703,20 +696,18 @@ public int hashCode () {
 	return handle;
 }
 
-void init(Device device, int width, int height) {
+void init(int width, int height) {
 	if (width <= 0 || height <= 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
 	this.type = SWT.BITMAP;
 	
 	handle = OS.PhCreateImage(null, (short)width, (short)height, OS.Pg_IMAGE_DIRECT_888, 0, 0, 0);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
-void init(Device device, ImageData i) {
+void init(ImageData i) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	
 	/*
 	* Feature in Photon. Photon does not support 2-bit depth images and
@@ -1035,11 +1026,9 @@ static void destroyImage(int image) {
 }
 
 public static Image photon_new(Device device, int type, int handle) {
-	if (device == null) device = Device.getDevice();
-	Image image = new Image();
+	Image image = new Image(device);
 	image.type = type;
 	image.handle = handle;
-	image.device = device;
 	return image;
 }
 

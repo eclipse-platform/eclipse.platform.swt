@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ import java.io.*;
  * Baseline TIFF decoder revision 6.0
  * Extension T4-encoding CCITT T.4 1D
  */
-final class TIFFFileFormat extends FileFormat {
+public final class TIFFFileFormat extends FileFormat {
 
 boolean isFileFormat(LEDataInputStream stream) {
 	try {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -91,6 +91,11 @@ import org.eclipse.swt.internal.motif.*;
  *	<dt><b>Styles</b></dt> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK</dd>
  *	<dt><b>Events</b></dt> <dd>DND.DragStart, DND.DragSetData, DND.DragEnd</dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: DNDExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DragSource extends Widget {
 
@@ -98,8 +103,9 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
+	DragSourceEffect dragEffect;
 
-	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 		
 	static Callback ConvertProc;
 	static Callback DragDropFinish;
@@ -136,7 +142,7 @@ public class DragSource extends Widget {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see Widget#dispose
  * @see DragSource#checkSubclass
@@ -150,9 +156,9 @@ public DragSource(Control control, int style) {
 	if (ConvertProc == null || DragDropFinish == null || DropFinish == null)
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null)
+	if (control.getData(DND.DRAG_SOURCE_KEY) != null)
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
-	control.setData(DRAGSOURCEID, this);
+	control.setData(DND.DRAG_SOURCE_KEY, this);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -176,6 +182,15 @@ public DragSource(Control control, int style) {
 			onDispose();
 		}
 	});
+	
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
+	} else if (control instanceof Tree) {
+		dragEffect = new TreeDragSourceEffect((Tree) control);
+	} else if (control instanceof Table) {
+		dragEffect = new TableDragSourceEffect((Table) control);
+	}
 }
 static DragSource FindDragSource(int handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
@@ -223,12 +238,14 @@ static int DropFinishCallback(int widget, int client_data, int call_data) {
  * </ul>
  *
  * @see DragSourceListener
+ * @see #getDragListeners
  * @see #removeDragListener
  * @see DragSourceEvent
  */
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragStart, typedListener);
 	addListener (DND.DragSetData, typedListener);
 	addListener (DND.DragEnd, typedListener);
@@ -281,7 +298,8 @@ int convertProcCallback(int widget, int pSelection, int pTarget, int pType_retur
 	TransferData transferData = new TransferData();
 	transferData.type = target[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData)){
 			dataMatch = true;
 			break;
 		}
@@ -294,10 +312,12 @@ int convertProcCallback(int widget, int pSelection, int pTarget, int pType_retur
 	event.dataType = transferData;
 	notifyListeners(DND.DragSetData,event);
 
+	if (!event.doit) return 0;
 	Transfer transferAgent = null;
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
-			transferAgent = transferAgents[i];
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData)){
+			transferAgent = transfer;
 			break;
 		}
 	}
@@ -349,11 +369,14 @@ void drag(Event dragEvent) {
 	// Copy targets to global memory
 	TransferData[] transferData = new TransferData[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		TransferData[] data = transferAgents[i].getSupportedTypes();
-		TransferData[] newTransferData = new TransferData[transferData.length + data.length];
-		System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
-		System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
-		transferData = newTransferData;
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			TransferData[] data = transfer.getSupportedTypes();
+			TransferData[] newTransferData = new TransferData[transferData.length + data.length];
+			System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
+			System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
+			transferData = newTransferData;
+		}
 	}
 	int[] dataTypes = new int[transferData.length];
 	for (int i = 0; i < transferData.length; i++){
@@ -451,6 +474,54 @@ public Control getControl () {
 	return control;
 }
 /**
+ * Returns an array of listeners who will be notified when a drag and drop 
+ * operation is in progress, by sending it one of the messages defined in 
+ * the <code>DragSourceListener</code> interface.
+ *
+ * @return the listeners who will be notified when a drag and drop
+ * operation is in progress
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragSourceListener
+ * @see #addDragListener
+ * @see #removeDragListener
+ * @see DragSourceEvent
+ * 
+ * @since 3.4
+ */
+public DragSourceListener[] getDragListeners() {
+	Listener[] listeners = getListeners(DND.DragStart);
+	int length = listeners.length;
+	DragSourceListener[] dragListeners = new DragSourceListener[length];
+	int count = 0;
+	for (int i = 0; i < length; i++) {
+		Listener listener = listeners[i];
+		if (listener instanceof DNDListener) {
+			dragListeners[count] = (DragSourceListener) ((DNDListener) listener).getEventListener();
+			count++;
+		}
+	}
+	if (count == length) return dragListeners;
+	DragSourceListener[] result = new DragSourceListener[count];
+	System.arraycopy(dragListeners, 0, result, 0, count);
+	return result;
+}
+/**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop operation.
+ *
+ * @return the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
+}
+/**
  * Returns the list of data types that can be transferred by this DragSource.
  *
  * @return the list of data types that can be transferred by this DragSource
@@ -467,7 +538,7 @@ void onDispose() {
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
 	controlListener = null;
-	control.setData(DRAGSOURCEID, null);
+	control.setData(DND.DRAG_SOURCE_KEY, null);
 	control = null;
 	transferAgents = null;
 }
@@ -499,7 +570,7 @@ int osOpToOp(byte osOperation){
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -511,12 +582,24 @@ int osOpToOp(byte osOperation){
  *
  * @see DragSourceListener
  * @see #addDragListener
+ * @see #getDragListeners
  */
 public void removeDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (DND.DragStart, listener);
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
+}
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * used during a drag and drop operation.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
 }
 /**
  * Specifies the list of data types that can be transferred by this DragSource.

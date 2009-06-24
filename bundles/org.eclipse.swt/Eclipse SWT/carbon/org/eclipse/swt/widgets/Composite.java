@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,12 +32,19 @@ import org.eclipse.swt.graphics.*;
  * behavior is undefined if they are used with subclasses of <code>Composite</code> other
  * than <code>Canvas</code>.
  * </p><p>
+ * Note: The <code>CENTER</code> style, although undefined for composites, has the
+ * same value as <code>EMBEDDED</code> which is used to embed widgets from other
+ * widget toolkits into SWT.  On some operating systems (GTK, Motif), this may cause
+ * the children of this composite to be obscured.
+ * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
  * of other controls.
  * </p>
  *
  * @see Canvas
+ * @see <a href="http://www.eclipse.org/swt/snippets/#composite">Composite snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Composite extends Scrollable {
 	Layout layout;
@@ -77,6 +84,8 @@ Composite () {
  * @see SWT#NO_MERGE_PAINTS
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_RADIO_GROUP
+ * @see SWT#EMBEDDED
+ * @see SWT#DOUBLE_BUFFERED
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {
@@ -84,49 +93,25 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-	if (OS.HIVIEW) {
-		short [] buffer = new short [1];
-		OS.CountSubControls (handle, buffer);
-		int count = buffer [0];
-		Control [] children = new Control [count];
-		int i = 0, j = 0;
-		int child = OS.HIViewGetFirstSubview (handle);
-		while (i < count) {
-			if (child != 0) {
-				Widget widget = display.getWidget (child);
-				if (widget != null && widget != this) {
-					if (widget instanceof Control) {
-						children [j++] = (Control) widget;
-					}
-				}
-			}
-			child = OS.HIViewGetNextView (child);
-			i++;
-		}
-		if (j == count) return children;
-		Control [] newChildren = new Control [j];
-		System.arraycopy (children, 0, newChildren, 0, j);
-		return newChildren;
-	}
-	short [] count = new short [1];
-	OS.CountSubControls (handle, count);
-	if (count [0] == 0) return new Control [0];
-	Control [] children = new Control [count [0]];
-	int [] outControl= new int [1];
+	short [] buffer = new short [1];
+	OS.CountSubControls (handle, buffer);
+	int count = buffer [0];
+	Control [] children = new Control [count];
 	int i = 0, j = 0;
-	while (i < count [0]) {
-		int status = OS.GetIndexedSubControl (handle, (short)(i+1), outControl);
-		if (status == OS.noErr) {
-			Widget widget = display.getWidget (outControl [0]);
+	int child = OS.HIViewGetFirstSubview (handle);
+	while (i < count) {
+		if (child != 0) {
+			Widget widget = display.getWidget (child);
 			if (widget != null && widget != this) {
 				if (widget instanceof Control) {
 					children [j++] = (Control) widget;
 				}
 			}
 		}
+		child = OS.HIViewGetNextView (child);
 		i++;
 	}
-	if (j == count [0]) return children;
+	if (j == count) return children;
 	Control [] newChildren = new Control [j];
 	System.arraycopy (children, 0, newChildren, 0, j);
 	return newChildren;
@@ -257,12 +242,13 @@ void createHandle () {
 }
 
 void createHandle (int parentHandle) {
-	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parentHandle);
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	OS.HIObjectSetAccessibilityIgnored (handle, true);
 }
 
 void createScrolledHandle (int parentHandle) {
@@ -273,10 +259,12 @@ void createScrolledHandle (int parentHandle) {
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	scrolledHandle = outControl [0];
 	outControl [0] = 0;
-	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	features |= OS.kControlSupportsFocus;
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	OS.HIObjectSetAccessibilityIgnored (scrolledHandle, true);
+	OS.HIObjectSetAccessibilityIgnored (handle, true);
 }
 
 void drawBackground (int control, int context) {
@@ -284,18 +272,19 @@ void drawBackground (int control, int context) {
 		Composite parent = this;
 		Shell shell = getShell ();
 		if (shell != this) parent = this.parent;
+		boolean drawBackground = (style & SWT.TRANSPARENT) == 0;
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), inset ());
+			parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), drawBackground, inset ());
 		} else {
 			if (hasBorder ()) {
-				parent.drawFocus (control, context, false, hasBorder (), inset ());
+				parent.drawFocus (control, context, false, hasBorder (), drawBackground, inset ());
 			} else {
 				parent.fillBackground (control, context, null);
 			}
 		}
 	} else {
 		if ((state & CANVAS) != 0) {
-			if ((style & SWT.NO_BACKGROUND) == 0) {
+			if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
 				fillBackground (control, context, null);
 			}	
 		}
@@ -314,6 +303,31 @@ void enableWidget (boolean enabled) {
 
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : parent.findDeferredControl ();
+}
+
+Menu [] findMenus (Control control) {
+	if (control == this) return new Menu [0];
+	Menu result [] = super.findMenus (control);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		Menu [] menuList = child.findMenus (control);
+		if (menuList.length != 0) {
+			Menu [] newResult = new Menu [result.length + menuList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (menuList, 0, newResult, result.length, menuList.length);
+			result = newResult;
+		}
+	}
+	return result;
+}
+
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
+	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		children [i].fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	}
 }
 
 void fixTabList (Control control) {
@@ -337,6 +351,24 @@ void fixTabList (Control control) {
 	tabList = newList;
 }
 
+/**
+ * Returns the receiver's background drawing mode. This
+ * will be one of the following constants defined in class
+ * <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERTIT_FORCE</code>.
+ *
+ * @return the background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public int getBackgroundMode () {
 	checkWidget ();
 	return backgroundMode;
@@ -344,7 +376,9 @@ public int getBackgroundMode () {
 
 /**
  * Returns a (possibly empty) array containing the receiver's children.
- * Children are returned in the order that they are drawn.
+ * Children are returned in the order that they are drawn.  The topmost
+ * control appears at the beginning of the array.  Subsequent controls
+ * draw beneath this control and appear later in the array.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
@@ -481,7 +515,7 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 				short [] count = new short [1];
 				OS.CountSubControls (handle, count);
 				if (count [0] == 0) {
-					if (OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart) == OS.noErr) {
+					if (OS.SetKeyboardFocus (window, handle, (short) focusPart ()) == OS.noErr) {
 						return OS.noErr;
 					}
 				}
@@ -504,11 +538,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 				if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 					short [] part = new short [1];
 					OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-					if (OS.HIVIEW) {
-						redrawWidget (scrolledHandle, false);
-					} else {
-						drawFocusClipped (scrolledHandle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
-					}
+					redrawWidget (scrolledHandle, false);
 				}
 			}
 		}
@@ -530,6 +560,24 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
+	/*
+	* For some reason the next event handler for embedded controls
+	* stops the event chain and does not let the default handler
+	* process the raw key event into unicode.  The fix to send
+	* the key from kEventRawKeyDown instead.
+	* 
+	* Note: should the embedded control no longer stop the event
+	* chain, there will be two key events issued for one key press.
+	*/	
+	if ((state & CANVAS) != 0  && (style & SWT.EMBEDDED) != 0) {
+		int [] theControl = new int[1];
+		OS.GetKeyboardFocus (OS.GetControlOwner(handle), theControl);
+		if (theControl[0] != handle) {
+			if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+			return OS.eventNotHandledErr;
+		}
+	}
+	
 	/*
 	* Feature in the Macintosh.  For some reason, the default handler
 	* does not issue kEventTextInputUnicodeForKeyEvent when the user
@@ -622,7 +670,13 @@ boolean isTabGroup () {
  * <p>
  * This is equivalent to calling <code>layout(true)</code>.
  * </p>
- *
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -648,7 +702,14 @@ public void layout () {
  * will cascade down through all child widgets in the receiver's widget 
  * tree until a child is encountered that does not resize.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  *
@@ -679,7 +740,14 @@ public void layout (boolean changed) {
  * tree.  However, if a child is resized as a result of a call to layout, the 
  * resize event will invoke the layout of the child.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  * @param all <code>true</code> if all children in the receiver's widget tree should be laid out, and <code>false</code> otherwise
@@ -706,6 +774,12 @@ public void layout (boolean changed, boolean all) {
  * (potentially) optimize the work it is doing by assuming that none of the 
  * peers of the changed control have changed state since the last layout.
  * If an ancestor does not have a layout, skip it.
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  * 
  * @param changed a control that has had a state change which requires a recalculation of its size
  * 
@@ -822,6 +896,23 @@ void resetVisibleRegion (int control) {
 	super.resetVisibleRegion (control);
 }
 
+/**
+ * Sets the background drawing mode to the argument which should
+ * be one of the following constants defined in class <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERIT_FORCE</code>.
+ *
+ * @param mode the new background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
@@ -898,7 +989,6 @@ public void setLayoutDeferred (boolean defer) {
 		layoutCount++;
 	}
 }
-
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	boolean changed = super.setScrollBarVisible (bar, visible);

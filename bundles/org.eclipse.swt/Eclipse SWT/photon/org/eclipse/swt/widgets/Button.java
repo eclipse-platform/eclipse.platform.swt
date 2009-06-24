@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,10 +39,16 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#button">Button snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Button extends Control {
 	String text = "";
 	Image image;
+	boolean grayed;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -74,6 +80,8 @@ public class Button extends Control {
  * @see SWT#RADIO
  * @see SWT#TOGGLE
  * @see SWT#FLAT
+ * @see SWT#UP
+ * @see SWT#DOWN
  * @see SWT#LEFT
  * @see SWT#RIGHT
  * @see SWT#CENTER
@@ -101,11 +109,11 @@ static int checkStyle (int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -279,6 +287,26 @@ boolean getDefault () {
 }
 
 /**
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the widget does not have
+ * the <code>CHECK</code> style, return false.
+ *
+ * @return the grayed state of the checkbox
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
+/**
  * Returns the receiver's image if it has one, or null
  * if it does not.
  *
@@ -386,7 +414,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -506,9 +534,34 @@ public void setSelection (boolean selected) {
 }
 
 /**
+ * Sets the grayed state of the receiver.  This state change 
+ * only applies if the control was created with the SWT.CHECK
+ * style.
+ *
+ * @param grayed the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setGrayed (boolean grayed) {
+	checkWidget ();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
+}
+
+/**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
- *
+ * <p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
+ * </p>
  * @param image the image to display on the receiver (may be <code>null</code>)
  *
  * @exception IllegalArgumentException <ul>
@@ -543,16 +596,20 @@ public void setImage (Image image) {
  * the mnemonic character but must not contain line delimiters.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
- * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * underlined but may be emphasized in a platform specific
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
+ * </p><p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
  * </p>
- * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

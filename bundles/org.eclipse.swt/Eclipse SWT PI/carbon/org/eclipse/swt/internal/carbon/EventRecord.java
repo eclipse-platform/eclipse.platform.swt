@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -13,12 +13,16 @@
 package org.eclipse.swt.internal.carbon;
 
 public class EventRecord {
+	/** @field cast=(EventKind) */
 	public short what;
 	public int message;
 	public int when;
 	//Point where;
+	/** @field accessor=where.v */
 	public short where_v;
+	/** @field accessor=where.h */
 	public short where_h;
+	/** @field cast=(EventModifiers) */
 	public short modifiers;
 	public static final int sizeof = 16;
 }

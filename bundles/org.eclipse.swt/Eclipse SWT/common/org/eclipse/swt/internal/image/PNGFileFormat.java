@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,11 +14,11 @@ package org.eclipse.swt.internal.image;
 import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
-final class PNGFileFormat extends FileFormat {
+public final class PNGFileFormat extends FileFormat {
 	static final int SIGNATURE_LENGTH = 8;
 	static final int PRIME = 65521;
-	PngDecodingDataStream decodingStream;
 	PngIhdrChunk headerChunk;
 	PngPlteChunk paletteChunk;
 	ImageData imageData;
@@ -44,11 +44,13 @@ ImageData[] loadFromByteStream() {
 		readSignature();
 		PngChunkReader chunkReader = new PngChunkReader(inputStream);
 		headerChunk = chunkReader.getIhdrChunk();
-		int imageSize = getAlignedBytesPerRow() * headerChunk.getHeight();
+		int width = headerChunk.getWidth(), height = headerChunk.getHeight();
+		if (width <= 0 || height <= 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		int imageSize = getAlignedBytesPerRow() * height;
 		data = new byte[imageSize];		
 		imageData = ImageData.internal_new(
-			headerChunk.getWidth(),
-			headerChunk.getHeight(),
+			width,
+			height,
 			headerChunk.getSwtBitsPerPixel(),
 			new PaletteData(0, 0, 0),
 			4,
@@ -83,7 +85,7 @@ ImageData[] loadFromByteStream() {
  * Read and handle the next chunk of data from the 
  * PNG file.
  */
-void readNextChunk(PngChunkReader chunkReader) {
+void readNextChunk(PngChunkReader chunkReader) throws IOException {
 	PngChunk chunk = chunkReader.readNextChunk();
 	switch (chunk.getChunkType()) {
 		case PngChunk.CHUNK_IEND:
@@ -140,89 +142,8 @@ void readNextChunk(PngChunkReader chunkReader) {
 	}
 }
 void unloadIntoByteStream(ImageLoader loader) {
-	/* We do not currently support writing png. */
-	SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
-	try {
-		/* PNG only supports single image (use MNG for multi-image). */
-		ImageData imageData = loader.data[0];
-	
-		/* Step 1: Write PNG signature. */
-		writeSignature();
-		
-		/* Step 2: Write IHDR chunk. */
-		int width = imageData.width;
-		int height = imageData.height;
-		PaletteData palette = imageData.palette;
-		byte colorType = PngIhdrChunk.COLOR_TYPE_RGB;
-		byte bitDepth = 8;
-		if (!palette.isDirect) {
-			colorType = PngIhdrChunk.COLOR_TYPE_PALETTE;
-			bitDepth = (byte) Math.min(imageData.depth, 8);
-		}
-		if (imageData.getTransparencyType() == SWT.TRANSPARENCY_ALPHA) {
-			colorType = PngIhdrChunk.COLOR_TYPE_RGB_WITH_ALPHA;
-		}
-		byte compressionMethod = 0; // must be zero
-		byte filterMethod = 0; // must be zero
-		byte interlaceMethod = PngIhdrChunk.INTERLACE_METHOD_NONE;
-		outputStream.write(new PngIhdrChunk(width, height, bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod).getReference());
-		
-		/* Step 3: Write PLTE (palette) chunk, if any. */
-		if (!palette.isDirect) {
-			outputStream.write(new PngPlteChunk(palette).getReference());
-		}
-		
-		/* Step 4: Write tRNS (transparency) chunk, if any. */
-		if (imageData.transparentPixel != -1) {
-			RGB transparentRGB = palette.getRGB(imageData.transparentPixel);
-			outputStream.write(new PngTrnsChunk(transparentRGB).getReference());
-		}
-		
-		/* Step 5: Write IDAT chunk. */
-		compress(imageData);
-		outputStream.write(new PngIdatChunk(headerByte1, headerByte2, data, adler).getReference());
-		
-		/* Step 6: Write IEND chunk. */
-		outputStream.write(new PngIendChunk().getReference());
-	} catch (IOException e) {
-		SWT.error(SWT.ERROR_IO, e);
-	}
-}
-/* Compress the image data, and store the results in:
- * headerByte1, headerByte2, data, and adler.
- */
-void compress(ImageData imageData) {
-	headerByte1 = (byte)0x78; // window size = 0x70 (32768), compression method = 0x08
-	headerByte2 = (byte)0x9C; // compression level = 0x80 (default), check bits = 0x1C
-	
-	int [] pixels = new int [imageData.width];
-	// TODO - determine the most efficient way to compress the data. For now, just compress by scanline.
-	for (int row = 0; row < imageData.height; row++) {
-		imageData.getPixels(0, row, imageData.width, pixels, 0);
-		// FIXME - compress the data, compute the Adler
-	}
-	// temporary code:
-	data = new byte[] {(byte) 0xC0}; // final compressed block, dynamic
-}
-void updateAdler(byte value) {
-	int low = adler & 0xFFFF;
-	int high = (adler >> 16) & 0xFFFF;
-	int valueInt = value & 0xFF;
-	low = (low + valueInt) % PRIME;
-	high = (low + high) % PRIME;
-	adler = (high << 16) | low;
-}
-void writeSignature() throws IOException {
-	byte[] signature = new byte[SIGNATURE_LENGTH];
-	signature[0] = (byte) 137; //constant
-	signature[1] = 80; //P
-	signature[2] = 78; //N
-	signature[3] = 71; //G
-	signature[4] = 13; //<RETURN>
-	signature[5] = 10; //<LINEFEED>
-	signature[6] = 26; //<CTRL/Z>
-	signature[7] = 10; //<LINEFEED>
-	outputStream.write(signature);
+	PngEncoder encoder = new PngEncoder(loader);
+	encoder.encode(outputStream);
 }
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
@@ -367,16 +288,29 @@ void setImageDataValues(byte[] data, ImageData imageData) {
  * Read the image data from the data stream. This must handle
  * decoding the data, filtering, and interlacing.
  */
-void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) {
-	decodingStream = new PngDecodingDataStream(chunk, chunkReader);
+void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOException {
+	InputStream stream = new PngInputStream(chunk, chunkReader);
+	//TEMPORARY CODE
+	boolean use3_2 = System.getProperty("org.eclipse.swt.internal.image.PNGFileFormat_3.2") != null;
+	InputStream inflaterStream = use3_2 ? null : Compatibility.newInflaterInputStream(stream);
+	if (inflaterStream != null) {
+		stream = inflaterStream;
+	} else {
+		stream = new PngDecodingDataStream(stream);
+	}
 	int interlaceMethod = headerChunk.getInterlaceMethod();
 	if (interlaceMethod == PngIhdrChunk.INTERLACE_METHOD_NONE) {
-		readNonInterlacedImage();
+		readNonInterlacedImage(stream);
 	} else {
-		readInterlacedImage();
+		readInterlacedImage(stream);
 	}
-	decodingStream.assertImageDataAtEnd();
-	decodingStream.checkAdler();
+	/*
+	* InflaterInputStream does not consume all bytes in the stream
+	* when it is closed. This may leave unread IDAT chunks. The fix
+	* is to read all available bytes before closing it.
+	*/
+	while (stream.available() > 0) stream.read();
+	stream.close();
 }
 /**
  * Answer the number of bytes in a word-aligned row of pixel data.
@@ -422,11 +356,12 @@ int getBytesPerRow(int rowWidthInPixels) {
  * 3. Notify the image loader's listeners of the frame load.
  */
 void readInterlaceFrame(
+	InputStream inputStream,
 	int rowInterval,
 	int columnInterval,
 	int startRow,
 	int startColumn,
-	int frameCount) 
+	int frameCount) throws IOException 
 {
 	int width = headerChunk.getWidth();
 	int alignedBytesPerRow = getAlignedBytesPerRow();
@@ -440,9 +375,10 @@ void readInterlaceFrame(
 	byte[] currentRow = row1;	
 	byte[] lastRow = row2;	
 	for (int row = startRow; row < height; row += rowInterval) {
-		byte filterType = decodingStream.getNextDecodedByte();
-		for (int col = 0; col < bytesPerRow; col++) {
-			currentRow[col] = decodingStream.getNextDecodedByte();
+		byte filterType = (byte)inputStream.read();
+		int read = 0;
+		while (read != bytesPerRow) {
+			read += inputStream.read(currentRow, read, bytesPerRow - read);
 		}
 		filterRow(currentRow, lastRow, filterType);
 		if (headerChunk.getBitDepth() >= 8) {
@@ -487,14 +423,14 @@ void readInterlaceFrame(
  * Read the pixel data for an interlaced image from the
  * data stream.
  */
-void readInterlacedImage() {
-	readInterlaceFrame(8, 8, 0, 0, 0);
-	readInterlaceFrame(8, 8, 0, 4, 1);	
-	readInterlaceFrame(8, 4, 4, 0, 2);	
-	readInterlaceFrame(4, 4, 0, 2, 3);
-	readInterlaceFrame(4, 2, 2, 0, 4);
-	readInterlaceFrame(2, 2, 0, 1, 5);	
-	readInterlaceFrame(2, 1, 1, 0, 6);
+void readInterlacedImage(InputStream inputStream) throws IOException {
+	readInterlaceFrame(inputStream, 8, 8, 0, 0, 0);
+	readInterlaceFrame(inputStream, 8, 8, 0, 4, 1);	
+	readInterlaceFrame(inputStream, 8, 4, 4, 0, 2);	
+	readInterlaceFrame(inputStream, 4, 4, 0, 2, 3);
+	readInterlaceFrame(inputStream, 4, 2, 2, 0, 4);
+	readInterlaceFrame(inputStream, 2, 2, 0, 1, 5);	
+	readInterlaceFrame(inputStream, 2, 1, 1, 0, 6);
 }
 /**
  * Fire an event to let listeners know that an interlaced
@@ -514,7 +450,7 @@ void fireInterlacedFrameEvent(int frameCount) {
  * data stream.
  * Update the imageData to reflect the new data.
  */
-void readNonInterlacedImage() {
+void readNonInterlacedImage(InputStream inputStream) throws IOException {
 	int dataOffset = 0;
 	int alignedBytesPerRow = getAlignedBytesPerRow();
 	int bytesPerRow = getBytesPerRow();
@@ -522,10 +458,12 @@ void readNonInterlacedImage() {
 	byte[] row2 = new byte[bytesPerRow];
 	byte[] currentRow = row1;	
 	byte[] lastRow = row2;
-	for (int row = 0; row < headerChunk.getHeight(); row++) {
-		byte filterType = decodingStream.getNextDecodedByte();
-		for (int col = 0; col < bytesPerRow; col++) {
-			currentRow[col] = decodingStream.getNextDecodedByte();
+	int height = headerChunk.getHeight();
+	for (int row = 0; row < height; row++) {
+		byte filterType = (byte)inputStream.read();
+		int read = 0;
+		while (read != bytesPerRow) {
+			read += inputStream.read(currentRow, read, bytesPerRow - read);
 		}
 		filterRow(currentRow, lastRow, filterType);
 		System.arraycopy(currentRow, 0, data, dataOffset, bytesPerRow);

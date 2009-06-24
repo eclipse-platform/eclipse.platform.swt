@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,9 +11,11 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public final class DISPPARAMS {
-	public int rgvarg;
-	public int rgdispidNamedArgs;
+	/** @field cast=(VARIANTARG FAR *) */
+	public int /*long*/ rgvarg;
+	/** @field cast=(DISPID FAR *) */
+	public int /*long*/ rgdispidNamedArgs;
 	public int cArgs;
 	public int cNamedArgs;
-	public static final int sizeof = 16; 						
+	public static final int sizeof = COM.DISPPARAMS_sizeof ();
 }

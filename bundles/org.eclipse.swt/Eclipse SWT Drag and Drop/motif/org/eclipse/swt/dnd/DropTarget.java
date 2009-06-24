@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,15 +13,14 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 
 /**
  *
  * Class <code>DropTarget</code> defines the target object for a drag and drop transfer.
  *
- * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  *
  * <p>This class identifies the <code>Control</code> over which the user must position the cursor
  * in order to drop the data being transferred.  It also specifies what data types can be dropped on 
@@ -67,13 +66,18 @@ import org.eclipse.swt.internal.motif.*;
  *	<dt><b>Events</b></dt> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: DNDExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DropTarget extends Widget {
 	
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DropTargetEffect dropEffect;
 	
 	// Track application selections
 	TransferData selectedDataType;
@@ -100,9 +104,11 @@ public class DropTarget extends Widget {
 	// not visible.
 	boolean registered = false;
 	
-	static int DELETE_TYPE = Transfer.registerType("DELETE\0"); //$NON-NLS-1$
-	static int NULL_TYPE = Transfer.registerType("NULL\0"); //$NON-NLS-1$
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	int deleteAtom, nullAtom;
+	
+	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
+	static byte [] DELETE = Converter.wcsToMbcs (null, "DELETE", true); //$NON-NLS-1$
+	static byte [] NULL = Converter.wcsToMbcs (null, "NULL", true); //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
 	
 	static Callback DropProc;
@@ -140,7 +146,7 @@ public class DropTarget extends Widget {
  * </ul>
  *
  * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see Widget#dispose
  * @see DropTarget#checkSubclass
@@ -155,10 +161,13 @@ public DropTarget(Control control, int style) {
 	if (DropProc == null || DragProc == null || TransferProc == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	if (control.getData(DROPTARGETID) != null) {
+	if (control.getData(DND.DROP_TARGET_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	control.setData(DROPTARGETID, this);
+	control.setData(DND.DROP_TARGET_KEY, this);
+	int xDisplay = Display.getDefault().xDisplay;
+	deleteAtom = OS.XmInternAtom (xDisplay, DELETE, false);
+	nullAtom = OS.XmInternAtom (xDisplay, NULL, false);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -175,12 +184,20 @@ public DropTarget(Control control, int style) {
 					} else {
 						int[] args = new int[]{OS.XmNdropSiteActivity,   OS.XmDROP_SITE_ACTIVE,};
 						OS.XmDropSiteUpdate(DropTarget.this.control.handle, args, args.length/2);
+						if (DropTarget.this.control instanceof Label) {
+							int formHandle = OS.XtParent (DropTarget.this.control.handle);
+							OS.XmDropSiteUpdate(formHandle, args, args.length / 2);
+						}
 					}
 					break;
 				}
 				case SWT.Hide: {
 					int[] args = new int[]{OS.XmNdropSiteActivity,   OS.XmDROP_SITE_INACTIVE,};
 					OS.XmDropSiteUpdate(DropTarget.this.control.handle, args, args.length/2);	
+					if (DropTarget.this.control instanceof Label) {
+						int formHandle = OS.XtParent (DropTarget.this.control.handle);
+						OS.XmDropSiteUpdate(formHandle, args, args.length / 2);
+					}
 					break;
 				}
 			}
@@ -204,13 +221,13 @@ public DropTarget(Control control, int style) {
 		}
 	});
 
-	// Drag under effect
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
+	if (effect instanceof DropTargetEffect) {
+		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dropEffect = new TableDropTargetEffect((Table) control);
+	} else if (control instanceof Tree) {
+		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 
 	if (control.isVisible()) registerDropTarget();
@@ -240,10 +257,10 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				event.item = effect.getItem(dragOverEvent.x, dragOverEvent.y);
+				if (dropEffect != null) {
+					event.item = dropEffect.getItem(dragOverEvent.x, dragOverEvent.y);
+				}
 				notifyListeners(DND.DragOver, event);
-				
-				effect.showDropTargetEffect(event.feedback, event.x, event.y);
 				
 				selectedDataType = null;
 				if (event.dataType != null) {
@@ -293,7 +310,7 @@ static DropTarget FindDropTarget(int handle) {
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
 	if (widget == null) return null;
-	return (DropTarget)widget.getData(DROPTARGETID);
+	return (DropTarget)widget.getData(DND.DROP_TARGET_KEY);
 }
 
 static int TransferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
@@ -332,12 +349,14 @@ static int TransferProcCallback(int widget, int client_data, int pSelection, int
  * </ul>
  *
  * @see DropTargetListener
+ * @see #getDropListeners
  * @see #removeDropListener
  * @see DropTargetEvent
  */
 public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragEnter, typedListener);
 	addListener (DND.DragLeave, typedListener);
 	addListener (DND.DragOver, typedListener);
@@ -361,7 +380,6 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 
 	if (callbackData.reason == OS.XmCR_DROP_SITE_LEAVE_MESSAGE) {
 		updateDragOverHover(0, null);
-		effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 		
 		if (callbackData.dropSiteStatus == OS.XmDROP_SITE_INVALID) {
 			return;
@@ -428,8 +446,6 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
 		selectedOperation = event.detail;
 	}
-	
-	effect.showDropTargetEffect(event.feedback, event.x, event.y);
 
 	callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_VALID;
 	callbackData.operation = opToOsOp(selectedOperation);
@@ -515,6 +531,57 @@ public Control getControl () {
 }
 
 /**
+ * Returns an array of listeners who will be notified when a drag and drop 
+ * operation is in progress, by sending it one of the messages defined in 
+ * the <code>DropTargetListener</code> interface.
+ *
+ * @return the listeners who will be notified when a drag and drop 
+ * operation is in progress
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DropTargetListener
+ * @see #addDropListener
+ * @see #removeDropListener
+ * @see DropTargetEvent
+ * 
+ * @since 3.4
+ */
+public DropTargetListener[] getDropListeners() {
+	Listener[] listeners = getListeners(DND.DragEnter);
+	int length = listeners.length;
+	DropTargetListener[] dropListeners = new DropTargetListener[length];
+	int count = 0;
+	for (int i = 0; i < length; i++) {
+		Listener listener = listeners[i];
+		if (listener instanceof DNDListener) {
+			dropListeners[count] = (DropTargetListener) ((DNDListener) listener).getEventListener();
+			count++;
+		}
+	}
+	if (count == length) return dropListeners;
+	DropTargetListener[] result = new DropTargetListener[count];
+	System.arraycopy(dropListeners, 0, result, 0, count);
+	return result;
+}
+
+/**
+ * Returns the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @return the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public DropTargetEffect getDropTargetEffect() {
+	return dropEffect;
+}
+
+/**
  * Returns a list of the data types that can be transferred to this DropTarget.
  *
  * @return a list of the data types that can be transferred to this DropTarget
@@ -535,7 +602,7 @@ void onDispose() {
 		control.removeListener(SWT.Dispose, controlListener);
 	}
 	controlListener = null;
-	control.setData(DROPTARGETID, null);
+	control.setData(DND.DROP_TARGET_KEY, null);
 	control = null;
 	transferAgents = null;
 }
@@ -575,14 +642,17 @@ void registerDropTarget() {
 		OS.XmNdropSiteType,       OS.XmDROP_SITE_COMPOSITE,
 	};
 	
-	if (transferAgents.length != 0) {
+	if (transferAgents != null && transferAgents.length != 0) {
 		TransferData[] transferData = new TransferData[0];
 		for (int i = 0, length = transferAgents.length; i < length; i++){
-			TransferData[] data = transferAgents[i].getSupportedTypes();
-			TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
-			System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
-			System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
-			transferData = newTransferData;
+			Transfer transfer = transferAgents[i];
+			if (transfer != null) {
+				TransferData[] data = transfer.getSupportedTypes();
+				TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
+				System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
+				System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
+				transferData = newTransferData;
+			}
 		}
 		
 		int[] atoms = new int[transferData.length];
@@ -606,10 +676,10 @@ void registerDropTarget() {
 	}
 	
 	OS.XmDropSiteRegister(control.handle, args, args.length / 2);
-	//if (control instanceof Label) {
-	//	int formHandle = OS.XtParent (control.handle);
-	//	OS.XmDropSiteRegister(formHandle, args, args.length / 2);
-	//}
+	if (control instanceof Label) {
+		int formHandle = OS.XtParent (control.handle);
+		OS.XmDropSiteRegister(formHandle, args, args.length / 2);
+	}
 	registered = true;
 }
 
@@ -618,7 +688,7 @@ void registerDropTarget() {
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -630,6 +700,7 @@ void registerDropTarget() {
  *
  * @see DropTargetListener
  * @see #addDropListener
+ * @see #getDropListeners
  */
 public void removeDropListener(DropTargetListener listener) {	
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
@@ -639,6 +710,19 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DragOperationChanged, listener);
 	removeListener (DND.Drop, listener);
 	removeListener (DND.DropAccept, listener);
+}
+
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public void setDropTargetEffect(DropTargetEffect effect) {
+	dropEffect = effect;
 }
 
 boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int timestamp, DNDEvent event) {
@@ -689,7 +773,8 @@ boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int t
 		for (int j = 0; j < transferAgents.length; j++){
 			TransferData transferData = new TransferData();
 			transferData.type = exportTargets[i];
-			if (transferAgents[j].isSupportedType(transferData)) {
+			Transfer transfer = transferAgents[j];
+			if (transfer != null && transfer.isSupportedType(transferData)) {
 				TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
 				System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
 				newDataTypes[dataTypes.length] = transferData;
@@ -713,7 +798,9 @@ boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int t
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
-	event.item = effect.getItem(event.x, event.y);
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(event.x, event.y);
+	}
 	return true;
 }
 
@@ -739,11 +826,14 @@ public void setTransfer(Transfer[] transferAgents){
 	// register data types
 	TransferData[] transferData = new TransferData[0];
 	for (int i = 0, length = transferAgents.length; i < length; i++){
-		TransferData[] data = transferAgents[i].getSupportedTypes();
-		TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
-		System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
-		System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
-		transferData = newTransferData;
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			TransferData[] data = transfer.getSupportedTypes();
+			TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
+			System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
+			System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
+			transferData = newTransferData;
+		}
 	}
 	
 	int[] atoms = new int[transferData.length];
@@ -761,6 +851,10 @@ public void setTransfer(Transfer[] transferAgents){
 	};
 
 	OS.XmDropSiteUpdate(control.handle, args, args.length / 2);
+	if (control instanceof Label) {
+		int formHandle = OS.XtParent (control.handle);
+		OS.XmDropSiteUpdate(formHandle, args, args.length / 2);
+	}
 	
 	OS.XtFree(pImportTargets);
 	
@@ -770,7 +864,7 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 	
 	int[] type = new int[1];
 	OS.memmove(type, pType, 4);
-	if (type[0] == NULL_TYPE) {
+	if (type[0] == nullAtom) {
 		return;
 	}
 	
@@ -793,8 +887,9 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 	transferData.pValue = pValue;
 	transferData.format = format[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
-			object = transferAgents[i].nativeToJava(transferData);
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData)){
+			object = transfer.nativeToJava(transferData);
 			break;
 		}
 	}
@@ -819,7 +914,7 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 	
 	//notify source of action taken
 	if ((selectedOperation & DND.DROP_MOVE) == DND.DROP_MOVE) {
-		int[] args = new int[]{control.handle, DELETE_TYPE};
+		int[] args = new int[]{control.handle, deleteAtom};
 		OS.XmDropTransferAdd(dropTransferObject, args, args.length / 2);
 	}
 }
@@ -827,6 +922,11 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 void unregisterDropTarget() {
 	if (control == null || control.isDisposed() || !registered) return;
 	OS.XmDropSiteUnregister(control.handle);
+	if (control instanceof Label) {
+		int formHandle = OS.XtParent(control.handle);
+		OS.XmDropSiteUnregister(formHandle);
+	}
+	
 	registered = false;
 }
 

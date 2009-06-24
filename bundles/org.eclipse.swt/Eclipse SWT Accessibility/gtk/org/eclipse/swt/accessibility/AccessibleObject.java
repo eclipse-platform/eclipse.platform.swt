@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,7 +74,7 @@ class AccessibleObject {
 		AccessibleListener[] listeners = object.getAccessibleListeners ();
 		if (listeners.length == 0) return parentResult;
 
-		AccessibleEvent event = new AccessibleEvent (object);
+		AccessibleEvent event = new AccessibleEvent (object.accessible);
 		event.childID = object.id;
 		if (parentResult != 0) {
 			int length = OS.strlen (parentResult);
@@ -109,7 +109,7 @@ class AccessibleObject {
 		AccessibleControlListener[] listeners = object.getControlListeners ();
 		if (listeners.length == 0) return parentResult;
 
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		if (parentResult != 0) {
 			int length = OS.strlen (parentResult);
@@ -153,7 +153,7 @@ class AccessibleObject {
 		OS.memmove (parentY, y, 4);
 		OS.memmove (parentWidth, width, 4);
 		OS.memmove (parentHeight, height, 4);
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		event.x = parentX [0]; event.y = parentY [0];
 		event.width = parentWidth [0]; event.height = parentHeight [0];
@@ -211,7 +211,7 @@ class AccessibleObject {
 		int[] parentX = new int [1], parentY = new int [1];
 		OS.memmove (parentX, x, 4);
 		OS.memmove (parentY, y, 4);
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		event.x = parentX [0]; event.y = parentY [0];
 		if (coord_type == ATK.ATK_XY_WINDOW) {
@@ -266,7 +266,7 @@ class AccessibleObject {
 		int[] parentWidth = new int [1], parentHeight = new int [1];
 		OS.memmove (parentWidth, width, 4);
 		OS.memmove (parentHeight, height, 4);
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		event.width = parentWidth [0]; event.height = parentHeight [0];
 		for (int i = 0; i < listeners.length; i++) {
@@ -293,7 +293,7 @@ class AccessibleObject {
 		AccessibleControlListener[] listeners = object.getControlListeners ();
 		if (listeners.length == 0) return parentResult;
 		
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		event.x = (int)/*64*/x; event.y = (int)/*64*/y;
 		if (coord_type == ATK.ATK_XY_WINDOW) {
@@ -350,7 +350,7 @@ class AccessibleObject {
 		AccessibleListener[] listeners = object.getAccessibleListeners ();
 		if (listeners.length == 0) return parentResult;
 			
-		AccessibleEvent event = new AccessibleEvent (object);
+		AccessibleEvent event = new AccessibleEvent (object.accessible);
 		event.childID = object.id;
 		if (parentResult != 0) {
 			int length = OS.strlen (parentResult);
@@ -383,7 +383,7 @@ class AccessibleObject {
 		AccessibleListener[] listeners = object.getAccessibleListeners ();
 		if (listeners.length == 0) return parentResult;
 		
-		AccessibleEvent event = new AccessibleEvent (object);
+		AccessibleEvent event = new AccessibleEvent (object.accessible);
 		event.childID = object.id;
 		if (parentResult != 0) {
 			int length = OS.strlen (parentResult);
@@ -416,7 +416,7 @@ class AccessibleObject {
 		AccessibleControlListener[] listeners = object.getControlListeners ();
 		if (listeners.length == 0) return parentResult;
 			
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		event.detail = (int)/*64*/parentResult;
 		for (int i = 0; i < listeners.length; i++) {
@@ -455,7 +455,7 @@ class AccessibleObject {
 		if (object == null) return 0;
 		if (object.getAccessibleListeners ().length != 0) {
 			AccessibleControlListener[] listeners = object.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (object);
+			AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 			event.childID = object.id;
 			event.detail = -1;
 			for (int i = 0; i < listeners.length; i++) {
@@ -480,8 +480,8 @@ class AccessibleObject {
 					case ACC.ROLE_SCROLLBAR: return ATK.ATK_ROLE_SCROLL_BAR;
 					case ACC.ROLE_SEPARATOR: return ATK.ATK_ROLE_SEPARATOR;
 					case ACC.ROLE_SLIDER: return ATK.ATK_ROLE_SLIDER;
-					case ACC.ROLE_TABLE: return ATK.ATK_ROLE_TABLE;
-					case ACC.ROLE_TABLECELL: return ATK.ATK_ROLE_TABLE_CELL;
+					case ACC.ROLE_TABLE: return ATK.ATK_ROLE_LIST;
+					case ACC.ROLE_TABLECELL: return ATK.ATK_ROLE_LIST_ITEM;
 					case ACC.ROLE_TABLECOLUMNHEADER: return ATK.ATK_ROLE_TABLE_COLUMN_HEADER;
 					case ACC.ROLE_TABLEROWHEADER: return ATK.ATK_ROLE_TABLE_ROW_HEADER;
 					case ACC.ROLE_TABFOLDER: return ATK.ATK_ROLE_PAGE_TAB_LIST;
@@ -492,6 +492,7 @@ class AccessibleObject {
 					case ACC.ROLE_TREE: return ATK.ATK_ROLE_TREE;
 					case ACC.ROLE_TREEITEM: return ATK.ATK_ROLE_LIST_ITEM;
 					case ACC.ROLE_RADIOBUTTON: return ATK.ATK_ROLE_RADIO_BUTTON;
+					case ACC.ROLE_SPLITBUTTON: return ATK.ATK_ROLE_PUSH_BUTTON;
 					case ACC.ROLE_WINDOW: return ATK.ATK_ROLE_WINDOW;
 				}
 			}
@@ -535,7 +536,7 @@ class AccessibleObject {
 		if (listeners.length == 0) return parentResult;
 
 		int /*long*/ set = parentResult;
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		event.detail = -1;
 		for (int i = 0; i < listeners.length; i++) {
@@ -579,7 +580,7 @@ class AccessibleObject {
 		AccessibleControlListener[] listeners = object.getControlListeners ();
 		if (listeners.length == 0) return parentResult;
 			
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		for (int i = 0; i < listeners.length; i++) {
 			listeners [i].getSelection (event);
@@ -607,7 +608,7 @@ class AccessibleObject {
 		AccessibleControlListener[] listeners = object.getControlListeners ();
 		if (listeners.length == 0) return parentResult;
 			
-		AccessibleControlEvent event = new AccessibleControlEvent (object);
+		AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
 		event.childID = object.id;
 		for (int i = 0; i < listeners.length; i++) {
 			listeners [i].getSelection (event);
@@ -637,7 +638,7 @@ class AccessibleObject {
 		AccessibleTextListener[] listeners = object.getTextListeners ();
 		if (listeners.length == 0) return parentResult;
 		
-		AccessibleTextEvent event = new AccessibleTextEvent (object);
+		AccessibleTextEvent event = new AccessibleTextEvent (object.accessible);
 		event.childID = object.id;
 		event.offset = (int)/*64*/parentResult;
 		for (int i = 0; i < listeners.length; i++) {
@@ -651,7 +652,7 @@ class AccessibleObject {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
 		String text = object.getText ();
-		if (text != null) return (int)text.charAt ((int)/*64*/offset); // TODO
+		if (text != null) return text.charAt ((int)/*64*/offset); // TODO
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
 			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
@@ -696,7 +697,7 @@ class AccessibleObject {
 		AccessibleTextListener[] listeners = object.getTextListeners ();
 		if (listeners.length == 0) return parentResult;
 
-		AccessibleTextEvent event = new AccessibleTextEvent (object);
+		AccessibleTextEvent event = new AccessibleTextEvent (object.accessible);
 		event.childID = object.id;
 		for (int i = 0; i < listeners.length; i++) {
 			listeners [i].getSelectionRange (event);
@@ -721,7 +722,7 @@ class AccessibleObject {
 		AccessibleTextListener[] listeners = object.getTextListeners ();
 		if (listeners.length == 0) return 0;
 
-		AccessibleTextEvent event = new AccessibleTextEvent (object);
+		AccessibleTextEvent event = new AccessibleTextEvent (object.accessible);
 		event.childID = object.id;
 		int[] parentStart = new int [1];
 		int[] parentEnd = new int [1];
@@ -1230,7 +1231,7 @@ class AccessibleObject {
 		}
 		AccessibleControlListener[] controlListeners = getControlListeners ();
 		if (controlListeners.length == 0) return parentText;
-		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 		event.childID = id;
 		event.result = parentText;
 		for (int i = 0; i < controlListeners.length; i++) {
@@ -1356,7 +1357,7 @@ class AccessibleObject {
 		AccessibleControlListener[] listeners = getControlListeners ();
 		if (listeners.length == 0) return;
 
-		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 		for (int i = 0; i < listeners.length; i++) {
 			listeners [i].getChildren (event);
 		}

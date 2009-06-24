@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
+ * Copyright (c) 2003, 2008 IBM Corp.
  * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
  *
  * All rights reserved.  This program and the accompanying materials
@@ -19,7 +19,9 @@ public class HIThemeTabDrawInfo {
 	public short direction;
 	public int size;
 	public int adornment;
-	//public int kind;
-	//public int position;
+	/** @field exclude=#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4 */
+	public int kind;
+	/** @field exclude=#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4 */
+	public int position;
 	public static final int sizeof = OS.VERSION >= 0x1040 ? 24 : 16;
 }

@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -57,7 +57,7 @@ public class nsIAppShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
 	}
 
-	public int ListenToEventQueue(int /*long*/ aQueue, boolean aListen) {
+	public int ListenToEventQueue(int /*long*/ aQueue, int aListen) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aQueue, aListen);
 	}
 
@@ -65,7 +65,7 @@ public class nsIAppShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aRealEvent, aEvent);
 	}
 
-	public int DispatchNativeEvent(boolean aRealEvent, int /*long*/ aEvent) {
+	public int DispatchNativeEvent(int aRealEvent, int /*long*/ aEvent) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aRealEvent, aEvent);
 	}
 

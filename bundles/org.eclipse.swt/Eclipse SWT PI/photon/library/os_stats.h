@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #ifdef NATIVE_STATS
 extern int OS_nativeFunctionCount;
@@ -16,8 +16,12 @@ extern char* OS_nativeFunctionNames[];
 #define OS_NATIVE_ENTER(env, that, func) OS_nativeFunctionCallCount[func]++;
 #define OS_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef OS_NATIVE_ENTER
 #define OS_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef OS_NATIVE_EXIT
 #define OS_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {
@@ -67,6 +71,7 @@ typedef enum {
 	PgSetFont_FUNC,
 	PgSetGC_FUNC,
 	PgSetMultiClip_FUNC,
+	PgSetMultiClipTiles_FUNC,
 	PgSetPalette_FUNC,
 	PgSetRegion_FUNC,
 	PgSetStrokeCap_FUNC,
@@ -76,6 +81,7 @@ typedef enum {
 	PgSetStrokeWidth_FUNC,
 	PgSetTextColor_FUNC,
 	PgSetTextXORColor_FUNC,
+	PgSetTranslation_FUNC,
 	PgSetUserClip_FUNC,
 	PgShmemCreate_FUNC,
 	PgShmemDestroy_FUNC,
@@ -178,6 +184,7 @@ typedef enum {
 	PtFrameSize_FUNC,
 	PtGetAbsPosition_FUNC,
 	PtGetResources_FUNC,
+	PtGetVisibleTiles_FUNC,
 	PtGlobalFocusNext_FUNC,
 	PtGlobalFocusNextContainer_FUNC,
 	PtGlobalFocusPrev_FUNC,
@@ -265,10 +272,6 @@ typedef enum {
 	PtWindowGetState_FUNC,
 	PtWindowToBack_FUNC,
 	PtWindowToFront_FUNC,
-	free_FUNC,
-	getenv_FUNC,
-	malloc_FUNC,
-	memmove__III_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I_FUNC,
@@ -279,9 +282,7 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I_FUNC,
-	memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I_FUNC,
-	memmove__I_3BI_FUNC,
-	memmove__I_3II_FUNC,
+	memmove__ILorg_eclipse_swt_internal_photon_PtWebClient2Data_1t_2I_FUNC,
 	memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II_FUNC,
@@ -300,12 +301,7 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_photon_PtWebMetaDataCallback_1t_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_photon_PtWebWindowCallback_1t_2II_FUNC,
-	memmove___3BII_FUNC,
 	memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I_FUNC,
-	memmove___3III_FUNC,
-	memmove___3SII_FUNC,
-	memset_FUNC,
 	strdup_FUNC,
-	strlen_FUNC,
 	uname_FUNC,
 } OS_FUNCS;

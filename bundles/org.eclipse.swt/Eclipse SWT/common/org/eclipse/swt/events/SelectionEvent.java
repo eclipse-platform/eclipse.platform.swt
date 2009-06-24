@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  *
  * @see SelectionListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class SelectionEvent extends TypedEvent {
@@ -45,6 +46,8 @@ public class SelectionEvent extends TypedEvent {
 	 * <li>{@link org.eclipse.swt.SWT#PAGE_UP}</li>
 	 * </ul></p><p><b>Table and Tree</b><ul>
 	 * <li>{@link org.eclipse.swt.SWT#CHECK}</li>
+	 * </ul></p><p><b>Text</b><ul>
+	 * <li>{@link org.eclipse.swt.SWT#CANCEL}</li>
 	 * </ul></p><p><b>CoolItem and ToolItem</b><ul>
 	 * <li>{@link org.eclipse.swt.SWT#ARROW}</li>
 	 * </ul></p>
@@ -82,7 +85,7 @@ public class SelectionEvent extends TypedEvent {
 	 * This will be either the text of the hyperlink or the value of its HREF,
 	 * if one was specified.
 	 * 
-	 * @see Link#setText(String)
+	 * @see org.eclipse.swt.widgets.Link#setText(String)
 	 * @since 3.1
 	 */
 	public String text;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,8 @@ import java.lang.reflect.Method;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.motif.OS;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
@@ -25,18 +26,25 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
 
 /* AWT Imports */
+import java.awt.AWTEvent;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Frame;
+import java.awt.Window;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
- * is possible to embedded AWT components in SWT and vice versa.
+ * is possible to embed AWT components in SWT and vice versa.
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#awt">Swing/AWT snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */
@@ -56,7 +64,7 @@ public class SWT_AWT {
 
 static boolean loaded, swingInitialized;
 
-static native final int /*long*/ getAWTHandle (Canvas canvas);
+static native final int /*long*/ getAWTHandle (Object canvas);
 static native final void setDebug (Frame canvas, boolean debug);
 
 static synchronized void loadLibrary () {
@@ -87,6 +95,19 @@ static synchronized void initializeSwing() {
 	} catch (Throwable e) {}
 }
 
+/**
+ * Returns a <code>java.awt.Frame</code> which is the embedded frame
+ * associated with the specified composite.
+ * 
+ * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>
+ * @return a <code>java.awt.Frame</code> the embedded frame or <code>null</code>.
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public static Frame getFrame (Composite parent) {
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;
@@ -159,6 +180,29 @@ public static Frame new_Frame (final Composite parent) {
 		Method method = clazz.getMethod("registerListeners", null);
 		if (method != null) method.invoke(value, null);
 	} catch (Throwable e) {}
+	final AWTEventListener awtListener = new AWTEventListener() {
+		public void eventDispatched(AWTEvent event) {
+			if (event.getID() == WindowEvent.WINDOW_OPENED) {
+				final Window window = (Window) event.getSource();
+				if (window.getParent() == frame) {
+					parent.getDisplay().asyncExec(new Runnable() {
+						public void run() {
+							Shell shell = parent.getShell();
+							loadLibrary();
+							int awtHandle =  getAWTHandle(window);
+							if (awtHandle == 0) return;
+							int xtParent = OS.XtParent (shell.handle);
+							while (xtParent != 0 && !OS.XtIsSubclass (xtParent, OS.shellWidgetClass ())) {
+								xtParent = OS.XtParent (xtParent);
+							}
+				        	OS.XSetTransientForHint(OS.XtDisplay(xtParent), awtHandle, OS.XtWindow(xtParent));
+						}
+					});
+				}
+			}
+		}
+	};
+	frame.getToolkit().addAWTEventListener(awtListener, AWTEvent.WINDOW_EVENT_MASK);
 	final Listener shellListener = new Listener () {
 		public void handleEvent (Event e) {
 			switch (e.type) {
@@ -182,19 +226,38 @@ public static Frame new_Frame (final Composite parent) {
 	Shell shell = parent.getShell ();
 	shell.addListener (SWT.Deiconify, shellListener);
 	shell.addListener (SWT.Iconify, shellListener);
-	parent.addListener (SWT.Dispose, new Listener () {
-		public void handleEvent (Event event) {
-			Shell shell = parent.getShell ();
-			shell.removeListener (SWT.Deiconify, shellListener);
-			shell.removeListener (SWT.Iconify, shellListener);
-			parent.setVisible(false);
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.dispose ();
-				}
-			});
+	
+	Listener listener = new Listener () {
+		public void handleEvent (Event e) {
+			switch (e.type) {
+				case SWT.Dispose:
+					Shell shell = parent.getShell ();
+					shell.removeListener (SWT.Deiconify, shellListener);
+					shell.removeListener (SWT.Iconify, shellListener);
+					parent.setVisible(false);
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.getToolkit().removeAWTEventListener(awtListener);
+							frame.dispose ();
+						}
+					});
+					break;
+				case SWT.Resize:
+					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 6, 0)) {
+						final Rectangle clientArea = parent.getClientArea();
+						EventQueue.invokeLater(new Runnable () {
+							public void run () {
+								frame.setSize (clientArea.width, clientArea.height);
+							}
+						});
+					}
+					break;
+			}
 		}
-	});
+	};
+	parent.addListener (SWT.Dispose, listener);
+	parent.addListener (SWT.Resize, listener);
+	
 	parent.getDisplay().asyncExec(new Runnable() {
 		public void run () {
 			if (parent.isDisposed()) return;
@@ -239,14 +302,21 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 
 	final Shell shell = Shell.motif_new (display, handle);
-	parent.addComponentListener(new ComponentAdapter () {
+	final ComponentListener listener = new ComponentAdapter () {
 		public void componentResized (ComponentEvent e) {
 			display.syncExec (new Runnable () {
 				public void run () {
+					if (shell.isDisposed()) return;
 					Dimension dim = parent.getSize ();
 					shell.setSize (dim.width, dim.height);
 				}
 			});
+		}
+	};
+	parent.addComponentListener(listener);
+	shell.addListener(SWT.Dispose, new Listener() {
+		public void handleEvent(Event event) {
+			parent.removeComponentListener(listener);
 		}
 	});
 	shell.setVisible (true);

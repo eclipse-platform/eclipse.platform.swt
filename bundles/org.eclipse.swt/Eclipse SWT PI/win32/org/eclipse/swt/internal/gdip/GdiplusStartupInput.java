@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gdip;
 
+/** @jniclass flags=cpp */
 public class GdiplusStartupInput {
 	public int GdiplusVersion;
-    public int DebugEventCallback;
-    public int SuppressBackgroundThread;
-    public int SuppressExternalCodecs;
-	public static final int sizeof = 16;
+	/** @field cast=(DebugEventProc) */
+	public int /*long*/ DebugEventCallback;
+	/** @field cast=(BOOL) */
+	public boolean SuppressBackgroundThread;
+	/** @field cast=(BOOL) */
+	public boolean SuppressExternalCodecs;
+	public static final int sizeof = Gdip.GdiplusStartupInput_sizeof ();
 }

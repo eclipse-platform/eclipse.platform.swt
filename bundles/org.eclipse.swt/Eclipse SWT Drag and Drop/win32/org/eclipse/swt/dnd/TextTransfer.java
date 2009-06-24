@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,10 +51,10 @@ public static TextTransfer getInstance () {
  * represented by a java <code>String</code> to a platform specific representation.
  * 
  * @param object a java <code>String</code> containing text
- * @param transferData an empty <code>TransferData</code> object; this object
- *  will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
  *  
- * @see Transfer#javaToNative
+ * @see Transfer#nativeToJava
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (!checkText(object) || !isSupportedType(transferData)) {
@@ -68,7 +68,7 @@ public void javaToNative (Object object, TransferData transferData){
 			char[] chars = new char[charCount+1];
 			string.getChars (0, charCount, chars, 0);
 			int byteCount = chars.length * 2;
-			int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
+			int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
 			OS.MoveMemory(newPtr, chars, byteCount);
 			transferData.stgmedium = new STGMEDIUM();
 			transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -88,7 +88,7 @@ public void javaToNative (Object object, TransferData transferData){
 				transferData.result = COM.DV_E_STGMEDIUM;
 				return;
 			}
-			int lpMultiByteStr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
+			int /*long*/ lpMultiByteStr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
 			OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 			transferData.stgmedium = new STGMEDIUM();
 			transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -108,7 +108,7 @@ public void javaToNative (Object object, TransferData transferData){
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>String</code> containing text if the conversion was successful; otherwise null
  * 
- * @see Transfer#nativeToJava
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;
@@ -118,10 +118,10 @@ public Object nativeToJava(TransferData transferData){
 	FORMATETC formatetc = transferData.formatetc;
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	stgmedium.tymed = COM.TYMED_HGLOBAL;	
-	transferData.result = data.GetData(formatetc, stgmedium);
+	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();
 	if (transferData.result != COM.S_OK) return null;
-	int hMem = stgmedium.unionField;
+	int /*long*/ hMem = stgmedium.unionField;
 	try {
 		switch (transferData.type) {
 			case CF_UNICODETEXTID: {
@@ -129,7 +129,7 @@ public Object nativeToJava(TransferData transferData){
 				int size = OS.GlobalSize(hMem) / 2 * 2;
 				if (size == 0) return null;
 				char[] chars = new char[size/2];
-				int ptr = OS.GlobalLock(hMem);
+				int /*long*/ ptr = OS.GlobalLock(hMem);
 				if (ptr == 0) return null;
 				try {
 					OS.MoveMemory(chars, ptr, size);
@@ -146,7 +146,7 @@ public Object nativeToJava(TransferData transferData){
 				}
 			}
 			case CF_TEXTID: {
-				int lpMultiByteStr = OS.GlobalLock(hMem);
+				int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
 				if (lpMultiByteStr == 0) return null;
 				try {
 					int codePage = OS.GetACP();

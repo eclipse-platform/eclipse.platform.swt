@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -51,6 +51,7 @@
 #define NO__1XFlush
 #define NO__1XGetSelectionOwner
 #define NO__1XQueryTree
+#define NO__1XQueryPointer
 #define NO__1XKeysymToKeycode
 #define NO__1XReconfigureWMWindow
 #define NO__1XSendEvent
@@ -58,6 +59,7 @@
 #define NO__1XSynchronize
 #define NO__1XSetErrorHandler
 #define NO__1XSetIOErrorHandler
+#define NO__1XSetTransientForHint
 #define NO__1XTestFakeButtonEvent
 #define NO__1XTestFakeKeyEvent
 #define NO__1XTestFakeMotionEvent

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,15 @@
 package org.eclipse.swt.dnd;
 
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 class DNDEvent extends Event {
-
 	public TransferData dataType;
 	public TransferData[] dataTypes;
 	public int operations;
 	public int feedback;
-	
+	public Image image;
+	public int offsetX;
+	public int offsetY;
 }

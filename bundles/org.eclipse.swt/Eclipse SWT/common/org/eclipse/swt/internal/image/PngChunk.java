@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@ package org.eclipse.swt.internal.image;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Compatibility;
 import java.io.*;
 
 class PngChunk extends Object {
@@ -56,6 +55,8 @@ class PngChunk extends Object {
 		}	
 	}
 	
+	int length;
+	
 /**
  * Construct a PngChunk using the reference bytes
  * given.
@@ -63,6 +64,8 @@ class PngChunk extends Object {
 PngChunk(byte[] reference) {
 	super();
 	setReference(reference);
+	if (reference.length < LENGTH_OFFSET + LENGTH_FIELD_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	length = getInt32(LENGTH_OFFSET);
 }
 
 /**
@@ -137,7 +140,7 @@ void setInt32(int offset, int value) {
  * This is not the length of the entire chunk.
  */	
 int getLength() {
-	return getInt32(LENGTH_OFFSET);
+	return length;
 }
 
 /**
@@ -146,6 +149,7 @@ int getLength() {
  */	
 void setLength(int value) {
 	setInt32(LENGTH_OFFSET, value);
+	length = value;
 }
 
 /**
@@ -268,7 +272,8 @@ boolean typeMatchesArray(byte[] array) {
 }
 
 boolean isCritical() {
-	return Character.isUpperCase((char) getTypeBytes()[0]);
+	char c = (char) getTypeBytes()[0]; 
+	return 'A' <= c && c <= 'Z';
 }
 
 int getChunkType() {
@@ -327,11 +332,15 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	byte[] type = getTypeBytes();
 	
 	// The third character MUST be upper case.
-	if (!Character.isUpperCase((char) type[2])) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	char c = (char) type[2];
+	if (!('A' <= c && c <= 'Z')) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	
 	// All characters must be letters.
 	for (int i = 0; i < TYPE_FIELD_LENGTH; i++) {
-		if (!Compatibility.isLetter((char) type[i])) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		c = (char) type[i];
+		if (!(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))) {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
 	}
 	
 	// The stored CRC must match the data's computed CRC.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ import org.eclipse.swt.*;
  *
  * @see #dispose
  * @see #isDisposed
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */
@@ -41,12 +42,30 @@ public abstract class Resource {
 	 */
 	Device device;
 
+public Resource() {
+}
+
+Resource(Device device) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+}
+
+void destroy() {
+}
+
 /**
  * Disposes of the operating system resources associated with
  * this resource. Applications must dispose of all resources
  * which they allocate.
  */
-public abstract void dispose();
+public void dispose() {
+	if (device == null) return;
+	if (device.isDisposed()) return;
+	destroy();
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
+}
 
 /**
  * Returns the <code>Device</code> where this resource was
@@ -60,6 +79,10 @@ public Device getDevice() {
 	Device device = this.device;
 	if (device == null || isDisposed ()) SWT.error (SWT.ERROR_GRAPHIC_DISPOSED);
 	return device;
+}
+
+void init() {
+	if (device.tracking) device.new_Object(this);
 }
 
 /**

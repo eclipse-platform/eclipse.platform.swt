@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,11 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class DirectoryDialog extends Dialog {
@@ -48,7 +53,7 @@ public class DirectoryDialog extends Dialog {
  * </ul>
  */
 public DirectoryDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**
@@ -76,12 +81,12 @@ public DirectoryDialog (Shell parent) {
  * </ul>
  */
 public DirectoryDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
-int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
-	switch (uMsg) {
+int /*long*/ BrowseCallbackProc (int /*long*/ hwnd, int /*long*/ uMsg, int /*long*/ lParam, int /*long*/ lpData) {
+	switch ((int)/*64*/uMsg) {
 		case OS.BFFM_INITIALIZED:
 			if (filterPath != null && filterPath.length () != 0) {
 				/* Use the character encoding for the default locale */
@@ -145,14 +150,14 @@ public String getMessage () {
 public String open () {
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	
-	int hHeap = OS.GetProcessHeap ();
+	int /*long*/ hHeap = OS.GetProcessHeap ();
 	
 	/* Get the owner HWND for the dialog */
-	int hwndOwner = 0;
+	int /*long*/ hwndOwner = 0;
 	if (parent != null) hwndOwner = parent.handle;
 
 	/* Copy the message to OS memory */
-	int lpszTitle = 0;
+	int /*long*/ lpszTitle = 0;
 	if (message.length () != 0) {
 		String string = message;
 		if (string.indexOf ('&') != -1) {
@@ -175,15 +180,15 @@ public String open () {
 
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
-	int address = callback.getAddress ();
-	if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	int /*long*/ lpfn = callback.getAddress ();
+	if (lpfn == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
+	Dialog oldModal = null;
 	Display display = parent.getDisplay ();
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 	
 	directoryPath = null;
@@ -191,7 +196,7 @@ public String open () {
 	lpbi.hwndOwner = hwndOwner;
 	lpbi.lpszTitle = lpszTitle;
 	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
-	lpbi.lpfn = address;
+	lpbi.lpfn = lpfn;
 	/*
 	* Bug in Windows.  On some hardware configurations, SHBrowseForFolder()
 	* causes warning dialogs with the message "There is no disk in the drive
@@ -224,13 +229,13 @@ public String open () {
 	*/
 	boolean oldRunMessages = display.runMessages;
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = false;
-	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
+	int /*long*/ lpItemIdList = OS.SHBrowseForFolder (lpbi);
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
 	OS.SetErrorMode (oldErrorMode);
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 	
 	boolean success = lpItemIdList != 0;
@@ -250,7 +255,7 @@ public String open () {
 	if (lpszTitle != 0) OS.HeapFree (hHeap, 0, lpszTitle);
 
 	/* Free the pointer to the ITEMIDLIST */
-	int [] ppMalloc = new int [1];
+	int /*long*/ [] ppMalloc = new int /*long*/ [1];
 	if (OS.SHGetMalloc (ppMalloc) == OS.S_OK) {
 		/* void Free (struct IMalloc *this, void *pv); */
 		OS.VtblCall (5, ppMalloc [0], lpItemIdList);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,6 +34,8 @@ import org.eclipse.swt.internal.win32.*;
  *
  * @see PrinterData
  * @see PrintDialog
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Printer extends Device {
 	/**
@@ -46,7 +48,7 @@ public final class Printer extends Device {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 
 	/**
 	 * the printer data describing this printer
@@ -72,9 +74,10 @@ public final class Printer extends Device {
 	
 /**
  * Returns an array of <code>PrinterData</code> objects
- * representing all available printers.
+ * representing all available printers.  If there are no
+ * printers, the array will be empty.
  *
- * @return the list of available printers
+ * @return an array of PrinterData objects representing the available printers
  */
 public static PrinterData[] getPrinterList() {
 	int length = 1024;
@@ -117,7 +120,7 @@ public static PrinterData[] getPrinterList() {
 /**
  * Returns a <code>PrinterData</code> object representing
  * the default printer or <code>null</code> if there is no 
- * printer available on the System.
+ * default printer.
  *
  * @return the default printer data or null
  * 
@@ -161,7 +164,7 @@ static DeviceData checkNull (PrinterData data) {
 /**
  * Constructs a new printer representing the default printer.
  * <p>
- * You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required. 
  * </p>
  *
  * @exception SWTError <ul>
@@ -176,12 +179,13 @@ public Printer() {
 
 /**
  * Constructs a new printer given a <code>PrinterData</code>
- * object representing the desired printer.
+ * object representing the desired printer. If the argument
+ * is null, then the default printer will be used.
  * <p>
- * You must dispose the printer when it is no longer required. 
+ * Note: You must dispose the printer when it is no longer required. 
  * </p>
  *
- * @param data the printer data for the specified printer
+ * @param data the printer data for the specified printer, or null to use the default printer
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the specified printer data does not represent a valid printer
@@ -207,13 +211,46 @@ protected void create(DeviceData deviceData) {
 	/* Use the character encoding for the default locale */
 	TCHAR driver = new TCHAR(0, data.driver, true);
 	TCHAR device = new TCHAR(0, data.name, true);
-	int lpInitData = 0;
-	byte buffer [] = data.otherData;
-	int hHeap = OS.GetProcessHeap();
-	if (buffer != null && buffer.length != 0) {
-		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
-		OS.MoveMemory(lpInitData, buffer, buffer.length);
+	int /*long*/ lpInitData = 0;
+	byte devmodeData [] = data.otherData;
+	int /*long*/ hHeap = OS.GetProcessHeap();
+	if (devmodeData != null && devmodeData.length != 0) {
+		/* If user setup info from a print dialog was specified, restore the DEVMODE struct. */
+		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
+		OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
+	} else {
+		/* Initialize DEVMODE for the default printer. */
+		PRINTDLG pd = new PRINTDLG();
+		pd.lStructSize = PRINTDLG.sizeof;
+		pd.Flags = OS.PD_RETURNDEFAULT;
+		OS.PrintDlg(pd);
+		if (pd.hDevMode != 0) {
+			int /*long*/ hGlobal = pd.hDevMode;
+			int /*long*/ ptr = OS.GlobalLock(hGlobal);
+			int size = OS.GlobalSize(hGlobal);
+			lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size);
+			OS.MoveMemory(lpInitData, ptr, size);
+			OS.GlobalUnlock(hGlobal);
+			OS.GlobalFree(pd.hDevMode);
+		}
+		if (pd.hDevNames != 0) OS.GlobalFree(pd.hDevNames);
 	}
+	
+	/* Initialize DEVMODE struct fields from the printerData. */
+	DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
+	OS.MoveMemory(devmode, lpInitData, DEVMODE.sizeof);
+	devmode.dmFields |= OS.DM_ORIENTATION;
+	devmode.dmOrientation = data.orientation == PrinterData.LANDSCAPE ? OS.DMORIENT_LANDSCAPE : OS.DMORIENT_PORTRAIT;
+	if (data.copyCount != 1) {
+		devmode.dmFields |= OS.DM_COPIES;
+		devmode.dmCopies = (short)data.copyCount;
+	}
+	if (data.collate != false) {
+		devmode.dmFields |= OS.DM_COLLATE;
+		devmode.dmCollate = OS.DMCOLLATE_TRUE;
+	}
+	OS.MoveMemory(lpInitData, devmode, DEVMODE.sizeof);
+
 	handle = OS.CreateDC(driver, device, 0, lpInitData);
 	if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -232,7 +269,7 @@ protected void create(DeviceData deviceData) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC(GCData data) {
+public int /*long*/ internal_new_GC(GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -243,7 +280,7 @@ public int internal_new_GC(GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = this;
-		data.hFont = OS.GetCurrentObject(handle, OS.OBJ_FONT);
+		data.font = Font.win32_new(this, OS.GetCurrentObject(handle, OS.OBJ_FONT));
 		isGCCreated = true;
 	}
 	return handle;
@@ -262,7 +299,7 @@ public int internal_new_GC(GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC(int hDC, GCData data) {
+public void internal_dispose_GC(int /*long*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
@@ -291,8 +328,8 @@ public boolean startJob(String jobName) {
 	checkDevice();
 	DOCINFO di = new DOCINFO();
 	di.cbSize = DOCINFO.sizeof;
-	int hHeap = OS.GetProcessHeap();
-	int lpszDocName = 0;
+	int /*long*/ hHeap = OS.GetProcessHeap();
+	int /*long*/ lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, jobName, true);
@@ -301,7 +338,7 @@ public boolean startJob(String jobName) {
 		OS.MoveMemory(lpszDocName, buffer, byteCount);
 		di.lpszDocName = lpszDocName;
 	}
-	int lpszOutput = 0;
+	int /*long*/ lpszOutput = 0;
 	if (data.printToFile && data.fileName != null) {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, data.fileName, true);
@@ -405,7 +442,9 @@ public Point getDPI() {
 
 /**
  * Returns a rectangle describing the receiver's size and location.
- * For a printer, this is the size of a page, in pixels.
+ * <p>
+ * For a printer, this is the size of the physical page, in pixels.
+ * </p>
  *
  * @return the bounding rectangle
  *
@@ -426,8 +465,10 @@ public Rectangle getBounds() {
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
+ * <p>
  * For a printer, this is the size of the printable area
- * of a page, in pixels.
+ * of the page, in pixels.
+ * </p>
  * 
  * @return the client area
  *
@@ -446,27 +487,32 @@ public Rectangle getClientArea() {
 }
 
 /**
- * Given a desired <em>client area</em> for the receiver
- * (as described by the arguments), returns the bounding
- * rectangle which would be required to produce that client
- * area.
+ * Given a <em>client area</em> (as described by the arguments),
+ * returns a rectangle, relative to the client area's coordinates,
+ * that is the client area expanded by the printer's trim (or minimum margins).
  * <p>
- * In other words, it returns a rectangle such that, if the
- * receiver's bounds were set to that rectangle, the area
- * of the receiver which is capable of displaying data
- * (that is, not covered by the "trimmings") would be the
- * rectangle described by the arguments (relative to the
- * receiver's parent).
+ * Most printers have a minimum margin on each edge of the paper where the
+ * printer device is unable to print.  This margin is known as the "trim."
+ * This method can be used to calculate the printer's minimum margins
+ * by passing in a client area of 0, 0, 0, 0 and then using the resulting
+ * x and y coordinates (which will be <= 0) to determine the minimum margins
+ * for the top and left edges of the paper, and the resulting width and height
+ * (offset by the resulting x and y) to determine the minimum margins for the
+ * bottom and right edges of the paper, as follows:
+ * <ul>
+ * 		<li>The left trim width is -x pixels</li>
+ * 		<li>The top trim height is -y pixels</li>
+ * 		<li>The right trim width is (x + width) pixels</li>
+ * 		<li>The bottom trim height is (y + height) pixels</li>
+ * </ul>
  * </p>
- * Note that there is no setBounds for a printer. This method
- * is usually used by passing in the client area (the 'printable
- * area') of the printer. It can also be useful to pass in 0, 0, 0, 0.
  * 
- * @param x the desired x coordinate of the client area
- * @param y the desired y coordinate of the client area
- * @param width the desired width of the client area
- * @param height the desired height of the client area
- * @return the required bounds to produce the given client area
+ * @param x the x coordinate of the client area
+ * @param y the y coordinate of the client area
+ * @param width the width of the client area
+ * @param height the height of the client area
+ * @return a rectangle, relative to the client area's coordinates, that is
+ * 		the client area expanded by the printer's trim (or minimum margins)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>

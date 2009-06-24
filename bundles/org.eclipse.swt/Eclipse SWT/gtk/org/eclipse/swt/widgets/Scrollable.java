@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,9 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Scrollable extends Control {
 	int /*long*/ scrolledHandle;
@@ -139,6 +142,7 @@ ScrollBar createScrollBar (int style) {
 		bar.handle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
 		bar.adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 	}
+	bar.setOrientation();
 	bar.hookEvents ();
 	bar.register ();
 	return bar;
@@ -153,6 +157,12 @@ void createWidget (int index) {
 void deregister () {
 	super.deregister ();
 	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
+}
+
+void destroyScrollBar (ScrollBar bar) {
+	setScrollBarVisible (bar, false);
+	//This code is intentionally commented
+	//bar.destroyHandle ();
 }
 
 public int getBorderWidth () {
@@ -266,6 +276,10 @@ int hScrollBarWidth() {
 	return requisition.height + spacing;
 }
 
+boolean sendLeaveNotify () {
+	return scrolledHandle != 0;
+}
+
 void setOrientation () {
 	super.setOrientation ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
@@ -288,8 +302,6 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 		vsp [0] = policy;
 	}
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp [0], vsp [0]);
-	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
-	sendEvent (SWT.Resize);
 	return true;
 }
 
@@ -357,7 +369,7 @@ int /*long*/ topHandle () {
 }
 
 void updateScrollBarValue (ScrollBar bar) {
-	parent.redrawBackgroundImage ();
+	redrawBackgroundImage ();
 }
 
 int vScrollBarWidth() {

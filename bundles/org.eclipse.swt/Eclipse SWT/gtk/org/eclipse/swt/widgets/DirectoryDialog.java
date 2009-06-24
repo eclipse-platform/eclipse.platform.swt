@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,11 @@ import org.eclipse.swt.internal.gtk.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
@@ -47,7 +52,7 @@ public class DirectoryDialog extends Dialog {
  * </ul>
  */
 public DirectoryDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -74,7 +79,7 @@ public DirectoryDialog (Shell parent) {
  * </ul>
  */
 public DirectoryDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 /**
@@ -121,13 +126,14 @@ public String open () {
 String openChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ shellHandle = parent.topHandle ();
-	int /*long*/ handle = OS.gtk_file_chooser_dialog_new (
-		titleBytes,
-		shellHandle,
-		OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
-		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
-		0);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	int /*long*/ handle = 0;
+	if (display.getDismissalAlignment() == SWT.RIGHT) {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
+	} else {
+		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
+	}
+	OS.gtk_window_set_modal (handle, true);
 	int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
@@ -141,7 +147,16 @@ String openChooserDialog () {
 		}
 		stringBuffer.append (filterPath);
 		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-		OS.gtk_file_chooser_set_current_folder (handle, buffer);
+		/*
+		* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+		* when setting a file name that is not a true canonical path. 
+		* The fix is to use the canonical path.
+		*/
+		int /*long*/ ptr = OS.realpath (buffer, null);
+		if (ptr != 0) {
+			OS.gtk_file_chooser_set_current_folder (handle, ptr);
+			OS.g_free (ptr);
+		}
 	}
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
@@ -156,7 +171,25 @@ String openChooserDialog () {
 		OS.gtk_file_chooser_set_extra_widget (handle, box);
 	}
 	String answer = null;
-	int response = OS.gtk_dialog_run (handle);	
+	display.addIdleProc ();
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int signalId = 0;
+	int /*long*/ hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
+	}	
+	int response = OS.gtk_dialog_run (handle);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook (signalId, hookId);
+	}
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
 		if (path != 0) {
@@ -172,11 +205,12 @@ String openChooserDialog () {
 					OS.memmove (chars, utf16Ptr, clength * 2);
 					OS.g_free (utf16Ptr);
 					answer = new String (chars);
-					filterPath = answer.substring (answer.lastIndexOf (SEPARATOR) + 1);
+					filterPath = answer;
 				}
 			}
 		}
 	}
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }
@@ -192,6 +226,7 @@ String openClassicDialog () {
 			OS.g_list_free (pixbufs);
 		}
 	}
+	OS.gtk_window_set_modal (handle, true);
 	String answer = null;
 	if (filterPath != null) {
 		String path = filterPath;
@@ -223,7 +258,26 @@ String openClassicDialog () {
 			selection.main_vbox, labelHandle, false, false, 0, OS.GTK_PACK_START);
 		OS.gtk_widget_show (labelHandle);
 	}
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	display.addIdleProc ();
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int signalId = 0;
+	int /*long*/ hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
+	}	
 	int response = OS.gtk_dialog_run (handle);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook (signalId, hookId);
+	}
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ fileNamePtr = OS.gtk_file_selection_get_filename (handle);
 		int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
@@ -247,6 +301,7 @@ String openClassicDialog () {
 			OS.g_free (utf8Ptr);
 		}
 	}
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }

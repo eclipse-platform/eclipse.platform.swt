@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -57,19 +57,19 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 4, getAddress(), aClientY);
 	}
 
-	public int GetCtrlKey(boolean[] aCtrlKey) {
+	public int GetCtrlKey(int[] aCtrlKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 5, getAddress(), aCtrlKey);
 	}
 
-	public int GetShiftKey(boolean[] aShiftKey) {
+	public int GetShiftKey(int[] aShiftKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 6, getAddress(), aShiftKey);
 	}
 
-	public int GetAltKey(boolean[] aAltKey) {
+	public int GetAltKey(int[] aAltKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 7, getAddress(), aAltKey);
 	}
 
-	public int GetMetaKey(boolean[] aMetaKey) {
+	public int GetMetaKey(int[] aMetaKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 8, getAddress(), aMetaKey);
 	}
 
@@ -81,7 +81,7 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 10, getAddress(), aRelatedTarget);
 	}
 
-	public int InitMouseEvent(int /*long*/ typeArg, boolean canBubbleArg, boolean cancelableArg, int /*long*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, boolean ctrlKeyArg, boolean altKeyArg, boolean shiftKeyArg, boolean metaKeyArg, short buttonArg, int /*long*/ relatedTargetArg) {
+	public int InitMouseEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, int /*long*/ relatedTargetArg) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 11, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg);
 	}
 }

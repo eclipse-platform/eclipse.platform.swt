@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,10 +26,10 @@ import org.eclipse.swt.widgets.*;
 * <p> Here is an example of using a TreeEditor:
 * <code><pre>
 *	final Tree tree = new Tree(shell, SWT.BORDER);
-*	for (int i = 0; i &lt 3; i++) {
+*	for (int i = 0; i &lt; 3; i++) {
 *		TreeItem item = new TreeItem(tree, SWT.NONE);
 *		item.setText("item " + i);
-*		for (int j = 0; j &lt 3; j++) {
+*		for (int j = 0; j &lt; 3; j++) {
 *			TreeItem subItem = new TreeItem(item, SWT.NONE);
 *			subItem.setText("item " + i + " " + j);
 *		}
@@ -67,6 +67,9 @@ import org.eclipse.swt.widgets.*;
 *		}
 *	});
 * </pre></code>
+*
+* @see <a href="http://www.eclipse.org/swt/snippets/#treeeditor">TreeEditor snippets</a>
+* @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
 public class TreeEditor extends ControlEditor {	
 	Tree tree;
@@ -74,6 +77,8 @@ public class TreeEditor extends ControlEditor {
 	int column = 0;
 	ControlListener columnListener;
 	TreeListener treeListener;
+	Runnable timer;
+	static final int TIMEOUT = 1500;
 	
 /**
 * Creates a TreeEditor for the specified Tree.
@@ -87,10 +92,15 @@ public TreeEditor (Tree tree) {
 
 	columnListener = new ControlListener() {
 		public void controlMoved(ControlEvent e){
-			resize();
+			layout();
 		}
 		public void controlResized(ControlEvent e){
-			resize();
+			layout();
+		}
+	};
+	timer = new Runnable () {
+		public void run() {
+			layout ();
 		}
 	};
 	treeListener = new TreeListener () {
@@ -98,7 +108,7 @@ public TreeEditor (Tree tree) {
 			public void run() {
 				if (editor == null || editor.isDisposed()) return;
 				if (TreeEditor.this.tree.isDisposed()) return;
-				resize();
+				layout();
 				editor.setVisible(true);
 			}
 		};
@@ -171,17 +181,19 @@ Rectangle computeBounds () {
  * tree and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	if (this.column > -1 && this.column < tree.getColumnCount()){
-		TreeColumn treeColumn = tree.getColumn(this.column);
-		treeColumn.removeControlListener(columnListener);
+	if (tree != null && !tree.isDisposed()) {
+		if (this.column > -1 && this.column < tree.getColumnCount()){
+			TreeColumn treeColumn = tree.getColumn(this.column);
+			treeColumn.removeControlListener(columnListener);
+		}
+		if (treeListener != null) tree.removeTreeListener(treeListener);
 	}
 	columnListener = null;
-	if (treeListener != null) 
-		tree.removeTreeListener(treeListener);
 	treeListener = null;
 	tree = null;
 	item = null;
 	column = 0;
+	timer = null;
 	super.dispose();
 }
 
@@ -203,6 +215,21 @@ public int getColumn () {
 */
 public TreeItem getItem () {
 	return item;
+}
+
+void resize () {
+	layout();
+	/*
+	 * On some platforms, the table scrolls when an item that
+	 * is partially visible at the bottom of the table is
+	 * selected.  Ensure that the correct row is edited by
+	 * laying out one more time in a timerExec().
+	 */
+	if (tree != null) {
+		Display display = tree.getDisplay();
+		display.timerExec(-1, timer);
+		display.timerExec(TIMEOUT, timer);
+	}
 }
 
 /**
@@ -235,6 +262,11 @@ public void setColumn(int column) {
 	resize();
 }
 
+/**
+* Specifies the <code>TreeItem</code> that is to be edited.
+*
+* @param item the item to be edited
+*/
 public void setItem (TreeItem item) {
 	this.item = item;
 	resize();
@@ -257,6 +289,11 @@ public void setEditor (Control editor, TreeItem item, int column) {
 	setColumn(column);
 	setEditor(editor);
 }
+public void setEditor (Control editor) {
+	super.setEditor(editor);
+	resize();
+}
+
 /**
 * Specify the Control that is to be displayed and the cell in the tree that it is to be positioned above.
 *
@@ -271,12 +308,12 @@ public void setEditor (Control editor, TreeItem item) {
 	setEditor(editor);
 }
 
-void resize () {
-	if (tree.isDisposed()) return;
+public void layout () {
+	if (tree == null || tree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;	
 	int columnCount = tree.getColumnCount();
 	if (columnCount == 0 && column != 0) return;
 	if (columnCount > 0 && (column < 0 || column >= columnCount)) return;
-	super.resize();
+	super.layout();
 }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,15 @@ import org.eclipse.swt.accessibility.*;
  * that combines a text field and a list and issues notification
  * when an item is selected from the list.
  * <p>
+ * CCombo was written to work around certain limitations in the native
+ * combo box. Specifically, on win32, the height of a CCombo can be set;
+ * attempts to set the height of a Combo are ignored. CCombo can be used
+ * anywhere that having the increased flexibility is more important than
+ * getting native L&F, but the decision should not be taken lightly. 
+ * There is no is no strict requirement that CCombo look or behave
+ * the same as the native combo box.
+ * </p>
+ * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to add children to it, or set a layout on it.
  * </p>
@@ -29,10 +38,14 @@ import org.eclipse.swt.accessibility.*;
  * <dt><b>Styles:</b>
  * <dd>BORDER, READ_ONLY, FLAT</dd>
  * <dt><b>Events:</b>
- * <dd>Selection</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ccombo">CCombo snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class CCombo extends Composite {
+public class CCombo extends Composite {
 
 	Text text;
 	List list;
@@ -43,7 +56,10 @@ public final class CCombo extends Composite {
 	Listener listener, filter;
 	Color foreground, background;
 	Font font;
+	Shell _shell;
 	
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.custom."; //$NON-NLS-1$
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -74,6 +90,7 @@ public final class CCombo extends Composite {
  */
 public CCombo (Composite parent, int style) {
 	super (parent, style = checkStyle (style));
+	_shell = super.getShell ();
 	
 	int textStyle = SWT.SINGLE;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
@@ -85,6 +102,7 @@ public CCombo (Composite parent, int style) {
 
 	listener = new Listener () {
 		public void handleEvent (Event event) {
+			if (isDisposed ()) return;
 			if (popup == event.widget) {
 				popupEvent (event);
 				return;
@@ -106,12 +124,18 @@ public CCombo (Composite parent, int style) {
 				return;
 			}
 			if (getShell () == event.widget) {
-				handleFocus (SWT.FocusOut);
+				getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						if (isDisposed ()) return;
+						handleFocus (SWT.FocusOut);
+					}
+				});
 			}
 		}
 	};
 	filter = new Listener() {
 		public void handleEvent(Event event) {
+			if (isDisposed ()) return;
 			Shell shell = ((Control)event.widget).getShell ();
 			if (shell == CCombo.this.getShell ()) {
 				handleFocus (SWT.FocusOut);
@@ -119,13 +143,13 @@ public CCombo (Composite parent, int style) {
 		}
 	};
 	
-	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
+	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn};
+	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
-	int [] arrowEvents = {SWT.Selection, SWT.FocusIn};
+	int [] arrowEvents = {SWT.MouseDown, SWT.MouseUp, SWT.Selection, SWT.FocusIn};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
 	createPopup(null, -1);
@@ -133,7 +157,7 @@ public CCombo (Composite parent, int style) {
 }
 static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-	return style & mask;
+	return SWT.NO_FOCUS | (style & mask);
 }
 /**
  * Adds the argument to the end of the receiver's list.
@@ -210,7 +234,7 @@ public void addModifyListener (ModifyListener listener) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -218,7 +242,7 @@ public void addModifyListener (ModifyListener listener) {
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed the combo's text area.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -239,16 +263,73 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is verified, by sending
+ * it one of the messages defined in the <code>VerifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #removeVerifyListener
+ * 
+ * @since 3.3
+ */
+public void addVerifyListener (VerifyListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Verify,typedListener);
+}
 void arrowEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
 			handleFocus (SWT.FocusIn);
 			break;
 		}
+		case SWT.MouseDown: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseDown, mouseEvent);
+			event.doit = mouseEvent.doit;
+			break;
+		}
+		case SWT.MouseUp: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseUp, mouseEvent);
+			event.doit = mouseEvent.doit;
+			break;
+		}
 		case SWT.Selection: {
+			text.setFocus();
 			dropDown (!isDropped ());
 			break;
 		}
+	}
+}
+protected void checkSubclass () {
+	String name = getClass ().getName ();
+	int index = name.lastIndexOf ('.');
+	if (!name.substring (0, index + 1).equals (PACKAGE_PREFIX)) {
+		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
 /**
@@ -276,6 +357,10 @@ public void clearSelection () {
 void comboEvent (Event event) {
 	switch (event.type) {
 		case SWT.Dispose:
+			removeListener(SWT.Dispose, listener);
+			notifyListeners(SWT.Dispose, event);
+			event.type = SWT.None;
+
 			if (popup != null && !popup.isDisposed ()) {
 				list.removeListener (SWT.Dispose, listener);
 				popup.dispose ();
@@ -288,6 +373,16 @@ void comboEvent (Event event) {
 			text = null;  
 			list = null;  
 			arrow = null;
+			_shell = null;
+			break;
+		case SWT.FocusIn:
+			Control focusControl = getDisplay ().getFocusControl ();
+			if (focusControl == arrow || focusControl == list) return;
+			if (isDropped()) {
+				list.setFocus();
+			} else {
+				text.setFocus();
+			}
 			break;
 		case SWT.Move:
 			dropDown (false);
@@ -302,42 +397,79 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	String[] items = list.getItems ();
-	int textWidth = 0;
 	GC gc = new GC (text);
 	int spacer = gc.stringExtent (" ").x; //$NON-NLS-1$
+	int textWidth = gc.stringExtent (text.getText ()).x;
 	for (int i = 0; i < items.length; i++) {
 		textWidth = Math.max (gc.stringExtent (items[i]).x, textWidth);
 	}
-	gc.dispose();
+	gc.dispose ();
 	Point textSize = text.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
 	Point arrowSize = arrow.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
-	Point listSize = list.computeSize (wHint, SWT.DEFAULT, changed);
+	Point listSize = list.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
 	int borderWidth = getBorderWidth ();
 	
-	height = Math.max (hHint, Math.max (textSize.y, arrowSize.y) + 2*borderWidth);
-	width = Math.max (wHint, Math.max (textWidth + 2*spacer + arrowSize.x + 2*borderWidth, listSize.x));
-	return new Point (width, height);
+	height = Math.max (textSize.y, arrowSize.y);
+	width = Math.max (textWidth + 2*spacer + arrowSize.x + 2*borderWidth, listSize.x);
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	return new Point (width + 2*borderWidth, height + 2*borderWidth);
+}
+/**
+ * Copies the selected text.
+ * <p>
+ * The current selection is copied to the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void copy () {
+	checkWidget ();
+	text.copy ();
 }
 void createPopup(String[] items, int selectionIndex) {		
-		// create shell and list
-		popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
-		int style = getStyle ();
-		int listStyle = SWT.SINGLE | SWT.V_SCROLL;
-		if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
-		if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
-		list = new List (popup, listStyle);
-		if (font != null) list.setFont (font);
-		if (foreground != null) list.setForeground (foreground);
-		if (background != null) list.setBackground (background);
-		
-		int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
-		for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
-		int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
-		for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
-		
-		if (items != null) list.setItems (items);
-		if (selectionIndex != -1) list.setSelection (selectionIndex);
+	// create shell and list
+	popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
+	int style = getStyle ();
+	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
+	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
+	list = new List (popup, listStyle);
+	if (font != null) list.setFont (font);
+	if (foreground != null) list.setForeground (foreground);
+	if (background != null) list.setBackground (background);
+
+	int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
+	for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
+	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
+	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
+
+	if (items != null) list.setItems (items);
+	if (selectionIndex != -1) list.setSelection (selectionIndex);
+}
+/**
+ * Cuts the selected text.
+ * <p>
+ * The current selection is first copied to the
+ * clipboard and then deleted from the widget.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void cut () {
+	checkWidget ();
+	text.cut ();
 }
 /**
  * Deselects the item at the given zero-relative index in the receiver's 
@@ -353,7 +485,12 @@ void createPopup(String[] items, int selectionIndex) {
  */
 public void deselect (int index) {
 	checkWidget ();
-	list.deselect (index);
+	if (0 <= index && index < list.getItemCount () &&
+			index == list.getSelectionIndex() && 
+			text.getText().equals(list.getItem(index))) {
+		text.setText("");  //$NON-NLS-1$
+		list.deselect (index);
+	}
 }
 /**
  * Deselects all selected items in the receiver's list.
@@ -371,18 +508,19 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget ();
+	text.setText("");  //$NON-NLS-1$
 	list.deselectAll ();
 }
 void dropDown (boolean drop) {
 	if (drop == isDropped ()) return;
 	if (!drop) {
 		popup.setVisible (false);
-		if (!isDisposed ()&& arrow.isFocusControl()) {
+		if (!isDisposed () && isFocusControl()) {
 			text.setFocus();
 		}
 		return;
 	}
-
+	if (!isVisible()) return;
 	if (getShell() != popup.getParent ()) {
 		String[] items = list.getItems ();
 		int selectionIndex = list.getSelectionIndex ();
@@ -412,9 +550,10 @@ void dropDown (boolean drop) {
 	int x = parentRect.x;
 	int y = parentRect.y + comboSize.y;
 	if (y + height > displayRect.y + displayRect.height) y = parentRect.y - height;
+	if (x + width > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - listRect.width;
 	popup.setBounds (x, y, width, height);
 	popup.setVisible (true);
-	list.setFocus ();
+	if (isFocusControl()) list.setFocus ();
 }
 /*
  * Return the lowercase of the first non-'&' character following
@@ -455,7 +594,7 @@ public Control [] getChildren () {
 /**
  * Gets the editable state.
  *
- * @return whether or not the reciever is editable
+ * @return whether or not the receiver is editable
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -537,6 +676,29 @@ public String [] getItems () {
 	checkWidget ();
 	return list.getItems ();
 }
+/**
+ * Returns <code>true</code> if the receiver's list is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's list's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getListVisible () {
+	checkWidget ();
+	return isDropped();
+}
 public Menu getMenu() {
 	return text.getMenu();
 }
@@ -572,6 +734,17 @@ public Point getSelection () {
 public int getSelectionIndex () {
 	checkWidget ();
 	return list.getSelectionIndex ();
+}
+public Shell getShell () {
+	checkWidget ();
+	Shell shell = super.getShell ();
+	if (shell != _shell) {
+		if (_shell != null && !_shell.isDisposed ()) {
+			_shell.removeListener (SWT.Deactivate, listener);
+		}
+		_shell = shell;
+	}
+	return _shell;
 }
 public int getStyle () {
 	int style = super.getStyle ();
@@ -643,7 +816,6 @@ public int getVisibleItemCount () {
 	return visibleItemCount;
 }
 void handleFocus (int type) {
-	if (isDisposed ()) return;
 	switch (type) {
 		case SWT.FocusIn: {
 			if (hasFocus) return;
@@ -769,6 +941,11 @@ void initAccessible() {
 		public void getCaretOffset (AccessibleTextEvent e) {
 			e.offset = text.getCaretPosition ();
 		}
+		public void getSelectionRange(AccessibleTextEvent e) {
+			Point sel = text.getSelection();
+			e.offset = sel.x;
+			e.length = sel.y - sel.x;
+		}
 	});
 	
 	getAccessible().addAccessibleControlListener (new AccessibleControlAdapter() {
@@ -781,7 +958,7 @@ void initAccessible() {
 		
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle location = getBounds ();
-			Point pt = toDisplay (location.x, location.y);
+			Point pt = getParent().toDisplay (location.x, location.y);
 			e.x = pt.x;
 			e.y = pt.y;
 			e.width = location.width;
@@ -878,6 +1055,12 @@ void listEvent (Event event) {
 				case SWT.TRAVERSE_ARROW_NEXT:
 					event.doit = false;
 					break;
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					event.doit = text.traverse(event.detail);
+					event.detail = SWT.TRAVERSE_NONE;
+					if (event.doit) dropDown(false);
+					return;
 			}
 			Event e = new Event ();
 			e.time = event.time;
@@ -929,7 +1112,24 @@ void listEvent (Event event) {
 		}
 	}
 }
-
+/**
+ * Pastes text from clipboard.
+ * <p>
+ * The selected text is deleted from the widget
+ * and new text inserted from the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void paste () {
+	checkWidget ();
+	text.paste ();
+}
 void popupEvent(Event event) {
 	switch (event.type) {
 		case SWT.Paint:
@@ -944,7 +1144,23 @@ void popupEvent(Event event) {
 			dropDown (false);
 			break;
 		case SWT.Deactivate:
-			dropDown (false);
+			/*
+			 * Bug in GTK. When the arrow button is pressed the popup control receives a
+			 * deactivate event and then the arrow button receives a selection event. If 
+			 * we hide the popup in the deactivate event, the selection event will show 
+			 * it again. To prevent the popup from showing again, we will let the selection 
+			 * event of the arrow button hide the popup.
+			 * In Windows, hiding the popup during the deactivate causes the deactivate 
+			 * to be called twice and the selection event to be disappear.
+			 */
+			if (!"carbon".equals(SWT.getPlatform())) {
+				Point point = arrow.toControl(getDisplay().getCursorLocation());
+				Point size = arrow.getSize();
+				Rectangle rect = new Rectangle(0, 0, size.x, size.y);
+				if (!rect.contains(point)) dropDown (false);
+			} else {
+				dropDown(false);
+			}
 			break;
 	}
 }
@@ -1055,7 +1271,7 @@ public void removeModifyListener (ModifyListener listener) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1075,6 +1291,30 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener(SWT.Selection, listener);
 	removeListener(SWT.DefaultSelection,listener);	
+}
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is verified.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #addVerifyListener
+ * 
+ * @since 3.3
+ */
+public void removeVerifyListener (VerifyListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	removeListener(SWT.Verify, listener);
 }
 /**
  * Selects the item at the given zero-relative index in the receiver's 
@@ -1135,6 +1375,8 @@ public void setEnabled (boolean enabled) {
 }
 public boolean setFocus () {
 	checkWidget();
+	if (!isEnabled () || !isVisible ()) return false;
+	if (isFocusControl ()) return true;
 	return text.setFocus ();
 }
 public void setFont (Font font) {
@@ -1196,7 +1438,7 @@ public void setItems (String [] items) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : No Layout can be set on this Control because it already
+ * Note: No Layout can be set on this Control because it already
  * manages the size and position of its children.
  * </p>
  *
@@ -1210,6 +1452,28 @@ public void setItems (String [] items) {
 public void setLayout (Layout layout) {
 	checkWidget ();
 	return;
+}
+/**
+ * Marks the receiver's list as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setListVisible (boolean visible) {
+	checkWidget ();
+	dropDown(visible);
 }
 public void setMenu(Menu menu) {
 	text.setMenu(menu);
@@ -1299,7 +1563,14 @@ public void setToolTipText (String string) {
 
 public void setVisible (boolean visible) {
 	super.setVisible(visible);
-	if (!visible) popup.setVisible(false);
+	/* 
+	 * At this point the widget may have been disposed in a FocusOut event.
+	 * If so then do not continue.
+	 */
+	if (isDisposed ()) return;
+	// TEMPORARY CODE
+	if (popup == null || popup.isDisposed ()) return;
+	if (!visible) popup.setVisible (false);
 }
 /**
  * Sets the number of items that are visible in the drop
@@ -1338,18 +1609,24 @@ void textEvent (Event event) {
 			handleFocus (SWT.FocusIn);
 			break;
 		}
+		case SWT.DefaultSelection: {
+			dropDown (false);
+			Event e = new Event ();
+			e.time = event.time;
+			e.stateMask = event.stateMask;
+			notifyListeners (SWT.DefaultSelection, e);
+			break;
+		}
 		case SWT.KeyDown: {
-			if (event.character == SWT.CR) {
-				dropDown (false);
-				Event e = new Event ();
-				e.time = event.time;
-				e.stateMask = event.stateMask;
-				notifyListeners (SWT.DefaultSelection, e);
-			}
-			//At this point the widget may have been disposed.
-			// If so, do not continue.
+			Event keyEvent = new Event ();
+			keyEvent.time = event.time;
+			keyEvent.character = event.character;
+			keyEvent.keyCode = event.keyCode;
+			keyEvent.stateMask = event.stateMask;
+			notifyListeners (SWT.KeyDown, keyEvent);
 			if (isDisposed ()) break;
-			
+			event.doit = keyEvent.doit;
+			if (!event.doit) break;
 			if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
 				event.doit = false;
 				if ((event.stateMask & SWT.ALT) != 0) {
@@ -1372,20 +1649,11 @@ void textEvent (Event event) {
 					e.stateMask = event.stateMask;
 					notifyListeners (SWT.Selection, e);
 				}
-				//At this point the widget may have been disposed.
-				// If so, do not continue.
 				if (isDisposed ()) break;
 			}
 			
 			// Further work : Need to add support for incremental search in 
 			// pop up list as characters typed in text widget
-						
-			Event e = new Event ();
-			e.time = event.time;
-			e.character = event.character;
-			e.keyCode = event.keyCode;
-			e.stateMask = event.stateMask;
-			notifyListeners (SWT.KeyDown, e);
 			break;
 		}
 		case SWT.KeyUp: {
@@ -1395,6 +1663,7 @@ void textEvent (Event event) {
 			e.keyCode = event.keyCode;
 			e.stateMask = event.stateMask;
 			notifyListeners (SWT.KeyUp, e);
+			event.doit = e.doit;
 			break;
 		}
 		case SWT.MenuDetect: {
@@ -1411,6 +1680,16 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.MouseDown: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseDown, mouseEvent);
+			if (isDisposed ()) break;
+			event.doit = mouseEvent.doit;
+			if (!event.doit) break;
 			if (event.button != 1) return;
 			if (text.getEditable ()) return;
 			boolean dropped = isDropped ();
@@ -1420,14 +1699,60 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.MouseUp: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseUp, mouseEvent);
+			if (isDisposed ()) break;
+			event.doit = mouseEvent.doit;
+			if (!event.doit) break;
 			if (event.button != 1) return;
 			if (text.getEditable ()) return;
 			text.selectAll ();
 			break;
 		}
+		case SWT.MouseDoubleClick: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseDoubleClick, mouseEvent);
+			break;
+		}
+		case SWT.MouseWheel: {
+			Event keyEvent = new Event ();
+			keyEvent.time = event.time;
+			keyEvent.keyCode = event.count > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;
+			keyEvent.stateMask = event.stateMask;
+			notifyListeners (SWT.KeyDown, keyEvent);
+			if (isDisposed ()) break;
+			event.doit = keyEvent.doit;
+			if (!event.doit) break;
+			if (event.count != 0) {
+				event.doit = false;
+				int oldIndex = getSelectionIndex ();
+				if (event.count > 0) {
+					select (Math.max (oldIndex - 1, 0));
+				} else {
+					select (Math.min (oldIndex + 1, getItemCount () - 1));
+				}
+				if (oldIndex != getSelectionIndex ()) {
+					Event e = new Event();
+					e.time = event.time;
+					e.stateMask = event.stateMask;
+					notifyListeners (SWT.Selection, e);
+				}
+				if (isDisposed ()) break;
+			}
+			break;
+		}
 		case SWT.Traverse: {		
 			switch (event.detail) {
-				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_ARROW_PREVIOUS:
 				case SWT.TRAVERSE_ARROW_NEXT:
 					// The enter causes default selection and
@@ -1435,8 +1760,11 @@ void textEvent (Event event) {
 					// do not use them for traversal.
 					event.doit = false;
 					break;
-			}
-			
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					event.doit = traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+					event.detail = SWT.TRAVERSE_NONE;
+					return;
+			}		
 			Event e = new Event ();
 			e.time = event.time;
 			e.detail = event.detail;
@@ -1446,6 +1774,18 @@ void textEvent (Event event) {
 			notifyListeners (SWT.Traverse, e);
 			event.doit = e.doit;
 			event.detail = e.detail;
+			break;
+		}
+		case SWT.Verify: {
+			Event e = new Event ();
+			e.text = event.text;
+			e.start = event.start;
+			e.end = event.end;
+			e.character = event.character;
+			e.keyCode = event.keyCode;
+			e.stateMask = event.stateMask;
+			notifyListeners (SWT.Verify, e);
+			event.doit = e.doit;
 			break;
 		}
 	}

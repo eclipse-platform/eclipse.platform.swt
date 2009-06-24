@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,10 +33,9 @@ import org.eclipse.swt.graphics.*;
  * than <code>Canvas</code>.
  * </p><p>
  * Note: The <code>CENTER</code> style, although undefined for composites, has the
- * same value as <code>EMBEDDED</code> (which is used to embed widgets from other
- * widget toolkits into SWT).  On some operating systems (GTK, Motif), this may cause
- * the children of this compostite to be obscured.  The <code>EMBEDDED</code> style
- * is for used by other widget toolkits and should normally never be used.
+ * same value as <code>EMBEDDED</code> which is used to embed widgets from other
+ * widget toolkits into SWT.  On some operating systems (GTK, Motif), this may cause
+ * the children of this composite to be obscured.
  * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
@@ -44,11 +43,12 @@ import org.eclipse.swt.graphics.*;
  * </p>
  *
  * @see Canvas
+ * @see <a href="http://www.eclipse.org/swt/snippets/#composite">Composite snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class Composite extends Scrollable {
 	Layout layout;
-	int font;
 	WINDOWPOS [] lpwp;
 	Control [] tabList;
 	int layoutCount, backgroundMode;
@@ -87,6 +87,8 @@ Composite () {
  * @see SWT#NO_MERGE_PAINTS
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_RADIO_GROUP
+ * @see SWT#EMBEDDED
+ * @see SWT#DOUBLE_BUFFERED
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {
@@ -95,7 +97,7 @@ public Composite (Composite parent, int style) {
 
 Control [] _getChildren () {
 	int count = 0;
-	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	if (hwndChild == 0) return new Control [0];
 	while (hwndChild != 0) {
 		count++;
@@ -188,19 +190,30 @@ void checkBuffered () {
 	}
 }
 
+void checkComposited () {
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.TRANSPARENT) != 0) {
+			int /*long*/ hwndParent = parent.handle;
+			int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+			bits |= OS.WS_EX_COMPOSITED;
+			OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, bits);
+		}
+	}
+}
+
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
 
-Control [] computeTabList () {
-	Control result [] = super.computeTabList ();
+Widget [] computeTabList () {
+	Widget result [] = super.computeTabList ();
 	if (result.length == 0) return result;
 	Control [] list = tabList != null ? _getTabList () : _getChildren ();
 	for (int i=0; i<list.length; i++) {
 		Control child = list [i];
-		Control [] childList = child.computeTabList ();
+		Widget  [] childList = child.computeTabList ();
 		if (childList.length != 0) {
-			Control [] newResult = new Control [result.length + childList.length];
+			Widget [] newResult = new Widget [result.length + childList.length];
 			System.arraycopy (result, 0, newResult, 0, result.length);
 			System.arraycopy (childList, 0, newResult, result.length, childList.length);
 			result = newResult;
@@ -231,11 +244,72 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+/**
+ * Copies a rectangular area of the receiver at the specified
+ * position using the gc.
+ * 
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+/*public*/ void copyArea (GC gc, int x, int y, int width, int height) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	
+	//XP only, no GDI+
+	//#define PW_CLIENTONLY 0x00000001
+	//DCOrg() wrong
+	//topHandle wrong for Tree?
+	int /*long*/ hDC = gc.handle;
+	int nSavedDC = OS.SaveDC (hDC);
+	OS.IntersectClipRect (hDC, 0, 0, width, height);
+	
+	//WRONG PARENT
+	POINT lpPoint = new POINT ();
+	int /*long*/ hwndParent = OS.GetParent (handle);
+	OS.MapWindowPoints (handle, hwndParent, lpPoint, 1);
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	POINT lpPoint1 = new POINT (), lpPoint2 = new POINT ();
+	x = x + (lpPoint.x - rect.left);
+	y = y + (lpPoint.y - rect.top);
+	OS.SetWindowOrgEx (hDC, x, y, lpPoint1);
+	OS.SetBrushOrgEx (hDC, x, y, lpPoint2);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.WS_VISIBLE) == 0) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+	}
+	//NECESSARY?
+	OS.RedrawWindow (handle, null, 0, OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN);
+	OS.PrintWindow (handle, hDC, 0);//0x00000001);
+	if ((bits & OS.WS_VISIBLE) == 0) {
+		OS.DefWindowProc(handle, OS.WM_SETREDRAW, 0, 0);
+	}
+	OS.RestoreDC (hDC, nSavedDC);
+}
+
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 		state |= THEME_BACKGROUND;
+	}
+	if ((style & SWT.TRANSPARENT) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+		bits |= OS.WS_EX_TRANSPARENT;
+		OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 	}
 }
 
@@ -290,7 +364,20 @@ void fixTabList (Control control) {
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Returns the receiver's background drawing mode. This
+ * will be one of the following constants defined in class
+ * <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERTIT_FORCE</code>.
+ *
+ * @return the background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
  * 
  * @since 3.2
  */
@@ -331,7 +418,7 @@ int getChildrenCount () {
 	* non-registered children.
 	*/
 	int count = 0;
-	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
 		count++;
 		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
@@ -442,7 +529,13 @@ public boolean isLayoutDeferred () {
  * <p>
  * This is equivalent to calling <code>layout(true)</code>.
  * </p>
- *
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -468,7 +561,14 @@ public void layout () {
  * will cascade down through all child widgets in the receiver's widget 
  * tree until a child is encountered that does not resize.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  *
@@ -499,7 +599,14 @@ public void layout (boolean changed) {
  * tree.  However, if a child is resized as a result of a call to layout, the 
  * resize event will invoke the layout of the child.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  * @param all <code>true</code> if all children in the receiver's widget tree should be laid out, and <code>false</code> otherwise
@@ -526,6 +633,12 @@ public void layout (boolean changed, boolean all) {
  * (potentially) optimize the work it is doing by assuming that none of the 
  * peers of the changed control have changed state since the last layout.
  * If an ancestor does not have a layout, skip it.
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  * 
  * @param changed a control that has had a state change which requires a recalculation of its size
  * 
@@ -615,6 +728,26 @@ boolean redrawChildren () {
 	return true;
 }
 
+void releaseParent () {
+	super.releaseParent ();
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.TRANSPARENT) != 0) {
+			int /*long*/ hwndParent = parent.handle;
+			int /*long*/ hwndChild = OS.GetWindow (hwndParent, OS.GW_CHILD);
+			while (hwndChild != 0) {
+				if (hwndChild != handle) {
+					int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+					if ((bits & OS.WS_EX_TRANSPARENT) != 0) return;
+				}
+				hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+			}
+			int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+			bits &= ~OS.WS_EX_COMPOSITED;
+			OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, bits);
+		}
+	}
+}
+
 void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -629,10 +762,11 @@ void releaseChildren (boolean destroy) {
 void releaseWidget () {
 	super.releaseWidget ();
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
-		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+		int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 		if (hwndChild != 0) {
 			int threadId = OS.GetWindowThreadProcessId (hwndChild, null);
 			if (threadId != OS.GetCurrentThreadId ()) {
+				OS.ShowWindow (hwndChild, OS.SW_HIDE);
 				OS.SetParent (hwndChild, 0);
 			}
 		}
@@ -660,7 +794,7 @@ void resizeChildren () {
 
 boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 	if (pwp == null) return true;
-	int hdwp = 0;
+	int /*long*/ hdwp = 0;
 	if (defer) {
 		hdwp = OS.BeginDeferWindowPos (pwp.length);
 		if (hdwp == 0) return false;
@@ -690,7 +824,7 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 	return true;
 }
 
-void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
+void resizeEmbeddedHandle(int /*long*/ embeddedHandle, int width, int height) {
 	if (embeddedHandle == 0) return;
 	int [] processID = new int [1];
 	int threadId = OS.GetWindowThreadProcessId (embeddedHandle, processID);
@@ -711,8 +845,31 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
 	}
 }
 
+void sendResize () {
+	setResizeChildren (false);
+	super.sendResize ();
+	if (isDisposed ()) return;
+	if (layout != null) {
+		markLayout (false, false);
+		updateLayout (false, false);
+	}
+	setResizeChildren (true);
+}
+
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Sets the background drawing mode to the argument which should
+ * be one of the following constants defined in class <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERIT_FORCE</code>.
+ *
+ * @param mode the new background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
  * 
  * @since 3.2
  */
@@ -725,12 +882,30 @@ public void setBackgroundMode (int mode) {
 	}
 }
 
+void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	if (display.resizeCount > Display.RESIZE_LIMIT) {
+		defer = false;
+	}
+	if (!defer && (state & CANVAS) != 0) {
+		state &= ~(RESIZE_OCCURRED | MOVE_OCCURRED);
+		state |= RESIZE_DEFERRED | MOVE_DEFERRED;
+	}
+	super.setBounds (x, y, width, height, flags, defer);
+	if (!defer && (state & CANVAS) != 0) {
+		boolean wasMoved = (state & MOVE_OCCURRED) != 0;
+		boolean wasResized = (state & RESIZE_OCCURRED) != 0;
+		state &= ~(RESIZE_DEFERRED | MOVE_DEFERRED);
+		if (wasMoved && !isDisposed ()) sendMove ();
+		if (wasResized && !isDisposed ()) sendResize ();
+	}
+}
+
 boolean setFixedFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.setRadioFocus ()) return true;
+		if (child.setRadioFocus (false)) return true;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -744,7 +919,7 @@ public boolean setFocus () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.setRadioFocus ()) return true;
+		if (child.setRadioFocus (false)) return true;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -837,6 +1012,9 @@ void setResizeChildren (boolean resize) {
 	if (resize) {
 		resizeChildren ();
 	} else {
+		if (display.resizeCount > Display.RESIZE_LIMIT) {
+			return;
+		}
 		int count = getChildrenCount ();
 		if (count > 1 && lpwp == null) {
 			lpwp = new WINDOWPOS [count];
@@ -855,24 +1033,32 @@ boolean setTabGroupFocus () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isTabItem () && child.setRadioFocus ()) return true;
+		if (child.isTabItem () && child.setRadioFocus (true)) return true;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+		if (child.isTabItem () && !child.isTabGroup () && child.setTabItemFocus ()) {
+			return true;
+		}
 	}
 	return false;
 }
 
 String toolTipText (NMTTDISPINFO hdr) {
+	Shell shell = getShell ();
 	if ((hdr.uFlags & OS.TTF_IDISHWND) == 0) {
-		return null;
+		String string = null;
+		ToolTip toolTip = shell.findToolTip ((int)/*64*/hdr.idFrom);
+		if (toolTip != null) {
+			string = toolTip.message;
+			if (string == null || string.length () == 0) string = " ";
+		}
+		return string;
 	}
-	int hwnd = hdr.idFrom;
-	if (hwnd == 0) return null;
-	Control control = display.getControl (hwnd);
-	if (control == null) return null;
-	return control.toolTipText;
+	shell.setToolTipTitle (hdr.hwndFrom, null, 0);
+	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	Control control = display.getControl (hdr.idFrom);
+	return control != null ? control.toolTipText : null;
 }
 
 boolean translateMnemonic (Event event, Control control) {
@@ -888,7 +1074,22 @@ boolean translateMnemonic (Event event, Control control) {
 }
 
 boolean translateTraversal (MSG msg) {
-	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) return false;
+	if ((state & CANVAS) != 0 ) {
+		if ((style & SWT.EMBEDDED) != 0) return false;
+		switch ((int)/*64*/msg.wParam) {
+			case OS.VK_UP:
+			case OS.VK_LEFT:
+			case OS.VK_DOWN:
+			case OS.VK_RIGHT: 
+			case OS.VK_PRIOR:
+			case OS.VK_NEXT:
+				int uiState = (int)/*64*/OS.SendMessage (msg.hwnd, OS.WM_QUERYUISTATE, 0, 0);
+				if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+					OS.SendMessage (msg.hwnd, OS.WM_UPDATEUISTATE, OS.MAKEWPARAM (OS.UIS_CLEAR, OS.UISF_HIDEFOCUS), 0);
+				}
+				break;
+		}
+	}
 	return super.translateTraversal (msg);
 }
 
@@ -953,22 +1154,32 @@ void updateLayout (boolean resize, boolean all) {
 	}
 }
 
+void updateUIState () {
+	int /*long*/ hwndShell = getShell ().handle;
+	int uiState = /*64*/(int)OS.SendMessage (hwndShell, OS.WM_QUERYUISTATE, 0, 0);
+	if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+		OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.MAKEWPARAM (OS.UIS_CLEAR, OS.UISF_HIDEFOCUS), 0);
+	}
+}
+
 int widgetStyle () {
 	/* Force clipping of children by setting WS_CLIPCHILDREN */
 	return super.widgetStyle () | OS.WS_CLIPCHILDREN;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
 		/* Return zero to indicate that the background was not erased */
-		if ((style & SWT.NO_BACKGROUND) != 0) return LRESULT.ZERO;
+		if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) != 0) {
+			return LRESULT.ZERO;
+		}
 	}
 	return result;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
@@ -983,16 +1194,15 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETFONT (int wParam, int lParam) {
+LRESULT WM_GETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETFONT (wParam, lParam);
 	if (result != null) return result;
-	int code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
 	if (code != 0) return new LRESULT (code);
-	if (font == 0) font = defaultFont ();
-	return new LRESULT (font);
+	return new LRESULT (font != null ? font.handle : defaultFont ());
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
@@ -1005,19 +1215,442 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_NCPAINT (int wParam, int lParam) {
-	LRESULT result = super.WM_NCPAINT (wParam, lParam);
+LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
-	if ((state & CANVAS) != 0) {
-		result = wmNCPaint (handle, wParam, lParam);
+	/*
+	* Bug in Windows.  For some reason, under circumstances
+	* that are not understood, when one scrolled window is
+	* embedded in another and the outer window scrolls the
+	* inner horizontally by moving the location of the inner
+	* one, the vertical scroll bars of the inner window no
+	* longer function.  Specifically, WM_NCHITTEST returns
+	* HTCLIENT instead of HTVSCROLL.  The fix is to detect
+	* the case where the result of WM_NCHITTEST is HTCLIENT
+	* and the point is not in the client area, and redraw
+	* the trim, which somehow fixes the next WM_NCHITTEST.
+	*/
+	if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if ((state & CANVAS)!= 0) {
+			int /*long*/ code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+			if (code == OS.HTCLIENT) {
+				RECT rect = new RECT ();
+				OS.GetClientRect (handle, rect);
+				POINT pt = new POINT ();
+				pt.x = OS.GET_X_LPARAM (lParam); 
+				pt.y = OS.GET_Y_LPARAM (lParam);
+				OS.MapWindowPoints (0, handle, pt, 1);
+				if (!OS.PtInRect (rect, pt)) {
+					int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
+					OS.RedrawWindow (handle, null, 0, flags);
+				}
+			}
+			return new LRESULT (code);
+		}
 	}
 	return result;
 }
 
-LRESULT WM_NOTIFY (int wParam, int lParam) {
+LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
+		if (OS.LOWORD (wParam) == OS.WM_CREATE) {
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			resizeEmbeddedHandle (lParam, rect.right - rect.left, rect.bottom - rect.top);
+		}
+	}	
+	return super.WM_PARENTNOTIFY (wParam, lParam);
+}
+
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
+	if ((state & CANVAS) == 0 || (state & FOREIGN_HANDLE) != 0) {
+		return super.WM_PAINT (wParam, lParam);
+	}
+
+	/* Set the clipping bits */
+	int oldBits = 0, newBits = 0;
 	if (!OS.IsWinCE) {
-		NMHDR hdr = new NMHDR ();
-		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+		oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;	
+		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	}
+
+	/* Paint the control and the background */
+	PAINTSTRUCT ps = new PAINTSTRUCT ();
+	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
+
+		/* Use the buffered paint when possible */
+		boolean bufferedPaint = false;
+		if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if ((style & (SWT.NO_MERGE_PAINTS | SWT.RIGHT_TO_LEFT)) == 0) {
+					if ((style & SWT.TRANSPARENT) == 0) bufferedPaint = true;
+				}
+			}
+		}
+		if (bufferedPaint) {
+			int /*long*/ hDC = OS.BeginPaint (handle, ps);
+			int width = ps.right - ps.left;
+			int height = ps.bottom - ps.top;
+			if (width != 0 && height != 0) {
+				int /*long*/ [] phdc = new int /*long*/ [1];
+				int flags = OS.BPBF_COMPATIBLEBITMAP;
+				RECT prcTarget = new RECT ();
+				OS.SetRect (prcTarget, ps.left, ps.top, ps.right, ps.bottom);
+				int /*long*/ hBufferedPaint = OS.BeginBufferedPaint (hDC, prcTarget, flags, null, phdc);
+				GCData data = new GCData ();
+				data.device = display;
+				data.foreground = getForegroundPixel ();
+				Control control = findBackgroundControl ();
+				if (control == null) control = this;
+				data.background = control.getBackgroundPixel ();
+				data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
+				data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				if ((style & SWT.NO_BACKGROUND) != 0) {
+					/* This code is intentionally commented because it may be slow to copy bits from the screen */
+					//paintGC.copyArea (image, ps.left, ps.top);
+				} else {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+					drawBackground (phdc [0], rect);
+				}
+				GC gc = GC.win32_new (phdc [0], data);
+				Event event = new Event ();
+				event.gc = gc;			
+				event.x = ps.left;
+				event.y = ps.top;
+				event.width = width;
+				event.height = height;
+				sendEvent (SWT.Paint, event);
+				if (data.focusDrawn && !isDisposed ()) updateUIState ();
+				gc.dispose ();
+				OS.EndBufferedPaint (hBufferedPaint, true);
+			}
+			OS.EndPaint (handle, ps);
+		} else {
+			
+			/* Create the paint GC */
+			GCData data = new GCData ();
+			data.ps = ps;
+			data.hwnd = handle;
+			GC gc = GC.win32_new (this, data);
+
+			/* Get the system region for the paint HDC */
+			int /*long*/ sysRgn = 0;
+			if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0 || (style & SWT.NO_MERGE_PAINTS) != 0) {
+				sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
+				if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
+					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+						if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
+							int nBytes = OS.GetRegionData (sysRgn, 0, null);
+							int [] lpRgnData = new int [nBytes / 4];
+							OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+							int /*long*/ newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
+							OS.DeleteObject (sysRgn);
+							sysRgn = newSysRgn;
+						}
+					}
+					if (OS.IsWinNT) {
+						POINT pt = new POINT();
+						OS.MapWindowPoints (0, handle, pt, 1);
+						OS.OffsetRgn (sysRgn, pt.x, pt.y);
+					}
+				}
+			}
+			
+			/* Send the paint event */
+			int width = ps.right - ps.left;
+			int height = ps.bottom - ps.top;
+			if (width != 0 && height != 0) {
+				GC paintGC = null;
+				Image image = null;
+				if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0) {
+					image = new Image (display, width, height);
+					paintGC = gc;
+					gc = new GC (image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
+					GCData gcData = gc.getGCData ();
+					gcData.uiState = data.uiState;
+					gc.setForeground (getForeground ());
+					gc.setBackground (getBackground ());
+					gc.setFont (getFont ());
+					if ((style & SWT.TRANSPARENT) != 0) {
+						OS.BitBlt (gc.handle, 0, 0, width, height, paintGC.handle, ps.left, ps.top, OS.SRCCOPY);						
+					} 
+					OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
+					OS.SelectClipRgn (gc.handle, sysRgn);
+					OS.OffsetRgn (sysRgn, ps.left, ps.top);
+					OS.SetMetaRgn (gc.handle);	
+					OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
+					OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
+					if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) != 0) {
+						/* This code is intentionally commented because it may be slow to copy bits from the screen */
+						//paintGC.copyArea (image, ps.left, ps.top);						
+					} else {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+						drawBackground (gc.handle, rect);
+					}
+				}
+				Event event = new Event ();
+				event.gc = gc;			
+				RECT rect = null;
+				if ((style & SWT.NO_MERGE_PAINTS) != 0 && OS.GetRgnBox (sysRgn, rect = new RECT ()) == OS.COMPLEXREGION) {
+					int nBytes = OS.GetRegionData (sysRgn, 0, null);
+					int [] lpRgnData = new int [nBytes / 4];
+					OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+					int count = lpRgnData [2];
+					for (int i=0; i<count; i++) {
+						int offset = 8 + (i << 2);
+						OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);
+						if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
+							drawBackground (gc.handle, rect);
+						}
+						event.x = rect.left;
+						event.y = rect.top;
+						event.width = rect.right - rect.left;
+						event.height = rect.bottom - rect.top;
+						event.count = count - 1 - i;
+						sendEvent (SWT.Paint, event);
+					}
+				} else {
+					if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
+						if (rect == null) rect = new RECT ();
+						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+						drawBackground (gc.handle, rect);
+					}
+					event.x = ps.left;
+					event.y = ps.top;
+					event.width = width;
+					event.height = height;
+					sendEvent (SWT.Paint, event);
+				}
+				// widget could be disposed at this point
+				event.gc = null;
+				if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0) {
+					if (!gc.isDisposed ()) {
+						GCData gcData = gc.getGCData ();
+						if (gcData.focusDrawn && !isDisposed ()) updateUIState ();
+					}
+					gc.dispose();
+					if (!isDisposed ()) paintGC.drawImage (image, ps.left, ps.top);
+					image.dispose ();
+					gc = paintGC;
+				}
+			}
+			if (sysRgn != 0) OS.DeleteObject (sysRgn);
+			if (data.focusDrawn && !isDisposed ()) updateUIState ();
+			
+			/* Dispose the paint GC */
+			gc.dispose ();
+		}
+	} else {
+		int /*long*/ hDC = OS.BeginPaint (handle, ps);
+		if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
+			RECT rect = new RECT ();
+			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+			drawBackground (hDC, rect);
+		}
+		OS.EndPaint (handle, ps);
+	}
+
+	/* Restore the clipping bits */
+	if (!OS.IsWinCE && !isDisposed ()) { 
+		if (newBits != oldBits) {
+			/*
+			* It is possible (but unlikely), that application
+			* code could have disposed the widget in the paint
+			* event.  If this happens, don't attempt to restore
+			* the style.
+			*/
+			if (!isDisposed ()) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+			}
+		}
+	}
+	return LRESULT.ZERO;
+}
+
+LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
+	if (result != null) return result;
+	if ((state & CANVAS) != 0) {
+		forceResize ();
+		int nSavedDC = OS.SaveDC (wParam);
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
+			drawBackground (wParam, rect);
+		}
+		if (hooks (SWT.Paint) || filters (SWT.Paint)) {
+			GCData data = new GCData ();
+			data.device = display;
+			data.foreground = getForegroundPixel ();
+			Control control = findBackgroundControl ();
+			if (control == null) control = this;
+			data.background = control.getBackgroundPixel ();
+			data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
+			data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+			GC gc = GC.win32_new (wParam, data);
+			Event event = new Event ();
+			event.gc = gc;
+			event.x = rect.left;
+			event.y = rect.top;
+			event.width = rect.right - rect.left;
+			event.height = rect.bottom - rect.top;
+			sendEvent (SWT.Paint, event);
+			event.gc = null;
+			gc.dispose ();
+		}
+		OS.RestoreDC (wParam, nSavedDC);
+	}
+	return result;
+}
+
+LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
+	if (lParam != 0) OS.InvalidateRect (handle, null, true);
+	return super.WM_SETFONT (wParam, lParam);
+}
+
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = null;
+	if ((state & RESIZE_DEFERRED) != 0) {
+		result = super.WM_SIZE (wParam, lParam);
+	} else {
+		/* Begin deferred window positioning */
+		setResizeChildren (false);
+		
+		/* Resize and Layout */
+		result = super.WM_SIZE (wParam, lParam);
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the resize
+		* event.  If this happens, end the processing of the
+		* Windows message by returning the result of the
+		* WM_SIZE message.
+		*/
+		if (isDisposed ()) return result;
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false, false);
+		}
+	
+		/* End deferred window positioning */
+		setResizeChildren (true);
+	}
+	
+	/* Damage the widget to cause a repaint */
+	if (OS.IsWindowVisible (handle)) {
+		if ((state & CANVAS) != 0) {
+			if ((style & SWT.NO_REDRAW_RESIZE) == 0) {
+				if (hooks (SWT.Paint)) {
+					OS.InvalidateRect (handle, null, true);
+				}
+			}
+		}
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (findThemeControl () != null) redrawChildren ();
+		}
+	}
+
+	/* Resize the embedded window */
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
+		resizeEmbeddedHandle (OS.GetWindow (handle, OS.GW_CHILD), OS.LOWORD (lParam), OS.HIWORD (lParam));
+	}
+	return result;
+}
+
+LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
+	if (result != null) return result;
+	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	while (hwndChild != 0) {
+		OS.SendMessage (hwndChild, OS.WM_SYSCOLORCHANGE, 0, 0);
+		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+	}
+	return result;
+}
+
+LRESULT WM_SYSCOMMAND (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
+	if (result != null) return result;
+		
+	/*
+	* Check to see if the command is a system command or
+	* a user menu item that was added to the system menu.
+	* 
+	* NOTE: This is undocumented.
+	*/
+	if ((wParam & 0xF000) == 0) return result;
+
+	/*
+	* Bug in Windows.  When a vertical or horizontal scroll bar is
+	* hidden or shown while the opposite scroll bar is being scrolled
+	* by the user (with WM_HSCROLL code SB_LINEDOWN), the scroll bar
+	* does not redraw properly.  The fix is to detect this case and
+	* redraw the non-client area.
+	*/
+	if (!OS.IsWinCE) {
+		int cmd = (int)/*64*/wParam & 0xFFF0;
+		switch (cmd) {
+			case OS.SC_HSCROLL:
+			case OS.SC_VSCROLL:
+				boolean showHBar = horizontalBar != null && horizontalBar.getVisible ();
+				boolean showVBar = verticalBar != null && verticalBar.getVisible ();
+				int /*long*/ code = callWindowProc (handle, OS.WM_SYSCOMMAND, wParam, lParam);
+				if ((showHBar != (horizontalBar != null && horizontalBar.getVisible ())) ||
+					(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
+						int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
+						OS.RedrawWindow (handle, null, 0, flags);
+					}		
+				if (code == 0) return LRESULT.ZERO;
+				return new LRESULT (code);
+		}
+	}
+	/* Return the result */
+	return result;
+}
+
+LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
+	if ((state & CANVAS) != 0 && hooks (SWT.Paint)) {
+		OS.InvalidateRect (handle, null, true);
+	}
+	return result;
+}
+
+LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
+	if (result != null) return result;
+	int /*long*/ borderHandle = borderHandle ();
+	if ((state & CANVAS) != 0 || (hwnd == borderHandle && handle != borderHandle)) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+			if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
+				int /*long*/ code = 0;
+				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+				if ((bits2 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
+					code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
+				}
+				int /*long*/ hDC = OS.GetWindowDC (hwnd);
+				RECT rect = new RECT ();
+				OS.GetWindowRect (hwnd, rect);
+				rect.right -= rect.left;
+				rect.bottom -= rect.top;
+				rect.left = rect.top = 0;
+				int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+				OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
+				OS.DrawThemeBackground (display.hEditTheme (), hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
+				OS.ReleaseDC (hwnd, hDC);
+				return new LRESULT (code);
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+	if (!OS.IsWinCE) {
 		switch (hdr.code) {
 			/*
 			* Feature in Windows.  When the tool tip control is
@@ -1042,7 +1675,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				* check if the parent is already on top and neither set or clear
 				* the topmost status of the tool tip.
 				*/
-				int hwndParent = hdr.hwndFrom;
+				int /*long*/ hwndParent = hdr.hwndFrom;
 				do {
 					hwndParent = OS.GetParent (hwndParent);
 					if (hwndParent == 0) break;
@@ -1052,7 +1685,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (hwndParent != 0) break;
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
+				int /*long*/ hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
 				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
 				display.lockActiveWindow = false;
 				break;
@@ -1083,29 +1716,32 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (string != null) {
 					Shell shell = getShell ();
 					string = Display.withCrLf (string);
-					int length = string.length ();
-					char [] chars = new char [length + 1];
-					string.getChars (0, length, chars, 0);
+					char [] chars = fixMnemonic (string);
 					
 					/*
 					* Ensure that the orientation of the tool tip matches
 					* the orientation of the control.
 					*/
-					int hwnd = hdr.idFrom;
-					if (hwnd != 0 && ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0)) {
-						Control control = display.getControl (hwnd);
-						if (control != null) {
-							if ((control.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
-								lpnmtdi.uFlags |= OS.TTF_RTLREADING;
-							} else {
-								lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
-							}
+					Widget widget = null;
+					int /*long*/ hwnd = hdr.idFrom;
+					if ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0) {
+						widget = display.getControl (hwnd);
+					} else {
+						if (hdr.hwndFrom == shell.toolTipHandle || hdr.hwndFrom == shell.balloonTipHandle) {
+							widget = shell.findToolTip ((int)/*64*/hdr.idFrom);
+						}
+					}
+					if (widget != null) {
+						if ((widget.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
+							lpnmtdi.uFlags |= OS.TTF_RTLREADING;
+						} else {
+							lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
 						}
 					}
 					
 					if (hdr.code == OS.TTN_GETDISPINFOA) {
 						byte [] bytes = new byte [chars.length * 2];
-						OS.WideCharToMultiByte (OS.CP_ACP, 0, chars, chars.length, bytes, bytes.length, null, null);
+						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
 						shell.setToolTipText (lpnmtdi, bytes);
 						OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
 					} else {
@@ -1118,321 +1754,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			}
 		}
 	}
-	return super.WM_NOTIFY (wParam, lParam);
-}
-
-LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
-	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
-		if ((wParam & 0xFFFF) == OS.WM_CREATE) {
-			RECT rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			resizeEmbeddedHandle (lParam, rect.right - rect.left, rect.bottom - rect.top);
-		}
-	}	
-	return super.WM_PARENTNOTIFY (wParam, lParam);
-}
-
-LRESULT WM_PAINT (int wParam, int lParam) {
-	if ((state & CANVAS) == 0) {
-		return super.WM_PAINT (wParam, lParam);
-	}
-
-	/* Set the clipping bits */
-	int oldBits = 0, newBits = 0;
-	if (!OS.IsWinCE) {
-		oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;	
-		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	}
-
-	/* Paint the control and the background */
-	PAINTSTRUCT ps = new PAINTSTRUCT ();
-	if (hooks (SWT.Paint)) {
-
-		/* Create the paint GC */
-		GCData data = new GCData ();
-		data.ps = ps;
-		data.hwnd = handle;
-		GC gc = GC.win32_new (this, data);
-
-		/* Get the system region for the paint HDC */
-		int sysRgn = 0;
-		if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
-			sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
-			if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
-				if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-					if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
-						int nBytes = OS.GetRegionData (sysRgn, 0, null);
-						int [] lpRgnData = new int [nBytes / 4];
-						OS.GetRegionData (sysRgn, nBytes, lpRgnData);
-						int newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
-						OS.DeleteObject (sysRgn);
-						sysRgn = newSysRgn;
-					}
-				}
-				if (OS.IsWinNT) {
-					POINT pt = new POINT();
-					OS.MapWindowPoints (0, handle, pt, 1);
-					OS.OffsetRgn (sysRgn, pt.x, pt.y);
-				}
-			}
-		}
-		
-		/* Send the paint event */
-		int width = ps.right - ps.left;
-		int height = ps.bottom - ps.top;
-		if (width != 0 && height != 0) {
-			GC paintGC = null;
-			Image image = null;
-			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
-				image = new Image (display, width, height);
-				paintGC = gc;
-				gc = new GC (image, style & SWT.RIGHT_TO_LEFT);
-				gc.setForeground (getForeground ());
-				gc.setBackground (getBackground ());
-				gc.setFont (getFont ());
-				if ((style & SWT.NO_BACKGROUND) != 0) {
-					/* This code is intentionally commented because it may be slow to copy bits from the screen */
-					//paintGC.copyArea (image, ps.left, ps.top);
-				} else {
-					RECT rect = new RECT ();
-					OS.SetRect (rect, 0, 0, width, height);
-					drawBackground (gc.handle, rect);
-				}
-				OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
-				OS.SelectClipRgn (gc.handle, sysRgn);
-				OS.OffsetRgn (sysRgn, ps.left, ps.top);
-				OS.SetMetaRgn (gc.handle);	
-				OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
-				OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
-			}
-			Event event = new Event ();
-			event.gc = gc;			
-			RECT rect = null;
-			if ((style & SWT.NO_MERGE_PAINTS) != 0 && OS.GetRgnBox (sysRgn, rect = new RECT ()) == OS.COMPLEXREGION) {
-				int nBytes = OS.GetRegionData (sysRgn, 0, null);
-				int [] lpRgnData = new int [nBytes / 4];
-				OS.GetRegionData (sysRgn, nBytes, lpRgnData);
-				int count = lpRgnData [2];
-				for (int i=0; i<count; i++) {
-					int offset = 8 + (i << 2);
-					OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);
-					if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
-						drawBackground (gc.handle, rect);
-					}
-					event.x = rect.left;
-					event.y = rect.top;
-					event.width = rect.right - rect.left;
-					event.height = rect.bottom - rect.top;
-					event.count = count - 1 - i;
-					sendEvent (SWT.Paint, event);
-				}
-			} else {
-				if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
-					if (rect == null) rect = new RECT ();
-					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-					drawBackground (gc.handle, rect);
-				}
-				event.x = ps.left;
-				event.y = ps.top;
-				event.width = width;
-				event.height = height;
-				sendEvent (SWT.Paint, event);
-			}
-			// widget could be disposed at this point
-			event.gc = null;
-			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
-				gc.dispose();
-				if (!isDisposed ()) {
-					paintGC.drawImage (image, ps.left, ps.top);
-				}
-				image.dispose ();
-				gc = paintGC;
-			}
-		}
-		
-		/* Dispose the paint GC */
-		gc.dispose ();
-		if (sysRgn != 0) OS.DeleteObject (sysRgn);
-	} else {
-		int hDC = OS.BeginPaint (handle, ps);
-		if ((style & SWT.NO_BACKGROUND) == 0) {
-			RECT rect = new RECT ();
-			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-			drawBackground (hDC, rect);
-		}
-		OS.EndPaint (handle, ps);
-	}
-
-	/* Restore the clipping bits */
-	if (!OS.IsWinCE && !isDisposed ()) { 
-		if (newBits != oldBits) {
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the paint
-			* event.  If this happens, don't attempt to restore
-			* the style.
-			*/
-			if (!isDisposed ()) {
-				OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
-			}
-		}
-	}
-	return LRESULT.ZERO;
-}
-
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
-	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
-	if (result != null) return result;
-	if ((state & CANVAS) != 0) {
-		forceResize ();
-		int nSavedDC = OS.SaveDC (wParam);
-		RECT rect = new RECT ();
-		OS.GetClientRect (handle, rect);
-		if ((style & SWT.NO_BACKGROUND) == 0) {
-			drawBackground (wParam, rect);
-		}
-		if (hooks (SWT.Paint) || filters (SWT.Paint)) {
-			GCData data = new GCData ();
-			data.device = display;
-			data.foreground = getForegroundPixel ();
-			Control control = findBackgroundControl ();
-			if (control == null) control = this;
-			data.background = control.getBackgroundPixel ();
-			data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-			GC gc = GC.win32_new (wParam, data);
-			Event event = new Event ();
-			event.gc = gc;
-			event.x = rect.left;
-			event.y = rect.top;
-			event.width = rect.right - rect.left;
-			event.height = rect.bottom - rect.top;
-			sendEvent (SWT.Paint, event);
-			event.gc = null;
-			gc.dispose ();
-		}
-		OS.RestoreDC (wParam, nSavedDC);
-	}
-	return result;
-}
-
-LRESULT WM_SETFONT (int wParam, int lParam) {
-	if (lParam != 0) OS.InvalidateRect (handle, null, true);
-	return super.WM_SETFONT (font = wParam, lParam);
-}
-
-LRESULT WM_SIZE (int wParam, int lParam) {
-
-	/* Begin deferred window positioning */
-	setResizeChildren (false);
-	
-	/* Resize and Layout */
-	LRESULT result = super.WM_SIZE (wParam, lParam);
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
-	*/
-	if (isDisposed ()) return result;
-	if (layout != null) {
-		markLayout (false, false);
-		updateLayout (false, false);
-	}
-
-	/* End deferred window positioning */
-	setResizeChildren (true);
-	
-	/* Damage the widget to cause a repaint */
-	if (OS.IsWindowVisible (handle)) {
-		if ((state & CANVAS) != 0) {
-			if ((style & SWT.NO_REDRAW_RESIZE) == 0) {
-				if (hooks (SWT.Paint)) {
-					OS.InvalidateRect (handle, null, true);
-				}
-			}
-		}
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-			if (findThemeControl () != null) redrawChildren ();
-		}
-	}
-
-	/* Resize the embedded window */
-	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
-		resizeEmbeddedHandle (OS.GetWindow (handle, OS.GW_CHILD), lParam & 0xFFFF, lParam >> 16);
-	}
-	return result;
-}
-
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
-	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
-	while (hwndChild != 0) {
-		OS.SendMessage (hwndChild, OS.WM_SYSCOLORCHANGE, 0, 0);
-		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
-	}
-	return null;
-}
-
-LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
-	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
-	if (result != null) return result;
-		
-	/*
-	* Check to see if the command is a system command or
-	* a user menu item that was added to the system menu.
-	*/
-	if ((wParam & 0xF000) == 0) return result;
-
-	/*
-	* Bug in Windows.  When a vertical or horizontal scroll bar is
-	* hidden or shown while the opposite scroll bar is being scrolled
-	* by the user (with WM_HSCROLL code SB_LINEDOWN), the scroll bar
-	* does not redraw properly.  The fix is to detect this case and
-	* redraw the non-client area.
-	*/
-	if (!OS.IsWinCE) {
-		int cmd = wParam & 0xFFF0;
-		switch (cmd) {
-			case OS.SC_HSCROLL:
-			case OS.SC_VSCROLL:
-				boolean showHBar = horizontalBar != null && horizontalBar.getVisible ();
-				boolean showVBar = verticalBar != null && verticalBar.getVisible ();
-				int code = callWindowProc (handle, OS.WM_SYSCOMMAND, wParam, lParam);
-				if ((showHBar != (horizontalBar != null && horizontalBar.getVisible ())) ||
-					(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
-						int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
-						OS.RedrawWindow (handle, null, 0, flags);
-					}		
-				if (code == 0) return LRESULT.ZERO;
-				return new LRESULT (code);
-		}
-	}
-	/* Return the result */
-	return result;
-}
-
-LRESULT wmNCPaint (int hwnd, int wParam, int lParam) {
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
-		if ((bits & OS.WS_EX_CLIENTEDGE) != 0) {
-			int code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
-			int hDC = OS.GetWindowDC (hwnd);
-			RECT rect = new RECT ();
-			OS.GetWindowRect (hwnd, rect);
-			rect.right -= rect.left;
-			rect.bottom -= rect.top;
-			rect.left = rect.top = 0;
-			int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-			OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
-			int hTheme = OS.OpenThemeData (hwnd, EDIT);
-			OS.DrawThemeBackground (hTheme, hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
-			OS.CloseThemeData (hwnd);
-			OS.ReleaseDC (hwnd, hDC);
-			return new LRESULT (code);
-		}
-	}
-	return null;
+	return super.wmNotify (hdr, wParam, lParam);
 }
 
 }

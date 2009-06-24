@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -8,14 +8,21 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
 
 public class GTypeQuery {
+	/** @field cast=(GType) */
 	public int type;
+	/** @field cast=(const gchar *) */
 	public int /*long*/ type_name;
+	/** @field cast=(guint) */
 	public int class_size;
+	/** @field cast=(guint) */
 	public int instance_size;
 	public static final int sizeof = OS.GTypeQuery_sizeof();
 }

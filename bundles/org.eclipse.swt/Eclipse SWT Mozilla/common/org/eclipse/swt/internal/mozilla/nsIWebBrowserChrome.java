@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -103,7 +103,7 @@ public class nsIWebBrowserChrome extends nsISupports {
 
 	public static final int CHROME_OPENAS_DIALOG = 1073741824;
 
-//	public static final int CHROME_OPENAS_CHROME = 2147483648;
+	public static final int CHROME_OPENAS_CHROME = -2147483648;
 
 	public static final int CHROME_ALL = 4094;
 
@@ -127,7 +127,7 @@ public class nsIWebBrowserChrome extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 
-	public int IsWindowModal(boolean[] _retval) {
+	public int IsWindowModal(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), _retval);
 	}
 

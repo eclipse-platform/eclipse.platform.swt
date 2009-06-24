@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.cairo;
@@ -23,6 +23,7 @@ package org.eclipse.swt.internal.cairo;
 
 public class cairo_path_t {
 	public int status;
+	/** @field cast=(cairo_path_data_t *) */
 	public int /*long*/ data;
 	public int num_data;
 	public static final int sizeof = Cairo.cairo_path_t_sizeof();

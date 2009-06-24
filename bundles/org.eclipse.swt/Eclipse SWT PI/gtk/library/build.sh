@@ -1,11 +1,11 @@
 #!/bin/sh
 #*******************************************************************************
-# Copyright (c) 2000, 2005 IBM Corporation and others.
+# Copyright (c) 2000, 2009 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #     Kevin Cornell (Rational Software Corporation)
@@ -13,6 +13,8 @@
 #*******************************************************************************
 
 cd `dirname $0`
+
+MAKE_TYPE=make
 
 if [ "${JAVA_HOME}" = "" ]; then
 	echo "Please set JAVA_HOME to point at a JRE."
@@ -29,7 +31,19 @@ fi
 case $OS in
 	"SunOS")
 		SWT_OS=solaris
+		PROC=`uname -i`
 		MAKEFILE=make_solaris.mak
+		if uname -p > /dev/null 2>&1; then
+			MODEL=`uname -p`
+		fi
+		if [ ${MODEL} = 'i386' ]; then
+			MAKEFILE=make_solaris_x86.mak
+			MAKE_TYPE=gmake
+		fi
+		;;
+	"FreeBSD")
+		SWT_OS=freebsd
+		MAKEFILE=make_freebsd.mak
 		;;
 	*)
 		SWT_OS=`uname -s | tr -s '[:upper:]' '[:lower:]'`
@@ -39,8 +53,8 @@ esac
 
 # Determine which CPU type we are building for
 if [ "${MODEL}" = "" ]; then
-	if uname -p > /dev/null 2>&1; then
-		MODEL=`uname -p`
+	if uname -i > /dev/null 2>&1; then
+		MODEL=`uname -i`
 	else
 		MODEL=`uname -m`
 	fi
@@ -61,8 +75,8 @@ case $MODEL in
 esac
 
 # For 64-bit CPUs, we have a switch
-if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' ]; then
-	SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
+if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 's390x' ]; then
+	SWT_PTR_CFLAGS=-DJNI64
 	export SWT_PTR_CFLAGS
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64
@@ -86,15 +100,27 @@ else
 	echo "    *** Advanced graphics support using cairo will not be compiled."
 fi
 
-if [ -z "${GECKO_INCLUDES}" -a -z "${GECKO_LIBS}" ]; then
+if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" ]; then
 	if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
-		GECKO_INCLUDES=`pkg-config --cflags mozilla-xpcom`
-		GECKO_LIBS=`pkg-config --libs mozilla-xpcom`
-		export GECKO_INCLUDES
-		export GECKO_LIBS
+		MOZILLA_INCLUDES=`pkg-config --cflags mozilla-xpcom`
+		MOZILLA_LIBS=`pkg-config --libs mozilla-xpcom`
+		export MOZILLA_INCLUDES
+		export MOZILLA_LIBS
 		MAKE_MOZILLA=make_mozilla
+	elif [ x`pkg-config --exists firefox-xpcom && echo YES` = "xYES" ]; then
+		MOZILLA_INCLUDES=`pkg-config --cflags firefox-xpcom`
+		MOZILLA_LIBS=`pkg-config --libs firefox-xpcom`
+		export MOZILLA_INCLUDES
+		export MOZILLA_LIBS
+		MAKE_MOZILLA=make_mozilla
+	elif [ x`pkg-config --exists libxul && echo YES` = "xYES" ]; then
+		XULRUNNER_INCLUDES=`pkg-config --cflags libxul`
+		XULRUNNER_LIBS=`pkg-config --libs libxul`
+		export XULRUNNER_INCLUDES
+		export XULRUNNER_LIBS
+		MAKE_MOZILLA=make_xulrunner
 	else
-		echo "Mozilla/XPCOM libraries not found:"
+		echo "None of the following libraries were found:  Mozilla/XPCOM, Firefox/XPCOM, or XULRunner/XPCOM"
 		echo "    *** Mozilla embedding support will not be compiled."
 	fi
 fi
@@ -124,7 +150,7 @@ if [ "x${OUTPUT_DIR}" = "x" ]; then
 fi
 
 if [ "x${1}" = "xclean" ]; then
-	make -f $MAKEFILE clean
+	${MAKE_TYPE} -f $MAKEFILE clean
 else
-	make -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
 fi

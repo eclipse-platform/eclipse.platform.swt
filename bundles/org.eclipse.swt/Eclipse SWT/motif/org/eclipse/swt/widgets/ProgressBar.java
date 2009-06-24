@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * Instances of the receiver represent is an unselectable
+ * Instances of the receiver represent an unselectable
  * user interface object that is used to display progress,
  * typically in the form of a bar.
  * <dl>
@@ -31,6 +31,11 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#progressbar">ProgressBar snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ProgressBar extends Control {
 	int timerId;
@@ -64,6 +69,7 @@ public class ProgressBar extends Control {
  * @see SWT#SMOOTH
  * @see SWT#HORIZONTAL
  * @see SWT#VERTICAL
+ * @see SWT#INDETERMINATE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -191,6 +197,27 @@ public int getSelection () {
 	int minimum = argList [1], sliderSize = argList [3];
 	return minimum + (foreground != -1 ? 0 : sliderSize);
 }
+/**
+ * Returns the state of the receiver. The value will be one of:
+ * <ul>
+ * 	<li>{@link SWT#NORMAL}</li>
+ * 	<li>{@link SWT#ERROR}</li>
+ * 	<li>{@link SWT#PAUSED}</li>
+ * </ul>
+ *
+ * @return the state 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getState () {
+	checkWidget ();
+	return SWT.NORMAL;
+}
 void releaseWidget () {
 	super.releaseWidget ();
 	destroyTimer ();
@@ -295,6 +322,27 @@ public void setSelection (int value) {
 	if (selection > maximum) selection = maximum;
 	setThumb(selection - minimum);
 	update ();
+}
+/**
+ * Sets the state of the receiver. The state must be one of these values:
+ * <ul>
+ * 	<li>{@link SWT#NORMAL}</li>
+ * 	<li>{@link SWT#ERROR}</li>
+ * 	<li>{@link SWT#PAUSED}</li>
+ * </ul>
+ *
+ * @param state the new state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setState (int state) {
+	checkWidget ();
+	//NOT IMPLEMENTED
 }
 void setThumb (int sliderSize) {
 	int [] argList1 = new int [] {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
 /**
- * Instances of this class are used used to inform or warn the user.
+ * Instances of this class are used to inform or warn the user.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ICON_ERROR, ICON_INFORMATION, ICON_QUESTION, ICON_WARNING, ICON_WORKING</dd>
@@ -33,6 +33,10 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public  class MessageBox extends Dialog {
 	String message = "";
@@ -76,14 +80,26 @@ public MessageBox (Shell parent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ * 
+ * @see SWT#ICON_ERROR
+ * @see SWT#ICON_INFORMATION
+ * @see SWT#ICON_QUESTION
+ * @see SWT#ICON_WARNING
+ * @see SWT#ICON_WORKING
+ * @see SWT#OK
+ * @see SWT#CANCEL
+ * @see SWT#YES
+ * @see SWT#NO
+ * @see SWT#ABORT
+ * @see SWT#RETRY
+ * @see SWT#IGNORE
  */
 public MessageBox (Shell parent, int style) {
-	super (parent, checkStyle (style));
+	super (parent, checkStyle (parent, checkStyle (style)));
 	checkSubclass ();
 }
 
 static int checkStyle (int style) {
-	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) == 0) style |= SWT.APPLICATION_MODAL;
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 	int bits = style & mask;
 	if (bits == SWT.OK || bits == SWT.CANCEL || bits == (SWT.OK | SWT.CANCEL)) return style;
@@ -109,7 +125,7 @@ public String getMessage () {
  * of the display.
  *
  * @return the ID of the button that was selected to dismiss the
- *         message box (e.g. SWT.OK, SWT.CANCEL, etc...)
+ *         message box (e.g. SWT.OK, SWT.CANCEL, etc.)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
@@ -148,10 +164,10 @@ public int open () {
 	}
 
 	int bits = buttonBits | iconBits | modalBits;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.MB_RTLREADING;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.MB_RTLREADING | OS.MB_RIGHT;
 	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
 		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-			bits |= OS.MB_RTLREADING;
+			bits |= OS.MB_RTLREADING | OS.MB_RIGHT;
 		}
 	}
 	
@@ -163,6 +179,8 @@ public int open () {
 	if ((bits & OS.MB_SYSTEMMODAL) != 0) {
 		bits |= OS.MB_TASKMODAL;
 		bits &= ~OS.MB_SYSTEMMODAL;
+		/* Force a system modal message box to the front */
+		bits |= OS.MB_TOPMOST;
 	}
 
 	/*
@@ -173,13 +191,13 @@ public int open () {
 	* anyway and not rely on MB_MODAL to work by making the
 	* parent be temporarily modal. 
 	*/
-	int hwndOwner = parent != null ? parent.handle : 0;
-	Shell oldModal = null;
+	int /*long*/ hwndOwner = parent != null ? parent.handle : 0;
+	Dialog oldModal = null;
 	Display display = null;
 	if ((bits & OS.MB_TASKMODAL) != 0) {
 		display = parent.getDisplay ();
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 
 	/* Open the message box */
@@ -190,7 +208,7 @@ public int open () {
 	
 	/* Clear the temporarily dialog modal parent */
 	if ((bits & OS.MB_TASKMODAL) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 	
 	/*

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,31 +23,42 @@ import org.eclipse.swt.*;
  * within the packages provided by SWT. It is not available on all
  * platforms, and should never be called from application code.
  * </p>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noinstantiate This class is not intended to be instantiated by clients.
  */
 public final class GCData {
 	public Device device;
-	public int style;
-	public Image image;
-	public int /*long*/ drawable;
+	public int style, state = -1;
 	public GdkColor foreground;
 	public GdkColor background;
+	public Font font;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
-	public int /*long*/ font;
-	public int /*long*/ context;
-	public int /*long*/ layout;
-	public int /*long*/ clipRgn, damageRgn;
-	public int lineWidth;
+	public int /*long*/ clipRgn;
+	public float lineWidth;
 	public int lineStyle = SWT.LINE_SOLID;
-	public int[] dashes;
+	public float[] lineDashes;
+	public float lineDashesOffset;
+	public float lineMiterLimit = 10;
+	public int lineCap = SWT.CAP_FLAT;
+	public int lineJoin = SWT.JOIN_MITER;
 	public boolean xorMode;
 	public int alpha = 0xFF;
 	public int interpolation = SWT.DEFAULT;
 
+	public int /*long*/ context;
+	public int /*long*/ layout;
+	public int /*long*/ damageRgn;
+	public Image image;
+	public int /*long*/ drawable;	
 	public int /*long*/ cairo;
-
+	public double cairoXoffset, cairoYoffset;
+	public boolean disposeCairo;
+	public double[] clippingTransform;
 	public String string;
 	public int stringWidth = -1;
 	public int stringHeight = -1;
 	public int drawFlags;
+	public boolean realDrawable;
+	public int width = -1, height = -1;
 }

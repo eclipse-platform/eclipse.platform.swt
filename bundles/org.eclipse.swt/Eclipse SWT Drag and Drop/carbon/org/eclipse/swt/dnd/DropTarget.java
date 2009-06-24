@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.swt.internal.carbon.*;
  *
  * Class <code>DropTarget</code> defines the target object for a drag and drop transfer.
  *
- * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  *
  * <p>This class identifies the <code>Control</code> over which the user must position the cursor
  * in order to drop the data being transferred.  It also specifies what data types can be dropped on 
@@ -66,13 +66,19 @@ import org.eclipse.swt.internal.carbon.*;
  *	<dt><b>Events</b></dt> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: DNDExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DropTarget extends Widget {
 
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DropTargetEffect dropEffect;
+	int feedback = DND.FEEDBACK_NONE;
 
 	// Track application selections
 	TransferData selectedDataType;
@@ -91,7 +97,7 @@ public class DropTarget extends Widget {
 	// drop enters or leaves a widget.
 	static DropTarget CurrentDropTarget = null;
 	
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
 	
 	static Callback DragTrackingHandler;
@@ -130,7 +136,7 @@ public class DropTarget extends Widget {
  * </ul>
  *
  * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see Widget#dispose
  * @see DropTarget#checkSubclass
@@ -145,10 +151,10 @@ public DropTarget(Control control, int style) {
 	if (DragTrackingHandler == null || DragTrackingHandler == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	if (control.getData(DROPTARGETID) != null) {
+	if (control.getData(DND.DROP_TARGET_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	control.setData(DROPTARGETID, this);
+	control.setData(DND.DROP_TARGET_KEY, this);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -164,14 +170,14 @@ public DropTarget(Control control, int style) {
 			onDispose();
 		}
 	});
-	
-	// Drag and drop effect
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+
+	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
+	if (effect instanceof DropTargetEffect) {
+		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dropEffect = new TableDropTargetEffect((Table) control);
+	} else if (control instanceof Tree) {
+		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 
 	dragOverHeartbeat = new Runnable() {
@@ -199,11 +205,12 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				event.item = effect.getItem(event.x, event.y);
+				if (dropEffect != null) {
+					event.item = dropEffect.getItem(event.x, event.y);
+				}
 				selectedDataType = null;
 				selectedOperation = DND.DROP_NONE;				
 				notifyListeners(DND.DragOver, event);
-				effect.showDropTargetEffect(event.feedback, event.x, event.y);
 				if (event.dataType != null) {
 					for (int i = 0; i < allowedTypes.length; i++) {
 						if (allowedTypes[i].type == event.dataType.type) {
@@ -263,15 +270,19 @@ static DropTarget FindDropTarget(int theWindow, int theDrag) {
 	OS.GetRootControl(theWindow, theRoot);
 	int[] theControl = new int[1];
 	Rect rect = new Rect();
-	OS.GetWindowBounds (theWindow, (short) OS.kWindowContentRgn, rect);
+	OS.GetWindowBounds (theWindow, (short) OS.kWindowStructureRgn, rect);
 	CGPoint inPoint = new CGPoint();
 	inPoint.x = mouse.h - rect.left;
 	inPoint.y = mouse.v - rect.top;
-	OS.HIViewGetSubviewHit(theRoot[0], inPoint, true, theControl);
+	int[] event = new int[1];
+	OS.CreateEvent (0, OS.kEventClassMouse, OS.kEventMouseDown, 0.0, 0, event);
+	OS.SetEventParameter (event[0], OS.kEventParamWindowMouseLocation, OS.typeHIPoint, CGPoint.sizeof, inPoint);
+	OS.HIViewGetViewForMouseEvent (theRoot [0], event [0], theControl);
+	OS.ReleaseEvent(event[0]);
 	if (!OS.IsControlEnabled(theControl[0])) return null;				
 	Widget widget = display.findWidget(theControl[0]);
 	if (widget == null) return null;
-	return (DropTarget)widget.getData(DROPTARGETID);
+	return (DropTarget)widget.getData(DND.DROP_TARGET_KEY);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -302,12 +313,14 @@ static DropTarget FindDropTarget(int theWindow, int theDrag) {
  * </ul>
  *
  * @see DropTargetListener
+ * @see #getDropListeners
  * @see #removeDropListener
  * @see DropTargetEvent
  */
 public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragEnter, typedListener);
 	addListener (DND.DragLeave, typedListener);
 	addListener (DND.DragOver, typedListener);
@@ -326,8 +339,6 @@ protected void checkSubclass () {
 
 int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	updateDragOverHover(0, null);
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
-
 	if (keyOperation == -1) return OS.dragNotAcceptedErr;
 
 	DNDEvent event = new DNDEvent();
@@ -340,6 +351,7 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	if (!setEventData(theDrag, event)) {
 		return OS.dragNotAcceptedErr;
 	}
+	
 	keyOperation = -1;
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
@@ -366,7 +378,7 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 		return OS.dragNotAcceptedErr;
 	}
 	// ask drag source for dropped data
-	byte[][] data  = data = new byte[0][];
+	byte[][] data  = new byte[0][];
 	// locate all the items with data of the desired type 
 	short[] numItems = new short[1];
 	OS.CountDragItems(theDrag, numItems);
@@ -388,7 +400,7 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	Object object = null;
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
-		if (transfer.isSupportedType(selectedDataType)) {
+		if (transfer != null && transfer.isSupportedType(selectedDataType)) {
 			selectedDataType.data = data;
 			object = transfer.nativeToJava(selectedDataType);
 			break;
@@ -417,7 +429,6 @@ int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDr
 	
 	if (message == OS.kDragTrackingLeaveWindow) {
 		updateDragOverHover(0, null);
-		effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 		OS.SetThemeCursor(OS.kThemeArrowCursor);
 		if (keyOperation == -1) return OS.dragNotAcceptedErr;
 		keyOperation = -1;
@@ -487,8 +498,6 @@ int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDr
 	}
 	
 	OS.SetDragDropAction(theDrag, opToOsOp(selectedOperation));
-	
-	effect.showDropTargetEffect(event.feedback, event.x, event.y);
 
 	switch (selectedOperation) {
 		case DND.DROP_COPY:
@@ -520,6 +529,57 @@ public Control getControl () {
 	return control;
 }
 
+/**
+ * Returns an array of listeners who will be notified when a drag and drop 
+ * operation is in progress, by sending it one of the messages defined in 
+ * the <code>DropTargetListener</code> interface.
+ *
+ * @return the listeners who will be notified when a drag and drop 
+ * operation is in progress
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DropTargetListener
+ * @see #addDropListener
+ * @see #removeDropListener
+ * @see DropTargetEvent
+ * 
+ * @since 3.4
+ */
+public DropTargetListener[] getDropListeners() {
+	Listener[] listeners = getListeners(DND.DragEnter);
+	int length = listeners.length;
+	DropTargetListener[] dropListeners = new DropTargetListener[length];
+	int count = 0;
+	for (int i = 0; i < length; i++) {
+		Listener listener = listeners[i];
+		if (listener instanceof DNDListener) {
+			dropListeners[count] = (DropTargetListener) ((DNDListener) listener).getEventListener();
+			count++;
+		}
+	}
+	if (count == length) return dropListeners;
+	DropTargetListener[] result = new DropTargetListener[count];
+	System.arraycopy(dropListeners, 0, result, 0, count);
+	return result;
+}
+
+/**
+ * Returns the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @return the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public DropTargetEffect getDropTargetEffect() {
+	return dropEffect;
+}
+
 int getOperationFromKeyState(int theDrag) {
 	short[] modifiers = new short[1];
 	OS.GetDragModifiers(theDrag, modifiers, null, null);
@@ -546,7 +606,7 @@ void onDispose () {
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
 	controlListener = null;
-	control.setData(DROPTARGETID, null);
+	control.setData(DND.DROP_TARGET_KEY, null);
 	transferAgents = null;
 	control = null;
 }
@@ -586,7 +646,7 @@ int osOpToOp(int osOperation){
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -598,6 +658,7 @@ int osOpToOp(int osOperation){
  *
  * @see DropTargetListener
  * @see #addDropListener
+ * @see #getDropListeners
  */
 public void removeDropListener(DropTargetListener listener) {	
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
@@ -607,6 +668,19 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DragOperationChanged, listener);
 	removeListener (DND.Drop, listener);
 	removeListener (DND.DropAccept, listener);
+}
+
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public void setDropTargetEffect(DropTargetEffect effect) {
+	dropEffect = effect;
 }
 
 boolean setEventData(int theDrag, DNDEvent event) {
@@ -672,7 +746,8 @@ boolean setEventData(int theDrag, DNDEvent event) {
 			TransferData data = new TransferData();
 			data.type = flavors[i];
 			for (int j = 0; j < transferAgents.length; j++) {
-				if (transferAgents[j].isSupportedType(data)) {
+				Transfer transfer = transferAgents[j];
+				if (transfer != null && transfer.isSupportedType(data)) {
 					dataTypes[++index] = data;
 					break;
 				}
@@ -699,7 +774,9 @@ boolean setEventData(int theDrag, DNDEvent event) {
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
-	event.item = effect.getItem(event.x, event.y);
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(event.x, event.y);
+	}
 	
 	return true;
 }

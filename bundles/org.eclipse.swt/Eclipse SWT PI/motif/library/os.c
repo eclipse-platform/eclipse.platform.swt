@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -837,6 +837,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFreeFontNames)
 }
 #endif
 
+#ifndef NO__1XFreeFontPath
+JNIEXPORT jint JNICALL OS_NATIVE(_1XFreeFontPath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XFreeFontPath_FUNC);
+	rc = (jint)XFreeFontPath((char **)arg0);
+	OS_NATIVE_EXIT(env, that, _1XFreeFontPath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XFreeGC
 JNIEXPORT void JNICALL OS_NATIVE(_1XFreeGC)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -874,6 +886,22 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFreeStringList)
 	OS_NATIVE_ENTER(env, that, _1XFreeStringList_FUNC);
 	XFreeStringList((char **)arg0);
 	OS_NATIVE_EXIT(env, that, _1XFreeStringList_FUNC);
+}
+#endif
+
+#ifndef NO__1XGetFontPath
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetFontPath)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XGetFontPath_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)XGetFontPath((Display *)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1XGetFontPath_FUNC);
+	return rc;
 }
 #endif
 
@@ -1427,24 +1455,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XRectInRegion)
 
 #ifndef NO__1XRenderComposite
 JNIEXPORT void JNICALL OS_NATIVE(_1XRenderComposite)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12)
 {
 	OS_NATIVE_ENTER(env, that, _1XRenderComposite_FUNC);
 /*
 	XRenderComposite(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderComposite_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderComposite");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+		LOAD_FUNCTION(fp, XRenderComposite)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jintLong, jintLong, jintLong, jint, jint, jint, jint, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1XRenderComposite_FUNC);
@@ -1452,29 +1472,20 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderComposite)
 #endif
 
 #ifndef NO__1XRenderCreatePicture
-JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderCreatePicture)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1XRenderCreatePicture)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jobject arg4)
 {
 	XRenderPictureAttributes _arg4, *lparg4=NULL;
-	jint rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1XRenderCreatePicture_FUNC);
 	if (arg4) if ((lparg4 = getXRenderPictureAttributesFields(env, arg4, &_arg4)) == NULL) goto fail;
 /*
-	rc = (jint)XRenderCreatePicture(arg0, arg1, arg2, arg3, lparg4);
+	rc = (jintLong)XRenderCreatePicture(arg0, arg1, arg2, arg3, lparg4);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef jint (*FPTR)(jint, jint, jint, jint, XRenderPictureAttributes *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderCreatePicture_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderCreatePicture");
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3, lparg4);
+		LOAD_FUNCTION(fp, XRenderCreatePicture)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jintLong, XRenderPictureAttributes *))fp)(arg0, arg1, arg2, arg3, lparg4);
 		}
 	}
 fail:
@@ -1485,27 +1496,18 @@ fail:
 #endif
 
 #ifndef NO__1XRenderFindStandardFormat
-JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderFindStandardFormat)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1XRenderFindStandardFormat)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1XRenderFindStandardFormat_FUNC);
 /*
-	rc = (jint)XRenderFindStandardFormat(arg0, arg1);
+	rc = (jintLong)XRenderFindStandardFormat(arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef jint (*FPTR)(jint, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderFindStandardFormat_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderFindStandardFormat");
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1);
+		LOAD_FUNCTION(fp, XRenderFindStandardFormat)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1XRenderFindStandardFormat_FUNC);
@@ -1514,27 +1516,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderFindStandardFormat)
 #endif
 
 #ifndef NO__1XRenderFindVisualFormat
-JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderFindVisualFormat)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1XRenderFindVisualFormat)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1XRenderFindVisualFormat_FUNC);
 /*
-	rc = (jint)XRenderFindVisualFormat(arg0, arg1);
+	rc = (jintLong)XRenderFindVisualFormat(arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef jint (*FPTR)(jint, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderFindVisualFormat_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderFindVisualFormat");
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1);
+		LOAD_FUNCTION(fp, XRenderFindVisualFormat)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1XRenderFindVisualFormat_FUNC);
@@ -1544,24 +1537,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderFindVisualFormat)
 
 #ifndef NO__1XRenderFreePicture
 JNIEXPORT void JNICALL OS_NATIVE(_1XRenderFreePicture)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1XRenderFreePicture_FUNC);
 /*
 	XRenderFreePicture(arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderFreePicture_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderFreePicture");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1);
+		LOAD_FUNCTION(fp, XRenderFreePicture)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1XRenderFreePicture_FUNC);
@@ -1570,7 +1555,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderFreePicture)
 
 #ifndef NO__1XRenderQueryExtension
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1XRenderQueryExtension)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
 {
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
@@ -1582,18 +1567,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1XRenderQueryExtension)
 	rc = (jboolean)XRenderQueryExtension(arg0, lparg1, lparg2);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef jboolean (*FPTR)(jint, jint *, jint *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderQueryExtension_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderQueryExtension");
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jboolean)(*fptr)(arg0, lparg1, lparg2);
+		LOAD_FUNCTION(fp, XRenderQueryExtension)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jint *, jint *))fp)(arg0, lparg1, lparg2);
 		}
 	}
 fail:
@@ -1604,9 +1580,36 @@ fail:
 }
 #endif
 
+#ifndef NO__1XRenderQueryVersion
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderQueryVersion)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XRenderQueryVersion_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)XRenderQueryVersion(arg0, lparg1, lparg2);
+*/
+	{
+		LOAD_FUNCTION(fp, XRenderQueryVersion)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint *, jint *))fp)(arg0, lparg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1XRenderQueryVersion_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XRenderSetPictureClipRectangles
 JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRectangles)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4, jint arg5)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jshortArray arg4, jint arg5)
 {
 	jshort *lparg4=NULL;
 	OS_NATIVE_ENTER(env, that, _1XRenderSetPictureClipRectangles_FUNC);
@@ -1615,17 +1618,9 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRectangles)
 	XRenderSetPictureClipRectangles(arg0, arg1, arg2, arg3, lparg4, arg5);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jint, jint, jint, jshort *, jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderSetPictureClipRectangles_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderSetPictureClipRectangles");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1, arg2, arg3, lparg4, arg5);
+		LOAD_FUNCTION(fp, XRenderSetPictureClipRectangles)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jshort *, jint))fp)(arg0, arg1, arg2, arg3, lparg4, arg5);
 		}
 	}
 fail:
@@ -1636,24 +1631,16 @@ fail:
 
 #ifndef NO__1XRenderSetPictureClipRegion
 JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRegion)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1XRenderSetPictureClipRegion_FUNC);
 /*
 	XRenderSetPictureClipRegion(arg0, arg1, arg2);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jint, jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderSetPictureClipRegion_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderSetPictureClipRegion");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1, arg2);
+		LOAD_FUNCTION(fp, XRenderSetPictureClipRegion)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1XRenderSetPictureClipRegion_FUNC);
@@ -1662,7 +1649,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRegion)
 
 #ifndef NO__1XRenderSetPictureTransform
 JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureTransform)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2)
 {
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1XRenderSetPictureTransform_FUNC);
@@ -1671,17 +1658,9 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureTransform)
 	XRenderSetPictureTransform(arg0, arg1, lparg2);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jint, jint *);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(XRenderSetPictureTransform_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "XRenderSetPictureTransform");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1, lparg2);
+		LOAD_FUNCTION(fp, XRenderSetPictureTransform)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint *))fp)(arg0, arg1, lparg2);
 		}
 	}
 fail:
@@ -1828,6 +1807,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XSetFillStyle)
 }
 #endif
 
+#ifndef NO__1XSetFontPath
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetFontPath)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XSetFontPath_FUNC);
+	rc = (jint)XSetFontPath((Display *)arg0, (char **)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetFontPath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XSetForeground
 JNIEXPORT void JNICALL OS_NATIVE(_1XSetForeground)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -1941,6 +1932,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XSetTile)
 	OS_NATIVE_ENTER(env, that, _1XSetTile_FUNC);
 	XSetTile((Display *)arg0, (GC)arg1, (Pixmap)arg2);
 	OS_NATIVE_EXIT(env, that, _1XSetTile_FUNC);
+}
+#endif
+
+#ifndef NO__1XSetTransientForHint
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetTransientForHint)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XSetTransientForHint_FUNC);
+	rc = (jint)XSetTransientForHint((Display *)arg0, (Window)arg1, (Window)arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetTransientForHint_FUNC);
+	return rc;
 }
 #endif
 
@@ -4969,6 +4972,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XtFree)
 }
 #endif
 
+#ifndef NO__1XtGetDisplays
+JNIEXPORT void JNICALL OS_NATIVE(_1XtGetDisplays)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1XtGetDisplays_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	XtGetDisplays((XtAppContext)arg0, (Display ***)lparg1, (Cardinal *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1XtGetDisplays_FUNC);
+}
+#endif
+
 #ifndef NO__1XtGetMultiClickTime
 JNIEXPORT jint JNICALL OS_NATIVE(_1XtGetMultiClickTime)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5442,6 +5462,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1_1XmSetMenuTraversal)
 }
 #endif
 
+#ifndef NO__1_1XtDefaultAppContext
+JNIEXPORT jint JNICALL OS_NATIVE(_1_1XtDefaultAppContext)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1_1XtDefaultAppContext_FUNC);
+	rc = (jint)_XtDefaultAppContext();
+	OS_NATIVE_EXIT(env, that, _1_1XtDefaultAppContext_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1applicationShellWidgetClass
 JNIEXPORT jint JNICALL OS_NATIVE(_1applicationShellWidgetClass)
 	(JNIEnv *env, jclass that)
@@ -5456,7 +5488,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1applicationShellWidgetClass)
 
 #ifndef NO__1dlclose
 JNIEXPORT jint JNICALL OS_NATIVE(_1dlclose)
-	(JNIEnv *env, jclass that, jint arg0)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1dlclose_FUNC);
@@ -5467,14 +5499,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1dlclose)
 #endif
 
 #ifndef NO__1dlopen
-JNIEXPORT jint JNICALL OS_NATIVE(_1dlopen)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1dlopen)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
 {
 	jbyte *lparg0=NULL;
-	jint rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1dlopen_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)dlopen((const char *)lparg0, arg1);
+	rc = (jintLong)dlopen((const char *)lparg0, arg1);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1dlopen_FUNC);
@@ -5483,14 +5515,14 @@ fail:
 #endif
 
 #ifndef NO__1dlsym
-JNIEXPORT jint JNICALL OS_NATIVE(_1dlsym)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1dlsym)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
 {
 	jbyte *lparg1=NULL;
-	jint rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1dlsym_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)dlsym((void *)arg0, (const char *)lparg1);
+	rc = (jintLong)dlsym((void *)arg0, (const char *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1dlsym_FUNC);
@@ -5578,22 +5610,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(fd_1set_1sizeof)
 	OS_NATIVE_ENTER(env, that, fd_1set_1sizeof_FUNC);
 	rc = (jint)fd_set_sizeof();
 	OS_NATIVE_EXIT(env, that, fd_1set_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_getenv
-JNIEXPORT jint JNICALL OS_NATIVE(getenv)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, getenv_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)getenv((const char *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, getenv_FUNC);
 	return rc;
 }
 #endif
@@ -5793,62 +5809,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XmTex
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3BI
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
-{
-	jbyte *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__I_3BI_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, memmove__I_3BI_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3CI
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3CI)
-	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
-{
-	jchar *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__I_3CI_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, memmove__I_3CI_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
-{
-	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__I_3II_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, memmove__I_3II_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3SI
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3SI)
-	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jint arg2)
-{
-	jshort *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__I_3SI_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, memmove__I_3SI_FUNC);
 }
 #endif
 
@@ -6244,48 +6204,6 @@ fail:
 }
 #endif
 
-#ifndef NO_memmove___3BII
-JNIEXPORT void JNICALL OS_NATIVE(memmove___3BII)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
-{
-	jbyte *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove___3BII_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, memmove___3BII_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3CII
-JNIEXPORT void JNICALL OS_NATIVE(memmove___3CII)
-	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
-{
-	jchar *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove___3CII_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, memmove___3CII_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3III
-JNIEXPORT void JNICALL OS_NATIVE(memmove___3III)
-	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
-{
-	jint *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove___3III_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, memmove___3III_FUNC);
-}
-#endif
-
 #ifndef NO_nl_1langinfo
 JNIEXPORT jint JNICALL OS_NATIVE(nl_1langinfo)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6367,18 +6285,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(setlocale)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, setlocale_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_strlen
-JNIEXPORT jint JNICALL OS_NATIVE(strlen)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, strlen_FUNC);
-	rc = (jint)strlen((char *)arg0);
-	OS_NATIVE_EXIT(env, that, strlen_FUNC);
 	return rc;
 }
 #endif

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.CGPoint;
@@ -32,8 +33,13 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Link extends Control {
 	String text;
@@ -47,6 +53,9 @@ public class Link extends Control {
 	
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	static final RGB LINK_DISABLED_FOREGROUND = new RGB (172, 168, 153);
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXTitleAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -81,11 +90,11 @@ public Link (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -143,8 +152,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;
-	int features = OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	state |= GRAB | THEME_BACKGROUND;
+	int features = OS.kControlSupportsFocus;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateUserPaneControl (window, null, features, outControl);
@@ -164,7 +173,6 @@ void createWidget () {
 	super.createWidget ();
 	layout.setFont (getFont ());
 	text = "";
-	//TODO accessibility
 }
 
 void drawBackground (int control, int context) {
@@ -173,13 +181,12 @@ void drawBackground (int control, int context) {
 	int [] outMetric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
 	outMetric[0]--;
-	Rect r = new Rect (), bounds = new Rect();
-	if (!OS.HIVIEW) OS.GetControlBounds (control, bounds);
+	Rect r = new Rect ();
 	Rectangle [] rects = getRectangles (focusIndex);
 	for (int i = 0; i < rects.length; i++) {
 		Rectangle rect = rects [i];
-		r.left = (short) (bounds.left + rect.x + outMetric[0]);
-		r.top = (short) (bounds.top + rect.y + outMetric[0]);
+		r.left = (short) (rect.x + outMetric[0]);
+		r.top = (short) (rect.y + outMetric[0]);
 		r.right = (short) (r.left + rect.width - (outMetric[0] * 2));
 		r.bottom = (short) (r.top + rect.height - (outMetric[0] * 2));
 		OS.DrawThemeFocusRect (r, true);
@@ -214,6 +221,10 @@ void enableWidget (boolean enabled) {
 		layout.setStyle (linkStyle, point.x, point.y);
 	}
 	redraw ();
+}
+
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
 }
 
 String getNameText () {
@@ -251,8 +262,7 @@ Rectangle [] getRectangles (int linkIndex) {
 
 /**
  * Returns the receiver's text, which will be an empty
- * string if it has never been set or if the receiver is
- * a <code>SEPARATOR</code> label.
+ * string if it has never been set.
  *
  * @return the receiver's text
  *
@@ -266,6 +276,52 @@ public String getText () {
 	return text;
 }
 
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.eventNotHandledErr;
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer = new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	String attributeName = new String(buffer);
+	if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+		String roleText = OS.kAXLinkRole;
+		buffer = new char [roleText.length ()];
+		roleText.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (stringRef [0] != 0) {
+			if (attributeName.equals (OS.kAXRoleAttribute)) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+			} else { // kAXRoleDescriptionAttribute
+				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+				OS.CFRelease(stringRef2);
+			}
+			OS.CFRelease(stringRef [0]);
+			code = OS.noErr;
+		}
+	} else if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
+		String text = parse (getText ());
+		if (text != null) {
+			buffer = new char [text.length ()];
+			text.getChars (0, buffer.length, buffer, 0);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				code = OS.noErr;
+			}
+		}
+	}
+	if (accessible != null) {
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
+	}
+	return code;
+}
+
 int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
 	return OS.noErr;
 }
@@ -276,140 +332,14 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	int [] clickCount = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	if (button [0] == 1 && clickCount [0] == 1) {
-		int x, y;
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-			OS.HIViewConvertPoint (pt, 0, handle);
-			x = (int) pt.x;
-			y = (int) pt.y;
-		} else {
-			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (handle);
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			x = pt.h - rect.left;
-			y = pt.v - rect.top;
-			OS.GetControlBounds (handle, rect);
-			x -= rect.left;
-			y -= rect.top;
-		}
-		int offset = layout.getOffset (x, y, null);
-		int oldSelectionX = selection.x;
-		int oldSelectionY = selection.y;
-		selection.x = offset;
-		selection.y = -1;
-		if (oldSelectionX != -1 && oldSelectionY != -1) {
-			if (oldSelectionX > oldSelectionY) {
-				int temp = oldSelectionX;
-				oldSelectionX = oldSelectionY;
-				oldSelectionY = temp;
-			}
-			Rectangle rectangle = layout.getBounds (oldSelectionX, oldSelectionY);
-			redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-		}		
-		for (int j = 0; j < offsets.length; j++) {
-			Rectangle [] rects = getRectangles (j);
-			for (int i = 0; i < rects.length; i++) {
-				Rectangle rectangle = rects [i];
-				if (rectangle.contains (x, y)) {
-					focusIndex = j;
-					redraw ();
-					return result;
-				}
-			}
-		}
-	}
-	
-	int window = OS.GetControlOwner (handle);
-	int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
-	int [] outModifiers = new int [1];
-	short [] outResult = new short [1];
-	CGPoint pt = new CGPoint ();
-	Rect rect = new Rect ();
-	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-	while (outResult [0] != OS.kMouseTrackingMouseUp) {
-		OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
-		switch (outResult [0]) {
-			case OS.kMouseTrackingMouseDown:
-			case OS.kMouseTrackingMouseUp:
-			case OS.kMouseTrackingMouseDragged: {
-				int chord = OS.GetCurrentEventButtonState ();
-				if ((chord & 0x01) != 0) {
-					int x, y;
-					if (OS.HIVIEW) {
-						OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-						pt.x = outPt.h - rect.left;
-						pt.y = outPt.v - rect.top;
-						OS.HIViewConvertPoint (pt, 0, handle);
-						x = (int) pt.x;
-						y = (int) pt.y;
-					} else {
-						OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-						x = outPt.h;
-						y = outPt.v;
-						OS.GetControlBounds (handle, rect);
-						x -= rect.left;
-						y -= rect.top;
-					}
-					int oldSelection = selection.y;
-					selection.y = layout.getOffset (x, y, null);
-					if (selection.y != oldSelection) {
-						int newSelection = selection.y;
-						if (oldSelection > newSelection) {
-							int temp = oldSelection;
-							oldSelection = newSelection;
-							newSelection = temp;
-						}
-						Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
-						redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-						if (!OS.HIVIEW) update ();
-					}
-				}
-				break;
-			}
-			default:
-				outResult [0] = OS.kMouseTrackingMouseUp;
-				break;
-		}
-	}
-	
-	return result;
-}
-
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseMoved (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	int x, y;
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		OS.HIViewConvertPoint (pt, 0, handle);
-		x = (int) pt.x;
-		y = (int) pt.y;
-	} else {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		x = pt.h - rect.left;
-		y = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
+	CGPoint pt = new CGPoint ();
+	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+	OS.HIViewConvertPoint (pt, 0, handle);
+	int x = (int) pt.x;
+	int y = (int) pt.y;
 	for (int j = 0; j < offsets.length; j++) {
 		Rectangle [] rects = getRectangles (j);
 		for (int i = 0; i < rects.length; i++) {
@@ -421,47 +351,6 @@ int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	setCursor (null);
-	return result;
-}
-
-int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseUp (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (focusIndex == -1) return result;
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	if (button [0] == 1) {
-		int x, y;
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-			OS.HIViewConvertPoint (pt, 0, handle);
-			x = (int) pt.x;
-			y = (int) pt.y;
-		} else {
-			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (handle);
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			x = pt.h - rect.left;
-			y = pt.v - rect.top;
-			OS.GetControlBounds (handle, rect);
-			x -= rect.left;
-			y -= rect.top;
-		}
-		Rectangle [] rects = getRectangles (focusIndex);
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle rectangle = rects [i];
-			if (rectangle.contains (x, y)) {
-				Event event = new Event ();
-				event.text = ids [focusIndex];
-				notifyListeners (SWT.Selection, event);
-				return result;
-			}
-		}
-	}
 	return result;
 }
 
@@ -518,7 +407,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -652,7 +541,7 @@ String parse (String string) {
 	}
 	if (start < length) {
 		int tmp = parseMnemonics (buffer, start, tagStart, result);
-		int mnemonic = parseMnemonics (buffer, linkStart, index, result);
+		int mnemonic = parseMnemonics (buffer, Math.max (tagStart, linkStart), length, result);
 		if (mnemonic == -1) mnemonic = tmp;
 		mnemonics [linkIndex] = mnemonic;
 	} else {
@@ -690,6 +579,75 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
+boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
+	boolean result = super.sendMouseEvent (type, button, count, detail, send, chord, x, y, modifiers);
+	switch (type) {
+		case SWT.MouseDown:
+			if (button == 1 && count == 1) {
+				int offset = layout.getOffset (x, y, null);
+				int oldSelectionX = selection.x;
+				int oldSelectionY = selection.y;
+				selection.x = offset;
+				selection.y = -1;
+				if (oldSelectionX != -1 && oldSelectionY != -1) {
+					if (oldSelectionX > oldSelectionY) {
+						int temp = oldSelectionX;
+						oldSelectionX = oldSelectionY;
+						oldSelectionY = temp;
+					}
+					Rectangle rectangle = layout.getBounds (oldSelectionX, oldSelectionY);
+					redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
+				}		
+				for (int j = 0; j < offsets.length; j++) {
+					Rectangle [] rects = getRectangles (j);
+					for (int i = 0; i < rects.length; i++) {
+						Rectangle rectangle = rects [i];
+						if (rectangle.contains (x, y)) {
+							focusIndex = j;
+							redraw ();
+							setFocus ();
+							return result;
+						}
+					}
+				}
+			}
+			break;
+		case SWT.MouseMove:
+			if ((chord & 0x01) != 0) {
+				int oldSelection = selection.y;
+				selection.y = layout.getOffset (x, y, null);
+				if (selection.y != oldSelection) {
+					int newSelection = selection.y;
+					if (oldSelection > newSelection) {
+						int temp = oldSelection;
+						oldSelection = newSelection;
+						newSelection = temp;
+					}
+					Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
+					redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
+				}
+			}
+			break;
+		case SWT.MouseUp:
+			if (focusIndex == -1) break;
+			if (button == 1) {
+				Rectangle [] rects = getRectangles (focusIndex);
+				for (int i = 0; i < rects.length; i++) {
+					Rectangle rectangle = rects [i];
+					if (rectangle.contains (x, y)) {
+						Event event = new Event ();
+						event.text = ids [focusIndex];
+						notifyListeners (SWT.Selection, event);
+						return result;
+					}
+				}
+			}
+			break;
+	}
+	
+	return result;
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int result = super.setBounds(x, y, width, height, move, resize, events);
 	if ((result & RESIZED) != 0) {
@@ -712,8 +670,9 @@ void setFontStyle (Font font) {
  * selected, the text field of the selection event contains either the
  * text of the hyperlink or the value of its HREF, if one was specified.
  * In the rare case of identical hyperlinks within the same string, the
- * HREF tag can be used to distinguish between them.  The string may
- * include the mnemonic character and line delimiters.
+ * HREF attribute can be used to distinguish between them.  The string may
+ * include the mnemonic character and line delimiters. The only delimiter
+ * the HREF attribute supports is the quotation mark (").
  * </p>
  * 
  * @param string the new text
@@ -741,14 +700,18 @@ public void setText (String string) {
 		Point point = offsets [i];
 		layout.setStyle (linkStyle, point.x, point.y);
 	}
-	TextStyle mnemonicStyle = new TextStyle (null, null, null);
-	mnemonicStyle.underline = true;
-	for (int i = 0; i < mnemonics.length; i++) {
-		int mnemonic  = mnemonics [i];
-		if (mnemonic != -1) {
-			layout.setStyle (mnemonicStyle, mnemonic, mnemonic);
-		}
-	}
+	/*
+	* This code is intentionally commented. Mnemonics are 
+	* not drawn on the Macintosh.
+	*/
+//	TextStyle mnemonicStyle = new TextStyle (null, null, null);
+//	mnemonicStyle.underline = true;
+//	for (int i = 0; i < mnemonics.length; i++) {
+//		int mnemonic  = mnemonics [i];
+//		if (mnemonic != -1) {
+//			layout.setStyle (mnemonicStyle, mnemonic, mnemonic);
+//		}
+//	}
 	redraw ();    
 }
 

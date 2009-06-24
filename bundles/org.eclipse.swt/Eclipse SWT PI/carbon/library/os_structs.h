@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "os.h"
 
@@ -21,6 +21,18 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
 #define getAEDescFields(a,b,c) NULL
 #define setAEDescFields(a,b,c)
 #define AEDesc_sizeof() 0
+#endif
+
+#ifndef NO_ATSFontMetrics
+void cacheATSFontMetricsFields(JNIEnv *env, jobject lpObject);
+ATSFontMetrics *getATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct);
+void setATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct);
+#define ATSFontMetrics_sizeof() sizeof(ATSFontMetrics)
+#else
+#define cacheATSFontMetricsFields(a,b)
+#define getATSFontMetricsFields(a,b,c) NULL
+#define setATSFontMetricsFields(a,b,c)
+#define ATSFontMetrics_sizeof() 0
 #endif
 
 #ifndef NO_ATSLayoutRecord
@@ -119,6 +131,18 @@ void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
 #define CFRange_sizeof() 0
 #endif
 
+#ifndef NO_CFRunLoopSourceContext
+void cacheCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject);
+CFRunLoopSourceContext *getCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct);
+void setCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct);
+#define CFRunLoopSourceContext_sizeof() sizeof(CFRunLoopSourceContext)
+#else
+#define cacheCFRunLoopSourceContextFields(a,b)
+#define getCFRunLoopSourceContextFields(a,b,c) NULL
+#define setCFRunLoopSourceContextFields(a,b,c)
+#define CFRunLoopSourceContext_sizeof() 0
+#endif
+
 #ifndef NO_CGFunctionCallbacks
 void cacheCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject);
 CGFunctionCallbacks *getCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject, CGFunctionCallbacks *lpStruct);
@@ -177,6 +201,18 @@ void setCGRectFields(JNIEnv *env, jobject lpObject, CGRect *lpStruct);
 #define getCGRectFields(a,b,c) NULL
 #define setCGRectFields(a,b,c)
 #define CGRect_sizeof() 0
+#endif
+
+#ifndef NO_CGSize
+void cacheCGSizeFields(JNIEnv *env, jobject lpObject);
+CGSize *getCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct);
+void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct);
+#define CGSize_sizeof() sizeof(CGSize)
+#else
+#define cacheCGSizeFields(a,b)
+#define getCGSizeFields(a,b,c) NULL
+#define setCGSizeFields(a,b,c)
+#define CGSize_sizeof() 0
 #endif
 
 #ifndef NO_ColorPickerInfo
@@ -275,6 +311,18 @@ void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct);
 #define Cursor_sizeof() 0
 #endif
 
+#ifndef NO_DataBrowserAccessibilityItemInfo
+void cacheDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject);
+DataBrowserAccessibilityItemInfo *getDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct);
+void setDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct);
+#define DataBrowserAccessibilityItemInfo_sizeof() sizeof(DataBrowserAccessibilityItemInfo)
+#else
+#define cacheDataBrowserAccessibilityItemInfoFields(a,b)
+#define getDataBrowserAccessibilityItemInfoFields(a,b,c) NULL
+#define setDataBrowserAccessibilityItemInfoFields(a,b,c)
+#define DataBrowserAccessibilityItemInfo_sizeof() 0
+#endif
+
 #ifndef NO_DataBrowserCallbacks
 void cacheDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject);
 DataBrowserCallbacks *getDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct);
@@ -335,30 +383,6 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);
 #define EventRecord_sizeof() 0
 #endif
 
-#ifndef NO_FontInfo
-void cacheFontInfoFields(JNIEnv *env, jobject lpObject);
-FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct);
-void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct);
-#define FontInfo_sizeof() sizeof(FontInfo)
-#else
-#define cacheFontInfoFields(a,b)
-#define getFontInfoFields(a,b,c) NULL
-#define setFontInfoFields(a,b,c)
-#define FontInfo_sizeof() 0
-#endif
-
-#ifndef NO_FontSelectionQDStyle
-void cacheFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject);
-FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct);
-void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct);
-#define FontSelectionQDStyle_sizeof() sizeof(FontSelectionQDStyle)
-#else
-#define cacheFontSelectionQDStyleFields(a,b)
-#define getFontSelectionQDStyleFields(a,b,c) NULL
-#define setFontSelectionQDStyleFields(a,b,c)
-#define FontSelectionQDStyle_sizeof() 0
-#endif
-
 #ifndef NO_GDevice
 void cacheGDeviceFields(JNIEnv *env, jobject lpObject);
 GDevice *getGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct);
@@ -369,6 +393,42 @@ void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct);
 #define getGDeviceFields(a,b,c) NULL
 #define setGDeviceFields(a,b,c)
 #define GDevice_sizeof() 0
+#endif
+
+#ifndef NO_HIAxisPosition
+void cacheHIAxisPositionFields(JNIEnv *env, jobject lpObject);
+HIAxisPosition *getHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct);
+void setHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct);
+#define HIAxisPosition_sizeof() sizeof(HIAxisPosition)
+#else
+#define cacheHIAxisPositionFields(a,b)
+#define getHIAxisPositionFields(a,b,c) NULL
+#define setHIAxisPositionFields(a,b,c)
+#define HIAxisPosition_sizeof() 0
+#endif
+
+#ifndef NO_HIAxisScale
+void cacheHIAxisScaleFields(JNIEnv *env, jobject lpObject);
+HIAxisScale *getHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct);
+void setHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct);
+#define HIAxisScale_sizeof() sizeof(HIAxisScale)
+#else
+#define cacheHIAxisScaleFields(a,b)
+#define getHIAxisScaleFields(a,b,c) NULL
+#define setHIAxisScaleFields(a,b,c)
+#define HIAxisScale_sizeof() 0
+#endif
+
+#ifndef NO_HIBinding
+void cacheHIBindingFields(JNIEnv *env, jobject lpObject);
+HIBinding *getHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct);
+void setHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct);
+#define HIBinding_sizeof() sizeof(HIBinding)
+#else
+#define cacheHIBindingFields(a,b)
+#define getHIBindingFields(a,b,c) NULL
+#define setHIBindingFields(a,b,c)
+#define HIBinding_sizeof() 0
 #endif
 
 #ifndef NO_HICommand
@@ -383,6 +443,42 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
 #define HICommand_sizeof() 0
 #endif
 
+#ifndef NO_HILayoutInfo
+void cacheHILayoutInfoFields(JNIEnv *env, jobject lpObject);
+HILayoutInfo *getHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct);
+void setHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct);
+#define HILayoutInfo_sizeof() sizeof(HILayoutInfo)
+#else
+#define cacheHILayoutInfoFields(a,b)
+#define getHILayoutInfoFields(a,b,c) NULL
+#define setHILayoutInfoFields(a,b,c)
+#define HILayoutInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIPositioning
+void cacheHIPositioningFields(JNIEnv *env, jobject lpObject);
+HIPositioning *getHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct);
+void setHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct);
+#define HIPositioning_sizeof() sizeof(HIPositioning)
+#else
+#define cacheHIPositioningFields(a,b)
+#define getHIPositioningFields(a,b,c) NULL
+#define setHIPositioningFields(a,b,c)
+#define HIPositioning_sizeof() 0
+#endif
+
+#ifndef NO_HIScaling
+void cacheHIScalingFields(JNIEnv *env, jobject lpObject);
+HIScaling *getHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct);
+void setHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct);
+#define HIScaling_sizeof() sizeof(HIScaling)
+#else
+#define cacheHIScalingFields(a,b)
+#define getHIScalingFields(a,b,c) NULL
+#define setHIScalingFields(a,b,c)
+#define HIScaling_sizeof() 0
+#endif
+
 #ifndef NO_HIScrollBarTrackInfo
 void cacheHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject);
 HIScrollBarTrackInfo *getHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTrackInfo *lpStruct);
@@ -393,6 +489,18 @@ void setHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTra
 #define getHIScrollBarTrackInfoFields(a,b,c) NULL
 #define setHIScrollBarTrackInfoFields(a,b,c)
 #define HIScrollBarTrackInfo_sizeof() 0
+#endif
+
+#ifndef NO_HISideBinding
+void cacheHISideBindingFields(JNIEnv *env, jobject lpObject);
+HISideBinding *getHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct);
+void setHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct);
+#define HISideBinding_sizeof() sizeof(HISideBinding)
+#else
+#define cacheHISideBindingFields(a,b)
+#define getHISideBindingFields(a,b,c) NULL
+#define setHISideBindingFields(a,b,c)
+#define HISideBinding_sizeof() 0
 #endif
 
 #ifndef NO_HIThemeAnimationFrameInfo
@@ -563,6 +671,30 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 #define HMHelpContentRec_sizeof() 0
 #endif
 
+#ifndef NO_LSApplicationParameters
+void cacheLSApplicationParametersFields(JNIEnv *env, jobject lpObject);
+LSApplicationParameters *getLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct);
+void setLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct);
+#define LSApplicationParameters_sizeof() sizeof(LSApplicationParameters)
+#else
+#define cacheLSApplicationParametersFields(a,b)
+#define getLSApplicationParametersFields(a,b,c) NULL
+#define setLSApplicationParametersFields(a,b,c)
+#define LSApplicationParameters_sizeof() 0
+#endif
+
+#ifndef NO_LongDateRec
+void cacheLongDateRecFields(JNIEnv *env, jobject lpObject);
+LongDateRec *getLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct);
+void setLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct);
+#define LongDateRec_sizeof() sizeof(LongDateRec)
+#else
+#define cacheLongDateRecFields(a,b)
+#define getLongDateRecFields(a,b,c) NULL
+#define setLongDateRecFields(a,b,c)
+#define LongDateRec_sizeof() 0
+#endif
+
 #ifndef NO_MenuTrackingData
 void cacheMenuTrackingDataFields(JNIEnv *env, jobject lpObject);
 MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);
@@ -575,6 +707,18 @@ void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *
 #define MenuTrackingData_sizeof() 0
 #endif
 
+#ifndef NO_NavCBRec
+void cacheNavCBRecFields(JNIEnv *env, jobject lpObject);
+NavCBRec *getNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct);
+void setNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct);
+#define NavCBRec_sizeof() sizeof(NavCBRec)
+#else
+#define cacheNavCBRecFields(a,b)
+#define getNavCBRecFields(a,b,c) NULL
+#define setNavCBRecFields(a,b,c)
+#define NavCBRec_sizeof() 0
+#endif
+
 #ifndef NO_NavDialogCreationOptions
 void cacheNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject);
 NavDialogCreationOptions *getNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct);
@@ -585,6 +729,54 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 #define getNavDialogCreationOptionsFields(a,b,c) NULL
 #define setNavDialogCreationOptionsFields(a,b,c)
 #define NavDialogCreationOptions_sizeof() 0
+#endif
+
+#ifndef NO_NavEventData
+void cacheNavEventDataFields(JNIEnv *env, jobject lpObject);
+NavEventData *getNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct);
+void setNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct);
+#define NavEventData_sizeof() sizeof(NavEventData)
+#else
+#define cacheNavEventDataFields(a,b)
+#define getNavEventDataFields(a,b,c) NULL
+#define setNavEventDataFields(a,b,c)
+#define NavEventData_sizeof() 0
+#endif
+
+#ifndef NO_NavEventDataInfo
+void cacheNavEventDataInfoFields(JNIEnv *env, jobject lpObject);
+NavEventDataInfo *getNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct);
+void setNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct);
+#define NavEventDataInfo_sizeof() sizeof(NavEventDataInfo)
+#else
+#define cacheNavEventDataInfoFields(a,b)
+#define getNavEventDataInfoFields(a,b,c) NULL
+#define setNavEventDataInfoFields(a,b,c)
+#define NavEventDataInfo_sizeof() 0
+#endif
+
+#ifndef NO_NavFileOrFolderInfo
+void cacheNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject);
+NavFileOrFolderInfo *getNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct);
+void setNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct);
+#define NavFileOrFolderInfo_sizeof() sizeof(NavFileOrFolderInfo)
+#else
+#define cacheNavFileOrFolderInfoFields(a,b)
+#define getNavFileOrFolderInfoFields(a,b,c) NULL
+#define setNavFileOrFolderInfoFields(a,b,c)
+#define NavFileOrFolderInfo_sizeof() 0
+#endif
+
+#ifndef NO_NavMenuItemSpec
+void cacheNavMenuItemSpecFields(JNIEnv *env, jobject lpObject);
+NavMenuItemSpec *getNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct);
+void setNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct);
+#define NavMenuItemSpec_sizeof() sizeof(NavMenuItemSpec)
+#else
+#define cacheNavMenuItemSpecFields(a,b)
+#define getNavMenuItemSpecFields(a,b,c) NULL
+#define setNavMenuItemSpecFields(a,b,c)
+#define NavMenuItemSpec_sizeof() 0
 #endif
 
 #ifndef NO_NavReplyRecord
@@ -719,18 +911,6 @@ void setTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStru
 #define TXNBackground_sizeof() 0
 #endif
 
-#ifndef NO_TXNLongRect
-void cacheTXNLongRectFields(JNIEnv *env, jobject lpObject);
-TXNLongRect *getTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
-void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
-#define TXNLongRect_sizeof() sizeof(TXNLongRect)
-#else
-#define cacheTXNLongRectFields(a,b)
-#define getTXNLongRectFields(a,b,c) NULL
-#define setTXNLongRectFields(a,b,c)
-#define TXNLongRect_sizeof() 0
-#endif
-
 #ifndef NO_TXNTab
 void cacheTXNTabFields(JNIEnv *env, jobject lpObject);
 TXNTab *getTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct);
@@ -741,6 +921,18 @@ void setTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct);
 #define getTXNTabFields(a,b,c) NULL
 #define setTXNTabFields(a,b,c)
 #define TXNTab_sizeof() 0
+#endif
+
+#ifndef NO_TextRange
+void cacheTextRangeFields(JNIEnv *env, jobject lpObject);
+TextRange *getTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct);
+void setTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct);
+#define TextRange_sizeof() sizeof(TextRange)
+#else
+#define cacheTextRangeFields(a,b)
+#define getTextRangeFields(a,b,c) NULL
+#define setTextRangeFields(a,b,c)
+#define TextRange_sizeof() 0
 #endif
 
 #ifndef NO_ThemeButtonDrawInfo

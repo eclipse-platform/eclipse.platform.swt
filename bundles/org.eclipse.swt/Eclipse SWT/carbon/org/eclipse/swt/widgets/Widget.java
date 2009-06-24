@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
@@ -48,6 +49,7 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see #checkSubclass
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
 	int style, state;
@@ -80,13 +82,20 @@ public abstract class Widget {
 
 	/* More global state flags */
 	static final int RELEASED = 1<<15;
-	static final int DISPOSE_SENT = 1<<16;
-	
+	static final int DISPOSE_SENT = 1<<16;	
+	static final int FOREIGN_HANDLE = 1<<17;
+	static final int DRAG_DETECT = 1<<18;
+
+	/* Safari fixes */
+	static final int SAFARI_EVENTS_FIX = 1<<19;
+	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	
 	static final Rect EMPTY_RECT = new Rect ();
+
 
 Widget () {
 	/* Do nothing */
@@ -129,14 +138,15 @@ public Widget (Widget parent, int style) {
 }
 
 int actionProc (int theControl, int partCode) {
-	return OS.noErr;
+	return OS.eventNotHandledErr;
 }
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
+ * be notified when an event of the given type occurs. When the
  * event does occur in the widget, the listener is notified by
- * sending it the <code>handleEvent()</code> message.
+ * sending it the <code>handleEvent()</code> message. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
@@ -150,7 +160,10 @@ int actionProc (int theControl, int partCode) {
  * </ul>
  *
  * @see Listener
- * @see #removeListener
+ * @see SWT
+ * @see #getListeners(int)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
  */
 public void addListener (int eventType, Listener listener) {
 	checkWidget();
@@ -169,7 +182,7 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when the widget is disposed. When the widget is
+ * be notified when the widget is disposed. When the widget is
  * disposed, the listener is notified by sending it the
  * <code>widgetDisposed()</code> message.
  *
@@ -218,18 +231,18 @@ void calculateVisibleRegion (int control, int visibleRgn, boolean clipChildren) 
 		int tempControl = control, lastControl = 0;
 		while (tempControl != root) {
 			OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
-			if (OS.HIVIEW) OS.HIViewConvertRegion (tempRgn, tempControl, root);
+			OS.HIViewConvertRegion (tempRgn, tempControl, root);
 			OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
 			if (OS.EmptyRgn (visibleRgn)) break;
 			if (clipChildren || tempControl != control) {
 				OS.CountSubControls (tempControl, count);
 				for (int i = 0; i < count [0]; i++) {
-					OS.GetIndexedSubControl (tempControl, (short)(OS.HIVIEW ? count [0] - i : i + 1), outControl);
+					OS.GetIndexedSubControl (tempControl, (short)(count [0] - i), outControl);
 					int child = outControl [0];
 					if (child == lastControl) break;
 					if (!OS.IsControlVisible (child)) continue;
 					OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
-					if (OS.HIVIEW) OS.HIViewConvertRegion (tempRgn, child, root);
+					OS.HIViewConvertRegion (tempRgn, child, root);
 					OS.UnionRgn (tempRgn, childRgn, childRgn);
 				}
 			}
@@ -337,6 +350,14 @@ boolean contains (int shellX, int shellY) {
 	return true;
 }
 
+int clockProc (int nextHandler, int theEvent, int userData) {
+	int kind = OS.GetEventKind (theEvent);
+	switch (kind) {
+		case OS.kEventClockDateOrTimeChanged: return kEventClockDateOrTimeChanged (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
 int controlProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
@@ -347,14 +368,50 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
 		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
 		case OS.kEventControlDraw:					return kEventControlDraw (nextHandler, theEvent, userData);
+		case OS.kEventControlGetPartRegion:			return kEventControlGetPartRegion (nextHandler, theEvent, userData);
 		case OS.kEventControlHit:					return kEventControlHit (nextHandler, theEvent, userData);
 		case OS.kEventControlSetCursor:				return kEventControlSetCursor (nextHandler, theEvent, userData);
 		case OS.kEventControlSetFocusPart:			return kEventControlSetFocusPart (nextHandler, theEvent, userData);
 		case OS.kEventControlTrack:					return kEventControlTrack (nextHandler, theEvent, userData);
 		case OS.kEventControlGetFocusPart:			return kEventControlGetFocusPart (nextHandler, theEvent, userData);
-		case OS.kEventControlHitTest:					return kEventControlHitTest (nextHandler, theEvent, userData);
+		case OS.kEventControlHitTest:				return kEventControlHitTest (nextHandler, theEvent, userData);
+		case OS.kEventControlGetClickActivation:	return kEventControlGetClickActivation (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
+}
+
+int accessibilityProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventAccessibleGetChildAtPoint:	return kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
+		case OS.kEventAccessibleGetFocusedChild:	return kEventAccessibleGetFocusedChild (nextHandler, theEvent, userData);
+		case OS.kEventAccessibleGetAllAttributeNames:	return kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+		case OS.kEventAccessibleGetNamedAttribute:	return kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
+void copyToClipboard (char [] chars) {
+	if (chars.length == 0) return;
+	OS.ClearCurrentScrap ();
+	int [] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	if (cfstring == 0) return;
+	byte[] buffer = null;
+	try {
+		CFRange range = new CFRange();
+		range.length = chars.length;
+		int[] size = new int[1];
+		int numChars = OS.CFStringGetBytes(cfstring, range, OS.kCFStringEncodingUnicode, (byte)'?', true, null, 0, size);
+		if (numChars == 0) return;
+		buffer = new byte[size[0]];
+		numChars = OS.CFStringGetBytes(cfstring, range, OS.kCFStringEncodingUnicode, (byte)'?', true, buffer, size [0], size);
+		if (numChars == 0) return;
+	} finally {
+		OS.CFRelease(cfstring);
+	}
+	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUTF16External, 0, buffer.length, buffer);
 }
 
 int createCIcon (Image image) {
@@ -376,7 +433,7 @@ int createCIcon (Image image) {
 	if (iconHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.HLock(iconHandle);
 	int[] iconPtr = new int[1];
-	OS.memcpy(iconPtr, iconHandle, 4);
+	OS.memmove(iconPtr, iconHandle, 4);
 
 	/* Initialize the pixmap */
 	PixMap iconPMap = new PixMap();
@@ -391,30 +448,30 @@ int createCIcon (Image image) {
 	iconPMap.pixelType = (short)OS.RGBDirect;
 	iconPMap.pixelSize = (short)bpp;
 	iconPMap.pixelFormat = (short)bpp;
-	OS.memcpy(iconPtr[0], iconPMap, PixMap.sizeof);
+	OS.memmove(iconPtr[0], iconPMap, PixMap.sizeof);
 
 	/* Initialize the mask */
 	BitMap iconMask = new BitMap();
 	iconMask.rowBytes = (short)maskBpl;
 	iconMask.right = (short)width;
 	iconMask.bottom = (short)height;
-	OS.memcpy(iconPtr[0] + PixMap.sizeof, iconMask, BitMap.sizeof);
+	OS.memmove(iconPtr[0] + PixMap.sizeof, iconMask, BitMap.sizeof);
 
 	/* Initialize the icon data */
 	int iconData = OS.NewHandle(pixmapSize);
 	OS.HLock(iconData);
 	int[] iconDataPtr = new int[1];
-	OS.memcpy(iconDataPtr, iconData, 4);
-	OS.memcpy(iconDataPtr[0], image.data, pixmapSize);
+	OS.memmove(iconDataPtr, iconData, 4);
+	OS.memmove(iconDataPtr[0], image.data, pixmapSize);
 	OS.HUnlock(iconData);
-	OS.memcpy(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, new int[]{iconData}, 4);
+	OS.memmove(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, new int[]{iconData}, 4);
 
 	/* Initialize the mask data */
 	if (alphaInfo != OS.kCGImageAlphaFirst) {
 		OS.memset(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, -1, maskSize);
 	} else {
 		byte[] srcData = new byte[pixmapSize];
-		OS.memcpy(srcData, image.data, pixmapSize);
+		OS.memmove(srcData, image.data, pixmapSize);
 		byte[] maskData = new byte[maskSize];
 		int offset = 0, maskOffset = 0;
 		for (int y = 0; y<height; y++) {
@@ -428,7 +485,7 @@ int createCIcon (Image image) {
 			}
 			maskOffset += maskBpl;
 		}
-		OS.memcpy(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, maskData, maskData.length);
+		OS.memmove(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, maskData, maskData.length);
 	}
 	
 	OS.HUnlock(iconHandle);	
@@ -504,8 +561,8 @@ int createIconRef (Image image) {
 	if (dataHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] dataPtr = new int[1];
 	OS.HLock(dataHandle);
-	OS.memcpy(dataPtr, dataHandle, 4);
-	OS.memcpy(dataPtr[0], imageData, dataSize);
+	OS.memmove(dataPtr, dataHandle, 4);
+	OS.memmove(dataPtr[0], imageData, dataSize);
 	OS.HUnlock(dataHandle);
 	OS.SetIconFamilyData(iconFamily, type, dataHandle);
 	OS.DisposeHandle(dataHandle);
@@ -516,12 +573,12 @@ int createIconRef (Image image) {
 	if (maskHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.HLock(maskHandle);
 	int[] maskPtr = new int[1];
-	OS.memcpy(maskPtr, maskHandle, 4);
+	OS.memmove(maskPtr, maskHandle, 4);
 	if (alphaInfo != OS.kCGImageAlphaFirst) {
 		OS.memset(maskPtr[0], 0xFF, maskSize);
 	} else {
 		byte[] srcData = new byte[dataSize];
-		OS.memcpy(srcData, imageData, dataSize);
+		OS.memmove(srcData, imageData, dataSize);
 		byte[] maskData = new byte[maskSize];
 		int offset = 0, maskOffset = 0;
 		for (int y = 0; y<height; y++) {
@@ -530,7 +587,7 @@ int createIconRef (Image image) {
 				offset += 4;
 			}
 		}
-		OS.memcpy(maskPtr[0], maskData, maskData.length);
+		OS.memmove(maskPtr[0], maskData, maskData.length);
 	}
 	OS.HUnlock(maskHandle);
 	OS.SetIconFamilyData(iconFamily, maskType, maskHandle);
@@ -542,7 +599,7 @@ int createIconRef (Image image) {
 	int[] iconRef = new int[1];
 	OS.HLock(iconFamily);
 	int[] iconPtr = new int[1];
-	OS.memcpy(iconPtr, iconFamily, 4);
+	OS.memmove(iconPtr, iconFamily, 4);
 	OS.GetIconRefFromIconFamilyPtr(iconPtr[0], OS.GetHandleSize(iconFamily), iconRef);
 	OS.HUnlock(iconFamily);	
 	OS.DisposeHandle(iconFamily);
@@ -575,14 +632,14 @@ void destroyCIcon (int iconHandle) {
 	
 	/* Dispose the ColorTable */
 	int[] iconPtr = new int[1];
-	OS.memcpy(iconPtr, iconHandle, 4);	
+	OS.memmove(iconPtr, iconHandle, 4);	
 	PixMap iconPMap = new PixMap();
-	OS.memcpy(iconPMap, iconPtr[0], PixMap.sizeof);
+	OS.memmove(iconPMap, iconPtr[0], PixMap.sizeof);
 	if (iconPMap.pmTable != 0) OS.DisposeHandle(iconPMap.pmTable);
 
 	/* Dispose the icon data */
 	int[] iconData = new int[1];
-	OS.memcpy(iconData, iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, 4);
+	OS.memmove(iconData, iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, 4);
 	if (iconData[0] != 0) OS.DisposeHandle(iconData[0]);
 	
 	OS.HUnlock(iconHandle);
@@ -597,13 +654,13 @@ int drawItemProc (int browser, int item, int property, int itemState, int theRec
 
 /**
  * Disposes of the operating system resources associated with
- * the receiver and all its descendents. After this method has
- * been invoked, the receiver and all descendents will answer
+ * the receiver and all its descendants. After this method has
+ * been invoked, the receiver and all descendants will answer
  * <code>true</code> when sent the message <code>isDisposed()</code>.
  * Any internal connections between the widgets in the tree will
  * have been removed to facilitate garbage collection.
  * <p>
- * NOTE: This method is not called recursively on the descendents
+ * NOTE: This method is not called recursively on the descendants
  * of the receiver. This means that, widget implementers can not
  * detect when a widget is being disposed of by re-implementing
  * this method, but should instead listen for the <code>Dispose</code>
@@ -655,54 +712,71 @@ int fixMnemonic (char [] buffer) {
 	return j;
 }
 
+String getClipboardText () {
+	String result = "";
+	int [] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	int [] size = new int [1];
+	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUTF16External, size) == OS.noErr) {
+		if (size [0] != 0) {
+			byte [] buffer = new byte [size [0]];
+			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUTF16External, size, buffer) == OS.noErr) {
+				int encoding = OS.kCFStringEncodingUnicode;
+				int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+				if (cfstring != 0) {
+					int length = OS.CFStringGetLength(cfstring);
+					if (length != 0) {
+						char[] chars = new char[length];
+						CFRange range = new CFRange();
+						range.length = length;
+						OS.CFStringGetCharacters(cfstring, range, chars);
+						result = new String(chars);
+					}
+					OS.CFRelease(cfstring);
+				}
+			}
+		}
+	} else if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) == OS.noErr) {
+		if (size [0] != 0) {
+			byte [] buffer = new byte [size [0]];
+			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeText, size, buffer) == OS.noErr) {
+				int encoding = OS.CFStringGetSystemEncoding();
+				int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+				if (cfstring != 0) {
+					int length = OS.CFStringGetLength(cfstring);
+					if (length != 0) {
+						char[] chars = new char[length];
+						CFRange range = new CFRange();
+						range.length = length;
+						OS.CFStringGetCharacters(cfstring, range, chars);
+						result = new String(chars);
+					}
+					OS.CFRelease(cfstring);
+				}
+			}
+		}
+	}
+	return result;
+}
+
 Rectangle getControlBounds (int control) {
-	if (OS.HIVIEW) {
-		CGRect rect = new CGRect ();
-		OS.HIViewGetFrame (control, rect);
-		Rect inset = getInset ();
-		rect.x -= inset.left;
-		rect.y -= inset.top;
-		rect.width += inset.right + inset.left;
-		rect.height += inset.bottom + inset.top;
-		return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
-	}
-	Rect rect = new Rect();
-	OS.GetControlBounds (control, rect);
-	int window = OS.GetControlOwner (control);
-	int [] theRoot = new int [1];
-	OS.GetRootControl (window, theRoot);
-	int [] parentHandle = new int [1];
-	OS.GetSuperControl (control, parentHandle);
-	if (parentHandle [0] != theRoot [0]) {
-		Rect parentRect = new Rect ();
-		OS.GetControlBounds (parentHandle [0], parentRect);
-		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
-	}
+	CGRect rect = new CGRect ();
+	OS.HIViewGetFrame (control, rect);
 	Rect inset = getInset ();
-	rect.left -= inset.left;
-	rect.top -= inset.top;
-	rect.right += inset.right;
-	rect.bottom += inset.bottom;
-	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	rect.x -= inset.left;
+	rect.y -= inset.top;
+	rect.width += inset.right + inset.left;
+	rect.height += inset.bottom + inset.top;
+	return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 Point getControlSize (int control) {
-	if (OS.HIVIEW) {
-		CGRect rect = new CGRect ();
-		OS.HIViewGetFrame (control, rect);
-		Rect inset = getInset ();
-		int width = (int) rect.width + inset.left + inset.right;
-		int height = (int) rect.height + inset.top + inset.bottom;
-		return new Point (width, height);
-	}
-	Rect rect = new Rect ();
-	OS.GetControlBounds (control, rect);
+	CGRect rect = new CGRect ();
+	OS.HIViewGetFrame (control, rect);
 	Rect inset = getInset ();
-	rect.left -= inset.left;
-	rect.top -= inset.top;
-	rect.right += inset.right;
-	rect.bottom += inset.bottom;
-	return new Point (rect.right - rect.left, rect.bottom - rect.top);
+	int width = (int) rect.width + inset.left + inset.right;
+	int height = (int) rect.height + inset.top + inset.bottom;
+	return new Point (width, height);
 }
 
 /**
@@ -789,12 +863,39 @@ public Display getDisplay () {
 	return display;
 }
 
-int getDrawCount (int control) {
-	return 0;
+boolean getDrawing () {
+	return true;
 }
 
 Rect getInset () {
 	return EMPTY_RECT;
+}
+
+/**
+ * Returns an array of listeners who will be notified when an event 
+ * of the given type occurs. The event type is one of the event constants 
+ * defined in class <code>SWT</code>.
+ *
+ * @param eventType the type of event to listen for
+ * @return an array of listeners that will be notified when the event occurs
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see SWT
+ * @see #addListener(int, Listener)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
+ * 
+ * @since 3.4
+ */
+public Listener[] getListeners (int eventType) {
+	checkWidget();
+	if (eventTable == null) return new Listener[0];
+	return eventTable.getListeners(eventType);
 }
 
 String getName () {
@@ -878,8 +979,8 @@ public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
 }
 
-boolean isDrawing (int control) {
-	return OS.IsControlVisible (control) && getDrawCount (control) == 0;
+boolean isDrawing () {
+	return true;
 }
 
 boolean isEnabled () {
@@ -889,15 +990,18 @@ boolean isEnabled () {
 /**
  * Returns <code>true</code> if there are any listeners
  * for the specified event type associated with the receiver,
- * and <code>false</code> otherwise.
+ * and <code>false</code> otherwise. The event type is one of
+ * the event constants defined in class <code>SWT</code>.
  *
- * @param	eventType the type of event
+ * @param eventType the type of event
  * @return true if the event is hooked
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see SWT
  */
 public boolean isListening (int eventType) {
 	checkWidget();
@@ -928,7 +1032,27 @@ int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
 }
 
+int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -961,41 +1085,28 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
-	if (OS.HIVIEW) {
-		boolean oldInPaint = display.inPaint;
-		display.inPaint = true;
-		int[] context = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-		int visibleRgn = region [0];
-		drawBackground (theControl [0], context [0]);
-		callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
-		drawWidget (theControl [0], context [0], region [0], visibleRgn, theEvent);
-		display.inPaint = oldInPaint;
-	} else {
-		if (getDrawCount (theControl [0]) > 0) return OS.noErr;
-		int visibleRgn = getVisibleRegion (theControl [0], true);
-		OS.SectRgn(region [0], visibleRgn, visibleRgn);
-		if (!OS.EmptyRgn (visibleRgn)) {
-			int [] port = new int [1];
-			OS.GetPort (port);
-			OS.LockPortBits (port [0]);
-//			OS.QDSetDirtyRegion (port, visibleRgn);
-			int oldClip = OS.NewRgn ();
-			OS.GetClip (oldClip);
-			OS.SetClip (visibleRgn);
-			drawBackground (theControl [0], 0);
-			callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
-			drawWidget (theControl [0], 0, region [0], visibleRgn, theEvent);
-			OS.SetClip (oldClip);
-			OS.DisposeRgn (oldClip);
-			OS.UnlockPortBits (port [0]);
-		}
-		OS.DisposeRgn (visibleRgn);
-	}
+	Display display = this.display;
+	boolean oldInPaint = display.inPaint;
+	display.inPaint = true;
+	int[] context = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+	int visibleRgn = region [0];
+	drawBackground (theControl [0], context [0]);
+	callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
+	drawWidget (theControl [0], context [0], region [0], visibleRgn, theEvent);
+	display.inPaint = oldInPaint;
 	return OS.noErr;
 }
 
+int kEventControlGetClickActivation (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -1016,7 +1127,12 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	OS.CFRetain (theControl[0]);
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	OS.CFRelease (theControl[0]);
+	return result;
 }
 
 int kEventMenuCalculateSize (int nextHandler, int theEvent, int userData) {
@@ -1040,6 +1156,10 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuMatchKey (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -1072,6 +1192,14 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventSearchFieldSearchClicked (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -1128,6 +1256,22 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	return OS.eventNotHandledErr;
 }
 
+int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventTextInputOffsetToPos (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -1144,6 +1288,10 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventWindowCollapsing (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -1153,6 +1301,10 @@ int kEventWindowDrawContent (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowGetClickModality (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -1196,6 +1348,7 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventMenuDrawItem: 			return kEventMenuDrawItem (nextHandler, theEvent, userData);
 		case OS.kEventMenuDrawItemContent: 	return kEventMenuDrawItemContent (nextHandler, theEvent, userData);
 		case OS.kEventMenuGetFrameBounds: 	return kEventMenuGetFrameBounds (nextHandler, theEvent, userData);
+		case OS.kEventMenuMatchKey:			return kEventMenuMatchKey (nextHandler, theEvent, userData);
 		case OS.kEventMenuMeasureItemWidth: 	return kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
 		case OS.kEventMenuOpening:			return kEventMenuOpening (nextHandler, theEvent, userData);
 		case OS.kEventMenuTargetItem:			return kEventMenuTargetItem (nextHandler, theEvent, userData);
@@ -1220,7 +1373,9 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
- * invoking their <code>handleEvent()</code> method.
+ * invoking their <code>handleEvent()</code> method.  The
+ * event type is one of the event constants defined in class
+ * <code>SWT</code>.
  *
  * @param eventType the type of event which has occurred
  * @param event the event data
@@ -1229,6 +1384,11 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see SWT
+ * @see #addListener
+ * @see #getListeners(int)
+ * @see #removeListener(int, Listener)
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
@@ -1265,61 +1425,36 @@ void redrawChildren (int control, int rgn) {
 }
 
 void redrawWidget (int control, boolean children) {
-	if (OS.HIVIEW) {
-		if (display.inPaint) {
-			int rgn = OS.NewRgn ();
-			Rect rect = new Rect ();
-			OS.GetControlBounds (control, rect);
-			rect.right += rect.left;
-			rect.bottom += rect.top;
-			rect.top = rect.left = 0;
-			OS.RectRgn (rgn, rect);
-			OS.HIViewConvertRegion (rgn, control, 0);
-			invalWindowRgn (0, rgn);
-			OS.DisposeRgn (rgn);
-		} else {
-			OS.HIViewSetNeedsDisplay (control, true);
-			if (children) redrawChildren (control);
-		}
-		return;
+	if (display.inPaint) {
+		int rgn = OS.NewRgn ();
+		Rect rect = new Rect ();
+		OS.GetControlBounds (control, rect);
+		rect.right += rect.left;
+		rect.bottom += rect.top;
+		rect.top = rect.left = 0;
+		OS.RectRgn (rgn, rect);
+		OS.HIViewConvertRegion (rgn, control, 0);
+		invalWindowRgn (0, rgn);
+		OS.DisposeRgn (rgn);
+	} else {
+		OS.HIViewSetNeedsDisplay (control, true);
+		if (children) redrawChildren (control);
 	}
-	if (!isDrawing (control)) return;
-	int window = OS.GetControlOwner (control);
-	int visibleRgn = getVisibleRegion (control, !children);
-	invalWindowRgn (window, visibleRgn);
-	OS.DisposeRgn (visibleRgn);
 }
 
 void redrawWidget (int control, int x, int y, int width, int height, boolean children) {
-	if (OS.HIVIEW) {
-		int rgn = OS.NewRgn ();
-		Rect rect = new Rect ();
-		OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
-		OS.RectRgn (rgn, rect);
-		if (display.inPaint) {
-			OS.HIViewConvertRegion (rgn, control, 0);
-			invalWindowRgn (0, rgn);
-		} else {
-			OS.HIViewSetNeedsDisplayInRegion (control, rgn, true);
-			if (children) redrawChildren (control, rgn);
-		}
-		OS.DisposeRgn (rgn);
-		return;
-	}
-	if (!isDrawing (control)) return;
+	int rgn = OS.NewRgn ();
 	Rect rect = new Rect ();
-	OS.GetControlBounds (control, rect);
-	x += rect.left;
-	y += rect.top;
 	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
-	int rectRgn = OS.NewRgn();
-	OS.RectRgn (rectRgn, rect);
-	int visibleRgn = getVisibleRegion (control, !children);
-	OS.SectRgn (rectRgn, visibleRgn, visibleRgn);
-	int window = OS.GetControlOwner (control);
-	invalWindowRgn (window, visibleRgn);
-	OS.DisposeRgn (rectRgn);
-	OS.DisposeRgn (visibleRgn);
+	OS.RectRgn (rgn, rect);
+	if (display.inPaint) {
+		OS.HIViewConvertRegion (rgn, control, 0);
+		invalWindowRgn (0, rgn);
+	} else {
+		OS.HIViewSetNeedsDisplayInRegion (control, rgn, true);
+		if (children) redrawChildren (control, rgn);
+	}
+	OS.DisposeRgn (rgn);
 }
 
 void register () {
@@ -1366,10 +1501,11 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1380,7 +1516,10 @@ void releaseWidget () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
+ * @see #getListeners(int)
+ * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener handler) {
 	checkWidget();
@@ -1391,7 +1530,7 @@ public void removeListener (int eventType, Listener handler) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
@@ -1400,7 +1539,7 @@ public void removeListener (int eventType, Listener handler) {
  * </p>
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1422,9 +1561,9 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when the widget is disposed.
+ * be notified when the widget is disposed.
  *
- * @param listener the listener which should no longer be notified when the receiver is disposed
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1442,6 +1581,15 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
+}
+
+int searchProc (int nextHandler, int theEvent, int userData) {
+	int kind = OS.GetEventKind (theEvent);
+	switch (kind) {
+		case OS.kEventSearchFieldCancelClicked: return kEventSearchFieldCancelClicked (nextHandler, theEvent, userData);
+		case OS.kEventSearchFieldSearchClicked: return kEventSearchFieldSearchClicked (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 void sendEvent (Event event) {
@@ -1477,8 +1625,8 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-
 boolean sendKeyEvent (int type, int theEvent) {
+	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
 	int [] length = new int [1];
 	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 	if (status == OS.noErr && length [0] > 2) {
@@ -1523,94 +1671,55 @@ boolean sendKeyEvent (int type, Event event) {
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	boolean sameOrigin = true, sameExtent = true;
-	if (OS.HIVIEW) {
-		CGRect oldBounds = new CGRect ();
-		OS.HIViewGetFrame (control, oldBounds);
-		Rect inset = getInset ();
-		oldBounds.x -= inset.left;
-		oldBounds.y -= inset.top;
-		oldBounds.width += inset.left + inset.right;
-		oldBounds.height += inset.top + inset.bottom;
-		if (!move) {
-			x = (int) oldBounds.x;
-			y = (int) oldBounds.y;
-		}
-		if (!resize) {
-			width = (int) oldBounds.width;
-			height = (int) oldBounds.height;
-		}
-		CGRect newBounds = new CGRect ();
-		newBounds.x = x + inset.left;
-		newBounds.y = y + inset.top;
-		newBounds.width = width - inset.right - inset.left;
-		newBounds.height = height - inset.bottom - inset.top;
-		sameOrigin = newBounds.x == oldBounds.x && newBounds.y == oldBounds.y;
-		sameExtent = newBounds.width == oldBounds.width && newBounds.height == oldBounds.height;
-		if (sameOrigin && sameExtent) return 0;
-		OS.HIViewSetFrame (control, newBounds);
-		invalidateVisibleRegion (control);
-	} else {
-		/* Compute the old bounds */
-		Rect oldBounds = new Rect ();
-		OS.GetControlBounds (control, oldBounds);
-		int [] theRoot = new int [1];
-		int window = OS.GetControlOwner (control);
-		OS.GetRootControl (window, theRoot);
-		int [] parentHandle = new int [1];
-		OS.GetSuperControl (control, parentHandle);
-		Rect parentRect = new Rect ();
-		if (parentHandle [0] != theRoot [0]) {
-			OS.GetControlBounds (parentHandle [0], parentRect);
-			OS.OffsetRect (oldBounds, (short) -parentRect.left, (short) -parentRect.top);
-		}
-		Rect inset = getInset ();
-		oldBounds.left -= inset.left;
-		oldBounds.top -= inset.top;
-		oldBounds.right += inset.right;
-		oldBounds.bottom += inset.bottom;
-		
-		/* Compute the new bounds */
-		if (!move) {
-			x = oldBounds.left;
-			y = oldBounds.top;
-		}
-		if (!resize) {
-			width = oldBounds.right - oldBounds.left;
-			height = oldBounds.bottom - oldBounds.top;
-		}	
-		Rect newBounds = new Rect ();
-		newBounds.left = (short) (parentRect.left + x + inset.left);
-		newBounds.top = (short) (parentRect.top + y + inset.top);
-		newBounds.right = (short) (newBounds.left + width - inset.right - inset.left);
-		newBounds.bottom = (short) (newBounds.top + height - inset.bottom - inset.top);	
-		if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
-		if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
+	CGRect oldBounds = new CGRect ();
+	OS.HIViewGetFrame (control, oldBounds);
+	Rect inset = getInset ();
+	oldBounds.x -= inset.left;
+	oldBounds.y -= inset.top;
+	oldBounds.width += inset.left + inset.right;
+	oldBounds.height += inset.top + inset.bottom;
+	if (!move) {
+		x = (int) oldBounds.x;
+		y = (int) oldBounds.y;
+	}
+	if (!resize) {
+		width = (int) oldBounds.width;
+		height = (int) oldBounds.height;
+	}
+	CGRect newBounds = new CGRect ();
+	newBounds.x = x + inset.left;
+	newBounds.y = y + inset.top;
+	newBounds.width = width - inset.right - inset.left;
+	newBounds.height = height - inset.bottom - inset.top;
+	sameOrigin = newBounds.x == oldBounds.x && newBounds.y == oldBounds.y;
+	sameExtent = newBounds.width == oldBounds.width && newBounds.height == oldBounds.height;
+	if (sameOrigin && sameExtent) return 0;
+	OS.HIViewSetFrame (control, newBounds);
+	invalidateVisibleRegion (control);
 	
-		/* Get bounds again, since the one above is in SWT coordinates */
-		OS.GetControlBounds (control, oldBounds);
-		
-		/* Check if anything changed */
-		sameOrigin = newBounds.left == oldBounds.left && newBounds.top == oldBounds.top;
-		sameExtent = (newBounds.right - newBounds.left) == (oldBounds.right - oldBounds.left) && (newBounds.bottom - newBounds.top) == (oldBounds.bottom - oldBounds.top);
-		if (sameOrigin && sameExtent) return 0;
-	
-		/* Apply changes and invalidate appropriate rectangles */
-		int tempRgn = 0;
-		boolean visible = OS.IsControlVisible (control);
-		if (visible) {
-			tempRgn = OS.NewRgn ();
-			OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
-			invalWindowRgn (window, tempRgn);
-		}
-		OS.SetControlBounds (control, newBounds);
-		invalidateVisibleRegion (control);
-		if (visible) {
-			OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
-			invalWindowRgn (window, tempRgn);
-			OS.DisposeRgn(tempRgn);
+	/*
+	* Bug in the Macintosh.  When HIViewSetDrawingEnabled() is used to
+	* turn off drawing for a control and the control is moved or resized, 
+	* the Mac does not redraw the area where the control once was in the
+	* parent.  The fix is to detect this case and redraw the area.
+	*/
+	if (!OS.HIViewIsDrawingEnabled (control)) {
+		int parent = OS.HIViewGetSuperview (control);
+		if (parent != 0 && OS.HIViewIsDrawingEnabled (parent)) {
+			int rgn = OS.NewRgn ();
+			Rect rect = new Rect ();
+			OS.SetRect (rect, (short) oldBounds.x, (short) oldBounds.y, (short) (oldBounds.x + oldBounds.width), (short) (oldBounds.y + oldBounds.height));
+			OS.RectRgn (rgn, rect);
+			if (display.inPaint) {
+				OS.HIViewConvertRegion (rgn, parent, 0);
+				invalWindowRgn (0, rgn);
+			} else {
+				OS.HIViewSetNeedsDisplayInRegion (parent, rgn, true);
+			}
+			OS.DisposeRgn (rgn);
 		}
 	}
-	
+
 	/* Send events */
 	int result = 0;
 	if (move && !sameOrigin) {
@@ -1648,6 +1757,10 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
  */
 public void setData (Object data) {
 	checkWidget();
+	if (SAFARI_EVENTS_FIX_KEY.equals(data)) {
+		state |= SAFARI_EVENTS_FIX;
+		return;
+	}
 	if ((state & KEYED_DATA) != 0) {
 		((Object []) this.data) [0] = data;
 	} else {
@@ -1846,7 +1959,7 @@ boolean setKeyState (Event event, int type, int theEvent) {
 					event.character = chars [0];
 				}
 				/*
-				* Bug in the Mactonish.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
+				* Bug in the Macintosh.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
 				* fail to give 0x0 (^@ or ASCII NUL) and 0x1e (^^).  Other control character
 				* key sequences such as ^A or even Ctrl+Shift+'-' (^_ or 0x1f) are correctly
 				* translated to control characters.  Since it is not possible to know which
@@ -1863,29 +1976,51 @@ boolean setKeyState (Event event, int type, int theEvent) {
 					display.kchrPtr = kchrPtr;
 					display.kchrState [0] = 0;
 				}
-				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
-				if (result <= 0x7f) {
-					event.keyCode = result & 0x7f;
-				} else {
-					int [] encoding = new int [1];
-					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
-					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
-					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
-						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
-							encoding [0] = OS.kTextEncodingMacRoman;
-						}
+				int [] layoutRef = new int [1];
+				int layoutKind = OS.kKLKCHRKind;
+				if (OS.KLGetCurrentKeyboardLayout (layoutRef) == OS.noErr) {
+					int [] layoutKindRef = new int [1];
+					OS.KLGetKeyboardLayoutProperty (layoutRef[0], OS.kKLKind, layoutKindRef);
+					layoutKind = layoutKindRef [0];
+				}
+				if (layoutKind == OS.kKLuchrKind) {
+					int [] layoutPtr = new int [1];
+					OS.KLGetKeyboardLayoutProperty (layoutRef[0], OS.kKLuchrData, layoutPtr);
+					int maxStringLength = 256;
+					char [] output = new char [maxStringLength];
+					int [] actualStringLength = new int [1];
+					OS.UCKeyTranslate (layoutPtr[0], (short)keyCode[0], (short)OS.kUCKeyActionDown, 0, OS.LMGetKbdType (), 0, display.kchrState, maxStringLength, actualStringLength, output);
+					if (actualStringLength[0] < 1) {
+						// part of a multi-key key
+						event.keyCode = 0;
+					} else {
+						event.keyCode = output[0];
 					}
-					int [] encodingInfo = new int [1];
-					OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
-					if (encodingInfo [0] != 0) {
-						char [] chars = new char [1];
-						int [] nchars = new int [1];
-						byte [] buffer = new byte [2];
-						buffer [0] = 1;
-						buffer [1] = (byte) (result & 0xFF);
-						OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
-						OS.DisposeTextToUnicodeInfo (encodingInfo);
-						event.keyCode = chars [0];
+				} else {
+					int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
+					if (result <= 0x7f) {
+						event.keyCode = result & 0x7f;
+					} else {
+						int [] encoding = new int [1];
+						short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+						short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+							if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+								encoding [0] = OS.kTextEncodingMacRoman;
+							}
+						}
+						int [] encodingInfo = new int [1];
+						OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
+						if (encodingInfo [0] != 0) {
+							char [] chars = new char [1];
+							int [] nchars = new int [1];
+							byte [] buffer = new byte [2];
+							buffer [0] = 1;
+							buffer [1] = (byte) (result & 0xFF);
+							OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
+							OS.DisposeTextToUnicodeInfo (encodingInfo);
+							event.keyCode = chars [0];
+						}
 					}
 				}
 			}
@@ -1903,55 +2038,24 @@ boolean setKeyState (Event event, int type, int theEvent) {
 }
 
 void setVisible (int control, boolean visible) {
-	if (OS.HIVIEW) {
-		OS.HIViewSetVisible (control, visible);
-		invalidateVisibleRegion (control);
-	} else {
-		int visibleRgn = 0;
-		boolean drawing = getDrawCount (control) == 0;
-		if (drawing && !visible) visibleRgn = getVisibleRegion (control, false);
-		OS.SetControlVisibility (control, visible, false);
-		invalidateVisibleRegion (control);
-		if (drawing && visible) visibleRgn = getVisibleRegion (control, false);
-		if (drawing) {
-			int window = OS.GetControlOwner (control);
-			invalWindowRgn (window, visibleRgn);
-			OS.DisposeRgn (visibleRgn);
-		}
-	}
+	OS.HIViewSetVisible (control, visible);
+	invalidateVisibleRegion (control);
 }
 
 void setZOrder (int control, int otheControl, boolean above) {
-	if (OS.HIVIEW) {
-		int inOp = above ?  OS.kHIViewZOrderAbove :  OS.kHIViewZOrderBelow;
-		OS.HIViewSetZOrder (control, inOp, otheControl);
-		invalidateVisibleRegion (control);
-	} else {
-		int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
-		int oldRgn = 0;
-		boolean drawing = isDrawing (control);
-		if (drawing) oldRgn = getVisibleRegion (control, false);
-		OS.HIViewSetZOrder (control, inOp, otheControl);
-		invalidateVisibleRegion (control);
-		if (drawing) {
-			int newRgn = getVisibleRegion (control, false);
-			if (above) {
-				OS.DiffRgn (newRgn, oldRgn, newRgn);
-			} else {
-				OS.DiffRgn (oldRgn, newRgn, newRgn);
-			}
-			int window = OS.GetControlOwner (control);
-			invalWindowRgn (window, newRgn);
-			OS.DisposeRgn (oldRgn);
-			OS.DisposeRgn (newRgn);
-		}
-	}
+	int inOp = above ?  OS.kHIViewZOrderAbove :  OS.kHIViewZOrderBelow;
+	OS.HIViewSetZOrder (control, inOp, otheControl);
+	invalidateVisibleRegion (control);
 }
 
 int textInputProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
 		case OS.kEventTextInputUnicodeForKeyEvent: return kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+		case OS.kEventTextInputUpdateActiveInputArea: return kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
+		case OS.kEventTextInputOffsetToPos: return kEventTextInputOffsetToPos (nextHandler, theEvent, userData);
+		case OS.kEventTextInputPosToOffset: return kEventTextInputPosToOffset (nextHandler, theEvent, userData);
+		case OS.kEventTextInputGetSelectedText: return kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }
@@ -1991,6 +2095,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowBoundsChanged:		return kEventWindowBoundsChanged (nextHandler, theEvent, userData);
 		case OS.kEventWindowClose:				return kEventWindowClose (nextHandler, theEvent, userData);
 		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
+		case OS.kEventWindowCollapsing:			return kEventWindowCollapsing (nextHandler, theEvent, userData);
 		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
 		case OS.kEventWindowDrawContent:		return kEventWindowDrawContent (nextHandler, theEvent, userData);
 		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
@@ -1999,6 +2104,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowHitTest:			return kEventWindowHitTest (nextHandler, theEvent, userData);
 		case OS.kEventWindowShown:				return kEventWindowShown (nextHandler, theEvent, userData);
 		case OS.kEventWindowUpdate:				return kEventWindowUpdate (nextHandler, theEvent, userData);
+		case OS.kEventWindowGetClickModality:	return kEventWindowGetClickModality (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

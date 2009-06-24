@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -61,12 +61,21 @@ import java.io.*;
  * @see Color
  * @see ImageData
  * @see ImageLoader
+ * @see <a href="http://www.eclipse.org/swt/snippets/#image">Image snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, ImageAnalyzer</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Image extends Resource implements Drawable {
 
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int type;
 	
@@ -115,11 +124,22 @@ public final class Image extends Resource implements Drawable {
 	int alpha = -1;
 	
 	/**
+	 * The width of the image.
+	 */
+	int width = -1;
+	
+	/**
+	 * The height of the image.
+	 */
+	int height = -1;
+	
+	/**
 	 * Specifies the default scanline padding.
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
-Image() {
+Image(Device device) {
+	super(device);
 }
 
 /**
@@ -153,9 +173,9 @@ Image() {
  * </ul>
  */
 public Image(Device device, int width, int height) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, width, height);
+	super(device);
+	init(width, height);
+	init();
 }
 
 /**
@@ -163,11 +183,11 @@ public Image(Device device, int width, int height) {
  * provided image, with an appearance that varies depending
  * on the value of the flag. The possible flag values are:
  * <dl>
- * <dt><b>IMAGE_COPY</b></dt>
+ * <dt><b>{@link SWT#IMAGE_COPY}</b></dt>
  * <dd>the result is an identical copy of srcImage</dd>
- * <dt><b>IMAGE_DISABLE</b></dt>
+ * <dt><b>{@link SWT#IMAGE_DISABLE}</b></dt>
  * <dd>the result is a copy of srcImage which has a <em>disabled</em> look</dd>
- * <dt><b>IMAGE_GRAY</b></dt>
+ * <dt><b>{@link SWT#IMAGE_GRAY}</b></dt>
  * <dd>the result is a copy of srcImage which has a <em>gray scale</em> look</dd>
  * </dl>
  *
@@ -182,17 +202,15 @@ public Image(Device device, int width, int height) {
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
- *          is otherwise in an invalid state</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the Image is not supported</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or is otherwise in an invalid state</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the image is not supported</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, Image srcImage, int flag) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
@@ -203,7 +221,7 @@ public Image(Device device, Image srcImage, int flag) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
+	device = this.device;
 	this.type = srcImage.type;
 
 	/* Get source image size */
@@ -228,7 +246,7 @@ public Image(Device device, Image srcImage, int flag) {
 	int dataSize = height * bpr;
 	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
+	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
 	if (provider == 0) {
 		OS.DisposePtr(data);
 		SWT.error(SWT.ERROR_NO_HANDLES);
@@ -240,64 +258,66 @@ public Image(Device device, Image srcImage, int flag) {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	
-	OS.memcpy(data, srcImage.data, dataSize);
-	if (flag == SWT.IMAGE_COPY) return;
+	OS.memmove(data, srcImage.data, dataSize);
+	if (flag != SWT.IMAGE_COPY) {
 	
-	/* Apply transformation */
-	switch (flag) {
-		case SWT.IMAGE_DISABLE: {
-			Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-			RGB zeroRGB = zeroColor.getRGB();
-			byte zeroRed = (byte)zeroRGB.red;
-			byte zeroGreen = (byte)zeroRGB.green;
-			byte zeroBlue = (byte)zeroRGB.blue;
-			Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-			RGB oneRGB = oneColor.getRGB();
-			byte oneRed = (byte)oneRGB.red;
-			byte oneGreen = (byte)oneRGB.green;
-			byte oneBlue = (byte)oneRGB.blue;
-			byte[] line = new byte[bpr];
-			for (int y=0; y<height; y++) {
-				OS.memcpy(line, data + (y * bpr), bpr);
-				int offset = 0;
-				for (int x=0; x<width; x++) {
-					int red = line[offset+1] & 0xFF;
-					int green = line[offset+2] & 0xFF;
-					int blue = line[offset+3] & 0xFF;
-					int intensity = red * red + green * green + blue * blue;
-					if (intensity < 98304) {
-						line[offset+1] = zeroRed;
-						line[offset+2] = zeroGreen;
-						line[offset+3] = zeroBlue;
-					} else {
-						line[offset+1] = oneRed;
-						line[offset+2] = oneGreen;
-						line[offset+3] = oneBlue;
+		/* Apply transformation */
+		switch (flag) {
+			case SWT.IMAGE_DISABLE: {
+				Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+				RGB zeroRGB = zeroColor.getRGB();
+				byte zeroRed = (byte)zeroRGB.red;
+				byte zeroGreen = (byte)zeroRGB.green;
+				byte zeroBlue = (byte)zeroRGB.blue;
+				Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+				RGB oneRGB = oneColor.getRGB();
+				byte oneRed = (byte)oneRGB.red;
+				byte oneGreen = (byte)oneRGB.green;
+				byte oneBlue = (byte)oneRGB.blue;
+				byte[] line = new byte[bpr];
+				for (int y=0; y<height; y++) {
+					OS.memmove(line, data + (y * bpr), bpr);
+					int offset = 0;
+					for (int x=0; x<width; x++) {
+						int red = line[offset+1] & 0xFF;
+						int green = line[offset+2] & 0xFF;
+						int blue = line[offset+3] & 0xFF;
+						int intensity = red * red + green * green + blue * blue;
+						if (intensity < 98304) {
+							line[offset+1] = zeroRed;
+							line[offset+2] = zeroGreen;
+							line[offset+3] = zeroBlue;
+						} else {
+							line[offset+1] = oneRed;
+							line[offset+2] = oneGreen;
+							line[offset+3] = oneBlue;
+						}
+						offset += 4;
 					}
-					offset += 4;
+					OS.memmove(data + (y * bpr), line, bpr);
 				}
-				OS.memcpy(data + (y * bpr), line, bpr);
+				break;
 			}
-			break;
-		}
-		case SWT.IMAGE_GRAY: {			
-			byte[] line = new byte[bpr];
-			for (int y=0; y<height; y++) {
-				OS.memcpy(line, data + (y * bpr), bpr);
-				int offset = 0;
-				for (int x=0; x<width; x++) {
-					int red = line[offset+1] & 0xFF;
-					int green = line[offset+2] & 0xFF;
-					int blue = line[offset+3] & 0xFF;
-					byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
-					line[offset+1] = line[offset+2] = line[offset+3] = intensity;
-					offset += 4;
+			case SWT.IMAGE_GRAY: {			
+				byte[] line = new byte[bpr];
+				for (int y=0; y<height; y++) {
+					OS.memmove(line, data + (y * bpr), bpr);
+					int offset = 0;
+					for (int x=0; x<width; x++) {
+						int red = line[offset+1] & 0xFF;
+						int green = line[offset+2] & 0xFF;
+						int blue = line[offset+3] & 0xFF;
+						byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
+						line[offset+1] = line[offset+2] = line[offset+3] = intensity;
+						offset += 4;
+					}
+					OS.memmove(data + (y * bpr), line, bpr);
 				}
-				OS.memcpy(data + (y * bpr), line, bpr);
+				break;
 			}
-			break;
 		}
 	}
+	init();
 }
 
 /**
@@ -331,10 +351,10 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, bounds.width, bounds.height);
+	init(bounds.width, bounds.height);
+	init();
 }
 
 /**
@@ -356,9 +376,9 @@ public Image(Device device, Rectangle bounds) {
  * </ul>
  */
 public Image(Device device, ImageData data) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, data);
+	super(device);
+	init(data);
+	init();
 }
 
 /**
@@ -387,7 +407,7 @@ public Image(Device device, ImageData data) {
  * </ul>
  */
 public Image(Device device, ImageData source, ImageData mask) {
-	if (device == null) device = Device.getDevice();
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -397,7 +417,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
-	init(device, image);
+	init(image);
+	init();
 }
 
 /**
@@ -439,19 +460,19 @@ public Image(Device device, ImageData source, ImageData mask) {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the InputStream describes an image with an unsupported depth</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
- *  * </ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image stream describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, InputStream stream) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(stream));
+	super(device);
+	init(new ImageData(stream));
+	init();
 }
 
 /**
@@ -472,9 +493,9 @@ public Image(Device device, InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file has an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  * @exception SWTError <ul>
@@ -482,9 +503,9 @@ public Image(Device device, InputStream stream) {
  * </ul>
  */
 public Image(Device device, String filename) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(filename));
+	super(device);
+	init(new ImageData(filename));
+	init();
 }
 
 void createAlpha () {
@@ -493,7 +514,7 @@ void createAlpha () {
 	int bpr = OS.CGImageGetBytesPerRow(handle);
 	int dataSize = height * bpr;
 	byte[] srcData = new byte[dataSize];
-	OS.memcpy(srcData, data, dataSize);
+	OS.memmove(srcData, data, dataSize);
 	if (transparentPixel != -1) {
 		for (int i=0; i<dataSize; i+=4) {
 			int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
@@ -515,21 +536,12 @@ void createAlpha () {
 			}
 		}
 	}
-	OS.memcpy(data, srcData, dataSize);
+	OS.memmove(data, srcData, dataSize);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the image. Applications must dispose of all images which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy () {
 	if (memGC != null) memGC.dispose();
 	OS.CGImageRelease(handle);
-	OS.DisposePtr(data);
-	device = null;
 	data = handle = 0;
 	memGC = null;
 }
@@ -593,7 +605,10 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return new Rectangle(0, 0, OS.CGImageGetWidth(handle), OS.CGImageGetHeight(handle));
+	if (width != -1 && height != -1) {
+		return new Rectangle(0, 0, width, height);
+	}
+	return new Rectangle(0, 0, width = OS.CGImageGetWidth(handle), height = OS.CGImageGetHeight(handle));
 }
 
 /**
@@ -619,11 +634,10 @@ public ImageData getImageData() {
 	int bpp = OS.CGImageGetBitsPerPixel(handle);	
 	int dataSize = height * bpr;
 	byte[] srcData = new byte[dataSize];
-	OS.memcpy(srcData, data, dataSize);
+	OS.memmove(srcData, data, dataSize);
 	
 	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-	ImageData data = new ImageData(width, height, bpp, palette);
-	data.data = srcData;
+	ImageData data = new ImageData(width, height, bpp, palette, 4, srcData);
 	data.bytesPerLine = bpr;
 
 	data.transparentPixel = transparentPixel;
@@ -676,12 +690,10 @@ public ImageData getImageData() {
  * @private
  */
 public static Image carbon_new(Device device, int type, int handle, int data) {
-	if (device == null) device = Device.getDevice();
-	Image image = new Image();
+	Image image = new Image(device);
 	image.type = type;
 	image.handle = handle;
 	image.data = data;
-	image.device = device;
 	return image;
 }
 
@@ -699,11 +711,10 @@ public int hashCode () {
 	return handle;
 }
 
-void init(Device device, int width, int height) {
+void init(int width, int height) {
 	if (width <= 0 || height <= 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
 	this.type = SWT.BITMAP;
 
 	/* Create the image */
@@ -711,7 +722,7 @@ void init(Device device, int width, int height) {
 	int dataSize = height * bpr;
 	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
+	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
 	if (provider == 0) {
 		OS.DisposePtr(data);
 		SWT.error(SWT.ERROR_NO_HANDLES);
@@ -739,9 +750,8 @@ void init(Device device, int width, int height) {
 	OS.CGContextRelease(context);
 }
 
-void init(Device device, ImageData image) {
+void init(ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	int width = image.width;
 	int height = image.height;
 	PaletteData palette = image.palette;
@@ -754,7 +764,7 @@ void init(Device device, ImageData image) {
 	int dataSize = width * height * 4;
 	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
+	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
 	if (provider == 0) {
 		OS.DisposePtr(data);
 		SWT.error(SWT.ERROR_NO_HANDLES);
@@ -852,7 +862,7 @@ void init(Device device, ImageData image) {
 		}
 	}
 	
-	OS.memcpy(data, buffer, dataSize);
+	OS.memmove(data, buffer, dataSize);
 }
 
 /**	 
@@ -976,7 +986,7 @@ public void setBackground(Color color) {
 	int bpl = OS.CGImageGetBytesPerRow(handle);
 	byte[] line = new byte[bpl];
 	for (int i = 0, offset = 0; i < height; i++, offset += bpl) {
-		OS.memcpy(line, data + offset, bpl);
+		OS.memmove(line, data + offset, bpl);
 		for (int j = 0; j  < line.length; j += 4) {
 			if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
 				line[j + 1] = newRed;
@@ -984,7 +994,7 @@ public void setBackground(Color color) {
 				line[j + 3] = newBlue;
 			}
 		}
-		OS.memcpy(data + offset, line, bpl);
+		OS.memmove(data + offset, line, bpl);
 	}
 	transparentPixel = (newRed & 0xFF) << 16 | (newGreen & 0xFF) << 8 | (newBlue & 0xFF);
 }

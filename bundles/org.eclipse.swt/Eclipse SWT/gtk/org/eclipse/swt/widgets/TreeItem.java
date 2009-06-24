@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a hierarchy of tree items in a tree widget.
+ * 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -28,6 +29,10 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tree">Tree, TreeItem, TreeColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TreeItem extends Item {
 	Tree parent;
@@ -87,10 +92,11 @@ public TreeItem (Tree parent, int style) {
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -156,10 +162,11 @@ public TreeItem (TreeItem parentItem, int style) {
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -204,6 +211,81 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+Color _getBackground () {
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, ptr, -1);
+	if (ptr [0] == 0) return parent.getBackground ();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (display, gdkColor);
+}
+
+Color _getBackground (int index) {
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return _getBackground ();
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, ptr, -1);
+	if (ptr [0] == 0) return _getBackground ();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (display, gdkColor);
+}
+
+boolean _getChecked () {
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
+	return ptr [0] != 0;
+}
+
+Color _getForeground () {
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, ptr, -1);
+	if (ptr [0] == 0) return parent.getForeground ();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (display, gdkColor);
+}
+
+Color _getForeground (int index) {
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return _getForeground ();
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	int modelIndex =  parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, ptr, -1);
+	if (ptr [0] == 0) return _getForeground ();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (display, gdkColor);
+}
+
+Image _getImage (int index) {
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return null;
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, ptr, -1);
+	if (ptr [0] == 0) return null;
+	ImageList imageList = parent.imageList;
+	int imageIndex = imageList.indexOf (ptr [0]);
+	if (imageIndex == -1) return null;
+	return imageList.get (imageIndex);
+}
+
+String _getText (int index) {
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return "";
+	int /*long*/ [] ptr = new int /*long*/ [1];
+	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, ptr, -1);
+	if (ptr [0] == 0) return ""; //$NON-NLS-1$
+	int length = OS.strlen (ptr [0]);
+	byte[] buffer = new byte [length];
+	OS.memmove (buffer, ptr [0], length);
+	OS.g_free (ptr [0]);
+	return new String (Converter.mbcsToWcs (null, buffer));
+}
+
 void clear () {
 	if (parent.currentItem == this) return;
 	if (cached || (parent.style & SWT.VIRTUAL) == 0) {
@@ -217,7 +299,7 @@ void clear () {
 		* invalidate the row when it is cleared.
 		*/
 		if ((parent.style & SWT.VIRTUAL) != 0) {
-			if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
+			if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
 				redraw ();
 			}
 		}
@@ -227,11 +309,53 @@ void clear () {
 	cellFont = null;
 }
 
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the tree was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code> if all child items of the indexed item should be
+ * cleared recursively, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
 public void clear (int index, boolean all) {
 	checkWidget ();
 	parent.clear (handle, index, all);
 }
 
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attributes of the items are set to their default values. If the
+ * tree was created with the <code>SWT.VIRTUAL</code> style, these
+ * attributes are requested again as needed.
+ * 
+ * @param all <code>true</code> if all child items should be cleared
+ * recursively, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
 public void clearAll (boolean all) {
 	checkWidget ();
 	parent.clearAll (all, handle);
@@ -247,23 +371,19 @@ void destroyWidget () {
  * Returns the receiver's background color.
  *
  * @return the background color
- *
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
  * @since 2.0
+ * 
  */
 public Color getBackground () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, ptr, -1);
-	if (ptr [0] == 0) return parent.getBackground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	return Color.gtk_new (display, gdkColor);
+	return _getBackground ();
 }
 
 /**
@@ -282,15 +402,7 @@ public Color getBackground () {
 public Color getBackground (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.columnCount);
-	if (0 > index || index > count - 1) return getBackground ();
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, ptr, -1);
-	if (ptr [0] == 0) return getBackground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	return Color.gtk_new (display, gdkColor);
+	return _getBackground (index);
 }
 
 /**
@@ -323,9 +435,9 @@ public Rectangle getBounds (int index) {
 	OS.gtk_widget_realize (parentHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	OS.gtk_tree_path_free (path);
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	
-	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		int [] buffer = new int [1];
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
@@ -334,6 +446,18 @@ public Rectangle getBounds (int index) {
 		rect.x += buffer [0];
 		//rect.width -= buffer [0]; // TODO Is this required for some versions?
 	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
+	}
+	OS.gtk_tree_path_free (path);
 	
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
@@ -350,7 +474,8 @@ public Rectangle getBounds (int index) {
 			rect.width -= w [0]  + buffer [0];
 		}
 	}
-	return new Rectangle (rect.x, rect.y, rect.width + 1, rect.height + 1);
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 /**
@@ -385,7 +510,7 @@ public Rectangle getBounds () {
 	
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	OS.gtk_tree_path_free (path);
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	int right = rect.x + rect.width;
 
 	int [] x = new int [1], w = new int [1];
@@ -394,10 +519,23 @@ public Rectangle getBounds () {
 	parent.ignoreSize = false;
 	rect.width = w [0];
 	int [] buffer = new int [1];
-	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING); 
+	}
+	OS.gtk_tree_path_free (path);
+	
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
@@ -418,13 +556,14 @@ public Rectangle getBounds () {
 			rect.width = Math.max (0, right - rect.x);
 		}
 	}
-	return new Rectangle (rect.x, rect.y, rect.width + 1, rect.height + 1);
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
- * the <code>CHECK</code> style, return false.
+ * the <code>CHECK style, return false.
  * <p>
  *
  * @return the checked state
@@ -438,9 +577,7 @@ public boolean getChecked () {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
-	return ptr [0] != 0;
+	return _getChecked ();
 }
 
 /**
@@ -516,17 +653,12 @@ public Font getFont (int index) {
  * </ul>
  * 
  * @since 2.0
- *
+ * 
  */
 public Color getForeground () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, ptr, -1);
-	if (ptr [0] == 0) return parent.getForeground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	return Color.gtk_new (display, gdkColor);
+	return _getForeground ();
 }
 
 /**
@@ -546,23 +678,16 @@ public Color getForeground () {
 public Color getForeground (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.columnCount);
-	if (0 > index || index > count - 1) return getForeground ();
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	int modelIndex =  parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, ptr, -1);
-	if (ptr [0] == 0) return getForeground ();
-	GdkColor gdkColor = new GdkColor ();
-	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	return Color.gtk_new (display, gdkColor);
+	return _getForeground (index);
 }
 
 /**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
- * the <code>CHECK</code> style, return false.
+ * the <code>CHECK style, return false.
+ * <p>
  *
- * @return the grayed state
+ * @return the grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -599,16 +724,7 @@ public Image getImage () {
 public Image getImage (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return null;
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, ptr, -1);
-	if (ptr [0] == 0) return null;
-	ImageList imageList = parent.imageList;
-	int imageIndex = imageList.indexOf (ptr [0]);
-	if (imageIndex == -1) return null;
-	return imageList.get (imageIndex);
+	return _getImage (index);
 }
 
 /**
@@ -644,9 +760,8 @@ public Rectangle getImageBounds (int index) {
 	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	OS.gtk_tree_path_free (path);
-	
-	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		int [] buffer = new int [1];
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
@@ -655,6 +770,18 @@ public Rectangle getImageBounds (int index) {
 		//int horizontalSeparator = buffer[0];
 		//rect.x += horizontalSeparator;
 	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
+	}
+	OS.gtk_tree_path_free (path);
 	
 	/*
 	* The OS call gtk_cell_renderer_get_size() provides the width of image to be drawn
@@ -676,7 +803,8 @@ public Rectangle getImageBounds (int index) {
 		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
 		rect.width = w [0];
 	}
-	return new Rectangle (rect.x, rect.y, rect.width, rect.height + 1);
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 /**
@@ -818,17 +946,98 @@ public String getText () {
 public String getText (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return _getText (index);
+}
+
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Rectangle getTextBounds (int index) {
+	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return "";
-	int /*long*/ [] ptr = new int /*long*/ [1];
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, ptr, -1);
-	if (ptr [0] == 0) return ""; //$NON-NLS-1$
-	int length = OS.strlen (ptr [0]);
-	byte[] buffer = new byte [length];
-	OS.memmove (buffer, ptr [0], length);
-	OS.g_free (ptr [0]);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
+	// TODO fully test on early and later versions of GTK
+	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = 0;
+	if (index >= 0 && index < parent.columnCount) {
+		column = parent.columns [index].handle;
+	} else {
+		column = OS.gtk_tree_view_get_column (parentHandle, index);
+	}
+	if (column == 0) return new Rectangle (0, 0, 0, 0);
+	int /*long*/ textRenderer = parent.getTextRenderer (column);
+	int /*long*/ pixbufRenderer = parent.getPixbufRenderer (column);
+	if (textRenderer == 0 || pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
+
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	OS.gtk_widget_realize (parentHandle);
+	
+	boolean isExpander = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
+	boolean isExpanded = OS.gtk_tree_view_row_expanded (parentHandle, path);
+	OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, isExpander, isExpanded);
+	
+	GdkRectangle rect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
+	int right = rect.x + rect.width;
+
+	int [] x = new int [1], w = new int [1];
+	parent.ignoreSize = true;
+	OS.gtk_cell_renderer_get_size (textRenderer, parentHandle, null, null, null, w, null);
+	parent.ignoreSize = false;
+	int [] buffer = new int [1];
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
+		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
+	}
+	OS.gtk_tree_path_free (path);
+	
+	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+	int horizontalSeparator = buffer[0];
+	rect.x += horizontalSeparator;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
+		OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
+		rect.x += x [0];
+	} else {
+		if ((parent.style & SWT.CHECK) != 0) {
+			OS.gtk_cell_renderer_get_size (parent.checkRenderer, parentHandle, null, null, null, w, null);
+			rect.x += w [0] + horizontalSeparator;
+		}
+		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
+		rect.x += w [0] + horizontalSeparator;
+	}
+	if (parent.columnCount > 0) {
+		if (rect.x + rect.width > right) {
+			rect.width = Math.max (0, right - rect.x);
+		}
+	}
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 /**
@@ -841,8 +1050,8 @@ public String getText (int index) {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -927,18 +1136,30 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	int length = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
+	int /*long*/ modelHandle = parent.modelHandle;
+	int length = OS.gtk_tree_model_iter_n_children (modelHandle, handle);
 	if (length == 0) return;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	int [] index = new int [1];
-	while (OS.gtk_tree_model_iter_children (parent.modelHandle, iter, handle)) {
-		OS.gtk_tree_model_get (parent.modelHandle, iter, Tree.ID_COLUMN, index, -1);
-		if (index [0] != -1) {
-			TreeItem item = parent.items [index [0]];
-			if (item != null && !item.isDisposed ()) {
-				item.dispose ();
-			}
+	if (iter == 0) error (SWT.ERROR_NO_HANDLES);
+	if (parent.fixAccessibility ()) {
+		parent.ignoreAccessibility = true;
+	}
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (parent.handle);
+	int [] value = new int [1];
+	while (OS.gtk_tree_model_iter_children (modelHandle, iter, handle)) {
+		OS.gtk_tree_model_get (modelHandle, iter, Tree.ID_COLUMN, value, -1);
+		TreeItem item = value [0] != -1 ? parent.items [value [0]] : null;
+		if (item != null && !item.isDisposed ()) {
+			item.dispose ();
+		} else {
+			OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.gtk_tree_store_remove (modelHandle, iter);
+			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		}
+	}
+	if (parent.fixAccessibility ()) {
+		parent.ignoreAccessibility = false;
+		OS.g_object_notify (parent.handle, OS.model);
 	}
 	OS.g_free (iter);
 }
@@ -966,8 +1187,19 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (_getBackground ().equals (color)) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 }
 
@@ -995,11 +1227,22 @@ public void setBackground (int index, Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (_getBackground (index).equals (color)) return;
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 	
 	if (color != null) {
@@ -1042,6 +1285,7 @@ public void setBackground (int index, Color color) {
 public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	if (_getChecked () == checked) return;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.CHECKED_COLUMN, checked, -1);
 	/*
 	* GTK+'s "inconsistent" state does not match SWT's concept of grayed.  To
@@ -1103,11 +1347,22 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (this.font == font) return;
-	if (this.font != null && this.font.equals (font)) return;
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	int /*long*/ fontHandle = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 }
 
@@ -1138,15 +1393,27 @@ public void setFont (int index, Font font) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	if (cellFont == null) {
+		if (font == null) return;
 		cellFont = new Font [count];
 	}
-	if (cellFont [index] == font) return;
-	if (cellFont [index] != null && cellFont [index].equals (font)) return;
+	Font oldFont = cellFont [index];
+	if (oldFont == font) return;
 	cellFont [index] = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	int /*long*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FONT, fontHandle, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 	
 	if (font != null) {
@@ -1193,14 +1460,26 @@ public void setFont (int index, Font font) {
  * </ul>
  * 
  * @since 2.0
+ * 
  */
 public void setForeground (Color color){
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (_getForeground ().equals (color)) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 }
 
@@ -1228,11 +1507,22 @@ public void setForeground (int index, Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (_getForeground (index).equals (color)) return;
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 	
 	if (color != null) {
@@ -1262,10 +1552,10 @@ public void setForeground (int index, Color color){
 }
 
 /**
- * Sets the grayed state of the receiver.
- * <p>
+ * Sets the grayed state of the checkbox for this item.  This state change 
+ * only applies if the Tree was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state
+ * @param grayed the new grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1275,6 +1565,7 @@ public void setForeground (int index, Color color){
 public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	/*
 	* GTK+'s "inconsistent" state does not match SWT's concept of grayed.
@@ -1307,6 +1598,9 @@ public void setImage (int index, Image image) {
 	if (image != null && image.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (image != null && image.type == SWT.ICON) {
+		if (image.equals (_getImage (index))) return;
+	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	int /*long*/ pixbuf = 0;
@@ -1323,16 +1617,21 @@ public void setImage (int index, Image image) {
 	* Bug in GTK.  When using fixed-height-mode,
 	* row changes do not cause the row to be repainted.  The fix is to
 	* invalidate the row when the image changes.
-	* 
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			if (parent.columnCount == 0) {
+				redraw ();
+			}
+		}
+	}
+	/*
 	* Bug in GTK.  When using fixed-height-mode, GTK does not recalculate the cell renderer width
 	* when the image is changed in the model.  The fix is to force it to recalculate the width if
 	* more space is required.
 	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && parent.currentItem == null) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
-			if (parent.columnCount == 0) {
-				redraw ();
-			}
 			if (image != null) {
 				int /*long*/parentHandle = parent.handle;
 				int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
@@ -1346,7 +1645,7 @@ public void setImage (int index, Image image) {
 					 * the style.
 					 */
 					int /*long*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
-					OS.gtk_widget_modify_style (parentHandle, style);
+					parent.modifyStyle (parentHandle, style);
 				}
 			} 
 		}
@@ -1383,6 +1682,18 @@ public void setImage (Image [] images) {
 	}
 }
 
+/**
+ * Sets the number of child items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
@@ -1408,6 +1719,7 @@ public void setItemCount (int count) {
 public void setText (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (_getText (index).equals (string)) return;
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
@@ -1419,7 +1731,7 @@ public void setText (int index, String string) {
 	* invalidate the row when the text changes.
 	*/
 	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
 			redraw ();
 		}
 	}

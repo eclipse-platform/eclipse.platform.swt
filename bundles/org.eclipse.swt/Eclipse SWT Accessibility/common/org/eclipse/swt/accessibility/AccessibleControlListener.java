@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -183,14 +183,14 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * Sent when an accessibility client requests the state
 	 * of the control, or the state of a child of the control.
 	 * <p>
-	 * Return a state constant (constant defined in ACC beginning with STATE_)
+	 * Return a state mask (mask bit constants defined in ACC beginning with STATE_)
 	 * that describes the current state of the specified control or child in the
 	 * <code>detail</code> field of the event object.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
-	 *    <li>detail [OUT] - a state constant describing the current state of the control or child</li>
+	 *    <li>detail [OUT] - a state mask describing the current state of the control or child</li>
 	 * </ul>
 	 */
 	public void getState(AccessibleControlEvent e);

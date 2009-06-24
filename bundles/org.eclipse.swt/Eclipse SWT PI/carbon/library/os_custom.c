@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -22,7 +22,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, NewGlobalRef_FUNC);
 	rc = (jint)(*env)->NewGlobalRef(env, arg0);
-fail:
 	OS_NATIVE_EXIT(env, that, NewGlobalRef_FUNC);
 	return rc;
 }
@@ -45,7 +44,6 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 	jobject rc = 0;
 	OS_NATIVE_ENTER(env, that, JNIGetObject_FUNC);
 	rc = (jobject)arg0;
-fail:
 	OS_NATIVE_EXIT(env, that, JNIGetObject_FUNC);
 	return rc;
 }
@@ -195,6 +193,20 @@ failTag:
 }
 #endif
 
+#ifndef NO_CGDisplayBounds
+JNIEXPORT void JNICALL OS_NATIVE(CGDisplayBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGDisplayBounds_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	*lparg1 = CGDisplayBounds((CGDirectDisplayID)arg0);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGDisplayBounds_FUNC);
+}
+#endif
+
 #ifndef NO_CGPathGetBoundingBox
 JNIEXPORT void JNICALL OS_NATIVE(CGPathGetBoundingBox)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -239,5 +251,54 @@ fail:
 	if (arg2 && lparg2) setCGPointFields(env, arg2, lparg2);
 	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, CGPointApplyAffineTransform_FUNC);
+}
+#endif
+
+#ifndef NO_CGSizeApplyAffineTransform
+JNIEXPORT void JNICALL OS_NATIVE(CGSizeApplyAffineTransform)
+	(JNIEnv *env, jclass that, jobject arg0, jfloatArray arg1, jobject arg2)
+{
+	CGSize _arg0, *lparg0=NULL;
+	jfloat *lparg1=NULL;
+	CGSize _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGSizeApplyAffineTransform_FUNC);
+	if (arg0) if ((lparg0 = getCGSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getCGSizeFields(env, arg2, &_arg2)) == NULL) goto fail;
+	*(CGSize *)lparg2 = CGSizeApplyAffineTransform(*(CGSize *)lparg0, *(CGAffineTransform *)lparg1);
+fail:
+	if (arg2 && lparg2) setCGSizeFields(env, arg2, lparg2);
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGSizeApplyAffineTransform_FUNC);
+}
+#endif
+
+#ifndef NO__1_1BIG_1ENDIAN_1_1
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1_1BIG_1ENDIAN_1_1)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
+#ifdef __BIG_ENDIAN__
+	rc = (jboolean)TRUE;
+#else
+	rc = (jboolean)FALSE;
+#endif
+	OS_NATIVE_EXIT(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
+	return rc;
+}
+#endif
+
+#ifndef QDPictGetBounds
+JNIEXPORT void JNICALL OS_NATIVE(QDPictGetBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, QDPictGetBounds_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	*lparg1 = QDPictGetBounds((QDPictRef)arg0);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, QDPictGetBounds_FUNC);
 }
 #endif

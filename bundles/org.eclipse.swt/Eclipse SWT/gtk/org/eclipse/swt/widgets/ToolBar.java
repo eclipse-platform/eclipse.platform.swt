@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,9 +38,15 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#toolbar">ToolBar, ToolItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolBar extends Composite {
 	ToolItem lastFocus;
+	ToolItem [] tabItemList;
 	ImageList imageList;
 
 /**
@@ -138,8 +144,56 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return computeNativeSize (handle, wHint, hHint, changed);
 }
 
+Widget computeTabGroup () {
+	ToolItem [] items = _getItems ();
+	if (tabItemList == null) {
+		int i = 0;
+		while (i < items.length && items [i].control == null) i++;
+		if (i == items.length) return super.computeTabGroup (); 
+	}
+	int index = 0;
+	while (index < items.length) {
+		if (items[index].hasFocus ()) break;
+		index++;
+	}
+	while (index >= 0) {
+		ToolItem item = items [index];
+		if (item.isTabGroup ()) return item;
+		index--;
+	}
+	return super.computeTabGroup ();
+}
+
+Widget [] computeTabList () {
+	ToolItem [] items = _getItems ();
+	if (tabItemList == null) {
+		int i = 0;
+		while (i < items.length && items [i].control == null) i++;
+		if (i == items.length) return super.computeTabList (); 
+	}
+	Widget result [] = {};
+	if (!isTabGroup () || !isEnabled () || !isVisible ()) return result;
+	ToolItem [] list = tabList != null ? _getTabItemList () : items;
+	for (int i=0; i<list.length; i++) {
+		ToolItem child = list [i];
+		Widget  [] childList = child.computeTabList ();
+		if (childList.length != 0) {
+			Widget [] newResult = new Widget [result.length + childList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (childList, 0, newResult, result.length, childList.length);
+			result = newResult;
+		}
+	}
+	if (result.length == 0) result = new Widget [] {this}; 
+	return result;
+}
+
 int /*long*/ eventHandle () {
 	return fixedHandle;
+}
+
+int /*long*/ enterExitHandle() {
+	return handle;
 }
 
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
@@ -149,8 +203,8 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 		for (int i = 0; i < items.length; i++) {
 			ToolItem item = items [i];
 			if (item.toolTipText != null) {
-				item.setToolTipText(oldShell, null, item.toolTipText);
-				item.setToolTipText(newShell, item.toolTipText, null);
+				item.setToolTipText(oldShell, null);
+				item.setToolTipText(newShell, item.toolTipText);
 			}
 		}
 	}
@@ -250,17 +304,27 @@ public int getItemCount () {
  */
 public ToolItem [] getItems () {
 	checkWidget();
+	return _getItems ();
+}
+
+ToolItem [] _getItems () {
 	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new ToolItem [0];
 	int count = OS.g_list_length (list);
-	ToolItem [] result = new ToolItem [count];
+	ToolItem [] items = new ToolItem [count];
+	int index = 0;
 	for (int i=0; i<count; i++) {
 		int /*long*/ data = OS.g_list_nth_data (list, i);
 		Widget widget = display.getWidget (data);
-		result [i] = (ToolItem) widget;
+		if (widget != null) items [index++] = (ToolItem) widget;
 	}
 	OS.g_list_free (list);
-	return result;
+	if (index != items.length) {
+		ToolItem [] newItems = new ToolItem [index];
+		System.arraycopy (items, 0, newItems, 0, index);
+		items = newItems;
+	}
+	return items;
 }
 
 /**
@@ -280,6 +344,24 @@ public int getRowCount () {
 	checkWidget();
 	 /* On GTK, toolbars cannot wrap */
 	return 1;
+}
+
+ToolItem [] _getTabItemList () {
+	if (tabItemList == null) return tabItemList;
+	int count = 0;
+	for (int i=0; i<tabItemList.length; i++) {
+		if (!tabItemList [i].isDisposed ()) count++;
+	}
+	if (count == tabItemList.length) return tabItemList;
+	ToolItem [] newList = new ToolItem [count];
+	int index = 0;
+	for (int i=0; i<tabItemList.length; i++) {
+		if (!tabItemList [i].isDisposed ()) {
+			newList [index++] = tabItemList [i];
+		}
+	}
+	tabItemList = newList;
+	return tabItemList;
 }
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
@@ -308,6 +390,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 					int /*long*/ topHandle = item.topHandle ();
 					event.x = OS.GTK_WIDGET_X (topHandle);
 					event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+					if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - OS.GTK_WIDGET_WIDTH(topHandle) - event.x;
 					item.postEvent (SWT.Selection, event);
 					return result;
 				}
@@ -317,6 +400,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		case OS.GDK_Right: next = true; break;
 		default: return result;
 	}
+	if ((style & SWT.MIRRORED) != 0) next= !next;
 	int start = index, offset = next ? 1 : -1;
 	while ((index = (index + offset + length) % length) != start) {
 		ToolItem item = items [index];
@@ -437,6 +521,22 @@ void setForegroundColor (GdkColor color) {
 	}
 }
 
+/*public*/ void setTabItemList (ToolItem [] tabList) {
+	checkWidget ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			ToolItem item = tabList [i];
+			if (item == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (item.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		}
+		ToolItem [] newList = new ToolItem [tabList.length];
+		System.arraycopy (tabList, 0, newList, 0, tabList.length);
+		tabList = newList;
+	} 
+	this.tabItemList = tabList;
+}
+
 public void setToolTipText (String string) {
 	checkWidget();
 	super.setToolTipText (string);
@@ -444,8 +544,7 @@ public void setToolTipText (String string) {
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		String newString = string != null ? null : items [i].toolTipText;
-		String oldString = string == null ? null : items [i].toolTipText;
-		shell.setToolTipText (items [i].handle, newString, oldString);
+		shell.setToolTipText (items [i].handle, newString);
 	}
 }
 

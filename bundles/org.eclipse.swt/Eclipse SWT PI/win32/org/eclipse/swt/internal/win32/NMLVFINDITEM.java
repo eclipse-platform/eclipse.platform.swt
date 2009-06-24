@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,12 +13,18 @@ package org.eclipse.swt.internal.win32;
 public class NMLVFINDITEM extends NMHDR {
 	public int iStart;
 //	LVFINDINFO lvfi;
+	/** @field accessor=lvfi.flags */
 	public int flags;
-	public int psz;
-	public int lParam;
+	/** @field accessor=lvfi.psz,cast=(LPCTSTR) */
+	public int /*long*/ psz;
+	/** @field accessor=lvfi.lParam */
+	public int /*long*/ lParam;
 //	POINT pt;
+	/** @field accessor=lvfi.pt.x */
 	public int x;
+	/** @field accessor=lvfi.pt.y */
 	public int y;
+	/** @field accessor=lvfi.vkDirection */
 	public int vkDirection;
-	public static final int sizeof = 40;
+	public static final int sizeof = OS.NMLVFINDITEM_sizeof ();
 }

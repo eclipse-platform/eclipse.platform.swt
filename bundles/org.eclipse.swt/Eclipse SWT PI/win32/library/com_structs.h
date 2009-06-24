@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "com.h"
 
@@ -213,5 +213,17 @@ void setVARDESCFields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
 #define getVARDESCFields(a,b,c) NULL
 #define setVARDESCFields(a,b,c)
 #define VARDESC_sizeof() 0
+#endif
+
+#ifndef NO_VARIANT
+void cacheVARIANTFields(JNIEnv *env, jobject lpObject);
+VARIANT *getVARIANTFields(JNIEnv *env, jobject lpObject, VARIANT *lpStruct);
+void setVARIANTFields(JNIEnv *env, jobject lpObject, VARIANT *lpStruct);
+#define VARIANT_sizeof() sizeof(VARIANT)
+#else
+#define cacheVARIANTFields(a,b)
+#define getVARIANTFields(a,b,c) NULL
+#define setVARIANTFields(a,b,c)
+#define VARIANT_sizeof() 0
 #endif
 

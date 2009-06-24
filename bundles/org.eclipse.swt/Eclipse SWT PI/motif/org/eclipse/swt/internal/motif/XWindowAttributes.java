@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,10 @@ public class XWindowAttributes {
 	public int height;
 	public int border_width;
 	public int depth;
+	/** @field cast=(Visual *) */
 	public int visual;
 	public int root;
+	/** @field accessor=class */
 	public int c_class;
 	public int bit_gravity;
   	public int win_gravity;
@@ -34,6 +36,7 @@ public class XWindowAttributes {
 	public int your_event_mask;
 	public int do_not_propagate_mask;
 	public int override_redirect;
+	/** @field cast=(Screen *) */
 	public int screen;
 	public static final int sizeof = 92;
 }

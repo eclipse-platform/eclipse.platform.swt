@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -117,11 +117,11 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), aPath);
 	}
 
-	public int Equals(int /*long*/ other, boolean[] _retval) {
+	public int Equals(int /*long*/ other, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), other, _retval);
 	}
 
-	public int SchemeIs(byte[] scheme, boolean[] _retval) {
+	public int SchemeIs(byte[] scheme, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 21, getAddress(), scheme, _retval);
 	}
 

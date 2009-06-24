@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,23 +20,45 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class are selectable user interface
  * objects that allow the user to enter and modify text.
+ * Text controls can be either single or multi-line.
+ * When a text control is created with a border, the
+ * operating system includes a platform specific inset
+ * around the contents of the control.  When created
+ * without a border, an effort is made to remove the
+ * inset such that the preferred size of the control
+ * is the same size as the contents.
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>CENTER, LEFT, MULTI, PASSWORD, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
+ * <dd>CENTER, ICON_CANCEL, ICON_SEARCH, LEFT, MULTI, PASSWORD, SEARCH, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles MULTI and SINGLE may be specified. 
- * </p><p>
+ * Note: Only one of the styles MULTI and SINGLE may be specified,
+ * and only one of the styles LEFT, CENTER, and RIGHT may be specified.
+ * </p>
+ * <p>
+ * Note: The styles ICON_CANCEL and ICON_SEARCH are hints used in combination with SEARCH.
+ * When the platform supports the hint, the text control shows these icons.  When an icon
+ * is selected, a default selection event is sent with the detail field set to one of
+ * ICON_CANCEL or ICON_SEARCH.  Normally, application code does not need to check the
+ * detail.  In the case of ICON_CANCEL, the text is cleared before the default selection
+ * event is sent causing the application to search for an empty string.
+ * </p>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#text">Text snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
-	String hiddenText;
+	String hiddenText, message;
 	int tabs, lastModifiedText;
 	PtTextCallback_t textVerify;
 	
@@ -94,6 +116,13 @@ public class Text extends Scrollable {
  * @see SWT#MULTI
  * @see SWT#READ_ONLY
  * @see SWT#WRAP
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#CENTER
+ * @see SWT#PASSWORD
+ * @see SWT#SEARCH
+ * @see SWT#ICON_SEARCH
+ * @see SWT#ICON_CANCEL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -102,6 +131,11 @@ public Text (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+	}
+	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -216,7 +250,7 @@ void createWidget (int index) {
 	super.createWidget (index);
 //	doubleClick = true;
 	setTabStops (tabs = 8);
-	hiddenText = "";
+	hiddenText = message = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar (PASSWORD);
 }
 
@@ -248,15 +282,17 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
  * <code>widgetSelected</code> is not called for texts.
- * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text.
+ * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
+ * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.CANCEL</code> style
+ * and the user cancels the search, the event object detail field contains the value <code>SWT.CANCEL</code>.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -525,7 +561,7 @@ public char getEchoChar () {
 /**
  * Returns the editable state.
  *
- * @return whether or not the reciever is editable
+ * @return whether or not the receiver is editable
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -610,6 +646,27 @@ public int getLineHeight () {
 	OS.memmove (extent, line [0] + 10, 8);
 	OS.free(ptr);
 	return extent.lr_y - extent.ul_y + 1 + args [4];
+}
+
+/**
+ * Returns the widget message.  The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
+ * 
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 String getNameText () {
@@ -760,8 +817,9 @@ public String getText (int start, int end) {
 	if (!(start <= end && 0 <= end)) return "";
 	String text = getText ();
 	int length = text.length ();
-	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
+	if (start > end) return "";
+	start = Math.max (0, start);
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character
@@ -1067,7 +1125,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (lastModifiedText != 0) OS.free (lastModifiedText);
 	lastModifiedText = 0;
-	hiddenText = null;
+	hiddenText = message = null;
 	textVerify = null;
 }
 
@@ -1097,7 +1155,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1242,6 +1300,31 @@ public void setEditable (boolean editable) {
 public void setFont (Font font) {
 	super.setFont (font);
 	setTabStops (tabs);
+}
+
+/**
+ * Sets the widget message. The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
+ * 
+ * @param message the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the message is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
 }
 
 /**

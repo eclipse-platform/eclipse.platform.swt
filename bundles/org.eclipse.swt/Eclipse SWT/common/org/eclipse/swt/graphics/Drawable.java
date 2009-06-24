@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ package org.eclipse.swt.graphics;
  * their associated GC. SWT images, and device objects such as the Display
  * device and the Printer device, are drawables.
  * <p>
- * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT
+ * <b>IMPORTANT:</b> This interface is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
  * within the packages provided by SWT. It should never be
  * referenced from application code.

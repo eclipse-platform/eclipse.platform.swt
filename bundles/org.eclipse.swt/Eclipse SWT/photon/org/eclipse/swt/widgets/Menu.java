@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,11 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#menu">Menu snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Menu extends Widget {
 	int x, y;
@@ -43,6 +48,11 @@ public class Menu extends Widget {
  * Constructs a new instance of this class given its parent,
  * and sets the style for the instance so that the instance
  * will be a popup menu on the given parent's shell.
+ * <p>
+ * After constructing a menu, it can be set into its parent
+ * using <code>parent.setMenu(menu)</code>.  In this case, the parent may
+ * be any control in the same widget tree as the parent.
+ * </p>
  *
  * @param parent a control which will be the parent of the new instance (cannot be null)
  *
@@ -74,6 +84,9 @@ public Menu (Control parent) {
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
+ * </p><p>
+ * After constructing a menu or menuBar, it can be set into its parent
+ * using <code>parent.setMenu(menu)</code> or <code>parent.setMenuBar(menuBar)</code>.
  * </p>
  *
  * @param parent a decorations control which will be the parent of the new instance (cannot be null)
@@ -90,6 +103,9 @@ public Menu (Control parent) {
  * @see SWT#BAR
  * @see SWT#DROP_DOWN
  * @see SWT#POP_UP
+ * @see SWT#NO_RADIO_GROUP
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -104,6 +120,10 @@ public Menu (Decorations parent, int style) {
  * (which must be a <code>Menu</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentMenu
+ * using <code>parentMenu.setMenu(menu)</code>.
+ * </p>
  *
  * @param parentMenu a menu which will be the parent of the new instance (cannot be null)
  *
@@ -128,6 +148,10 @@ public Menu (Menu parentMenu) {
  * (which must be a <code>MenuItem</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent menu.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentItem
+ * using <code>parentItem.setMenu(menu)</code>.
+ * </p>
  *
  * @param parentItem a menu item which will be the parent of the new instance (cannot be null)
  *
@@ -503,7 +527,7 @@ void hookEvents () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -543,7 +567,9 @@ public int indexOf (MenuItem item) {
 public boolean isEnabled () {
 	checkWidget();
 	Menu parentMenu = getParentMenu ();
-	if (parentMenu == null) return getEnabled ();
+	if (parentMenu == null) {
+		return getEnabled () && parent.isEnabled ();
+	}
 	return getEnabled () && parentMenu.isEnabled ();
 }
 

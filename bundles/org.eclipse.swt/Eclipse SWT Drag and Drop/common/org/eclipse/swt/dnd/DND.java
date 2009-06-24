@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
  * Class DND contains all the constants used in defining a 
  * DragSource or a DropTarget.
  *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class DND {
 	
@@ -107,7 +108,7 @@ public class DND {
 	/**
 	 * DropTarget Event: the cursor has left the drop target boundaries OR the drop
 	 * operation has been cancelled (such as by hitting ECS) OR the drop is about to 
-	 * happen (user has released the mous ebutotn over this target) (value is 2003).
+	 * happen (user has released the mouse button over this target) (value is 2003).
 	 */
 	public static final int DragLeave	= 2003;
 	
@@ -171,7 +172,7 @@ public class DND {
 	 * select a drop target from a sub item; applies to trees (value is 16).
 	 */	
 	public static final int FEEDBACK_EXPAND = 16;
-	
+
 	/**
 	 * Error code: drag source can not be initialized (value is 2000).
 	 */
@@ -193,6 +194,25 @@ public class DND {
 	 */
 	public static final int ERROR_INVALID_DATA = 2003;
 	
+	/**
+	 * DropTarget Key: The string constant for looking up the drop target 
+	 * for a control using <code>getData(String)</code>. When a drop target 
+	 * is created for a control, it is stored as a property in the control 
+	 * using <code>setData(String, Object)</code>.
+	 * 
+	 * @since 3.4
+	 */
+	public static final String DROP_TARGET_KEY = "DropTarget"; //$NON-NLS-1$
+	
+	/**
+	 * DragSource Key: The string constant for looking up the drag source 
+	 * for a control using <code>getData(String)</code>. When a drag source 
+	 * is created for a control, it is stored as a property in the control 
+	 * using <code>setData(String, Object)</code>.
+	 * 
+	 * @since 3.4
+	 */
+	public static final String DRAG_SOURCE_KEY = "DragSource"; //$NON-NLS-1$
 
 	static final String INIT_DRAG_MESSAGE = "Cannot initialize Drag"; //$NON-NLS-1$
 	static final String INIT_DROP_MESSAGE = "Cannot initialize Drop"; //$NON-NLS-1$

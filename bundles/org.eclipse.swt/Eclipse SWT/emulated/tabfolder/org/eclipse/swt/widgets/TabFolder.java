@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,6 +39,11 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#tabfolder">TabFolder, TabItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabFolder extends Composite {
 	TabItem items[] = new TabItem [0];
@@ -81,6 +86,8 @@ public class TabFolder extends Composite {
  * </ul>
  *
  * @see SWT
+ * @see SWT#TOP
+ * @see SWT#BOTTOM
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -102,7 +109,7 @@ public TabFolder(Composite parent, int style) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -110,7 +117,7 @@ public TabFolder(Composite parent, int style) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -468,8 +475,8 @@ public Rectangle getClientArea() {
 	}
 	clientArea.x = xClient;
 	clientArea.y = yClient;
-	clientArea.width -= xClient + CLIENT_MARGIN_WIDTH + 1;
-	clientArea.height -= yClient + CLIENT_MARGIN_WIDTH + 1;
+	clientArea.width = Math.max (0, clientArea.width - (xClient + CLIENT_MARGIN_WIDTH + 1));
+	clientArea.height = Math.max (0, clientArea.height - (yClient + CLIENT_MARGIN_WIDTH + 1));
 	return clientArea;
 }
 /**
@@ -498,6 +505,35 @@ public TabItem getItem (int index) {
 	checkWidget();
 	if (!(0 <= index && index < getItemCount())) error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
+}
+/**
+ * Returns the tab item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the tab item at the given point, or null if the point is not in a tab item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public TabItem getItem (Point point) {
+	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = items.length;
+	for (int index = 0; index < count; index++) {
+		TabItem item = items[index];
+		Rectangle bounds = item.getBounds();
+		if (bounds.contains(point)) return item;
+	}
+	return null;
 }
 /**
  * Returns the number of items contained in the receiver.
@@ -642,7 +678,7 @@ void handleEvents (Event event){
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -985,7 +1021,7 @@ void removeControl (Control control) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1075,6 +1111,23 @@ public void setSelection(int index) {
 	if (!(0 <= index && index < items.length)) return;
 	setSelection(index, false);
 }
+/**
+ * Sets the receiver's selection to the given item.
+ * The current selected is first cleared, then the new item is
+ * selected.
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setSelection(TabItem item) {
 	checkWidget();
 	if (item == null) error(SWT.ERROR_NULL_ARGUMENT);
@@ -1108,7 +1161,7 @@ public void setSelection(TabItem selectedItems[]) {
  * Set the selection to the tab at the specified index.
  */
 void setSelection(int index, boolean notify) {
-	
+	if (selectedIndex == index) return;
 	int oldIndex = selectedIndex;
 	
 	if (selectedIndex == index || index >= getItemCount()) return;

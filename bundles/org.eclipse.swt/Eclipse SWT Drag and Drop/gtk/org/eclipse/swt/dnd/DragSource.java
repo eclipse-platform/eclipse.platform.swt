@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -92,6 +92,11 @@ import org.eclipse.swt.internal.gtk.*;
  *	<dt><b>Styles</b></dt> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK</dd>
  *	<dt><b>Events</b></dt> <dd>DND.DragStart, DND.DragSetData, DND.DragEnd</dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: DNDExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class DragSource extends Widget {
 
@@ -99,14 +104,14 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
+	DragSourceEffect dragEffect;
 
 	int /*long*/ targetList;
 	
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
 	
-	DragAndDropEffect effect;
-	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 		
 	static Callback DragGetData;
 	static Callback DragEnd;
@@ -140,7 +145,7 @@ public class DragSource extends Widget {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see Widget#dispose
  * @see DragSource#checkSubclass
@@ -155,10 +160,10 @@ public DragSource(Control control, int style) {
 	if (DragGetData == null || DragEnd == null || DragDataDelete == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
-	if (control.getData(DRAGSOURCEID) != null) {
+	if (control.getData(DND.DRAG_SOURCE_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
-	control.setData(DRAGSOURCEID, this);
+	control.setData(DND.DRAG_SOURCE_KEY, this);
 
 	OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);	
 	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
@@ -180,14 +185,14 @@ public DragSource(Control control, int style) {
 	};
 	control.addListener (SWT.Dispose, controlListener);
 	control.addListener (SWT.DragDetect, controlListener);
-	
-	// DND effect
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
+	} else if (control instanceof Tree) {
+		dragEffect = new TreeDragSourceEffect((Tree) control);
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dragEffect = new TableDragSourceEffect((Table) control);
 	}
 	
 	this.addListener(SWT.Dispose, new Listener() {
@@ -228,7 +233,7 @@ static DragSource FindDragSource(int /*long*/ handle) {
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
 	if (widget == null) return null;
-	return (DragSource)widget.getData(DRAGSOURCEID);
+	return (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
 }
 
 /**
@@ -257,12 +262,14 @@ static DragSource FindDragSource(int /*long*/ handle) {
  * </ul>
  *
  * @see DragSourceListener
+ * @see #getDragListeners
  * @see #removeDragListener
  * @see DragSourceEvent
  */
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragStart, typedListener);
 	addListener (DND.DragSetData, typedListener);
 	addListener (DND.DragEnd, typedListener);
@@ -289,14 +296,12 @@ void drag(Event dragEvent) {
 	if (targetList == 0) return;
 	
 	int actions = opToOsOp(getStyle());
-	ImageData imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
+	Image image = event.image; 
 	int /*long*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
-	if (context != 0 && imageData != null) {
-		Image image = new Image(getDisplay(), imageData);
+	if (context != 0 && image != null) {
 		int /*long*/ pixbuf = createPixbuf(image);
 		OS.gtk_drag_set_icon_pixbuf(context, pixbuf, 0, 0);
 		OS.g_object_unref(pixbuf);
-		image.dispose();
 	}
 }
 
@@ -354,10 +359,12 @@ void dragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selecti
 	event.dataType = transferData; 
 	notifyListeners(DND.DragSetData, event);
 		
+	if (!event.doit) return;
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
-		if (transferAgents[i].isSupportedType(transferData)) {
-			transfer = transferAgents[i];
+		Transfer transferAgent = transferAgents[i];
+		if (transferAgent != null && transferAgent.isSupportedType(transferData)) {
+			transfer = transferAgent;
 			break;
 		}
 	}
@@ -384,6 +391,56 @@ public Control getControl () {
 }
 
 /**
+ * Returns an array of listeners who will be notified when a drag and drop 
+ * operation is in progress, by sending it one of the messages defined in 
+ * the <code>DragSourceListener</code> interface.
+ *
+ * @return the listeners who will be notified when a drag and drop
+ * operation is in progress
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragSourceListener
+ * @see #addDragListener
+ * @see #removeDragListener
+ * @see DragSourceEvent
+ * 
+ * @since 3.4
+ */
+public DragSourceListener[] getDragListeners() {
+	Listener[] listeners = getListeners(DND.DragStart);
+	int length = listeners.length;
+	DragSourceListener[] dragListeners = new DragSourceListener[length];
+	int count = 0;
+	for (int i = 0; i < length; i++) {
+		Listener listener = listeners[i];
+		if (listener instanceof DNDListener) {
+			dragListeners[count] = (DragSourceListener) ((DNDListener) listener).getEventListener();
+			count++;
+		}
+	}
+	if (count == length) return dragListeners;
+	DragSourceListener[] result = new DragSourceListener[count];
+	System.arraycopy(dragListeners, 0, result, 0, count);
+	return result;
+}
+
+/**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop operation.
+ *
+ * @return the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
+}
+
+/**
  * Returns the list of data types that can be transferred by this DragSource.
  *
  * @return the list of data types that can be transferred by this DragSource
@@ -403,7 +460,7 @@ void onDispose() {
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
 	controlListener = null;
-	control.setData(DRAGSOURCEID, null);
+	control.setData(DND.DRAG_SOURCE_KEY, null);
 	control = null;
 	transferAgents = null;
 }
@@ -438,7 +495,7 @@ int osOpToOp(int osOperation){
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -450,12 +507,25 @@ int osOpToOp(int osOperation){
  *
  * @see DragSourceListener
  * @see #addDragListener
+ * @see #getDragListeners
  */
 public void removeDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (DND.DragStart, listener);
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
+}
+
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * used during a drag and drop operation.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
 }
 
 /**
@@ -477,19 +547,21 @@ public void setTransfer(Transfer[] transferAgents){
 	GtkTargetEntry[] targets = new GtkTargetEntry[0];
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
-		int[] typeIds = transfer.getTypeIds();
-		String[] typeNames = transfer.getTypeNames();
-		for (int j = 0; j < typeIds.length; j++) {
-			GtkTargetEntry entry = new GtkTargetEntry();
-			byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
-			entry.target = OS.g_malloc(buffer.length);
-			OS.memmove(entry.target, buffer, buffer.length);						
-			entry.info = typeIds[j];
-			GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
-			System.arraycopy(targets, 0, newTargets, 0, targets.length);
-			newTargets[targets.length] = entry;
-			targets = newTargets;
-		}	
+		if (transfer != null) {
+			int[] typeIds = transfer.getTypeIds();
+			String[] typeNames = transfer.getTypeNames();
+			for (int j = 0; j < typeIds.length; j++) {
+				GtkTargetEntry entry = new GtkTargetEntry();
+				byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
+				entry.target = OS.g_malloc(buffer.length);
+				OS.memmove(entry.target, buffer, buffer.length);						
+				entry.info = typeIds[j];
+				GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
+				System.arraycopy(targets, 0, newTargets, 0, targets.length);
+				newTargets[targets.length] = entry;
+				targets = newTargets;
+			}	
+		}
 	}
 	
 	int /*long*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);

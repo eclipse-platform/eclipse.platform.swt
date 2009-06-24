@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -45,11 +45,11 @@ public class nsIProgressDialog extends nsIDownload {
 		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 1, getAddress(), aParent);
 	}
 
-	public int GetCancelDownloadOnClose(boolean[] aCancelDownloadOnClose) {
+	public int GetCancelDownloadOnClose(int[] aCancelDownloadOnClose) {
 		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 2, getAddress(), aCancelDownloadOnClose);
 	}
 
-	public int SetCancelDownloadOnClose(boolean aCancelDownloadOnClose) {
+	public int SetCancelDownloadOnClose(int aCancelDownloadOnClose) {
 		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 3, getAddress(), aCancelDownloadOnClose);
 	}
 

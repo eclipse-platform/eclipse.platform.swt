@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,9 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see FontData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#font">Font snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class Font extends Resource {
@@ -40,12 +43,13 @@ public final class Font extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Font() {
+Font(Device device) {
+	super(device);
 }
 
 /**	 
@@ -67,10 +71,9 @@ Font() {
  * </ul>
  */
 public Font(Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd);
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(fd);
+	init();
 }
 
 /**	 
@@ -97,15 +100,14 @@ public Font(Device device, FontData fd) {
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	init(device, fds[0]);
-	if (device.tracking) device.new_Object(this);	
+	init(fds[0]);
+	init();	
 }
 
 /**	 
@@ -131,25 +133,21 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData (name, height, style));
-	if (device.tracking) device.new_Object(this);	
+	init(new FontData (name, height, style));
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+/*public*/ Font(Device device, String name, float height, int style) {
+	super(device);
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(new FontData (name, height, style));
+	init();	
+}
+void destroy() {
 	OS.DeleteObject(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -199,12 +197,11 @@ public FontData[] getFontData() {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
-void init (Device device, FontData fd) {
+void init (FontData fd) {
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	LOGFONT logFont = fd.data;
 	int lfHeight = logFont.lfHeight;
 	logFont.lfHeight = device.computePixels(fd.height);
@@ -252,11 +249,9 @@ public String toString () {
  * @param handle the handle for the font
  * @return a new font object containing the specified device and handle
  */
-public static Font win32_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
+public static Font win32_new(Device device, int /*long*/ handle) {
+	Font font = new Font(device);
 	font.handle = handle;
-	font.device = device;
 	return font;
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,7 +79,7 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Close, Dispose</dd>
+ * <dd>Close, Dispose, Settings</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -90,6 +90,9 @@ import org.eclipse.swt.graphics.*;
  * @see #readAndDispatch
  * @see #sleep
  * @see Device#dispose
+ * @see <a href="http://www.eclipse.org/swt/snippets/#display">Display snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Display extends Device {
 
@@ -100,8 +103,8 @@ public class Display extends Device {
 	/* Windows, Events and Callbacks */
 	Callback windowCallback;
 	int windowProc, shellHandle;
-	static String APP_NAME = "SWT";
-	static final String SHELL_HANDLE_KEY = "org.eclipse.swt.internal.motif.shellHandle";
+	static String APP_NAME = "SWT"; //$NON-NLS-1$
+	static final String SHELL_HANDLE_KEY = "org.eclipse.swt.internal.motif.shellHandle"; //$NON-NLS-1$
 	byte [] displayName, appName, appClass;
 	Event [] eventQueue;
 	XKeyEvent keyEvent = new XKeyEvent ();
@@ -117,6 +120,7 @@ public class Display extends Device {
 	/* Focus */
 	int focusEvent;
 	boolean postFocusOut;
+	Combo focusedCombo;
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;
@@ -277,7 +281,7 @@ public class Display extends Device {
 	static Display [] Displays = new Display [4];
 
 	/* Double Click */
-	int lastTime, lastButton;
+	int lastTime, lastButton, clickCount = 1;
 	
 	/* Current caret */
 	Caret currentCaret;
@@ -288,7 +292,7 @@ public class Display extends Device {
 	static boolean DisplayDisposed;
 
 	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/*
 	* This code is intentionally commented.  In order
 	* to support CLDC, .class cannot be used because
@@ -300,21 +304,6 @@ public class Display extends Device {
 //		int index = name.lastIndexOf ('.');
 //		PACKAGE_PREFIX = name.substring (0, index + 1);
 //	}
-	
-	/*
-	* In order to support CLDC, .class cannot be used because
-	* it does not compile on some Java compilers when they are
-	* targeted for CLDC.  Use Class.forName() instead.
-	*/
-	static final Class OS_LOCK;
-	static {
-		Class lock = null;
-		try {
-			lock = Class.forName ("org.eclipse.swt.internal.motif.OS");
-		} catch (Throwable th) {
-		}
-		OS_LOCK = lock;
-	}
 	
 	/* Mouse Hover */
 	Callback mouseHoverCallback;
@@ -463,9 +452,11 @@ void addWidget (int handle, Widget widget) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere
- * in a widget. When the event does occur, the listener is
- * notified by sending it the <code>handleEvent()</code> message.
+ * be notified when an event of the given type occurs anywhere
+ * in a widget. The event type is one of the event constants
+ * defined in class <code>SWT</code>. When the event does occur,
+ * the listener is notified by sending it the <code>handleEvent()</code>
+ * message.
  * <p>
  * Setting the type of an event to <code>SWT.None</code> from
  * within the <code>handleEvent()</code> method can be used to
@@ -489,6 +480,7 @@ void addWidget (int handle, Widget widget) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeFilter
  * @see #removeListener
  * 
@@ -502,8 +494,9 @@ public void addFilter (int eventType, Listener listener) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
- * event does occur in the display, the listener is notified by
+ * be notified when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
+ * When the event does occur in the display, the listener is notified by
  * sending it the <code>handleEvent()</code> message.
  *
  * @param eventType the type of event to listen for
@@ -518,6 +511,7 @@ public void addFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeListener
  * 
  * @since 2.0 
@@ -569,8 +563,10 @@ void addPopup (Menu menu) {
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	synchronizer.asyncExec (runnable);
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer.asyncExec (runnable);
+	}
 }
 /**
  * Causes the system hardware to emit a short sound
@@ -628,11 +624,13 @@ int checkResizeProc (int display, int event, int arg) {
 	}
 	return 0;
 }
-static synchronized void checkDisplay (Thread thread, boolean multiple) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] != null) {
-			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
-			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+static void checkDisplay (Thread thread, boolean multiple) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] != null) {
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]"); //$NON-NLS-1$
+				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			}
 		}
 	}
 }
@@ -720,54 +718,70 @@ protected void create (DeviceData data) {
 }
 void createDisplay (DeviceData data) {
 	/* Create the AppContext */
-	int [] argc = new int [] {0};
-	int xtContext = OS.XtCreateApplicationContext ();
-	OS.XtSetLanguageProc (xtContext, 0, 0);
-	
 	xEvent = OS.XtMalloc (XEvent.sizeof);
 
-	/* 
-	* Feature in Linux.  On some DBCS Linux platforms, the default
-	* font is not be properly initialized to contain a font set.
-	* This causes the IME to fail.  The fix is to set a fallback
-	* resource with an appropriated font to ensure a font set is
-	* found.
-	*/
-	int ptr1 = 0, ptr2 = 0; 
-	if (OS.IsLinux && OS.IsDBLocale) {
-		String resource = "*fontList: -*-*-medium-r-*-*-*-120-*-*-*-*-*-*:";
-		byte [] buffer = Converter.wcsToMbcs (null, resource, true);
-		ptr1 = OS.XtMalloc (buffer.length);
-		if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
-		int [] spec = new int[]{ptr1, 0};
-		ptr2 = OS.XtMalloc (spec.length * 4);
-		if (ptr2 != 0)OS.memmove (ptr2, spec, spec.length * 4);
-		OS.XtAppSetFallbackResources(xtContext, ptr2); 
+	int dpy = 0;
+	if (Default == null) {
+		int xtContext = OS.__XtDefaultAppContext ();
+		int [] dpy_return = new int [1];
+		int [] num_dpy_return = new int [1];
+		OS.XtGetDisplays (xtContext, dpy_return, num_dpy_return);
+		if (num_dpy_return [0] > 0) {
+			OS.memmove (dpy_return, dpy_return [0], 4);
+			dpy = dpy_return [0];
+		}
 	}
 	
-	/* Compute the display name, application name and class */
-	String display_name = null;
-	String application_name = APP_NAME;
-	String application_class = APP_NAME;
-	if (data != null) {
-		if (data.display_name != null) display_name = data.display_name;
-		if (data.application_name != null) application_name = data.application_name;
-		if (data.application_class != null) application_class = data.application_class;
-	}
-	/* Use the character encoding for the default locale */
-	if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
-	if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
-	if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
+	if (dpy != 0) {
+		xDisplay = dpy;
+	} else {
+		int [] argc = new int [] {0};
+		int xtContext = OS.XtCreateApplicationContext ();
+		OS.XtSetLanguageProc (xtContext, 0, 0);
 	
-	/* Create the XDisplay */
-	xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
-	DisplayDisposed = false;
-	
-	if (ptr2 != 0) {
-		OS.XtAppSetFallbackResources (xtContext, 0);
-		OS.XtFree (ptr2);
+		/* 
+		* Feature in Linux.  On some DBCS Linux platforms, the default
+		* font is not be properly initialized to contain a font set.
+		* This causes the IME to fail.  The fix is to set a fallback
+		* resource with an appropriated font to ensure a font set is
+		* found.
+		*/
+		int ptr1 = 0, ptr2 = 0; 
+		if (OS.IsLinux && OS.IsDBLocale) {
+			String resource = "*fontList: -*-*-medium-r-*-*-*-120-*-*-*-*-*-*:"; //$NON-NLS-1$
+			byte [] buffer = Converter.wcsToMbcs (null, resource, true);
+			ptr1 = OS.XtMalloc (buffer.length);
+			if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
+			int [] spec = new int[]{ptr1, 0};
+			ptr2 = OS.XtMalloc (spec.length * 4);
+			if (ptr2 != 0)OS.memmove (ptr2, spec, spec.length * 4);
+			OS.XtAppSetFallbackResources(xtContext, ptr2); 
+		}
+		
+		/* Compute the display name, application name and class */
+		String display_name = null;
+		String application_name = APP_NAME;
+		String application_class = APP_NAME;
+		if (data != null) {
+			if (data.display_name != null) display_name = data.display_name;
+			if (data.application_name != null) application_name = data.application_name;
+			if (data.application_class != null) application_class = data.application_class;
+		}
+		/* Use the character encoding for the default locale */
+		if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
+		if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
+		if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
+		
+		/* Create the XDisplay */
+		xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
+		DisplayDisposed = false;
+		
+		if (ptr2 != 0) {
+			OS.XtAppSetFallbackResources (xtContext, 0);
+			OS.XtFree (ptr2);
+		}
+		if (ptr1 != 0) OS.XtFree (ptr1);
 	}
-	if (ptr1 != 0) OS.XtFree (ptr1);
 }
 int createMask (int pixmap) {
 	if (pixmap == 0) return 0;
@@ -790,11 +804,11 @@ int createPixmap (String name) {
 	byte[] buffer = Converter.wcsToMbcs (null, name, true);
 	int pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
 	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
-		buffer = Converter.wcsToMbcs (null, "default_" + name, true);
+		buffer = Converter.wcsToMbcs (null, "default_" + name, true); //$NON-NLS-1$
 		pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
 		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
 			if (OS.IsSunOS) {
-				buffer = Converter.wcsToMbcs (null, "/usr/dt/share/include/bitmaps/" + name, true);
+				buffer = Converter.wcsToMbcs (null, "/usr/dt/share/include/bitmaps/" + name, true); //$NON-NLS-1$
 				pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
 				if (pixmap == OS.XmUNSPECIFIED_PIXMAP) pixmap = 0;
 			} else {
@@ -804,9 +818,11 @@ int createPixmap (String name) {
 	}
 	return pixmap;
 }
-synchronized static void deregister (Display display) {
-	for (int i=0; i<Displays.length; i++) {
-		if (display == Displays [i]) Displays [i] = null;
+static void deregister (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (display == Displays [i]) Displays [i] = null;
+		}
 	}
 }
 /**
@@ -1042,6 +1058,28 @@ public Widget findWidget (int handle) {
  * @since 3.1
  */
 public Widget findWidget (int handle, int id) {
+	checkDevice ();
+	return null;
+}
+/**
+ * Given a widget and a widget-specific id, returns the
+ * instance of the <code>Widget</code> subclass which represents
+ * the widget/id pair in the currently running application,
+ * if such exists, or null if no matching widget can be found.
+ *
+ * @param widget the widget
+ * @param id the id for the subwidget (usually an item)
+ * @return the SWT subwidget (usually an item) that the widget/id pair represents
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Widget findWidget (Widget widget, int id) {
+	checkDevice ();
 	return null;
 }
 boolean fixKey (int[] keysym, byte[] buffer, int state) {
@@ -1191,7 +1229,7 @@ public Shell getActiveShell () {
  *
  * @return the current display
  */
-public static synchronized Display getCurrent () {
+public static Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
 /**
@@ -1204,14 +1242,16 @@ public static synchronized Display getCurrent () {
  * @param thread the user-interface thread
  * @return the display for the given thread
  */
-public static synchronized Display findDisplay (Thread thread) {
-	for (int i=0; i<Displays.length; i++) {
-		Display display = Displays [i];
-		if (display != null && display.thread == thread) {
-			return display;
+public static Display findDisplay (Thread thread) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			Display display = Displays [i];
+			if (display != null && display.thread == thread) {
+				return display;
+			}
 		}
+		return null;
 	}
-	return null;
 }
 int getCaretBlinkTime () {
 //	checkDevice ();
@@ -1297,9 +1337,11 @@ public Point [] getCursorSizes() {
  *
  * @return the default display
  */
-public static synchronized Display getDefault () {
-	if (Default == null) Default = new Display ();
-	return Default;
+public static Display getDefault () {
+	synchronized (Device.class) {
+		if (Default == null) Default = new Display ();
+		return Default;
+	}
 }
 /**
  * Returns the application defined property of the receiver
@@ -1641,6 +1683,22 @@ public Shell [] getShells () {
 	return result;
 }
 /**
+ * Gets the synchronizer used by the display.
+ *
+ * @return the receiver's synchronizer
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public Synchronizer getSynchronizer () {
+	checkDevice ();
+	return synchronizer;
+}
+/**
  * Returns the thread that has invoked <code>syncExec</code>
  * or null if no such runnable is currently being invoked by
  * the user-interface thread.
@@ -1656,8 +1714,10 @@ public Shell [] getShells () {
  * </ul>
  */
 public Thread getSyncThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return synchronizer.syncThread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return synchronizer.syncThread;
+	}
 }
 /**
  * Returns the matching standard color for the given
@@ -1713,10 +1773,10 @@ public Color getSystemColor (int id) {
  * specified in class <code>SWT</code>. This cursor should
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
- * be returned if the supplied constant is not an swt cursor
+ * be returned if the supplied constant is not an SWT cursor
  * constant. 
  *
- * @param id the swt cursor constant
+ * @param id the SWT cursor constant
  * @return the corresponding cursor or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -1789,10 +1849,10 @@ public Font getSystemFont () {
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
  * be returned either if the supplied constant is not an
- * swt icon constant or if the platform does not define an
+ * SWT icon constant or if the platform does not define an
  * image that corresponds to the constant. 
  *
- * @param id the swt icon constant
+ * @param id the SWT icon constant
  * @return the corresponding image or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -1814,7 +1874,7 @@ public Image getSystemImage (int style) {
 	switch (style) {
 		case SWT.ICON_ERROR:
 			if (errorPixmap == 0) {
-				errorPixmap = createPixmap ("xm_error");
+				errorPixmap = createPixmap ("xm_error"); //$NON-NLS-1$
 				errorMask = createMask (errorPixmap);
 			}
 			imagePixmap = errorPixmap;
@@ -1822,7 +1882,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_INFORMATION:
 			if (infoPixmap == 0) {
-				infoPixmap = createPixmap ("xm_information");
+				infoPixmap = createPixmap ("xm_information"); //$NON-NLS-1$
 				infoMask = createMask (infoPixmap);
 			}
 			imagePixmap = infoPixmap;
@@ -1830,7 +1890,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_QUESTION:
 			if (questionPixmap == 0) {
-				questionPixmap = createPixmap ("xm_question");
+				questionPixmap = createPixmap ("xm_question"); //$NON-NLS-1$
 				questionMask = createMask (questionPixmap);
 			}
 			imagePixmap = questionPixmap;
@@ -1838,7 +1898,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_WARNING:
 			if (warningPixmap == 0) {
-				warningPixmap = createPixmap ("xm_warning");
+				warningPixmap = createPixmap ("xm_warning"); //$NON-NLS-1$
 				warningMask = createMask (warningPixmap);
 			}
 			imagePixmap = warningPixmap;
@@ -1846,7 +1906,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_WORKING:
 			if (workingPixmap == 0) {
-				workingPixmap = createPixmap ("xm_working");
+				workingPixmap = createPixmap ("xm_working"); //$NON-NLS-1$
 				workingMask = createMask (workingPixmap);
 			}
 			imagePixmap = workingPixmap;
@@ -1882,8 +1942,10 @@ public Tray getSystemTray () {
  * </ul>
  */
 public Thread getThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return thread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return thread;
+	}
 }
 Widget getWidget (int handle) {
 	if (handle == 0) return null;
@@ -1947,7 +2009,7 @@ void initializeButton () {
 	* GP's some time later  when a button widget is created with empty
 	* text. The fix is to create the button with a non-empty string.
 	*/
-	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
+	byte [] buffer = Converter.wcsToMbcs(null, "string", true); //$NON-NLS-1$
 	widgetHandle = OS.XmCreatePushButton (shellHandle, buffer, null, 0);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
@@ -2049,31 +2111,31 @@ void initializeDialog () {
 void initializeDisplay () {
 	
 	/* Create the callbacks */
-	focusCallback = new Callback (this, "focusProc", 4);
+	focusCallback = new Callback (this, "focusProc", 4); //$NON-NLS-1$
 	focusProc = focusCallback.getAddress ();
 	if (focusProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowCallback = new Callback (this, "windowProc", 4);
+	windowCallback = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowTimerCallback = new Callback (this, "windowTimerProc", 2);
+	windowTimerCallback = new Callback (this, "windowTimerProc", 2); //$NON-NLS-1$
 	windowTimerProc = windowTimerCallback.getAddress ();
 	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	timerCallback = new Callback (this, "timerProc", 2);
+	timerCallback = new Callback (this, "timerProc", 2); //$NON-NLS-1$
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	caretCallback = new Callback (this, "caretProc", 2);
+	caretCallback = new Callback (this, "caretProc", 2); //$NON-NLS-1$
 	caretProc = caretCallback.getAddress ();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2);
+	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2); //$NON-NLS-1$
 	mouseHoverProc = mouseHoverCallback.getAddress ();
 	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	checkExposeCallback = new Callback (this, "checkExposeProc", 3);
+	checkExposeCallback = new Callback (this, "checkExposeProc", 3); //$NON-NLS-1$
 	checkExposeProc = checkExposeCallback.getAddress ();
 	if (checkExposeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	checkResizeCallback = new Callback (this, "checkResizeProc", 3);
+	checkResizeCallback = new Callback (this, "checkResizeProc", 3); //$NON-NLS-1$
 	checkResizeProc = checkResizeCallback.getAddress ();
 	if (checkResizeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	wakeCallback = new Callback (this, "wakeProc", 3);
+	wakeCallback = new Callback (this, "wakeProc", 3); //$NON-NLS-1$
 	wakeProc = wakeCallback.getAddress ();
 	if (wakeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
@@ -2116,7 +2178,7 @@ void initializeLabel () {
 	* GP's some time later  when a label widget is created with empty
 	* text. The fix is to create the label with a non-empty string.
 	*/
-	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
+	byte [] buffer = Converter.wcsToMbcs(null, "string", true); //$NON-NLS-1$
 	widgetHandle = OS.XmCreateLabel (shellHandle, buffer, null, 0);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
@@ -2191,12 +2253,12 @@ void initializeNumLock () {
 		if (keymapCode [0] == numLockCode) {
 			int modIndex = i / keymap.max_keypermod;
 			switch (modIndex) {
-				case OS.Mod1MapIndex: numLock = "Mod1"; break;
-				case OS.Mod2MapIndex: numLock = "Mod2"; break;
-				case OS.Mod3MapIndex: numLock = "Mod3"; break;
-				case OS.Mod4MapIndex: numLock = "Mod4"; break;
-				case OS.Mod5MapIndex: numLock = "Mod5"; break;
-				default: numLock = "Mod2";
+				case OS.Mod1MapIndex: numLock = "Mod1"; break; //$NON-NLS-1$
+				case OS.Mod2MapIndex: numLock = "Mod2"; break; //$NON-NLS-1$
+				case OS.Mod3MapIndex: numLock = "Mod3"; break; //$NON-NLS-1$
+				case OS.Mod4MapIndex: numLock = "Mod4"; break; //$NON-NLS-1$
+				case OS.Mod5MapIndex: numLock = "Mod5"; break; //$NON-NLS-1$
+				default: numLock = "Mod2"; //$NON-NLS-1$
 			}
 			break;
 		}
@@ -2302,11 +2364,11 @@ void initializeText () {
 
 }
 void initializeTranslations () {
-	byte [] buffer1 = Converter.wcsToMbcs (null, "<Key>osfUp:\n<Key>osfDown:\n<Key>osfLeft:\n<Key>osfRight:\0");
+	byte [] buffer1 = Converter.wcsToMbcs (null, "<Key>osfUp:\n<Key>osfDown:\n<Key>osfLeft:\n<Key>osfRight:\0"); //$NON-NLS-1$
 	arrowTranslations = OS.XtParseTranslationTable (buffer1);
-	byte [] buffer2 = Converter.wcsToMbcs (null, "~Meta ~Alt <Key>Tab:\nShift ~Meta ~Alt <Key>Tab:\0");
+	byte [] buffer2 = Converter.wcsToMbcs (null, "~Meta ~Alt <Key>Tab:\nShift ~Meta ~Alt <Key>Tab:\0"); //$NON-NLS-1$
 	tabTranslations = OS.XtParseTranslationTable (buffer2);
-	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
+	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0"); //$NON-NLS-1$
 	dragTranslations = OS.XtParseTranslationTable (buffer3);
 }
 void initializeWidgetTable () {
@@ -2351,8 +2413,8 @@ public int internal_new_GC (GCData data) {
 		data.device = this;
 		data.display = xDisplay;
 		data.drawable = xDrawable;
-		data.background = getSystemColor (SWT.COLOR_WHITE).handle.pixel;
-		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle.pixel;
+		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = defaultFont;
 		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
 	}
@@ -2464,6 +2526,7 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
+	if (from == to) return point;
 	if (from != null) {
 		short [] root_x = new short [1], root_y = new short [1];
 		OS.XtTranslateCoords (from.handle, (short) x, (short) y, root_x, root_y);
@@ -2562,6 +2625,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = new Rectangle (x, y, width, height);
+	if (from == to) return rect;
 	if (from != null) {
 		short [] root_x = new short [1], root_y = new short [1];
 		OS.XtTranslateCoords (from.handle, (short) x, (short) y, root_x, root_y);
@@ -2619,6 +2683,13 @@ int mouseHoverProc (int handle, int id) {
  * <li>(in) x the x coordinate to move the mouse pointer to in screen coordinates
  * <li>(in) y the y coordinate to move the mouse pointer to in screen coordinates
  * </ul>
+ * <p>MouseWheel</p>
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type MouseWheel
+ * <li>(in) detail either SWT.SCROLL_LINE or SWT.SCROLL_PAGE
+ * <li>(in) count the number of lines or pages to scroll
+ * </ul>
  * </dl>
  * 
  * @param event the event to be generated
@@ -2636,48 +2707,62 @@ int mouseHoverProc (int handle, int id) {
  * 
  */
 public boolean post (Event event) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int type = event.type;
-	switch (type) {
-		case SWT.KeyDown :
-		case SWT.KeyUp : {
-			int keyCode = 0;
-			int keysym = untranslateKey (event.keyCode);
-			if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-			if (keyCode == 0) {
-				char key = event.character;
-				switch (key) {
-					case SWT.BS: keysym = OS.XK_BackSpace; break;
-					case SWT.CR: keysym = OS.XK_Return; break;
-					case SWT.DEL: keysym = OS.XK_Delete; break;
-					case SWT.ESC: keysym = OS.XK_Escape; break;
-					case SWT.TAB: keysym = OS.XK_Tab; break;
-					case SWT.LF: keysym = OS.XK_Linefeed; break;
-					default:
-						keysym = wcsToMbcs (key);
+	/*
+	* Get the operating system lock before synchronizing on the device
+	* lock so that the device lock will not be held should another
+	* thread already be in the operating system.  This avoids deadlock
+	* should the other thread need the device lock.
+	*/
+	Lock lock = OS.lock;
+	lock.lock();
+	try {
+		synchronized (Device.class) {
+			if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+			if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+			int type = event.type;
+			switch (type) {
+				case SWT.KeyDown :
+				case SWT.KeyUp : {
+					int keyCode = 0;
+					int keysym = untranslateKey (event.keyCode);
+					if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+					if (keyCode == 0) {
+						char key = event.character;
+						switch (key) {
+							case SWT.BS: keysym = OS.XK_BackSpace; break;
+							case SWT.CR: keysym = OS.XK_Return; break;
+							case SWT.DEL: keysym = OS.XK_Delete; break;
+							case SWT.ESC: keysym = OS.XK_Escape; break;
+							case SWT.TAB: keysym = OS.XK_Tab; break;
+							case SWT.LF: keysym = OS.XK_Linefeed; break;
+							default:
+								keysym = key;
+						}
+						keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+						if (keyCode == 0) return false;
+					}
+					OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
+					return true;
 				}
-				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-				if (keyCode == 0) return false;
+				case SWT.MouseDown :
+				case SWT.MouseMove : 
+				case SWT.MouseUp : {
+					if (type == SWT.MouseMove) {
+						OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+						return true;
+					} else {
+						int button = event.button;
+						if (button < 1 || button > 3) return false;
+						OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
+					    return true;
+					}
+				}
 			}
-			OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
-			return true;
+			return false;
 		}
-		case SWT.MouseDown :
-		case SWT.MouseMove : 
-		case SWT.MouseUp : {
-			if (type == SWT.MouseMove) {
-				OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
-				return true;
-			} else {
-				int button = event.button;
-				if (button < 1 || button > 3) return false;
-				OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
-			    return true;
-			}
-		}
+	} finally {
+		lock.unlock();
 	}
-	return false;
 }
 void postEvent (Event event) {
 	/*
@@ -2748,19 +2833,21 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return runAsyncMessages (false);
+	return isDisposed () || runAsyncMessages (false);
 }
-static synchronized void register (Display display) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] == null) {
-			Displays [i] = display;
-			return;
+static void register (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] == null) {
+				Displays [i] = display;
+				return;
+			}
 		}
+		Display [] newDisplays = new Display [Displays.length + 4];
+		System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
+		newDisplays [Displays.length] = display;
+		Displays = newDisplays;
 	}
-	Display [] newDisplays = new Display [Displays.length + 4];
-	System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
-	newDisplays [Displays.length] = display;
-	Displays = newDisplays;
 }
 /**
  * Releases any internal resources back to the operating
@@ -2931,6 +3018,16 @@ void releaseDisplay () {
 	COLOR_INFO_BACKGROUND = null;
 
 	popups = null;
+	focusedCombo = null;
+	displayName = appName = appClass = wake_buffer = fd_set = null;
+	keyEvent = null;
+	eventTable = filterTable = null;
+	indexTable = userData = timeout = null;
+	widgetTable = shellTable = null;
+	xExposeEvent = null;
+	xConfigureEvent = null;
+	data = null;
+	values = keys = null;
 }
 void releaseToolTipHandle (int handle) {
 	if (mouseHoverHandle == handle) removeMouseHoverTimeOut ();
@@ -2981,8 +3078,9 @@ void removePopup (Menu menu) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere in
- * a widget.
+ * be notified when an event of the given type occurs anywhere in
+ * a widget. The event type is one of the event constants defined
+ * in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -2995,6 +3093,7 @@ void removePopup (Menu menu) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addFilter
  * @see #addListener
  * 
@@ -3009,10 +3108,11 @@ public void removeFilter (int eventType, Listener listener) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs. The event type
+ * is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -3023,6 +3123,7 @@ public void removeFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
  * 
  * @since 2.0 
@@ -3037,6 +3138,7 @@ boolean runAsyncMessages (boolean all) {
 	return synchronizer.runAsyncMessages (all);
 }
 boolean runDeferredEvents () {
+	boolean run = false;
 	/*
 	* Run deferred events.  This code is always
 	* called in the Display's thread so it must
@@ -3056,6 +3158,7 @@ boolean runDeferredEvents () {
 		if (widget != null && !widget.isDisposed ()) {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
+				run = true;
 				widget.sendEvent (event);
 			}
 		}
@@ -3069,7 +3172,7 @@ boolean runDeferredEvents () {
 
 	/* Clear the queue */
 	eventQueue = null;
-	return true;
+	return run;
 }
 boolean runFocusOutEvents () {
 	if (eventQueue == null) return false;
@@ -3109,7 +3212,7 @@ boolean runPopups () {
 		System.arraycopy (popups, 1, popups, 0, --length);
 		popups [length] = null;
 		runDeferredEvents ();
-		menu._setVisible (true);
+		if (!menu.isDisposed ()) menu._setVisible (true);
 		result = true;
 	}
 	popups = null;
@@ -3125,6 +3228,21 @@ void sendEvent (int eventType, Event event) {
 	if (event.time == 0) event.time = getLastEventTime ();
 	if (!filterEvent (event)) {
 		if (eventTable != null) eventTable.sendEvent (event);
+	}
+}
+void sendFocusEvent (Control control, int type) {
+	if (type == SWT.FocusIn) {		
+		focusEvent = SWT.FocusIn;
+		control.sendEvent (SWT.FocusIn);
+		focusEvent = SWT.None;
+	} else {
+		if (postFocusOut) {
+			control.postEvent (SWT.FocusOut);
+		} else {
+			focusEvent = SWT.FocusOut;
+			control.sendEvent (SWT.FocusOut);
+			focusEvent = SWT.None;
+		}
 	}
 }
 /**
@@ -3305,10 +3423,15 @@ public void setData (Object data) {
 public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages(true);
+	if (synchronizer == this.synchronizer) return;
+	Synchronizer oldSynchronizer;
+	synchronized (Device.class) {
+		oldSynchronizer = this.synchronizer;
+		this.synchronizer = synchronizer;
 	}
-	this.synchronizer = synchronizer;
+	if (oldSynchronizer != null) {
+		oldSynchronizer.runAsyncMessages(true);
+	}
 }
 void setToolTipText (int handle, String toolTipText) {
 	if (toolTipHandle == 0) return;
@@ -3319,8 +3442,12 @@ void setToolTipText (int handle, String toolTipText) {
 }
 void showToolTip (int handle, String toolTipText) {
 	int shellHandle = 0;
+	if (toolTipText == null) toolTipText = ""; //$NON-NLS-1$
+	char [] text = new char [toolTipText.length ()];
+	toolTipText.getChars (0, text.length, text, 0);
+	Widget.fixMnemonic (text);
 	/* Use the character encoding for the default locale */
-	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	if (toolTipHandle != 0) {
 		shellHandle = OS.XtParent (toolTipHandle);
 		int shellParent = OS.XtParent (shellHandle);
@@ -3464,14 +3591,18 @@ public boolean sleep () {
  * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
- *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred when executing the runnable</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #asyncExec
  */
 public void syncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	Synchronizer synchronizer;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer = this.synchronizer;
+	}
 	synchronizer.syncExec (runnable);
 }
 int textWidth (String string, Font font) {
@@ -3603,17 +3734,19 @@ public void update () {
  * @see #sleep
  */
 public void wake () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (thread == Thread.currentThread ()) return;
-	wakeThread ();
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (thread == Thread.currentThread ()) return;
+		wakeThread ();
+	}
 }
 void wakeThread () {
 	/* Write a single byte to the wake up pipe */
-	while (OS.write (write_fd, wake_buffer, 1) != 1);
+	while (OS.write (write_fd, wake_buffer, 1) != 1) {/* empty */}
 }
 int wakeProc (int closure, int source, int id) {
 	/* Read a single byte from the wake up pipe */
-	while (OS.read (read_fd, wake_buffer, 1) != 1);
+	while (OS.read (read_fd, wake_buffer, 1) != 1) {/* empty */}
 	return 0;
 }
 static int wcsToMbcs (char ch) {
@@ -3640,7 +3773,7 @@ int windowProc (int w, int client_data, int call_data, int continue_to_dispatch)
 	return widget.windowProc (w, client_data, call_data, continue_to_dispatch);
 }
 String wrapText (String text, Font font, int width) {
-	String Lf = "\n";
+	String Lf = "\n"; //$NON-NLS-1$
 	text = convertToLf (text);
 	int length = text.length ();
 	if (width <= 0 || length == 0 || length == 1) return text;

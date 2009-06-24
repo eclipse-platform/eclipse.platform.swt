@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,23 +25,30 @@ import org.eclipse.swt.accessibility.*;
  * <dd>BORDER</dd>
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
- * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
- *     DragDetect, MenuDetect</dd>
+ * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
  * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
+	Cursor cursor;
+	Font font;
 	Menu menu;
 	Object layoutData;
 	String toolTipText;
 	Image backgroundImage;
+	Region region;
 	int toolTipHandle;
 	Accessible accessible;
 	
@@ -74,6 +81,8 @@ Control () {
  * </ul>
  *
  * @see SWT#BORDER
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -108,6 +117,34 @@ public void addControlListener(ControlListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when a drag gesture occurs, by sending it
+ * one of the messages defined in the <code>DragDetectListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #removeDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
 }
 
 /**
@@ -168,7 +205,18 @@ public void addHelpListener (HelpListener listener) {
  * be notified when keys are pressed and released on the system keyboard, by sending
  * it one of the messages defined in the <code>KeyListener</code>
  * interface.
- *
+ * <p>
+ * When a key listener is added to a control, the control
+ * will take part in widget traversal.  By default, all
+ * traversal keys (such as the tab key and so on) are
+ * delivered to the control.  In order for a control to take
+ * part in traversal, it should listen for traversal events.
+ * Otherwise, the user can traverse into a control but not
+ * out.  Note that native controls such as table and tree
+ * implement key traversal in the operating system.  It is
+ * not necessary to add traversal listeners for these controls,
+ * unless you want to override the default traversal.
+ * </p>
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -188,6 +236,34 @@ public void addKeyListener (KeyListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.KeyUp,typedListener);
 	addListener (SWT.KeyDown,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the platform-specific context menu trigger
+ * has occurred, by sending it one of the messages defined in
+ * the <code>MenuDetectListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #removeMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void addMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MenuDetect, typedListener);
 }
 
 /**
@@ -220,6 +296,32 @@ public void addMouseListener (MouseListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when the mouse moves, by sending it one of the
+ * messages defined in the <code>MouseMoveListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseMoveListener
+ * @see #removeMouseMoveListener
+ */
+public void addMouseMoveListener (MouseMoveListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MouseMove,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when the mouse passes or hovers over controls, by sending
  * it one of the messages defined in the <code>MouseTrackListener</code>
  * interface.
@@ -248,9 +350,9 @@ public void addMouseTrackListener (MouseTrackListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the mouse moves, by sending it one of the
- * messages defined in the <code>MouseMoveListener</code>
- * interface.
+ * be notified when the mouse wheel is scrolled, by sending
+ * it one of the messages defined in the
+ * <code>MouseWheelListener</code> interface.
  *
  * @param listener the listener which should be notified
  *
@@ -262,14 +364,16 @@ public void addMouseTrackListener (MouseTrackListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see MouseMoveListener
- * @see #removeMouseMoveListener
+ * @see MouseWheelListener
+ * @see #removeMouseWheelListener
+ *
+ * @since 3.3
  */
-public void addMouseMoveListener (MouseMoveListener listener) {
-	checkWidget();
+public void addMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.MouseMove,typedListener);
+	addListener (SWT.MouseWheel, typedListener);
 }
 
 /**
@@ -488,69 +592,160 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *  
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (MouseEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
+	//TODO - not implemented
+	return false;
+}
+
 int drawProc (int widget, int damage) {
-	drawWidget (widget, damage);
+	if (widget <=0) return OS.Pt_CONTINUE; 
+	drawWidget (widget, damage );
 	if (!hooks(SWT.Paint) && !filters (SWT.Paint)) return OS.Pt_CONTINUE;
-	
-	/* Translate the damage to widget coordinates */
-	short [] widgetX = new short [1];
-	short [] widgetY = new short [1];
-	OS.PtGetAbsPosition (handle, widgetX, widgetY);
-	short [] shellX = new short [1];
-	short [] shellY = new short [1];
-	int shellHandle = OS.PtFindDisjoint (handle);
-	OS.PtGetAbsPosition (shellHandle, shellX, shellY);
-	PhPoint_t pt = new PhPoint_t ();
-	pt.x = (short) (shellX [0] - widgetX [0]);
-	pt.y = (short) (shellY [0] - widgetY [0]);
-	damage = OS.PhCopyTiles (damage);
-	damage = OS.PhTranslateTiles (damage, pt);
-	
 	/* Send the paint event */
+	PhPoint_t pt = new PhPoint_t ();  
+	PhRect_t widRect = new PhRect_t();    
+	OS.PtWidgetExtent(widget, widRect) ;
+	OS.PtWidgetOffset(widget, pt);
+	pt.x += widRect.ul_x;
+	pt.y += widRect.ul_y;
+	damage = OS.PhCopyTiles( damage );
 	PhTile_t tile = new PhTile_t ();
 	OS.memmove (tile, damage, PhTile_t.sizeof);
+	int transPoint = OS.malloc ( PhPoint_t.sizeof);
+	OS.memmove(transPoint, pt, PhPoint_t.sizeof);
+	OS.PhDeTranslateTiles(damage, transPoint);
+	OS.free(transPoint);
+	OS.memmove (tile, damage, PhTile_t.sizeof);
 	boolean noMerge = (style & SWT.NO_MERGE_PAINTS) != 0 && (state & CANVAS) != 0;
-	if (tile.next != 0 && noMerge) {
-		while (tile.next != 0) {
-			OS.memmove (tile, tile.next, PhTile_t.sizeof);
-			if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
-				Event event = new Event ();
-				event.x = tile.rect_ul_x;
-				event.y = tile.rect_ul_y;
-				event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
-				event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-				GCData data = new GCData();
-				if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
-					data.paint = true;
-				}
-				GC gc = event.gc = GC.photon_new (this, data);
-				gc.setClipping (event.x, event.y, event.width, event.height);
-				sendEvent (SWT.Paint, event);
-				if (isDisposed ()) break;
-				gc.dispose ();
-				event.gc = null;
-			}
-		}
-	} else {
-		if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+	if (tile.next != 0 && noMerge) 
+	{
+		OS.memmove (tile, tile.next, PhTile_t.sizeof);
+		while (tile.next != 0) 
+		{
 			Event event = new Event ();
-			event.x = tile.rect_ul_x;
-			event.y = tile.rect_ul_y;
 			event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
 			event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-			Region region = Region.photon_new (display, tile.next);
-			GCData data = new GCData();
-			if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
-				data.paint = true;
-			}
-			GC gc = event.gc = GC.photon_new (this, data);
-			gc.setClipping (region);
+			event.x = tile.rect_ul_x;
+			event.y = tile.rect_ul_y; 
+			GC gc = event.gc = new GC (this);
+			gc.setClipping(event.x, event.y, event.width, event.height);
+			sendEvent (SWT.Paint, event);
+			if (isDisposed ()) break;
+			gc.dispose ();
+			event.gc = null;
+			if ( tile.next != 0 )
+				OS.memmove (tile, tile.next, PhTile_t.sizeof);
+		}
+	} 
+	else 
+	{
+		int rect1 = OS.malloc (PhRect_t.sizeof);
+		int rect2 = OS.malloc (PhRect_t.sizeof);
+		OS.memmove (rect1, tile, PhRect_t.sizeof);
+		OS.memmove (rect2, widRect, PhRect_t.sizeof);
+		int inter = OS.PhRectIntersect(rect1, rect2);
+		if ( inter == 1 )
+		{
+			OS.memmove(widRect, rect1, PhRect_t.sizeof);
+			Event event = new Event ();
+			event.x = widRect.ul_x;
+			event.y = widRect.ul_y; 
+			event.width = widRect.lr_x - widRect.ul_x + 1;
+			event.height = widRect.lr_y - widRect.ul_y + 1;
+            GC gc = event.gc = new GC (this);
+            gc.setClipping(event.x, event.y, event.width, event.height );
 			sendEvent (SWT.Paint, event);
 			gc.dispose ();
 			event.gc = null;
 		}
+		OS.free(rect1);
+		OS.free(rect2);
 	}
-	OS.PhFreeTiles (damage);
+	OS.PhFreeTiles( damage );
 	return OS.Pt_CONTINUE;
 }
 
@@ -592,7 +787,11 @@ public Accessible getAccessible () {
 
 /**
  * Returns the receiver's background color.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on some versions of Windows the background of a TabFolder,
+ * is a gradient rather than a solid color.
+ * </p>
  * @return the background color
  *
  * @exception SWTException <ul>
@@ -607,6 +806,18 @@ public Color getBackground () {
 	return Color.photon_new (display, args [1]);
 }
 
+/**
+ * Returns the receiver's background image.
+ *
+ * @return the background image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public Image getBackgroundImage () {
 	checkWidget ();
 	return backgroundImage;
@@ -624,6 +835,7 @@ public Image getBackgroundImage () {
  */
 public Font getFont () {
 	checkWidget();
+	if (font != null) return font;
 	int [] args = {
 		OS.Pt_ARG_TEXT_FONT, 0, 0,
 		OS.Pt_ARG_LIST_FONT, 0, 0,
@@ -711,6 +923,46 @@ public Rectangle getBounds () {
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
+}
+
+/**
+ * Returns the receiver's cursor, or null if it has not been set.
+ * <p>
+ * When the mouse pointer passes over a control its appearance
+ * is changed to match the control's cursor.
+ * </p>
+ *
+ * @return the receiver's cursor or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Cursor getCursor () {
+	checkWidget ();
+	return cursor;
+}
+
+/**
+ * Returns <code>true</code> if the receiver is detecting
+ * drag gestures, and  <code>false</code> otherwise. 
+ *
+ * @return the receiver's drag detect state
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public boolean getDragDetect () {
+	checkWidget ();
+	//TODO - not implemented
+	return true;
 }
 
 /**
@@ -899,6 +1151,24 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+/** 
+ * Returns the region that defines the shape of the control,
+ * or null if the control has the default shape.
+ *
+ * @return the region that defines the shape of the shell (or null)
+ *	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public Region getRegion () {
+	checkWidget ();
+	return region;
+}
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -992,10 +1262,13 @@ public int internal_new_GC (GCData data) {
 	OS.PtGetResources (handle, args.length / 3, args);
 	data.device = display;
 	data.widget = handle;
+	int disjoint = OS.PtFindDisjoint( handle );
+	if( disjoint != 0 )
+		OS.PgSetRegion( OS.PtWidgetRid( disjoint ) );
 	data.topWidget = topHandle ();
 	data.foreground = args [1];
 	data.background = args [4];
-	data.font = getFont ().handle;
+	data.font = getFont ();
 	return phGC;
 }
 
@@ -1036,14 +1309,6 @@ public void internal_dispose_GC (int phGC, GCData data) {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
-}
-
-boolean isFocusAncestor () {
-	Control control = display.getFocusControl ();
-	while (control != null && control != this) {
-		control = control.parent;
-	}
-	return control == this;
 }
 
 /**
@@ -1265,6 +1530,30 @@ public void pack (boolean changed) {
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
+/**
+ * Prints the receiver and all children.
+ * 
+ * @param gc the gc where the drawing occurs
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
+}
+
 int Ph_EV_BOUNDARY (int widget, int info) {
 	if (info == 0) return OS.Pt_END;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -1327,11 +1616,14 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
+	event.count = pe.click_count;
 	event.time = ev.timestamp;
 	setMouseState (event, SWT.MouseDown, pe, ev);
 	postEvent (SWT.MouseDown, event);
 	if (pe.click_count == 2) {
 		Event clickEvent = new Event ();
+		clickEvent.count = pe.click_count;
+		clickEvent.time = ev.timestamp;
 		setMouseState (clickEvent, SWT.MouseDoubleClick, pe, ev);
 		postEvent (SWT.MouseDoubleClick, clickEvent);
 	}
@@ -1384,6 +1676,7 @@ int Ph_EV_BUT_RELEASE (int widget, int info) {
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
+	event.count = pe.click_count;
 	event.time = ev.timestamp;
 	setMouseState (event, SWT.MouseUp, pe, ev);
 	postEvent (SWT.MouseUp, event);
@@ -1621,7 +1914,9 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
+	cursor = null;
 	layoutData = null;
+	region = null;
 }
 
 /**
@@ -1635,12 +1930,13 @@ void releaseWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#DOUBLE_BUFFERED
  */
 public void redraw () {
 	checkWidget();
@@ -1669,12 +1965,13 @@ public void redraw () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
  * @see SWT#NO_REDRAW_RESIZE
  * @see SWT#NO_MERGE_PAINTS
+ * @see SWT#DOUBLE_BUFFERED
  */
 public void redraw (int x, int y, int width, int height, boolean allChildren) {
 	checkWidget ();
@@ -1710,6 +2007,32 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when a drag gesture occurs.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
 }
 
 /**
@@ -1788,7 +2111,8 @@ public void removeKeyListener(KeyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the mouse passes or hovers over controls.
+ * be notified when the platform-specific context menu trigger has
+ * occurred.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1800,16 +2124,16 @@ public void removeKeyListener(KeyListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see MouseTrackListener
- * @see #addMouseTrackListener
+ * @see MenuDetectListener
+ * @see #addMenuDetectListener
+ *
+ * @since 3.3
  */
-public void removeMouseTrackListener(MouseTrackListener listener) {
-	checkWidget();
+public void removeMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (SWT.MouseEnter, listener);
-	eventTable.unhook (SWT.MouseExit, listener);
-	eventTable.unhook (SWT.MouseHover, listener);
+	eventTable.unhook (SWT.MenuDetect, listener);
 }
 
 /**
@@ -1860,6 +2184,58 @@ public void removeMouseMoveListener(MouseMoveListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MouseMove, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the mouse passes or hovers over controls.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseTrackListener
+ * @see #addMouseTrackListener
+ */
+public void removeMouseTrackListener(MouseTrackListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MouseEnter, listener);
+	eventTable.unhook (SWT.MouseExit, listener);
+	eventTable.unhook (SWT.MouseHover, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the mouse wheel is scrolled.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #addMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void removeMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MouseWheel, listener);
 }
 
 /**
@@ -2016,7 +2392,8 @@ public void setBounds (Rectangle rect) {
 /**
  * If the argument is <code>true</code>, causes the receiver to have
  * all mouse events delivered to it until the method is called with
- * <code>false</code> as the argument.
+ * <code>false</code> as the argument.  Note that on some platforms,
+ * a mouse button must currently be down for capture to be assigned.
  *
  * @param capture <code>true</code> to capture the mouse, and <code>false</code> to release it
  *
@@ -2057,6 +2434,7 @@ public void setCursor (Cursor cursor) {
 		type = cursor.type;
 		bitmap = cursor.bitmap;
 	}
+	this.cursor = cursor;
 	int [] args = new int []{
 		OS.Pt_ARG_CURSOR_TYPE, type, 0,
 		OS.Pt_ARG_BITMAP_CURSOR, bitmap, 0,
@@ -2073,6 +2451,25 @@ public void setCursor (Cursor cursor) {
 		type &= ~OS.Ph_CURSOR_NO_INHERIT;
 		OS.PtSetResource (handle, OS.Pt_ARG_CURSOR_TYPE, type, 0);
 	}
+}
+
+/**
+ * Sets the receiver's drag detect state. If the argument is
+ * <code>true</code>, the receiver will detect drag gestures,
+ * otherwise these gestures will be ignored.
+ *
+ * @param dragDetect the new drag detect state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	//TODO - not implemented
 }
 
 /**
@@ -2124,7 +2521,10 @@ public boolean setFocus () {
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2147,6 +2547,28 @@ public void setBackground (Color color) {
 	setBackgroundPixel (pixel);
 }
 
+/**
+ * Sets the receiver's background image to the image specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.  The background image is tiled to fill
+ * the available space.
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
+ * @param image the new image (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setBackgroundImage (Image image) {
 	checkWidget ();
 	if (image != null) {
@@ -2189,6 +2611,7 @@ public void setFont (Font font) {
 	} else {
 		buffer = defaultFont ();
 	}
+	this.font = font;
 	setFont (buffer);
 }
 
@@ -2213,7 +2636,9 @@ void setFont (int font) {
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2302,6 +2727,11 @@ public void setLocation (Point location) {
  * the control. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pop up
  * menu is platform specific.
+ * <p>
+ * Note: Disposing of a control that has a pop up menu will
+ * dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the control is disposed.
+ * </p>
  *
  * @param menu the new pop up menu
  *
@@ -2329,7 +2759,7 @@ public void setMenu (Menu menu) {
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
- * Answers <code>true</code> if the parent is successfully changed.
+ * Returns <code>true</code> if the parent is successfully changed.
  *
  * @param parent the new parent for the control.
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
@@ -2407,7 +2837,7 @@ boolean setRadioSelection (boolean value) {
  * </ul>
  * 
  * @see #redraw(int, int, int, int, boolean)
- * @see #update
+ * @see #update()
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
@@ -2416,6 +2846,30 @@ public void setRedraw (boolean redraw) {
 	} else {
 		OS.PtContainerHold (handle);
 	}
+}
+
+/**
+ * Sets the shape of the control to the region specified
+ * by the argument.  When the argument is null, the
+ * default shape of the control is restored.
+ *
+ * @param region the region that defines the shape of the control (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
+ * </ul>  
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setRegion (Region region) {
+	checkWidget ();
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	// TODO implement setRegion
+	this.region = region;
 }
 /**
  * Sets the receiver's size to the point specified by the arguments.
@@ -2480,8 +2934,17 @@ public void setVisible (boolean visible) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
+ * 
  * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
@@ -2790,13 +3253,19 @@ boolean traverseReturn () {
 
 /**
  * Forces all outstanding paint requests for the widget
- * to be processed before this method returns.
+ * to be processed before this method returns. If there
+ * are no outstanding paint request, this method does
+ * nothing.
+ * <p>
+ * Note: This method does not cause a redraw.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see #redraw()
  * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint

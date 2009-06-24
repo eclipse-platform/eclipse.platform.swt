@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,9 +34,13 @@ import org.eclipse.swt.graphics.*;
  * </p>
  *
  * @see Composite
+ * @see <a href="http://www.eclipse.org/swt/snippets/#canvas">Canvas snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Canvas extends Composite {
 	Caret caret;
+	IME ime;
 
 Canvas () {
 	/* Do nothing */
@@ -73,13 +77,70 @@ public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
 
+/** 
+ * Fills the interior of the rectangle specified by the arguments,
+ * with the receiver's background. 
+ *
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	control.fillBackground (handle, gc.handle, new Rectangle (x, y, width, height));
+	if (control != null) {
+		control.fillBackground (handle, gc.handle, new Rectangle (x, y, width, height));
+	} else {
+		gc.fillRectangle (x, y, width, height);
+	}
+}
+
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
+	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
+	if (OS.VERSION >= 0x1040) {
+		if (control != handle) return;
+		if (caret == null) return;
+		if (caret.isShowing) {
+			OS.CGContextSaveGState (context);
+			CGRect rect = new CGRect ();
+			rect.x = caret.x;
+			rect.y = caret.y;
+			Image image = caret.image;
+			OS.CGContextSetBlendMode (context, OS.kCGBlendModeDifference);
+			if (image != null) {
+				rect.width = OS.CGImageGetWidth (image.handle);
+				rect.height = OS.CGImageGetHeight (image.handle);
+			 	OS.CGContextScaleCTM (context, 1, -1);
+			 	OS.CGContextTranslateCTM (context, 0, -(rect.height + 2 * rect.y));
+				OS.CGContextDrawImage (context, rect, image.handle);
+			} else {
+				rect.width = caret.width != 0 ? caret.width : Caret.DEFAULT_WIDTH;
+				rect.height = caret.height;
+				OS.CGContextSetShouldAntialias (context, false);
+				int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+				OS.CGContextSetFillColorSpace (context, colorspace);
+				OS.CGContextSetFillColor (context, new float[]{1, 1, 1, 1});
+				OS.CGColorSpaceRelease (colorspace);
+				OS.CGContextFillRect (context, rect);
+			}
+			OS.CGContextRestoreGState (context);
+		}
+	}
 }
 
 /**
@@ -93,7 +154,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
  * drawing in the window any other time.
  * </p>
  *
- * @return the caret
+ * @return the caret for the receiver, may be null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -105,10 +166,27 @@ public Caret getCaret () {
     return caret;
 }
 
+/**
+ * Returns the IME.
+ *
+ * @return the IME
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public IME getIME () {
+	checkWidget();
+    return ime;
+}
+
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	boolean isFocus = theControl [0] == handle && caret != null && caret.isFocusCaret ();
+	boolean isFocus = OS.VERSION < 0x1040 && theControl [0] == handle && caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
 	if (isFocus) caret.setFocus ();
@@ -118,28 +196,73 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) {
-		if (caret != null && !isDisposed ()) {
+		if (!isDisposed ()) {
+			Shell shell = getShell ();
 			short [] part = new short [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 			if (part [0] != OS.kControlFocusNoPart) {
-				caret.setFocus ();
+				if (caret != null) caret.setFocus ();
+				OS.ActivateTSMDocument (shell.imHandle);
 			} else {
-				caret.killFocus ();
+				if (caret != null) caret.killFocus ();
+				OS.DeactivateTSMDocument (shell.imHandle);
 			}
 		}
 	}
 	return result;
 }
 
+int kEventTextInputOffsetToPos (int nextHandler, int theEvent, int userData) {
+	if (ime != null) {
+		int result = ime.kEventTextInputOffsetToPos (nextHandler, theEvent, userData);
+		if (result != OS.eventNotHandledErr) return result;
+	}
+	return super.kEventTextInputOffsetToPos (nextHandler, theEvent, userData);
+}
+
+int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
+	if (ime != null) {
+		int result = ime.kEventTextInputPosToOffset (nextHandler, theEvent, userData);
+		if (result != OS.eventNotHandledErr) return result;
+	}
+	return super.kEventTextInputPosToOffset (nextHandler, theEvent, userData);
+}
+
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventTextInputUnicodeForKeyEvent(nextHandler, theEvent, userData);
+	if (result != OS.noErr) {
+		if (caret != null) {
+			if (OS.CGCursorIsVisible ()) OS.CGDisplayHideCursor (OS.CGMainDisplayID ());
+		}
+	}
+	return result;
+}
+
+int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
+	if (ime != null) {
+		int result = ime.kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
+		if (result != OS.eventNotHandledErr) return result;
+	}
+	return super.kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
+}
+
+int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData) {
+	if (ime != null) {
+		int result = ime.kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
+		if (result != OS.eventNotHandledErr) return result;
+	}
+	return super.kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
+}
+
 void redrawWidget (int control, boolean children) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
+	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	super.redrawWidget (control, children);
 	if (isFocus) caret.setFocus ();
 }
 
 void redrawWidget (int control, int x, int y, int width, int height, boolean all) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
+	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	super.redrawWidget (control, x, y, width, height, all);
 	if (isFocus) caret.setFocus ();
@@ -149,6 +272,10 @@ void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);
 		caret = null;
+	}
+	if (ime != null) {
+		ime.release (false);
+		ime = null;
 	}
 	super.releaseChildren (destroy);
 }
@@ -180,7 +307,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
-	if (!isDrawing (handle)) return;
+	if (!isDrawing ()) return;
+	if (!OS.IsControlVisible (handle)) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	Rectangle clientRect = getClientArea ();
@@ -249,6 +377,27 @@ public void setFont (Font font) {
 	checkWidget ();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+
+/**
+ * Sets the receiver's IME.
+ * 
+ * @param ime the new IME for the receiver, may be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the IME has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 
 }

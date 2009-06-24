@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,6 @@ import org.eclipse.swt.internal.motif.*;
  * platform specific representation of the data and vice versa.  
  * Each <code>String</code> in the array contains the absolute path for a single 
  * file or directory.
- * See <code>Transfer</code> for additional information.
  * 
  * <p>An example of a java <code>String[]</code> containing a list of files is shown 
  * below:</p>
@@ -31,6 +30,8 @@ import org.eclipse.swt.internal.motif.*;
  *     fileData[0] = file1.getAbsolutePath();
  *     fileData[1] = file2.getAbsolutePath();
  * </code></pre>
+ *
+ * @see Transfer
  */
 public class FileTransfer extends ByteArrayTransfer {
 	
@@ -55,13 +56,13 @@ public static FileTransfer getInstance () {
  * This implementation of <code>javaToNative</code> converts a list of file names
  * represented by a java <code>String[]</code> to a platform specific representation.
  * Each <code>String</code> in the array contains the absolute path for a single 
- * file or directory.  For additional information see 
- * <code>Transfer#javaToNative</code>.
+ * file or directory.
  * 
- * @param object a java <code>String[]</code> containing the file names to be 
- * converted
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param object a java <code>String[]</code> containing the file names to be converted
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 public void javaToNative(Object object, TransferData transferData) {
 	transferData.result = 0;
@@ -88,12 +89,12 @@ public void javaToNative(Object object, TransferData transferData) {
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of a list of file names to a java <code>String[]</code>.  
  * Each String in the array contains the absolute path for a single file or directory. 
- * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>String[]</code> containing a list of file names if the 
- * conversion was successful; otherwise null
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>String[]</code> containing a list of file names if the conversion
+ * 		was successful; otherwise null
+ * 
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;

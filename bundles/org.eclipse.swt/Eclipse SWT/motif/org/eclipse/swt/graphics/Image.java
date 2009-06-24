@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,11 +62,20 @@ import java.io.*;
  * @see Color
  * @see ImageData
  * @see ImageLoader
+ * @see <a href="http://www.eclipse.org/swt/snippets/#image">Image snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, ImageAnalyzer</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Image extends Resource implements Drawable {
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int type;
 	
@@ -117,11 +126,22 @@ public final class Image extends Resource implements Drawable {
 	int alpha = -1;
 	
 	/**
+	 * The width of the image.
+	 */
+	int width = -1;
+	
+	/**
+	 * The height of the image.
+	 */
+	int height = -1;
+	
+	/**
 	 * Specifies the default scanline padding.
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 	
-Image() {
+Image(Device device) {
+	super(device);
 }
 /**
  * Constructs an empty instance of this class with the
@@ -154,21 +174,20 @@ Image() {
  * </ul>
  */
 public Image(Device device, int width, int height) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, width, height);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(width, height);
+	init();
 }
 /**
  * Constructs a new instance of this class based on the
  * provided image, with an appearance that varies depending
  * on the value of the flag. The possible flag values are:
  * <dl>
- * <dt><b>IMAGE_COPY</b></dt>
+ * <dt><b>{@link SWT#IMAGE_COPY}</b></dt>
  * <dd>the result is an identical copy of srcImage</dd>
- * <dt><b>IMAGE_DISABLE</b></dt>
+ * <dt><b>{@link SWT#IMAGE_DISABLE}</b></dt>
  * <dd>the result is a copy of srcImage which has a <em>disabled</em> look</dd>
- * <dt><b>IMAGE_GRAY</b></dt>
+ * <dt><b>{@link SWT#IMAGE_GRAY}</b></dt>
  * <dd>the result is a copy of srcImage which has a <em>gray scale</em> look</dd>
  * </dl>
  *
@@ -183,18 +202,16 @@ public Image(Device device, int width, int height) {
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
- *          is otherwise in an invalid state</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the Image is not supported</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or is otherwise in an invalid state</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the image is not supported</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, Image srcImage, int flag) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
+	device = this.device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int xDisplay = device.xDisplay;
@@ -234,8 +251,8 @@ public Image(Device device, Image srcImage, int flag) {
 				alphaData = new byte[srcImage.alphaData.length];
 				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 			}
-			if (device.tracking) device.new_Object(this);
-			return;
+			createAlphaMask(width, height);
+			break;
 		case SWT.IMAGE_DISABLE:
 			/* Get src image data */
 			XImage srcXImage = new XImage();
@@ -405,9 +422,14 @@ public Image(Device device, Image srcImage, int flag) {
 			OS.XDestroyImage(destXImagePtr);
 			OS.XDestroyImage(srcXImagePtr);
 			OS.XFreeGC(xDisplay, gc);
+			alpha = srcImage.alpha;
+			if (srcImage.alphaData != null) {
+				alphaData = new byte[srcImage.alphaData.length];
+				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+			}
+			createAlphaMask(width, height);
 			this.pixmap = destPixmap;
-			if (device.tracking) device.new_Object(this);
-			return;
+			break;
 		case SWT.IMAGE_GRAY:
 			ImageData data = srcImage.getImageData();
 			PaletteData palette = data.palette;
@@ -433,6 +455,8 @@ public Image(Device device, Image srcImage, int flag) {
 					rgbs[i] = new RGB(i, i, i);
 				}
 				newData = new ImageData(width, height, 8, new PaletteData(rgbs));
+				newData.alpha = data.alpha;
+				newData.alphaData = data.alphaData;
 				newData.maskData = data.maskData;
 				newData.maskPad = data.maskPad;
 				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
@@ -467,12 +491,12 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 				}
 			}
-			init (device, newData);
+			init (newData);
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 /**
  * Constructs an empty instance of this class with the
@@ -505,11 +529,10 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, bounds.width, bounds.height);
-	if (device.tracking) device.new_Object(this);
+	init(bounds.width, bounds.height);
+	init();
 }
 /**
  * Constructs an instance of this class from the given
@@ -530,10 +553,9 @@ public Image(Device device, Rectangle bounds) {
  * </ul>
  */
 public Image(Device device, ImageData image) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, image);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(image);
+	init();
 }
 /**
  * Constructs an instance of this class, whose type is 
@@ -561,8 +583,7 @@ public Image(Device device, ImageData image) {
  * </ul>
  */
 public Image(Device device, ImageData source, ImageData mask) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -572,8 +593,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
-	init(device, image);
-	if (device.tracking) device.new_Object(this);
+	init(image);
+	init();
 }
 /**
  * Constructs an instance of this class by loading its representation
@@ -614,20 +635,19 @@ public Image(Device device, ImageData source, ImageData mask) {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the InputStream describes an image with an unsupported depth</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
- *  * </ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image stream describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, InputStream stream) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(stream));
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(new ImageData(stream));
+	init();
 }
 /**
  * Constructs an instance of this class by loading its representation
@@ -647,9 +667,9 @@ public Image(Device device, InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file has an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  * @exception SWTError <ul>
@@ -657,10 +677,38 @@ public Image(Device device, InputStream stream) {
  * </ul>
  */
 public Image(Device device, String filename) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(filename));
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(new ImageData(filename));
+	init();
+}
+void createAlphaMask(int width, int height) {
+	if (device.useXRender && (alpha != -1 || alphaData != null)) {
+		int xDisplay = device.xDisplay;
+		int drawable = OS.XDefaultRootWindow(xDisplay);
+		mask = OS.XCreatePixmap(xDisplay, drawable, alpha != -1 ? 1 : width, alpha != -1 ? 1 : height, 8);
+		if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int gc = OS.XCreateGC(xDisplay, mask, 0, null);
+		if (alpha != -1) {
+			OS.XSetForeground(xDisplay, gc, (alpha & 0xFF) << 8 | (alpha & 0xFF));
+			OS.XFillRectangle(xDisplay, mask, gc, 0, 0, 1, 1);
+		} else {
+			int imagePtr = OS.XGetImage(xDisplay, mask, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
+			XImage xImage = new XImage();
+			OS.memmove(xImage, imagePtr, XImage.sizeof);
+			if (xImage.bytes_per_line == width) {
+				OS.memmove(xImage.data, alphaData, alphaData.length);
+			} else {
+				byte[] line = new byte[xImage.bytes_per_line];
+				for (int y = 0; y < height; y++) {
+					System.arraycopy(alphaData, width * y, line, 0, width);
+					OS.memmove(xImage.data + (xImage.bytes_per_line * y), line, xImage.bytes_per_line);
+				}
+			}
+			OS.XPutImage(xDisplay, mask, gc, imagePtr, 0, 0, 0, 0, width, height);
+			OS.XDestroyImage(imagePtr);
+		}			
+		OS.XFreeGC(xDisplay, gc);
+	}
 }
 /**
  * Create the receiver's mask if necessary.
@@ -688,14 +736,7 @@ void createSurface() {
 	int xVisual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
 	surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width[0], height[0]);
 }
-/**
- * Disposes of the operating system resources associated with
- * the image. Applications must dispose of all images which
- * they allocate.
- */
-public void dispose () {
-	if (pixmap == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (memGC != null) memGC.dispose();
 	int xDisplay = device.xDisplay;
 	if (pixmap != 0) OS.XFreePixmap (xDisplay, pixmap);
@@ -703,8 +744,6 @@ public void dispose () {
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
 	surface = pixmap = mask = 0;
 	memGC = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 /**
  * Destroy the receiver's mask if it exists.
@@ -772,9 +811,12 @@ public Color getBackground() {
  */
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
- 	OS.XGetGeometry (device.xDisplay, pixmap, unused, unused, unused, width, height, unused, unused);
-	return new Rectangle(0, 0, width [0], height [0]);
+	if (width != -1 && height != -1) {
+		return new Rectangle(0, 0, width, height);
+	}
+	int [] unused = new int [1];  int [] w = new int [1];  int [] h = new int [1];
+ 	OS.XGetGeometry (device.xDisplay, pixmap, unused, unused, unused, w, h, unused, unused);
+	return new Rectangle(0, 0, width = w [0], height = h [0]);
 }
 /**
  * Returns an <code>ImageData</code> based on the receiver
@@ -895,8 +937,7 @@ public ImageData getImageData() {
 		OS.memmove(v, visual, Visual.sizeof);
 		palette = new PaletteData(v.red_mask, v.green_mask, v.blue_mask);
 	}	
-	ImageData data = new ImageData(width, height, xSrcImage.bits_per_pixel, palette);
-	data.data = srcData;
+	ImageData data = new ImageData(width, height, xSrcImage.bits_per_pixel, palette, 4, srcData);
 	if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {
 		/* Get the icon mask data */
 		int xMaskPtr = OS.XGetImage(xDisplay, mask, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
@@ -1006,8 +1047,7 @@ static boolean getOffsetForMask(int bitspp, int mask, int byteOrder, int[] poff)
 public int hashCode () {
 	return pixmap;
 }
-void init(Device device, int width, int height) {
-	this.device = device;
+void init(int width, int height) {
 	if (width <= 0 || height <= 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -1028,8 +1068,7 @@ void init(Device device, int width, int height) {
 	OS.XFreeGC(xDisplay, xGC);
 	this.pixmap = pixmap;
 }
-void init(Device device, ImageData image) {
-	this.device = device;
+void init(ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);
@@ -1072,31 +1111,7 @@ void init(Device device, ImageData image) {
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
 		}
-		if (device.useXRender && (alpha != -1 || alphaData != null)) {
-			mask = OS.XCreatePixmap(xDisplay, drawable, alpha != -1 ? 1 : image.width, alpha != -1 ? 1 : image.height, 8);
-			if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			gc = OS.XCreateGC(xDisplay, mask, 0, null);
-			if (alpha != -1) {
-				OS.XSetForeground(xDisplay, gc, (alpha & 0xFF) << 8 | (alpha & 0xFF));
-				OS.XFillRectangle(xDisplay, mask, gc, 0, 0, 1, 1);
-			} else {
-				int imagePtr = OS.XGetImage(xDisplay, mask, 0, 0, image.width, image.height, OS.AllPlanes, OS.ZPixmap);
-				XImage xImage = new XImage();
-				OS.memmove(xImage, imagePtr, XImage.sizeof);
-				if (xImage.bytes_per_line == image.width) {
-					OS.memmove(xImage.data, alphaData, alphaData.length);
-				} else {
-					byte[] line = new byte[xImage.bytes_per_line];
-					for (int y = 0; y < image.height; y++) {
-						System.arraycopy(alphaData, image.width * y, line, 0, image.width);
-						OS.memmove(xImage.data + (xImage.bytes_per_line * y), line, xImage.bytes_per_line);
-					}
-				}
-				OS.XPutImage(xDisplay, mask, gc, imagePtr, 0, 0, 0, 0, image.width, image.height);
-				OS.XDestroyImage(imagePtr);
-			}			
-			OS.XFreeGC(xDisplay, gc);
-		}
+		createAlphaMask(image.width, image.height);
 	}
 	this.pixmap = pixmap;
 }
@@ -1129,8 +1144,8 @@ public int internal_new_GC (GCData data) {
 		data.device = device;
 		data.display = xDisplay;
 		data.drawable = pixmap;
-		data.background = device.COLOR_WHITE.handle.pixel;
-		data.foreground = device.COLOR_BLACK.handle.pixel;
+		data.background = device.COLOR_WHITE.handle;
+		data.foreground = device.COLOR_BLACK.handle;
 		data.font = device.systemFont;
 		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
 		data.image = this;
@@ -1171,9 +1186,7 @@ public boolean isDisposed() {
 	return pixmap == 0;
 }
 public static Image motif_new(Device device, int type, int pixmap, int mask) {
-	if (device == null) device = Device.getDevice();
-	Image image = new Image();
-	image.device = device;
+	Image image = new Image(device);
 	image.type = type;
 	image.pixmap = pixmap;
 	image.mask = mask;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,19 +20,43 @@ import org.eclipse.swt.*;
  * objects that allow the user to enter and modify numeric
  * values.
  * <p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add children to it, or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, Modify</dd>
+ * <dd>Selection, Modify, Verify</dd>
  * </dl>
- * <p>
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#spinner">Spinner snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Spinner extends Composite {
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 * 
+	 * @since 3.4
+	 */
+	public static final int LIMIT;
+	
+	/*
+	 * These values can be different on different platforms.
+	 * Therefore they are not initialized in the declaration
+	 * to stop the compiler from inlining.
+	 */
+	static {
+		LIMIT = 0x7FFF;	
+	}
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -130,7 +154,7 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -138,7 +162,7 @@ public void addModifyListener (ModifyListener listener) {
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -422,6 +446,47 @@ public int getSelection () {
 	return args [1];
 }
 
+/**
+ * Returns a string containing a copy of the contents of the
+ * receiver's text field, or an empty string if there are no
+ * contents.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public String getText () {
+	checkWidget ();
+	return "";
+}
+
+/**
+ * Returns the maximum number of characters that the receiver's
+ * text field is capable of holding. If this has not been changed
+ * by <code>setTextLimit()</code>, it will be the constant
+ * <code>Spinner.LIMIT</code>.
+ * 
+ * @return the text limit
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #LIMIT
+ * 
+ * @since 3.4
+ */
+public int getTextLimit () {
+	checkWidget ();
+	return LIMIT;
+}
+
 boolean hasFocus () {
 	return OS.PtIsFocused (handle) != 0;
 }
@@ -514,7 +579,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -569,6 +634,7 @@ void removeVerifyListener (VerifyListener listener) {
  * a value of 2 and setSelection() with a value of 137. Similarly, if getDigits() has a value
  * of 2 and getSelection() returns 137 this should be interpreted as 1.37. This applies to all
  * numeric APIs. 
+ * </p>
  * 
  * @param value the new digits (must be greater than or equal to zero)
  * 
@@ -623,11 +689,11 @@ public void setMaximum (int value) {
 
 /**
  * Sets the minimum value that the receiver will allow.  This new
- * value will be ignored if it is negative or is not less than the receiver's
+ * value will be ignored if it is not less than the receiver's
  * current maximum value.  If the new minimum is applied then the receiver's
  * selection value will be adjusted if necessary to fall within its new range.
  *
- * @param value the new minimum, which must be nonnegative and less than the current maximum
+ * @param value the new minimum, which must be less than the current maximum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -675,6 +741,56 @@ public void setSelection (int value) {
 	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_VALUE, value, 0);
 }
 
+/**
+ * Sets the maximum number of characters that the receiver's
+ * text field is capable of holding to be the argument.
+ * <p>
+ * To reset this value to the default, use <code>setTextLimit(Spinner.LIMIT)</code>.
+ * Specifying a limit value larger than <code>Spinner.LIMIT</code> sets the
+ * receiver's limit to <code>Spinner.LIMIT</code>.
+ * </p>
+ * @param limit new text limit
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_CANNOT_BE_ZERO - if the limit is zero</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #LIMIT
+ * 
+ * @since 3.4
+ */
+public void setTextLimit (int limit) {
+	checkWidget ();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+}
+
+/**
+ * Sets the receiver's selection, minimum value, maximum
+ * value, digits, increment and page increment all at once.
+ * <p>
+ * Note: This is similar to setting the values individually
+ * using the appropriate methods, but may be implemented in a 
+ * more efficient fashion on some platforms.
+ * </p>
+ *
+ * @param selection the new selection value
+ * @param minimum the new minimum value
+ * @param maximum the new maximum value
+ * @param digits the new digits value
+ * @param increment the new increment value
+ * @param pageIncrement the new pageIncrement value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
 	if (minimum < 0) return;

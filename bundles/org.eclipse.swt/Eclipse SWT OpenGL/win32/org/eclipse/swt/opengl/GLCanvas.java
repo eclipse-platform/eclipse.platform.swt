@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,15 +18,17 @@ import org.eclipse.swt.internal.opengl.win32.*;
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
  * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
+ * @see GLData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.2
  */
 
 public class GLCanvas extends Canvas {
-	int context;
+	int /*long*/ context;
 	int pixelFormat;
-
+	static final String USE_OWNDC_KEY = "org.eclipse.swt.internal.win32.useOwnDC"; //$NON-NLS-1$
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
  * object provided.
@@ -39,13 +41,10 @@ public class GLCanvas extends Canvas {
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null
  *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLCanvas (Composite parent, int style, GLData data) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
+	parent.getDisplay ().setData (USE_OWNDC_KEY, new Boolean (false));
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
 	pfd.nSize = (short) PIXELFORMATDESCRIPTOR.sizeof;
@@ -66,6 +65,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	pfd.cAccumBlueBits = (byte) data.accumBlueSize;
 	pfd.cAccumAlphaBits = (byte) data.accumAlphaSize;
 	pfd.cAccumBits = (byte) (pfd.cAccumRedBits + pfd.cAccumGreenBits + pfd.cAccumBlueBits + pfd.cAccumAlphaBits);
+	
 	//FIXME - use wglChoosePixelFormatARB
 //	if (data.sampleBuffers > 0) {
 //		wglAttrib [pos++] = WGL.WGL_SAMPLE_BUFFERS_ARB;
@@ -76,7 +76,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 //		wglAttrib [pos++] = data.samples;
 //	}
 
-	int hDC = OS.GetDC (handle);
+	int /*long*/ hDC = OS.GetDC (handle);
 	pixelFormat = WGL.ChoosePixelFormat (hDC, pfd);
 	if (pixelFormat == 0 || !WGL.SetPixelFormat (hDC, pixelFormat, pfd)) {
 		OS.ReleaseDC (handle, hDC);
@@ -89,19 +89,29 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		SWT.error (SWT.ERROR_NO_HANDLES);
 	}
 	OS.ReleaseDC (handle, hDC);
-	//FIXME- share lists
-	//if (share != null) WGL.wglShareLists (context, share.context);
+	if (data.shareContext != null) {
+		WGL.wglShareLists (data.shareContext.context, context);
+	}
 	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
-			case SWT.Dispose:
-				WGL.wglDeleteContext (context);
-				break;
+				case SWT.Dispose:
+					WGL.wglDeleteContext (context);
+					break;
 			}
 		}
 	};
 	addListener (SWT.Dispose, listener);
+}
+
+static int checkStyle(Composite parent, int style) {
+	if (parent != null) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			parent.getDisplay ().setData (USE_OWNDC_KEY, new Boolean (true));
+		}
+	}
+	return style;
 }
 
 /**
@@ -112,17 +122,13 @@ public GLCanvas (Composite parent, int style, GLData data) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLData getGLData () {
 	checkWidget ();
 	GLData data = new GLData ();
 	PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
 	pfd.nSize = (short) PIXELFORMATDESCRIPTOR.sizeof;
-	int hDC = OS.GetDC (handle);
+	int /*long*/ hDC = OS.GetDC (handle);
 	WGL.DescribePixelFormat (hDC, pixelFormat, PIXELFORMATDESCRIPTOR.sizeof, pfd);
 	OS.ReleaseDC (handle, hDC);
 	data.doubleBuffer = (pfd.dwFlags & WGL.PFD_DOUBLEBUFFER) != 0;
@@ -150,14 +156,10 @@ public GLData getGLData () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public boolean isCurrent () {
 	checkWidget ();
-	return WGL.wglGetCurrentContext () == handle;
+	return WGL.wglGetCurrentContext () == context;
 }
 
 /**
@@ -168,15 +170,11 @@ public boolean isCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void setCurrent () {
 	checkWidget ();
-	if (WGL.wglGetCurrentContext () == handle) return;
-	int hDC = OS.GetDC (handle);
+	if (WGL.wglGetCurrentContext () == context) return;
+	int /*long*/ hDC = OS.GetDC (handle);
 	WGL.wglMakeCurrent (hDC, context);
 	OS.ReleaseDC (handle, hDC);
 }
@@ -188,14 +186,10 @@ public void setCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void swapBuffers () {
 	checkWidget ();
-	int hDC = OS.GetDC (handle);
+	int /*long*/ hDC = OS.GetDC (handle);
 	WGL.SwapBuffers (hDC);
 	OS.ReleaseDC (handle, hDC);
 }

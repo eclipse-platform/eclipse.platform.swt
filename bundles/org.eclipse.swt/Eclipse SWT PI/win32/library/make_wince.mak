@@ -1,10 +1,10 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2005 IBM Corporation and others.
+# Copyright (c) 2000, 2007 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
@@ -30,7 +30,7 @@ CFLAGS = /nologo /c /W3 -O1 -DSWT_VERSION=$(SWT_VERSION) -DREDUCED_CALLBACKS -DJ
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver) -D"WIN32_PLATFORM_PSPC"
 LFLAGS = $(dlllflags) /dll /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib
 
-SWT_OBJS = swt.obj os.obj os_structs.obj os_custom.obj callback.obj
+SWT_OBJS = swt.obj c.obj c_stats.obj os.obj os_structs.obj os_custom.obj callback.obj
 
 all: $(SWT_LIB)
 
