@@ -241,7 +241,7 @@
 
 	<!-- Params: machine, java_home, classpath, fragment, build_target -->
 	<target name="build_ssh">
-		<property name="build_home" value="${user.home}/build"/>
+		<property name="build_home" value="~/build"/>
 		<property name="jh" value="${build_home}/${java_home}"/>
 		<property name="ant_bin" value="${build_home}/apache-ant-1.7.1/bin"/>
 		<property name="tmpdir" value="/${build_home}/${machine}_${fragment}"/>
