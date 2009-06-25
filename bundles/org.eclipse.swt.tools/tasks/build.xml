@@ -244,7 +244,7 @@
 		<property name="build_home" value="~/build"/>
 		<property name="jh" value="${build_home}/${java_home}"/>
 		<property name="ant_bin" value="${build_home}/apache-ant-1.7.1/bin"/>
-		<property name="tmpdir" value="/${build_home}/${machine}_${fragment}"/>
+		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
