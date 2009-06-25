@@ -19,17 +19,8 @@
 		
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 		
-	<target name="checkout_natives">
-		<xslt style="style.xls" in="${workdir}/${cp}" out="${workdir}/files.xml">
-			<param name="TAG" expression="${TAG}"/>
-			<param name="workdir" expression="${workdir}"/>
-		</xslt>
-		<ant antfile="${workdir}/files.xml"/>
-		<copy todir="${workdir}/${builddir}" flatten="true">
-			<fileset dir="${workdir}/org.eclipse.swt" includes="**/library/"/>
-		</copy>
-	</target>
 	
+	<!-- Low level build tasks -->
 	<target name="build_win32_dll" >
 		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
 			<arg line="x86"/>
@@ -79,6 +70,18 @@
 		</exec>
 	</target>
 
+	<!-- common build tasks -->
+	<target name="checkout_natives">
+		<xslt style="style.xls" in="${workdir}/${cp}" out="${workdir}/files.xml">
+			<param name="TAG" expression="${TAG}"/>
+			<param name="workdir" expression="${workdir}"/>
+		</xslt>
+		<ant antfile="${workdir}/files.xml"/>
+		<copy todir="${workdir}/${builddir}" flatten="true">
+			<fileset dir="${workdir}/org.eclipse.swt" includes="**/library/"/>
+		</copy>
+	</target>
+	
 	<target name="get_version" >
 		<property name="version_file" value="${workdir}/${builddir}/make_common.mak"/>
 		<copy file="${version_file}" tofile="${workdir}/tmp"/>
@@ -218,16 +221,27 @@
 		</antcall>
 	</target>
 
-	<target name="build_gtk_ssh">
-		<property name="gtkbuilddir" value="/bluebird/teamswt/swt-builddir/build"/>
-		<property name="fragmentTools" value="org.eclipse.swt.tools/tasks"/>
-		<property name="java_home" value="${gtkbuilddir}/JRE/x32/jdk1.6.0_14"/>
-		<property name="ant_bin" value="${gtkbuilddir}/apache-ant-1.7.1/bin"/>
-		<property name="machineName" value="rhel4vh"/>
-		<sshexec host="${machineName}" 
+	<!-- Params: machine, java_home, classpath, fragment, target -->
+	<target name="build_ssh">
+		<property name="jh" value="/bluebird/teamswt/swt-builddir/build/${java_home}"/>
+		<property name="ant_bin" value="/bluebird/teamswt/swt-builddir/build/apache-ant-1.7.1/bin"/>
+		<property name="tmpdir" value="/bluebird/teamswt/swt-builddir/build/${machine}"/>
+		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
+		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
-			knownhosts="C:\BUILD\ssh\known_hosts"
-	 		command="cd ${gtkbuilddir}; 'cvs -d ${cvsRoot_ottcvs1} checkout ${fragmentAntTasks}'; JAVA_HOME=${java_home}; PATH=$PATH:${ant_bin}; cd ${gtkbuilddir}}/${fragmentAntTasks}; ant build_gtk;"/>
+			trust="true"
+	 		command="mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${jh}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_gtk; cd; rm -rf ${tmpdir}"/>
 	</target>
+	
+	
+	<!-- shortcuts -->
+	<target name="rhel4">
+		<antcall target="build_ssh">
+			<param name="machine" value="${rhel4}"/>
+			<param name="java_home" value="JRE/x32/jdk1.6.0_14"/>
+		</antcall>
+	</target>
+	
+
 </project>
