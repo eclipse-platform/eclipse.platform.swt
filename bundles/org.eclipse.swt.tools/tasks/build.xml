@@ -59,10 +59,10 @@
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<!--env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
 			<arg value="clean"/>
 			<arg value="make_cairo"/>
-			<arg value="install"/>
+			<arg value="install"/-->
 		</exec>
 	</target>
 	
@@ -83,10 +83,10 @@
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<!--env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
 			<arg value="clean"/>
 			<arg value="make_cairo"/>
-			<arg value="install"/>
+			<arg value="install"/-->
 		</exec>
 	</target>
 
@@ -241,9 +241,10 @@
 
 	<!-- Params: machine, java_home, classpath, fragment, build_target -->
 	<target name="build_ssh">
-		<property name="jh" value="/bluebird/teamswt/swt-builddir/build/${java_home}"/>
-		<property name="ant_bin" value="/bluebird/teamswt/swt-builddir/build/apache-ant-1.7.1/bin"/>
-		<property name="tmpdir" value="/bluebird/teamswt/swt-builddir/build/${machine}_${fragment}"/>
+		<property name="build_home" value="${user.home}/build"/>
+		<property name="jh" value="${build_home}/${java_home}"/>
+		<property name="ant_bin" value="${build_home}/apache-ant-1.7.1/bin"/>
+		<property name="tmpdir" value="/${build_home}/${machine}_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
@@ -251,6 +252,8 @@
 			trust="true"
 	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${jh}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
+	
+	<target name="hh"><echo>${user.home}</echo></target>
 	
 	
 	<!-- shortcuts -->
