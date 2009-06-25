@@ -6,7 +6,6 @@
 	
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
-	<property name="cvsRoot_ottcvs1" value=":ext:${cvsUser}@ottcvs1:/home/cvs/swtwork"/>
 	<property name="cvsRoot" value=":ext:${cvsUser}@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="TAG" value="SSQ_build"/>
 	
@@ -221,10 +220,14 @@
 
 	<target name="build_gtk_ssh">
 		<property name="gtkbuilddir" value="/bluebird/teamswt/swt-builddir/build"/>
-		<property name="fragmentAntTasks" value="org.eclipse.swt.build/antTasks"/>
+		<property name="fragmentTools" value="org.eclipse.swt.tools/tasks"/>
 		<property name="java_home" value="${gtkbuilddir}/JRE/x32/jdk1.6.0_14"/>
 		<property name="ant_bin" value="${gtkbuilddir}/apache-ant-1.7.1/bin"/>
-		<sshexec host="${machineName}" username="swtbuild" keyfile="/bluebird/teamswt/swt-builddir/.ssh/id_dsa"
+		<property name="machineName" value="rhel4vh"/>
+		<sshexec host="${machineName}" 
+			username="swtbuild" 
+			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
+			knownhosts="C:\BUILD\ssh\known_hosts"
 	 		command="cd ${gtkbuilddir}; 'cvs -d ${cvsRoot_ottcvs1} checkout ${fragmentAntTasks}'; JAVA_HOME=${java_home}; PATH=$PATH:${ant_bin}; cd ${gtkbuilddir}}/${fragmentAntTasks}; ant build_gtk;"/>
 	</target>
 </project>
