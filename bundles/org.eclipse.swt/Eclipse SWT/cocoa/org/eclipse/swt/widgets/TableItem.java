@@ -472,7 +472,7 @@ public Rectangle getImageBounds (int index) {
 		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	rect.x += Tree.IMAGE_GAP;
+	rect.x += Table.IMAGE_GAP;
 	if (image != null) {
 		rect.width = parent.imageBounds.width;
 	} else {
@@ -580,10 +580,10 @@ public Rectangle getTextBounds (int index) {
 		index = parent.indexOf (column.nsColumn);
 	}
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	rect.x += Tree.TEXT_GAP;
-	rect.width -= Tree.TEXT_GAP;
+	rect.x += Table.TEXT_GAP;
+	rect.width -= Table.TEXT_GAP;
 	if (image != null) {
-		int offset = parent.imageBounds.width + Tree.IMAGE_GAP;
+		int offset = parent.imageBounds.width + Table.IMAGE_GAP;
 		rect.x += offset;
 		rect.width -= offset;
 	}

@@ -586,6 +586,7 @@ void createHandle () {
 	*/
 	firstColumn.setMinWidth (FIRST_COLUMN_MINIMUM_WIDTH);
 	firstColumn.setWidth(0);
+	firstColumn.setResizingMask (OS.NSTableColumnNoResizing);
 	firstColumn.headerCell ().setTitle (str);
 	widget.addTableColumn (firstColumn);
 	widget.setOutlineTableColumn (firstColumn);
@@ -614,6 +615,7 @@ void createItem (TreeColumn column, int index) {
 		//TODO - clear attributes, alignment etc.
 		nsColumn = firstColumn;
 		nsColumn.setMinWidth (0);
+		nsColumn.setResizingMask (OS.NSTableColumnUserResizingMask);
 		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
@@ -839,6 +841,7 @@ void destroyItem (TreeColumn column) {
 		* column always has a minimal width that makes this call come in.
 		*/
 		firstColumn.setMinWidth (FIRST_COLUMN_MINIMUM_WIDTH);
+		firstColumn.setResizingMask (OS.NSTableColumnNoResizing);
 		setScrollWidth ();
 	} else {
 		if (index == 0) {
