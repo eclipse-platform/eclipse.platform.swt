@@ -105,6 +105,7 @@
 		<cvs dest="${workdir}/${fragment}" command="add ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
+	<!-- Params: fragment -->
 	<target name="commit_fragment" depends="get_version">
 		<copy todir="${workdir}/${fragment}" overwrite="false">
 			<fileset dir="${workdir}/${fragment}" includes="*${old_version}*"/>
@@ -189,11 +190,10 @@
 	</target>
 	
 
-	<target name="build_gtk">
+	<!-- Params: cp, fragment, build_target -->
+	<target name="build_fragment">
 		<property name="cvsRsh" value="ssh"/>
-		<property name="cp" value="org.eclipse.swt/.classpath_gtk"/>
-		<property name="fragmentGtk" value="org.eclipse.swt.gtk.linux.x86"/>
-		<property name="workdir" value="${basedir}/gtk_linux_x86"/>
+		<property name="workdir" value="${basedir}/workdir"/>
 		
 		<!-- check out classpath, fragments, and natives -->
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${workdir}">
@@ -202,7 +202,7 @@
 				<argument value="-r"/>
 				<argument value="${TAG}"/>
 				<argument value="${cp}"/>
-				<argument value="${fragmentGtk}"/>
+				<argument value="${fragment}"/>
 			</commandline>
 		</cvs>
 		
@@ -213,15 +213,13 @@
 		<copy file="make_common.mak" todir="${workdir}/${builddir}" overwrite="true"/>
 		
 		<!-- build libraries -->
-		<antcall target="build_gtk_linux_x86"/>
+		<antcall target="${build_target}"/>
 		
 		<!-- commint libraries -->
-		<antcall target="commit_fragment">
-			<param name="fragment" value="${fragmentGtk}"/>
-		</antcall>
+		<antcall target="commit_fragment"/>
 	</target>
 
-	<!-- Params: machine, java_home, classpath, fragment, target -->
+	<!-- Params: machine, java_home, classpath, fragment, build_target -->
 	<target name="build_ssh">
 		<property name="jh" value="/bluebird/teamswt/swt-builddir/build/${java_home}"/>
 		<property name="ant_bin" value="/bluebird/teamswt/swt-builddir/build/apache-ant-1.7.1/bin"/>
@@ -231,7 +229,7 @@
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
-	 		command="mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${jh}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_gtk; cd; rm -rf ${tmpdir}"/>
+	 		command="mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${jh}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 	
 	
@@ -240,6 +238,9 @@
 		<antcall target="build_ssh">
 			<param name="machine" value="${rhel4}"/>
 			<param name="java_home" value="JRE/x32/jdk1.6.0_14"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+			<param name="build_target" value="build_gtk_linux_x86"/>
 		</antcall>
 	</target>
 	
