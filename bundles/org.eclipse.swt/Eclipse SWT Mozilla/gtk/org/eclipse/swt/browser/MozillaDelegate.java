@@ -26,19 +26,8 @@ class MozillaDelegate {
 	static int /*long*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
 
-	static boolean IsSparc;
-	static {
-		String osName = System.getProperty ("os.name").toLowerCase (); //$NON-NLS-1$
-		String osArch = System.getProperty ("os.arch").toLowerCase (); //$NON-NLS-1$
-		IsSparc = (osName.startsWith ("sunos") || osName.startsWith ("solaris")) && osArch.startsWith("sparc"); //$NON-NLS-1$
-	}
-
 MozillaDelegate (Browser browser) {
 	super ();
-	if (IsSparc) {
-		browser.dispose ();
-		SWT.error (SWT.ERROR_NO_HANDLES, null, " [Unsupported platform]"); //$NON-NLS-1$
-	}
 	this.browser = browser;
 }
 
