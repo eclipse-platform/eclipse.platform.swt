@@ -243,13 +243,13 @@
 	<target name="build_ssh">
 		<property name="jh" value="/bluebird/teamswt/swt-builddir/build/${java_home}"/>
 		<property name="ant_bin" value="/bluebird/teamswt/swt-builddir/build/apache-ant-1.7.1/bin"/>
-		<property name="tmpdir" value="/bluebird/teamswt/swt-builddir/build/${machine}"/>
+		<property name="tmpdir" value="/bluebird/teamswt/swt-builddir/build/${machine}_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
-	 		command="mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${jh}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
+	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${jh}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 	
 	
