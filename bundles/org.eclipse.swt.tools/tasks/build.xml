@@ -9,14 +9,6 @@
 	<property name="cvsRoot" value=":ext:${cvsUser}@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="TAG" value="SSQ_build"/>
 	
-	<!-- Machine names -->
-	<property name="rhel4" value="rhel4vh"/>
-	<property name="ppc"  value="apollobuildserv14"/>
-	<property name="solaris"  value="mmsol10"/>
-	<property name="solaris_x86"  value="tswtopensol"/>
-	<property name="rhel3x64"  value="tswtrh3x64"/>
-	<property name="rhel4x64"  value="tswtrh4x"/>
-		
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 		
 	
@@ -53,6 +45,24 @@
 	</target>
 
 	<target name="build_gtk_linux_x86" >
+		<exec dir="${workdir}/${builddir}" executable="sh">
+			<arg value="${workdir}/${builddir}/build.sh"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"/>
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<arg value="make_mozilla"/>
+			<arg value="make_xulrunner"/>
+			<arg value="make_xpcominit"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+	
+	<target name="build_motif_linux_x86" >
 		<exec dir="${workdir}/${builddir}" executable="sh">
 			<arg value="${workdir}/${builddir}/build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
@@ -236,7 +246,7 @@
 	<!-- shortcuts -->
 	<target name="rhel4">
 		<antcall target="build_ssh">
-			<param name="machine" value="${rhel4}"/>
+			<param name="machine" value="rhel4vh"/>
 			<param name="java_home" value="JRE/x32/jdk1.6.0_14"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
@@ -244,5 +254,23 @@
 		</antcall>
 	</target>
 	
+	<!-- shortcuts -->
+	<target name="rhel4_motif">
+		<antcall target="build_ssh">
+			<param name="machine" value="rhel4vh"/>
+			<param name="java_home" value="JRE/x32/jdk1.6.0_14"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
+			<param name="build_target" value="build_gtk_motif_x86"/>
+		</antcall>
+	</target>
+
+	<!-- Machine names -->
+	<property name="ppc"  value="apollobuildserv14"/>
+	<property name="solaris"  value="mmsol10"/>
+	<property name="solaris_x86"  value="tswtopensol"/>
+	<property name="rhel3x64"  value="tswtrh3x64"/>
+	<property name="rhel4x64"  value="tswtrh4x"/>
+		
 
 </project>
