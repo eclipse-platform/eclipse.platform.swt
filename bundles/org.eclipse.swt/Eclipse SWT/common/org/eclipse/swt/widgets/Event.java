@@ -109,9 +109,10 @@ public class Event {
 
 	/**
 	 * depending on the event type, the number of following
-	 * paint events which are pending which may always be zero
-	 * on some platforms or the number of lines or pages to
-	 * scroll using the mouse wheel
+	 * paint events that are pending which may always be zero
+	 * on some platforms, or the number of lines or pages to
+	 * scroll using the mouse wheel, or the number of times the
+	 * mouse has been clicked
 	 */
 	public int count;
 	

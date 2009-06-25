@@ -464,6 +464,9 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
+	 * @see org.eclipse.swt.widgets.Control#addDragDetectListener
+	 * @see org.eclipse.swt.events.DragDetectListener#dragDetected
+	 * @see org.eclipse.swt.events.DragDetectEvent
 	 * @see org.eclipse.swt.dnd.DragSource
 	 */
 	public static final int DragDetect = 29;
