@@ -73,6 +73,7 @@ class Mozilla extends WebBrowser {
 	static final String PREFIX_JAVASCRIPT = "javascript:"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
+	static final String PREFERENCE_DISABLEOPENWINDOWSTATUSHIDE = "dom.disable_window_open_feature.status"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEWINDOWSTATUSCHANGE = "dom.disable_window_status_change"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
 	static final String PREFERENCE_PROXYHOST_FTP = "network.proxy.ftp"; //$NON-NLS-1$
@@ -1054,6 +1055,14 @@ public void create (Composite parent, int style) {
 
 		/* Ensure that the status text can be set through means like javascript */ 
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_DISABLEWINDOWSTATUSCHANGE, true);
+		rc = prefBranch.SetBoolPref (buffer, 0);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+
+		/* Ensure that the status line can be hidden when opening a window from javascript */ 
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_DISABLEOPENWINDOWSTATUSHIDE, true);
 		rc = prefBranch.SetBoolPref (buffer, 0);
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
@@ -3108,7 +3117,9 @@ int SetVisibility (int aVisibility) {
 				event.location = location;
 				event.size = size;
 				event.addressBar = (chromeFlags & nsIWebBrowserChrome.CHROME_LOCATIONBAR) != 0;
-				event.menuBar = (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
+				/* Feature of OSX.  The menu bar is always displayed. */
+				boolean isOSX = Platform.PLATFORM.equals ("cocoa") || Platform.PLATFORM.equals ("carbon");
+				event.menuBar = isOSX || (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
 				event.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
 				event.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
 				for (int i = 0; i < visibilityWindowListeners.length; i++) {

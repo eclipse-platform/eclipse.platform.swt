@@ -161,7 +161,7 @@ public class WindowEvent extends TypedEvent {
 
 	/**
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
-	 * display a menu bar.
+	 * display a menu bar.  Note that this is always <code>true</code> on OS X.
 	 * 
 	 * @since 3.1
 	 */

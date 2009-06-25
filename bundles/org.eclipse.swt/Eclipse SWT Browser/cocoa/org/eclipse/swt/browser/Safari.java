@@ -1067,9 +1067,9 @@ void webViewShow(int /*long*/ sender) {
 	* the address bar.  The address bar is displayed
 	* if the tool bar is displayed. There is no separate
 	* notification for the address bar.
-	* Feature in Safari.  The menu bar is always
-	* displayed. There is no notification to hide
-	* the menu bar.
+	* 
+	* Feature of OSX.  The menu bar is always displayed.
+	* There is no notification to hide the menu bar.
 	*/
 	newEvent.addressBar = toolBar;
 	newEvent.menuBar = true;
