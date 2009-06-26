@@ -89,7 +89,31 @@
 			<arg value="install"/-->
 		</exec>
 	</target>
+	
+	<target name="build_cocoa_x86_and_ppc">
+		<exec dir="${workdir}/${builddir}" executable="sh">
+			<arg line="build32.sh"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+		
+	<target name="build_cocoa_x86_64">
+		<exec dir="${workdir}/${builddir}" executable="sh">
+			<arg line="build64.sh"/>
+			<arg value="install_x86_64"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
 
+	<target name="build_carbon">
+		<exec dir="${workdir}/${builddir}" executable="sh">
+			<arg line="build.sh"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+	
 	<!-- common build tasks -->
 	<target name="checkout_natives">
 		<xslt style="style.xls" in="${workdir}/${cp}" out="${workdir}/files.xml">
@@ -267,7 +291,6 @@
 		</antcall>
 	</target>
 	
-	<!-- shortcuts -->
 	<target name="rhel4_motif">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
@@ -278,6 +301,37 @@
 		</antcall>
 	</target>
 
+	<target name="grantsimac_cocoa_x86_ppc">
+		<antcall target="build_ssh">
+			<param name="machine" value="grants-imac"/>
+			<param name="java_home" value=""/>
+			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
+			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
+			<param name="build_target" value="build_cocoa_x86_and_ppc"/>
+		</antcall>
+	</target>
+	
+	<target name="grantsimac_cocoa_x86_64">
+		<antcall target="build_ssh">
+			<param name="machine" value="grants-imac"/>
+			<param name="java_home" value=""/>
+			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
+			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
+			<param name="build_target" value="build_cocoa_x86_64"/>
+		</antcall>
+	</target>
+	
+	<target name="grantsimac_carbon_x86_ppc">
+		<antcall target="build_ssh">
+			<param name="machine" value="grants-imac"/>
+			<param name="java_home" value=""/>
+			<param name="cp" value="org.eclipse.swt/.classpath_carbon"/>
+			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
+			<param name="build_target" value="build_carbon"/>
+		</antcall>
+	</target>
+		
+	
 	<!-- Machine names -->
 	<property name="ppc"  value="apollobuildserv14"/>
 	<property name="solaris"  value="mmsol10"/>
