@@ -541,7 +541,7 @@
 	</target>
 	
 	<target name="build_all">
-		<parallel>
+		<parallel failonany="false">
 			<sequential>
 				<antcall target="win32"></antcall>
 				<antcall target="wpf"></antcall>
