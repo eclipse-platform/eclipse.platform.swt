@@ -396,6 +396,11 @@
 		<antcall target="commit_fragment">
 			<param name="fragment" value="${fragmentWinCE}"/>
 		</antcall>
+		<delete dir="org.eclipse.swt"/>
+		<delete dir="${fragmentWin32}"/>
+		<delete dir="${fragmentWin64}"/>
+		<delete dir="${fragmentWinIA}"/>
+		<delete dir="${fragmentWinCE}"/>
 	</target>
 	
 	<target name="wpf">
