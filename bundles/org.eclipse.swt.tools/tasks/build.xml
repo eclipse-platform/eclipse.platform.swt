@@ -84,11 +84,11 @@
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<!--env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
 			<arg value="clean"/>
 			<arg value="make_cairo"/>
 			<arg value="install"/>
-			<arg value="clean"/>
+			<arg value="clean"/-->
 		</exec>
 	</target>
 	
