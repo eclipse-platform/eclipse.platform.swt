@@ -1,4 +1,4 @@
-<project name="org.eclipse.swt.build.buildWindows" default="build_windows" basedir=".">
+<project name="org.eclipse.swt.build.buildWindows" default="build_all" basedir=".">
 	<property name="workspace.location" location=".."/>
 	
 	<!-- CVS user name -->
@@ -13,7 +13,7 @@
 		
 	
 	<!-- Low level build tasks -->
-	<target name="build_win32_dll" >
+	<target name="build_win32_x86" >
 		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
 			<arg line="x86"/>
 			<arg line="install"/>
@@ -21,7 +21,7 @@
 		</exec>
 	</target>
 	
-	<target name="build_win64_dll" >
+	<target name="build_win32_x86_64" >
 		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
 			<arg line="x86_64"/>
 			<arg line="install"/>
@@ -29,7 +29,7 @@
 		</exec>
 	</target>
 
-	<target name="build_winIA_dll" >
+	<target name="build_win32_ia64" >
 		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
 			<arg line="ia64"/>
 			<arg line="install"/>
@@ -37,8 +37,15 @@
 		</exec>
 	</target>
 		
-	<target name="build_wince_dll" >
+	<target name="build_wince" >
 		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build-ce.bat">
+			<arg line="install"/>
+			<arg line="clean"/>
+		</exec>
+	</target>
+	
+	<target name="build_wpf" >
+		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
@@ -275,7 +282,7 @@
 		<delete dir="${workdir}"/> 
 	</target>
 	
-	<target name="build_windows">
+	<target name="win32">
 		<property name="cvsRsh" value="plink"/>
 		<property name="cp" value="org.eclipse.swt/.classpath_win32"/>
 		<property name="fragmentWin32" value="org.eclipse.swt.win32.win32.x86"/>
@@ -302,10 +309,10 @@
 		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
 		
 		<!-- build libraries -->
-		<antcall target="build_win32_dll"/>
-		<antcall target="build_win64_dll"/>
-		<antcall target="build_winIA_dll"/>
-		<antcall target="build_wince_dll"/>
+		<antcall target="build_win32_x86"/>
+		<antcall target="build_win32_x86_64"/>
+		<antcall target="build_win32_ia64"/>
+		<antcall target="build_wince"/>
 		
 		<!-- commint libraries -->
 		<antcall target="commit_fragment">
@@ -320,7 +327,33 @@
 		<antcall target="commit_fragment">
 			<param name="fragment" value="${fragmentWinCE}"/>
 		</antcall>
-
+	</target>
+	
+	<target name="wpf">
+		<property name="cvsRsh" value="plink"/>
+		<property name="cp" value="org.eclipse.swt/.classpath_wpf"/>
+		<property name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
+		
+		<!-- check out classpath, fragments, and natives -->
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
+			<commandline>
+				<argument value="checkout"/>
+				<argument value="-r"/>
+				<argument value="${TAG}"/>
+				<argument value="${cp}"/>
+				<argument value="${fragment}"/>
+			</commandline>
+		</cvs>
+		<antcall target="checkout_natives"/>
+			
+		<!-- test only -->
+		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
+		
+		<!-- build libraries -->
+		<antcall target="build_wpf_x86"/>
+		
+		<!-- commint libraries -->
+		<antcall target="commit_fragment"/>
 	</target>
 	
 
@@ -428,7 +461,7 @@
 		</antcall>
 	</target>
 
-	<target name="rhel4_motif">
+	<target name="motif_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
 			<param name="java_home" value="~/build/JRE/x32/jdk1.6.0_14"/>
@@ -464,14 +497,9 @@
 			<param name="build_target" value="build_carbon"/>
 		</antcall>
 	</target>
-		
 	
-	<!-- Machine names -->
-	<property name="ppc"  value="apollobuildserv14"/>
-	<property name="solaris"  value="mmsol10"/>
-	<property name="solaris_x86"  value="tswtopensol"/>
-	<property name="rhel3x64"  value="tswtrh3x64"/>
-	<property name="rhel4x64"  value="tswtrh4x"/>
+	<target name="build_all">
+	
+	</target>
 		
-
 </project>
