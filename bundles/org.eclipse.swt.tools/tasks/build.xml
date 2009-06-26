@@ -276,6 +276,17 @@
 	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${java_home}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 	
+	<target name="build_mac_ssh">
+		<property name="build_home" value="~/build"/>
+		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
+		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
+		<sshexec host="${machine}" 
+			username="swtbuild" 
+			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
+			trust="true"
+	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
+	</target>
+	
 	<!-- shortcuts -->
 	<target name="rhel4">
 		<antcall target="build_ssh">
@@ -298,9 +309,8 @@
 	</target>
 
 	<target name="grantsimac_cocoa_x86_ppc">
-		<antcall target="build_ssh">
+		<antcall target="build_mac_ssh">
 			<param name="machine" value="grants-imac"/>
-			<param name="java_home" value="/System/Library/Frameworks/JavaVM.framework/Versions/Current/"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
 			<param name="build_target" value="build_cocoa_x86_and_ppc"/>
@@ -308,9 +318,8 @@
 	</target>
 	
 	<target name="grantsimac_cocoa_x86_64">
-		<antcall target="build_ssh">
+		<antcall target="build_mac_ssh">
 			<param name="machine" value="grants-imac"/>
-			<param name="java_home" value="/System/Library/Frameworks/JavaVM.framework/Versions/Current/"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 			<param name="build_target" value="build_cocoa_x86_64"/>
@@ -318,9 +327,8 @@
 	</target>
 	
 	<target name="grantsimac_carbon_x86_ppc">
-		<antcall target="build_ssh">
+		<antcall target="build_mac_ssh">
 			<param name="machine" value="grants-imac"/>
-			<param name="java_home" value="/System/Library/Frameworks/JavaVM.framework/Versions/Current/"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_carbon"/>
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
 			<param name="build_target" value="build_carbon"/>
