@@ -340,27 +340,14 @@
 
 	<!-- Params: machine, java_home, classpath, fragment, build_target -->
 	<target name="build_ssh">
-		<property name="build_home" value="~/build"/>
-		<property name="ant_bin" value="${build_home}/apache-ant-1.7.1/bin"/>
-		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
+		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<property name="pre_commands" value=""/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${java_home}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
-	</target>
-	
-	<target name="build_mac_ssh">
-		<property name="build_home" value="~/build"/>
-		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
-		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
-		<sshexec host="${machine}" 
-			username="swtbuild" 
-			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
-			trust="true"
-	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 
 	<!-- all platforms -->
@@ -436,71 +423,70 @@
 	<target name="gtk_linux_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
-			<param name="java_home" value="~/build/JRE/x32/jdk1.6.0_14"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_x86"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 	
 	<target name="gtk_linux_x86_64">
 		<antcall target="build_ssh">
 			<param name="machine" value="tswtrh4x64"/>
-			<param name="java_home" value="~/build/JRE/x64/jdk1.6.0_14"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 			<param name="build_target" value="build_gtk_linux_x86_64"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 	
 	<target name="gtk_linux_ppc">
 		<antcall target="build_ssh">
 			<param name="machine" value="apollobuildserv14"/>
-			<param name="java_home" value="~/build/JRE/PPC/ibm-java-ppc-60/"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 			<param name="build_target" value="build_gtk_linux_ppc"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 	
 	<target name="gtk_solaris_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="tswtopensol"/>
-			<param name="java_home" value="~/build/JRE/Solaris_x86/jdk1.6.0_14/"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 			<param name="build_target" value="build_gtk_solaris_x86"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/Solaris_x86/jdk1.6.0_14/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 
 	<target name="gtk_solaris_sparc">
 		<antcall target="build_ssh">
 			<param name="machine" value="mmsol10"/>
-			<param name="java_home" value="~/build/JRE/SPARC/jdk1.6.0_14/"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
 			<param name="build_target" value="build_gtk_solaris_sparc"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 
 	<target name="motif_linux">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
-			<param name="java_home" value="~/build/JRE/x32/jdk1.6.0_14"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
 			<param name="build_target" value="build_motif_linux"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 
 	<target name="motif_aix">
 		<antcall target="build_ssh">
 			<param name="machine" value="janis"/>
-			<param name="java_home" value="~/build/JRE/AIX/sdk"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
 			<param name="build_target" value="build_motif_aix"/>
-			<param name="pre_commands" value="export PATH=$PATH:~/build/cvs_bin/AIX;"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/AIX/sdk; export PATH=$PATH:~/build/apache-ant-1.7.1/bin:~/build/cvs_bin/AIX;"/>
 		</antcall>
 	</target>
 
@@ -511,21 +497,22 @@
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
 			<param name="build_target" value="build_motif_solaris"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 
 	<target name="motif_hpux">
 		<antcall target="build_ssh">
 			<param name="machine" value="darkwing"/>
-			<param name="java_home" value="~/build/JRE/x32/jdk1.6.0_14"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
 			<param name="build_target" value="build_motif_hpux"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 
 	<target name="cocoa_x86_and_ppc">
-		<antcall target="build_mac_ssh">
+		<antcall target="build_ssh">
 			<param name="machine" value="grants-imac"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
@@ -534,7 +521,7 @@
 	</target>
 	
 	<target name="cocoa_x86_64">
-		<antcall target="build_mac_ssh">
+		<antcall target="build_ssh">
 			<param name="machine" value="grants-imac"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
@@ -543,7 +530,7 @@
 	</target>
 	
 	<target name="carbon">
-		<antcall target="build_mac_ssh">
+		<antcall target="build_ssh">
 			<param name="machine" value="grants-imac"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_carbon"/>
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
