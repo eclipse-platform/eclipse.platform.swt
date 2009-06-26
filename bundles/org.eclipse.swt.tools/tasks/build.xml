@@ -11,7 +11,6 @@
 	
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 		
-	
 	<!-- Low level build tasks -->
 	<target name="build_win32_x86" >
 		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
@@ -44,7 +43,7 @@
 		</exec>
 	</target>
 	
-	<target name="build_wpf" >
+	<target name="build_wpf_x86" >
 		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -160,9 +159,8 @@
 			<arg value="clean"/>
 		</exec>
 	</target>
-
 	
-	<target name="build_motif_linux_x86" >
+	<target name="build_motif_linux" >
 		<exec dir="${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
@@ -183,6 +181,39 @@
 			<arg value="clean"/>
 			<arg value="make_cairo"/>
 			<arg value="install"/-->
+			<arg value="clean"/>
+		</exec>
+	</target>
+
+	<target name="build_motif_aix" >
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
+			<env key="AWT_HOME" value="/bluebird/teamswt/swt-builddir/aix_jre_r6/sdk/jre/lib/ppc"/>
+			<env key="MOTIF_HOME" value="/bluebird/teamswt/swt-builddir/motif21"/>
+			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo1.6.0/lib/pkgconfig/"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+	
+	<target name="build_motif_solaris" >
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
+			<env key="CCPATH" value="/export/home/SUNWspro/bin"/>
+			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.6/lib/pkgconfig/"/>
+			<env key="PATH" value="${CCPATH}:/usr/ccs/bin:${PATH}"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+	
+	<target name="build_motif_hpux" >
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
+			<env key="JAVA_HOME" value="/opt/java1.5/"/>
+			<env key="AWT_HOME" value="/opt/java1.5/jre/lib/IA64N/"/>
+			<arg value="install"/>
 			<arg value="clean"/>
 		</exec>
 	</target>
@@ -277,7 +308,61 @@
 		<echo>"Commiting ${added_files}</echo>
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
+	
 
+	<!-- Params: cp, fragment, build_target -->
+	<target name="build_fragment">
+		<property name="cvsRsh" value="ssh"/>
+		
+		<!-- check out classpath, fragments, and natives -->
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
+			<commandline>
+				<argument value="checkout"/>
+				<argument value="-r"/>
+				<argument value="${TAG}"/>
+				<argument value="${cp}"/>
+				<argument value="${fragment}"/>
+			</commandline>
+		</cvs>
+		
+		<!-- check out natives -->
+		<antcall target="checkout_natives"/>
+			
+		<!-- test only -->
+		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
+		
+		<!-- build libraries -->
+		<antcall target="${build_target}"/>
+		
+		<!-- commint libraries -->
+		<antcall target="commit_fragment"/>
+	</target>
+
+	<!-- Params: machine, java_home, classpath, fragment, build_target -->
+	<target name="build_ssh">
+		<property name="build_home" value="~/build"/>
+		<property name="ant_bin" value="${build_home}/apache-ant-1.7.1/bin"/>
+		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
+		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
+		<sshexec host="${machine}" 
+			username="swtbuild" 
+			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
+			trust="true"
+	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${java_home}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
+	</target>
+	
+	<target name="build_mac_ssh">
+		<property name="build_home" value="~/build"/>
+		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
+		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
+		<sshexec host="${machine}" 
+			username="swtbuild" 
+			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
+			trust="true"
+	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
+	</target>
+
+	<!-- all platforms -->
 	<target name="win32">
 		<property name="cvsRsh" value="plink"/>
 		<property name="cp" value="org.eclipse.swt/.classpath_win32"/>
@@ -351,61 +436,7 @@
 		<!-- commint libraries -->
 		<antcall target="commit_fragment"/>
 	</target>
-	
 
-	<!-- Params: cp, fragment, build_target -->
-	<target name="build_fragment">
-		<property name="cvsRsh" value="ssh"/>
-		
-		<!-- check out classpath, fragments, and natives -->
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
-			<commandline>
-				<argument value="checkout"/>
-				<argument value="-r"/>
-				<argument value="${TAG}"/>
-				<argument value="${cp}"/>
-				<argument value="${fragment}"/>
-			</commandline>
-		</cvs>
-		
-		<!-- check out natives -->
-		<antcall target="checkout_natives"/>
-			
-		<!-- test only -->
-		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
-		
-		<!-- build libraries -->
-		<antcall target="${build_target}"/>
-		
-		<!-- commint libraries -->
-		<antcall target="commit_fragment"/>
-	</target>
-
-	<!-- Params: machine, java_home, classpath, fragment, build_target -->
-	<target name="build_ssh">
-		<property name="build_home" value="~/build"/>
-		<property name="ant_bin" value="${build_home}/apache-ant-1.7.1/bin"/>
-		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
-		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
-		<sshexec host="${machine}" 
-			username="swtbuild" 
-			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
-			trust="true"
-	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${java_home}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
-	</target>
-	
-	<target name="build_mac_ssh">
-		<property name="build_home" value="~/build"/>
-		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
-		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
-		<sshexec host="${machine}" 
-			username="swtbuild" 
-			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
-			trust="true"
-	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
-	</target>
-	
-	<!-- shortcuts -->
 	<target name="gtk_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
@@ -456,13 +487,43 @@
 		</antcall>
 	</target>
 
-	<target name="motif_x86">
+	<target name="motif_linux">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
 			<param name="java_home" value="~/build/JRE/x32/jdk1.6.0_14"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
-			<param name="build_target" value="build_motif_linux_x86"/>
+			<param name="build_target" value="build_motif_linux"/>
+		</antcall>
+	</target>
+
+	<target name="motif_aix">
+		<antcall target="build_ssh">
+			<param name="machine" value="janis"/>
+			<param name="java_home" value="~/build/JRE/AIX/sdk"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
+			<param name="build_target" value="build_motif_aix"/>
+		</antcall>
+	</target>
+
+	<target name="motif_solaris">
+		<antcall target="build_ssh">
+			<param name="machine" value="mmsol10"/>
+			<param name="java_home" value="~/build/JRE/SPARC/jdk1.6.0_14"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
+			<param name="build_target" value="build_motif_solaris"/>
+		</antcall>
+	</target>
+
+	<target name="motif_hpux">
+		<antcall target="build_ssh">
+			<param name="machine" value="darkwing"/>
+			<param name="java_home" value="~/build/JRE/x32/jdk1.6.0_14"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
+			<param name="build_target" value="build_motif_hpux"/>
 		</antcall>
 	</target>
 
@@ -494,7 +555,20 @@
 	</target>
 	
 	<target name="build_all">
-	
+		<antcall target="win32"></antcall>
+		<antcall target="wpf"></antcall>
+		<antcall target="cocoa_x86"></antcall>
+		<antcall target="cocoa_x86_64"></antcall>
+		<antcall target="carbon"></antcall>
+		<antcall target="gtk_x86"></antcall>
+		<antcall target="gtk_x86_64"></antcall>
+		<antcall target="gtk_ppc"></antcall>
+		<antcall target="gtk_solaris_x86"></antcall>
+		<antcall target="gtk_solaris_sparc"></antcall>
+		<antcall target="motif_linux"></antcall>
+		<antcall target="motif_aix"></antcall>
+		<antcall target="motif_solaris"></antcall>
+		<antcall target="motif_hpux"></antcall>
 	</target>
 		
 </project>
