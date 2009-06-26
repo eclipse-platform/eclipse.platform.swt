@@ -499,7 +499,7 @@
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
 			<param name="build_target" value="build_motif_aix"/>
-			<param name="pre_commands" value="bash; export PATH=$PATH:~/build/cvs_bin/AIX;"/>
+			<param name="pre_commands" value="export PATH=$PATH:~/build/cvs_bin/AIX;"/>
 		</antcall>
 	</target>
 
