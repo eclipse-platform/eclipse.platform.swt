@@ -252,6 +252,7 @@
 		<copy todir="${builddir}" flatten="true">
 			<fileset dir="org.eclipse.swt" includes="**/library/"/>
 		</copy>
+		<delete file="files.xml"/>
 	</target>
 	
 	<target name="get_version" >
