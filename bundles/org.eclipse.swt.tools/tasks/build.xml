@@ -238,6 +238,10 @@
 		</exec>
 	</target>
 	
+	<target name="build_photon">
+		<echo>Photon is not being built</echo>
+	</target>
+	
 	<!-- common build tasks -->
 	<target name="checkout_natives">
 		<xslt style="style.xls" in="${cp}" out="files.xml">
@@ -328,7 +332,7 @@
 		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
 		
 		<!-- build libraries -->
-		<antcall target="${build_target}" if="build_target"/>
+		<antcall target="${build_target}"/>
 		
 		<!-- commint libraries -->
 		<antcall target="commit_fragment"/>
