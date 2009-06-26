@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.SWTLayoutExample.name
+Bundle-SymbolicName: org.eclipse.swt.examples.layouts; singleton:=true
+Bundle-Version: 3.1.100.qualifier
+Bundle-ClassPath: layouts.jar
+Bundle-Activator: org.eclipse.swt.examples.layouts.LayoutPlugin
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui.ide,
+ org.eclipse.ui.views,
+ org.eclipse.jface.text,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.editors,
+ org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.swt,
+ org.eclipse.swt.examples
+Bundle-ActivationPolicy: lazy

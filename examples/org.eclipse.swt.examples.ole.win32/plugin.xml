@@ -1,31 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <!-- File written by PDE 1.0 -->
-<plugin
-   id="org.eclipse.swt.examples.ole.win32"
-   name="%plugin.SWTOLEExample.name"
-   version="3.1.100.qualifier"
-   provider-name="%providerName"
-   class="org.eclipse.swt.examples.ole.win32.OlePlugin">
+<plugin>
 <!-- Required plugins -->
-<requires>
-   <import plugin="org.eclipse.ui.ide"/>
-   <import plugin="org.eclipse.ui.views"/>
-   <import plugin="org.eclipse.jface.text"/>
-   <import plugin="org.eclipse.ui.workbench.texteditor"/>
-   <import plugin="org.eclipse.ui.editors"/>
-   <import plugin="org.eclipse.core.runtime"/>
-   <import plugin="org.eclipse.core.resources"/>
-   <import plugin="org.eclipse.ui"/>
-   <import plugin="org.eclipse.swt"/>
-</requires>
 
 <!-- Runtime -->
 <!-- Runtime -->
-<runtime>
-   <library name="olewin32.jar">
-   </library>
-</runtime>
 
 <!-- Extensions -->
 <!-- Extension points -->

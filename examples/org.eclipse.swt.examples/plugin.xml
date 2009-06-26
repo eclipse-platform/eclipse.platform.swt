@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <!-- File written by PDE 1.0 -->
-<plugin
-   id="org.eclipse.swt.examples"
-   name="%plugin.SWTStandaloneExampleSet.name"
-   version="3.4.0"
-   provider-name="%providerName"
->
+<plugin>
 <!-- Required plugins -->
-<requires>
-   <import plugin="org.eclipse.swt"/>
-   <import plugin="org.eclipse.swt.examples.launcher" optional="true"/>
-</requires>
 
 <!-- Runtime -->
-<runtime>
-   <library name="swtexamples.jar">
-      <export name="*"/>
-   </library>
-</runtime>
 
 <!-- Extensions -->
 <!-- Extension points -->

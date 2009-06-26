@@ -1,38 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.eclipse.swt.examples.launcher"
-   name="%plugin.SWTLauncherExample.name"
-   version="3.1.100.qualifier"
-   provider-name="%providerName"
-   class="org.eclipse.swt.examples.launcher.LauncherPlugin">
+<plugin>
 
 <!-- Runtime -->
 <!-- Runtime -->
 <!-- Runtime -->
 <!-- Runtime -->
-   <runtime>
-      <library name="launcher.jar">
-      </library>
-   </runtime>
+   
 <!-- Required plugins -->
-   <requires>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.swt"/>
-      <import plugin="org.eclipse.jdt.launching"/>
-      <import plugin="org.eclipse.debug.core"/>
-      <import plugin="org.eclipse.core.boot"/>
-      <import plugin="org.eclipse.jdt.core"/>
-   </requires>
-
-
+   
 <!-- Extension points -->
    <extension-point id="launchItems" name="%extension-point.launchItems.name" schema="schema/org.eclipse.swt.examples.launcher.launchItems.exsd"/>
 
