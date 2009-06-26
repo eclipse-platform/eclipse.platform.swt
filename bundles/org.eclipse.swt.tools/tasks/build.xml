@@ -91,7 +91,6 @@
 		</exec>
 	</target>
 	
-	
 	<target name="build_gtk_solaris_sparc" >
 		<exec dir="${workdir}/${builddir}" executable="sh">
 			<arg value="${workdir}/${builddir}/build.sh"/>
@@ -111,6 +110,25 @@
 			<arg value="clean"/>
 		</exec>
 	</target>
+	
+	<target name="build_gtk_solaris_x86" >
+		<exec dir="${workdir}/${builddir}" executable="sh">
+			<arg value="${workdir}/${builddir}/build.sh"/>
+			<env key="CC" value="cc"/>
+			<env key="CXX" value="CC"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/bog/mozilla/solaris_x86/1.7/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/solaris-x86/mozilla/dist/sdk"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
+			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<arg value="make_mozilla"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+
 	
 	<target name="build_motif_linux_x86" >
 		<exec dir="${workdir}/${builddir}" executable="sh">
@@ -355,7 +373,17 @@
 		</antcall>
 	</target>
 	
-	<target name="gtk_solaris">
+	<target name="gtk_solaris_x86">
+		<antcall target="build_ssh">
+			<param name="machine" value="tswtopensol"/>
+			<param name="java_home" value="~/build/JRE/Solaris_x86/jdk1.6.0_14/"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
+			<param name="build_target" value="build_gtk_solaris_x86"/>
+		</antcall>
+	</target>
+
+	<target name="gtk_solaris_sparc">
 		<antcall target="build_ssh">
 			<param name="machine" value="mmsol10"/>
 			<param name="java_home" value="~/build/JRE/SPARC/jdk1.6.0_14/"/>
@@ -364,7 +392,7 @@
 			<param name="build_target" value="build_gtk_solaris_sparc"/>
 		</antcall>
 	</target>
-		
+
 	<target name="rhel4_motif">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
