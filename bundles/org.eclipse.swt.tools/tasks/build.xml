@@ -9,7 +9,7 @@
 		
 	<!-- Low level build tasks -->
 	<target name="build_win32_x86" >
-		<exec dir="${basedir}/${builddir}" executable="build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="x86"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -17,7 +17,7 @@
 	</target>
 	
 	<target name="build_win32_x86_64" >
-		<exec dir="${basedir}/${builddir}" executable="build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="x86_64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -25,7 +25,7 @@
 	</target>
 
 	<target name="build_win32_ia64" >
-		<exec dir="${basedir}/${builddir}" executable="build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="ia64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -33,14 +33,14 @@
 	</target>
 		
 	<target name="build_wince" >
-		<exec dir="${basedir}/${builddir}" executable="build-ce.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build-ce.bat">
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
 	</target>
 	
 	<target name="build_wpf_x86" >
-		<exec dir="${basedir}/${builddir}" executable="build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
