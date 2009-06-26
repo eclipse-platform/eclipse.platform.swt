@@ -273,6 +273,7 @@ void releaseChildren (boolean destroy) {
 }
 
 void sendHorizontalSelection () {
+	if (horizontalBar.view.isHiddenOrHasHiddenAncestor()) return;
 	if ((state & CANVAS) == 0 && scrollView != null && visibleRgn == 0) {
 		scrollView.contentView().setCopiesOnScroll(!isObscured());
 	}
@@ -280,6 +281,7 @@ void sendHorizontalSelection () {
 }
 
 void sendVerticalSelection () {
+	if (verticalBar.view.isHiddenOrHasHiddenAncestor()) return;
 	if ((state & CANVAS) == 0 && scrollView != null && visibleRgn == 0) {
 		scrollView.contentView().setCopiesOnScroll(!isObscured());
 	}
