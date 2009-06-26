@@ -48,7 +48,7 @@
 
 	<target name="build_gtk_linux_x86" >
 		<exec dir="${basedir}/${builddir}" executable="sh">
-			<arg value="${builddir}/build.sh"/>
+			<arg value="build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
