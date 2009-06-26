@@ -308,7 +308,7 @@
 		</antcall>
 	</target>
 
-	<target name="grantsimac_cocoa_x86_ppc">
+	<target name="cocoa_x86">
 		<antcall target="build_mac_ssh">
 			<param name="machine" value="grants-imac"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
@@ -317,7 +317,7 @@
 		</antcall>
 	</target>
 	
-	<target name="grantsimac_cocoa_x86_64">
+	<target name="cocoa_x86_64">
 		<antcall target="build_mac_ssh">
 			<param name="machine" value="grants-imac"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
@@ -326,7 +326,7 @@
 		</antcall>
 	</target>
 	
-	<target name="grantsimac_carbon_x86_ppc">
+	<target name="carbon">
 		<antcall target="build_mac_ssh">
 			<param name="machine" value="grants-imac"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_carbon"/>
