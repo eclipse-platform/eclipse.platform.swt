@@ -66,6 +66,31 @@
 			<arg value="clean"/>
 		</exec>
 	</target>
+
+	<target name="build_gtk_linux_x86_64" >
+		<exec dir="${workdir}/${builddir}" executable="sh">
+			<arg value="${workdir}/${builddir}/build.sh"/>
+			<env key="CAIROPATH" value="/usr/local/cairo-1.0.2/lib/pkgconfig"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
+			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk/"/>
+			<!-- setenv GCC_VERSION -gcc3 -->
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
+			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<arg value="make_mozilla"/>
+			<arg value="make_xulrunner"/>
+			<arg value="make_xpcominit"/>
+			<arg value="install"/>
+			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<arg value="clean"/>
+			<arg value="make_cairo"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
 	
 	<target name="build_gtk_linux_ppc" >
 		<exec dir="${workdir}/${builddir}" executable="sh">
@@ -360,6 +385,16 @@
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_x86"/>
+		</antcall>
+	</target>
+	
+	<target name="gtk_x86_64">
+		<antcall target="build_ssh">
+			<param name="machine" value="tswtrh4x64"/>
+			<param name="java_home" value="~/build/JRE/x64/jdk1.6.0_14"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
+			<param name="build_target" value="build_gtk_linux_x86_64"/>
 		</antcall>
 	</target>
 	
