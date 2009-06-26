@@ -52,8 +52,8 @@
 	</target>
 
 	<target name="build_gtk_linux_x86" >
-		<exec dir="${workdir}/${builddir}" executable="sh">
-			<arg value="${workdir}/${builddir}/build.sh"/>
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
@@ -75,8 +75,8 @@
 	</target>
 
 	<target name="build_gtk_linux_x86_64" >
-		<exec dir="${workdir}/${builddir}" executable="sh">
-			<arg value="${workdir}/${builddir}/build.sh"/>
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0.2/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
 			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig"/>
@@ -100,8 +100,8 @@
 	</target>
 	
 	<target name="build_gtk_linux_ppc" >
-		<exec dir="${workdir}/${builddir}" executable="sh">
-			<arg value="${workdir}/${builddir}/build.sh"/>
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/bluebird/teamswt/swt-builddir/cairo/ppc/cairo-1.0.2/lib/pkgconfig/"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-ppc-142"/>
 			<env key="MOZILLA_SDK" value=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc/mozilla/dist/sdk"/>
@@ -124,8 +124,8 @@
 	</target>
 	
 	<target name="build_gtk_solaris_sparc" >
-		<exec dir="${workdir}/${builddir}" executable="sh">
-			<arg value="${workdir}/${builddir}/build.sh"/>
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
 			<env key="CCPATH" value="/export/home/SUNWspro/bin"/>
 			<env key="CC" value="cc"/>
@@ -144,8 +144,8 @@
 	</target>
 	
 	<target name="build_gtk_solaris_x86" >
-		<exec dir="${workdir}/${builddir}" executable="sh">
-			<arg value="${workdir}/${builddir}/build.sh"/>
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
 			<env key="CC" value="cc"/>
 			<env key="CXX" value="CC"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
@@ -163,8 +163,8 @@
 
 	
 	<target name="build_motif_linux_x86" >
-		<exec dir="${workdir}/${builddir}" executable="sh">
-			<arg value="${workdir}/${builddir}/build.sh"/>
+		<exec dir="${builddir}" executable="sh">
+			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
 			<env key="MOTIF_HOME" value="/bluebird/teamswt/swt-builddir/motif21"/>
@@ -188,7 +188,7 @@
 	</target>
 	
 	<target name="build_cocoa_x86_and_ppc">
-		<exec dir="${workdir}/${builddir}" executable="sh">
+		<exec dir="${builddir}" executable="sh">
 			<arg line="build32.sh"/>
 			<arg value="install"/>
 			<arg value="clean"/>
@@ -196,7 +196,7 @@
 	</target>
 		
 	<target name="build_cocoa_x86_64">
-		<exec dir="${workdir}/${builddir}" executable="sh">
+		<exec dir="${builddir}" executable="sh">
 			<arg line="build64.sh"/>
 			<arg value="install_x86_64"/>
 			<arg value="clean"/>
@@ -204,7 +204,7 @@
 	</target>
 
 	<target name="build_carbon">
-		<exec dir="${workdir}/${builddir}" executable="sh">
+		<exec dir="${builddir}" executable="sh">
 			<arg line="build.sh"/>
 			<arg value="install"/>
 			<arg value="clean"/>
@@ -213,25 +213,25 @@
 	
 	<!-- common build tasks -->
 	<target name="checkout_natives">
-		<xslt style="style.xls" in="${workdir}/${cp}" out="${workdir}/files.xml">
+		<xslt style="style.xls" in="${cp}" out="files.xml">
 			<param name="TAG" expression="${TAG}"/>
-			<param name="workdir" expression="${workdir}"/>
+			<param name="workdir" expression="${basedir}"/>
 		</xslt>
-		<ant antfile="${workdir}/files.xml"/>
-		<copy todir="${workdir}/${builddir}" flatten="true">
-			<fileset dir="${workdir}/org.eclipse.swt" includes="**/library/"/>
+		<ant antfile="files.xml"/>
+		<copy todir="${builddir}" flatten="true">
+			<fileset dir="org.eclipse.swt" includes="**/library/"/>
 		</copy>
 	</target>
 	
 	<target name="get_version" >
-		<property name="version_file" value="${workdir}/${builddir}/make_common.mak"/>
-		<copy file="${version_file}" tofile="${workdir}/tmp"/>
+		<property name="version_file" value="${builddir}/make_common.mak"/>
+		<copy file="${version_file}" tofile="tmp"/>
 		<loadproperties srcFile="${version_file}"/>
-		<propertyfile file="${workdir}/tmp">
+		<propertyfile file="tmp">
 			<entry key="old_min_ver" default="${min_ver}" type="int" operation="-"/>
 		</propertyfile>
-		<loadproperties srcFile="${workdir}/tmp"/>
-		<delete file="${workdir}/tmp"/>
+		<loadproperties srcFile="tmp"/>
+		<delete file="tmp"/>
 		<property name="swt_version" value="${maj_ver}${min_ver}"/>
 		<property name="old_version" value="${maj_ver}${old_min_ver}"/>
 		<echo>Version ${swt_version} ${old_version}</echo>
@@ -239,33 +239,33 @@
 	
 	<target name="new_version" if="is_new_version">
 		<echo>Removing ${removed_files}</echo>
-		<cvs dest="${workdir}/${fragment}" command="remove -f ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+		<cvs dest="${fragment}" command="remove -f ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>Commiting ${removed_files}</echo>
-		<cvs dest="${workdir}/${fragment}" command="commit -m 'remove v${old_version}' ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+		<cvs dest="${fragment}" command="commit -m 'remove v${old_version}' ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>Adding ${added_files}</echo>
-		<cvs dest="${workdir}/${fragment}" command="add ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+		<cvs dest="${fragment}" command="add ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
 	<!-- Params: fragment -->
 	<target name="commit_fragment" depends="get_version">
-		<copy todir="${workdir}/${fragment}" overwrite="false">
-			<fileset dir="${workdir}/${fragment}" includes="*${old_version}*"/>
+		<copy todir="${fragment}" overwrite="false">
+			<fileset dir="${fragment}" includes="*${old_version}*"/>
 			<regexpmapper from="(.*)${old_version}(.*)" to="\1${swt_version}\2"/>
 		</copy>
 
-		<fileset id="removeid" dir="${workdir}/${fragment}" includes="*${old_version}*"/>
+		<fileset id="removeid" dir="${fragment}" includes="*${old_version}*"/>
 		<property name="rfiles" refid="removeid"/>
-		<echo file="${workdir}/tmp">removed_files=${rfiles}</echo>
-		<replace file="${workdir}/tmp" token=";" value=" "/>
-		<loadproperties srcfile="${workdir}/tmp"></loadproperties>
-		<delete file="${workdir}/tmp"/>
+		<echo file="tmp">removed_files=${rfiles}</echo>
+		<replace file="tmp" token=";" value=" "/>
+		<loadproperties srcfile="tmp"></loadproperties>
+		<delete file="tmp"/>
 		
-		<fileset id= "addid" dir="${workdir}/${fragment}" includes="*${swt_version}*"/>
+		<fileset id= "addid" dir="${fragment}" includes="*${swt_version}*"/>
 		<property name="afiles" refid="addid"/>
-		<echo file="${workdir}/tmp">added_files=${afiles}</echo>
-		<replace file="${workdir}/tmp" token=";" value=" "/>
-		<loadproperties srcfile="${workdir}/tmp"></loadproperties>
-		<delete file="${workdir}/tmp"/>
+		<echo file="tmp">added_files=${afiles}</echo>
+		<replace file="tmp" token=";" value=" "/>
+		<loadproperties srcfile="tmp"></loadproperties>
+		<delete file="tmp"/>
 		
 		<condition property="is_new_version">
 			<not>
@@ -275,13 +275,9 @@
 		<antcall target="new_version"/>
 		
 		<echo>"Commiting ${added_files}</echo>
-		<cvs dest="${workdir}/${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 
-	<target name="clean">
-		<delete dir="${workdir}"/> 
-	</target>
-	
 	<target name="win32">
 		<property name="cvsRsh" value="plink"/>
 		<property name="cp" value="org.eclipse.swt/.classpath_win32"/>
@@ -360,10 +356,9 @@
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_fragment">
 		<property name="cvsRsh" value="ssh"/>
-		<property name="workdir" value="${basedir}/workdir"/>
 		
 		<!-- check out classpath, fragments, and natives -->
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${workdir}">
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
 			<commandline>
 				<argument value="checkout"/>
 				<argument value="-r"/>
@@ -377,7 +372,7 @@
 		<antcall target="checkout_natives"/>
 			
 		<!-- test only -->
-		<copy file="make_common.mak" todir="${workdir}/${builddir}" overwrite="true"/>
+		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
 		
 		<!-- build libraries -->
 		<antcall target="${build_target}"/>
