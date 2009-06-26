@@ -344,6 +344,7 @@
 		<property name="ant_bin" value="${build_home}/apache-ant-1.7.1/bin"/>
 		<property name="tmpdir" value="${build_home}/${machine}_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
+		<property name="pre_commands" value=""/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
