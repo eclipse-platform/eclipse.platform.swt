@@ -91,6 +91,27 @@
 		</exec>
 	</target>
 	
+	
+	<target name="build_gtk_solaris_sparc" >
+		<exec dir="${workdir}/${builddir}" executable="sh">
+			<arg value="${workdir}/${builddir}/build.sh"/>
+			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
+			<env key="CCPATH" value="/export/home/SUNWspro/bin"/>
+			<env key="CC" value="cc"/>
+			<env key="CXX" value="CC"/>
+			<env key="CDE_HOME" value="/usr/dt"/>
+			<env key="JAVA_HOME" value="/usr/j2se"/>
+			<env key="PATH" value="${CCPATH}:/usr/ccs/bin:/usr/local/bin:${PATH}"/>
+			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"/>
+			<env key="MOZILLA_INCLUDES" value="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"/>
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<arg value="make_mozilla"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+	
 	<target name="build_motif_linux_x86" >
 		<exec dir="${workdir}/${builddir}" executable="sh">
 			<arg value="${workdir}/${builddir}/build.sh"/>
@@ -334,6 +355,16 @@
 		</antcall>
 	</target>
 	
+	<target name="gtk_solaris">
+		<antcall target="build_ssh">
+			<param name="machine" value="mmsol10"/>
+			<param name="java_home" value="~/build/JRE/SPARC/jdk1.6.0_14/"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
+			<param name="build_target" value="build_gtk_solaris_sparc"/>
+		</antcall>
+	</target>
+		
 	<target name="rhel4_motif">
 		<antcall target="build_ssh">
 			<param name="machine" value="rhel4vh"/>
