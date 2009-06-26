@@ -348,7 +348,7 @@
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
-	 		command="rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${java_home}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; export JAVA_HOME=${java_home}; export PATH=$PATH:${ant_bin}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 	
 	<target name="build_mac_ssh">
@@ -499,6 +499,7 @@
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
 			<param name="build_target" value="build_motif_aix"/>
+			<param name="pre_commands" value="bash; export PATH=$PATH:~/build/cvs_bin/AIX;"/>
 		</antcall>
 	</target>
 
@@ -552,6 +553,7 @@
 	<target name="build_all">
 		<antcall target="win32"></antcall>
 		<antcall target="wpf"></antcall>
+		<antcall target="photon"></antcall>
 		<antcall target="cocoa_x86_and_ppc"></antcall>
 		<antcall target="cocoa_x86_64"></antcall>
 		<antcall target="carbon"></antcall>
@@ -564,7 +566,6 @@
 		<antcall target="motif_aix"></antcall>
 		<antcall target="motif_solaris"></antcall>
 		<antcall target="motif_hpux"></antcall>
-		<antcall target="photon"></antcall>
 	</target>
 		
 </project>
