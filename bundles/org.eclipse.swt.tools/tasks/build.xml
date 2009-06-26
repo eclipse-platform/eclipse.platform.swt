@@ -507,7 +507,7 @@
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
 			<param name="build_target" value="build_motif_hpux"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=/opt/java1.5; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
 
@@ -553,7 +553,7 @@
 		<antcall target="motif_linux"></antcall>
 		<antcall target="motif_aix"></antcall>
 		<antcall target="motif_solaris"></antcall>
-		<antcall target="motif_hpux"></antcall>
+		<!--antcall target="motif_hpux"></antcall-->
 	</target>
 		
 </project>
