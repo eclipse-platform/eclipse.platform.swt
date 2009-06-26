@@ -122,12 +122,11 @@
 		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
-			<env key="CCPATH" value="/export/home/SUNWspro/bin"/>
 			<env key="CC" value="cc"/>
 			<env key="CXX" value="CC"/>
 			<env key="CDE_HOME" value="/usr/dt"/>
 			<env key="JAVA_HOME" value="/usr/j2se"/>
-			<env key="PATH" value="${CCPATH}:/usr/ccs/bin:/usr/local/bin:${PATH}"/>
+			<env key="PATH" value="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/local/bin:$PATH"/>
 			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"/>
 			<env key="MOZILLA_INCLUDES" value="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"/>
@@ -196,9 +195,8 @@
 	<target name="build_motif_solaris" >
 		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="build.sh"/>
-			<env key="CCPATH" value="/export/home/SUNWspro/bin"/>
 			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.6/lib/pkgconfig/"/>
-			<env key="PATH" value="${CCPATH}:/usr/ccs/bin:${PATH}"/>
+			<env key="PATH" value="/export/home/SUNWspro/bin:/usr/ccs/bin:$PATH"/>
 			<arg value="install"/>
 			<arg value="clean"/>
 		</exec>
