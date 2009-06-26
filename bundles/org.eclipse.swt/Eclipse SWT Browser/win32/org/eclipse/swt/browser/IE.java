@@ -496,13 +496,6 @@ public void create(Composite parent, int style) {
 								/* final document complete */
 								globalDispatch = 0;
 
-								/* re-install registered functions */
-								Enumeration elements = functions.elements ();
-								while (elements.hasMoreElements ()) {
-									BrowserFunction function = (BrowserFunction)elements.nextElement ();
-									execute (function.functionString);
-								}
-
 								ProgressEvent progressEvent = new ProgressEvent(browser);
 								progressEvent.display = browser.getDisplay();
 								progressEvent.widget = browser;
@@ -530,6 +523,14 @@ public void create(Composite parent, int style) {
 						Variant variant = new Variant(auto);
 						IDispatch top = variant.getDispatch();
 						boolean isTop = top.getAddress() == dispatch.getAddress();
+						if (isTop) {
+							/* re-install registered functions */
+							Enumeration elements = functions.elements ();
+							while (elements.hasMoreElements ()) {
+								BrowserFunction function = (BrowserFunction)elements.nextElement ();
+								execute (function.functionString);
+							}
+						}
 						hookDOMListeners(webBrowser, isTop);
 						webBrowser.dispose();
 						break;

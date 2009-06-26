@@ -634,13 +634,6 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 			);
 		}
 
-		/* re-install registered functions */
-		Enumeration elements = functions.elements ();
-		while (elements.hasMoreElements ()) {
-			BrowserFunction function = (BrowserFunction)elements.nextElement ();
-			execute (function.functionString);
-		}
-
 		/*
 		* Feature on Safari.  The identifier is used here as a marker for the events 
 		* related to the top frame and the URL changes related to that top frame as 
@@ -736,6 +729,13 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 		/* reset resource status variables */
 		resourceCount = 0;		
 		this.url = url2;
+
+		/* re-install registered functions */
+		Enumeration elements = functions.elements ();
+		while (elements.hasMoreElements ()) {
+			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+			execute (function.functionString);
+		}
 
 		final ProgressEvent progress = new ProgressEvent(browser);
 		progress.display = display;

@@ -42,6 +42,7 @@ class Mozilla extends WebBrowser {
 	XPCOMObject tooltipListener;
 	XPCOMObject domEventListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
+	int registerFunctionsOnState = 0;
 	int refCount, lastKeyCode, lastCharCode, authCount;
 	int /*long*/ request;
 	Point location, size;
@@ -2590,9 +2591,19 @@ int GetWeakReference (int /*long*/ ppvObject) {
 /* nsIWebProgressListener */
 
 int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateFlags, int aStatus) {
+	if (registerFunctionsOnState != 0 && ((aStateFlags & registerFunctionsOnState) == registerFunctionsOnState)) {
+		registerFunctionsOnState = 0;
+		Enumeration elements = functions.elements ();
+		while (elements.hasMoreElements ()) {
+			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+			execute (function.functionString);
+		}
+	}
+
 	if ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) == 0) return XPCOM.NS_OK;
 	if ((aStateFlags & nsIWebProgressListener.STATE_START) != 0) {
 		if (request == 0) request = aRequest;
+		registerFunctionsOnState = nsIWebProgressListener.STATE_IS_REQUEST | nsIWebProgressListener.STATE_START;
 		/*
 		 * Add the page's nsIDOMWindow to the collection of windows that will
 		 * have DOM listeners added to them later on in the page loading
@@ -2607,6 +2618,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		unhookedDOMWindows.addElement (new LONG (result[0]));
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_REDIRECTING) != 0) {
 		if (request == aRequest) request = 0;
+		registerFunctionsOnState = nsIWebProgressListener.STATE_TRANSFERRING;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		/*
 		* If this page's nsIDOMWindow handle is still in unhookedDOMWindows then
@@ -2715,6 +2727,18 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 
 				rc = stream.OpenStream (uri.getAddress (), aContentType);
 				if (rc != XPCOM.NS_OK) error (rc);
+
+				/*
+				* When content is being streamed to Mozilla this is the only place
+				* where registered functions can be re-installed such that they will
+				* be invokable at load time by JS contained in the stream.
+				*/
+				Enumeration elements = functions.elements ();
+				while (elements.hasMoreElements ()) {
+					BrowserFunction function = (BrowserFunction)elements.nextElement ();
+					execute (function.functionString);
+				}
+
 				int /*long*/ ptr = C.malloc (htmlBytes.length);
 				XPCOM.memmove (ptr, htmlBytes, htmlBytes.length);
 				int pageSize = 8192;
@@ -2773,13 +2797,6 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				statusTextListeners[i].changed (event);
 			}
 
-			/* re-install registered functions */
-			Enumeration elements = functions.elements ();
-			while (elements.hasMoreElements ()) {
-				BrowserFunction function = (BrowserFunction)elements.nextElement ();
-				execute (function.functionString);
-			}
-
 			ProgressEvent event2 = new ProgressEvent (browser);
 			event2.display = browser.getDisplay ();
 			event2.widget = browser;
@@ -2787,6 +2804,8 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				progressListeners[i].completed (event2);
 			}
 		}
+
+		registerFunctionsOnState = 0;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
 		/*
 		* Hook DOM listeners to the page's nsIDOMWindow here because this is
