@@ -3650,6 +3650,10 @@
 			<arg name="paragraphStyle" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setDisplaysLinkToolTips:" swt_gen="true">
+			<arg name="flag" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setLinkTextAttributes:" swt_gen="true">
 			<arg name="attributeDictionary" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>

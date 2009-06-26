@@ -56,6 +56,10 @@ public void setDefaultParagraphStyle(NSParagraphStyle paragraphStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setDefaultParagraphStyle_, paragraphStyle != null ? paragraphStyle.id : 0);
 }
 
+public void setDisplaysLinkToolTips(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setDisplaysLinkToolTips_, flag);
+}
+
 public void setLinkTextAttributes(NSDictionary attributeDictionary) {
 	OS.objc_msgSend(this.id, OS.sel_setLinkTextAttributes_, attributeDictionary != null ? attributeDictionary.id : 0);
 }

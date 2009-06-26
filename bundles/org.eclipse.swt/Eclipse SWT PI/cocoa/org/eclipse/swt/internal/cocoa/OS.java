@@ -1446,6 +1446,7 @@ public static final int /*long*/ sel_setDestination_allowOverwrite_ = sel_regist
 public static final int /*long*/ sel_setDictionary_ = sel_registerName("setDictionary:");
 public static final int /*long*/ sel_setDirectory_ = sel_registerName("setDirectory:");
 public static final int /*long*/ sel_setDisplayMode_ = sel_registerName("setDisplayMode:");
+public static final int /*long*/ sel_setDisplaysLinkToolTips_ = sel_registerName("setDisplaysLinkToolTips:");
 public static final int /*long*/ sel_setDocumentCursor_ = sel_registerName("setDocumentCursor:");
 public static final int /*long*/ sel_setDocumentEdited_ = sel_registerName("setDocumentEdited:");
 public static final int /*long*/ sel_setDocumentView_ = sel_registerName("setDocumentView:");

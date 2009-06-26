@@ -488,6 +488,11 @@ public void setText (String string) {
 	}
 }
 
+public void setToolTipText(String string) {
+	((NSTextView)view).setDisplaysLinkToolTips(string == null);
+	super.setToolTipText(string);
+}
+
 void setZOrder () {
 	super.setZOrder ();
 	if (scrollView != null) scrollView.setDocumentView (view);
@@ -524,3 +529,4 @@ void updateCursorRects (boolean enabled) {
 //}
 
 }
+
