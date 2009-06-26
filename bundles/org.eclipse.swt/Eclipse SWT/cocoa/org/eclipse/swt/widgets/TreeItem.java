@@ -983,7 +983,7 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	parent.setItemCount (0);
+	parent.setItemCount (this, 0);
 }
 
 void sendExpand (boolean expand, boolean recurse) {
