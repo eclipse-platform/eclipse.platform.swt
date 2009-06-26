@@ -2662,6 +2662,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			new nsISupports (ptrObject.value).Release ();
 		}
 
+		boolean deferCompleted = false;
 		/*
 		 * If htmlBytes is not null then there is html from a previous setText() call
 		 * waiting to be set into the about:blank page once it has completed loading. 
@@ -2759,6 +2760,13 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				stream.Release ();
 				uri.Release ();
 				htmlBytes = null;
+				/*
+				* Browser content that is set via nsIWebBrowserStream is not parsed immediately.
+				* Since clients depend on the Completed event to know when the browser's content
+				* is available, delay the sending of this event so that the stream content will
+				* be parsed first.
+				*/
+				deferCompleted = true;
 
 				rc = webBrowser.GetContentDOMWindow (result);
 				if (rc != XPCOM.NS_OK) error (rc);
@@ -2797,11 +2805,22 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				statusTextListeners[i].changed (event);
 			}
 
-			ProgressEvent event2 = new ProgressEvent (browser);
-			event2.display = browser.getDisplay ();
+			final Display display = browser.getDisplay ();
+			final ProgressEvent event2 = new ProgressEvent (browser);
+			event2.display = display;
 			event2.widget = browser;
-			for (int i = 0; i < progressListeners.length; i++) {
-				progressListeners[i].completed (event2);
+			Runnable runnable = new Runnable () {
+				public void run () {
+					if (browser.isDisposed ()) return;
+					for (int i = 0; i < progressListeners.length; i++) {
+						progressListeners[i].completed (event2);
+					}
+				}
+			};
+			if (deferCompleted) {
+				display.asyncExec (runnable);
+			} else {
+				display.syncExec (runnable);
 			}
 		}
 
