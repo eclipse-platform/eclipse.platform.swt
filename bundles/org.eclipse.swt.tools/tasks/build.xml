@@ -411,37 +411,25 @@
 	</target>
 	
 	<target name="wpf">
-		<property name="cvsRsh" value="plink"/>
-		<property name="cp" value="org.eclipse.swt/.classpath_wpf"/>
-		<property name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
-		
-		<!-- check out classpath, fragments, and natives -->
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
-			<commandline>
-				<argument value="checkout"/>
-				<argument value="-r"/>
-				<argument value="${TAG}"/>
-				<argument value="${cp}"/>
-				<argument value="${fragment}"/>
-			</commandline>
-		</cvs>
-		<antcall target="checkout_natives"/>
-			
-		<!-- test only -->
-		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
-		
-		<!-- build libraries -->
-		<antcall target="build_wpf_x86"/>
-		
-		<!-- commint libraries -->
-		<antcall target="commit_fragment"/>
+		<antcall target="build_fragment">
+			<param name="cvsRsh" value="plink"/>
+			<param name="cp" value="org.eclipse.swt/.classpath_wpf"/>
+			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
+			<param name="build_target" value="build_wpf_x86"/>
+		</antcall>
+		<delete dir="org.eclipse.swt"/>
+		<delete dir="org.eclipse.swt.wpf.win32.x86"/>
 	</target>
 	
 	<target name="photon">
 		<antcall target="build_fragment">
+			<param name="cvsRsh" value="plink"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_photon"/>
 			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
+			<param name="build_target" value="build_photon"/>
 		</antcall>
+		<delete dir="org.eclipse.swt"/>
+		<delete dir="org.eclipse.swt.photon.qnx.x86"/>
 	</target>
 
 	<target name="gtk_linux_x86">
