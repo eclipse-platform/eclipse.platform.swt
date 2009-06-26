@@ -9,7 +9,7 @@
 		
 	<!-- Low level build tasks -->
 	<target name="build_win32_x86" >
-		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="x86"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -17,7 +17,7 @@
 	</target>
 	
 	<target name="build_win32_x86_64" >
-		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="x86_64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -25,7 +25,7 @@
 	</target>
 
 	<target name="build_win32_ia64" >
-		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="ia64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -33,21 +33,21 @@
 	</target>
 		
 	<target name="build_wince" >
-		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build-ce.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build-ce.bat">
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
 	</target>
 	
 	<target name="build_wpf_x86" >
-		<exec dir="${basedir}\${builddir}" executable="${basedir}\${builddir}\build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
 	</target>
 
 	<target name="build_gtk_linux_x86" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
@@ -70,7 +70,7 @@
 	</target>
 
 	<target name="build_gtk_linux_x86_64" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0.2/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
@@ -95,7 +95,7 @@
 	</target>
 	
 	<target name="build_gtk_linux_ppc" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/bluebird/teamswt/swt-builddir/cairo/ppc/cairo-1.0.2/lib/pkgconfig/"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-ppc-142"/>
@@ -119,7 +119,7 @@
 	</target>
 	
 	<target name="build_gtk_solaris_sparc" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
 			<env key="CCPATH" value="/export/home/SUNWspro/bin"/>
@@ -139,7 +139,7 @@
 	</target>
 	
 	<target name="build_gtk_solaris_x86" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CC" value="cc"/>
 			<env key="CXX" value="CC"/>
@@ -157,7 +157,7 @@
 	</target>
 	
 	<target name="build_motif_linux" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
@@ -182,7 +182,7 @@
 	</target>
 
 	<target name="build_motif_aix" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
 			<env key="AWT_HOME" value="/bluebird/teamswt/swt-builddir/aix_jre_r6/sdk/jre/lib/ppc"/>
@@ -194,7 +194,7 @@
 	</target>
 	
 	<target name="build_motif_solaris" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="CCPATH" value="/export/home/SUNWspro/bin"/>
 			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.6/lib/pkgconfig/"/>
@@ -205,7 +205,7 @@
 	</target>
 	
 	<target name="build_motif_hpux" >
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg value="${builddir}/build.sh"/>
 			<env key="JAVA_HOME" value="/opt/java1.5/"/>
 			<env key="AWT_HOME" value="/opt/java1.5/jre/lib/IA64N/"/>
@@ -215,7 +215,7 @@
 	</target>
 	
 	<target name="build_cocoa_x86_and_ppc">
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg line="build32.sh"/>
 			<arg value="install"/>
 			<arg value="clean"/>
@@ -223,7 +223,7 @@
 	</target>
 		
 	<target name="build_cocoa_x86_64">
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg line="build64.sh"/>
 			<arg value="install_x86_64"/>
 			<arg value="clean"/>
@@ -231,7 +231,7 @@
 	</target>
 
 	<target name="build_carbon">
-		<exec dir="${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh">
 			<arg line="build.sh"/>
 			<arg value="install"/>
 			<arg value="clean"/>
