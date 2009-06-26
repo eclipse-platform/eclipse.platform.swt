@@ -541,21 +541,25 @@
 	</target>
 	
 	<target name="build_all">
-		<antcall target="win32"></antcall>
-		<antcall target="wpf"></antcall>
-		<antcall target="photon"></antcall>
-		<antcall target="cocoa_x86_and_ppc"></antcall>
-		<antcall target="cocoa_x86_64"></antcall>
-		<antcall target="carbon"></antcall>
-		<antcall target="gtk_linux_x86"></antcall>
-		<antcall target="gtk_linux_x86_64"></antcall>
-		<antcall target="gtk_linux_ppc"></antcall>
-		<antcall target="gtk_solaris_x86"></antcall>
-		<antcall target="gtk_solaris_sparc"></antcall>
-		<antcall target="motif_linux"></antcall>
-		<antcall target="motif_aix"></antcall>
-		<antcall target="motif_solaris"></antcall>
-		<!--antcall target="motif_hpux"></antcall-->
+		<parallel>
+			<sequential>
+				<antcall target="win32"></antcall>
+				<antcall target="wpf"></antcall>
+				<antcall target="photon"></antcall>
+			</sequential>
+			<antcall target="cocoa_x86_and_ppc"></antcall>
+			<antcall target="cocoa_x86_64"></antcall>
+			<antcall target="carbon"></antcall>
+			<antcall target="gtk_linux_x86"></antcall>
+			<antcall target="gtk_linux_x86_64"></antcall>
+			<antcall target="gtk_linux_ppc"></antcall>
+			<antcall target="gtk_solaris_x86"></antcall>
+			<antcall target="gtk_solaris_sparc"></antcall>
+			<antcall target="motif_linux"></antcall>
+			<antcall target="motif_aix"></antcall>
+			<antcall target="motif_solaris"></antcall>
+			<!--antcall target="motif_hpux"></antcall-->
+		</parallel>
 	</target>
 		
 </project>
