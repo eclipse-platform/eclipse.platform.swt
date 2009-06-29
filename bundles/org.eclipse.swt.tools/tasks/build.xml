@@ -393,8 +393,7 @@
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
 			<commandline>
 				<argument value="checkout"/>
-				<argument value="-r"/>
-				<argument value="${TAG}"/>
+				<argument line="${TAG}"/>
 				<argument value="${cp}"/>
 				<argument value="${fragment}"/>
 			</commandline>
