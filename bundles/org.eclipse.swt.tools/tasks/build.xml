@@ -28,6 +28,7 @@
 
 	<target name="build_win32_ia64" >
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
 			<arg line="ia64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -36,6 +37,7 @@
 		
 	<target name="build_wince" >
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build-ce.bat" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
@@ -43,6 +45,7 @@
 	
 	<target name="build_wpf_x86" >
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
