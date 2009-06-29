@@ -325,7 +325,7 @@
 
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_local">
-		<property name="tmpdir" value="buildtmp_${fragment}"/>
+		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<property name="build_version" value=""/>
 		<delete dir="${tmpdir}" quiet="true"/>
@@ -336,7 +336,7 @@
 				<argument value="${tools}"/>
 			</commandline>
 		</cvs>
-		<ant antfile="build.xml" output="../../../${build_version}/${fragment}.log" dir="${tmpdir}/${tools}" target="build_fragment">
+		<ant antfile="build.xml" output="C:/BUILD/swt-builddir/logs/${build_version}/${fragment}.log" dir="${tmpdir}/${tools}" target="build_fragment">
 			<property name="cvsRsh" value="plink"/>
 			<property name="cp" value="${cp}"/>
 			<property name="fragment" value="${fragment}"/>
@@ -355,7 +355,7 @@
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
-			output="${build_version}/${fragment}.log"
+			output="C:/BUILD/swt-builddir/logs/${build_version}/${fragment}.log"
 	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 
