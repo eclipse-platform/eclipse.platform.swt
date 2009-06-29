@@ -297,10 +297,17 @@
 		</cvs>
 		<delete dir="${tmpdir}" quiet="true"/>
 		
-	</target>	
+	</target>
 
 	<target name="get_version" >
-		<property name="version_file" value="${builddir}/make_common.mak"/>
+		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
+		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${TAG}"/>
+				<argument value="${version_file}"/>
+			</commandline>
+		</cvs>
 		<copy file="${version_file}" tofile="tmp"/>
 		<loadproperties srcFile="${version_file}"/>
 		<propertyfile file="tmp">
@@ -322,6 +329,48 @@
 		<cvs dest="${fragment}" command="commit -m 'remove v${old_version}' ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>Adding ${added_files}</echo>
 		<cvs dest="${fragment}" command="add ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+	</target>
+	
+	<target name="gen_build_notes">
+		<property name="cvsRsh" value="plink"/>
+		<tstamp>
+		      <format property="header.time" pattern="EEEE MMMMM dd, yyyy"/>
+		</tstamp>
+		<tstamp>
+		      <format property="url.time" pattern="yyyy-MM-dd"/>
+		</tstamp>
+		<property name="build_notes" value="org.eclipse.swt/buildnotes_swt.html"/>
+		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
+		<property name="tmpdir" value="c:/build/swt-builddir/tmp/notes"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument value="-r"/>
+				<argument value="${TAG}"/>
+				<argument value="${build_notes}"/>
+				<argument value="${version_file}"/>
+			</commandline>
+		</cvs>
+		<loadproperties srcfile="${tmpdir}/${version_file}"/>
+		<property name="swt_version" value="${maj_ver}.${min_ver}"/>
+		<property name="header" value="&lt;h2&gt;SWT Build ${swt_version} - ${header.time}&lt;/h2&gt;"/>
+		<property name="url" value="https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc=;bug_file_loc_type=allwordssubstr;bug_id=;bugidtype=include;chfield=resolution;chfieldfrom=$DATE_FROM;chfieldto=$DATE_TO;chfieldvalue=FIXED;classification=Eclipse;component=SWT;email1=;email2=;emailtype1=substring;emailtype2=substring;field-1-0-0=classification;field-1-1-0=product;field-1-2-0=component;field0-0-0=noop;keywords=;keywords_type=allwords;long_desc=;long_desc_type=allwordssubstr;product=Platform;query_format=advanced;remaction=;short_desc=;short_desc_type=allwordssubstr;status_whiteboard=;status_whiteboard_type=allwordssubstr;type-1-0-0=anyexact;type-1-1-0=anyexact;type-1-2-0=anyexact;type0-0-0=noop;value-1-0-0=Eclipse;value-1-1-0=Platform;value-1-2-0=SWT;value0-0-0=;votes=;query_based_on="/>
+		<replace file="${tmpdir}/${build_notes}" token="SWT&lt;/h1&gt;" value="SWT&lt;/h1&gt;&#13;&#10;&#13;&#10;$HEADER&#13;&#10;&#13;&#10;&lt;blockquote&gt;&lt;a href=$BUGS_URL&gt;Bugs fixed&lt;/a&gt;&lt;/blockquote&gt;"/>	
+		<replace file="${tmpdir}/${build_notes}" token="$HEADER" value="${header}"/> 
+		<replace file="${tmpdir}/${build_notes}" token="$BUGS_URL" value="${url}"/> 
+		<replace file="${tmpdir}/${build_notes}" token="$DATE_TO" value="${url.time}"/> 
+		<replace file="${tmpdir}/${build_notes}" token="$DATE_FROM" value="-7d"/> 
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="commit"/>
+				<argument value="-r"/>
+				<argument value="${TAG}"/>
+				<argument value="${build_notes}"/>
+			</commandline>
+		</cvs>
+		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
 	
 	<!-- Params: fragment -->
