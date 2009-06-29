@@ -9,7 +9,7 @@
 		
 	<!-- Low level build tasks -->
 	<target name="build_win32_x86" >
-		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
 			<arg line="x86"/>
 			<arg line="install"/>
 			<arg line="clean"/>
