@@ -3,7 +3,7 @@
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
-	<property name="TAG" value="SSQ_build"/>
+	<property name="TAG" value="HEAD"/>
 	
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="C:/BUILD/swt-builddir/logs"/>
@@ -308,8 +308,10 @@
 		</propertyfile>
 		<loadproperties srcFile="tmp"/>
 		<delete file="tmp"/>
-		<property name="swt_version" value="${maj_ver}${min_ver}"/>
-		<property name="old_version" value="${maj_ver}${old_min_ver}"/>
+		<!--property name="swt_version" value="${maj_ver}${min_ver}"/-->
+		<!--property name="old_version" value="${maj_ver}${old_min_ver}"/-->
+		<property name="swt_version" value="3600"/>
+		<property name="old_version" value="3550"/>
 		<echo>Version ${swt_version} ${old_version}</echo>
 	</target>
 	
