@@ -243,6 +243,62 @@
 		<delete file="files.xml"/>
 	</target>
 	
+	<target name="increment_version">
+		<property name="cvsRsh" value="plink"/>
+		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
+		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
+		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
+		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/version.txt"/>
+		<property name="tmpdir" value="c:/build/swt-builddir/tmp/inc"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument value="-r"/>
+				<argument value="${TAG}"/>
+				<argument value="${library_j2se}"/>
+				<argument value="${library_j2me}"/>
+				<argument value="${make_common}"/>
+				<argument value="${version_file}"/>
+			</commandline>
+		</cvs>
+		<copy file="${tmpdir}/${make_common}" tofile="${tmpdir}/tmp.txt"/>
+		<replace file="${tmpdir}/tmp.txt" token="min_ver" value="new_min_ver"/>
+		<propertyfile file="${tmpdir}/tmp.txt">
+			<entry key="new_min_ver" value="=" type="int" operation="+"/>
+		</propertyfile>
+		<loadproperties srcFile="${tmpdir}/${make_common}"/>	
+		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
+		<property name="swt_version" value="${maj_ver}${min_ver}"/>
+		<property name="new_version" value="${maj_ver}${new_min_ver}"/>
+		<echo>Version current ${swt_version} -> New ${new_version}</echo>
+
+		<replace file="${tmpdir}/${library_j2se}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
+		<replace file="${tmpdir}/${library_j2me}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
+		<replace file="${tmpdir}/${version_file}" token="version ${maj_ver}.${min_ver}" value="version ${maj_ver}.${new_min_ver}"/>
+		<replace file="${tmpdir}/${make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>	
+			
+		<echo file="${tmpdir}/ver.txt">new_comma_ver=${new_version}</echo>
+		<replaceregexp file="${tmpdir}/ver.txt" match="(\d)(\d)(\d)(\d)" replace="\1,\2,\3,\4" byline="true"/>
+		<loadproperties srcFile="${tmpdir}/ver.txt"/>
+		<replace file="${tmpdir}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>	
+
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="commit"/>
+				<argument value="-m"/>
+				<argument line="'Update current version from v${swt_version} to v${new_version}'"/>
+				<argument value="${library_j2se}"/>
+				<argument value="${library_j2me}"/>
+				<argument value="${make_common}"/>
+				<argument value="${version_file}"/>
+			</commandline>
+		</cvs>
+		<delete dir="${tmpdir}" quiet="true"/>
+		
+	</target>	
+
 	<target name="get_version" >
 		<property name="version_file" value="${builddir}/make_common.mak"/>
 		<copy file="${version_file}" tofile="tmp"/>
