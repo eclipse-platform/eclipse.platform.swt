@@ -31,6 +31,7 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	shell = new Shell();
 	accessible = shell.getAccessible();
 }
@@ -39,6 +40,7 @@ protected void tearDown() {
 	assertEquals(false, shell.isDisposed());
 	shell.dispose();
 	assertTrue(shell.isDisposed());
+	super.tearDown();
 }
 
 public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {

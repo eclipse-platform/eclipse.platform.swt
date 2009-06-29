@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,10 +40,6 @@ protected void setUp() {
 	super.setUp();
 	combo = new Combo(shell, 0);
 	setWidget(combo);
-}
-
-protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
@@ -142,6 +138,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 		exceptionThrown = true;
 	}
 	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	
 	// test whether all content modifying API methods send a Modify event	
 	combo.addModifyListener(listener);
@@ -160,6 +157,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
@@ -178,6 +176,8 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	combo.addSelectionListener(listener);
 	combo.select(0);
 	assertTrue(":a:", listenerCalled == false);
@@ -188,6 +188,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_clearSelection() {

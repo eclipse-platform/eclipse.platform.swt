@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,11 +40,6 @@ protected void setUp() {
 	makeCleanEnvironment(false); // use multi-line by default
 }
 
-protected void tearDown() {
-	super.tearDown();
-	shell.dispose();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		text = new Text(null, 0);
@@ -73,6 +68,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 		exceptionThrown = true;
 	}
 	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	
 	// test whether all content modifying API methods send a Modify event	
 	text.addModifyListener(listener);
@@ -91,6 +87,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
@@ -109,6 +106,8 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	text.addSelectionListener(listener);
 	text.setText("12345");
 	text.setSelection(1,3);
@@ -120,6 +119,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
@@ -583,6 +583,22 @@ public void test_getText() {
 	String string = "012345" + delimiterString + "67890";
 	text.setText(string);
 	assertEquals(string, text.getText());
+	
+	// tests a SINGLE line text editor
+	makeCleanEnvironment(true);
+	assertEquals("", text.getText());
+	text.setText("01234567890");
+	assertEquals("01234567890", text.getText());
+	text.setText("");
+	assertEquals("", text.getText());
+	
+	// tests a SINGLE line text editor with border
+	makeCleanEnvironment(true, true);
+	assertEquals("", text.getText());
+	text.setText("01234567890");
+	assertEquals("01234567890", text.getText());
+	text.setText("");
+	assertEquals("", text.getText());
 }
 
 public void test_getTextII() {
@@ -594,6 +610,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(-1,0));
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
@@ -603,12 +620,14 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(-1,0));
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
 	
 	text.setText("");
 	text.setEchoChar('*');
@@ -621,6 +640,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(-1,0));
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
@@ -630,12 +650,132 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(-1,0));
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
-	assertEquals("", text.getText(5, 3));	
+	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
+	
+	// tests a SINGLE line text editor
+	makeCleanEnvironment(true);
+	assertEquals("", text.getText());
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("", text.getText(-1,0));
+	assertEquals("", text.getText(0,0));
+	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("a");
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("a", text.getText(-1,0));
+	assertEquals("a", text.getText(0,0));
+	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("01234567890");
+	assertEquals("345", text.getText(3, 5));
+	assertEquals("012", text.getText(-1, 2));
+	assertEquals("34567890", text.getText(3, 100));
+	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
+	
+	text.setText("");
+	text.setEchoChar('*');
+	
+	assertEquals("", text.getText());
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("", text.getText(-1,0));
+	assertEquals("", text.getText(0,0));
+	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("a");
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("a", text.getText(-1,0));
+	assertEquals("a", text.getText(0,0));
+	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("01234567890");
+	assertEquals("345", text.getText(3, 5));
+	assertEquals("012", text.getText(-1, 2));
+	assertEquals("34567890", text.getText(3, 100));
+	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
+	
+	// tests a SINGLE line text editor
+	makeCleanEnvironment(true, true);
+	assertEquals("", text.getText());
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("", text.getText(-1,0));
+	assertEquals("", text.getText(0,0));
+	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("a");
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("a", text.getText(-1,0));
+	assertEquals("a", text.getText(0,0));
+	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("01234567890");
+	assertEquals("345", text.getText(3, 5));
+	assertEquals("012", text.getText(-1, 2));
+	assertEquals("34567890", text.getText(3, 100));
+	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
+	
+	text.setText("");
+	text.setEchoChar('*');
+	
+	assertEquals("", text.getText());
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("", text.getText(-1,0));
+	assertEquals("", text.getText(0,0));
+	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("a");
+	assertEquals("", text.getText(-4,-4));
+	assertEquals("", text.getText(-4,-2));
+	assertEquals("", text.getText(-2,-1));
+	assertEquals("", text.getText(-1,-1));
+	assertEquals("a", text.getText(-1,0));
+	assertEquals("a", text.getText(0,0));
+	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
+	
+	text.setText("01234567890");
+	assertEquals("345", text.getText(3, 5));
+	assertEquals("012", text.getText(-1, 2));
+	assertEquals("34567890", text.getText(3, 100));
+	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
 }
 
 public void test_getTextLimit() {
@@ -1076,8 +1216,7 @@ public void test_setTextLimitI() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":c:", exceptionThrown == true);
-	exceptionThrown = false;
+	assertTrue(":c:", exceptionThrown);
 }
 
 public void test_setTextLjava_lang_String() {
@@ -1317,17 +1456,23 @@ String delimiterString;
  * 
  * @param single true if the new text widget should be single-line.
  */
+
 private void makeCleanEnvironment(boolean single) {
+	makeCleanEnvironment (single, false);
+}
+
+private void makeCleanEnvironment(boolean single, boolean border) {
 // this method must be private or protected so the auto-gen tool keeps it
 	if ( text != null ) text.dispose();
 
 	if ( single == true )
-		text = new Text(shell, SWT.SINGLE);	
+		text = new Text(shell, SWT.SINGLE | (border ? SWT.BORDER : SWT.NULL));	
 	else
-		text = new Text(shell, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		text = new Text(shell, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | (border ? SWT.BORDER : SWT.NULL));
 	setWidget(text);
 	delimiterString = Text.DELIMITER;
 }
+
 protected void setWidget(Widget w) {
 	text = (Text)w;
 	super.setWidget(w);

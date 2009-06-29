@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,57 +29,51 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_ConstructorIII() {
 	// Test RGB(int red, int green, int blue)
-	RGB rgb = new RGB(20,100,200);
+	new RGB(20,100,200);
 	
-	rgb = new RGB(0,0,0);
+	new RGB(0,0,0);
 
-	rgb = new RGB(255,255,255);
+	
 
 	try {
-		rgb = new RGB(-1, 20, 50);
+		new RGB(-1, 20, 50);
 		fail("No exception thrown for red < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(256, 20, 50);
+		new RGB(256, 20, 50);
 		fail("No exception thrown for red > 255");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(20, -1, 50);
+		new RGB(20, -1, 50);
 		fail("No exception thrown for green < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(20, 256, 50);
+		new RGB(20, 256, 50);
 		fail("No exception thrown for green > 255");
 	}
 	catch (IllegalArgumentException e) {
 	}
 
 	try {
-		rgb = new RGB(20, 50, -1);
+		new RGB(20, 50, -1);
 		fail("No exception thrown for blue < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(20, 50, 256);
+		new RGB(20, 50, 256);
 		fail("No exception thrown for blue > 255");
 	}
 	catch (IllegalArgumentException e) {
@@ -89,139 +83,139 @@ public void test_ConstructorIII() {
 
 public void test_ConstructorFFF() {
 
-	RGB rgb = new RGB(0f,0f,0f);
-	rgb = new RGB(0f,1f,1f);
-	rgb = new RGB(0f,1f,0f);
-	rgb = new RGB(0f,0f,1f);
-	rgb = new RGB(0f,0.6f,0.4f);
-	rgb = new RGB(1f,0f,1f);
-	rgb = new RGB(1f,1f,1f);
-	rgb = new RGB(1f,0f,1f);
-	rgb = new RGB(1f,1f,0f);
-	rgb = new RGB(1f,0.6f,0.4f);
-	rgb = new RGB(59f,0f,1f);
-	rgb = new RGB(59f,1f,1f);
-	rgb = new RGB(59f,0f,1f);
-	rgb = new RGB(59f,1f,0f);
-	rgb = new RGB(59f,0.6f,0.4f);
-	rgb = new RGB(60f,0f,1f);
-	rgb = new RGB(60f,1f,1f);
-	rgb = new RGB(60f,0f,1f);
-	rgb = new RGB(60f,1f,0f);
-	rgb = new RGB(60f,0.6f,0.4f);
-	rgb = new RGB(61f,0f,1f);
-	rgb = new RGB(61f,1f,1f);
-	rgb = new RGB(61f,0f,1f);
-	rgb = new RGB(61f,1f,0f);
-	rgb = new RGB(61f,0.6f,0.4f);
-	rgb = new RGB(119f,0f,1f);
-	rgb = new RGB(119f,1f,1f);
-	rgb = new RGB(119f,0f,1f);
-	rgb = new RGB(119f,1f,0f);
-	rgb = new RGB(119f,0.6f,0.4f);
-	rgb = new RGB(120f,0f,1f);
-	rgb = new RGB(120f,1f,1f);
-	rgb = new RGB(120f,0f,1f);
-	rgb = new RGB(120f,1f,0f);
-	rgb = new RGB(120f,0.6f,0.4f);
-	rgb = new RGB(121f,0f,1f);
-	rgb = new RGB(121f,1f,1f);
-	rgb = new RGB(121f,0f,1f);
-	rgb = new RGB(121f,1f,0f);
-	rgb = new RGB(121f,0.6f,0.4f);
-	rgb = new RGB(179f,0f,1f);
-	rgb = new RGB(179f,1f,1f);
-	rgb = new RGB(179f,0f,1f);
-	rgb = new RGB(179f,1f,0f);
-	rgb = new RGB(179f,0.6f,0.4f);
-	rgb = new RGB(180f,0f,1f);
-	rgb = new RGB(180f,1f,1f);
-	rgb = new RGB(180f,0f,1f);
-	rgb = new RGB(180f,1f,0f);
-	rgb = new RGB(180f,0.6f,0.4f);
-	rgb = new RGB(181f,0f,1f);
-	rgb = new RGB(181f,1f,1f);
-	rgb = new RGB(181f,0f,1f);
-	rgb = new RGB(181f,1f,0f);
-	rgb = new RGB(181f,0.6f,0.4f);
-	rgb = new RGB(239f,0f,1f);
-	rgb = new RGB(239f,1f,1f);
-	rgb = new RGB(239f,0f,1f);
-	rgb = new RGB(239f,1f,0f);
-	rgb = new RGB(239f,0.6f,0.4f);
-	rgb = new RGB(240f,0f,1f);
-	rgb = new RGB(240f,1f,1f);
-	rgb = new RGB(240f,0f,1f);
-	rgb = new RGB(240f,1f,0f);
-	rgb = new RGB(240f,0.6f,0.4f);
-	rgb = new RGB(241f,0f,1f);
-	rgb = new RGB(241f,1f,1f);
-	rgb = new RGB(241f,0f,1f);
-	rgb = new RGB(241f,1f,0f);
-	rgb = new RGB(241f,0.6f,0.4f);
-	rgb = new RGB(299f,0f,1f);
-	rgb = new RGB(299f,1f,1f);
-	rgb = new RGB(299f,0f,1f);
-	rgb = new RGB(299f,1f,0f);
-	rgb = new RGB(299f,0.6f,0.4f);
-	rgb = new RGB(300f,0f,1f);
-	rgb = new RGB(300f,1f,1f);
-	rgb = new RGB(300f,0f,1f);
-	rgb = new RGB(300f,1f,0f);
-	rgb = new RGB(300f,0.6f,0.4f);
-	rgb = new RGB(301f,0f,1f);
-	rgb = new RGB(301f,1f,1f);
-	rgb = new RGB(301f,0f,1f);
-	rgb = new RGB(301f,1f,0f);
-	rgb = new RGB(301f,0.6f,0.4f);
-	rgb = new RGB(359f,0f,1f);
-	rgb = new RGB(359f,1f,1f);
-	rgb = new RGB(359f,0f,1f);
-	rgb = new RGB(359f,1f,0f);
-	rgb = new RGB(359f,0.6f,0.4f);
-	rgb = new RGB(360f,0f,1f);
-	rgb = new RGB(360f,1f,1f);
-	rgb = new RGB(360f,0f,1f);
-	rgb = new RGB(360f,1f,0f);
-	rgb = new RGB(360f,0.6f,0.4f);
+	new RGB(0f,0f,0f);
+	
+	new RGB(0f,1f,0f);
+	new RGB(0f,0f,1f);
+	new RGB(0f,0.6f,0.4f);
+	new RGB(1f,0f,1f);
+	new RGB(1f,1f,1f);
+	new RGB(1f,0f,1f);
+	new RGB(1f,1f,0f);
+	new RGB(1f,0.6f,0.4f);
+	new RGB(59f,0f,1f);
+	new RGB(59f,1f,1f);
+	new RGB(59f,0f,1f);
+	new RGB(59f,1f,0f);
+	new RGB(59f,0.6f,0.4f);
+	new RGB(60f,0f,1f);
+	new RGB(60f,1f,1f);
+	new RGB(60f,0f,1f);
+	new RGB(60f,1f,0f);
+	new RGB(60f,0.6f,0.4f);
+	new RGB(61f,0f,1f);
+	new RGB(61f,1f,1f);
+	new RGB(61f,0f,1f);
+	new RGB(61f,1f,0f);
+	new RGB(61f,0.6f,0.4f);
+	new RGB(119f,0f,1f);
+	new RGB(119f,1f,1f);
+	new RGB(119f,0f,1f);
+	new RGB(119f,1f,0f);
+	new RGB(119f,0.6f,0.4f);
+	new RGB(120f,0f,1f);
+	new RGB(120f,1f,1f);
+	new RGB(120f,0f,1f);
+	new RGB(120f,1f,0f);
+	new RGB(120f,0.6f,0.4f);
+	new RGB(121f,0f,1f);
+	new RGB(121f,1f,1f);
+	new RGB(121f,0f,1f);
+	new RGB(121f,1f,0f);
+	new RGB(121f,0.6f,0.4f);
+	new RGB(179f,0f,1f);
+	new RGB(179f,1f,1f);
+	new RGB(179f,0f,1f);
+	new RGB(179f,1f,0f);
+	new RGB(179f,0.6f,0.4f);
+	new RGB(180f,0f,1f);
+	new RGB(180f,1f,1f);
+	new RGB(180f,0f,1f);
+	new RGB(180f,1f,0f);
+	new RGB(180f,0.6f,0.4f);
+	new RGB(181f,0f,1f);
+	new RGB(181f,1f,1f);
+	new RGB(181f,0f,1f);
+	new RGB(181f,1f,0f);
+	new RGB(181f,0.6f,0.4f);
+	new RGB(239f,0f,1f);
+	new RGB(239f,1f,1f);
+	new RGB(239f,0f,1f);
+	new RGB(239f,1f,0f);
+	new RGB(239f,0.6f,0.4f);
+	new RGB(240f,0f,1f);
+	new RGB(240f,1f,1f);
+	new RGB(240f,0f,1f);
+	new RGB(240f,1f,0f);
+	new RGB(240f,0.6f,0.4f);
+	new RGB(241f,0f,1f);
+	new RGB(241f,1f,1f);
+	new RGB(241f,0f,1f);
+	new RGB(241f,1f,0f);
+	new RGB(241f,0.6f,0.4f);
+	new RGB(299f,0f,1f);
+	new RGB(299f,1f,1f);
+	new RGB(299f,0f,1f);
+	new RGB(299f,1f,0f);
+	new RGB(299f,0.6f,0.4f);
+	new RGB(300f,0f,1f);
+	new RGB(300f,1f,1f);
+	new RGB(300f,0f,1f);
+	new RGB(300f,1f,0f);
+	new RGB(300f,0.6f,0.4f);
+	new RGB(301f,0f,1f);
+	new RGB(301f,1f,1f);
+	new RGB(301f,0f,1f);
+	new RGB(301f,1f,0f);
+	new RGB(301f,0.6f,0.4f);
+	new RGB(359f,0f,1f);
+	new RGB(359f,1f,1f);
+	new RGB(359f,0f,1f);
+	new RGB(359f,1f,0f);
+	new RGB(359f,0.6f,0.4f);
+	new RGB(360f,0f,1f);
+	new RGB(360f,1f,1f);
+	new RGB(360f,0f,1f);
+	new RGB(360f,1f,0f);
+	new RGB(360f,0.6f,0.4f);
 	
 	try {
-		rgb = new RGB(400f, 0.5f, 0.5f);
+		new RGB(400f, 0.5f, 0.5f);
 		fail("No exception thrown for hue > 360");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(-5f, 0.5f, 0.5f);
+		new RGB(-5f, 0.5f, 0.5f);
 		fail("No exception thrown for hue < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(200f, -0.5f, 0.5f);
+		new RGB(200f, -0.5f, 0.5f);
 		fail("No exception thrown for saturation < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(200f, 300f, 0.5f);
+		new RGB(200f, 300f, 0.5f);
 		fail("No exception thrown for saturation > 1");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(200f, 0.5f, -0.5f);
+		new RGB(200f, 0.5f, -0.5f);
 		fail("No exception thrown for brightness < 0");
 	}
 	catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		rgb = new RGB(200f, 0.5f, 400f);
+		new RGB(200f, 0.5f, 400f);
 		fail("No exception thrown for brightness > 1");
 	}
 	catch (IllegalArgumentException e) {

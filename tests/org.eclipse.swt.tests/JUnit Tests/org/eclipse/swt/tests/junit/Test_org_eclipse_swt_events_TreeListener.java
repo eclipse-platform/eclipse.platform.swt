@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_treeCollapsedLorg_eclipse_swt_events_TreeEvent() {
 	warnUnimpl("Test test_treeCollapsedLorg_eclipse_swt_events_TreeEvent not written");
 }

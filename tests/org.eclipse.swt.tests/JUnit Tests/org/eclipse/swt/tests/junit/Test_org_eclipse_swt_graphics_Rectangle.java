@@ -31,12 +31,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_ConstructorIIII() {
 	// Test new Rectangle (int x, int y, int width, int height)
 	Rectangle r = new Rectangle(3, 4, 5, 6);

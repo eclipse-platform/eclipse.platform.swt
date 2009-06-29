@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -85,7 +85,7 @@ protected void getLineBackgrounds() {
 private String textString() {
 	return "This is the text component in testing\nNew Line1\nNew Line2\nNew Line3\nNew Line4.";
 }
-private boolean isBidi() {
+boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 // this method must not be public so that the auto-gen tool keeps it
@@ -227,7 +227,7 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 	text.addBidiSegmentListener(listener);
 	// cause StyledText to call the BidiSegmentListener. 
 	text.getLocationAtOffset(0);
-	if (isBidi() || SWT.getPlatform().equals("gtk")) {
+	if (isBidi()) {
 		assertTrue("Listener not called", listenerCalled);
 	}
 	else {
@@ -1074,7 +1074,7 @@ void test_getLinePixel(StyledText text) {
 
 public void test_getLocationAtOffsetI(){
 	// copy from StyledText, has to match value used by StyledText
-	final int XINSET = isBidi() ? 2 : 0;
+	final int XINSET = isBidiCaret() ? 2 : 0;
 	
 	assertTrue(":a:", text.getLocationAtOffset(0).equals(new Point(XINSET, 0)));
 	try {
@@ -1153,8 +1153,9 @@ public void test_getOffsetAtLineI() {
 public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	boolean exceptionThrown = false;
 	Point location;
+	final int XINSET = isBidiCaret() ? 2 : 0;
 	
-	assertTrue(":a:", text.getOffsetAtLocation(new Point(0, 0)) == 0);
+	assertTrue(":a:", text.getOffsetAtLocation(new Point(XINSET, 0)) == 0);
 	try {
 		text.getOffsetAtLocation(new Point(-1, 0));
 	}
@@ -1176,7 +1177,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	text.setText("Line0\r\nLine1");	
 	location = text.getLocationAtOffset(5);
 	assertTrue(":d:", text.getOffsetAtLocation(new Point(10, 0)) > 0);
-	assertTrue(":e:", text.getOffsetAtLocation(new Point(location.x - 1, 0)) == 4);
+	assertTrue(":e:", text.getOffsetAtLocation(new Point(location.x - 1, 0)) == 5);
 	location = text.getLocationAtOffset(7);	
 	assertTrue(":f:", text.getOffsetAtLocation(location) == 7);
 	try {
@@ -1198,12 +1199,12 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	exceptionThrown = false;
 
 	text.setTopIndex(1);
-	assertTrue(":i:", text.getOffsetAtLocation(new Point(0, -5)) == 0);
-	assertTrue(":j:", text.getOffsetAtLocation(new Point(0, 0)) == 7);
+	assertTrue(":i:", text.getOffsetAtLocation(new Point(XINSET, -5)) == 0);
+	assertTrue(":j:", text.getOffsetAtLocation(new Point(XINSET, 0)) == 7);
 	
 	text.setHorizontalIndex(1);
-	assertTrue(":k:", text.getOffsetAtLocation(new Point(-5, -5)) == 0);
-	assertTrue(":l:", text.getOffsetAtLocation(new Point(-5, 0)) == 7);
+	assertTrue(":k:", text.getOffsetAtLocation(new Point(XINSET + -5, -5)) == 0);
+	assertTrue(":l:", text.getOffsetAtLocation(new Point(XINSET + -5, 0)) == 7);
 
 	// 1GL4ZVE
 	assertTrue(":m:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);
@@ -1213,6 +1214,254 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 
 public void test_getOrientation() {
 	warnUnimpl("Test test_getOrientation not written");
+}
+
+void testStyles (String msg, int[] resultRanges, int[] expectedRanges, StyleRange[] resultStyles, StyleRange[] expectedStyles) {
+	assertNotNull("resultRanges is null on: " + msg, resultRanges);
+	assertNotNull("expectedRanges is null on: " + msg, expectedRanges);
+	assertNotNull("resultStyles is null on: " + msg, resultStyles);
+	assertNotNull("expectedStyles is null on: " + msg, expectedStyles);
+	assertEquals("result ranges and styles length don't match on: " + msg, resultRanges.length, resultStyles.length * 2);
+	assertEquals("expected ranges and styles length don't match on: " + msg, expectedRanges.length, expectedStyles.length * 2);
+	assertEquals("expected and result ranges are differnt on: " + msg, expectedRanges, resultRanges);
+	assertEquals("expected and result styles are differnt on: " + msg, expectedStyles, resultStyles);
+}
+
+public void test_getRanges(){
+	StyleRange style0 = new StyleRange();
+	style0.rise = 10;
+	StyleRange style1 = new StyleRange();
+	style1.rise = 5;
+	StyleRange style2 = new StyleRange();
+	style2.rise = 30;
+	StyleRange[] expectedStyles;
+	int[] expectedRanges;
+	
+	// tests using the new API
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	expectedStyles = new StyleRange[] {style0};
+	expectedRanges = new int[] {0, 10};
+	testStyles("Test 1", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	expectedStyles = new StyleRange[] {style1};
+	expectedRanges = new int[] {3, 4};
+	testStyles("Test 2", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	expectedStyles = new StyleRange[] {style0, style1, style0};
+	expectedRanges = new int[] {0, 3, 3, 4, 7, 3};
+	testStyles("Test 3", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+	
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {1, 4}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style2, style1, style0};
+	expectedRanges = new int[] {0, 1, 1, 4, 5, 2, 7, 3};
+	testStyles("Test 4", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+		
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {1, 8}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style2, style0};
+	expectedRanges = new int[] {0, 1, 1, 8, 9, 1};
+	testStyles("Test 5", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+	
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {0, 5}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style2, style1, style0};
+	expectedRanges = new int[] {0, 5, 5, 2, 7, 3};
+	testStyles("Test 6", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {1, 6}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style2, style0};
+	expectedRanges = new int[] {0, 1, 1, 6, 7, 3};
+	testStyles("Test 7", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style2, style0};
+	expectedRanges = new int[] {0, 3, 3, 4, 7, 3};
+	testStyles("Test 8", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+			
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {0, 3}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style2, style1, style0};
+	expectedRanges = new int[] {0, 3, 3, 4, 7, 3};
+	testStyles("Test 9", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {7, 3}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style1, style2};
+	expectedRanges = new int[] {0, 3, 3, 4, 7, 3};
+	testStyles("Test 10", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+	
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {4, 2}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style1, style2, style1, style0};
+	expectedRanges = new int[] {0, 3, 3, 1, 4, 2, 6, 1, 7, 3};
+	testStyles("Test 11", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {3, 4}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {2, 6}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style2, style0};
+	expectedRanges = new int[] {0, 2, 2, 6, 8, 2};
+	testStyles("Test 12", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+	
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {0, 10}, new StyleRange[] {style1});
+	expectedStyles = new StyleRange[] {style1};
+	expectedRanges = new int[] {0, 10};
+	testStyles("Test 13", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789AB");
+	text.setStyleRanges(0, 0, new int[] {1, 3}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {5, 1}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {7, 1}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {9, 2}, new StyleRange[] {style1});
+	expectedStyles = new StyleRange[] {style0, style1, style0, style1};
+	expectedRanges = new int[] {1,3, 5,1, 7,1, 9,2};
+	testStyles("Test 14", text.getRanges(0,12), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789AB");
+	text.setStyleRanges(0, 0, new int[] {1, 3}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {5, 1}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {7, 1}, new StyleRange[] {style0});
+	text.setStyleRanges(0, 0, new int[] {9, 2}, new StyleRange[] {style1});
+	text.setStyleRanges(0, 0, new int[] {2, 8}, new StyleRange[] {style2});
+	expectedStyles = new StyleRange[] {style0, style2, style1};
+	expectedRanges = new int[] {1,1, 2,8, 10,1};
+	testStyles("Test 15", text.getRanges(0,12), expectedRanges, text.getStyleRanges(false), expectedStyles);
+	
+	//tests mixing the old API and the new API
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(new StyleRange[]{new StyleRange(3,4,null,null,SWT.BOLD)});
+	expectedStyles = new StyleRange[]{new StyleRange(3,4,null,null,SWT.BOLD)};
+	expectedRanges = new int[] {3, 4};
+	testStyles("Test 16", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	
+	//test the merging code
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(new int[] {1, 3, 6, 3}, new StyleRange[] {style0, style0});
+	text.setStyleRanges(0, 0, new int[] {4, 2}, new StyleRange[] {style0});
+	expectedStyles = new StyleRange[] {style0};
+	expectedRanges = new int[] {1, 8};
+	testStyles("Test 17", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+	
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(new int[] {1, 3, 6, 3}, new StyleRange[] {style0, style0});
+	text.setStyleRanges(0, 0, new int[] {2, 6}, new StyleRange[] {style0});
+	expectedStyles = new StyleRange[] {style0};
+	expectedRanges = new int[] {1, 8};
+	testStyles("Test 18", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(new int[] {1, 3, 6, 3}, new StyleRange[] {style0, style0});
+	text.setStyleRanges(3, 4, new int[] {0, 1, 9, 1}, new StyleRange[] {style0, style0});
+	expectedStyles = new StyleRange[] {style0, style0};
+	expectedRanges = new int[] {0, 3, 7, 3};
+	testStyles("Test 19", text.getRanges(0,10), expectedRanges, text.getStyleRanges(false), expectedStyles);
+
+	//tests mixing the old API and the new API
+	text.setText ("");
+	text.setText ("0123456789");
+	text.setStyleRanges(new StyleRange[]{new StyleRange(3,4,null,null,SWT.BOLD)});
+	expectedStyles = new StyleRange[]{};
+	expectedRanges = new int[] {};
+	testStyles("Test 20", text.getRanges(3,0), expectedRanges, text.getStyleRanges(3, 0, false), expectedStyles);	
+
+	//bug 250859 (getRanges)
+	text.setText ("");
+	text.setText ("The Eclipse Foundation is currently going through the exercise");
+	text.setStyleRanges(new int[] {12, 10, 36, 5}, new StyleRange[] {style0, style1});
+	expectedStyles = new StyleRange[] {style0};
+	expectedRanges = new int[] {12, 10};
+	testStyles("Test 21 (bug 250859)", text.getRanges(12, 10), expectedRanges, text.getStyleRanges(12, 10, false), expectedStyles);
+	
+	//bug 250193
+	text.setText ("");
+	text.setText("The Eclipse Foundation is currently going through the exercise");
+	StyleRange sr1 = new StyleRange();
+	sr1.underline = true;
+	StyleRange sr2 = new StyleRange();
+	sr2.strikeout = true;
+	sr1.start = 12;
+	sr1.length = 10;
+	sr2.start = 36;
+	sr2.length = 5;
+	text.setStyleRange(sr1);
+	text.setStyleRange(sr2);
+	text.replaceTextRange(12, 10, "");
+	expectedStyles = new StyleRange[] {sr2};
+	expectedRanges = new int[] {26, 5};
+	testStyles("Test 22 (bug 250193)", text.getRanges(26, 5), expectedRanges, text.getStyleRanges(26, 5, false), expectedStyles);
+	
+	//bug 212851 (getStyleRanges)
+	text.setText("");
+	text.setText("line0\nline1\nline2");
+	text.setStyleRanges(new int[] {0,2,2,2,4,4,13,3}, new StyleRange[] {style0, style1, style2, style0});
+	expectedRanges = new int[] {6, 2};	
+	expectedStyles = new StyleRange[] {style2}; 
+	testStyles("Test 23 (bug 212851 - getRanges)", text.getRanges(6, 6), expectedRanges, text.getStyleRanges(6, 6, false), expectedStyles);
+	StyleRange[] styles = text.getStyleRanges(6, 6, true);
+	int[] ranges = new int[styles.length * 2];
+	for (int i = 0; i < ranges.length; i+=2) {
+		ranges[i] = styles[i/2].start;
+		ranges[i+1] = styles[i/2].length;
+	}
+	testStyles("Test 24 (bug 212851 - getStyleRanges)", ranges, expectedRanges, text.getStyleRanges(6, 6, false), expectedStyles);
+	expectedRanges = new int[] {6, 2, 13, 1};
+	expectedStyles = new StyleRange[] {style2, style0}; 
+	testStyles("Test 25 ", text.getRanges(6, 8), expectedRanges, text.getStyleRanges(6, 8, false), expectedStyles);
+	styles = text.getStyleRanges(6, 8, true);
+	ranges = new int[styles.length * 2];
+	for (int i = 0; i < ranges.length; i+=2) {
+		ranges[i] = styles[i/2].start;
+		ranges[i+1] = styles[i/2].length;
+	}
+	testStyles("Test 26 ", ranges, expectedRanges, text.getStyleRanges(6, 8, false), expectedStyles);
 }
 
 public void test_getSelection(){
@@ -1892,7 +2141,7 @@ public void test_printLorg_eclipse_swt_printing_Printer() {
 
 	boolean exceptionThrown = false;
 	try {
-		text.print(null);
+		text.print((Printer) null);
 	} catch (IllegalArgumentException ex) {
 		exceptionThrown = true;
 	}	
@@ -2694,7 +2943,7 @@ public void test_selectAll() {
 
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	Caret caret = new Caret(text, SWT.NONE);
-	final int XINSET = isBidi() ? 2 : 0;
+	final int XINSET = isBidiCaret() ? 2 : 0;
 	
 	text.setCaret(caret);
 	assertEquals(XINSET, text.getCaret().getLocation().x);
@@ -4210,6 +4459,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getOffsetAtLineI");
 	methodNames.addElement("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getOrientation");
+	methodNames.addElement("test_getRanges");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionBackground");
 	methodNames.addElement("test_getSelectionCount");
@@ -4321,6 +4571,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getOffsetAtLineI")) test_getOffsetAtLineI();
 	else if (getName().equals("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point")) test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getOrientation")) test_getOrientation();
+	else if (getName().equals("test_getRanges")) test_getRanges();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionBackground")) test_getSelectionBackground();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
@@ -4449,6 +4700,7 @@ protected void testRtfCopy() {
 	// cause StyledText to call the listener. 
 	text.setSelection(0, text.getCharCount());
 	text.addLineStyleListener(listener);
+	linesCalled[0] = 0;
 	text.copy();
 	assertTrue("not all lines tested for RTF copy", linesCalled[0] == text.getLineCount());
 	

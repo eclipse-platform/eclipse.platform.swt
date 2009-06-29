@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,9 @@ package org.eclipse.swt.tests.junit;
 
 
 import java.io.*;
+
 import junit.framework.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
@@ -62,7 +64,7 @@ public class SwtTestCase extends TestCase {
 	public static String[] transparentImageFilenames = new String[] {"transparent.png"};
 	
 	// specify reparentable platforms
-	public static String[] reparentablePlatforms = new String[] {"win32", "gtk"};
+	public static String[] reparentablePlatforms = new String[] {"win32", "gtk", "carbon", "cocoa"};
 	
 public SwtTestCase(String name) {
 	super(name);
@@ -185,13 +187,6 @@ static public void assertEquals(String message, int expected[], int actual[]) {
 static public void assertEquals(int expected[], int actual[]) {
     assertEquals(null, expected, actual);
 }
-// copied exactly from junit.framework.TestCase so that it can be called from here even though private
-static private void failNotEquals(String message, Object expected, Object actual) {
-	String formatted= "";
-	if (message != null)
-		formatted= message+" ";
-	fail(formatted+"expected:<"+expected+"> but was:<"+actual+">");
-}
 
 static private void failNotEquals(String message, Object[] expected, Object[] actual) {
 	String formatted= "";
@@ -233,6 +228,23 @@ protected boolean isReparentablePlatform() {
 		if (reparentablePlatforms[i].equals(platform)) return true;
 	}
 	return false;
+}
+
+protected boolean isBidi() {
+	return  SWT.getPlatform().equals("gtk") || SWT.getPlatform().equals("carbon") ||  SWT.getPlatform().equals("cocoa") || BidiUtil.isBidiPlatform();// || isMirrored;
+}
+
+protected void setUp() {
+	try {
+		super.setUp();
+	} catch (Exception e) {
+		SWTError error = new SWTError();
+		error.throwable = e;
+		throw error;
+	}
+}
+
+protected void tearDown() {
 }
 
 protected void warnUnimpl(String message) {

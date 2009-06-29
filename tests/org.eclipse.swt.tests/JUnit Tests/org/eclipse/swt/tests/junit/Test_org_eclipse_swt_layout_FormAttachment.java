@@ -32,11 +32,13 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	shell = new Shell();
 }
 
 protected void tearDown() {
 	shell.dispose();
+	super.tearDown();
 }
 
 public void test_ConstructorI() {

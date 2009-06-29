@@ -36,10 +36,6 @@ protected void setUp() {
 	setWidget(expandItem);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI() {
 	try {
 		new ExpandItem(null, SWT.NULL);

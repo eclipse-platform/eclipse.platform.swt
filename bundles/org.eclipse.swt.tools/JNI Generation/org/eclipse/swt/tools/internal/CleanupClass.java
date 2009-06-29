@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2004, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,38 @@ String[] sourcePath;
 String classSource;
 Hashtable files;
 int usedCount, unusedCount;
+
+String[] getArgNames(JNIMethod method) {
+	int n_args = method.getParameters().length;
+	if (n_args == 0) return new String[0];
+	String name = method.getName();
+	String params = "";
+	int index = 0;
+	while (true) {
+		index = classSource.indexOf(name, index + 1);
+		if (!Character.isWhitespace(classSource.charAt(index - 1))) continue;
+		if (index == -1) return null;
+		int parantesesStart = classSource.indexOf("(", index);
+		if (classSource.substring(index + name.length(), parantesesStart).trim().length() == 0) {
+			int parantesesEnd = classSource.indexOf(")", parantesesStart);
+ 			params = classSource.substring(parantesesStart + 1, parantesesEnd);
+ 			break;
+		}
+	}
+	String[] names = new String[n_args];
+	StringTokenizer tk = new StringTokenizer(params, ",");
+	for (int i = 0; i < names.length; i++) {
+		String s = tk.nextToken().trim();
+		StringTokenizer tk1 = new StringTokenizer(s, " ");
+		String s1 = null;
+		while (tk1.hasMoreTokens()) {
+			s1 = tk1.nextToken();
+		}
+		names[i] = s1.trim();
+	}
+	return names;	
+}
+
 
 void loadClassSource() {
 	if (classSourcePath == null) return;
@@ -78,7 +110,7 @@ void loadDirectory(File file) {
 	}
 }
 
-public void generate(Class clazz) {
+public void generate(JNIClass clazz) {
 	loadFiles ();
 	loadClassSource();
 }

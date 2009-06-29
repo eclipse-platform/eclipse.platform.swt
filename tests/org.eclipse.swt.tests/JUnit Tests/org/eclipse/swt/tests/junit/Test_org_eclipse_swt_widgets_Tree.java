@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(tree);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		tree = new Tree(null, 0);
@@ -57,7 +53,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	cases = new int[]{0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TreeItem ti = new TreeItem(tree, 0);
+			new TreeItem(tree, 0);
 		}
 		assertEquals(cases[j], tree.getItemCount());
 		tree.removeAll();
@@ -390,14 +386,14 @@ public void test_setItemCountI() {
 	tree.removeAll();
 	assertEquals(0, tree.getItemCount());
 	for (int i=0; i<8; i++) {
-		TreeItem item = new TreeItem(tree, SWT.NULL);
+		new TreeItem(tree, SWT.NULL);
 		assertEquals(i+1, tree.getItemCount());
 	}
 	assertEquals(8, tree.getItemCount());
 	assertEquals(4, tree.indexOf(tree.getItems()[4]));
 	tree.getItem(1).dispose();
 	assertEquals(7, tree.getItemCount());
-	TreeItem item = new TreeItem (tree, SWT.NULL, 0);
+	new TreeItem (tree, SWT.NULL, 0);
 	assertEquals(1, tree.indexOf(tree.getItems()[1]));
 	assertEquals(8, tree.getItemCount());
 	tree.removeAll();
@@ -604,17 +600,17 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	tree.removeAll();
 	for (int i = 0; i < 10; i++) {
-		TreeItem item = new TreeItem(tree, 0);	
+		new TreeItem(tree, 0);	
 	}
 	TreeItem top = new TreeItem(tree, 0);
 	for (int i = 0; i < 10; i++) {
-		TreeItem item = new TreeItem(tree, 0);	
+		new TreeItem(tree, 0);	
 	}
 	tree.setSize(50,50);
 	shell.open();
 	tree.setTopItem(top);
 	for (int i = 0; i < 10; i++) {
-		TreeItem item = new TreeItem(tree, 0);	
+		new TreeItem(tree, 0);	
 	}
 	TreeItem top2 = tree.getTopItem();
 	shell.setVisible(false);
@@ -663,7 +659,7 @@ public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 	TreeItem[] items2 = new TreeItem[number];
 	for (int i = 0; i < number; i++) {
 		items2[i] = new TreeItem(tree2, 0);
-	};
+	}
 
 	for(int i=0; i<number; i++)
 		tree.showItem(items2[i]);

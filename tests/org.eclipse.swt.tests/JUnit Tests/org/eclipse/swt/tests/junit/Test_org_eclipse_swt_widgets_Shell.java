@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,10 +41,6 @@ protected void setUp() {
 	testShell = new Shell(shell, SWT.NULL);
 	setWidget(shell);
 	assertTrue(testShell.getParent() == shell);
-}
-
-protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_Constructor() {
@@ -124,6 +120,8 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	shell.addShellListener(listener);
 	shell.forceActive();
 	/* can't assume listener is synchronously called when forceActive returned */
@@ -140,6 +138,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_close() {

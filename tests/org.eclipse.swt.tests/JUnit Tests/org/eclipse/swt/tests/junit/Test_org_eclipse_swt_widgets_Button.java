@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,26 +41,22 @@ protected void setUp() {
 	setWidget(button);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Button(Composite parent, int style)
-	Button button = new Button(shell, SWT.NULL);
+	new Button(shell, SWT.NULL);
 
-	button = new Button(shell, SWT.PUSH);
+	new Button(shell, SWT.PUSH);
 
-	button = new Button(shell, SWT.CHECK);
+	new Button(shell, SWT.CHECK);
 
-	button = new Button(shell, SWT.TOGGLE);
+	new Button(shell, SWT.TOGGLE);
 
-	button = new Button(shell, SWT.ARROW);
+	new Button(shell, SWT.ARROW);
 
-	button = new Button(shell, SWT.PUSH | SWT.CHECK);
+	new Button(shell, SWT.PUSH | SWT.CHECK);
 
 	try {
-		button = new Button(null, 0);
+		new Button(null, 0);
 		fail("No exception thrown for parent == null");
 	}
 	catch (IllegalArgumentException e) {
@@ -72,9 +68,9 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	SelectionListener listener = new SelectionListener() {
 		public void widgetSelected(SelectionEvent e) {
 			listenerCalled = true;
-		};
+		}
 		public void widgetDefaultSelected(SelectionEvent e) {
-		};
+		}
 	};
 	
 	try {
@@ -245,7 +241,7 @@ public void test_setTextLjava_lang_String() {
 	for (int i=0; i<goodCases; i++){
 		button.setText(cases[i]);
 		assertTrue("good case: " + String.valueOf(i), button.getText().equals(cases[i]));
-	};
+	}
 
 	try {
 		button.setText(null);

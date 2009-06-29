@@ -40,9 +40,6 @@ protected void setUp() {
 	setDialog(colorDialog);
 }
 
-protected void tearDown() {
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	new ColorDialog(shell);
 	

@@ -10,34 +10,34 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
 
 public class ConstantsGenerator extends JNIGenerator {
 
-public void generate(Class clazz) {
-	Field[] fields = clazz.getDeclaredFields();
+public void generate(JNIClass clazz) {
+	JNIField[] fields = clazz.getDeclaredFields();
 	generate(fields);
 }
 
-public void generate(Field[] fields) {
+public void generate(JNIField[] fields) {
 	sort(fields);
 	outputln("int main() {");
 	for (int i = 0; i < fields.length; i++) {
-		Field field = fields[i];
+		JNIField field = fields[i];
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
 		generate(field);
 	}
 	outputln("}");
 }
 
-public void generate(Field field) {
-	Class type = field.getType();
+public void generate(JNIField field) {
+	JNIType type = field.getType();
 	output("\tprintf(\"public static final ");
-	output(getTypeSignature3(field.getType()));
+	output(field.getType().getTypeSignature3(false));
 	output(" ");
 	output(field.getName());
 	output(" = ");
-	if (type == String.class || type == byte[].class) output("\"%s\"");
+	if (type.isType("java.lang.String") || type.isType("[B")) output("\"%s\"");
 	else output("0x%x");
 	output(";\\n\", ");
 	output(field.getName());
@@ -54,7 +54,7 @@ public static void main(String[] args) {
 		for (int i = 0; i < args.length; i++) {
 			String clazzName = args[i];
 			Class clazz = Class.forName(clazzName);
-			gen.generate(clazz);
+			gen.generate(new ReflectClass(clazz));
 		}
 	} catch (Exception e) {
 		System.out.println("Problem");

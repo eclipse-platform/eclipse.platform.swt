@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2004, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,25 +11,83 @@
 package org.eclipse.swt.tools.internal;
 
 import java.io.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
-import org.eclipse.swt.SWT;
+public abstract class JNIGenerator implements Flags {
 
-public abstract class JNIGenerator {
-
-	Class mainClass;
-	Class[] classes;
+	JNIClass mainClass;
+	JNIClass[] classes;
 	MetaData metaData;
 	boolean isCPP;
 	String delimiter;
 	PrintStream output;
 	ProgressMonitor progress;
+	
+	static final String JNI64 = "JNI64";
 
 public JNIGenerator() {
 	delimiter = System.getProperty("line.separator");
 	output = System.out;
 	metaData = new MetaData(new Properties());
+}
+
+public static String skipCopyrights(InputStream is) throws IOException {
+	int state = 0;
+	StringBuffer copyrights = new StringBuffer();
+	while (state != 5) {
+		int c = is.read();
+		if (c == -1) return null;
+		switch (state) {
+			case 0:
+				if (!Character.isWhitespace((char)c)) state = 1;
+			case 1:
+				if (c == '/') state = 2;
+				else return null;
+				break;
+			case 2:
+				if (c == '*') state = 3;
+				else return null;
+				break;
+			case 3:
+				if (c == '*') state = 4;
+				break;
+			case 4:
+				if (c == '/') state = 5;
+				else state = 3;
+				break;
+		}
+		if (state > 0) copyrights.append((char)c);
+	}
+	return copyrights.toString();
+}
+
+public static boolean compare(InputStream is1, InputStream is2) throws IOException {
+	skipCopyrights(is1);
+	skipCopyrights(is2);
+	while (true) {
+		int c1 = is1.read();
+		int c2 = is2.read();
+		if (c1 != c2) return false;
+		if (c1 == -1) break;
+	}
+	return true;
+}
+
+public static void output(byte[] bytes, String fileName) throws IOException {
+	FileInputStream is = null;
+	try {
+		is = new FileInputStream(fileName);
+		if (compare(new ByteArrayInputStream(bytes), new BufferedInputStream(is))) return;
+	} catch (FileNotFoundException e) {
+	} finally {
+		try {
+			if (is != null) is.close();
+		} catch (IOException e) {}
+	}
+	FileOutputStream out = new FileOutputStream(fileName);
+	out.write(bytes);
+	out.close();
 }
 
 String fixDelimiter(String str) {
@@ -50,196 +108,77 @@ String fixDelimiter(String str) {
 	return buffer.toString();
 }
 
-static String getClassName(Class clazz) {
-	String name = clazz.getName();
-	int index = name.lastIndexOf('.') + 1;
-	return name.substring(index, name.length());
-}
-
-static String getFunctionName(Method method) {
+static String getFunctionName(JNIMethod method) {
 	return getFunctionName(method, method.getParameterTypes());
 }
 
-static String getFunctionName(Method method, Class[] paramTypes) {
+static String getFunctionName(JNIMethod method, JNIType[] paramTypes) {
 	if ((method.getModifiers() & Modifier.NATIVE) == 0) return method.getName();
 	String function = toC(method.getName());
-	if (!isNativeUnique(method)) {
+	if (!method.isNativeUnique()) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(function);
 		buffer.append("__");
-		if (paramTypes.length > 0) {
-			for (int i = 0; i < paramTypes.length; i++) {
-				Class paramType = paramTypes[i];
-				buffer.append(toC(getTypeSignature(paramType)));
-			}
+		for (int i = 0; i < paramTypes.length; i++) {
+			JNIType paramType = paramTypes[i];
+			buffer.append(toC(paramType.getTypeSignature(false)));
 		}
 		return buffer.toString();
 	}
 	return function;
 }
 
-static int getByteCount(Class clazz) {
-	if (clazz == Integer.TYPE) return 4;
-	if (clazz == Boolean.TYPE) return 4;
-	if (clazz == Long.TYPE) return 8;
-	if (clazz == Short.TYPE) return 2;
-	if (clazz == Character.TYPE) return 2;
-	if (clazz == Byte.TYPE) return 1;
-	if (clazz == Float.TYPE) return 4;
-	if (clazz == Double.TYPE) return 8;
-	return 4;
-}
-
-static String getTypeSignature(Class clazz) {
-	if (clazz == Void.TYPE) return "V";
-	if (clazz == Integer.TYPE) return "I";
-	if (clazz == Boolean.TYPE) return "Z";
-	if (clazz == Long.TYPE) return "J";
-	if (clazz == Short.TYPE) return "S";
-	if (clazz == Character.TYPE) return "C";
-	if (clazz == Byte.TYPE) return "B";
-	if (clazz == Float.TYPE) return "F";
-	if (clazz == Double.TYPE) return "D";
-	if (clazz == String.class) return "Ljava/lang/String;";
-	if (clazz.isArray()) {
-		Class componentType = clazz.getComponentType();
-		return "[" + getTypeSignature(componentType);
+static String loadFile (String file) {
+	try {
+		FileReader fr = new FileReader(file);
+		BufferedReader br = new BufferedReader(fr);
+		StringBuffer str = new StringBuffer();
+		char[] buffer = new char[1024];
+		int read;
+		while ((read = br.read(buffer)) != -1) {
+			str.append(buffer, 0, read);
+		}
+		fr.close();
+		return str.toString();
+	} catch (IOException e) {
+		throw new RuntimeException("File not found:" + file, e);
 	}
-	return "L" + clazz.getName().replace('.', '/') + ";";
 }
 
-static String getTypeSignature1(Class clazz) {
-	if (clazz == Void.TYPE) return "Void";
-	if (clazz == Integer.TYPE) return "Int";
-	if (clazz == Boolean.TYPE) return "Boolean";
-	if (clazz == Long.TYPE) return "Long";
-	if (clazz == Short.TYPE) return "Short";
-	if (clazz == Character.TYPE) return "Char";
-	if (clazz == Byte.TYPE) return "Byte";
-	if (clazz == Float.TYPE) return "Float";
-	if (clazz == Double.TYPE) return "Double";
-	if (clazz == String.class) return "String";
-	return "Object";
-}
-
-static String getTypeSignature2(Class clazz) {
-	if (clazz == Void.TYPE) return "void";
-	if (clazz == Integer.TYPE) return "jint";
-	if (clazz == Boolean.TYPE) return "jboolean";
-	if (clazz == Long.TYPE) return "jlong";
-	if (clazz == Short.TYPE) return "jshort";
-	if (clazz == Character.TYPE) return "jchar";
-	if (clazz == Byte.TYPE) return "jbyte";
-	if (clazz == Float.TYPE) return "jfloat";
-	if (clazz == Double.TYPE) return "jdouble";
-	if (clazz == String.class) return "jstring";
-	if (clazz == Class.class) return "jclass";
-	if (clazz.isArray()) {
-		Class componentType = clazz.getComponentType();
-		return getTypeSignature2(componentType) + "Array";
-	}
-	return "jobject";
-}
-
-static String getTypeSignature3(Class clazz) {
-	if (clazz == Void.TYPE) return "void";
-	if (clazz == Integer.TYPE) return "int";
-	if (clazz == Boolean.TYPE) return "boolean";
-	if (clazz == Long.TYPE) return "long";
-	if (clazz == Short.TYPE) return "short";
-	if (clazz == Character.TYPE) return "char";
-	if (clazz == Byte.TYPE) return "byte";
-	if (clazz == Float.TYPE) return "float";
-	if (clazz == Double.TYPE) return "double";
-	if (clazz == String.class) return "String";
-	if (clazz.isArray()) {
-		Class componentType = clazz.getComponentType();
-		return getTypeSignature3(componentType) + "[]";
-	}
-	return clazz.getName();
-}
-
-static String getTypeSignature4(Class clazz) {
-	return getTypeSignature4(clazz, false);
-}
-
-static String getTypeSignature4(Class clazz, boolean struct) {
-	if (clazz == Void.TYPE) return "void";
-	if (clazz == Integer.TYPE) return "jint";
-	if (clazz == Boolean.TYPE) return "jboolean";
-	if (clazz == Long.TYPE) return "jlong";
-	if (clazz == Short.TYPE) return "jshort";
-	if (clazz == Character.TYPE) return "jchar";
-	if (clazz == Byte.TYPE) return "jbyte";
-	if (clazz == Float.TYPE) return "jfloat";
-	if (clazz == Double.TYPE) return "jdouble";
-	if (clazz == String.class) return "jstring";
-	if (clazz.isArray()) {
-		Class componentType = clazz.getComponentType();
-		String sig = getTypeSignature4(componentType);
-		return struct ? sig : sig + " *";
-	}
-	String sig = getClassName(clazz); 
-	return struct ? sig : sig + " *";
-}
-
-static HashMap uniqueCache = new HashMap();
-static Class uniqueClassCache;
-static Method[] uniqueMethodsCache;
-static synchronized boolean isNativeUnique(Method method) {
-	if ((method.getModifiers() & Modifier.NATIVE) == 0) return false;
-	Object unique = uniqueCache.get(method);
-	if (unique != null) return ((Boolean)unique).booleanValue();
-	boolean result = true;
-	Method[] methods;
-	String name = method.getName();
-	Class clazz = method.getDeclaringClass();
-	if (clazz.equals(uniqueClassCache)) {
-		methods = uniqueMethodsCache;
-	} else {
-		methods = clazz.getDeclaredMethods();
-		uniqueClassCache = clazz;
-		uniqueMethodsCache = methods;
-	}
-	for (int i = 0; i < methods.length; i++) {
-		Method mth = methods[i];
-		if ((mth.getModifiers() & Modifier.NATIVE) != 0 &&
-			method != mth && !method.equals(mth) &&
-			name.equals(mth.getName()))
-			{
-				result = false;
-				break;
-			}
-	}
-	uniqueCache.put(method, new Boolean(result));
-	return result;
-}
-
-static void sort(Method[] methods) {
+static void sort(JNIMethod[] methods) {
 	Arrays.sort(methods, new Comparator() {
 		public int compare(Object a, Object b) {
-			Method mth1 = (Method)a;
-			Method mth2 = (Method)b;
+			JNIMethod mth1 = (JNIMethod)a;
+			JNIMethod mth2 = (JNIMethod)b;
 			int result = mth1.getName().compareTo(mth2.getName());
 			return result != 0 ? result : getFunctionName(mth1).compareTo(getFunctionName(mth2));
 		}
 	});
 }
 
-static void sort(Field[] fields) {
+static void sort(JNIField[] fields) {
 	Arrays.sort(fields, new Comparator() {
 		public int compare(Object a, Object b) {
-			return ((Field)a).getName().compareTo(((Field)b).getName());
+			return ((JNIField)a).getName().compareTo(((JNIField)b).getName());
 		}
 	});
 }
 
-static void sort(Class[] classes) {
+static void sort(JNIClass[] classes) {
 	Arrays.sort(classes, new Comparator() {
 		public int compare(Object a, Object b) {
-			return ((Class)a).getName().compareTo(((Class)b).getName());
+			return ((JNIClass)a).getName().compareTo(((JNIClass)b).getName());
 		}
 	});	
+}
+
+static String[] split(String str, String separator) {
+	StringTokenizer tk = new StringTokenizer(str, separator);
+	ArrayList result = new ArrayList();
+	while (tk.hasMoreElements()) {
+		result.add(tk.nextElement());
+	}
+	return (String[])result.toArray(new String[result.size()]);
 }
 
 static String toC(String str) {
@@ -259,7 +198,7 @@ static String toC(String str) {
 	return buffer.toString();
 }
 
-public abstract void generate(Class clazz);
+public abstract void generate(JNIClass clazz);
 
 public void generateCopyright() {
 }
@@ -273,15 +212,14 @@ public void generate() {
 	generateIncludes();
 	sort(classes);
 	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData data = getMetaData().getMetaData(clazz);
-		if (data.getFlag("cpp")) {
+		JNIClass clazz = classes[i];
+		if (clazz.getFlag(FLAG_CPP)) {
 			isCPP = true;
 			break;
 		}
 	}
 	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
+		JNIClass clazz = classes[i];
 		if (getGenerate(clazz)) generate(clazz);
 		if (progress != null) progress.step();
 	}
@@ -296,13 +234,8 @@ public void generateMetaData(String key) {
 	outputln(fixDelimiter(data));
 }
 
-public Class[] getClasses() {
+public JNIClass[] getClasses() {
 	return classes;
-}
-
-protected boolean getGenerate(Class clazz) {
-	ClassData data = getMetaData().getMetaData(clazz);
-	return !data.getFlag("no_gen");
 }
 
 public boolean getCPP() {
@@ -321,24 +254,24 @@ public String getFileName() {
 	return getOutputName() + getSuffix() + getExtension();
 }
 
+protected boolean getGenerate(JNIItem item) {
+	return item.getGenerate();
+}
+
 public PrintStream getOutput() {
 	return output;
 }
 
 public String getOutputName() {
-	return getClassName(getMainClass()).toLowerCase();
+	return getMainClass().getSimpleName().toLowerCase();
 }
 
-public Class getMainClass() {
+public JNIClass getMainClass() {
 	return mainClass;
 }
 
 public MetaData getMetaData() {
 	return metaData;
-}
-
-public String getPlatform() {
-	return SWT.getPlatform();
 }
 
 public ProgressMonitor getProgressMonitor() {
@@ -362,7 +295,7 @@ public void outputln(String str) {
 	output(getDelimiter());
 }
 
-public void setClasses(Class[] classes) {
+public void setClasses(JNIClass[] classes) {
 	this.classes = classes;
 }
 
@@ -370,7 +303,7 @@ public void setDelimiter(String delimiter) {
 	this.delimiter = delimiter;
 }
 
-public void setMainClass(Class mainClass) {
+public void setMainClass(JNIClass mainClass) {
 	this.mainClass = mainClass;
 }
 

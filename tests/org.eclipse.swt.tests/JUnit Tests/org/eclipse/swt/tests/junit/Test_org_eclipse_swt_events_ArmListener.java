@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_widgetArmedLorg_eclipse_swt_events_ArmEvent() {
 	warnUnimpl("Test test_widgetArmedLorg_eclipse_swt_events_ArmEvent not written");
 }

@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_handleEventLorg_eclipse_swt_widgets_Event() {
 	warnUnimpl("Test test_handleEventLorg_eclipse_swt_widgets_Event not written");
 }

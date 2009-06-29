@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_mouseEnterLorg_eclipse_swt_events_MouseEvent() {
 	warnUnimpl("Test test_mouseEnterLorg_eclipse_swt_events_MouseEvent not written");
 }

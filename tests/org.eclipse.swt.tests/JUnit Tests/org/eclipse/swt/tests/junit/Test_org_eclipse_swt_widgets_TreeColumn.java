@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(treeColumn);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
 	try {
 		new TreeColumn(null, SWT.NULL);

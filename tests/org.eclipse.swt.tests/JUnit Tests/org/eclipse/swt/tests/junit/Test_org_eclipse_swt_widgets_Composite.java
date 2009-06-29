@@ -40,10 +40,6 @@ protected void setUp() {
 	super.setWidget(composite);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		composite = new Composite(null, 0);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -95,7 +95,7 @@ public class Browser3 {
 				new Thread() {
 					public void run() {
 						if (verbose) System.out.println("timer start");
-						try { sleep(2000); } catch (Exception e) {};
+						try { sleep(2000); } catch (Exception e) {}
 						passed = true;
 						if (!display.isDisposed())
 							display.asyncExec(new Runnable(){
@@ -105,7 +105,7 @@ public class Browser3 {
 								}
 							});
 						if (verbose) System.out.println("timer over");
-					};
+					}
 				}.start();
 			}
 		});

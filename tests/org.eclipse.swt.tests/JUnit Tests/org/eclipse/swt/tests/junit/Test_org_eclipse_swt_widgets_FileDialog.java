@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,13 +36,9 @@ protected void setUp() {
 	setDialog(fileDialog);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	// Test FileDialog(Shell)
-	FileDialog fd = new FileDialog(shell);
+	new FileDialog(shell);
 	try {
 		new FileDialog(null);
 		fail("No exception thrown for parent == null");
@@ -55,14 +51,31 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	// Test FileDialog(Shell, int)
 	FileDialog fd;
 	fd = new FileDialog(shell, SWT.NULL);
-	assertTrue(fd.getStyle()==SWT.NULL);
+	int style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.APPLICATION_MODAL);
+	
 	fd = new FileDialog(shell, SWT.APPLICATION_MODAL);
-	assertTrue(fd.getStyle()==SWT.APPLICATION_MODAL);
+	style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.APPLICATION_MODAL);
+	
 	fd = new FileDialog(shell, SWT.PRIMARY_MODAL);
-	assertTrue(fd.getStyle()==SWT.PRIMARY_MODAL);
+	style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.PRIMARY_MODAL);
+	
 	fd = new FileDialog(shell, SWT.SYSTEM_MODAL);
-	assertTrue(fd.getStyle()==SWT.SYSTEM_MODAL);
+	style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.SYSTEM_MODAL);
 }
+
+
 public void test_getFileName() {
 	//	tested in test_setFileNameLjava_lang_String()
 }

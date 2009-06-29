@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,10 +34,6 @@ public static void main(String[] args) {
 protected void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
-}
-
-protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
@@ -233,7 +229,7 @@ public void test_getBoundsI() {
 	makeCleanEnvironment();
 	
 	tableItem.setText("hello");
-	TableColumn column = new TableColumn(table, SWT.RIGHT);
+	new TableColumn(table, SWT.RIGHT);
 	bounds = tableItem.getBounds(0);
 	assertTrue(":3s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
 	
@@ -318,7 +314,7 @@ public void test_getBoundsI() {
 	tableItem2 = new TableItem(table2, SWT.NONE);
 	
 	tableItem2.setText("hello");
-	column = new TableColumn(table2, SWT.RIGHT);
+	new TableColumn(table2, SWT.RIGHT);
 	bounds = tableItem2.getBounds(0);
 	assertTrue(":4s:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 0);
 }
@@ -372,11 +368,11 @@ public void test_getImageBoundsI() {
 	makeCleanEnvironment();
 	
 	Image image = images[0];	
-	int imageWidth = image.getBounds().width;
-	int imageHeight;
+//	int imageWidth = image.getBounds().width;
+//	int imageHeight;
 	
 	tableItem.setImage(0, image);
-	imageHeight = table.getItemHeight() - table.getGridLineWidth();
+//	imageHeight = table.getItemHeight() - table.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(-1));
 	
 	bounds = tableItem.getImageBounds(0);
@@ -391,9 +387,9 @@ public void test_getImageBoundsI() {
 	table2 = new Table(shell, SWT.CHECK);
 	tableItem2.dispose();
 	tableItem2 = new TableItem(table2, SWT.NULL);
-	Rectangle imageBounds = image.getBounds();
-	imageWidth = imageBounds.width; 	tableItem2.setImage(0, image);
-	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
+//	Rectangle imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width; 	tableItem2.setImage(0, image);
+//	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
 	
 	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if they are wider than image
@@ -409,10 +405,10 @@ public void test_getImageBoundsI() {
 	tableItem2.dispose();
 	tableItem2 = new TableItem(table2, SWT.NULL);
 	image = images[1];
-	imageBounds = image.getBounds();
-	imageWidth = imageBounds.width;
+//	imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width;
  	tableItem2.setImage(0, image);
-	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
+//	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
  	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
 //	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
@@ -451,8 +447,8 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(tableItem.getBackground(), tableItem.getBackground(10));
 	
 	// with columns
-	TableColumn column1 = new TableColumn(table, SWT.LEFT);
-	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
 	
 	// index beyond range - no error
 	tableItem.setBackground(10, red);
@@ -548,8 +544,8 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	assertTrue(tableItem.getFont().equals(tableItem.getFont(10)));
 	
 	// with columns
-	TableColumn column1 = new TableColumn(table, SWT.LEFT);
-	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
 	
 	// index beyond range - no error
 	tableItem.setFont(10, font);
@@ -599,8 +595,8 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(tableItem.getForeground(), tableItem.getForeground(10));
 	
 	// with columns
-	TableColumn column1 = new TableColumn(table, SWT.LEFT);
-	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
 	
 	// index beyond range - no error
 	tableItem.setForeground(10, red);
@@ -671,7 +667,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	int columnCount = table.getColumnCount();
 	if (columnCount < texts.length) {
 		for (int i = columnCount; i < texts.length; i++){
-			TableColumn column = new TableColumn(table, SWT.NONE);
+			new TableColumn(table, SWT.NONE);
 		}
 	}
 	TableColumn[] columns = table.getColumns();
@@ -703,8 +699,8 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	assertEquals(null, tableItem.getImage(10));
 	
 	// with columns
-	TableColumn column1 = new TableColumn(table, SWT.LEFT);
-	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
 	
 	// index beyond range - no error
 	tableItem.setImage(10, images[0]);
@@ -733,7 +729,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 }
 
 public void test_setImageIndentI() {
-	if (SwtJunit.isCarbon || SwtJunit.isGTK) {
+	if (SwtJunit.isCarbon || SwtJunit.isCocoa || SwtJunit.isGTK) {
 		//setImageIndent not implemented on Carbon
 		tableItem.setImageIndent(1);
 		return; 
@@ -778,7 +774,7 @@ public void test_setText$Ljava_lang_String() {
 	int columnCount = table.getColumnCount();
 	if (columnCount < images.length) {
 		for (int i = columnCount; i < images.length; i++){
-			TableColumn column = new TableColumn(table, SWT.NONE);
+			new TableColumn(table, SWT.NONE);
 		}
 	}
 	TableColumn[] columns = table.getColumns();
@@ -819,7 +815,7 @@ public void test_setTextILjava_lang_String(){
 	int columnCount = table.getColumnCount();
 	if (columnCount < images.length) {
 		for (int i = columnCount; i < images.length; i++){
-			TableColumn column = new TableColumn(table, SWT.NONE);
+			new TableColumn(table, SWT.NONE);
 		}
 	}
 	TableColumn[] columns = table.getColumns();

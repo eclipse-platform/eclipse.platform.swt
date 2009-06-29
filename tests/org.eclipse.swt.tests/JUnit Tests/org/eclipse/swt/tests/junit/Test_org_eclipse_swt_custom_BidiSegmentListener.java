@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,6 @@ import org.eclipse.swt.custom.BidiSegmentListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.internal.BidiUtil;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.BidiSegmentListener
@@ -39,10 +38,6 @@ public static void main(String[] args) {
 public Test_org_eclipse_swt_custom_BidiSegmentListener(String name) {
 	super(name);
 }
-
-private boolean isBidi() {
-	return BidiUtil.isBidiPlatform();
-}
 protected void setUp() {
 	shell = new Shell();
 	text = new StyledText(shell, SWT.NULL);
@@ -58,6 +53,7 @@ public static Test suite() {
 }
 protected void tearDown() {
 	shell.dispose();
+	super.tearDown();
 }
 private void testListener(final String message, final int[] segments, boolean exceptionExpected) {
 	boolean exceptionThrown = false;
@@ -114,7 +110,7 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 		for (int i=0; i<boldRanges.length; i+=2) {
 			StyleRange styleRange = new StyleRange(boldRanges[i], boldRanges[i+1], null, null, SWT.BOLD);
 			text.setStyleRange(styleRange);
-		};
+		}
 		text.getLocationAtOffset(0);
 	}
 	catch (IllegalArgumentException e) {

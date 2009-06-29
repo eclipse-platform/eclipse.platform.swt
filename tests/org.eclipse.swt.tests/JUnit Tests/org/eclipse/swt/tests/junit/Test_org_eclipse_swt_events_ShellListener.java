@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_shellActivatedLorg_eclipse_swt_events_ShellEvent() {
 	warnUnimpl("Test test_shellActivatedLorg_eclipse_swt_events_ShellEvent not written");
 }

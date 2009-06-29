@@ -1,0 +1,25 @@
+# Copyright by many contributors; see http://babel.eclipse.org/
+SWT_Yes=Ja
+SWT_No=Nee
+SWT_OK=OK
+SWT_Cancel=Annuleren
+SWT_Abort=Afbreken
+SWT_Ignore=Negeren
+SWT_Sample=Voorbeeld
+SWT_Selection=Selectie
+SWT_Font=Lettertype
+SWT_Color=Kleur
+SWT_Size=Grootte
+SWT_Style=Stijl
+SWT_Save=Opslaan
+SWT_FontDialog_Title=Lettertypen
+SWT_Remove=Verwijderen
+SWT_Up=Omhoog
+SWT_Down=Omlaag
+SWT_Charset_ASCII=ASCII
+SWT_Password=Wachtwoord:
+SWT_Open=Openen
+SWT_Close=Sluiten
+SWT_Minimize=Minimaliseren
+SWT_Maximize=Maximaliseren
+SWT_Restore=Herstellen

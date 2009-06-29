@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -60,7 +60,7 @@ public void test_createComposites() {
 	PerformanceMeter meter = createMeter("Create composites");
 	int samples;
 
-    Performance performance = Performance.getDefault();
+    Performance.getDefault();
 	
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
@@ -68,11 +68,11 @@ public void test_createComposites() {
 		for (int i = 0; i < 100; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
 			for (int j = 0; j < 10; j++) {
-				Composite c2 = new Composite(c, SWT.NONE);
+				new Composite(c, SWT.NONE);
 			}
 		}
 		shell.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}
 
 	for(samples = 0; samples < 100; samples++) {
@@ -81,12 +81,12 @@ public void test_createComposites() {
 		for (int i = 0; i < 100; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
 			for (int j = 0; j < 50; j++) {
-				Composite c2 = new Composite(c, SWT.NONE);
+				new Composite(c, SWT.NONE);
 			}
 		}
 		meter.stop();
 		shell.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}	
 	disposeMeter(meter);
 }
@@ -105,30 +105,30 @@ public void test_createWidgets() {
 		for (int i = 0; i < 50; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
 			for (int j = 0; j < 10; j++) {
-				Button b = new Button(c, SWT.PUSH);
-				Label label = new Label(c, SWT.NONE);
-				Scale scale = new Scale(c, SWT.NONE);
-				ProgressBar bar = new ProgressBar(c, SWT.NONE);
-				List list = new List(c, SWT.NONE);
-				Text text = new Text(c, SWT.SINGLE);
-				Text multitext = new Text(c, SWT.MULTI);
-				Slider slider = new Slider(c, SWT.NONE);
-				Tree tree = new Tree(c, SWT.NONE);
-				Table table = new Table(c, SWT.NONE);
-				TabFolder tabFolder = new TabFolder(c, SWT.NONE);
-				Group g = new Group(c, SWT.BORDER);				
-				Composite c2 = new Composite(c, SWT.NONE);
+				new Button(c, SWT.PUSH);
+				new Label(c, SWT.NONE);
+				new Scale(c, SWT.NONE);
+				new ProgressBar(c, SWT.NONE);
+				new List(c, SWT.NONE);
+				new Text(c, SWT.SINGLE);
+				new Text(c, SWT.MULTI);
+				new Slider(c, SWT.NONE);
+				new Tree(c, SWT.NONE);
+				new Table(c, SWT.NONE);
+				new TabFolder(c, SWT.NONE);
+				new Group(c, SWT.BORDER);				
+				new Composite(c, SWT.NONE);
 			}
 		}
 		meter.stop();
 		shell.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}	
 	disposeMeter(meter);
 }
 
 public void test_layout() {
-	PerformanceMeter meter = createMeter("layout composites");
+	PerformanceMeter meter = createMeter("Layout Composites");
 	int samples;
 
 	for(samples = 0; samples < 10; samples++) {
@@ -185,9 +185,9 @@ public void test_layout() {
 		changedLabel.setLayoutData(data);
 		
 		shell.open();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		meter.start();
 		for(int numlayouts = 0; numlayouts < 20; numlayouts++) {
 			shell.layout(true);
@@ -197,7 +197,7 @@ public void test_layout() {
 		}
 		meter.stop();
 		shell.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}	
 	disposeMeter(meter);
 }
@@ -231,13 +231,18 @@ public void test_imageDrawing() {
 		image.dispose();
 		color1.dispose();
 		color2.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}	
 	disposeMeter(meter);
 }
 
 public void test_windowDrawing() {
 	PerformanceMeter meter = createMeter("Draw on a window");
+	Performance performance= Performance.getDefault();
+	performance.setComment(meter, 
+			Performance.EXPLAINS_DEGRADATION_COMMENT, 
+			"Regression due to a issue on the Releng test machine");
+			
 	int samples;
 	
 	for(samples = 0; samples < 10; samples++) {
@@ -252,9 +257,9 @@ public void test_windowDrawing() {
 		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		Color color1 = new Color(display, 0xff, 0, 0xff);
 		Color color2 = new Color(display, 0, 0xff, 0xff);
 		int x1 = 0, y1 = height/2, x2 = width/2, y2 = 0;
@@ -276,7 +281,7 @@ public void test_windowDrawing() {
 		shell.dispose();
 		color1.dispose();
 		color2.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}	
 	disposeMeter(meter);
 }
@@ -297,9 +302,9 @@ public void test_stringDrawing() {
 		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		Color color1 = new Color(display, 0xff, 0, 0xff);
 		Color color2 = new Color(display, 0, 0xff, 0xff);
 		Font font1 = new Font(display, "Helvetica", 20, SWT.NONE);
@@ -324,7 +329,7 @@ public void test_stringDrawing() {
 		color2.dispose();
 		font1.dispose();
 		font2.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}	
 	disposeMeter(meter);
 }
@@ -345,9 +350,9 @@ public void test_fastStringDrawing() {
 		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 		Color color1 = new Color(display, 0xff, 0, 0xff);
 		Color color2 = new Color(display, 0, 0xff, 0xff);
 		Font font1 = new Font(display, "Helvetica", 20, SWT.NONE);
@@ -371,7 +376,7 @@ public void test_fastStringDrawing() {
 		color2.dispose();
 		font1.dispose();
 		font2.dispose();
-		while(display.readAndDispatch());
+		while(display.readAndDispatch()){/*empty*/}
 	}	
 	disposeMeter(meter);
 }

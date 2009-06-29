@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,10 +36,8 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
-}
-
-protected void tearDown() {
 }
 
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
@@ -56,7 +54,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	}
 
 	try {
-		new ImageData(1, 1, 1, null, 0, new byte[] {});
+		new ImageData(1, 1, 1, null, 0, new byte[] {0, 0x4f, 0x4f, 0});
 		fail("No exception thrown for paletteData == null");
 	} catch (IllegalArgumentException e) {
 	}
@@ -70,24 +68,26 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	for (int i = 0; i < validDepths.length; i++) {
 		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	};
+	}
 }
 
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
+	byte[] validData = new byte[] {0, 0x4f, 0x4f, 0};
+	
 	try {
-		new ImageData(-1, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		new ImageData(-1, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 		fail("No exception thrown for width < 0");
 	} catch (IllegalArgumentException e) {
 	}
 
 	try {
-		new ImageData(1, -1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		new ImageData(1, -1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}
 
 	try {
-		new ImageData(1, 1, 1, null, 0, new byte[] {});
+		new ImageData(1, 1, 1, null, 0, validData);
 		fail("No exception thrown for paletteData == null");
 	} catch (IllegalArgumentException e) {
 	}
@@ -99,26 +99,44 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	}
 
 	try {
-		new ImageData(1, 1, 3, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		new ImageData(1, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(1, 1, 16, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {0x4f});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(1, 1, 32, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {0x4f, 0x4f});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(2, 2, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {0x4f, 0x4f, 0x4f});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(1, 1, 3, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 		fail("No exception thrown for unsupported depth");
 	} catch (IllegalArgumentException e) {
 	}
 	
+	// verify all valid depths
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	for (int i = 0; i < validDepths.length; i++) {
-		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
-	};
-	
-	// illegal argument, data is null
-	try {
-		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 4, null);
-		fail("No exception thrown for null data");
-	} catch (IllegalArgumentException e) {
+		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 	}
 	
-	// divide by zero exception if scanlinePad == 0
+	// verify no divide by zero exception if scanlinePad == 0
 	try {
-		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 0, new byte[] {});
+		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 0, validData);
 		fail("No exception thrown for scanlinePad == 0");
 	} catch (IllegalArgumentException e) {
 	}
@@ -354,7 +372,6 @@ public void test_getPixelII() {
 }
 
 public void test_getPixelsIII$BI() {
-	byte value;
 	final int SIZE = 20; 
 	final int GET_WIDTH = 10;
 	final int OFFSET = 10;
@@ -492,7 +509,6 @@ public void test_getPixelsIII$BI() {
 }
 
 public void test_getPixelsIII$II() {
-	int value;
 	final int SIZE = 20; 
 	final int GET_WIDTH = 10;
 	final int OFFSET = 10;
@@ -701,6 +717,7 @@ public void test_getTransparencyMask() {
 	imageData = image.getImageData();
 	ImageData maskData = imageData.getTransparencyMask();
 	assertNotNull(":b:", maskData);
+	image.dispose();
 
 //	Bug 71472 - transparency mask should be null	
 /*	image = new Image(Display.getDefault(), getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]));
@@ -720,6 +737,7 @@ public void test_getTransparencyType() {
 	} catch (IOException e) {}
 	imageData = image.getImageData();
 	assertFalse(":b:", SWT.TRANSPARENCY_NONE == imageData.getTransparencyType());
+	image.dispose();
 	
 	stream = getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]);
 	image = new Image(Display.getDefault(), stream);
@@ -728,6 +746,7 @@ public void test_getTransparencyType() {
 	} catch (IOException e) {}
 	imageData = image.getImageData();
 	assertEquals(":c:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
+	image.dispose();
 }
 
 public void test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII() {
@@ -898,7 +917,6 @@ public void test_setPixelIII() {
 }
 
 public void test_setPixelsIII$BI() {
-	byte value;
 	final int SIZE = 20; 
 	final int OFFSET = 1;
 	byte[] pixelData = new byte[SIZE];
@@ -1007,7 +1025,6 @@ public void test_setPixelsIII$BI() {
 }
 
 public void test_setPixelsIII$II() {
-	int value;
 	final int SIZE = 20; 
 	final int OFFSET = 1;
 	int[] pixelData = new int[SIZE];

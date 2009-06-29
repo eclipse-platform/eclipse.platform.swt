@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,10 +40,6 @@ protected void setUp() {
 	setWidget(link);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// Test Link(Composite parent, int style)
 	link = new Link(shell, SWT.NULL);
@@ -65,9 +61,9 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	SelectionListener listener = new SelectionListener() {
 		public void widgetSelected(SelectionEvent e) {
 			listenerCalled = true;
-		};
+		}
 		public void widgetDefaultSelected(SelectionEvent e) {
-		};
+		}
 	};
 	
 	try {

@@ -37,9 +37,7 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	display = Display.getDefault();
-}
-
-protected void tearDown() {
+	super.setUp();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
@@ -201,8 +199,12 @@ public void test_isDisposed() {
 
 public void test_toString() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
-	assertNotNull(cursor.toString());
-	assertTrue(cursor.toString().length() > 0);
+	try {
+		assertNotNull(cursor.toString());
+		assertTrue(cursor.toString().length() > 0);
+	} finally {
+		cursor.dispose();
+	}
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

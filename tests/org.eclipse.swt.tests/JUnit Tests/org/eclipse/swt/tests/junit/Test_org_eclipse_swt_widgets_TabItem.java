@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(tabItem);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderI() {
 	try {
 		new TabItem(null, SWT.NULL);

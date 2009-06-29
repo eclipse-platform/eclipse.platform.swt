@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,10 +34,6 @@ public static void main(String[] args) {
 protected void setUp() {
 	super.setUp();
 	makeCleanEnvironment();
-}
-
-protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
@@ -399,7 +395,7 @@ void test_getBoundsIC() {
 	makeCleanEnvironment();
 	
 	treeItem.setText(string1);
-	TreeColumn column = new TreeColumn(tree, SWT.RIGHT);
+	new TreeColumn(tree, SWT.RIGHT);
 	bounds = treeItem.getBounds(0);
 	assertTrue(":3x:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width  == 0);
 }
@@ -516,7 +512,7 @@ void test_getBoundsID() {
 	treeItem2 = new TreeItem(tree2, SWT.NONE);
 	
 	treeItem2.setText(string1);
-	TreeColumn column = new TreeColumn(tree2, SWT.RIGHT);
+	new TreeColumn(tree2, SWT.RIGHT);
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4x:", bounds.x > 0 && bounds.height > stringExtent1.y && bounds.width  == 0);
 }
@@ -587,11 +583,11 @@ public void test_getImageBoundsI() {
 	makeCleanEnvironment();
 	
 	Image image = images[0];	
-	int imageWidth = image.getBounds().width;
-	int imageHeight;
+//	int imageWidth = image.getBounds().width;
+//	int imageHeight;
 	
 	treeItem.setImage(0, image);
-	imageHeight = tree.getItemHeight() - tree.getGridLineWidth();
+//	imageHeight = tree.getItemHeight() - tree.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(-1));
 	
 	bounds = treeItem.getImageBounds(0);
@@ -606,9 +602,9 @@ public void test_getImageBoundsI() {
 	tree2 = new Tree(shell, SWT.CHECK);
 	treeItem2.dispose();
 	treeItem2 = new TreeItem(tree2, SWT.NULL);
-	Rectangle imageBounds = image.getBounds();
-	imageWidth = imageBounds.width; 	treeItem2.setImage(0, image);
-	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
+//	Rectangle imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width; 	treeItem2.setImage(0, image);
+//	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(-1));
 	
 	bounds = treeItem2.getImageBounds(0);	// bounds.width should be check box width if they are wider than image
@@ -624,10 +620,10 @@ public void test_getImageBoundsI() {
 	treeItem2.dispose();
 	treeItem2 = new TreeItem(tree2, SWT.NULL);
 	image = images[1];
-	imageBounds = image.getBounds();
-	imageWidth = imageBounds.width;
+//	imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width;
  	treeItem2.setImage(0, image);
-	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
+//	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(-1));
  	bounds = treeItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
 //	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
@@ -724,8 +720,8 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(treeItem.getBackground(), treeItem.getBackground(10));
 	
 	// with columns
-	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
-	TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
 	
 	// index beyond range - no error
 	treeItem.setBackground(10, red);
@@ -842,8 +838,8 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	assertTrue(treeItem.getFont().equals(treeItem.getFont(10)));
 	
 	// with columns
-	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
-	TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
 	
 	// index beyond range - no error
 	treeItem.setFont(10, font);
@@ -893,8 +889,8 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(treeItem.getForeground(), treeItem.getForeground(10));
 	
 	// with columns
-	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
-	TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
 	
 	// index beyond range - no error
 	treeItem.setForeground(10, red);
@@ -965,7 +961,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	int columnCount = tree.getColumnCount();
 	if (columnCount < texts.length) {
 		for (int i = columnCount; i < texts.length; i++){
-			TreeColumn column = new TreeColumn(tree, SWT.NONE);
+			new TreeColumn(tree, SWT.NONE);
 		}
 	}
 	TreeColumn[] columns = tree.getColumns();
@@ -997,8 +993,8 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	assertEquals(null, treeItem.getImage(10));
 	
 	// with columns
-	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
-	TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
+	new TreeColumn(tree, SWT.LEFT);
 	
 	// index beyond range - no error
 	treeItem.setImage(10, images[0]);
@@ -1059,7 +1055,7 @@ public void test_setText$Ljava_lang_String() {
 	int columnCount = tree.getColumnCount();
 	if (columnCount < images.length) {
 		for (int i = columnCount; i < images.length; i++){
-			TreeColumn column = new TreeColumn(tree, SWT.NONE);
+			new TreeColumn(tree, SWT.NONE);
 		}
 	}
 	TreeColumn[] columns = tree.getColumns();
@@ -1100,7 +1096,7 @@ public void test_setTextILjava_lang_String(){
 	int columnCount = tree.getColumnCount();
 	if (columnCount < images.length) {
 		for (int i = columnCount; i < images.length; i++){
-			TreeColumn column = new TreeColumn(tree, SWT.NONE);
+			new TreeColumn(tree, SWT.NONE);
 		}
 	}
 	TreeColumn[] columns = tree.getColumns();

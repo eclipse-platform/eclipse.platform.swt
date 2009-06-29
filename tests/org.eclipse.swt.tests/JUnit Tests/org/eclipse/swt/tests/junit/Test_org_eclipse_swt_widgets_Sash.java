@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,10 +34,6 @@ protected void setUp() {
 	super.setUp();
 	sash = new Sash(shell, 0);
 	setWidget(sash);
-}
-
-protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
@@ -108,9 +104,9 @@ Sash sash;
 private void createSash() {
     tearDown();
     super.setUp();
-    Button b1 = new Button(shell, SWT.PUSH);
+    new Button(shell, SWT.PUSH);
     Sash sash = new Sash(shell, SWT.VERTICAL);
-    Button b2 = new Button(shell, SWT.PUSH);
+    new Button(shell, SWT.PUSH);
     setWidget(sash);
 }
 

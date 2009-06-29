@@ -30,12 +30,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_ConstructorII() {
 	// Test new Point (int x, int y)
 	Point p = new Point(3, 4);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,12 +45,18 @@ public class MozillaGenerator {
 		"  NS_IMETHOD ",
 		"  NS_IMETHOD_(nsrefcnt) ",
 		"  NS_IMETHOD_(void *) ",
-		"  NS_IMETHOD_(void) "
+		"  NS_IMETHOD_(void) ",
+		"  NS_IMETHOD_(nsresult) ",
+		"  NS_SCRIPTABLE NS_IMETHOD ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(nsrefcnt) ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(void *) ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(void) ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(nsresult) ",
 	};
 	static String NO_SUPER_CLASS = "SWT_NO_SUPER_CLASS";
 	
 	static String[][] TYPES_C2JAVA = { 
-		{ "PRBool *", "boolean[]" },
+		{ "PRBool *", "int[]" },
 		{ "nsIID &", "nsID" },
 		{ "nsCID &", "nsID" },
 		{ "nsCID * *", "int /*long*/" }, // nsID[] not supported by jnigen
@@ -75,25 +81,25 @@ public class MozillaGenerator {
 		{ "PRInt32", "int" }, 
 		{ "PRInt64", "long" }, 
 		{ "nsresult", "int" },
-		{ "PRBool", "boolean" },
+		{ "PRBool", "int" },
 		{ "float", "float" },
 		{ "PRUint16", "short" },
 		{ "size_t", "int" },
 		};
 
-	static String GECKO = "/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/include/";
+	static String GECKO = "/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/include/";
 	static String TARGET_FOLDER = "/bluebird/teamswt/chrisx/amd64/workspace/org.eclipse.swt/Eclipse SWT Mozilla/common/org/eclipse/swt/internal/mozilla/";
-	static String[] XPCOM_HEADERS = { 
+	static String[] XPCOM_HEADERS = {
 		"profile/nsIProfile.h",
 		"widget/nsIAppShell.h",
-		"widget/nsIBaseWindow.h", 
+		"widget/nsIBaseWindow.h",
 		"xpcom/nsIComponentManager.h",
 		"xpcom/nsIComponentRegistrar.h",
 		"webbrwsr/nsIContextMenuListener.h", 
 		"docshell/nsIDocShell.h",
-		"dom/nsIDOMEvent.h", 
+		"dom/nsIDOMEvent.h",
 		"dom/nsIDOMMouseEvent.h",
-		"dom/nsIDOMUIEvent.h", 
+		"dom/nsIDOMUIEvent.h",
 		"dom/nsIDOMWindow.h",
 		"uriloader/nsIDownload.h", 
 		"webbrwsr/nsIEmbeddingSiteWindow.h",
@@ -438,15 +444,20 @@ public class MozillaGenerator {
 		}
 	}
 
-	// assume a declaration matching: "class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {"
-	// returns nsIWebBrowserChrome
-	// special case for nsISupports that has no super class: class NS_NO_VTABLE nsISupports {
+	// Assume a declaration matching: "class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {"
+	// or "class NS_NO_VTABLE NS_SCRIPTABLE nsIWebBrowserChrome : public nsISupports {" returns nsIWebBrowserChrome.
+	// Special case for nsISupports that has no super class: class NS_NO_VTABLE nsISupports {
 	String getClassName(String declaration) {
 		int endIndex = declaration.indexOf(" :");
 		// nsISupports special case (no super class)
 		if (endIndex == -1) endIndex = declaration.indexOf(" {");
-		return declaration.substring(declaration.indexOf("class NS_NO_VTABLE ")
-				+ "class NS_NO_VTABLE ".length(), endIndex);
+		String searchString = "class NS_NO_VTABLE NS_SCRIPTABLE";
+		int startIndex = declaration.indexOf(searchString);
+		if (startIndex == -1) {
+			searchString = "class NS_NO_VTABLE ";
+			startIndex = declaration.indexOf(searchString);
+		}
+		return declaration.substring(startIndex + searchString.length(), endIndex);
 	}
 
 	// assume a declaration matching: "class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {"
@@ -673,7 +684,7 @@ public class MozillaGenerator {
 		+ " *\r\n" 
 		+ " * IBM\r\n"
 		+ " * -  Binding to permit interfacing between Mozilla and SWT\r\n"
-		+ " * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.\r\n"
+		+ " * -  Copyright (C) 2003, 2009 IBM Corp.  All Rights Reserved.\r\n"
 		+ " *\r\n" + " * ***** END LICENSE BLOCK ***** */";
 
 	static String PACKAGE_DECLARATION = "package org.eclipse.swt.internal.mozilla;";

@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_itemClosedLorg_eclipse_swt_custom_CTabFolderEvent() {
 	warnUnimpl("Test test_itemClosedLorg_eclipse_swt_custom_CTabFolderEvent not written");
 }

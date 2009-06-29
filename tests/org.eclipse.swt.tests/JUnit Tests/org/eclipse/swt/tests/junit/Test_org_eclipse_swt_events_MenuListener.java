@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_menuHiddenLorg_eclipse_swt_events_MenuEvent() {
 	warnUnimpl("Test test_menuHiddenLorg_eclipse_swt_events_MenuEvent not written");
 }

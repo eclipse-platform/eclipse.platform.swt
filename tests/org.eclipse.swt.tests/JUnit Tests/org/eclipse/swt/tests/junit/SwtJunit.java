@@ -21,6 +21,7 @@ public class SwtJunit {
 	public static final String testFontName;
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
 	public final static boolean isCarbon = SWT.getPlatform().startsWith("carbon");
+	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
 	public final static boolean isMotif = SWT.getPlatform().equals("motif");
 	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
 	public final static boolean isPhoton = SWT.getPlatform().equals("photon");
@@ -28,6 +29,7 @@ public class SwtJunit {
 	public final static boolean isAIX = System.getProperty("os.name").equals("AIX");
 	public final static boolean isSolaris = System.getProperty("os.name").equals("Solaris") || System.getProperty("os.name").equals("SunOS");
 	public final static boolean isHPUX = System.getProperty("os.name").equals("HP-UX");
+	public final static boolean isWPF = SWT.getPlatform().startsWith("wpf");
 	
 	static {
 		if (isMotif) {

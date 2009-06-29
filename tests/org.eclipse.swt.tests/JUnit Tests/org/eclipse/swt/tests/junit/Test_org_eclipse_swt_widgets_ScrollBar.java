@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,9 +41,6 @@ protected void setUp() {
 	shell.open();
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
 protected String valueString(int[] intArray) {
 	return " ("+intArray[1]+","+intArray[2]+","+intArray[3]+","+intArray[4]+")";
 }
@@ -63,6 +60,8 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	scrollBar.addSelectionListener(listener);
 	scrollBar.setSelection(100);
 	assertTrue(":a:", listenerCalled == false);
@@ -73,6 +72,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_dispose() {

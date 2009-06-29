@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
 
 public class SizeofGenerator extends JNIGenerator {
 
 
-public void generate(Class clazz) {
-	String className = getClassName(clazz);
+public void generate(JNIClass clazz) {
+	String className = clazz.getSimpleName();
 	output("\tprintf(\"");
 	output(className);
 	output("=%d\\n\", sizeof(");
@@ -32,16 +32,16 @@ public void generate() {
 	outputln("}");
 }
 
-public void generate(Field[] fields) {
+public void generate(JNIField[] fields) {
 	sort(fields);	
 	for (int i = 0; i < fields.length; i++) {
-		Field field = fields[i];
+		JNIField field = fields[i];
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
 		generate(field);
 	}
 }
 
-public void generate(Field field) {
+public void generate(JNIField field) {
 	output("\tprintf(\"");
 	output(field.getName());
 	output("=%d\\n\", sizeof(");
@@ -59,7 +59,7 @@ public static void main(String[] args) {
 		for (int i = 0; i < args.length; i++) {
 			String clazzName = args[i];
 			Class clazz = Class.forName(clazzName);
-			gen.generate(clazz);
+			gen.generate(new ReflectClass(clazz));
 		}
 	} catch (Exception e) {
 		System.out.println("Problem");

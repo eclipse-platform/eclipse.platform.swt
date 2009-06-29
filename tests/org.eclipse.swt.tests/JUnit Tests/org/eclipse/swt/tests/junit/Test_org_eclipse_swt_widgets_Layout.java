@@ -34,6 +34,7 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	shell = new Shell();
 	composite = new Composite(shell, 0);
 }
@@ -45,6 +46,7 @@ protected void tearDown() {
 	if (shell != null) {
 		shell.dispose();
 	}
+	super.tearDown();
 }
 
 public void test_Constructor() {

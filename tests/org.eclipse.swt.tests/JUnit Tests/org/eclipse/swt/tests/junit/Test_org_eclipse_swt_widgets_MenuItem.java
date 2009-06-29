@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,10 +36,6 @@ protected void setUp() {
 	menu = new Menu(shell);
 	menuItem = new MenuItem(menu, 0);
 	setWidget(menuItem);
-}
-
-protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
@@ -83,7 +79,7 @@ public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
 	ArmListener listener = new ArmListener() {
 		public void widgetArmed(ArmEvent e) {
 			listenerCalled = true;
-		};
+		}
 	};
 	
 	try {
@@ -112,7 +108,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	HelpListener listener = new HelpListener() {
 		public void helpRequested(HelpEvent e) {
 			listenerCalled = true;
-		};
+		}
 	};
 	
 	try {
@@ -141,9 +137,9 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	SelectionListener listener = new SelectionListener() {
 		public void widgetSelected(SelectionEvent e) {
 			listenerCalled = true;
-		};
+		}
 		public void widgetDefaultSelected(SelectionEvent e) {
-		};
+		}
 	};
 	
 	try {

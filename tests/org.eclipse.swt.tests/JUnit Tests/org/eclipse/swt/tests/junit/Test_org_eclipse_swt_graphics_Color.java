@@ -32,9 +32,7 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	display = Display.getDefault();
-}
-
-protected void tearDown() {
+	super.setUp();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
@@ -196,6 +194,7 @@ public void test_getRGB() {
 	Color color = new Color(display, 255, 255, 255);
 	assertNotNull(color.getRGB());
 	assertEquals(new RGB(255, 255, 255), color.getRGB());
+	color.dispose();
 }
 
 public void test_getRed() {
@@ -214,6 +213,8 @@ public void test_hashCode() {
 	if (color.equals(otherColor)) {
 		assertEquals("Hash codes of equal objects should be equal", color.hashCode(), otherColor.hashCode());
 	}
+	color.dispose();
+	otherColor.dispose();
 }
 
 public void test_isDisposed() {

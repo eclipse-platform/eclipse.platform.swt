@@ -38,10 +38,6 @@ protected void setUp() {
 	browser = new Browser(shell, SWT.NONE);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	shell.setText("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	Browser browser = new Browser(shell, SWT.NONE);

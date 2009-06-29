@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,10 +36,6 @@ public static void main(String[] args) {
 protected void setUp() {
 	super.setUp();
 	makeCleanEnvironment(false); // by default, use multi-select table.	
-}
-
-protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
@@ -325,7 +321,7 @@ public void test_getItemCount() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j="+ j, cases[j], table.getItemCount());
 		table.removeAll();
@@ -335,7 +331,7 @@ public void test_getItemCount() {
 	makeCleanEnvironment(true);	
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j="+ j, cases[j], table.getItemCount());
 		table.removeAll();
@@ -401,7 +397,7 @@ public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j=" + j, cases[j], table.getItems().length);
 		table.removeAll();
@@ -424,7 +420,7 @@ public void test_getItems() {
 	
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j=" + j, cases[j], table.getItems().length);
 		table.removeAll();

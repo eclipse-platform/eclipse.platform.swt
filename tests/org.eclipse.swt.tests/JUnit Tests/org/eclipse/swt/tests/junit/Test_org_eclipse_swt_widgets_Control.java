@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,14 +36,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-	super.setUp();
-}
-
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// abstract class
 }
@@ -52,10 +44,10 @@ public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 	ControlListener listener = new ControlListener() {
 		public void controlMoved(ControlEvent e) {
 			eventOccurred = true;
-		};
+		}
 		public void controlResized(ControlEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addControlListener(listener);
 	eventOccurred = false;
@@ -71,10 +63,10 @@ public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 	FocusListener listener = new FocusListener() {
 		public void focusGained(FocusEvent e) {
 			eventOccurred = true;
-		};
+		}
 		public void focusLost(FocusEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addFocusListener(listener);
 	eventOccurred = false;
@@ -90,7 +82,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	HelpListener listener = new HelpListener() {
 		public void helpRequested(HelpEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addHelpListener(listener);
 	eventOccurred = false;
@@ -103,10 +95,10 @@ public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
 	KeyListener listener = new KeyListener() {
 		public void keyPressed(KeyEvent e) {
 			eventOccurred = true;
-		};
+		}
 		public void keyReleased(KeyEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addKeyListener(listener);
 	eventOccurred = false;
@@ -122,13 +114,13 @@ public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 	MouseListener listener = new MouseListener() {
 		public void mouseDown(MouseEvent e) {
 			eventOccurred = true;
-		};
+		}
 		public void mouseUp(MouseEvent e) {
 			eventOccurred = true;
-		};
+		}
 		public void mouseDoubleClick(MouseEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addMouseListener(listener);
 	eventOccurred = false;
@@ -147,7 +139,7 @@ public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener()
 	MouseMoveListener listener = new MouseMoveListener() {
 		public void mouseMove(MouseEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addMouseMoveListener(listener);
 	eventOccurred = false;
@@ -160,13 +152,13 @@ public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
 	MouseTrackListener listener = new MouseTrackListener() {
 		public void mouseEnter(MouseEvent e) {
 			eventOccurred = true;
-		};
+		}
 		public void mouseExit(MouseEvent e) {
 			eventOccurred = true;
-		};
+		}
 		public void mouseHover(MouseEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addMouseTrackListener(listener);
 	eventOccurred = false;
@@ -185,7 +177,7 @@ public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 	PaintListener listener = new PaintListener() {
 		public void paintControl(PaintEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addPaintListener(listener);
 	eventOccurred = false;
@@ -201,7 +193,7 @@ public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
 	TraverseListener listener = new TraverseListener() {
 		public void keyTraversed(TraverseEvent e) {
 			eventOccurred = true;
-		};
+		}
 	};
 	control.addTraverseListener(listener);
 	eventOccurred = false;

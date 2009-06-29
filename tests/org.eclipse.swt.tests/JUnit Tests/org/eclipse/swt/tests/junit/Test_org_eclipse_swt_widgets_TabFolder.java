@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,14 +37,9 @@ protected void setUp() {
 	makeCleanEnvironment();
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	TabFolder newTabFolder;
 	try {
-		newTabFolder = new TabFolder(null, 0);
+		new TabFolder(null, 0);
 		fail("No exception thrown for parent == null");
 	}
 	catch (IllegalArgumentException e) {
@@ -69,10 +64,9 @@ public void test_getClientArea() {
 
 public void test_getItemCount() {
 	int number = 10;
-	TabItem ti;
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, tabFolder.getItemCount()==i);
-	  	ti = new TabItem(tabFolder, 0);
+	  	new TabItem(tabFolder, 0);
 	}
 }
 
@@ -222,11 +216,25 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TabItem() {
 	warnUnimpl("Test test_setSelection$Lorg_eclipse_swt_widgets_TabItem not written");
 }
 
+public void test_setSelectionEmpty() {
+	int number = 10;
+	for (int i = 0; i<number ; i++){
+	  	new TabItem(tabFolder, 0);
+	}
+	for (int i = 0; i<number ; i++){
+		tabFolder.setSelection(i);
+		assertEquals(i, tabFolder.getSelectionIndex());
+	}
+	
+	makeCleanEnvironment();
+	tabFolder.setSelection(-1);
+	assertEquals(0, tabFolder.getSelection().length);	
+}
+
 public void test_setSelectionI() {
 	int number = 10;
-	TabItem ti;
 	for (int i = 0; i<number ; i++){
-	  	ti = new TabItem(tabFolder, 0);
+	  	new TabItem(tabFolder, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		tabFolder.setSelection(i);
@@ -237,7 +245,7 @@ public void test_setSelectionI() {
 	makeCleanEnvironment();
 	
 	for (int i = 0; i<number ; i++){
-	  	ti = new TabItem(tabFolder, 0);
+	  	new TabItem(tabFolder, 0);
 	  	assertEquals("i=" + i, 0, tabFolder.getSelectionIndex());
 	}
 
@@ -308,9 +316,6 @@ public void test_setSelectionI() {
 	tabFolder.setSelection(items[0]);
 	assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
 	
-	tabFolder.setSelection(new TabItem[]{});
-	assertEquals(new TabItem[]{}, tabFolder.getSelection());
-		
 	tabFolder.setSelection(new TabItem[] {items[0]});
 	assertEquals(new TabItem[] {items[0]}, tabFolder.getSelection());
 
@@ -368,6 +373,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TabItem");
 	methodNames.addElement("test_setSelectionI");
+	methodNames.addElement("test_setSelectionEmpty");
 	methodNames.addElement("test_consistency_KeySelection");
 	methodNames.addElement("test_consistency_MouseSelection");
 	methodNames.addElement("test_consistency_PgupSelection");
@@ -392,6 +398,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TabItem")) test_setSelection$Lorg_eclipse_swt_widgets_TabItem();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
+	else if (getName().equals("test_setSelectionEmpty")) test_setSelectionEmpty();
 	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
 	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
 	else if (getName().equals("test_consistency_PgdwnSelection")) test_consistency_PgdwnSelection();

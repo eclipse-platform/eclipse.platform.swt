@@ -32,7 +32,6 @@ class StyledTextTab extends ScrollableTab {
 	Image boldImage, italicImage, redImage, yellowImage, underlineImage, strikeoutImage;
 	
 	/* Variables for saving state. */
-	String text;
 	StyleRange[] styleRanges;
 
 	/**
@@ -105,10 +104,6 @@ class StyledTextTab extends ScrollableTab {
 		styledText.append ("\n");
 		styledText.append (ControlExample.getResourceString("One_Two_Three"));
 		
-		if (text != null) {
-			styledText.setText(text);
-			text = null;
-		}
 		if (styleRanges != null) {
 			styledText.setStyleRanges(styleRanges);
 			styleRanges = null;
@@ -287,7 +282,6 @@ class StyledTextTab extends ScrollableTab {
 		/* store the state of the styledText if applicable */
 		if (styledText != null) {
 			styleRanges = styledText.getStyleRanges();
-			text = styledText.getText();
 		}
 		super.disposeExampleWidgets();	
 	}

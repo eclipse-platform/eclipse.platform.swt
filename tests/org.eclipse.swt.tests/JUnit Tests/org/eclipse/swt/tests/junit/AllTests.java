@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -113,6 +113,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_ProgressBar.suite());
 	addTest(Test_org_eclipse_swt_widgets_Composite.suite());
 	addTest(Test_org_eclipse_swt_widgets_Link.suite());
+	addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
 	//addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
 	addTest(Test_org_eclipse_swt_widgets_ColorDialog.suite());
@@ -226,7 +227,6 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
 	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
-
 
 }
 }

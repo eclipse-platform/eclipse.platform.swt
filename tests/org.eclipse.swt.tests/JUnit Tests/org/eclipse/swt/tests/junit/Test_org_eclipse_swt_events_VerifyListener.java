@@ -28,12 +28,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_verifyTextLorg_eclipse_swt_events_VerifyEvent() {
 	warnUnimpl("Test test_verifyTextLorg_eclipse_swt_events_VerifyEvent not written");
 }

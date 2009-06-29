@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,6 @@ import java.util.*;
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.program.*;
 import org.eclipse.swt.widgets.*;
 
@@ -25,8 +24,6 @@ import org.eclipse.swt.widgets.*;
  * @see org.eclipse.swt.program.Program
  */
 public class Test_org_eclipse_swt_program_Program extends SwtTestCase {
-
-	private Display display;
 	
 public Test_org_eclipse_swt_program_Program(String name) {
 	super(name);
@@ -37,10 +34,8 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
-	display = Display.getDefault();
-}
-
-protected void tearDown() {
+	super.setUp();
+	Display.getDefault();
 }
 
 public void test_equalsLjava_lang_Object() {
@@ -84,13 +79,13 @@ public void test_findProgramLjava_lang_String() {
 	// No assertion here because the doc does not guarantee a non-null result.
 	if (extensions != null) {
 		for (int i=0; i<extensions.length; i++) {
-			Program program = Program.findProgram(extensions[i]);
+			Program.findProgram(extensions[i]);
 			// No assertion here because a null result is allowed.
 		}
 	}
 	
 	try {
-		Program program = Program.findProgram(null);
+		Program.findProgram(null);
 		fail("Failed to throw ERROR_NULL_ARGUMENT");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
@@ -118,7 +113,7 @@ public void test_getImageData() {
 		for (int i=0; i<extensions.length; i++) {
 			Program program = Program.findProgram(extensions[i]);
 			if (program != null) {
-				ImageData data = program.getImageData();
+				program.getImageData();
 				// Nothing to do.
 			}
 		}
@@ -157,7 +152,7 @@ public void test_getPrograms() {
 		int hashCode = programs[i].hashCode();
 		Integer key = new Integer(hashCode);
 		if (lookup.contains(key)) {
-			fail("Duplicate hash code for "+programs[i]+" (same as "+(Program)lookup.get(key)+")");
+			fail("Duplicate hash code for "+programs[i]+" (same as "+lookup.get(key)+")");
 		}
 		else {
 			lookup.put(key,programs[i]);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,6 @@ import junit.textui.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -34,6 +33,7 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	display = Display.getDefault();
 	shell = new Shell(display);
 	shell.setBounds(0,30,240,290);
@@ -45,6 +45,7 @@ protected void tearDown() {
 	gc.dispose();
 	image.dispose();
 	shell.dispose();
+	super.tearDown();
 }
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	try {
@@ -54,46 +55,20 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
-
+	
+	Image image = null;
+	GC gc1 = null, gc2 = null;
 	try {
-		Image image = new Image(display, 10, 10);
-		GC gc1 = new GC(image);
-		GC gc2 = new GC(image);
-		gc1.dispose();
-		gc2.dispose();
-		image.dispose();
+		image = new Image(display, 10, 10);
+		gc1 = new GC(image);
+		gc2 = new GC(image);
 		fail("No exception thrown for more than one GC on one image");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
-	}
-
-	if (Printer.getDefaultPrinterData() == null) {
-		// No printer installed. Skip test.
-		return;
-	}
-	Class printerClass = null;
-	try {
-		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
-	} catch (ClassNotFoundException e) {
-		// Printer class not present (eSWT). Skip test.
-		return;
-	}
-	try {
-		// Direct instantiation results in a NoClassDefFoundError during class 
-		// loading/initialization. Casting seems to be ok.
-		Object printer = printerClass.newInstance();
-		GC gc1 = new GC((Printer) printer);
-		GC gc2 = new GC((Printer) printer);
-		gc1.dispose();
-		gc2.dispose();
-		((Printer) printer).dispose();
-		fail("No exception thrown for more than one GC on one printer");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
-	} catch (InstantiationException e) {
-		e.printStackTrace();
-	} catch (IllegalAccessException e) {
-		e.printStackTrace();
+	} finally {
+		if (image != null) image.dispose();
+		if (gc1 != null) gc1.dispose();
+		if (gc2 != null) gc2.dispose();
 	}
 }
 
@@ -106,16 +81,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
+	Image image = null;
+	GC gc1 = null, gc2 = null;
 	try {
-		Image image = new Image(display, 10, 10);
-		GC gc1 = new GC(image, SWT.RIGHT_TO_LEFT);
-		GC gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
-		gc1.dispose();
-		gc2.dispose();
-		image.dispose();
+		image = new Image(display, 10, 10);
+		gc1 = new GC(image, SWT.RIGHT_TO_LEFT);
+		gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
 		fail("No exception thrown for more than one GC on one image");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+	} finally {
+		if (image != null) image.dispose();
+		if (gc1 != null) gc1.dispose();
+		if (gc2 != null) gc2.dispose();
 	}
 
 	Canvas canvas = new Canvas(shell, SWT.NULL);
@@ -124,35 +102,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
 	testGC.dispose();
 	canvas.dispose();
-
-	if (Printer.getDefaultPrinterData() == null) {
-		// No printer installed. Skip test.
-		return;
-	}
-	Class printerClass = null;
-	try {
-		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
-	} catch (ClassNotFoundException e) {
-		// Printer class not present (eSWT). Skip test.
-		return;
-	}
-	try {
-		// Direct instantiation results in a NoClassDefFoundError during class 
-		// loading/initialization. Casting seems to be ok.
-		Object printer = printerClass.newInstance();
-		GC gc1 = new GC((Printer)printer, SWT.RIGHT_TO_LEFT);
-		GC gc2 = new GC((Printer)printer, SWT.LEFT_TO_RIGHT);
-		gc1.dispose();
-		gc2.dispose();
-		((Printer) printer).dispose();
-		fail("No exception thrown for more than one GC on one printer");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
-	} catch (InstantiationException e) {
-		e.printStackTrace();
-	} catch (IllegalAccessException e) {
-		e.printStackTrace();
-	}
 }
 
 public void test_copyAreaIIIIII() {
@@ -258,6 +207,9 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	image.dispose();
 	imageTransparent.dispose();
 	imageAlpha.dispose();
+	c1.dispose();
+	c2.dispose();
+	c3.dispose();
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
@@ -298,6 +250,9 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	image.dispose();
 	imageAlpha.dispose();
 	imageTransparent.dispose();
+	c1.dispose();
+	c2.dispose();
+	c3.dispose();
 }
 
 public void test_drawLineIIII() {

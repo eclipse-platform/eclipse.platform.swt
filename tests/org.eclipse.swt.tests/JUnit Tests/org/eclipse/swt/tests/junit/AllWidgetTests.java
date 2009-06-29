@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,8 +59,9 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_widgets_Slider.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_ProgressBar.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Composite.suite());
-	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Link.suite());
+	suite.addTest(Test_org_eclipse_swt_widgets_DateTime.suite());
+	//suite.addTest(Test_org_eclipse_swt_widgets_CoolBar.suite());
 
 	suite.addTest(Test_org_eclipse_swt_widgets_ColorDialog.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_FileDialog.suite());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,14 +34,8 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-}
-
-protected void tearDown() {
-}
-
 public void test_Constructor() {
-	ImageLoader loader = new ImageLoader();
+	new ImageLoader();
 }
 
 public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
@@ -49,7 +43,7 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 	ImageLoaderListener loaderListener = new ImageLoaderListener() {
 		public void imageDataLoaded(ImageLoaderEvent e) {
 			loaderListenerCalled = true;
-		};
+		}
 	};
 	
 	try {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2004, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -124,7 +124,7 @@ void generateMetaData () {
 	MetaDataGenerator gen = new MetaDataGenerator();
 	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
-	Method[] methods = getSelectedMethods();
+	JNIMethod[] methods = getSelectedMethods();
 	if (methods.length != 0) {
 		gen.generate(methods);
 	} else {
@@ -137,7 +137,7 @@ void generateNatives () {
 	NativesGenerator gen = new NativesGenerator();
 	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
-	Method[] methods = getSelectedMethods();
+	JNIMethod[] methods = getSelectedMethods();
 	if (methods.length != 0) {
 		gen.generate(methods);
 	} else {
@@ -156,7 +156,8 @@ void generateAll() {
 		Control child = children[i];
 		if (child instanceof Button) child.setEnabled(false);				
 	}
-	final boolean showProgress = true;
+	boolean showProgress = true;
+	final boolean finalShowProgress = showProgress; /* avoid dead code warning below */
 	if (showProgress) {
 		progressLabel.setText("");
 		progressBar.setSelection(0);
@@ -167,18 +168,24 @@ void generateAll() {
 	new Thread() {
 		public void run() {
 			try {
-				app.generate(!showProgress ? null : new ProgressMonitor() {
+				app.generate(!finalShowProgress ? null : new ProgressMonitor() {
+					int total, step, maximum = 100;
 					public void setTotal(final int total) {
+						this.total = total;
 						display.syncExec(new Runnable() {
 							public void run() {
-								progressBar.setMaximum(total);
+								progressBar.setMaximum(maximum);
 							}
 						});
 					}
 					public void step() {
+						int oldValue = step * maximum / total;
+						step++;
+						final int newValue = step * maximum / total;
+						if (oldValue == newValue) return;
 						display.syncExec(new Runnable() {
 							public void run() {
-								progressBar.setSelection(progressBar.getSelection() + 1);
+								progressBar.setSelection(newValue);
 							}
 						});					
 					}
@@ -216,7 +223,7 @@ void generateConstants () {
 	ConstantsGenerator gen = new ConstantsGenerator();
 	gen.setMainClass(app.getMainClass());
 	gen.setMetaData(app.getMetaData());
-	Field[] fields = getSelectedFields();
+	JNIField[] fields = getSelectedFields();
 	if (fields.length != 0) {
 		gen.generate(fields);
 	} else {
@@ -225,50 +232,48 @@ void generateConstants () {
 	}
 }
 
-Class[] getSelectedClasses() {
+JNIClass[] getSelectedClasses() {
 	TableItem[] items = classesLt.getSelection();
-	Class[] classes = new Class[items.length];
+	JNIClass[] classes = new JNIClass[items.length];
 	for (int i = 0; i < items.length; i++) {
 		TableItem item = items[i];
-		classes[i] = ((ClassData)item.getData()).getClazz();
+		classes[i] = (JNIClass)item.getData();
 	}
 	return classes;
 }
 
-Method[] getSelectedMethods() {
+JNIMethod[] getSelectedMethods() {
 	TableItem[] selection = membersLt.getSelection();
-	Method[] methods = new Method[selection.length];
+	JNIMethod[] methods = new JNIMethod[selection.length];
 	int count = 0;
 	for (int i = 0; i < selection.length; i++) {
 		TableItem item = selection [i];
 		Object data = item.getData();
-		if (data instanceof MethodData) {
-			Method method = ((MethodData)data).getMethod();
-			methods[count++] = method;
+		if (data instanceof JNIMethod) {
+			methods[count++] = (JNIMethod)data;
 		}
 	}
 	if (count != methods.length) {
-		Method[] result = new Method[count];
+		JNIMethod[] result = new JNIMethod[count];
 		System.arraycopy(methods, 0, result, 0, count);
 		methods = result;
 	}
 	return methods;
 }
 
-Field[] getSelectedFields() {
+JNIField[] getSelectedFields() {
 	TableItem[] selection = membersLt.getSelection();
-	Field[] fields = new Field[selection.length];
+	JNIField[] fields = new JNIField[selection.length];
 	int count = 0;
 	for (int i = 0; i < selection.length; i++) {
 		TableItem item = selection [i];
 		Object data = item.getData();
-		if (data instanceof FieldData) {
-			Field field = ((FieldData)data).getField();
-			fields[count++] = field;
+		if (data instanceof JNIField) {
+			fields[count++] = (JNIField)data;
 		}
 	}
 	if (count != fields.length) {
-		Field[] result = new Field[count];
+		JNIField[] result = new JNIField[count];
 		System.arraycopy(fields, 0, result, 0, count);
 		fields = result;
 	}
@@ -343,10 +348,14 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 
 	String mainClasses = app.getMetaData().getMetaData("swt_main_classes", null);
 	if (mainClasses != null) {
-		String[] list = ItemData.split(mainClasses, ",");
+		String[] list = JNIGenerator.split(mainClasses, ",");
 		for (int i = 0; i < list.length; i += 2) {
-			mainClassCb.add(list[i].trim());
-			outputDirCb.add(list[i + 1].trim());
+			String className = list[i].trim();
+			try {
+				Class.forName(className, false, getClass().getClassLoader());
+				mainClassCb.add(className);
+				outputDirCb.add(list[i + 1].trim());
+			} catch (Exception e) {}
 		}
 	}
 }
@@ -400,13 +409,11 @@ void createClassesPanel(Composite panel) {
 			TableItem item = classTextEditor.getItem();
 			if (item == null) return;
 			int column = classTextEditor.getColumn();
-			ClassData classData = (ClassData)item.getData();
+			JNIClass clazz = (JNIClass)item.getData();
 			if (column == CLASS_EXCLUDE_COLUMN) {
 				String text = classEditorTx.getText();
-				classData.setExclude(text);
-				item.setText(column, classData.getExclude());
-				MetaData metaData = app.getMetaData();
-				metaData.setMetaData(classData.getClazz(), classData);
+				clazz.setExclude(text);
+				item.setText(column, clazz.getExclude());
 				classesLt.getColumn(column).pack();
 			}
 		}
@@ -419,7 +426,7 @@ void createClassesPanel(Composite panel) {
 	floater.setLayout(new FillLayout());
 	classListEditor = new FlagsEditor(classesLt);
 	classEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
-	classEditorLt.setItems(ClassData.getAllFlags());
+	classEditorLt.setItems(JNIClass.FLAGS);
 	floater.pack();
 	floater.addListener(SWT.Close, new Listener() {
 		public void handleEvent(Event e) {
@@ -442,14 +449,12 @@ void createClassesPanel(Composite panel) {
 			TableItem item = classListEditor.getItem();
 			if (item == null) return;
 			int column = classListEditor.getColumn();
-			ClassData classData = (ClassData)item.getData();
+			JNIClass clazz = (JNIClass)item.getData();
 			if (column == CLASS_FLAGS_COLUMN) {
 				String[] flags = classEditorLt.getSelection();
-				classData.setFlags(flags);
-				item.setText(column, getFlagsString(classData.getFlags()));
-				item.setChecked(classData.getGenerate());
-				MetaData metaData = app.getMetaData();
-				metaData.setMetaData(classData.getClazz(), classData);
+				clazz.setFlags(flags);
+				item.setText(column, getFlagsString(clazz.getFlags()));
+				item.setChecked(clazz.getGenerate());
 				classesLt.getColumn(column).pack();
 			}
 		}
@@ -475,7 +480,7 @@ void createClassesPanel(Composite panel) {
 						}				
 					}
 					if (column == -1) return;
-					ClassData data = (ClassData)item.getData();
+					JNIClass data = (JNIClass)item.getData();
 					if (column == CLASS_EXCLUDE_COLUMN) {
 						classTextEditor.setColumn(column);
 						classTextEditor.setItem(item);
@@ -498,10 +503,45 @@ void createClassesPanel(Composite panel) {
 }
 
 void createMembersPanel(Composite panel) {
-	Label membersLb = new Label(panel, SWT.NONE);
-	membersLb.setText("Mem&bers:");
-
 	GridData data;
+	Composite comp = new Composite(panel, SWT.NONE);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	comp.setLayoutData(data);	
+	GridLayout layout = new GridLayout(2, false);
+	layout.marginWidth = layout.marginHeight = 0;
+	comp.setLayout(layout);
+	Label membersLb = new Label(comp, SWT.NONE);
+	membersLb.setText("Mem&bers [regex]:");
+	final Text searchText = new Text(comp, SWT.SINGLE | SWT.SEARCH);
+	searchText.setText(".*");
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	searchText.setLayoutData(data);
+	searchText.addListener(SWT.DefaultSelection, new Listener() {
+		boolean match (int index, String pattern) {
+			TableItem item = membersLt.getItem(index);
+			String text = item.getText();
+			try {
+				if (text.matches(pattern)) {
+					membersLt.setSelection(index);
+					return true;
+				}
+			} catch (Exception ex) {}
+			return false;
+		}
+		public void handleEvent(Event e) {
+			String pattern = searchText.getText();
+			int selection = membersLt.getSelectionIndex();
+			int count = membersLt.getItemCount();
+			selection++;
+			for (int i = selection; i < count; i++) {
+				if (match (i, pattern)) return;
+			}
+			for (int i = 0; i < selection; i++) {
+				if (match (i, pattern)) return;
+			}
+		}
+	});
+
 	membersLt = new Table(panel, SWT.CHECK | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 	data = new GridData(GridData.FILL_BOTH);
 	data.heightHint = membersLt.getItemHeight() * 6;
@@ -535,45 +575,42 @@ void createMembersPanel(Composite panel) {
 			TableItem item = memberTextEditor.getItem();
 			if (item == null) return;
 			int column = memberTextEditor.getColumn();
-			ItemData memberData = (ItemData)item.getData();
+			JNIItem memberData = (JNIItem)item.getData();
 			String text = memberEditorTx.getText();
-			MetaData metaData = app.getMetaData();
-			if (memberData instanceof FieldData) {
-				FieldData fieldData = (FieldData)memberData;
+			if (memberData instanceof JNIField) {
+				JNIField field = (JNIField)memberData;
 				switch (column) {
 					case FIELD_CAST_COLUMN: {
-						fieldData.setCast(text);
-						item.setText(column, fieldData.getCast());
+						field.setCast(text);
+						item.setText(column, field.getCast());
 						break;
 					}
 					case FIELD_ACCESSOR_COLUMN: {
-						fieldData.setAccessor(text);
-						item.setText(column, fieldData.getAccessor());
+						field.setAccessor(text.equals(field.getName()) ? "" : text);
+						item.setText(column, field.getAccessor());
 						break;
 					}
 					case FIELD_EXCLUDE_COLUMN: {
-						fieldData.setExclude(text);
-						item.setText(column, fieldData.getExclude());
+						field.setExclude(text);
+						item.setText(column, field.getExclude());
 						break;
 					}
 				}
-				metaData.setMetaData(fieldData.getField(), fieldData);
 				membersLt.getColumn(column).pack();
-			} else if (memberData instanceof MethodData) {
-				MethodData methodData = (MethodData)memberData;
+			} else if (memberData instanceof JNIMethod) {
+				JNIMethod method = (JNIMethod)memberData;
 				switch (column) {
 					case METHOD_ACCESSOR_COLUMN: {
-						methodData.setAccessor(text);
-						item.setText(column, methodData.getAccessor());
+						method.setAccessor(text.equals(method.getName()) ? "" : text);
+						item.setText(column, method.getAccessor());
 						break;
 					}
 					case METHOD_EXCLUDE_COLUMN: {
-						methodData.setExclude(text);
-						item.setText(column, methodData.getExclude());
+						method.setExclude(text);
+						item.setText(column, method.getExclude());
 						break;
 					}
 				}
-				metaData.setMetaData(methodData.getMethod(), methodData);
 				membersLt.getColumn(column).pack();
 			}
 		}
@@ -607,21 +644,12 @@ void createMembersPanel(Composite panel) {
 			TableItem item = memberListEditor.getItem();
 			if (item == null) return;
 			int column = memberListEditor.getColumn();
-			ItemData data = (ItemData)item.getData();
+			JNIItem data = (JNIItem)item.getData();
 			String[] flags = memberEditorLt.getSelection();
 			data.setFlags(flags);
 			item.setText(column, getFlagsString(data.getFlags()));
 			item.setChecked(data.getGenerate());
-			MetaData metaData = app.getMetaData();
-			if (data instanceof FieldData) {
-				FieldData fieldData = (FieldData)data;
-				metaData.setMetaData(fieldData.getField(), fieldData);
-				membersLt.getColumn(column).pack();
-			} else if (data instanceof MethodData) {
-				MethodData methodData = (MethodData)data;
-				metaData.setMetaData(methodData.getMethod(), methodData);
-				membersLt.getColumn(column).pack();
-			}
+			membersLt.getColumn(column).pack();
 		}
 	};
 	memberEditorLt.addListener(SWT.DefaultSelection, memberListListener);
@@ -645,17 +673,29 @@ void createMembersPanel(Composite panel) {
 						}				
 					}
 					if (column == -1) return;
-					ItemData itemData = (ItemData)item.getData();
-					if (itemData instanceof FieldData) {
-						FieldData data = (FieldData)itemData;
+					Object itemData = item.getData();
+					if (itemData instanceof JNIField) {
+						JNIField field = (JNIField)itemData;
 						if (column == FIELD_CAST_COLUMN || column == FIELD_ACCESSOR_COLUMN || column == FIELD_EXCLUDE_COLUMN) {
 							memberTextEditor.setColumn(column);
 							memberTextEditor.setItem(item);
 							String text = "";
 							switch (column) {
-								case FIELD_CAST_COLUMN: text = data.getCast(); break;
-								case FIELD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
-								case FIELD_EXCLUDE_COLUMN: text = data.getExclude(); break;
+								case FIELD_CAST_COLUMN: text = field.getCast(); break;
+								case FIELD_ACCESSOR_COLUMN: {
+									text = field.getAccessor(); 
+									if (text.length() == 0) {
+										text = field.getName();
+										int index = text.lastIndexOf('_');
+										if (index != -1) {
+											char[] chars = text.toCharArray();
+											chars[index] = '.';
+											text = new String(chars);
+										}
+									}
+									break;
+								}
+								case FIELD_EXCLUDE_COLUMN: text = field.getExclude(); break;
 							}
 							memberEditorTx.setText(text);
 							memberEditorTx.selectAll();
@@ -664,22 +704,26 @@ void createMembersPanel(Composite panel) {
 						} else if (column == FIELD_FLAGS_COLUMN) {
 							memberListEditor.setColumn(column);
 							memberListEditor.setItem(item);
-							memberEditorLt.setItems(FieldData.getAllFlags());
-							memberEditorLt.setSelection(data.getFlags());
+							memberEditorLt.setItems(JNIField.FLAGS);
+							memberEditorLt.setSelection(field.getFlags());
 							floater.setLocation(membersLt.toDisplay(e.x, e.y));
 							floater.pack();
 							floater.setVisible(true);
 							memberEditorLt.setFocus();
 						}
-					} else if (itemData instanceof MethodData) {
-						MethodData data = (MethodData)itemData;
+					} else if (itemData instanceof JNIMethod) {
+						JNIMethod method = (JNIMethod)itemData;
 						if (column == METHOD_EXCLUDE_COLUMN || column == METHOD_ACCESSOR_COLUMN) {
 							memberTextEditor.setColumn(column);
 							memberTextEditor.setItem(item);
 							String text = "";
 							switch (column) {
-								case METHOD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
-								case METHOD_EXCLUDE_COLUMN: text = data.getExclude(); break;
+								case METHOD_ACCESSOR_COLUMN: {
+									text = method.getAccessor();
+									if (text.length() == 0) text = method.getName();
+									break;
+								}
+								case METHOD_EXCLUDE_COLUMN: text = method.getExclude(); break;
 							}
 							memberEditorTx.setText(text);
 							memberEditorTx.selectAll();
@@ -688,8 +732,8 @@ void createMembersPanel(Composite panel) {
 						} else if (column == METHOD_FLAGS_COLUMN) {
 							memberListEditor.setColumn(column);
 							memberListEditor.setItem(item);
-							memberEditorLt.setItems(MethodData.getAllFlags());
-							memberEditorLt.setSelection(data.getFlags());
+							memberEditorLt.setItems(JNIMethod.FLAGS);
+							memberEditorLt.setSelection(method.getFlags());
 							floater.setLocation(membersLt.toDisplay(e.x, e.y));
 							floater.pack();
 							floater.setVisible(true);
@@ -748,13 +792,11 @@ void createParametersPanel(Composite panel) {
 			TableItem item = paramTextEditor.getItem();
 			if (item == null) return;
 			int column = paramTextEditor.getColumn();
-			ParameterData paramData = (ParameterData)item.getData();
+			JNIParameter param = (JNIParameter)item.getData();
 			if (column == PARAM_CAST_COLUMN) {
 				String text = paramEditorTx.getText();
-				paramData.setCast(text);
-				item.setText(column, paramData.getCast());
-				MetaData metaData = app.getMetaData();
-				metaData.setMetaData(paramData.getMethod(), paramData.getParameter(), paramData);
+				param.setCast(text);
+				item.setText(column, param.getCast());
 				paramsLt.getColumn(column).pack();
 			}
 		}
@@ -767,7 +809,7 @@ void createParametersPanel(Composite panel) {
 	floater.setLayout(new FillLayout());
 	paramListEditor = new FlagsEditor(paramsLt);
 	paramEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
-	paramEditorLt.setItems(ParameterData.getAllFlags());
+	paramEditorLt.setItems(JNIParameter.FLAGS);
 	floater.pack();
 	floater.addListener(SWT.Close, new Listener() {
 		public void handleEvent(Event e) {
@@ -790,13 +832,11 @@ void createParametersPanel(Composite panel) {
 			TableItem item = paramListEditor.getItem();
 			if (item == null) return;
 			int column = paramListEditor.getColumn();
-			ParameterData paramData = (ParameterData)item.getData();
+			JNIParameter param = (JNIParameter)item.getData();
 			if (column == PARAM_FLAGS_COLUMN) {
 				String[] flags = paramEditorLt.getSelection();
-				paramData.setFlags(flags);
-				item.setText(column, getFlagsString(paramData.getFlags()));
-				MetaData metaData = app.getMetaData();
-				metaData.setMetaData(paramData.getMethod(), paramData.getParameter(), paramData);
+				param.setFlags(flags);
+				item.setText(column, getFlagsString(param.getFlags()));
 				paramsLt.getColumn(column).pack();
 			}
 		}
@@ -822,18 +862,18 @@ void createParametersPanel(Composite panel) {
 						}				
 					}
 					if (column == -1) return;
-					ParameterData data = (ParameterData)item.getData();
+					JNIParameter param = (JNIParameter)item.getData();
 					if (column == PARAM_CAST_COLUMN) {
 						paramTextEditor.setColumn(column);
 						paramTextEditor.setItem(item);
-						paramEditorTx.setText(data.getCast());
+						paramEditorTx.setText(param.getCast());
 						paramEditorTx.selectAll();
 						paramEditorTx.setVisible(true);
 						paramEditorTx.setFocus();
 					} else if (column == PARAM_FLAGS_COLUMN) {
 						paramListEditor.setColumn(column);
 						paramListEditor.setItem(item);
-						paramEditorLt.setSelection(data.getFlags());
+						paramEditorLt.setSelection(param.getFlags());
 						floater.setLocation(paramsLt.toDisplay(e.x, e.y));
 						floater.setVisible(true);
 						paramEditorLt.setFocus();
@@ -923,6 +963,13 @@ void createActionButtons(Composite parent) {
 
 public void run() {
 	shell.open();
+	MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO);
+	box.setText("Warning");
+	box.setMessage("This tool is obsolete as of Eclipse 3.5 M2.\nThe meta data has been embedded in java source files.\nThere is a new plugin tool that replaces this tool.\nSee http://www.eclipse.org/swt/jnigen.php.\n\n Continue?");
+	int result = box.open();
+	if (result == SWT.NO) {
+		shell.dispose();
+	}
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep ();
 	}
@@ -935,8 +982,8 @@ String getPackageString(String className) {
 	return app.getMainClassName().substring(0, dot);
 }
 
-String getClassString(Class clazz) {
-	String name = JNIGenerator.getTypeSignature3(clazz);
+String getClassString(JNIType type) {
+	String name = type.getTypeSignature3(false);
 	int index = name.lastIndexOf('.');
 	if (index == -1) return name;
 	return name.substring(index + 1, name.length());
@@ -953,16 +1000,16 @@ String getFlagsString(String[] flags) {
 	return buffer.toString();
 }
 
-String getMethodString(Method method) {
+String getMethodString(JNIMethod method) {
 	String pkgName = getPackageString(method.getDeclaringClass().getName());
 	StringBuffer buffer = new StringBuffer();
 	buffer.append(method.getName());
 	buffer.append("(");
-	Class[] params = method.getParameterTypes();
+	JNIParameter[] params = method.getParameters();
 	for (int i = 0; i < params.length; i++) {
-		Class param = params[i];
+		JNIParameter param = params[i];
 		if (i != 0) buffer.append(",");
-		String string = JNIGenerator.getTypeSignature3(param);
+		String string = param.getType().getTypeSignature3(false);
 		if (string.startsWith(pkgName)) string = string.substring(pkgName.length() + 1);
 		buffer.append(string);
 	}
@@ -970,33 +1017,33 @@ String getMethodString(Method method) {
 	return buffer.toString();
 }
 
-String getFieldString(Field field) {
+String getFieldString(JNIField field) {
 	return field.getName();
 }
 
 void updateClasses() {
 	classesLt.removeAll();
-	MetaData metaData = app.getMetaData();
-	Class[] classes = app.getClasses();
+	JNIClass[] classes = app.getClasses();
+	int mainIndex = 0;
 	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData classData = metaData.getMetaData(clazz);
+		JNIClass clazz = classes[i];
+		if (clazz.equals(app.getMainClass())) mainIndex = i;
 		TableItem item = new TableItem(classesLt, SWT.NONE);
-		item.setData(classData);
-		item.setText(CLASS_NAME_COLUMN, getClassString(clazz));
-		item.setText(CLASS_FLAGS_COLUMN, getFlagsString(classData.getFlags()));
-		item.setChecked(classData.getGenerate());
+		item.setData(clazz);
+		item.setText(CLASS_NAME_COLUMN, clazz.getSimpleName());
+		item.setText(CLASS_FLAGS_COLUMN, getFlagsString(clazz.getFlags()));
+		item.setChecked(clazz.getGenerate());
 	}
 	TableColumn[] columns = classesLt.getColumns();
 	for (int i = 0; i < columns.length; i++) {
 		TableColumn column = columns[i];
 		column.pack();
 	}
+	classesLt.setSelection(mainIndex);
 }
 
 void updateMembers() {
 	membersLt.removeAll();
-	MetaData metaData = app.getMetaData();
 	membersLt.setHeaderVisible(false);
 	TableColumn[] columns = membersLt.getColumns();
 	for (int i = 0; i < columns.length; i++) {
@@ -1006,12 +1053,11 @@ void updateMembers() {
 	int[] indices = classesLt.getSelectionIndices();
 	if (indices.length != 1) return;
 	TableItem classItem = classesLt.getItem(indices[0]);
-	ClassData classData = (ClassData)classItem.getData();
-	Class clazz = classData.getClazz();
+	JNIClass clazz = (JNIClass)classItem.getData();
 	boolean hasNatives = false;
-	Method[] methods = clazz.getDeclaredMethods();
+	JNIMethod[] methods = clazz.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
-		Method method = methods[i];
+		JNIMethod method = methods[i];
 		int mods = method.getModifiers();
 		if (hasNatives =((mods & Modifier.NATIVE) != 0)) break;
 	}
@@ -1030,15 +1076,14 @@ void updateMembers() {
 		*/
 		JNIGenerator.sort(methods);
 		for (int i = 0; i < methods.length; i++) {
-			Method method = methods[i];
+			JNIMethod method = methods[i];
 			if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-			MethodData methodData = metaData.getMetaData(method);
 			TableItem item = new TableItem(membersLt, SWT.NONE);
-			item.setData(methodData);
+			item.setData(method);
 			item.setText(METHOD_NAME_COLUMN, getMethodString(method));
-			item.setChecked(methodData.getGenerate());
-			item.setText(METHOD_FLAGS_COLUMN, getFlagsString(methodData.getFlags()));
-			item.setText(METHOD_ACCESSOR_COLUMN, methodData.getAccessor());
+			item.setChecked(method.getGenerate());
+			item.setText(METHOD_FLAGS_COLUMN, getFlagsString(method.getFlags()));
+			item.setText(METHOD_ACCESSOR_COLUMN, method.getAccessor());
 			/*
 			item.setText(METHOD_EXCLUDE_COLUMN, methodData.getExclude());
 			*/
@@ -1057,21 +1102,20 @@ void updateMembers() {
 		column = new TableColumn(membersLt, SWT.NONE, FIELD_EXCLUDE_COLUMN);
 		column.setText("Exclude");
 		*/
-		Field[] fields = clazz.getDeclaredFields();	
+		JNIField[] fields = clazz.getDeclaredFields();	
 		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
+			JNIField field = fields[i];
 			int mods = field.getModifiers(); 
 			if (((mods & Modifier.PUBLIC) == 0) ||
 				((mods & Modifier.FINAL) != 0) ||
 				((mods & Modifier.STATIC) != 0)) continue;
-			FieldData fieldData = metaData.getMetaData(field);
 			TableItem item = new TableItem(membersLt, SWT.NONE);
-			item.setData(fieldData);
+			item.setData(field);
 			item.setText(FIELD_NAME_COLUMN, getFieldString(field));
-			item.setChecked(fieldData.getGenerate());
-			item.setText(FIELD_CAST_COLUMN, fieldData.getCast());
-			item.setText(FIELD_FLAGS_COLUMN, getFlagsString(fieldData.getFlags()));
-			item.setText(FIELD_ACCESSOR_COLUMN, fieldData.getAccessor());
+			item.setChecked(field.getGenerate());
+			item.setText(FIELD_CAST_COLUMN, field.getCast());
+			item.setText(FIELD_FLAGS_COLUMN, getFlagsString(field.getFlags()));
+			item.setText(FIELD_ACCESSOR_COLUMN, field.getAccessor());
 			/*
 			item.setText(FIELD_EXCLUDE_COLUMN, fieldData.getExclude());
 			*/
@@ -1088,7 +1132,6 @@ void updateMembers() {
 
 void updateParameters() {
 	paramsLt.removeAll();
-	MetaData metaData = app.getMetaData();
 	int[] indices = membersLt.getSelectionIndices();
 	if (indices.length != 1) {
 		paramsLt.setHeaderVisible(false);
@@ -1096,20 +1139,18 @@ void updateParameters() {
 	}
 	TableItem memberItem = membersLt.getItem(indices[0]);
 	Object data = memberItem.getData();
-	if (!(data instanceof MethodData)) return;
+	if (!(data instanceof JNIMethod)) return;
 	paramsLt.setRedraw(false);
-	MethodData methodData = (MethodData)memberItem.getData();
-	Method method = methodData.getMethod();
-	Class[] params = method.getParameterTypes();
+	JNIMethod method = (JNIMethod)data;
+	JNIParameter[] params = method.getParameters();
 	for (int i = 0; i < params.length; i++) {
-		Class param = params[i];
-		ParameterData paramData = metaData.getMetaData(method, i);
+		JNIParameter param = params[i];
 		TableItem item = new TableItem(paramsLt, SWT.NONE);
-		item.setData(paramData);
+		item.setData(param);
 		item.setText(PARAM_INDEX_COLUMN, String.valueOf(i));
-		item.setText(PARAM_TYPE_COLUMN, getClassString(param));
-		item.setText(PARAM_CAST_COLUMN, paramData.getCast());
-		item.setText(PARAM_FLAGS_COLUMN, getFlagsString(paramData.getFlags()));
+		item.setText(PARAM_TYPE_COLUMN, getClassString(param.getType()));
+		item.setText(PARAM_CAST_COLUMN, param.getCast());
+		item.setText(PARAM_FLAGS_COLUMN, getFlagsString(param.getFlags()));
 	}
 	TableColumn[] columns = paramsLt.getColumns();
 	for (int i = 0; i < columns.length; i++) {
@@ -1121,25 +1162,25 @@ void updateParameters() {
 }
 
 void updateGenerate(TableItem item) {
-	MetaData metaData = app.getMetaData();
-	ItemData itemData = (ItemData)item.getData();
+	JNIItem itemData = (JNIItem)item.getData();
 	itemData.setGenerate(item.getChecked());
-	if (itemData instanceof ClassData) {
-		ClassData data = (ClassData)itemData;
-		metaData.setMetaData(data.getClazz(), data);
-	} else if (itemData instanceof FieldData) {
-		FieldData data = (FieldData)itemData;
-		item.setText(FIELD_FLAGS_COLUMN, getFlagsString(data.getFlags()));
-		metaData.setMetaData(data.getField(), data);
-	} else if (itemData instanceof MethodData) {
-		MethodData data = (MethodData)itemData;
-		item.setText(METHOD_FLAGS_COLUMN, getFlagsString(data.getFlags()));
-		metaData.setMetaData(data.getMethod(), data);
-	} else if (itemData instanceof ParameterData) {
-		ParameterData data = (ParameterData)itemData;
-		item.setText(PARAM_FLAGS_COLUMN, getFlagsString(data.getFlags()));
-		metaData.setMetaData(data.getMethod(), data.getParameter(), data);
-	}
+//	MetaData metaData = app.getMetaData();
+//	if (itemData instanceof JNIClass) {
+//		ClassData data = (ClassData)itemData;
+//		metaData.setMetaData(data.getClazz(), data);
+//	} else if (itemData instanceof FieldData) {
+//		FieldData data = (FieldData)itemData;
+//		item.setText(FIELD_FLAGS_COLUMN, getFlagsString(data.getFlags()));
+//		metaData.setMetaData(data.getField(), data);
+//	} else if (itemData instanceof MethodData) {
+//		MethodData data = (MethodData)itemData;
+//		item.setText(METHOD_FLAGS_COLUMN, getFlagsString(data.getFlags()));
+//		metaData.setMetaData(data.getMethod(), data);
+//	} else if (itemData instanceof ParameterData) {
+//		ParameterData data = (ParameterData)itemData;
+//		item.setText(PARAM_FLAGS_COLUMN, getFlagsString(data.getFlags()));
+//		metaData.setMetaData(data.getMethod(), data.getParameter(), data);
+//	}
 }
 
 boolean updateOutputDir() {

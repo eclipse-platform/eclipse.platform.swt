@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,10 +38,6 @@ protected void setUp() {
 	setWidget(toolBar);
 }
 
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		new ToolBar(null, 0);
@@ -61,10 +57,9 @@ public void test_computeTrimIIII() {
 
 public void test_getItemCount() {
 	int number = 10;
-	ToolItem ti;
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, toolBar.getItemCount()==i);
-	  	ti = new ToolItem(toolBar, 0);
+	  	new ToolItem(toolBar, 0);
 	}
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,14 +29,6 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
-	super.setUp();
-}
-
-protected void tearDown() {
-	super.tearDown();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	// abstract class
 }
@@ -50,11 +42,11 @@ public void test_getClientArea() {
 }
 
 public void test_getHorizontalBar() {
-	ScrollBar hbar = scrollable.getHorizontalBar();
+	scrollable.getHorizontalBar();
 }
 
 public void test_getVerticalBar() {
-	ScrollBar vbar = scrollable.getVerticalBar();
+	scrollable.getVerticalBar();
 }
 
 public static Test suite() {

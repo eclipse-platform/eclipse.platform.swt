@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,10 +32,8 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	super.setUp();
 	display = Display.getDefault();
-}
-
-protected void tearDown() {
 }
 
 public void test_Constructor() {
@@ -133,6 +131,7 @@ public void test_addLorg_eclipse_swt_graphics_Region() {
 	Region reg2 = new Region(display);
 	reg2.add(new Rectangle(40, 50, 10, 20));
 	reg1.add(reg2);
+	reg2.dispose();
 
 	try {
 		reg1.add((Region)null);
@@ -160,6 +159,8 @@ public void test_addLorg_eclipse_swt_graphics_Region() {
 		fail("no exception thrown for adding a Region to a Region which got disposed");
 	}
 	catch (SWTException e) {
+	} finally {
+		if (reg2 != null) reg2.dispose();
 	}
 }
 
@@ -173,7 +174,7 @@ public void test_containsII() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.contains(pointInRect1.x, pointInRect1.y);
+		reg.contains(pointInRect1.x, pointInRect1.y);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {
@@ -212,7 +213,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.contains(pointInRect1);
+		reg.contains(pointInRect1);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {
@@ -308,7 +309,7 @@ public void test_getBounds() {
 	reg.dispose();
 	
 	try {
-		Rectangle rect = reg.getBounds();
+		reg.getBounds();
 		fail("Region disposed should throw Exception");
 	}
 	catch (Exception e) {
@@ -520,6 +521,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	reg.dispose();
 	reg1.dispose();
 	reg4.dispose();
+	reg5.dispose();
 }
 
 public void test_intersectsIIII() {
@@ -535,7 +537,7 @@ public void test_intersectsIIII() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.intersects(rectInter1.x, rectInter1.y, rectInter1.width, rectInter1.height);
+		reg.intersects(rectInter1.x, rectInter1.y, rectInter1.width, rectInter1.height);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {
@@ -589,7 +591,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.intersects(rectInter1);
+		reg.intersects(rectInter1);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {
@@ -894,6 +896,38 @@ public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
 	}
 }
 
+public void test_add_intArray() {
+	Region reg = new Region(display);
+	int[] points = new int[] {1};
+	reg.add(points);
+	reg.dispose();
+	
+	Region reg2 = new Region(display);
+	points = new int[] {1,2};
+	reg2.add(points);
+	reg2.dispose();
+	
+	Region reg3 = new Region(display);
+	points = new int[] {1,2,3};
+	reg3.add(points);
+	reg3.dispose();
+	
+	Region reg4 = new Region(display);
+	points = new int[] {1,2,3,4};
+	reg4.add(points);
+	reg4.dispose();
+	
+	Region reg5 = new Region(display);
+	points = new int[] {1,2,3,4,5};
+	reg5.add(points);
+	reg5.dispose();
+	
+	Region reg6 = new Region(display);
+	points = new int[] {1,2,3,4,5,6};
+	reg6.add(points);
+	reg6.dispose();
+}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -927,6 +961,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_toString");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
+	methodNames.addElement("test_add_intArray");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -952,6 +987,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Region")) test_subtractLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
+	else if (getName().equals("test_add_intArray")) test_add_intArray();
 }
 
 /* custom */

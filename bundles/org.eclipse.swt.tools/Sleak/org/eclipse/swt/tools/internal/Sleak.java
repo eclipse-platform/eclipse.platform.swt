@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,8 +23,6 @@ import java.io.*;
  * 
  */
 public class Sleak {
-	Display display;
-	Shell shell;
 	List list;
 	Canvas canvas;
 	Button start, stop, check;
@@ -41,9 +39,14 @@ public static void main (String [] args) {
 	data.tracking = true;
 	Display display = new Display (data);
 	Sleak sleak = new Sleak ();
-	sleak.open ();
+	Shell shell = new Shell(display);
+	shell.setText ("S-Leak");
+	Point size = shell.getSize ();
+	shell.setSize (size.x / 2, size.y / 2);
+	sleak.create (shell);
+	shell.open();
 	
-	// Launch you application here
+	// Launch your application here
 	// e.g.		
 //	Shell shell = new Shell(display);
 //	Button button1 = new Button(shell, SWT.PUSH);
@@ -55,66 +58,62 @@ public static void main (String [] args) {
 //	button2.setImage(image);
 //	shell.open();
 	
-	while (!sleak.shell.isDisposed ()) {
+	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
-	
-void open () {
-	display = Display.getCurrent ();
-	shell = new Shell (display);
-	shell.setText ("S-Leak");
-	list = new List (shell, SWT.BORDER | SWT.V_SCROLL);
+
+public void create (Composite parent) {
+	list = new List (parent, SWT.BORDER | SWT.V_SCROLL);
 	list.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			refreshObject ();
 		}
 	});
-	text = new Text (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-	canvas = new Canvas (shell, SWT.BORDER);
+	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	canvas = new Canvas (parent, SWT.BORDER);
 	canvas.addListener (SWT.Paint, new Listener () {
 		public void handleEvent (Event event) {
 			paintCanvas (event);
 		}
 	});
-	check = new Button (shell, SWT.CHECK);
+	check = new Button (parent, SWT.CHECK);
 	check.setText ("Stack");
 	check.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			toggleStackTrace ();
 		}
 	});
-	start = new Button (shell, SWT.PUSH);
+	start = new Button (parent, SWT.PUSH);
 	start.setText ("Snap");
 	start.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			refreshAll ();
 		}
 	});
-	stop = new Button (shell, SWT.PUSH);
+	stop = new Button (parent, SWT.PUSH);
 	stop.setText ("Diff");
 	stop.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			refreshDifference ();
 		}
 	});
-	label = new Label (shell, SWT.BORDER);
+	label = new Label (parent, SWT.BORDER);
 	label.setText ("0 object(s)");
-	shell.addListener (SWT.Resize, new Listener () {
+	parent.addListener (SWT.Resize, new Listener () {
 		public void handleEvent (Event e) {
 			layout ();
 		}
 	});
 	check.setSelection (false);
 	text.setVisible (false);
-	Point size = shell.getSize ();
-	shell.setSize (size.x / 2, size.y / 2);
-	shell.open ();
+	layout();
 }
 
 void refreshLabel () {
-	int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0, regions = 0;
+	int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
+	int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms= 0;
 	for (int i=0; i<objects.length; i++) {
 		Object object = objects [i];
 		if (object instanceof Color) colors++;
@@ -122,7 +121,11 @@ void refreshLabel () {
 		if (object instanceof Font) fonts++;
 		if (object instanceof GC) gcs++;
 		if (object instanceof Image) images++;
+		if (object instanceof Path) paths++;
+		if (object instanceof Pattern) patterns++;
 		if (object instanceof Region) regions++;
+		if (object instanceof TextLayout) textLayouts++;
+		if (object instanceof Transform) transforms++;
 	}
 	String string = "";
 	if (colors != 0) string += colors + " Color(s)\n";
@@ -130,7 +133,11 @@ void refreshLabel () {
 	if (fonts != 0) string += fonts + " Font(s)\n";
 	if (gcs != 0) string += gcs + " GC(s)\n";
 	if (images != 0) string += images + " Image(s)\n";
+	if (paths != 0) string += paths + " Paths(s)\n";
+	if (patterns != 0) string += patterns + " Pattern(s)\n";
 	if (regions != 0) string += regions + " Region(s)\n";
+	if (textLayouts != 0) string += textLayouts + " TextLayout(s)\n";
+	if (transforms != 0) string += transforms + " Transform(s)\n";
 	if (string.length () != 0) {
 		string = string.substring (0, string.length () - 1);
 	}
@@ -138,8 +145,10 @@ void refreshLabel () {
 }
 
 void refreshDifference () {
+	Display display = canvas.getDisplay();
 	DeviceData info = display.getDeviceData ();
 	if (!info.tracking) {
+		Shell shell = canvas.getShell();
 		MessageBox dialog = new MessageBox (shell, SWT.ICON_WARNING | SWT.OK);
 		dialog.setText (shell.getText ());
 		dialog.setMessage ("Warning: Device is not tracking resource allocation");
@@ -170,17 +179,10 @@ void refreshDifference () {
 	text.setText ("");
 	canvas.redraw ();
 	for (int i=0; i<objects.length; i++) {
-		list.add (objectName (objects [i]));
+		list.add (objects [i].toString());
 	}
 	refreshLabel ();
 	layout ();
-}
-
-String objectName (Object object) {
-	String string = object.toString ();
-	int index = string.lastIndexOf ('.');
-	if (index == -1) return string;
-	return string.substring (index + 1, string.length ());
 }
 
 void toggleStackTrace () {
@@ -233,9 +235,32 @@ void paintCanvas (Event event) {
 		gc.drawImage ((Image) object, 0, 0);
 		return;
 	}
+	if (object instanceof Path) {
+		if (((Path)object).isDisposed ()) return;
+		gc.drawPath ((Path) object);
+		return;
+	}
+	if (object instanceof Pattern) {
+		if (((Pattern)object).isDisposed ()) return;
+		gc.setBackgroundPattern ((Pattern)object);
+		gc.fillRectangle (canvas.getClientArea ());
+		gc.setBackgroundPattern (null);
+		return;
+	}
 	if (object instanceof Region) {
 		if (((Region)object).isDisposed ()) return;
 		String string = ((Region)object).getBounds().toString();
+		gc.drawString (string, 0, 0);
+		return;
+	}
+	if (object instanceof TextLayout) {
+		if (((TextLayout)object).isDisposed ()) return;
+		((TextLayout)object).draw (gc, 0, 0);
+		return;
+	}
+	if (object instanceof Transform) {
+		if (((Transform)object).isDisposed ()) return;
+		String string = ((Transform)object).toString();
 		gc.drawString (string, 0, 0);
 		return;
 	}
@@ -267,7 +292,8 @@ void refreshAll () {
 }
 
 void layout () {
-	Rectangle rect = shell.getClientArea ();
+	Composite parent = canvas.getParent();
+	Rectangle rect = parent.getClientArea ();
 	int width = 0;
 	String [] items = list.getItems ();
 	GC gc = new GC (list);

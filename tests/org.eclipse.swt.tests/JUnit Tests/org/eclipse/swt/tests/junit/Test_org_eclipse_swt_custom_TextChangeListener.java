@@ -34,10 +34,9 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 protected void setUp() {
+	super.setUp();
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
-}
-protected void tearDown() {
 }
 
 public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {

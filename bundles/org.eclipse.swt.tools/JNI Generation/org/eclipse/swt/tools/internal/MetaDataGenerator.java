@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
 
 public class MetaDataGenerator extends JNIGenerator {
 
@@ -18,22 +18,21 @@ public void generateCopyright() {
 	generateMetaData("swt_properties_copyright");
 }
 
-public void generate(Class clazz) {
+public void generate(JNIClass clazz) {
 	output(toC(clazz.getName()));
 	output("=");
-	ClassData data = getMetaData().getMetaData(clazz);
-	if (data != null) output(data.toString());
+	output(((AbstractItem)clazz).flatten());
 	outputln();
-	Field[] fields = clazz.getDeclaredFields();
+	JNIField[] fields = clazz.getDeclaredFields();
 	generate(fields);
-	Method[] methods = clazz.getDeclaredMethods();
+	JNIMethod[] methods = clazz.getDeclaredMethods();
 	generate(methods);
 	outputln();
 }
 
-public void generate(Field[] fields) {
+public void generate(JNIField[] fields) {
 	for (int i = 0; i < fields.length; i++) {
-		Field field = fields[i];
+		JNIField field = fields[i];
 		int mods = field.getModifiers();
 		if ((mods & Modifier.PUBLIC) == 0) continue;
 		if ((mods & Modifier.FINAL) != 0) continue;
@@ -43,19 +42,18 @@ public void generate(Field[] fields) {
 	}
 }
 
-public void generate(Field field) {
-	output(getClassName(field.getDeclaringClass()));
+public void generate(JNIField field) {
+	output(field.getDeclaringClass().getSimpleName());
 	output("_");
 	output(field.getName());
 	output("=");
-	FieldData data = getMetaData().getMetaData(field);
-	if (data != null) output(data.toString());
+	output(((AbstractItem)field).flatten());
 }
 
-public void generate(Method[] methods) {
+public void generate(JNIMethod[] methods) {
 	sort(methods);
 	for (int i = 0; i < methods.length; i++) {
-		Method method = methods[i];
+		JNIMethod method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generate(method);
 		outputln();
@@ -63,11 +61,11 @@ public void generate(Method[] methods) {
 	}
 }
 
-public void generate(Method method) {
+public void generate(JNIMethod method) {
 	StringBuffer buffer = new StringBuffer();
-	buffer.append(getClassName(method.getDeclaringClass()));
+	buffer.append(method.getDeclaringClass().getSimpleName());
 	buffer.append("_");
-	if (isNativeUnique(method)) {
+	if (method.isNativeUnique()) {
 		buffer.append(method.getName());
 	} else {
 		buffer.append(getFunctionName(method));
@@ -75,16 +73,14 @@ public void generate(Method method) {
 	String key = buffer.toString();
 	output(key);
 	output("=");
-	MethodData methodData = getMetaData().getMetaData(method);
-	if (methodData != null) output(methodData.toString());
+	output(((AbstractItem)method).flatten());
 	outputln();
-	int length = method.getParameterTypes().length;
-	for (int i = 0; i < length; i++) {
+	JNIParameter[] params = method.getParameters();
+	for (int i = 0; i < params.length; i++) {
 		output(key);
 		output("_");
 		output(i + "=");
-		ParameterData paramData = getMetaData().getMetaData(method, i);
-		if (paramData != null) output(paramData.toString());
+		output(((AbstractItem)params[i]).flatten());
 		outputln();		
 	}
 }
@@ -93,11 +89,15 @@ public String getExtension() {
 	return ".properties";
 }
 
+protected boolean getGenerate(JNIItem item) {
+	return true;
+}
+
 public String getOutputName() {
 	return getMainClass().getName();
 }
 
-protected boolean getGenerate(Class clazz) {
+protected boolean getGenerate(JNIClass clazz) {
 	return true;
 }
 

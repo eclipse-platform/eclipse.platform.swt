@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.BidiUtil;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledTextContent
@@ -74,18 +73,13 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-private boolean isBidi() {
-	return BidiUtil.isBidiPlatform();
-}
 protected void setUp() {
+	super.setUp();
 	if (isBidi()) XINSET = 2;
 	else XINSET = 0;
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
 	styledText.setContent(content);
-}
-
-protected void tearDown() {
 }
 
 public void test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener() {
