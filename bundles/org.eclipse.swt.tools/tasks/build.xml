@@ -17,7 +17,7 @@
 	</target>
 	
 	<target name="build_win32_x86_64" >
-		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
 			<arg line="x86_64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -25,7 +25,7 @@
 	</target>
 
 	<target name="build_win32_ia64" >
-		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
 			<arg line="ia64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
@@ -33,21 +33,21 @@
 	</target>
 		
 	<target name="build_wince" >
-		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build-ce.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build-ce.bat" failonerror="true">
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
 	</target>
 	
 	<target name="build_wpf_x86" >
-		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat">
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
 			<arg line="install"/>
 			<arg line="clean"/>
 		</exec>
 	</target>
 
 	<target name="build_gtk_linux_x86" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
@@ -61,10 +61,10 @@
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<!--env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
 			<arg value="clean"/>
 			<arg value="make_cairo"/>
-			<arg value="install"/-->
+			<arg value="install"/>
 			<arg value="clean"/>
 		</exec>
 	</target>
