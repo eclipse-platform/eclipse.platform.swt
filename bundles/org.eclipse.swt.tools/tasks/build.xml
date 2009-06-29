@@ -93,7 +93,6 @@
 	<target name="build_gtk_linux_ppc" >
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="CAIROPATH" value="/bluebird/teamswt/swt-builddir/cairo/ppc/cairo-1.0.2/lib/pkgconfig/"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-ppc-142"/>
 			<env key="MOZILLA_SDK" value=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc/mozilla/dist/sdk/"/>
@@ -102,31 +101,10 @@
 			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc/lib/pkgconfig/"/>
 			<arg value="make_mozilla"/>
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
-			<arg value="install"/>
-			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
-			<arg value="clean"/>
-			<arg value="make_cairo"/>
-			<arg value="install"/>
-			<arg value="clean"/>
-		</exec>
-	</target>
-	
-	<target name="build_gtk_solaris_sparc">
-		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
-			<arg value="build.sh"/>
-			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
-			<env key="CC" value="cc"/>
-			<env key="CXX" value="CC"/>
-			<env key="CDE_HOME" value="/usr/dt"/>
-			<env key="JAVA_HOME" value="/usr/j2se"/>
-			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
-			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"/>
-			<env key="MOZILLA_INCLUDES" value="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"/>
-			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
-			<arg value="make_mozilla"/>
 			<arg value="install"/>
 			<arg value="clean"/>
 		</exec>
@@ -150,6 +128,24 @@
 		</exec>
 	</target>
 	
+	<target name="build_gtk_solaris_sparc">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
+			<env key="CC" value="cc"/>
+			<env key="CXX" value="CC"/>
+			<env key="CDE_HOME" value="/usr/dt"/>
+			<env key="JAVA_HOME" value="/usr/j2se"/>
+			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"/>
+			<env key="MOZILLA_INCLUDES" value="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"/>
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<arg value="make_mozilla"/>
+			<arg value="install"/>
+			<arg value="clean"/>
+		</exec>
+	</target>
+	
 	<target name="build_motif_linux" >
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
@@ -161,7 +157,7 @@
 			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
-			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo/linux_x86/lib/pkgconfig"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
 			<!--Need to add? setenv GCC_VERSION -gcc3 -->
 			<arg value="make_mozilla"/>
 			<arg value="make_xulrunner"/>
@@ -396,19 +392,11 @@
 		</antcall>
 	</target>
 
-	<target name="wpf">
+	<target name="wpf_x86">
 		<antcall target="build_local">
 			<param name="cp" value="org.eclipse.swt/.classpath_wpf"/>
 			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
 			<param name="build_target" value="build_wpf_x86"/>
-		</antcall>
-	</target>
-	
-	<target name="photon">
-		<antcall target="build_local">
-			<param name="cp" value="org.eclipse.swt/.classpath_photon"/>
-			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
-			<param name="build_target" value="build_photon"/>
 		</antcall>
 	</target>
 
@@ -529,6 +517,14 @@
 			<param name="build_target" value="build_carbon"/>
 		</antcall>
 	</target>
+			
+	<target name="photon">
+		<antcall target="build_local">
+			<param name="cp" value="org.eclipse.swt/.classpath_photon"/>
+			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
+			<param name="build_target" value="build_photon"/>
+		</antcall>
+	</target>
 	
 	<target name="build_all">
 		<tstamp>
@@ -540,11 +536,7 @@
 			<antcall target="win32_x86_64"></antcall>
 			<antcall target="win32_ia64"></antcall>
 			<antcall target="wince"></antcall>
-			<antcall target="wpf"></antcall>
-			<antcall target="photon"></antcall>
-			<antcall target="cocoa_x86_and_ppc"></antcall>
-			<antcall target="cocoa_x86_64"></antcall>
-			<antcall target="carbon"></antcall>
+			<antcall target="wpf_x86"></antcall>
 			<antcall target="gtk_linux_x86"></antcall>
 			<antcall target="gtk_linux_x86_64"></antcall>
 			<antcall target="gtk_linux_ppc"></antcall>
@@ -553,7 +545,11 @@
 			<antcall target="motif_linux"></antcall>
 			<antcall target="motif_aix"></antcall>
 			<antcall target="motif_solaris"></antcall>
-			<!--antcall target="motif_hpux"></antcall-->
+			<antcall target="motif_hpux"></antcall>
+			<antcall target="cocoa_x86_and_ppc"></antcall>
+			<antcall target="cocoa_x86_64"></antcall>
+			<antcall target="carbon"></antcall>
+			<antcall target="photon"></antcall>
 		</parallel>
 	</target>
 		
