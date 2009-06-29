@@ -335,7 +335,28 @@
 		<antcall target="commit_fragment"/>
 	</target>
 
-	<!-- Params: machine, java_home, classpath, fragment, build_target -->
+	<!-- Params: cp, fragment, build_target -->
+	<target name="build_local">
+		<property name="tmpdir" value="buildtmp_${fragment}"/>
+		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument value="${tools}"/>
+			</commandline>
+		</cvs>
+		<ant antfile="build.xml" output="../../../${build_ver}/${fragment}.log" dir="${tmpdir}/${tools}" target="build_fragment">
+			<property name="cvsRsh" value="plink"/>
+			<property name="cp" value="${cp}"/>
+			<property name="fragment" value="${fragment}"/>
+			<property name="build_target" value="${build_target}"/>
+		</ant>
+		<delete dir="${tmpdir}"/>
+	</target>
+	
+	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
 	<target name="build_ssh">
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
@@ -344,91 +365,57 @@
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
+			output="${build_ver}/${fragment}.log"
 	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 
 	<!-- all platforms -->
-	<target name="win32">
-		<delete dir="org.eclipse.swt"/>
-		<delete dir="${fragmentWin32}"/>
-		<delete dir="${fragmentWin64}"/>
-		<delete dir="${fragmentWinIA}"/>
-		<delete dir="${fragmentWinCE}"/>
-		<property name="cvsRsh" value="plink"/>
-		<property name="cp" value="org.eclipse.swt/.classpath_win32"/>
-		<property name="fragmentWin32" value="org.eclipse.swt.win32.win32.x86"/>
-		<property name="fragmentWin64" value="org.eclipse.swt.win32.win32.x86_64"/>
-		<property name="fragmentWinIA" value="org.eclipse.swt.win32.win32.ia64"/>
-		<property name="fragmentWinCE" value="org.eclipse.swt.win32.wce_ppc.arm"/>
-		
-		<!-- check out classpath, fragments, and natives -->
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
-			<commandline>
-				<argument value="checkout"/>
-				<argument value="-r"/>
-				<argument value="${TAG}"/>
-				<argument value="${cp}"/>
-				<argument value="${fragmentWin32}"/>
-				<argument value="${fragmentWin64}"/>
-				<argument value="${fragmentWinIA}"/>
-				<argument value="${fragmentWinCE}"/>
-			</commandline>
-		</cvs>
-		<antcall target="checkout_natives"/>
-			
-		<!-- test only -->
-		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
-		
-		<!-- build libraries -->
-		<antcall target="build_win32_x86"/>
-		<antcall target="build_win32_x86_64"/>
-		<antcall target="build_win32_ia64"/>
-		<antcall target="build_wince"/>
-		
-		<!-- commint libraries -->
-		<antcall target="commit_fragment">
-			<param name="fragment" value="${fragmentWin32}"/>
+	<target name="win32_x86">
+		<antcall target="build_local">
+			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
+			<param name="build_target" value="build_win32_x86"/>
 		</antcall>
-		<antcall target="commit_fragment">
-			<param name="fragment" value="${fragmentWin64}"/>
-		</antcall>
-		<antcall target="commit_fragment">
-			<param name="fragment" value="${fragmentWinIA}"/>
-		</antcall>
-		<antcall target="commit_fragment">
-			<param name="fragment" value="${fragmentWinCE}"/>
-		</antcall>
-		<delete dir="org.eclipse.swt"/>
-		<delete dir="${fragmentWin32}"/>
-		<delete dir="${fragmentWin64}"/>
-		<delete dir="${fragmentWinIA}"/>
-		<delete dir="${fragmentWinCE}"/>
 	</target>
-	
+
+	<target name="win32_x86_64">
+		<antcall target="build_local">
+			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
+			<param name="build_target" value="build_win32_x86_64"/>
+		</antcall>
+	</target>	
+
+	<target name="win32_ia64">
+		<antcall target="build_local">
+			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
+			<param name="build_target" value="build_win32_ia64"/>
+		</antcall>
+	</target>	
+
+	<target name="wince">
+		<antcall target="build_local">
+			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
+			<param name="build_target" value="build_wince"/>
+		</antcall>
+	</target>
+
 	<target name="wpf">
-		<delete dir="org.eclipse.swt"/>
-		<delete dir="org.eclipse.swt.wpf.win32.x86"/>
-		<antcall target="build_fragment">
-			<param name="cvsRsh" value="plink"/>
+		<antcall target="build_local">
 			<param name="cp" value="org.eclipse.swt/.classpath_wpf"/>
 			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
 			<param name="build_target" value="build_wpf_x86"/>
 		</antcall>
-		<delete dir="org.eclipse.swt"/>
-		<delete dir="org.eclipse.swt.wpf.win32.x86"/>
 	</target>
 	
 	<target name="photon">
-		<delete dir="org.eclipse.swt"/>
-		<delete dir="org.eclipse.swt.photon.qnx.x86"/>
-		<antcall target="build_fragment">
-			<param name="cvsRsh" value="plink"/>
+		<antcall target="build_local">
 			<param name="cp" value="org.eclipse.swt/.classpath_photon"/>
 			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
 			<param name="build_target" value="build_photon"/>
 		</antcall>
-		<delete dir="org.eclipse.swt"/>
-		<delete dir="org.eclipse.swt.photon.qnx.x86"/>
 	</target>
 
 	<target name="gtk_linux_x86">
@@ -550,12 +537,17 @@
 	</target>
 	
 	<target name="build_all">
+		<tstamp>
+		      <format property="build_ver" pattern="yyyyMMddkkmmss"/>
+		</tstamp>
+		<mkdir dir="${build_ver}"/>
 		<parallel failonany="false">
-			<sequential>
-				<antcall target="win32"></antcall>
-				<antcall target="wpf"></antcall>
-				<antcall target="photon"></antcall>
-			</sequential>
+			<antcall target="win32_x86"></antcall>
+			<antcall target="win32_x86_64"></antcall>
+			<antcall target="win32_ia64"></antcall>
+			<antcall target="wince"></antcall>
+			<antcall target="wpf"></antcall>
+			<antcall target="photon"></antcall>
 			<antcall target="cocoa_x86_and_ppc"></antcall>
 			<antcall target="cocoa_x86_64"></antcall>
 			<antcall target="carbon"></antcall>
