@@ -354,6 +354,23 @@
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
+	
+	<target name="tag_fragment">
+		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/"/>
+		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
+				
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument value="${map}"/>
+			</commandline>
+		</cvs>
+		<replace file="${src}/index.html" token="fragment@" value="&lt;xml project="/>
+		<replace file="${src}/index.html" token="=" value="&quot;"/>
+		<replace file="${src}/index.html" token="=" value="&quot; old&quot;"/>
+		<replace file="${src}/index.html" token=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse," value="&quot;"/>
+				
+	</target>
 
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_fragment">
