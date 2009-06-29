@@ -127,12 +127,11 @@
 	<target name="build_gtk_solaris_sparc">
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
 			<env key="CC" value="cc"/>
 			<env key="CXX" value="CC"/>
 			<env key="CDE_HOME" value="/usr/dt"/>
 			<env key="JAVA_HOME" value="/usr/j2se"/>
-			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"/>
 			<env key="MOZILLA_INCLUDES" value="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"/>
 			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
@@ -180,7 +179,7 @@
 	<target name="build_motif_solaris" >
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.6/lib/pkgconfig/"/>
+			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
 			<arg value="make_cairo"/>
 			<arg value="install"/>
 			<arg value="clean"/>
