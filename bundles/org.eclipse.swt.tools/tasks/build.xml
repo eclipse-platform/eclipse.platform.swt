@@ -356,20 +356,31 @@
 	
 	
 	<target name="tag_fragment">
-		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/"/>
+		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/map"/>
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-				
+		<property name="map_copy" value="${tmpdir}/swt_map.txt"/>
+		<property name="map_xml" value="${tmpdir}/swt_map.xml"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
-		<replace file="${src}/index.html" token="fragment@" value="&lt;xml project="/>
-		<replace file="${src}/index.html" token="=" value="&quot;"/>
-		<replace file="${src}/index.html" token="=" value="&quot; old&quot;"/>
-		<replace file="${src}/index.html" token=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse," value="&quot;"/>
-				
+		<copy file="${tmpdir}/${map}" tofile="${map_copy}"/>
+		<replace file="${map_copy}" token="=" value="&quot; old=&quot;"/>
+		<replace file="${map_copy}" token="fragment@" value="&lt;element project=&quot;"/>
+		<replace file="${map_copy}" token="plugin@" value="&lt;element project=&quot;"/>
+		<replace file="${map_copy}" token=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse," value="&quot;/&gt;"/>
+		<!--delete dir="${tmpdir}" quiet="true"/-->
+		<replaceregexp file="${map_copy}" match="!(.*)" replace="" byline="true"/>
+		<loadfile property="body" srcfile="${map_copy}"/>
+		<echo file="${map_xml}">&lt;project&gt;</echo>
+		<echo file="${map_xml}" append="true">${body}</echo>
+		<echo file="${map_xml}" append="true">&lt;/project&gt;</echo>			
+
+			
 	</target>
 
 	<!-- Params: cp, fragment, build_target -->
