@@ -158,6 +158,7 @@
 			<arg value="make_mozilla"/>
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
+			<arg value="make_cairo"/>
 			<arg value="install"/>
 			<arg value="clean"/>
 		</exec>
