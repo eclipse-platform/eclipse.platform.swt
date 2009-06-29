@@ -18,7 +18,7 @@
 	
 	<target name="build_win32_x86_64" >
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
-			<env key="JAVA_HOME" value=""/>
+			<env key="JAVA_HOME" value="C:\BUILD\swt-builddir\ibm-jdk1.4.1"/>
 			<arg line="x86_64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
