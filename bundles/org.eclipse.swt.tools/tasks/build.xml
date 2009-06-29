@@ -18,6 +18,7 @@
 	
 	<target name="build_win32_x86_64" >
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
 			<arg line="x86_64"/>
 			<arg line="install"/>
 			<arg line="clean"/>
