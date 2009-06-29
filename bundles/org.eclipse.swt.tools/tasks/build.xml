@@ -49,7 +49,6 @@
 	<target name="build_gtk_linux_x86" >
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="CAIROPATH" value="/bluebird/teamswt/swt-builddir/linux_x86/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
@@ -61,7 +60,7 @@
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/linux_x86/lib/pkgconfig"/>
 			<arg value="clean"/>
 			<arg value="make_cairo"/>
 			<arg value="install"/>
