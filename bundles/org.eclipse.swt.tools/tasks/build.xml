@@ -60,7 +60,7 @@
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/linux_x86/lib/pkgconfig"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo/linux_x86/lib/pkgconfig"/>
 			<arg value="clean"/>
 			<arg value="make_cairo"/>
 			<arg value="install"/>
