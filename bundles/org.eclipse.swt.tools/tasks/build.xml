@@ -56,13 +56,10 @@
 			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
 			<arg value="make_mozilla"/>
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
-			<arg value="install"/>
-			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo/linux_x86/lib/pkgconfig"/>
-			<arg value="clean"/>
-			<arg value="make_cairo"/>
 			<arg value="install"/>
 			<arg value="clean"/>
 		</exec>
@@ -94,7 +91,7 @@
 	</target>
 	
 	<target name="build_gtk_linux_ppc" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="CAIROPATH" value="/bluebird/teamswt/swt-builddir/cairo/ppc/cairo-1.0.2/lib/pkgconfig/"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-ppc-142"/>
@@ -117,8 +114,8 @@
 		</exec>
 	</target>
 	
-	<target name="build_gtk_solaris_sparc" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+	<target name="build_gtk_solaris_sparc">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="CAIROPATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
 			<env key="CC" value="cc"/>
@@ -135,8 +132,8 @@
 		</exec>
 	</target>
 	
-	<target name="build_gtk_solaris_x86" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+	<target name="build_gtk_solaris_x86">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="CC" value="cc"/>
 			<env key="CXX" value="CC"/>
@@ -154,9 +151,8 @@
 	</target>
 	
 	<target name="build_motif_linux" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="CAIROPATH" value="/usr/local/cairo-1.0/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
 			<env key="MOTIF_HOME" value="/bluebird/teamswt/swt-builddir/motif21"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
@@ -165,21 +161,18 @@
 			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo/linux_x86/lib/pkgconfig"/>
 			<!--Need to add? setenv GCC_VERSION -gcc3 -->
 			<arg value="make_mozilla"/>
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<!--env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
-			<arg value="clean"/>
-			<arg value="make_cairo"/>
-			<arg value="install"/-->
 			<arg value="clean"/>
 		</exec>
 	</target>
 
 	<target name="build_motif_aix" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
 			<env key="AWT_HOME" value="/bluebird/teamswt/swt-builddir/aix_jre_r6/sdk/jre/lib/ppc"/>
@@ -191,7 +184,7 @@
 	</target>
 	
 	<target name="build_motif_solaris" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.6/lib/pkgconfig/"/>
 			<arg value="install"/>
@@ -200,7 +193,7 @@
 	</target>
 	
 	<target name="build_motif_hpux" >
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/opt/java1.5/"/>
 			<env key="AWT_HOME" value="/opt/java1.5/jre/lib/IA64N/"/>
@@ -210,7 +203,7 @@
 	</target>
 	
 	<target name="build_cocoa_x86_and_ppc">
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg line="build32.sh"/>
 			<arg value="install"/>
 			<arg value="clean"/>
@@ -218,7 +211,7 @@
 	</target>
 		
 	<target name="build_cocoa_x86_64">
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg line="build64.sh"/>
 			<arg value="install_x86_64"/>
 			<arg value="clean"/>
@@ -226,7 +219,7 @@
 	</target>
 
 	<target name="build_carbon">
-		<exec dir="${basedir}/${builddir}" executable="sh">
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg line="build.sh"/>
 			<arg value="install"/>
 			<arg value="clean"/>
@@ -338,6 +331,7 @@
 	<target name="build_local">
 		<property name="tmpdir" value="buildtmp_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
+		<property name="build_version" value=""/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
@@ -346,7 +340,7 @@
 				<argument value="${tools}"/>
 			</commandline>
 		</cvs>
-		<ant antfile="build.xml" output="../../../${build_ver}/${fragment}.log" dir="${tmpdir}/${tools}" target="build_fragment">
+		<ant antfile="build.xml" output="../../../${build_version}/${fragment}.log" dir="${tmpdir}/${tools}" target="build_fragment">
 			<property name="cvsRsh" value="plink"/>
 			<property name="cp" value="${cp}"/>
 			<property name="fragment" value="${fragment}"/>
@@ -360,11 +354,12 @@
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
 		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<property name="pre_commands" value=""/>
+		<property name="build_version" value=""/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
-			output="${build_ver}/${fragment}.log"
+			output="${build_version}/${fragment}.log"
 	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; cd; rm -rf ${tmpdir}"/>
 	</target>
 
@@ -537,9 +532,9 @@
 	
 	<target name="build_all">
 		<tstamp>
-		      <format property="build_ver" pattern="yyyyMMddkkmmss"/>
+		      <format property="build_version" pattern="yyyyMMddkkmmss"/>
 		</tstamp>
-		<mkdir dir="${build_ver}"/>
+		<mkdir dir="${build_version}"/>
 		<parallel failonany="false">
 			<antcall target="win32_x86"></antcall>
 			<antcall target="win32_x86_64"></antcall>
