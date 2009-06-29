@@ -68,7 +68,6 @@
 	<target name="build_gtk_linux_x86_64" >
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="CAIROPATH" value="/usr/local/cairo-1.0.2/lib/pkgconfig"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
 			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"/>
@@ -78,15 +77,12 @@
 			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86_64/lib/pkgconfig"/>
 			<arg value="make_mozilla"/>
 			<arg value="make_xulrunner"/>
 			<arg value="make_xpcominit"/>
 			<arg value="install"/>
-			<!--env key="PKG_CONFIG_PATH" value="${CAIROPATH}"/>
 			<arg value="clean"/>
-			<arg value="make_cairo"/>
-			<arg value="install"/>
-			<arg value="clean"/-->
 		</exec>
 	</target>
 	
@@ -312,9 +308,6 @@
 		
 		<!-- check out natives -->
 		<antcall target="checkout_natives"/>
-			
-		<!-- test only -->
-		<copy file="make_common.mak" todir="${builddir}" overwrite="true"/>
 		
 		<!-- build libraries -->
 		<antcall target="${build_target}"/>
