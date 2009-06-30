@@ -326,7 +326,7 @@
 		<echo>Commiting ${removed_files}</echo>
 		<cvs dest="${fragment}" command="commit -m 'remove v${old_version}' ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>Adding ${added_files}</echo>
-		<cvs dest="${fragment}" command="add ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+		<cvs dest="${fragment}" command="add -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
 	<target name="build_notes">
