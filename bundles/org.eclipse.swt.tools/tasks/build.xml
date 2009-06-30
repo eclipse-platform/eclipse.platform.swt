@@ -233,15 +233,15 @@
 	
 	<!-- common build tasks -->
 	<target name="checkout_natives">
-		<xslt style="style.xls" in="${cp}" out="files.xml">
+		<xslt style="classpath.xls" in="${cp}" out="checkoutCommand.xml">
 			<param name="TAG" expression="${TAG}"/>
 			<param name="workdir" expression="${basedir}"/>
 		</xslt>
-		<ant antfile="files.xml"/>
+		<ant antfile="checkoutCommand.xml"/>
 		<copy todir="${builddir}" flatten="true">
 			<fileset dir="org.eclipse.swt" includes="**/library/"/>
 		</copy>
-		<delete file="files.xml"/>
+		<delete file="checkoutCommand.xml"/>
 	</target>
 	
 	<target name="increment_version">
@@ -405,21 +405,21 @@
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
-	
+	<!-- Params: versionTag -->
 	<target name="tag_fragment">
-		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/map"/>
+		<property name="tagdir" value="/Users/felipeheidrich/Desktop/bog/ant_test"/>
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-		<property name="map_copy" value="${tmpdir}/swt_map.txt"/>
-		<property name="map_xml" value="${tmpdir}/swt_map.xml"/>
-		<delete dir="${tmpdir}" quiet="true"/>
-		<mkdir dir="${tmpdir}"/>
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+		<property name="map_copy" value="${tagdir}/swt_map.txt"/>
+		<property name="map_xml" value="${tagdir}/swt_map.xml"/>
+		<delete dir="${tagdir}" quiet="true"/>
+		<mkdir dir="${tagdir}"/>
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tagdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
-		<copy file="${tmpdir}/${map}" tofile="${map_copy}"/>
+		<copy file="${tagdir}/${map}" tofile="${map_copy}"/>
 		<replace file="${map_copy}" token="=" value="&quot; old=&quot;"/>
 		<replace file="${map_copy}" token="fragment@" value="&lt;element project=&quot;"/>
 		<replace file="${map_copy}" token="plugin@" value="&lt;element project=&quot;"/>
@@ -430,10 +430,15 @@
 		<echo file="${map_xml}">&lt;project&gt;</echo>
 		<echo file="${map_xml}" append="true">${body}</echo>
 		<echo file="${map_xml}" append="true">&lt;/project&gt;</echo>			
-
-			
+		<xslt style="swtmap.xls" in="/Users/felipeheidrich/Desktop/bog/ant_test/swt_map.xml" out="${tagdir}/tagCommand.xml">
+			<param name="tag" expression="${TAG}"/>
+			<param name="cvsRoot" expression="${cvsRoot}"/>
+			<param name="versionTag" expression="vTest123"/>
+		</xslt>
+		<!--ant antfile="${tagdir}/tagCommand.xml"/>
+		<delete file="${tagdir}/tagCommand.xml"/-->
 	</target>
-
+	
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_fragment">
 		<property name="cvsRsh" value="ssh"/>

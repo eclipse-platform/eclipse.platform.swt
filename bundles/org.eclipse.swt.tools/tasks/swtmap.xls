@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:param name="cvsRoot"/>
+<xsl:param name="TAG"/>
+<xsl:param name="versionTag"/>
+<xsl:template match="/">
+<project name="test" default="tag_files" basedir=".">
+<target name="tag_files">
+    	<cvs cvsRoot="$cvsRoot">
+	  	<xsl:attribute name="cvsRoot">
+	    	<xsl:value-of select="$cvsRoot" />
+		</xsl:attribute>
+	<commandline>
+	  <argument value="rtag"/>
+				<argument>
+				<xsl:attribute name="value">
+					<xsl:value-of select="$TAG"/>
+				</xsl:attribute> 
+				</argument>
+				<argument>
+				<xsl:attribute name="value">
+					<xsl:value-of select="$versionTag"/>
+				</xsl:attribute> 
+				</argument>
+	<xsl:for-each select="project/element">
+	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390'">
+	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390x'">
+	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.ia64'">
+	<xsl:if test="@project != 'org.eclipse.swt.motif.hpux.PA_RISC'">
+				<argument>
+					<xsl:attribute name="value"><xsl:value-of select="@project"/></xsl:attribute>
+				</argument>
+	</xsl:if>
+	</xsl:if>
+	</xsl:if>
+	</xsl:if>
+	</xsl:for-each>
+	</commandline>
+	</cvs>
+</target>
+</project>
+</xsl:template>
+</xsl:stylesheet>
