@@ -403,6 +403,7 @@
 		<antcall target="new_version"/>
 		
 		<echo>"Commiting ${added_files}</echo>
+		<cvs dest="${fragment}" command="admin -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
