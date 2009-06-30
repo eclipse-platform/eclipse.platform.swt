@@ -359,7 +359,6 @@
 		<property name="delimiter" value="&#13;&#10;"/>
 		<property name="url" value="https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc=;bug_file_loc_type=allwordssubstr;bug_id=;bugidtype=include;chfield=resolution;chfieldfrom=${url.from.time};chfieldto=${url.to.time};chfieldvalue=FIXED;classification=Eclipse;component=SWT;email1=;email2=;emailtype1=substring;emailtype2=substring;field-1-0-0=classification;field-1-1-0=product;field-1-2-0=component;field0-0-0=noop;keywords=;keywords_type=allwords;long_desc=;long_desc_type=allwordssubstr;product=Platform;query_format=advanced;remaction=;short_desc=;short_desc_type=allwordssubstr;status_whiteboard=;status_whiteboard_type=allwordssubstr;type-1-0-0=anyexact;type-1-1-0=anyexact;type-1-2-0=anyexact;type0-0-0=noop;value-1-0-0=Eclipse;value-1-1-0=Platform;value-1-2-0=SWT;value0-0-0=;votes=;query_based_on="/>
 		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${swt_version} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
-		<echo>${body}</echo>
 		<replace file="${tmpdir}/${build_notes}" token="${match_line}" value="${match_line}${body}"/>
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
