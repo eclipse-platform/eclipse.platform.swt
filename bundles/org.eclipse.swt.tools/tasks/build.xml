@@ -1,4 +1,4 @@
-<project name="org.eclipse.swt.build.buildWindows" default="build_all" basedir=".">
+<project name="swtbuild" default="build_all" basedir=".">
 	
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
@@ -298,6 +298,54 @@
 		<delete dir="${tmpdir}" quiet="true"/>
 		
 	</target>
+	
+	<target name="get_new_tag">
+		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
+		<property name="tags_file" value="tags.txt"/>
+		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
+			<commandline>
+				<argument value="rlog"/>
+				<argument line="${TAG}"/>
+				<argument value="${version_file}"/>
+			</commandline>
+		</cvs>
+		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${TAG}"/>
+				<argument value="${version_file}"/>
+			</commandline>
+		</cvs>
+		<loadproperties srcFile="${version_file}"/>
+		<property name="swt_version" value="v${maj_ver}${min_ver}"/>
+		<loadfile property="tags" srcfile="${tags_file}"></loadfile>
+		<script language="javascript">
+		 	<![CDATA[
+				tags = swtbuild.getProperty("tags");
+				swt_version = swtbuild.getProperty("swt_version");
+				if (!tags.match(swt_version)) {
+					newTag = swtbuild.setProperty("version_tag", swt_version);
+				} else {
+					for (i=97; i<123; i++) {
+						t = swt_version + String.fromCharCode(i);
+						if (!tags.match(t)) {
+							newTag = swtbuild.setProperty("version_tag", t);
+							break;
+						}
+					}
+				}
+	   	 	]]>
+		</script>
+		<fail message="Unable to determine new tag">
+			<condition>
+				<not>
+					<isset property="version_tag"/>
+				</not>
+			</condition>
+		</fail>
+		<echo>New tag=${version_tag}</echo>
+		<!-- DO TO: delete temp files -->
+	</target>
 
 	<target name="get_version" >
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
@@ -329,8 +377,9 @@
 		<cvs dest="${fragment}" command="add -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
-	<target name="build_notes">
-		<property name="cvsRsh" value="plink"/>
+	
+	<!-- Params: cvsRsh, tmpdir, and version_tag -->
+	<target name="update_buildnotes">
 		<tstamp>
 			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
 		</tstamp>
@@ -341,38 +390,29 @@
 			<format property="url.to.time" pattern="yyyy-MM-dd"/>
 		</tstamp>
 		<property name="build_notes" value="org.eclipse.swt/buildnotes_swt.html"/>
-		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
-		<property name="tmpdir" value="c:/build/swt-builddir/tmp/notes"/>
-		<delete dir="${tmpdir}" quiet="true"/>
-		<mkdir dir="${tmpdir}"/>
 		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
 				<argument value="${build_notes}"/>
-				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
-		<loadproperties srcfile="${tmpdir}/${version_file}"/>
-		<property name="swt_version" value="${maj_ver}.${min_ver}"/>
 		<property name="match_line" value="SWT&lt;/h1&gt;"/>
 		<property name="delimiter" value="&#13;&#10;"/>
 		<property name="url" value="https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc=;bug_file_loc_type=allwordssubstr;bug_id=;bugidtype=include;chfield=resolution;chfieldfrom=${url.from.time};chfieldto=${url.to.time};chfieldvalue=FIXED;classification=Eclipse;component=SWT;email1=;email2=;emailtype1=substring;emailtype2=substring;field-1-0-0=classification;field-1-1-0=product;field-1-2-0=component;field0-0-0=noop;keywords=;keywords_type=allwords;long_desc=;long_desc_type=allwordssubstr;product=Platform;query_format=advanced;remaction=;short_desc=;short_desc_type=allwordssubstr;status_whiteboard=;status_whiteboard_type=allwordssubstr;type-1-0-0=anyexact;type-1-1-0=anyexact;type-1-2-0=anyexact;type0-0-0=noop;value-1-0-0=Eclipse;value-1-1-0=Platform;value-1-2-0=SWT;value0-0-0=;votes=;query_based_on="/>
-		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${swt_version} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
+		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${version_tag} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
 		<replace file="${tmpdir}/${build_notes}" token="${match_line}" value="${match_line}${body}"/>
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
 				<argument line="${TAG}"/>
 				<argument value="-m"/>
-				<argument value="'new version v${maj_ver}${min_ver}'"/>
+				<argument value="'new version v${version_tag}'"/>
 				<argument value="${build_notes}"/>
 			</commandline>
 		</cvs>
-		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
 
-	
 	<!-- Params: fragment -->
 	<target name="commit_fragment" depends="get_version">
 		<copy todir="${fragment}" overwrite="false">
@@ -405,38 +445,59 @@
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 	
-	<!-- Params: versionTag -->
-	<target name="tag_fragment">
-		<property name="tagdir" value="/Users/felipeheidrich/Desktop/bog/ant_test"/>
+	<!-- depends on 'get_new_tag' to define version_tag, swt_version, maj_ver and min_ver -->
+	<target name="tag_projects" depends="get_new_tag">
+		<property name="cvsRsh" value="plink"/>
+		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/tag"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		
+		<!-- update and commit the buildnotes_swt.html file -->
+		<!--antcall target="update_buildnotes"/-->
+
+		<!-- tags fragments and plugins listed in swt.map -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-		<property name="map_copy" value="${tagdir}/swt_map.txt"/>
-		<property name="map_xml" value="${tagdir}/swt_map.xml"/>
-		<delete dir="${tagdir}" quiet="true"/>
-		<mkdir dir="${tagdir}"/>
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tagdir}">
+		<property name="map_copy" value="${tmpdir}/swt_map.txt"/>
+		<property name="map_xml" value="${tmpdir}/swt_map.xml"/>
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
-		<copy file="${tagdir}/${map}" tofile="${map_copy}"/>
+		<copy file="${tmpdir}/${map}" tofile="${map_copy}"/>
 		<replace file="${map_copy}" token="=" value="&quot; old=&quot;"/>
 		<replace file="${map_copy}" token="fragment@" value="&lt;element project=&quot;"/>
 		<replace file="${map_copy}" token="plugin@" value="&lt;element project=&quot;"/>
 		<replace file="${map_copy}" token=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse," value="&quot;/&gt;"/>
-		<!--delete dir="${tmpdir}" quiet="true"/-->
 		<replaceregexp file="${map_copy}" match="!(.*)" replace="" byline="true"/>
 		<loadfile property="body" srcfile="${map_copy}"/>
 		<echo file="${map_xml}">&lt;project&gt;</echo>
 		<echo file="${map_xml}" append="true">${body}</echo>
 		<echo file="${map_xml}" append="true">&lt;/project&gt;</echo>			
-		<xslt style="swtmap.xls" in="/Users/felipeheidrich/Desktop/bog/ant_test/swt_map.xml" out="${tagdir}/tagCommand.xml">
+		<xslt style="swtmap.xls" in="${tmpdir}/swt_map.xml" out="${tmpdir}/tagCommand.xml">
 			<param name="tag" expression="${TAG}"/>
 			<param name="cvsRoot" expression="${cvsRoot}"/>
-			<param name="versionTag" expression="vTest123"/>
+			<param name="version_tag" expression="${version_tag}"/>
 		</xslt>
-		<!--ant antfile="${tagdir}/tagCommand.xml"/>
-		<delete file="${tagdir}/tagCommand.xml"/-->
+		<!--ant antfile="${tmpdir}/tagCommand.xml"/-->
+
+		
+		<!-- update and commit the swt.map file -->
+		<!-- TODO ignore gtk.linux.s390, gtk.linux.s390x, swt.gtk.linux.ia64 and motif.hpux.PA_RISC -->
+		<replaceregexp file="${tmpdir}/${map}" match="v\d\d\d\d\w?" replace="${version_tag}" byline="true"/>
+		
+		<!--cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="commit"/>
+				<argument line="${TAG}"/>
+				<argument value="-m"/>
+				<argument value="'new version v${version_tag}'"/>
+				<argument value="${map}"/>
+			</commandline>
+		</cvs-->
+
+		<!--delete file="${tmpdir}"/-->
 	</target>
 	
 	<!-- Params: cp, fragment, build_target -->
