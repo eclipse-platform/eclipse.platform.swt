@@ -332,7 +332,7 @@
 	<target name="build_notes">
 		<property name="cvsRsh" value="plink"/>
 		<tstamp>
-			<format property="header.time" pattern="EEEE MMMMM dd, yyyy"/>
+			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
 		</tstamp>
 		<tstamp>
 			<format property="url.from.time" pattern="yyyy-MM-dd" offset="-7" unit="day"/>
