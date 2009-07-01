@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2009 IBM Corporation and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+        IBM Corporation - initial API and implementation
+ -->
+
+<project default="build_cocoa_lib" basedir="../../..">
+
+<target name="init">
+	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
+   	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr" />
+</target>
+	
+<target name="build_cocoa_lib">
+	<antcall target="clean"/>
+	<antcall target="build_cocoa_lib_x86_and_ppc"/>
+	<antcall target="clean"/>
+	<antcall target="build_cocoa_lib_x86_64"/>
+</target>
+	
+<target name="build_cocoa_lib_x86_and_ppc" depends="init">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build32.sh"/>
+		<arg value="install"/>
+	</exec>
+	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx" depth="infinite" />		
+</target>
+	
+<target name="build_cocoa_lib_x86_64" depends="init">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build64.sh"/>
+		<arg value="install_x86_64"/>
+	</exec>
+	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx.x86_64" depth="infinite" />		
+</target>
+	
+<!-- Convert SWT 32 bit java and C source to 64 bit  -->
+<target name="replace.32.to.64" depends="init">
+	<echo>Converting java files to 64 bit in org.eclipse.swt project</echo>
+	<replace dir="." includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
+	<replace dir="." includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
+	<replace dir="." includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
+	<replace dir="." includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
+	<antcall target="init"/>
+</target>
+	
+<!-- Convert SWT 64 bit java and C source to 32 bit  -->
+<target name="replace.64.to.32" depends="init">
+	<echo>Converting java files to 32 bit in org.eclipse.swt project</echo>
+	<replace dir="." includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
+	<replace dir="." includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
+	<replace dir="." includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
+	<replace dir="." includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
+	<antcall target="init"/>
+</target>
+
+<target name="clean">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="clean"/>
+	</exec>
+</target>
+
+</project>
