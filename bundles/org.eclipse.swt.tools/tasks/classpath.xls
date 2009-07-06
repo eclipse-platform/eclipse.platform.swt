@@ -8,12 +8,11 @@
 <target name="checkout_native_files">
 	<xsl:for-each select="classpath/classpathentry">
 	<xsl:if test="@kind = 'src'">
-			<cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" reallyquiet="true">
+			<cvs cvsRoot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse">
 			<xsl:attribute name="dest">
 				<xsl:value-of select="$workdir"/>
 			</xsl:attribute> 
 			<commandline>
-				<argument value="-Q"/>
 				<argument value="co"/>
 				<argument>
 					<xsl:attribute name="line">
