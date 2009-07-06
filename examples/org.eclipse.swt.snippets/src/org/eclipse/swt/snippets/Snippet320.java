@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Text example snippet: implement a simple content assist
+ * Text example snippet: implement content assist
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
