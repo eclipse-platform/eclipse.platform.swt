@@ -300,15 +300,16 @@
 	</target>
 	
 	<target name="get_tag">
-		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/gettag"/>
+		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/tag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
-		<property name="version_file" value="org.eclipse.swt/.project"/>
+		<property name="rlog_file" value="org.eclipse.swt/.project"/>
+		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 		<property name="tags_file" value="${tmpdir}/tags.txt"/>
 		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
 			<commandline>
 				<argument value="rlog"/>
-				<argument value="${version_file}"/>
+				<argument value="${rlog_file}"/>
 			</commandline>
 		</cvs>
 		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
@@ -345,7 +346,7 @@
 				</not>
 			</condition>
 		</fail>
-		<!--delete dir="${tmpdir}" quiet="true"/-->
+		<delete dir="${tmpdir}" quiet="true"/>
 		<echo>New tag=${version_tag}</echo>
 	</target>
 
@@ -455,7 +456,7 @@
 		<mkdir dir="${tmpdir}"/>
 		
 		<!-- update and commit the buildnotes_swt.html file -->
-		<!--antcall target="update_buildnotes"/-->
+		<antcall target="update_buildnotes"/>
 
 		<!-- tags fragments and plugins listed in swt.map -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
@@ -468,6 +469,9 @@
 			</commandline>
 		</cvs>
 		<copy file="${tmpdir}/${map}" tofile="${map_copy}"/>
+		
+		<copy file="${tmpdir}/${map}" tofile="${tmpdir}/map.txt"/>
+		
 		<replace file="${map_copy}" token="=" value="&quot; old=&quot;"/>
 		<replace file="${map_copy}" token="fragment@" value="&lt;element project=&quot;"/>
 		<replace file="${map_copy}" token="plugin@" value="&lt;element project=&quot;"/>
@@ -482,13 +486,10 @@
 			<param name="cvsRoot" expression="${cvsRoot}"/>
 			<param name="cvsRsh" expression="${cvsRsh}"/>
 			<param name="version_tag" expression="${version_tag}"/>
+			<param name="map" expression="${tmpdir}/map.txt"/>
 		</xslt>
-		<!--ant antfile="${tmpdir}/tagCommand.xml"/-->
-
-		
-		<!-- update and commit the swt.map file -->
-		<!-- TODO ignore gtk.linux.s390, gtk.linux.s390x, swt.gtk.linux.ia64 and motif.hpux.PA_RISC -->
-		<replaceregexp file="${tmpdir}/${map}" match="v\d\d\d\d\w?" replace="${version_tag}" byline="true"/>
+		<ant antfile="${tmpdir}/tagCommand.xml"/>
+		<!--ant antfile="${tmpdir}/tagCommand.xml" target="update_map"/-->
 		
 		<!--cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
