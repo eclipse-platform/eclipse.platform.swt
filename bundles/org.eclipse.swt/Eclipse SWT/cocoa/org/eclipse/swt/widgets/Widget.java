@@ -177,6 +177,7 @@ void accessibilityPerformAction(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 
 String getClipboardText () {
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
+	if (pasteboard == null) return "";
 	NSString string = pasteboard.stringForType (OS.NSStringPboardType);
 	return string != null ? string.getString () : null;
 }
@@ -478,6 +479,7 @@ void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*lon
 void copyToClipboard (char [] buffer) {
 	if (buffer.length == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
+	if (pasteboard == null) return;
 	pasteboard.declareTypes (NSArray.arrayWithObject (OS.NSStringPboardType), null);
 	pasteboard.setString (NSString.stringWithCharacters (buffer, buffer.length), OS.NSStringPboardType);
 }

@@ -170,7 +170,7 @@ public void clearContents(int clipboards) {
 	checkWidget();
 	if ((clipboards & DND.CLIPBOARD) == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
-	pasteboard.declareTypes(NSMutableArray.arrayWithCapacity(0), null);
+	if (pasteboard != null) pasteboard.declareTypes(NSMutableArray.arrayWithCapacity(0), null);
 }
 
 /**
@@ -517,6 +517,7 @@ public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
 	if ((clipboards & DND.CLIPBOARD) == 0) return new TransferData[0];
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+	if (pasteboard == null) return new TransferData[0];
 	NSArray types = pasteboard.types();
 	int count = (int)/*64*/types.count();
 	TransferData[] result = new TransferData[count];
@@ -546,6 +547,7 @@ public TransferData[] getAvailableTypes(int clipboards) {
 public String[] getAvailableTypeNames() {
 	checkWidget();
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+	if (pasteboard == null) return new String[0];
 	NSArray types = pasteboard.types();
 	int count = (int)/*64*/types.count();
 	String[] result = new String[count];
