@@ -2,35 +2,39 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:param name="cvsRoot"/>
+<xsl:param name="cvsRsh"/>
 <xsl:param name="TAG"/>
-<xsl:param name="versionTag"/>
+<xsl:param name="version_tag"/>
 <xsl:template match="/">
 <project name="test" default="tag_files" basedir=".">
 <target name="tag_files">
-    	<cvs cvsRoot="$cvsRoot">
+    	<cvs>
 	  	<xsl:attribute name="cvsRoot">
 	    	<xsl:value-of select="$cvsRoot" />
 		</xsl:attribute>
+	  	<xsl:attribute name="cvsRsh">
+	    	<xsl:value-of select="$cvsRsh" />
+		</xsl:attribute>
 	<commandline>
-	  <argument value="rtag"/>
-				<argument>
+		<argument value="rtag"/>
+			<argument>
 				<xsl:attribute name="value">
 					<xsl:value-of select="$TAG"/>
 				</xsl:attribute> 
-				</argument>
-				<argument>
+			</argument>
+			<argument>
 				<xsl:attribute name="value">
-					<xsl:value-of select="$versionTag"/>
+					<xsl:value-of select="$version_tag"/>
 				</xsl:attribute> 
-				</argument>
+			</argument>
 	<xsl:for-each select="project/element">
 	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390'">
 	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390x'">
 	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.ia64'">
 	<xsl:if test="@project != 'org.eclipse.swt.motif.hpux.PA_RISC'">
-				<argument>
-					<xsl:attribute name="value"><xsl:value-of select="@project"/></xsl:attribute>
-				</argument>
+			<argument>
+				<xsl:attribute name="value"><xsl:value-of select="@project"/></xsl:attribute>
+			</argument>
 	</xsl:if>
 	</xsl:if>
 	</xsl:if>
