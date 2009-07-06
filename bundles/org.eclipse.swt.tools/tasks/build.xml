@@ -303,7 +303,7 @@
 		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/gettag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
-		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
+		<property name="version_file" value="org.eclipse.swt/.project"/>
 		<property name="tags_file" value="${tmpdir}/tags.txt"/>
 		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
 			<commandline>
