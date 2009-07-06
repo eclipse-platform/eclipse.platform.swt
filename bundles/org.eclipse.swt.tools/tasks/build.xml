@@ -299,9 +299,12 @@
 		
 	</target>
 	
-	<target name="get_new_tag">
+	<target name="get_tag">
+		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/tag"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
-		<property name="tags_file" value="tags.txt"/>
+		<property name="tags_file" value="${tmpdir}/tags.txt"/>
 		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
 			<commandline>
 				<argument value="rlog"/>
@@ -309,27 +312,27 @@
 				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true">
+		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
 				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
-		<loadproperties srcFile="${version_file}"/>
+		<loadproperties srcFile="${tmpdir}/${version_file}"/>
 		<property name="swt_version" value="v${maj_ver}${min_ver}"/>
-		<loadfile property="tags" srcfile="${tags_file}"></loadfile>
+		<loadfile property="tags" srcfile="${tags_file}"/>
 		<script language="javascript">
 		 	<![CDATA[
-				tags = swtbuild.getProperty("tags");
-				swt_version = swtbuild.getProperty("swt_version");
+				tags = project.getProperty("tags");
+				swt_version = project.getProperty("swt_version");
 				if (!tags.match(swt_version)) {
-					newTag = swtbuild.setProperty("version_tag", swt_version);
+					project.setProperty("version_tag", swt_version);
 				} else {
 					for (i=97; i<123; i++) {
 						t = swt_version + String.fromCharCode(i);
 						if (!tags.match(t)) {
-							newTag = swtbuild.setProperty("version_tag", t);
+							project.setProperty("version_tag", t);
 							break;
 						}
 					}
@@ -343,8 +346,8 @@
 				</not>
 			</condition>
 		</fail>
+		<delete dir="${tmpdir}" quiet="true"/>
 		<echo>New tag=${version_tag}</echo>
-		<!-- DO TO: delete temp files -->
 	</target>
 
 	<target name="get_version" >
@@ -446,7 +449,7 @@
 	</target>
 	
 	<!-- depends on 'get_new_tag' to define version_tag, swt_version, maj_ver and min_ver -->
-	<target name="tag_projects" depends="get_new_tag">
+	<target name="tag_projects" depends="get_tag">
 		<property name="cvsRsh" value="plink"/>
 		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/tag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
