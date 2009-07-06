@@ -98,6 +98,7 @@ public static void main(String [] args) {
 
 	Listener focusOutListener = new Listener() {
 		public void handleEvent(Event event) {
+			/* async is needed to wait until focus reaches its new Control */
 			display.asyncExec(new Runnable() {
 				public void run() {
 					if (display.isDisposed()) return;
