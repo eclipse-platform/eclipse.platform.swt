@@ -559,7 +559,7 @@
 			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; if ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else exit 1; fi"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; if ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
 
 	<!-- all platforms -->
