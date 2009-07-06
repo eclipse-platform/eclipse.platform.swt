@@ -300,7 +300,7 @@
 	</target>
 	
 	<target name="get_tag">
-		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/tag"/>
+		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/gettag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
@@ -345,7 +345,7 @@
 				</not>
 			</condition>
 		</fail>
-		<delete dir="${tmpdir}" quiet="true"/>
+		<!--delete dir="${tmpdir}" quiet="true"/-->
 		<echo>New tag=${version_tag}</echo>
 	</target>
 
@@ -480,6 +480,7 @@
 		<xslt style="swtmap.xls" in="${tmpdir}/swt_map.xml" out="${tmpdir}/tagCommand.xml">
 			<param name="tag" expression="${TAG}"/>
 			<param name="cvsRoot" expression="${cvsRoot}"/>
+			<param name="cvsRsh" expression="${cvsRsh}"/>
 			<param name="version_tag" expression="${version_tag}"/>
 		</xslt>
 		<!--ant antfile="${tmpdir}/tagCommand.xml"/-->
