@@ -161,9 +161,9 @@
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
 			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
 			<!--Need to add? setenv GCC_VERSION -gcc3 -->
-			<!--arg value="make_mozilla"/>
+			<arg value="make_mozilla"/>
 			<arg value="make_xulrunner"/>
-			<arg value="make_xpcominit"/-->
+			<arg value="make_xpcominit"/>
 			<arg value="make_cairo"/>
 			<arg value="install"/>
 			<arg value="clean"/>
