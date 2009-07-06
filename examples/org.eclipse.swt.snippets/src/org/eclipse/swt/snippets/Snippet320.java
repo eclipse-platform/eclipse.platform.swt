@@ -81,19 +81,7 @@ public static void main(String [] args) {
 			}
 		}
 	});
-	text.addListener(SWT.FocusOut, new Listener() {
-		public void handleEvent(Event event) {
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (display.isDisposed()) return;
-					Control control = display.getFocusControl();
-					if (control == null || (control != text && control != table)) {
-						popupShell.setVisible(false);
-					}
-				}
-			});
-		}
-	});
+
 	table.addListener(SWT.DefaultSelection, new Listener() {
 		public void handleEvent(Event event) {
 			text.setText(table.getSelection()[0].getText());
@@ -107,6 +95,23 @@ public static void main(String [] args) {
 			}
 		}
 	});
+
+	Listener focusOutListener = new Listener() {
+		public void handleEvent(Event event) {
+			display.asyncExec(new Runnable() {
+				public void run() {
+					if (display.isDisposed()) return;
+					Control control = display.getFocusControl();
+					if (control == null || (control != text && control != table)) {
+						popupShell.setVisible(false);
+					}
+				}
+			});
+		}
+	};
+	table.addListener(SWT.FocusOut, focusOutListener);
+	text.addListener(SWT.FocusOut, focusOutListener);
+
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
