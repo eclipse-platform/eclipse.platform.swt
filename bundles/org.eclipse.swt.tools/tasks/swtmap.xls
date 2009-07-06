@@ -5,6 +5,7 @@
 <xsl:param name="cvsRsh"/>
 <xsl:param name="TAG"/>
 <xsl:param name="version_tag"/>
+<xsl:param name="map"/>
 <xsl:template match="/">
 <project name="test" default="tag_files" basedir=".">
 <target name="tag_files">
@@ -43,6 +44,33 @@
 	</commandline>
 	</cvs>
 </target>
+
+<target name="update_map">
+	<xsl:for-each select="project/element">
+	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390'">
+	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390x'">
+	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.ia64'">
+	<xsl:if test="@project != 'org.eclipse.swt.motif.hpux.PA_RISC'">
+		<replaceregexp byline="true">
+				<xsl:attribute name="match">
+					<xsl:value-of select="@project"/>=v\d\d\d\d[a-z]?,
+				</xsl:attribute>
+				<xsl:attribute name="replace">
+					<xsl:value-of select="@project"/>=<xsl:value-of select="$version_tag"/>,
+				</xsl:attribute>
+				<xsl:attribute name="file">
+					<xsl:value-of select="$map"/>
+				</xsl:attribute> 
+		</replaceregexp>
+	</xsl:if>
+	</xsl:if>
+	</xsl:if>
+	</xsl:if>
+	</xsl:for-each>
+</target>
+
+
+
 </project>
 </xsl:template>
 </xsl:stylesheet>
