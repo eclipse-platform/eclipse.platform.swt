@@ -25,7 +25,7 @@ public class Snippet320 {
 
 public static void main(String [] args) {
 	final Display display = new Display();
-	Shell shell = new Shell(display);
+	final Shell shell = new Shell(display);
 	shell.setLayout(new GridLayout());
 	final Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
 	text.setLayoutData(new GridData(150, SWT.DEFAULT));
@@ -33,8 +33,6 @@ public static void main(String [] args) {
 	shell.open();
 
 	final Shell popupShell = new Shell(display, SWT.ON_TOP);
-	Rectangle textBounds = display.map(shell, null, text.getBounds());
-	popupShell.setBounds(textBounds.x, textBounds.y + textBounds.height, textBounds.width, 150);
 	popupShell.setLayout(new FillLayout());
 	final Table table = new Table(popupShell, SWT.SINGLE);
 	for (int i = 0; i < 5; i++) {
@@ -77,6 +75,8 @@ public static void main(String [] args) {
 				for (int i = 0; i < items.length; i++) {
 					items[i].setText(string + '-' + i);
 				}
+				Rectangle textBounds = display.map(shell, null, text.getBounds());
+				popupShell.setBounds(textBounds.x, textBounds.y + textBounds.height, textBounds.width, 150);
 				popupShell.setVisible(true);
 			}
 		}
