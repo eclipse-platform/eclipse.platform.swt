@@ -41,7 +41,7 @@
 #include <X11/extensions/Xinerama.h>
 #endif /* NO_XINERAMA_EXTENSIONS */
 
-//this is bad
+this is bad
 #include <Xm/XmAll.h>
 #include <Mrm/MrmPublic.h>
 
