@@ -174,7 +174,7 @@
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
-			<env key="AWT_HOME" value="/bluebird/teamswt/swt-builddir/aix_jre_r6/sdk/jre/lib/ppc"/>
+			<env key="AWT_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5/jre/bin"/>
 			<env key="MOTIF_HOME" value="/bluebird/teamswt/swt-builddir/motif21"/>
 			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo1.6.0/lib/pkgconfig/"/>
 			<arg value="make_cairo"/>
