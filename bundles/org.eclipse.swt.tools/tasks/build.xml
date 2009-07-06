@@ -3,8 +3,8 @@
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
-	<property name="TAG" value=""/>
-	<!--property name="TAG" value="-r SSQ_build"/-->
+	<!--property name="TAG" value=""/-->
+	<property name="TAG" value="-rSSQ_build"/>
 	
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="C:/BUILD/swt-builddir/logs"/>
@@ -308,7 +308,6 @@
 		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
 			<commandline>
 				<argument value="rlog"/>
-				<argument line="${TAG}"/>
 				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
