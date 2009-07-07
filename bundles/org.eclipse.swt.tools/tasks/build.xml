@@ -6,7 +6,7 @@
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="TAG" value=""/>
 	<!--property name="TAG" value="-rSSQ_build"/-->
-	
+	<property name="tasks" value="org.eclipse.swt.tools/tasks"/>
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="C:/BUILD/swt-builddir/logs"/>
 		
@@ -531,17 +531,16 @@
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_local">
 		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/${fragment}"/>
-		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<property name="build_version" value=""/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
-				<argument value="${tools}"/>
+				<argument value="${tasks}"/>
 			</commandline>
 		</cvs>
-		<ant antfile="build.xml" output="${logdir}/${build_version}/${fragment}.log" dir="${tmpdir}/${tools}" target="build_fragment">
+		<ant antfile="build.xml" output="${logdir}/${build_version}/${fragment}.log" dir="${tmpdir}/${tasks}" target="build_fragment">
 			<property name="cvsRsh" value="plink"/>
 			<property name="cp" value="${cp}"/>
 			<property name="fragment" value="${fragment}"/>
@@ -553,7 +552,6 @@
 	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
 	<target name="build_ssh">
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
-		<property name="tools" value="org.eclipse.swt.tools/tasks"/>
 		<property name="pre_commands" value=""/>
 		<property name="build_version" value=""/>
 		<sshexec host="${machine}" 
@@ -561,7 +559,7 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; if ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tasks}; cd ${tmpdir}/${tasks}; if ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
 
 	<!-- all platforms -->
