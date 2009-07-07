@@ -2307,7 +2307,7 @@ public void select (TreeItem item) {
 	NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
 	set = set.initWithIndex(row);
 	ignoreSelect = true;
-	outlineView.selectRowIndexes (set, false);
+	outlineView.selectRowIndexes (set, (style & SWT.MULTI) != 0);
 	ignoreSelect = false;
 	set.release();
 }

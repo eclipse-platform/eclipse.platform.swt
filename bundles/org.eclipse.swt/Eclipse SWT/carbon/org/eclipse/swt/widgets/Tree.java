@@ -2924,7 +2924,7 @@ public void select (TreeItem item) {
 		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
 		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
 	}
-	OS.SetDataBrowserSelectedItems (handle, 1, new int [] {item.id}, OS.kDataBrowserItemsAssign);
+	OS.SetDataBrowserSelectedItems (handle, 1, new int [] {item.id}, (style & SWT.MULTI) != 0 ? OS.kDataBrowserItemsAdd : OS.kDataBrowserItemsAssign);
 	if ((style & SWT.SINGLE) != 0) {
 		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
 	}
