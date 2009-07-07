@@ -470,8 +470,6 @@
 		</cvs>
 		<copy file="${tmpdir}/${map}" tofile="${map_copy}"/>
 		
-		<copy file="${tmpdir}/${map}" tofile="${tmpdir}/map.txt"/>
-		
 		<replace file="${map_copy}" token="=" value="&quot; old=&quot;"/>
 		<replace file="${map_copy}" token="fragment@" value="&lt;element project=&quot;"/>
 		<replace file="${map_copy}" token="plugin@" value="&lt;element project=&quot;"/>
@@ -486,12 +484,13 @@
 			<param name="cvsRoot" expression="${cvsRoot}"/>
 			<param name="cvsRsh" expression="${cvsRsh}"/>
 			<param name="version_tag" expression="${version_tag}"/>
-			<param name="map" expression="${tmpdir}/map.txt"/>
+			<param name="map" expression="${tmpdir}/${map}"/>
 		</xslt>
-		<ant antfile="${tmpdir}/tagCommand.xml"/>
-		<!--ant antfile="${tmpdir}/tagCommand.xml" target="update_map"/-->
+		<ant antfile="${tmpdir}/tagCommand.xml" target="tag_files"/>
 		
-		<!--cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<ant antfile="${tmpdir}/tagCommand.xml" target="update_map"/>
+		
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
 				<argument line="${TAG}"/>
@@ -499,9 +498,9 @@
 				<argument value="'new version v${version_tag}'"/>
 				<argument value="${map}"/>
 			</commandline>
-		</cvs-->
+		</cvs>
 
-		<!--delete file="${tmpdir}"/-->
+		<delete file="${tmpdir}"/>
 	</target>
 	
 	<!-- Params: cp, fragment, build_target -->
