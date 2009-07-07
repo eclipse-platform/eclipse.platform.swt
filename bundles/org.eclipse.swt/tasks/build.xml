@@ -6,7 +6,7 @@
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="TAG" value=""/>
 	<!--property name="TAG" value="-rSSQ_build"/-->
-	<property name="tasks" value="org.eclipse.swt.tools/tasks"/>
+	<property name="tasks" value="org.eclipse.swt/tasks"/>
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="C:/BUILD/swt-builddir/logs"/>
 		
