@@ -681,6 +681,7 @@ void menuNeedsUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	visible = true;
 	sendEvent (SWT.Show);
+	if (isDisposed()) return;
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
 		if (item != null)  item.updateAccelerator (true);
@@ -689,6 +690,7 @@ void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 
 void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	sendEvent (SWT.Hide);
+	if (isDisposed()) return;
 	visible = false;
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
