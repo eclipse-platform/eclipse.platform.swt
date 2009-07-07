@@ -35,7 +35,7 @@ public class Snippet321 {
 
 public static void main(String [] args) {
 	Display display = new Display();
-	final Shell shell = new Shell(display);
+	Shell shell = new Shell(display);
 	shell.setBounds(10,10,200,200);
 	shell.setLayout(new FillLayout());
 	Browser browser;
