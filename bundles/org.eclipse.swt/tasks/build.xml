@@ -1,4 +1,4 @@
-<project name="swtbuild" default="build_all" basedir=".">
+<project name="swtbuild" basedir=".">
 	<import file="properties.xml"/>
 	
 	<!-- CVS values -->
