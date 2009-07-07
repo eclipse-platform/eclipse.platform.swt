@@ -2568,6 +2568,11 @@ public static final native void CGContextAddPath(int /*long*/ context, int /*lon
 public static final native void CGContextDrawImage(int /*long*/ c, CGRect rect, int /*long*/ image);
 /**
  * @param c cast=(CGContextRef)
+ * @param rect flags=struct
+ */
+public static final native void CGContextFillRect(int /*long*/ c, CGRect rect);
+/**
+ * @param c cast=(CGContextRef)
  */
 public static final native void CGContextRelease(int /*long*/ c);
 /**
@@ -2593,6 +2598,16 @@ public static final native void CGContextScaleCTM(int /*long*/ c, float /*double
  * @param mode cast=(CGBlendMode)
  */
 public static final native void CGContextSetBlendMode(int /*long*/ context, int mode);
+/**
+ * @param c cast=(CGContextRef)
+ * @param components cast=(CGFloat*)
+ */
+public static final native void CGContextSetFillColor(int /*long*/ c, float[] /*double[]*/ components);
+/**
+ * @param c cast=(CGContextRef)
+ * @param colorspace cast=(CGColorSpaceRef)
+ */
+public static final native void CGContextSetFillColorSpace(int /*long*/ c, int /*long*/ colorspace);
 /**
  * @param c cast=(CGContextRef)
  * @param cap cast=(CGLineCap)
