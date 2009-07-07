@@ -53,7 +53,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_updateOpenGLContext_ = sel_registerName("updateOpenGLContext:");
 	
 	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
-
+	public static final int /*long*/ sel_setShowsHiddenFiles_ = sel_registerName("setShowsHiddenFiles:");
+	
 	public static final int /*long*/ sel_setMovable_ = OS.sel_registerName("setMovable:");
 
 	public static final int /*long*/ sel_contextID = OS.sel_registerName("contextID");
@@ -1571,7 +1572,6 @@ public static final int /*long*/ sel_setSelectedRange_ = sel_registerName("setSe
 public static final int /*long*/ sel_setSelectedSegment_ = sel_registerName("setSelectedSegment:");
 public static final int /*long*/ sel_setServicesMenu_ = sel_registerName("setServicesMenu:");
 public static final int /*long*/ sel_setShouldAntialias_ = sel_registerName("setShouldAntialias:");
-public static final int /*long*/ sel_setShowsHiddenFiles_ = sel_registerName("setShowsHiddenFiles:");
 public static final int /*long*/ sel_setShowsPrintPanel_ = sel_registerName("setShowsPrintPanel:");
 public static final int /*long*/ sel_setShowsProgressPanel_ = sel_registerName("setShowsProgressPanel:");
 public static final int /*long*/ sel_setShowsResizeIndicator_ = sel_registerName("setShowsResizeIndicator:");

@@ -221,7 +221,7 @@ public String open () {
 		panel = openPanel;
 	}
 	panel.setCanCreateDirectories(true);
-	panel.setShowsHiddenFiles(true);
+	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	int /*long*/ jniRef = 0;
 	SWTPanelDelegate delegate = null;
 	if (filterExtensions != null && filterExtensions.length != 0) {
