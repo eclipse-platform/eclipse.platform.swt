@@ -1,4 +1,5 @@
 <project name="swtbuild" default="build_all" basedir=".">
+	<import file="properties.xml"/>
 	
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
@@ -557,7 +558,7 @@
 		<property name="build_version" value=""/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
-			keyfile="C:\BUILD\ssh\swtbuild_dsa_private" 
+			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
 	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tools}; cd ${tmpdir}/${tools}; if ant build_fragment -Dcp=${cp} -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
@@ -606,7 +607,7 @@
 
 	<target name="gtk_linux_x86">
 		<antcall target="build_ssh">
-			<param name="machine" value="rhel4vh"/>
+			<param name="machine" value="${m_linux_x86}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_x86"/>
@@ -616,7 +617,7 @@
 	
 	<target name="gtk_linux_x86_64">
 		<antcall target="build_ssh">
-			<param name="machine" value="tswtrh4x64"/>
+			<param name="machine" value="${m_linux_x86_64}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 			<param name="build_target" value="build_gtk_linux_x86_64"/>
@@ -626,7 +627,7 @@
 	
 	<target name="gtk_linux_ppc">
 		<antcall target="build_ssh">
-			<param name="machine" value="apollobuildserv14"/>
+			<param name="machine" value="${m_linux_ppc}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 			<param name="build_target" value="build_gtk_linux_ppc"/>
@@ -636,7 +637,7 @@
 	
 	<target name="gtk_solaris_x86">
 		<antcall target="build_ssh">
-			<param name="machine" value="tswtopensol"/>
+			<param name="machine" value="${m_solaris_x86}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 			<param name="build_target" value="build_gtk_solaris_x86"/>
@@ -646,7 +647,7 @@
 
 	<target name="gtk_solaris_sparc">
 		<antcall target="build_ssh">
-			<param name="machine" value="mmsol10"/>
+			<param name="machine" value="${m_solaris_sparc}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
 			<param name="build_target" value="build_gtk_solaris_sparc"/>
@@ -656,7 +657,7 @@
 
 	<target name="motif_linux">
 		<antcall target="build_ssh">
-			<param name="machine" value="rhel4vh"/>
+			<param name="machine" value="${m_linux_x86}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
 			<param name="build_target" value="build_motif_linux"/>
@@ -666,7 +667,7 @@
 
 	<target name="motif_aix">
 		<antcall target="build_ssh">
-			<param name="machine" value="janis"/>
+			<param name="machine" value="${m_aix}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
 			<param name="build_target" value="build_motif_aix"/>
@@ -676,7 +677,7 @@
 
 	<target name="motif_solaris">
 		<antcall target="build_ssh">
-			<param name="machine" value="mmsol10"/>
+			<param name="machine" value="${m_solaris_sparc}"/>
 			<param name="java_home" value="~/build/JRE/SPARC/jdk1.6.0_14"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
@@ -687,7 +688,7 @@
 
 	<target name="motif_hpux">
 		<antcall target="build_ssh">
-			<param name="machine" value="darkwing"/>
+			<param name="machine" value="${m_hpux}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
 			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
 			<param name="build_target" value="build_motif_hpux"/>
@@ -697,7 +698,7 @@
 
 	<target name="cocoa_x86_and_ppc">
 		<antcall target="build_ssh">
-			<param name="machine" value="grants-imac"/>
+			<param name="machine" value="${m_mac}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
 			<param name="build_target" value="build_cocoa_x86_and_ppc"/>
@@ -706,7 +707,7 @@
 	
 	<target name="cocoa_x86_64">
 		<antcall target="build_ssh">
-			<param name="machine" value="grants-imac"/>
+			<param name="machine" value="${m_mac}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 			<param name="build_target" value="build_cocoa_x86_64"/>
@@ -715,7 +716,7 @@
 	
 	<target name="carbon">
 		<antcall target="build_ssh">
-			<param name="machine" value="grants-imac"/>
+			<param name="machine" value="${m_mac}"/>
 			<param name="cp" value="org.eclipse.swt/.classpath_carbon"/>
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
 			<param name="build_target" value="build_carbon"/>
