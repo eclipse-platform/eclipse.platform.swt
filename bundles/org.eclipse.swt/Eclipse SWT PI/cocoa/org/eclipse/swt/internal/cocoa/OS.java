@@ -53,7 +53,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_updateOpenGLContext_ = sel_registerName("updateOpenGLContext:");
 	
 	public static final int /*long*/ sel_overwriteExistingFileCheck = sel_registerName("_overwriteExistingFileCheck:");
-
+	public static final int /*long*/ sel_setShowsHiddenFiles_ = sel_registerName("setShowsHiddenFiles:");
+	
 	public static final int /*long*/ sel_setMovable_ = OS.sel_registerName("setMovable:");
 
 	public static final int /*long*/ sel_contextID = OS.sel_registerName("contextID");
