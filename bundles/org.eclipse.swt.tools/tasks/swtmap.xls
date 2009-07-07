@@ -55,12 +55,8 @@
 			<xsl:attribute name="file">
 				<xsl:value-of select="$map"/>
 			</xsl:attribute> 
-			<xsl:attribute name="match">
-				\Q<xsl:value-of select="@project"/>\E=v\d\d\d\d[a-z]?
-			</xsl:attribute>
-			<xsl:attribute name="replace">
-				<xsl:value-of select="@project"/>=<xsl:value-of select="$version_tag"/>
-			</xsl:attribute>
+			<xsl:attribute name="match"><xsl:value-of select="@project"/>=v\d\d\d\d[a-z]?</xsl:attribute>
+			<xsl:attribute name="replace"><xsl:value-of select="@project"/>=<xsl:value-of select="$version_tag"/></xsl:attribute>
 		</replaceregexp>
 	</xsl:if>
 	</xsl:if>
