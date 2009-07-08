@@ -8,7 +8,8 @@
 	<!--property name="TAG" value="-rSSQ_build"/-->
 	<property name="tasks" value="org.eclipse.swt/tasks"/>
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
-	<property name="logdir" value="C:/BUILD/swt-builddir/logs"/>
+	<property name="logdir" value="S:/swt-builddir/logs"/>
+	<property name="tmphome" value="S:/swt-builddir/tmp"/>
 		
 	<!-- Low level build tasks -->
 	<target name="build_win32_x86" >
@@ -251,7 +252,7 @@
 		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/version.txt"/>
-		<property name="tmpdir" value="c:/build/swt-builddir/tmp/inc"/>
+		<property name="tmpdir" value="${tmphome}/inc"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
@@ -301,7 +302,7 @@
 	</target>
 	
 	<target name="get_tag">
-		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/tag"/>
+		<property name="tmpdir" value="${tmphome}/tag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		<property name="rlog_file" value="org.eclipse.swt/.project"/>
@@ -452,7 +453,7 @@
 	<!-- depends on 'get_new_tag' to define version_tag, swt_version, maj_ver and min_ver -->
 	<target name="tag_projects" depends="get_tag">
 		<property name="cvsRsh" value="plink"/>
-		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/tag"/>
+		<property name="tmpdir" value="${tmphome}/tag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		
@@ -530,7 +531,7 @@
 
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_local">
-		<property name="tmpdir" value="C:/BUILD/swt-builddir/tmp/${fragment}"/>
+		<property name="tmpdir" value="${tmphome}/${fragment}"/>
 		<property name="build_version" value=""/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
