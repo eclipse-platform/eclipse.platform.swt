@@ -56,6 +56,7 @@ public static void main (String [] args) {
 	folder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 		public void minimize(CTabFolderEvent event) {
 			folder.setMinimized(true);
+			folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			shell.layout(true);
 		}
 		public void maximize(CTabFolderEvent event) {
