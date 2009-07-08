@@ -234,16 +234,36 @@
 	</target>
 	
 	<!-- common build tasks -->
+	<!-- Params: cp -->
 	<target name="checkout_natives">
 		<xslt style="classpath.xls" in="${cp}" out="checkoutCommand.xml">
 			<param name="TAG" expression="${TAG}"/>
 			<param name="workdir" expression="${basedir}"/>
 		</xslt>
 		<ant antfile="checkoutCommand.xml"/>
+		
+		<tstamp>
+		     <format property="last_build.time" pattern="yyyy-MM-dd kk:mm" offset="-1" unit="minute"/>
+		</tstamp>
+		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
+			<commandline>
+				<argument value="diff"/>
+				<argument value="-u"/>
+				<argument value="-D"/>
+				<argument value="${last_build.time}"/>
+				<argument value="org.eclipse.swt"/>
+			</commandline>
+		</cvs>
+		<condition property="native_changed">
+			<length file="diff.txt" when="greater" length="0"/>
+		</condition>
+		
 		<copy todir="${builddir}" flatten="true">
 			<fileset dir="org.eclipse.swt" includes="**/library/"/>
 		</copy>
 		<delete file="checkoutCommand.xml"/>
+		<echo>Has native changes: ${native_changed}</echo>
+		<!--delete file="diff.txt"/-->
 	</target>
 	
 	<target name="increment_version">
@@ -419,7 +439,7 @@
 	</target>
 
 	<!-- Params: fragment -->
-	<target name="commit_fragment" depends="get_version">
+	<target name="commit_fragment" depends="get_version" if="native_changed">
 		<copy todir="${fragment}" overwrite="false">
 			<fileset dir="${fragment}" includes="*${old_version}*"/>
 			<regexpmapper from="(.*)${old_version}(.*)" to="\1${swt_version}\2"/>
@@ -505,6 +525,11 @@
 		<delete file="${tmpdir}"/>
 	</target>
 	
+	<!-- Params: build_target -->
+	<target name="build_natives" if="native_changed">
+		<antcall target="${build_target}"/>
+	</target>
+		
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_fragment">
 		<property name="cvsRsh" value="ssh"/>
@@ -519,11 +544,11 @@
 			</commandline>
 		</cvs>
 		
-		<!-- check out natives -->
+		<!-- check out natives, set the native_changed property is necessary -->
 		<antcall target="checkout_natives"/>
 		
 		<!-- build libraries -->
-		<antcall target="${build_target}"/>
+		<antcall target="build_natives"/>
 		
 		<!-- commint libraries -->
 		<antcall target="commit_fragment"/>
