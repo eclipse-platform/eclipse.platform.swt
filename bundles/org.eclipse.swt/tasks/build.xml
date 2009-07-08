@@ -241,29 +241,7 @@
 			<param name="workdir" expression="${basedir}"/>
 		</xslt>
 		<ant antfile="checkoutCommand.xml"/>
-		
-		<tstamp>
-		     <format property="last_build.time" pattern="yyyy-MM-dd kk:mm" offset="-1" unit="minute"/>
-		</tstamp>
-		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
-			<commandline>
-				<argument value="diff"/>
-				<argument value="-u"/>
-				<argument value="-D"/>
-				<argument value="${last_build.time}"/>
-				<argument value="org.eclipse.swt"/>
-			</commandline>
-		</cvs>
-		<condition property="native_changed">
-			<length file="diff.txt" when="greater" length="0"/>
-		</condition>
-		
-		<copy todir="${builddir}" flatten="true">
-			<fileset dir="org.eclipse.swt" includes="**/library/"/>
-		</copy>
 		<delete file="checkoutCommand.xml"/>
-		<echo>Has native changes: ${native_changed}</echo>
-		<!--delete file="diff.txt"/-->
 	</target>
 	
 	<target name="increment_version">
@@ -527,6 +505,9 @@
 	
 	<!-- Params: build_target -->
 	<target name="build_natives" if="native_changed">
+		<copy todir="${builddir}" flatten="true">
+			<fileset dir="org.eclipse.swt" includes="**/library/"/>
+		</copy>
 		<antcall target="${build_target}"/>
 	</target>
 		
@@ -544,10 +525,28 @@
 			</commandline>
 		</cvs>
 		
-		<!-- check out natives, set the native_changed property is necessary -->
+		<!-- check out natives -->
 		<antcall target="checkout_natives"/>
 		
-		<!-- build libraries -->
+		<!-- Verify for changes in the native code -->
+		<tstamp>
+		     <format property="last_build.time" pattern="yyyy-MM-dd kk:mm" offset="-1" unit="minute"/>
+		</tstamp>
+		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
+			<commandline>
+				<argument value="diff"/>
+				<argument value="-u"/>
+				<argument value="-D"/>
+				<argument value="${last_build.time}"/>
+				<argument value="org.eclipse.swt"/>
+			</commandline>
+		</cvs>
+		<condition property="native_changed">
+			<length file="diff.txt" when="greater" length="0"/>
+		</condition>
+		<echo>Has native changes: ${native_changed}</echo>
+
+		<!-- build natives -->
 		<antcall target="build_natives"/>
 		
 		<!-- commint libraries -->
