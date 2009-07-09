@@ -18,12 +18,12 @@
 	<property name="cp_cocoa" value="org.eclipse.swt/.classpath_cocoa"/>
 	<property name="cp_photon" value="org.eclipse.swt/.classpath_photon"/-->
 
-	<property name="cp_common" value="&quot;org.eclipse.swt/Eclipse SWT/common/library&quot; &quot;org.eclipse.swt/Eclipse SWT Mozilla/common/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/common/library&quot;"/>
+	<property name="cp_common" value="\&quot;org.eclipse.swt/Eclipse SWT/common/library\&quot; \&quot;org.eclipse.swt/Eclipse SWT Mozilla/common/library\&quot; \&quot;org.eclipse.swt/Eclipse SWT PI/common/library\&quot;"/>
 	<property name="cp_win32" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/win32/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/win32/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/win32/library&quot;"/>
 	<property name="cp_wpf" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/wpf/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/wpf_win32/library&quot;"/>
 	<property name="cp_gtk" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/gtk/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/gtk/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/glx/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/cairo/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/gnome/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/cde/library&quot;"/>
 	<property name="cp_motif" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/motif/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/motif_gtk/library&quot;  &quot;org.eclipse.swt/Eclipse SWT AWT/motif/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/glx/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/cairo/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/cde/library&quot;"/>
-	<property name="cp_carbon" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/carbon/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/carbon/library&quot;"/>
+	<property name="cp_carbon" value="${cp_common} \&quot;org.eclipse.swt/Eclipse SWT PI/carbon/library\&quot; \&quot;org.eclipse.swt/Eclipse SWT OpenGL/carbon/library\&quot;"/>
 	<property name="cp_cocoa" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/cocoa/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/cocoa/library&quot;"/>
 	<property name="cp_photon" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/photon/library&quot;"/>
 	
@@ -612,6 +612,8 @@
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_fragment">
 		<property name="cvsRsh" value="ssh"/>
+
+		<echo>${cp}</echo>
 		
 		<!-- check out classpath, fragments, and natives -->
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
@@ -685,12 +687,13 @@
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
 		<property name="pre_commands" value=""/>
 		<property name="build_version" value=""/>
+		<echo>${cp}</echo>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tasks}; cp ${tasks}/*.xml .; cp ${tasks}/*.xls .; if ant build_fragment -Dcp='${cp}' -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tasks}; cp ${tasks}/*.xml .; cp ${tasks}/*.xls .; if ant build_fragment -Dcp=&quot;${cp}&quot; -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
 
 	<!-- all platforms -->
