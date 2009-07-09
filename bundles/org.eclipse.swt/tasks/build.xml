@@ -1,30 +1,45 @@
-<project name="swtbuild" basedir=".">
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Copyright (c) 2009 IBM Corporation and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+        IBM Corporation - initial API and implementation
+ -->
+
+<!-- 
+ 
+	TAG: a tag param can be passed in to work on branch. If no tag is set HEAD is used.
+		For example: ant -f build.xml build_all -DTAG=-rR3_5_maintenance
+		
+	natives_changed: when starting a integration build the increment of the version 
+		can be forced by setting this project. If property is not defined the increment 
+		is determine automatically based on changes in the native code since the last 
+		revision in the swp.map.
+		for Example: ant -f build.xml increment_version -Dnatives_changed=true
+			
+	This script can be used from within Eclipse to build the natives for the current
+	platform. Call the task named build_[platform]. For example:
+	
+	 Before running the tasks you need to set the basedir to {workspace_loc}
+	 
+	 To void clean after build define a property named "clean" to empty ("").
+	 
+	 To run only clean define a property named "targets" to empty ("").
+	 
+	 		ant -f build.xml build_gtk_linux_ppc
+-->
+
+ <project name="swtbuild" basedir=".">
 	<import file="properties.xml"/>
 	
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
-	<!-- Params: 
-		TAG: a tag param can be passed in to work on branch. If no tag is set HEAD is used.
-			For example: ant -f build.xml build_all -DTAG=-rR3_5_maintenance
-			
-		natives_changed: when starting a integration build the increment of the version 
-			can be forced by setting this project. If property is not defined the increment 
-			is determine automatically based on changes in the native code since the last 
-			revision in the swp.map.
-			for Example: ant -f build.xml increment_version -Dnatives_changed=true
-				
-		This script can be used from within Eclipse to build the natives for the current
-		platform. Call the task named build_[platform]. For example:
-		
-		 Before running the tasks you need to set the basedir to {workspace_loc}
-		 
-		 To void clean after build define a property named "clean" to empty ("").
-		 
-		 To run only clean define a property named "targets" to empty ("").
-		 
-		 		ant -f build.xml build_gtk_linux_ppc
-		-->
 	<property name="TAG" value=""/>
 	<property name="tasks" value="org.eclipse.swt/tasks"/>
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
@@ -338,6 +353,11 @@
 	</target>
 	
 	<!-- common build tasks -->
+ 	<target name="setup_build" description="Copy the internal property file to the workspace">
+ 		<echo>Copy properties</echo>
+ 		<copy file="S:/tasks/properties.xml" todir="." overwrite="true"/>
+ 	</target>
+ 	
 	<target name="increment_version" depends="check_natives_changed" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
@@ -488,6 +508,7 @@
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
+				<argument line="${TAG}"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
@@ -556,7 +577,6 @@
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
-				<argument line="${TAG}"/>
 				<argument value="-m"/>
 				<argument value="'new version v${version_tag}'"/>
 				<argument value="${build_notes}"/>
@@ -613,6 +633,7 @@
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
+				<argument line="${TAG}"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
@@ -641,9 +662,8 @@
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
-				<argument line="${TAG}"/>
 				<argument value="-m"/>
-				<argument value="'new version v${version_tag}'"/>
+				<argument value="'new version ${version_tag}'"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
@@ -707,6 +727,7 @@
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
+				<argument line="${TAG}"/>
 				<argument value="${tasks}"/>
 			</commandline>
 		</cvs>
@@ -725,17 +746,23 @@
 		<delete dir="${tmpdir}"/>
 	</target>
 	
+ 	<target name="set_natives_changed" if="natives_changed">
+ 		<property name="extra_properties" value="-Dnatives_changed=${natives_changed}"/>
+ 	</target>
+ 	
 	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
-	<target name="build_ssh">
+	<target name="build_ssh" depends="set_natives_changed">
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
 		<property name="pre_commands" value=""/>
 		<property name="build_version" value=""/>
+		<property name="extra_properties" value=""/>
+		<property name="properties" value="-Dcp=&quot;${cp}&quot; -Dfragment=${fragment} -Dbuild_target=${build_target} -DTAG=${TAG} ${extra_properties}"/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tasks}; cp ${tasks}/*.xml .; cp ${tasks}/*.xls .; if ant build_fragment -Dcp=&quot;${cp}&quot; -Dfragment=${fragment} -Dbuild_target=${build_target}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${TAG} ${tasks}; cp ${tasks}/*.xml .; cp ${tasks}/*.xls .; if ant build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
 	
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
