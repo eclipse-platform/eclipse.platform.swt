@@ -353,6 +353,10 @@
 	</target>
 	
 	<!-- common build tasks -->
+ 	<target name="setup_build">
+ 		<copy file="S:/tasks/properties.xml" todir="."/>
+ 	</target>
+ 	
 	<target name="increment_version" depends="check_natives_changed" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
