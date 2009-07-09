@@ -17,7 +17,8 @@
 	<property name="cp_carbon" value="org.eclipse.swt/.classpath_carbon"/>
 	<property name="cp_cocoa" value="org.eclipse.swt/.classpath_cocoa"/>
 	<property name="cp_photon" value="org.eclipse.swt/.classpath_photon"/-->
-
+	
+	<property name="native_changed" value="true"/>
 	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library'"/>
 	<property name="cp_wpf" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/wpf/library' 'org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
