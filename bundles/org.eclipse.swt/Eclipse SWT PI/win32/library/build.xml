@@ -18,34 +18,7 @@
 	
 <target name="refresh">
 	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
-	<eclipse.refreshLocal resource="org.eclipse.swt.tools" depth="infinite" />	
    	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr" />
-</target>
-
-<!-- 64 bit tasks -->
-<target name="build.cfiles" depends="refresh">
-	<java
-		fork="true"
-		dir="../org.eclipse.swt.tools"
-		classname="org.eclipse.swt.tools.internal.JNIGeneratorApp"
-		classpath="./bin:../org.eclipse.swt.tools/bin">
-		<arg value="all"/>
-	</java>
-	<antcall target="refresh"/>
-</target>
-	
-<!-- Convert SWT 32 bit java and C source to 64 bit  -->
-<target name="replace.32.to.64" depends="refresh">
-	<echo>Converting java files to 64 bit in org.eclipse.swt project</echo>
-	<replace dir="." includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
-	<antcall target="build.cfiles"/>
-</target>
-	
-<!-- Convert SWT 64 bit java and C source to 32 bit  -->
-<target name="replace.64.to.32" depends="refresh">
-	<echo>Converting java files to 32 bit in org.eclipse.swt project</echo>
-	<replace dir="." includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
-	<antcall target="build.cfiles"/>
 </target>
 	
 <!-- Build swt.dll for x86 -->
