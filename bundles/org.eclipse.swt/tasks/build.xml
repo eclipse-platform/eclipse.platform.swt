@@ -4,8 +4,28 @@
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
+	<!-- Params: 
+		TAG: a tag param can be passed in to work on branch. If no tag is set HEAD is used.
+			For example: ant -f build.xml build_all -DTAG=-rR3_5_maintenance
+			
+		natives_changed: when starting a integration build the increment of the version 
+			can be forced by setting this project. If property is not defined the increment 
+			is determine automatically based on changes in the native code since the last 
+			revision in the swp.map.
+			for Example: ant -f build.xml increment_version -Dnatives_changed=true
+				
+		This script can be used from within Eclipse to build the natives for the current
+		platform. Call the task named build_[platform]. For example:
+		
+		 Before running the tasks you need to set the basedir to {workspace_loc}
+		 
+		 To void clean after build define a property named "clean" to empty ("").
+		 
+		 To run only clean define a property named "targets" to empty ("").
+		 
+		 		ant -f build.xml build_gtk_linux_ppc
+		-->
 	<property name="TAG" value=""/>
-	<!--property name="TAG" value="-rSSQ_build"/-->
 	<property name="tasks" value="org.eclipse.swt/tasks"/>
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="S:/swt-builddir/logs"/>
