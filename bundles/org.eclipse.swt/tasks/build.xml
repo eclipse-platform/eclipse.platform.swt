@@ -932,13 +932,13 @@
 	</target>
 	
 	<target name="gtk_linux_redhat_x86_64">
-		<antcall target="build_ssh">
+		<!--antcall target="build_ssh">
 			<param name="machine" value="${m_linux_rh3_x86_64}"/>
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 			<param name="build_target" value="build_gtk_linux_rh3_x86_64"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
-		</antcall>
+		</antcall-->
 		<sshexec host="${m_linux_rh3_x86_64}"
 			username="swtbuild" 
 			keyfile="${keyfile}" 
