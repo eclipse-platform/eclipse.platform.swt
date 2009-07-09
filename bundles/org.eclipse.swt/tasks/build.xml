@@ -628,9 +628,9 @@
 			<param name="dest" value="${basedir}"/>
 		</antcall-->
 		
-		<!-- Verify for changes in the native code -->
+		<!-- Check if there are changes in the native code -->
 		<tstamp>
-		     <format property="last_build.time" pattern="yyyy-MM-dd kk:mm" offset="-1" unit="day"/>
+		     <format property="last_build.time" pattern="yyyy.MM.dd.kk.mm.ss" offset="-1" unit="day"/>
 		</tstamp>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
@@ -685,7 +685,6 @@
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
 		<property name="pre_commands" value=""/>
 		<property name="build_version" value=""/>
-		<echo>${cp}</echo>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
