@@ -10,7 +10,23 @@
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="S:/swt-builddir/logs"/>
 	<property name="tmphome" value="S:/swt-builddir/tmp"/>
-		
+	<!--property name="cp_win32" value="org.eclipse.swt/.classpath_win32"/>
+	<property name="cp_wpf" value="org.eclipse.swt/.classpath_wpf"/>
+	<property name="cp_gtk" value="org.eclipse.swt/.classpath_gtk"/>
+	<property name="cp_motif" value="org.eclipse.swt/.classpath_motif"/>
+	<property name="cp_carbon" value="org.eclipse.swt/.classpath_carbon"/>
+	<property name="cp_cocoa" value="org.eclipse.swt/.classpath_cocoa"/>
+	<property name="cp_photon" value="org.eclipse.swt/.classpath_photon"/-->
+
+	<property name="cp_common" value="&quot;org.eclipse.swt/Eclipse SWT/common/library&quot; &quot;org.eclipse.swt/Eclipse SWT Mozilla/common/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/common/library&quot;"/>
+	<property name="cp_win32" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/win32/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/win32/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/win32/library&quot;"/>
+	<property name="cp_wpf" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/wpf/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/wpf_win32/library&quot;"/>
+	<property name="cp_gtk" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/gtk/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/gtk/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/glx/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/cairo/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/gnome/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/cde/library&quot;"/>
+	<property name="cp_motif" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/motif/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/motif_gtk/library&quot;  &quot;org.eclipse.swt/Eclipse SWT AWT/motif/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/glx/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/cairo/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/cde/library&quot;"/>
+	<property name="cp_carbon" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/carbon/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/carbon/library&quot;"/>
+	<property name="cp_cocoa" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/cocoa/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/cocoa/library&quot;"/>
+	<property name="cp_photon" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/photon/library&quot;"/>
+	
 	<!-- Low level build tasks -->
 	<target name="build_win32_x86" >
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
@@ -234,11 +250,11 @@
 	</target>
 	
 	<!-- common build tasks -->
-	<!-- Params: cp -->
+	<!-- Params: cp, dest -->
 	<target name="checkout_natives">
 		<xslt style="classpath.xls" in="${cp}" out="checkoutCommand.xml">
 			<param name="TAG" expression="${TAG}"/>
-			<param name="workdir" expression="${basedir}"/>
+			<param name="workdir" expression="${dest}"/>
 		</xslt>
 		<ant antfile="checkoutCommand.xml"/>
 		<delete file="checkoutCommand.xml"/>
@@ -369,6 +385,88 @@
 		<property name="swt_version" value="${maj_ver}${min_ver}"/>
 		<property name="old_version" value="${maj_ver}${old_min_ver}"/>
 		<echo>Version ${swt_version} ${old_version}</echo>
+	</target>
+	
+	<target name="natives_changed">
+		<property name="tmpdir" value="${tmphome}/map"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${TAG}"/>
+				<argument line="${cp_win32}"/>
+				<argument line="${cp_wpf}"/>
+				<argument line="${cp_gtk}"/>
+				<argument line="${cp_motif}"/>
+				<argument line="${cp_carbon}"/>
+				<argument line="${cp_cocoa}"/>
+				<argument line="${cp_photon}"/>
+			</commandline>
+		</cvs>
+		<!--antcall target="checkout_natives">
+			<param name="cp" value="${tmpdir}/${cp_win32}"/>
+			<param name="dest" value="${tmpdir}"/>
+		</antcall>
+		<antcall target="checkout_natives">
+			<param name="cp" value="${tmpdir}/${cp_wpf}"/>
+			<param name="dest" value="${tmpdir}"/>
+		</antcall>
+		<antcall target="checkout_natives">
+			<param name="cp" value="${tmpdir}/${cp_gtk}"/>
+			<param name="dest" value="${tmpdir}"/>
+		</antcall>
+		<antcall target="checkout_natives">
+			<param name="cp" value="${tmpdir}/${cp_motif}"/>
+			<param name="dest" value="${tmpdir}"/>
+		</antcall>
+		<antcall target="checkout_natives">
+			<param name="cp" value="${tmpdir}/${cp_carbon}"/>
+			<param name="dest" value="${tmpdir}"/>
+		</antcall>
+		<antcall target="checkout_natives">
+			<param name="cp" value="${tmpdir}/${cp_cocoa}"/>
+			<param name="dest" value="${tmpdir}"/>
+		</antcall>	
+		<antcall target="checkout_natives">
+			<param name="cp" value="${tmpdir}/${cp_photon}"/>
+			<param name="dest" value="${tmpdir}"/>
+		</antcall-->
+		
+		<!-- Read in last tagged revision from map file -->
+		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument value="${map}"/>
+			</commandline>
+		</cvs>
+		
+		<loadfile property="revision" srcfile="${tmpdir}/${map}">
+			<filterchain>
+				<striplinebreaks/>
+				<tokenfilter>
+					<containsstring contains="plugin@org.eclipse.swt="/>
+					<replaceregex pattern="(.*)(v\d\d\d\d[a-z]?)(.*)" replace="\2"/>
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+
+		<echo>Revision -${revision}-</echo>
+		<!-- Verify for changes in the native code -->
+		<cvs cvsRoot="${cvsRootAnon}" dest="${tmpdir}" output="${tmpdir}/diff.txt">
+			<commandline>
+				<argument value="diff"/>
+				<argument value="-u"/>
+				<argument value="-r"/>
+				<argument value="${revision}"/>
+				<argument value="org.eclipse.swt"/>
+			</commandline>
+		</cvs>
+		<condition property="native_changed">
+			<length file="${tmpdir}/diff.txt" when="greater" length="0"/>
+		</condition>
+		<echo>Has native changes: ${native_changed}</echo>
 	</target>
 	
 	<target name="new_version" if="is_new_version">
@@ -526,11 +624,13 @@
 		</cvs>
 		
 		<!-- check out natives -->
-		<antcall target="checkout_natives"/>
+		<!--antcall target="checkout_natives">
+			<param name="dest" value="${basedir}"/>
+		</antcall-->
 		
 		<!-- Verify for changes in the native code -->
 		<tstamp>
-		     <format property="last_build.time" pattern="yyyy-MM-dd kk:mm" offset="-1" unit="minute"/>
+		     <format property="last_build.time" pattern="yyyy-MM-dd kk:mm" offset="-1" unit="day"/>
 		</tstamp>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
@@ -596,7 +696,7 @@
 	<!-- all platforms -->
 	<target name="win32_x86">
 		<antcall target="build_local">
-			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="cp" value="${cp_win32}"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
 			<param name="build_target" value="build_win32_x86"/>
 		</antcall>
@@ -604,7 +704,7 @@
 
 	<target name="win32_x86_64">
 		<antcall target="build_local">
-			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="cp" value="${cp_win32}"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
 			<param name="build_target" value="build_win32_x86_64"/>
 		</antcall>
@@ -612,7 +712,7 @@
 
 	<target name="win32_ia64">
 		<antcall target="build_local">
-			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="cp" value="${cp_win32}"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
 			<param name="build_target" value="build_win32_ia64"/>
 		</antcall>
@@ -620,7 +720,7 @@
 
 	<target name="wince">
 		<antcall target="build_local">
-			<param name="cp" value="org.eclipse.swt/.classpath_win32"/>
+			<param name="cp" value="${cp_win32}"/>
 			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
 			<param name="build_target" value="build_wince"/>
 		</antcall>
@@ -628,7 +728,7 @@
 
 	<target name="wpf_x86">
 		<antcall target="build_local">
-			<param name="cp" value="org.eclipse.swt/.classpath_wpf"/>
+			<param name="cp" value="${cp_wpf}"/>
 			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
 			<param name="build_target" value="build_wpf_x86"/>
 		</antcall>
@@ -637,7 +737,7 @@
 	<target name="gtk_linux_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_x86"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -647,7 +747,7 @@
 	<target name="gtk_linux_x86_64">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86_64}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 			<param name="build_target" value="build_gtk_linux_x86_64"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -657,7 +757,7 @@
 	<target name="gtk_linux_ppc">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_ppc}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 			<param name="build_target" value="build_gtk_linux_ppc"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -667,7 +767,7 @@
 	<target name="gtk_solaris_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_solaris_x86}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 			<param name="build_target" value="build_gtk_solaris_x86"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/Solaris_x86/jdk1.6.0_14/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -677,7 +777,7 @@
 	<target name="gtk_solaris_sparc">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_solaris_sparc}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_gtk"/>
+			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
 			<param name="build_target" value="build_gtk_solaris_sparc"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14/; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/local/bin:$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -687,7 +787,7 @@
 	<target name="motif_linux">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
 			<param name="build_target" value="build_motif_linux"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -697,7 +797,7 @@
 	<target name="motif_aix">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_aix}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
 			<param name="build_target" value="build_motif_aix"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/AIX/sdk; export PATH=$PATH:~/build/apache-ant-1.7.1/bin:~/build/cvs_bin/AIX;"/>
@@ -708,7 +808,7 @@
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_solaris_sparc}"/>
 			<param name="java_home" value="~/build/JRE/SPARC/jdk1.6.0_14"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
 			<param name="build_target" value="build_motif_solaris"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -718,7 +818,7 @@
 	<target name="motif_hpux">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_hpux}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_motif"/>
+			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
 			<param name="build_target" value="build_motif_hpux"/>
 			<param name="pre_commands" value="export JAVA_HOME=/opt/java1.5; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
@@ -728,7 +828,7 @@
 	<target name="cocoa_x86_and_ppc">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_mac}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
+			<param name="cp" value="${cp_cocoa}"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
 			<param name="build_target" value="build_cocoa_x86_and_ppc"/>
 		</antcall>
@@ -737,7 +837,7 @@
 	<target name="cocoa_x86_64">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_mac}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_cocoa"/>
+			<param name="cp" value="${cp_cocoa}"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 			<param name="build_target" value="build_cocoa_x86_64"/>
 		</antcall>
@@ -746,7 +846,7 @@
 	<target name="carbon">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_mac}"/>
-			<param name="cp" value="org.eclipse.swt/.classpath_carbon"/>
+			<param name="cp" value="${cp_carbon}"/>
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
 			<param name="build_target" value="build_carbon"/>
 		</antcall>
@@ -754,7 +854,7 @@
 			
 	<target name="photon">
 		<antcall target="build_local">
-			<param name="cp" value="org.eclipse.swt/.classpath_photon"/>
+			<param name="cp" value="${cp_photon}"/>
 			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
 			<param name="build_target" value="build_photon"/>
 		</antcall>
