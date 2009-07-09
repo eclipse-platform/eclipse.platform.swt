@@ -327,16 +327,6 @@
 	</target>
 	
 	<!-- common build tasks -->
-	<!-- Params: cp, dest -->
-	<target name="checkout_natives">
-		<xslt style="classpath.xls" in="${cp}" out="checkoutCommand.xml">
-			<param name="TAG" expression="${TAG}"/>
-			<param name="workdir" expression="${dest}"/>
-		</xslt>
-		<ant antfile="checkoutCommand.xml"/>
-		<delete file="checkoutCommand.xml"/>
-	</target>
-	
 	<target name="increment_version" depends="check_natives_changed" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
@@ -671,11 +661,6 @@
 				<argument value="${fragment}"/>
 			</commandline>
 		</cvs>
-		
-		<!-- check out natives -->
-		<!--antcall target="checkout_natives">
-			<param name="dest" value="${basedir}"/>
-		</antcall-->
 		
 		<!-- Check if there are changes in the native code -->
 		<tstamp>
