@@ -34,9 +34,9 @@
 	 		ant -f build.xml build_gtk_linux_ppc
 -->
 
- <project name="swtbuild" basedir=".">
+<project name="swtbuild" basedir=".">
 	<import file="properties.xml"/>
-	
+
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
@@ -45,7 +45,7 @@
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="S:/swt-builddir/logs"/>
 	<property name="tmphome" value="S:/swt-builddir/tmp"/>
-	
+
 	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library'"/>
 	<property name="cp_wpf" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/wpf/library' 'org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
@@ -54,18 +54,18 @@
 	<property name="cp_carbon" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/carbon/library' 'org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
 	<property name="cp_cocoa" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
 	<property name="cp_photon" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/photon/library'"/>
-	
+
 	<!-- Low level build tasks -->
 	<target name="init_build" if="eclipse.pdebuild.home">
 		<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite"/>
-	   	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr"/>
+		<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr"/>
 	</target>
-	
+
 	<target name="refresh_fragment" if="eclipse.pdebuild.home">
 		<echo>refreshing ${fragment}</echo>
 		<eclipse.refreshLocal resource="${fragment}" depth="infinite"/>
 	</target>
-	
+
 	<target name="build_win32_x86" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="x86 install"/>
@@ -78,7 +78,7 @@
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
 		</antcall>
 	</target>
-	
+
 	<target name="build_win32_x86_64" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="x86_64 install"/>
@@ -104,7 +104,7 @@
 			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
 		</antcall>
 	</target>
-		
+
 	<target name="build_wince" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
@@ -117,7 +117,7 @@
 			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
 		</antcall>
 	</target>
-	
+
 	<target name="build_wpf_x86" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
@@ -131,6 +131,98 @@
 		</antcall>
 	</target>
 
+	<target name="build_gtk_linux_rh3_x86" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="make_mozilla install"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
+			<env key="GCC_VERSION" value="-gcc3"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"/>
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+		</antcall>
+	</target>
+
+	<target name="build_gtk_linux_rh4_x86" depends="init_build">
+		<property name="clean" value="clean" />
+		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit" />
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh" />
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141" />
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk" />
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk" />
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string" />
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4" />
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include" />
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue" />
+			<arg line="${targets}" />
+			<arg line="${clean}" />
+		</exec>
+		<copy todir="org.eclipse.swt.gtk.linux.x86">
+			<fileset dir="${basedir}/${builddir}">
+				<include name="*.so" />
+			</fileset>
+		</copy>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86" />
+		</antcall>
+	</target>
+
+	<target name="build_gtk_linux_rh3_x86_64" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="make_mozilla install"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk/"/>
+			<env key="GCC_VERSION" value="-gcc3"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
+			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86_64/lib/pkgconfig"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
+		</antcall>
+	</target>
+	
+	<target name="build_gtk_linux_rh4_x86_64" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk/"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
+			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86_64/lib/pkgconfig"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<copy todir="org.eclipse.swt.gtk.linux.x86_64">
+			<fileset dir="${basedir}/${builddir}">
+				<include name="*.so" />
+			</fileset>
+		</copy>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
+		</antcall>
+	</target>
+	
 	<target name="build_gtk_linux_x86" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
@@ -149,8 +241,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
-		</antcall>	
+		</antcall>
 	</target>
+
 
 	<target name="build_gtk_linux_x86_64" depends="init_build">
 		<property name="clean" value="clean"/>
@@ -172,9 +265,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_gtk_linux_ppc" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
@@ -194,9 +287,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_gtk_solaris_x86" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla install"/>
@@ -216,9 +309,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_gtk_solaris_sparc" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla install"/>
@@ -237,9 +330,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_motif_linux" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit make_cairo install"/>
@@ -260,7 +353,7 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
-		</antcall>	
+		</antcall>
 	</target>
 
 	<target name="build_motif_aix" depends="init_build">
@@ -277,9 +370,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_motif_solaris" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_cairo install"/>
@@ -291,9 +384,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_motif_hpux" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
@@ -306,9 +399,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_cocoa_x86_and_ppc" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
@@ -319,9 +412,9 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
-		</antcall>	
+		</antcall>
 	</target>
-		
+
 	<target name="build_cocoa_x86_64" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install_x86_64"/>
@@ -332,7 +425,7 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
-		</antcall>	
+		</antcall>
 	</target>
 
 	<target name="build_carbon" depends="init_build">
@@ -345,13 +438,13 @@
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="build_photon" depends="init_build">
 		<echo>Photon is not being built</echo>
 	</target>
-	
+
 	<!-- common build tasks -->
 	<target name="increment_version" depends="check_natives_changed" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
@@ -377,7 +470,7 @@
 		<propertyfile file="${tmpdir}/tmp.txt">
 			<entry key="new_min_ver" value="=" type="int" operation="+"/>
 		</propertyfile>
-		<loadproperties srcFile="${tmpdir}/${make_common}"/>	
+		<loadproperties srcFile="${tmpdir}/${make_common}"/>
 		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
 		<property name="swt_version" value="${maj_ver}${min_ver}"/>
 		<property name="new_version" value="${maj_ver}${new_min_ver}"/>
@@ -386,12 +479,12 @@
 		<replace file="${tmpdir}/${library_j2se}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
 		<replace file="${tmpdir}/${library_j2me}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
 		<replace file="${tmpdir}/${version_file}" token="version ${maj_ver}.${min_ver}" value="version ${maj_ver}.${new_min_ver}"/>
-		<replace file="${tmpdir}/${make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>	
-			
+		<replace file="${tmpdir}/${make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
+
 		<echo file="${tmpdir}/ver.txt">new_comma_ver=${new_version}</echo>
 		<replaceregexp file="${tmpdir}/ver.txt" match="(\d)(\d)(\d)(\d)" replace="\1,\2,\3,\4" byline="true"/>
 		<loadproperties srcFile="${tmpdir}/ver.txt"/>
-		<replace file="${tmpdir}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>	
+		<replace file="${tmpdir}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
 
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
@@ -405,9 +498,9 @@
 			</commandline>
 		</cvs>
 		<delete dir="${tmpdir}" quiet="true"/>
-		
+
 	</target>
-	
+
 	<target name="get_tag">
 		<property name="tmpdir" value="${tmphome}/tag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
@@ -432,7 +525,7 @@
 		<property name="swt_version" value="v${maj_ver}${min_ver}"/>
 		<loadfile property="tags" srcfile="${tags_file}"/>
 		<script language="javascript">
-		 	<![CDATA[
+			<![CDATA[
 				tags = project.getProperty("tags");
 				swt_version = project.getProperty("swt_version");
 				if (!tags.match(swt_version)) {
@@ -479,7 +572,7 @@
 		<property name="old_version" value="${maj_ver}${old_min_ver}"/>
 		<echo>Version ${swt_version} ${old_version}</echo>
 	</target>
-	
+
 	<target name="check_natives_changed" unless="natives_changed">
 		<property name="tmpdir" value="${tmphome}/map"/>
 		<delete dir="${tmpdir}" quiet="true"/>
@@ -497,7 +590,7 @@
 				<argument line="${cp_photon}"/>
 			</commandline>
 		</cvs>
-		
+
 		<!-- Read in last tagged revision from map file -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
@@ -507,7 +600,7 @@
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
-		
+
 		<loadfile property="revision" srcfile="${tmpdir}/${map}">
 			<filterchain>
 				<striplinebreaks/>
@@ -534,7 +627,7 @@
 		</condition>
 		<echo>Natives changed: ${natives_changed}</echo>
 	</target>
-	
+
 	<target name="new_version" if="is_new_version">
 		<echo>Removing ${removed_files}</echo>
 		<cvs dest="${fragment}" command="remove -f ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
@@ -543,8 +636,8 @@
 		<echo>Adding ${added_files}</echo>
 		<cvs dest="${fragment}" command="add -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
-	
-	
+
+
 	<!-- Params: cvsRsh, tmpdir, and version_tag -->
 	<target name="update_buildnotes">
 		<tstamp>
@@ -590,34 +683,34 @@
 		<property name="rfiles" refid="removeid"/>
 		<echo file="tmp">removed_files=${rfiles}</echo>
 		<replace file="tmp" token=";" value=" "/>
-		<loadproperties srcfile="tmp"></loadproperties>
+		<loadproperties srcfile="tmp"/>
 		<delete file="tmp"/>
-		
+
 		<fileset id= "addid" dir="${fragment}" includes="*${swt_version}*"/>
 		<property name="afiles" refid="addid"/>
 		<echo file="tmp">added_files=${afiles}</echo>
 		<replace file="tmp" token=";" value=" "/>
-		<loadproperties srcfile="tmp"></loadproperties>
+		<loadproperties srcfile="tmp"/>
 		<delete file="tmp"/>
-		
+
 		<condition property="is_new_version">
 			<not>
 				<equals arg1="" arg2="${removed_files}"/>
 			</not>
 		</condition>
 		<antcall target="new_version"/>
-		
+
 		<echo>"Commiting ${added_files}</echo>
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
-	
+
 	<!-- depends on 'get_new_tag' to define version_tag, swt_version, maj_ver and min_ver -->
 	<target name="tag_projects" depends="get_tag">
 		<property name="cvsRsh" value="plink"/>
 		<property name="tmpdir" value="${tmphome}/tag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
-		
+
 		<!-- update and commit the buildnotes_swt.html file -->
 		<antcall target="update_buildnotes"/>
 
@@ -633,7 +726,7 @@
 			</commandline>
 		</cvs>
 		<copy file="${tmpdir}/${map}" tofile="${map_copy}"/>
-		
+
 		<replace file="${map_copy}" token="=" value="&quot; old=&quot;"/>
 		<replace file="${map_copy}" token="fragment@" value="&lt;element project=&quot;"/>
 		<replace file="${map_copy}" token="plugin@" value="&lt;element project=&quot;"/>
@@ -642,7 +735,7 @@
 		<loadfile property="body" srcfile="${map_copy}"/>
 		<echo file="${map_xml}">&lt;project&gt;</echo>
 		<echo file="${map_xml}" append="true">${body}</echo>
-		<echo file="${map_xml}" append="true">&lt;/project&gt;</echo>			
+		<echo file="${map_xml}" append="true">&lt;/project&gt;</echo>
 		<xslt style="swtmap.xls" in="${tmpdir}/swt_map.xml" out="${tmpdir}/tagCommand.xml">
 			<param name="TAG" expression="${TAG}"/>
 			<param name="cvsRoot" expression="${cvsRoot}"/>
@@ -651,9 +744,9 @@
 			<param name="map" expression="${tmpdir}/${map}"/>
 		</xslt>
 		<ant antfile="${tmpdir}/tagCommand.xml" target="tag_files"/>
-		
+
 		<ant antfile="${tmpdir}/tagCommand.xml" target="update_map"/>
-		
+
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
@@ -665,7 +758,7 @@
 
 		<delete file="${tmpdir}"/>
 	</target>
-	
+
 	<!-- Params: build_target -->
 	<target name="build_natives" if="native_changed">
 		<copy todir="${builddir}" flatten="true">
@@ -673,7 +766,7 @@
 		</copy>
 		<antcall target="${build_target}"/>
 	</target>
-		
+
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_fragment">
 		<property name="cvsRsh" value="ssh"/>
@@ -687,10 +780,10 @@
 				<argument value="${fragment}"/>
 			</commandline>
 		</cvs>
-		
+
 		<!-- Check if there are changes in the native code -->
 		<tstamp>
-		     <format property="last_build.time" pattern="yyyy-MM-dd hh:mm aa" offset="24" unit="hour"/>
+			<format property="last_build.time" pattern="yyyy-MM-dd hh:mm aa" offset="24" unit="hour"/>
 		</tstamp>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
@@ -708,7 +801,7 @@
 
 		<!-- build natives -->
 		<antcall target="build_natives"/>
-		
+
 		<!-- commint libraries -->
 		<antcall target="commit_fragment"/>
 	</target>
@@ -727,7 +820,7 @@
 			</commandline>
 		</cvs>
 		<copy todir="${tmpdir}">
-			<fileset dir="${tmpdir}/${tasks}"> 
+			<fileset dir="${tmpdir}/${tasks}">
 				<include name="*.xml"/>
 				<include name="*.xls"/>
 			</fileset>
@@ -740,11 +833,11 @@
 		</ant>
 		<delete dir="${tmpdir}"/>
 	</target>
-	
- 	<target name="set_natives_changed" if="natives_changed">
- 		<property name="extra_properties" value="-Dnatives_changed=${natives_changed}"/>
- 	</target>
- 	
+
+	<target name="set_natives_changed" if="natives_changed">
+		<property name="extra_properties" value="-Dnatives_changed=${natives_changed}"/>
+	</target>
+
 	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
 	<target name="build_ssh" depends="set_natives_changed">
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
@@ -759,7 +852,7 @@
 			output="${logdir}/${build_version}/${fragment}.log"
 	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${TAG} ${tasks}; cp ${tasks}/*.xml .; cp ${tasks}/*.xls .; if ant build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
-	
+
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
 	<target name="replace.32.to.64" depends="init_build">
 		<echo>Converting java files to 64 bit in org.eclipse.swt project</echo>
@@ -769,7 +862,7 @@
 		<replace dir="." includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
 		<antcall target="init"/>
 	</target>
-		
+
 	<!-- Convert SWT 64 bit java and C source to 32 bit  -->
 	<target name="replace.64.to.32" depends="init_build">
 		<echo>Converting java files to 32 bit in org.eclipse.swt project</echo>
@@ -795,7 +888,7 @@
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
 			<param name="build_target" value="build_win32_x86_64"/>
 		</antcall>
-	</target>	
+	</target>
 
 	<target name="win32_ia64">
 		<antcall target="build_local">
@@ -803,7 +896,7 @@
 			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
 			<param name="build_target" value="build_win32_ia64"/>
 		</antcall>
-	</target>	
+	</target>
 
 	<target name="wince">
 		<antcall target="build_local">
@@ -821,6 +914,40 @@
 		</antcall>
 	</target>
 
+	<target name="gtk_linux_redhat_x86">
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_linux_rh3_x86}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+			<param name="build_target" value="build_gtk_linux_rh3_x86"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+		</antcall>
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_linux_x86}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+			<param name="build_target" value="build_gtk_linux_rh4_x86"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+		</antcall>
+	</target>
+	
+	<target name="gtk_linux_redhat_x86_64">
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_linux_rh3_x86_64}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
+			<param name="build_target" value="build_gtk_linux_rh3_x86_64"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+		</antcall>
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_linux_x86_64}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
+			<param name="build_target" value="build_gtk_linux_rh4_x86_64"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+		</antcall>
+	</target>
+	
 	<target name="gtk_linux_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
@@ -830,7 +957,7 @@
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
-	
+		
 	<target name="gtk_linux_x86_64">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86_64}"/>
@@ -840,7 +967,7 @@
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
-	
+
 	<target name="gtk_linux_ppc">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_ppc}"/>
@@ -850,7 +977,7 @@
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
 	</target>
-	
+
 	<target name="gtk_solaris_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_solaris_x86}"/>
@@ -920,7 +1047,7 @@
 			<param name="build_target" value="build_cocoa_x86_and_ppc"/>
 		</antcall>
 	</target>
-	
+
 	<target name="cocoa_x86_64">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_mac}"/>
@@ -929,7 +1056,7 @@
 			<param name="build_target" value="build_cocoa_x86_64"/>
 		</antcall>
 	</target>
-	
+
 	<target name="carbon">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_mac}"/>
@@ -938,7 +1065,7 @@
 			<param name="build_target" value="build_carbon"/>
 		</antcall>
 	</target>
-			
+
 	<target name="photon">
 		<antcall target="build_local">
 			<param name="cp" value="${cp_photon}"/>
@@ -946,32 +1073,32 @@
 			<param name="build_target" value="build_photon"/>
 		</antcall>
 	</target>
-	
+
 	<target name="build_all">
 		<tstamp>
-		      <format property="build_version" pattern="yyyyMMddkkmmss"/>
+			<format property="build_version" pattern="yyyyMMddkkmmss"/>
 		</tstamp>
 		<mkdir dir="${logdir}/${build_version}"/>
 		<parallel failonany="false">
-			<antcall target="win32_x86"></antcall>
-			<antcall target="win32_x86_64"></antcall>
-			<antcall target="win32_ia64"></antcall>
-			<antcall target="wince"></antcall>
-			<antcall target="wpf_x86"></antcall>
-			<antcall target="gtk_linux_x86"></antcall>
-			<antcall target="gtk_linux_x86_64"></antcall>
-			<antcall target="gtk_linux_ppc"></antcall>
-			<antcall target="gtk_solaris_x86"></antcall>
-			<antcall target="gtk_solaris_sparc"></antcall>
-			<antcall target="motif_linux"></antcall>
-			<antcall target="motif_aix"></antcall>
-			<antcall target="motif_solaris"></antcall>
-			<antcall target="motif_hpux"></antcall>
-			<antcall target="cocoa_x86_and_ppc"></antcall>
-			<antcall target="cocoa_x86_64"></antcall>
-			<antcall target="carbon"></antcall>
-			<antcall target="photon"></antcall>
+			<antcall target="win32_x86"/>
+			<antcall target="win32_x86_64"/>
+			<antcall target="win32_ia64"/>
+			<antcall target="wince"/>
+			<antcall target="wpf_x86"/>
+			<antcall target="gtk_linux_x86"/>
+			<antcall target="gtk_linux_x86_64"/>
+			<antcall target="gtk_linux_ppc"/>
+			<antcall target="gtk_solaris_x86"/>
+			<antcall target="gtk_solaris_sparc"/>
+			<antcall target="motif_linux"/>
+			<antcall target="motif_aix"/>
+			<antcall target="motif_solaris"/>
+			<antcall target="motif_hpux"/>
+			<antcall target="cocoa_x86_and_ppc"/>
+			<antcall target="cocoa_x86_64"/>
+			<antcall target="carbon"/>
+			<antcall target="photon"/>
 		</parallel>
 	</target>
-		
+
 </project>
