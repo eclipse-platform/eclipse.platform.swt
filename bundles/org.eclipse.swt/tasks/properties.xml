@@ -1,7 +1,9 @@
 <project name="org.eclipse.swt.build.properties" basedir=".">
 	<!-- Machine names -->
 	<property name="m_linux_x86" value="na"/>
+	<property name="m_linux_rh3_x86" value="na"/>
 	<property name="m_linux_x86_64"  value="na"/>
+	<property name="m_linux_rh3_x86_64"  value="na"/>
 	<property name="m_linux_ppc"  value="na"/>
 	<property name="m_solaris_sparc"  value="na"/>
 	<property name="m_solaris_x86"  value="na"/>

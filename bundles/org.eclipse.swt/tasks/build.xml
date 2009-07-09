@@ -353,11 +353,6 @@
 	</target>
 	
 	<!-- common build tasks -->
- 	<target name="setup_build" description="Copy the internal property file to the workspace">
- 		<echo>Copy properties</echo>
- 		<copy file="S:/tasks/properties.xml" todir="." overwrite="true"/>
- 	</target>
- 	
 	<target name="increment_version" depends="check_natives_changed" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
