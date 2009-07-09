@@ -648,7 +648,7 @@
 		<echo file="${map_xml}" append="true">${body}</echo>
 		<echo file="${map_xml}" append="true">&lt;/project&gt;</echo>			
 		<xslt style="swtmap.xls" in="${tmpdir}/swt_map.xml" out="${tmpdir}/tagCommand.xml">
-			<param name="tag" expression="${TAG}"/>
+			<param name="TAG" expression="${TAG}"/>
 			<param name="cvsRoot" expression="${cvsRoot}"/>
 			<param name="cvsRsh" expression="${cvsRsh}"/>
 			<param name="version_tag" expression="${version_tag}"/>
