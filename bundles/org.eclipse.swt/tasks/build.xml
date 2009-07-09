@@ -337,7 +337,7 @@
 		<delete file="checkoutCommand.xml"/>
 	</target>
 	
-	<target name="increment_version">
+	<target name="increment_version" depends="check_natives_changed" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
@@ -464,7 +464,7 @@
 		<echo>Version ${swt_version} ${old_version}</echo>
 	</target>
 	
-	<target name="natives_changed">
+	<target name="check_natives_changed" unless="natives_changed">
 		<property name="tmpdir" value="${tmphome}/map"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
@@ -481,34 +481,6 @@
 				<argument line="${cp_photon}"/>
 			</commandline>
 		</cvs>
-		<!--antcall target="checkout_natives">
-			<param name="cp" value="${tmpdir}/${cp_win32}"/>
-			<param name="dest" value="${tmpdir}"/>
-		</antcall>
-		<antcall target="checkout_natives">
-			<param name="cp" value="${tmpdir}/${cp_wpf}"/>
-			<param name="dest" value="${tmpdir}"/>
-		</antcall>
-		<antcall target="checkout_natives">
-			<param name="cp" value="${tmpdir}/${cp_gtk}"/>
-			<param name="dest" value="${tmpdir}"/>
-		</antcall>
-		<antcall target="checkout_natives">
-			<param name="cp" value="${tmpdir}/${cp_motif}"/>
-			<param name="dest" value="${tmpdir}"/>
-		</antcall>
-		<antcall target="checkout_natives">
-			<param name="cp" value="${tmpdir}/${cp_carbon}"/>
-			<param name="dest" value="${tmpdir}"/>
-		</antcall>
-		<antcall target="checkout_natives">
-			<param name="cp" value="${tmpdir}/${cp_cocoa}"/>
-			<param name="dest" value="${tmpdir}"/>
-		</antcall>	
-		<antcall target="checkout_natives">
-			<param name="cp" value="${tmpdir}/${cp_photon}"/>
-			<param name="dest" value="${tmpdir}"/>
-		</antcall-->
 		
 		<!-- Read in last tagged revision from map file -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
@@ -540,10 +512,10 @@
 				<argument value="org.eclipse.swt"/>
 			</commandline>
 		</cvs>
-		<condition property="native_changed">
+		<condition property="natives_changed">
 			<length file="${tmpdir}/diff.txt" when="greater" length="0"/>
 		</condition>
-		<echo>Natives changed: ${native_changed}</echo>
+		<echo>Natives changed: ${natives_changed}</echo>
 	</target>
 	
 	<target name="new_version" if="is_new_version">
