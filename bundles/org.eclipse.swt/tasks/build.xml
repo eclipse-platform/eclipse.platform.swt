@@ -508,6 +508,7 @@
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
+				<argument line="${TAG}"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
@@ -576,7 +577,6 @@
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
-				<argument line="${TAG}"/>
 				<argument value="-m"/>
 				<argument value="'new version v${version_tag}'"/>
 				<argument value="${build_notes}"/>
@@ -633,6 +633,7 @@
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
+				<argument line="${TAG}"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
@@ -661,9 +662,8 @@
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
-				<argument line="${TAG}"/>
 				<argument value="-m"/>
-				<argument value="'new version v${version_tag}'"/>
+				<argument value="'new version ${version_tag}'"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
@@ -727,6 +727,7 @@
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
+				<argument line="${TAG}"/>
 				<argument value="${tasks}"/>
 			</commandline>
 		</cvs>
@@ -761,7 +762,7 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${tasks}; cp ${tasks}/*.xml .; cp ${tasks}/*.xls .; if ant build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${TAG} ${tasks}; cp ${tasks}/*.xml .; cp ${tasks}/*.xls .; if ant build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
 	
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
