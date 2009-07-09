@@ -939,6 +939,14 @@
 			<param name="build_target" value="build_gtk_linux_rh3_x86_64"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
 		</antcall>
+		<sshexec host="${m_linux_rh3_x86_64}"
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			trust="true"
+	  		command="sudo /sbin/shutdown -r now"/>
+		<waitfor maxwait="5" maxwaitunit="minute" checkevery="10" checkeveryunit="second">
+			<socket server="${m_linux_x86_64}" port="22" />
+		</waitfor>
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86_64}"/>
 			<param name="cp" value="${cp_gtk}"/>
