@@ -354,6 +354,7 @@
 	
 	<!-- common build tasks -->
  	<target name="setup_build">
+ 		<echo>Copy properties</echo>
  		<copy file="S:/tasks/properties.xml" todir="."/>
  	</target>
  	
