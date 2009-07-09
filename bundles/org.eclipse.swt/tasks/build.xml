@@ -624,7 +624,7 @@
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
-				<argument line="${cp1}"/>
+				<argument line="${cp}"/>
 				<argument value="${fragment}"/>
 			</commandline>
 		</cvs>
