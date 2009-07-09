@@ -18,12 +18,12 @@
 	<property name="cp_cocoa" value="org.eclipse.swt/.classpath_cocoa"/>
 	<property name="cp_photon" value="org.eclipse.swt/.classpath_photon"/-->
 
-	<property name="cp_common" value="\&quot;org.eclipse.swt/Eclipse SWT/common/library\&quot; \&quot;org.eclipse.swt/Eclipse SWT Mozilla/common/library\&quot; \&quot;org.eclipse.swt/Eclipse SWT PI/common/library\&quot;"/>
+	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="cp_win32" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/win32/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/win32/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/win32/library&quot;"/>
 	<property name="cp_wpf" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/wpf/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/wpf_win32/library&quot;"/>
 	<property name="cp_gtk" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/gtk/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/gtk/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/glx/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/cairo/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/gnome/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/cde/library&quot;"/>
 	<property name="cp_motif" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/motif/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/motif_gtk/library&quot;  &quot;org.eclipse.swt/Eclipse SWT AWT/motif/library&quot; &quot;org.eclipse.swt/Eclipse SWT OpenGL/glx/library&quot; &quot;org.eclipse.swt/Eclipse SWT PI/cairo/library&quot; &quot;org.eclipse.swt/Eclipse SWT Program/cde/library&quot;"/>
-	<property name="cp_carbon" value="${cp_common} \&quot;org.eclipse.swt/Eclipse SWT PI/carbon/library\&quot; \&quot;org.eclipse.swt/Eclipse SWT OpenGL/carbon/library\&quot;"/>
+	<property name="cp_carbon" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/carbon/library' 'org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
 	<property name="cp_cocoa" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/cocoa/library&quot; &quot;org.eclipse.swt/Eclipse SWT AWT/cocoa/library&quot;"/>
 	<property name="cp_photon" value="${cp_common} &quot;org.eclipse.swt/Eclipse SWT PI/photon/library&quot;"/>
 	
@@ -614,13 +614,17 @@
 		<property name="cvsRsh" value="ssh"/>
 
 		<echo>${cp}</echo>
+		<echo file="tmp">cp1=${cp}</echo>
+		<replace file="tmp" token="'" value="&quot;"/>
+		<loadproperties srcfile="tmp"></loadproperties>
+		<delete file="tmp"/>
 		
 		<!-- check out classpath, fragments, and natives -->
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
-				<argument value="${cp}"/>
+				<argument value="${cp1}"/>
 				<argument value="${fragment}"/>
 			</commandline>
 		</cvs>
