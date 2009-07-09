@@ -10,6 +10,9 @@
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="S:/swt-builddir/logs"/>
 	<property name="tmphome" value="S:/swt-builddir/tmp"/>
+	
+	<!--property name="native_changed" value="true"/-->
+
 	<!--property name="cp_win32" value="org.eclipse.swt/.classpath_win32"/>
 	<property name="cp_wpf" value="org.eclipse.swt/.classpath_wpf"/>
 	<property name="cp_gtk" value="org.eclipse.swt/.classpath_gtk"/>
@@ -17,9 +20,6 @@
 	<property name="cp_carbon" value="org.eclipse.swt/.classpath_carbon"/>
 	<property name="cp_cocoa" value="org.eclipse.swt/.classpath_cocoa"/>
 	<property name="cp_photon" value="org.eclipse.swt/.classpath_photon"/-->
-	
-	<!--property name="native_changed" value="true"/-->
-	
 	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library'"/>
 	<property name="cp_wpf" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/wpf/library' 'org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
@@ -468,7 +468,7 @@
 		<condition property="native_changed">
 			<length file="${tmpdir}/diff.txt" when="greater" length="0"/>
 		</condition>
-		<echo>Has native changes: ${native_changed}</echo>
+		<echo>Natives changed: ${native_changed}</echo>
 	</target>
 	
 	<target name="new_version" if="is_new_version">
