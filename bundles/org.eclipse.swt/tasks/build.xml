@@ -630,7 +630,7 @@
 		
 		<!-- Check if there are changes in the native code -->
 		<tstamp>
-		     <format property="last_build.time" pattern="yyyy.MM.dd.hh.mm.ss" offset="-1" unit="day"/>
+		     <format property="last_build.time" pattern="yyyy.MM.dd.hh.mm.ss" offset="24" unit="hour"/>
 		</tstamp>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
