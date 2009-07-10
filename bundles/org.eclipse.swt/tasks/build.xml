@@ -36,7 +36,7 @@
 
 <project name="swtbuild" basedir="../..">
 	<property name="tasks" value="org.eclipse.swt/tasks"/>
-	<import file="${tasks}/properties.xml"/>
+	<import file="${basedir}/${tasks}/properties.xml"/>
 
 	<!-- CVS values -->
 	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
