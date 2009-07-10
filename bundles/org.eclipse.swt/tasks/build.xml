@@ -24,14 +24,12 @@
 			
 	This script can be used from within Eclipse to build the natives for the current
 	platform. Call the task named build_[platform]. For example:
-	
-	 Before running the tasks you need to set the basedir to {workspace_loc}
-	 
+	 	ant -f build.xml build_gtk_linux_ppc
+
+	Notes:
 	 To void clean after build define a property named "clean" to empty ("").
-	 
 	 To run only clean define a property named "targets" to empty ("").
 	 
-	 		ant -f build.xml build_gtk_linux_ppc
 -->
 
 <project name="swtbuild" basedir="../..">
