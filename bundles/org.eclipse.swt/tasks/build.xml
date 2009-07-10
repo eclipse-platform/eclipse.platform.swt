@@ -45,6 +45,7 @@
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="S:/swt-builddir/logs"/>
 	<property name="tmphome" value="S:/swt-builddir/tmp"/>
+	<property name="ant_home" value="~/build/apache-ant-1.7.1/bin"/>
 
 	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library'"/>
@@ -920,14 +921,14 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_rh3_x86"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}:$PATH;"/>
 		</antcall>
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_rh4_x86"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 	
@@ -937,7 +938,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 			<param name="build_target" value="build_gtk_linux_rh3_x86_64"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=${ant_home}:$PATH; "/>
 		</antcall-->
 		<sshexec host="${m_linux_rh3_x86_64}"
 			username="swtbuild" 
@@ -952,7 +953,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 			<param name="build_target" value="build_gtk_linux_rh4_x86_64"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 	
@@ -962,7 +963,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_x86"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 		
@@ -972,7 +973,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 			<param name="build_target" value="build_gtk_linux_x86_64"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x64/jdk1.6.0_14; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -982,7 +983,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 			<param name="build_target" value="build_gtk_linux_ppc"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -992,7 +993,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 			<param name="build_target" value="build_gtk_solaris_x86"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/Solaris_x86/jdk1.6.0_14/; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/Solaris_x86/jdk1.6.0_14/; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -1002,7 +1003,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
 			<param name="build_target" value="build_gtk_solaris_sparc"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14/; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/local/bin:$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14/; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/local/bin:${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -1012,7 +1013,7 @@
 			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
 			<param name="build_target" value="build_motif_linux"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -1022,7 +1023,7 @@
 			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
 			<param name="build_target" value="build_motif_aix"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/AIX/sdk; export PATH=$PATH:~/build/apache-ant-1.7.1/bin:~/build/cvs_bin/AIX;"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/AIX/sdk; export PATH=~/build/apache-ant-1.7.1/bin:~/build/cvs_bin/AIX:$PATH;"/>
 		</antcall>
 	</target>
 
@@ -1033,7 +1034,7 @@
 			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
 			<param name="build_target" value="build_motif_solaris"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -1043,7 +1044,7 @@
 			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
 			<param name="build_target" value="build_motif_hpux"/>
-			<param name="pre_commands" value="export JAVA_HOME=/opt/java1.5; export PATH=$PATH:~/build/apache-ant-1.7.1/bin; "/>
+			<param name="pre_commands" value="export JAVA_HOME=/opt/java1.5; export PATH=${ant_home}:$PATH; "/>
 		</antcall>
 	</target>
 
