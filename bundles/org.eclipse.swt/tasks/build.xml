@@ -706,7 +706,7 @@
 		<condition property="native_changed">
 			<length file="diff.txt" when="greater" length="0"/>
 		</condition>
-		<echo>Has native changes: ${natives_changed}</echo>
+		<echo>Has native changes: ${native_changed}</echo>
 
 		<!-- build natives -->
 		<antcall target="build_natives"/>
