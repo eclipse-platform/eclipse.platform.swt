@@ -582,7 +582,7 @@
 	</target>
 
 	<!-- Params: fragment -->
-	<target name="commit_fragment" depends="get_version" if="native_changed">
+	<target name="commit_fragment" depends="get_version" if="natives_changed">
 		<copy todir="${fragment}" overwrite="false">
 			<fileset dir="${fragment}" includes="*${old_version}*"/>
 			<regexpmapper from="(.*)${old_version}(.*)" to="\1${swt_version}\2"/>
@@ -669,7 +669,7 @@
 	</target>
 
 	<!-- Params: build_target -->
-	<target name="build_natives" if="native_changed">
+	<target name="build_natives" if="natives_changed">
 		<copy todir="${builddir}" flatten="true">
 			<fileset dir="org.eclipse.swt" includes="**/library/"/>
 		</copy>
@@ -703,10 +703,10 @@
 				<argument value="org.eclipse.swt"/>
 			</commandline>
 		</cvs>
-		<condition property="native_changed">
+		<condition property="natives_changed">
 			<length file="diff.txt" when="greater" length="0"/>
 		</condition>
-		<echo>Has native changes: ${native_changed}</echo>
+		<echo>Has native changes: ${natives_changed}</echo>
 
 		<!-- build natives -->
 		<antcall target="build_natives"/>
