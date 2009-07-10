@@ -45,7 +45,7 @@
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="S:/swt-builddir/logs"/>
 	<property name="tmphome" value="S:/swt-builddir/tmp"/>
-	<property name="ant_home" value="~/build/apache-ant-1.7.1/bin"/>
+	<property name="ant_home" value="~/build/apache-ant-1.7.1"/>
 
 	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library'"/>
@@ -921,14 +921,14 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_rh3_x86"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}:$PATH;"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export ANT_HOME=${ant_home}; export PATH=${ant_home}/bin:$PATH;"/>
 		</antcall>
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 			<param name="build_target" value="build_gtk_linux_rh4_x86"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}:$PATH; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export ANT_HOME=${ant_home}; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 	
