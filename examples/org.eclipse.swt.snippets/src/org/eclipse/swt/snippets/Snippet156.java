@@ -85,8 +85,11 @@ static ImageData convertToSWT(BufferedImage bufferedImage) {
 				int rgb = bufferedImage.getRGB(x, y);
 				int pixel = palette.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF)); 
 				data.setPixel(x, y, pixel);
+				if (colorModel.hasAlpha()) {
+					data.setAlpha(x, y, (rgb >> 24) & 0xFF);
+				}
 			}
-		}		
+		}
 		return data;		
 	} else if (bufferedImage.getColorModel() instanceof IndexColorModel) {
 		IndexColorModel colorModel = (IndexColorModel)bufferedImage.getColorModel();
