@@ -201,8 +201,8 @@
 	<target name="build_gtk_linux_rh4_x86_64" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit"/>
-		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
-			<arg value="build.sh"/>
+		<exec dir="${basedir}/${builddir}" executable="make" failonerror="true">
+			<arg line="-f make_linux.mak"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk/"/>
@@ -212,13 +212,16 @@
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
 			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86_64/lib/pkgconfig"/>
 			<arg line="${targets}"/>
-			<arg line="${clean}"/>
 		</exec>
 		<copy todir="org.eclipse.swt.gtk.linux.x86_64">
 			<fileset dir="${basedir}/${builddir}">
 				<include name="*.so" />
 			</fileset>
 		</copy>
+		<exec dir="${basedir}/${builddir}" executable="make" failonerror="true">
+			<arg line="-f make_linux.mak"/>
+			<arg line="${clean}"/>
+		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
