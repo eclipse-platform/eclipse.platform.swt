@@ -530,9 +530,11 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 		if (fieldEditor != null) {
 			NSRange selectedRange = fieldEditor.selectedRange();
 			if (selectedRange.length > 0) {
-				NSPoint mouseLocation = NSEvent.mouseLocation();
 				NSTextView feAsTextView = new NSTextView(fieldEditor);
-				int /*long*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(mouseLocation);
+				NSPoint textViewMouse = new NSPoint();
+				textViewMouse.x = x;
+				textViewMouse.y = y;
+				int /*long*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(textViewMouse);
 				if (charPosition != OS.NSNotFound && charPosition >= selectedRange.location && charPosition < (selectedRange.location + selectedRange.length)) {
 					if (super.dragDetect(x, y, filter, consume)) {
 						if (consume != null) consume[0] = true;
