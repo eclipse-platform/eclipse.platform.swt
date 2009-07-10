@@ -34,7 +34,7 @@
 	 		ant -f build.xml build_gtk_linux_ppc
 -->
 
-<project name="swtbuild" basedir=".">
+<project name="swtbuild" default="init_build"  basedir=".">
 	<import file="properties.xml"/>
 
 	<!-- CVS values -->
