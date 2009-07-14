@@ -678,6 +678,8 @@
 	<target name="build_fragment">
 		<property name="cvsRsh" value="ssh"/>
 
+		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
+		
 		<!-- check out classpath, fragments, and natives -->
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
 			<commandline>
@@ -685,26 +687,39 @@
 				<argument line="${TAG}"/>
 				<argument line="${cp}"/>
 				<argument value="${fragment}"/>
+				<argument value="${map}"/>
 			</commandline>
 		</cvs>
 
 		<!-- Check if there are changes in the native code -->
+		<loadfile property="revision" srcfile="${map}">
+			<filterchain>
+				<striplinebreaks/>
+				<tokenfilter>
+					<containsstring contains="plugin@org.eclipse.swt="/>
+					<replaceregex pattern="(.*)(v\d\d\d\d[a-z]?)(.*)" replace="\2"/>
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
 		<tstamp>
 			<format property="last_build.time" pattern="yyyy-MM-dd hh:mm aa" offset="-1" unit="day"/>
 		</tstamp>
+		<!-- during maintenance builds (TAG is set) there is no nightly, so don't ever use timestamps (which are no good for branch)-->
+		<condition property="diff_tag" value="-r${revision}" else="-D${last_build.time}">
+			<length string="${TAG}" trim="true" when="greater" length="0"/>
+		</condition>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
 				<argument value="diff"/>
+				<argument line="${diff_tag}"/>
 				<argument value="-u"/>
-				<argument value="-D"/>
-				<argument value="${last_build.time}"/>
 				<argument value="org.eclipse.swt"/>
 			</commandline>
 		</cvs>
 		<condition property="native_changed">
 			<length file="diff.txt" when="greater" length="0"/>
 		</condition>
-		<echo>Has native changes: ${native_changed}</echo>
+		<echo>Has native changes: ${native_changed}, compared against ${diff_tag}</echo>
 
 		<!-- build natives -->
 		<antcall target="build_natives"/>
