@@ -1688,20 +1688,17 @@ void updateParent (boolean visible) {
 
 void updateSystemUIMode () {
 	if (!getMonitor ().equals (display.getPrimaryMonitor ())) return;
+	int mode = OS.kUIModeNormal;
 	if (fullScreen) {
-		int mode = OS.kUIModeAllHidden;
+		mode = OS.kUIModeAllHidden;
 		if (menuBar != null) {
 			mode = OS.kUIModeContentHidden;
 		}
-		int uiMode[] = new int[1];
-		OS.GetSystemUIMode(uiMode, null);
-		if (uiMode[0] != mode) OS.SetSystemUIMode (mode, 0);
-		window.setFrame(fullScreenFrame, true);
-	} else {
-		int uiMode[] = new int[1];
-		OS.GetSystemUIMode(uiMode, null);
-		if (uiMode[0] != OS.kUIModeNormal) OS.SetSystemUIMode (OS.kUIModeNormal, 1);
 	}
+	int uiMode[] = new int[1];
+	OS.GetSystemUIMode(uiMode, null);
+	if (uiMode[0] != mode) OS.SetSystemUIMode (mode, 0);
+	if (fullScreen)	window.setFrame(fullScreenFrame, true);
 }
 
 int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {
