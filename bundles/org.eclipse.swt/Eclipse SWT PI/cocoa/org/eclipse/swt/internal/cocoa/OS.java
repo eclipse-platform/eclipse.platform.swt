@@ -118,6 +118,12 @@ public static final native int /*long*/ kTISPropertyUnicodeKeyLayoutData();
 public static final native int SetSystemUIMode(int inMode, int inOptions);
 /**
  * @method flags=dynamic
+ * @param outMode cast=(UInt32*)
+ * @param outOptions cast=(UInt32*)
+ */
+public static final native int GetSystemUIMode(int[] outMode, int[] outOptions);
+/**
+ * @method flags=dynamic
  * @param keyLayoutPtr cast=(const UCKeyboardLayout *)
  * @param virtualKeyCode cast=(UInt16)
  * @param keyAction cast=(UInt16)

@@ -1802,6 +1802,33 @@ fail:
 }
 #endif
 
+#ifndef NO_GetSystemUIMode
+JNIEXPORT jint JNICALL OS_NATIVE(GetSystemUIMode)
+	(JNIEnv *env, jclass that, jintArray arg0, jintArray arg1)
+{
+	jint *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetSystemUIMode_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetSystemUIMode((UInt32*)lparg0, (UInt32*)lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, GetSystemUIMode)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(UInt32*, UInt32*))fp)((UInt32*)lparg0, (UInt32*)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, GetSystemUIMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeMetric
 JNIEXPORT void JNICALL OS_NATIVE(GetThemeMetric)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

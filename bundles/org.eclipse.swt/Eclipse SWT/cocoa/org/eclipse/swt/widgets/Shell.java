@@ -1693,10 +1693,14 @@ void updateSystemUIMode () {
 		if (menuBar != null) {
 			mode = OS.kUIModeContentHidden;
 		}
-		OS.SetSystemUIMode (mode, 0);
+		int uiMode[] = new int[1];
+		OS.GetSystemUIMode(uiMode, null);
+		if (uiMode[0] != mode) OS.SetSystemUIMode (mode, 0);
 		window.setFrame(fullScreenFrame, true);
 	} else {
-		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
+		int uiMode[] = new int[1];
+		OS.GetSystemUIMode(uiMode, null);
+		if (uiMode[0] != OS.kUIModeNormal) OS.SetSystemUIMode (OS.kUIModeNormal, 1);
 	}
 }
 
