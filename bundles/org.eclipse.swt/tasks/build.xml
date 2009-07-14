@@ -761,7 +761,7 @@
 		</tstamp>
 		<!-- during maintenance builds (TAG is set) there is no nightly, so don't ever use timestamps (which are no good for branch)-->
 		<condition property="diff_tag" value="-r${revision}" else="-D${last_build.time}">
-			<isset property="${TAG}"/>
+			<length string="${TAG}" trim="true" when="greater" length="0"/>
 		</condition>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
@@ -774,7 +774,7 @@
 		<condition property="native_changed">
 			<length file="diff.txt" when="greater" length="0"/>
 		</condition>
-		<echo>Has native changes: ${native_changed}</echo>
+		<echo>Has native changes: ${native_changed}, compared against ${diff_tag}</echo>
 
 		<!-- build natives -->
 		<antcall target="build_natives"/>
