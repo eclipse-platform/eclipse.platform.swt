@@ -750,6 +750,7 @@
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
 				<argument value="diff"/>
+				<argument line="${TAG}"/>
 				<argument value="-u"/>
 				<argument value="-D"/>
 				<argument value="${last_build.time}"/>
