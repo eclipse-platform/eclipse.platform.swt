@@ -943,6 +943,20 @@ fail:
 }
 #endif
 
+#ifndef NO_CGContextFillRect
+JNIEXPORT void JNICALL OS_NATIVE(CGContextFillRect)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextFillRect_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	CGContextFillRect((CGContextRef)arg0, *lparg1);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextFillRect_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextRelease
 JNIEXPORT void JNICALL OS_NATIVE(CGContextRelease)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1000,6 +1014,30 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetBlendMode)
 	OS_NATIVE_ENTER(env, that, CGContextSetBlendMode_FUNC);
 	CGContextSetBlendMode((CGContextRef)arg0, (CGBlendMode)arg1);
 	OS_NATIVE_EXIT(env, that, CGContextSetBlendMode_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetFillColor
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFillColor)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDoubleArray arg1)
+{
+	jfloatDouble *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextSetFillColor_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CGContextSetFillColor((CGContextRef)arg0, (CGFloat*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatDoubleArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGContextSetFillColor_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetFillColorSpace
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFillColorSpace)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetFillColorSpace_FUNC);
+	CGContextSetFillColorSpace((CGContextRef)arg0, (CGColorSpaceRef)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetFillColorSpace_FUNC);
 }
 #endif
 

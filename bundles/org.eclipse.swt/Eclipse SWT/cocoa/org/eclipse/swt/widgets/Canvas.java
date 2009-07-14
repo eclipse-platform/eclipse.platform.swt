@@ -158,6 +158,9 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	super.drawWidget (id, context, rect);
 	if (caret == null) return;
 	if (caret.isShowing) {
+		int /*long*/ ctx = context.graphicsPort();
+		OS.CGContextSaveGState (ctx);
+		OS.CGContextSetBlendMode (ctx, OS.kCGBlendModeDifference);
 		Image image = caret.image;
 		if (image != null) {
 			NSImage imageHandle = image.handle;
@@ -178,28 +181,24 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 			int /*long*/ cgImage = OS.CGImageCreate((int)size.width, (int)size.height, rep.bitsPerSample(), rep.bitsPerPixel(), bpr, colorspace, alphaInfo, provider, 0, true, 0);
 			OS.CGColorSpaceRelease(colorspace);
 			OS.CGDataProviderRelease(provider);
-			int /*long*/ ctx = context.graphicsPort();
-			OS.CGContextSaveGState(ctx);
 		 	OS.CGContextScaleCTM (ctx, 1, -1);
 		 	OS.CGContextTranslateCTM (ctx, 0, -(size.height + 2 * destRect.origin.y));
 			OS.CGContextSetBlendMode (ctx, OS.kCGBlendModeDifference);
 			OS.CGContextDrawImage (ctx, destRect, cgImage);
-			OS.CGContextRestoreGState(ctx);
 		 	OS.CGImageRelease(cgImage);			
 		} else {
-			context.saveGraphicsState();
-			context.setCompositingOperation(OS.NSCompositeXOR);
-			NSRect drawRect = new NSRect();
-			drawRect.x = caret.x;
-			drawRect.y = caret.y;
-			drawRect.width = caret.width != 0 ? caret.width : Caret.DEFAULT_WIDTH;
-			drawRect.height = caret.height;
-			context.setShouldAntialias(false);
-			NSColor color = NSColor.colorWithDeviceRed(1, 1, 1, 1);
-			color.set();
-			NSBezierPath.fillRect(drawRect);
-			context.restoreGraphicsState();
+			CGRect drawRect = new CGRect();
+			drawRect.origin.x = caret.x;
+			drawRect.origin.y = caret.y;
+			drawRect.size.width = caret.width != 0 ? caret.width : Caret.DEFAULT_WIDTH;
+			drawRect.size.height = caret.height;
+			int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+			OS.CGContextSetFillColorSpace(ctx, colorspace);
+			OS.CGColorSpaceRelease(colorspace);
+			OS.CGContextSetFillColor(ctx, new float /*double*/ [] {1, 1, 1, 1});
+			OS.CGContextFillRect(ctx, drawRect);
 		}
+		OS.CGContextRestoreGState(ctx);
 	}
 }
 

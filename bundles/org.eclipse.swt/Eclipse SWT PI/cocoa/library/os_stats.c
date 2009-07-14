@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 478;
-int OS_nativeFunctionCallCount[478];
+int OS_nativeFunctionCount = 481;
+int OS_nativeFunctionCallCount[481];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -66,12 +66,15 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextCopyPath",
 	"CGContextCopyWindowContentsToRect",
 	"CGContextDrawImage",
+	"CGContextFillRect",
 	"CGContextRelease",
 	"CGContextReplacePathWithStrokedPath",
 	"CGContextRestoreGState",
 	"CGContextSaveGState",
 	"CGContextScaleCTM",
 	"CGContextSetBlendMode",
+	"CGContextSetFillColor",
+	"CGContextSetFillColorSpace",
 	"CGContextSetLineCap",
 	"CGContextSetLineDash",
 	"CGContextSetLineJoin",

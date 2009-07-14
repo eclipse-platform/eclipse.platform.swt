@@ -73,6 +73,10 @@
 		<arg name="rect" swt_gen="true"></arg>
 		<arg name="image" swt_gen="true"></arg>
 	</function>
+	<function name="CGContextFillRect" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="rect" swt_gen="true"></arg>
+	</function>
 	<function name="CGContextRelease" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>
 	</function>
@@ -93,6 +97,14 @@
 	<function name="CGContextSetBlendMode" swt_gen="true">
 		<arg name="context" swt_gen="true"></arg>
 		<arg name="mode" swt_gen="true"></arg>
+	</function>
+	<function name="CGContextSetFillColor" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="components" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+	</function>
+	<function name="CGContextSetFillColorSpace" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="colorspace" swt_gen="true"></arg>
 	</function>
 	<function name="CGContextSetLineCap" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>
