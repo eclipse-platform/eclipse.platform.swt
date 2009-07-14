@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 481;
-int OS_nativeFunctionCallCount[481];
+int OS_nativeFunctionCount = 482;
+int OS_nativeFunctionCallCount[482];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -133,6 +133,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetCurrentProcess",
 	"GetDblTime",
 	"GetRegionBounds",
+	"GetSystemUIMode",
 	"GetThemeMetric",
 	"HIThemeDrawFocusRect",
 	"JNIGetObject",

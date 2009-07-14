@@ -46,3 +46,4 @@
 #define AcquireRootMenu_LIB "com.apple.Carbon"
 #define CancelMenuTracking_LIB "com.apple.Carbon"
 #define SetSystemUIMode_LIB "com.apple.Carbon"
+#define GetSystemUIMode_LIB "com.apple.Carbon"
