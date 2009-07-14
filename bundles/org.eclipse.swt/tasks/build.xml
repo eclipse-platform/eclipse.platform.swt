@@ -802,7 +802,7 @@
 			<property name="fragment" value="${fragment}"/>
 			<property name="build_target" value="${build_target}"/>
 		</ant>
-		<!--delete dir="${tmpdir}"/-->
+		<delete dir="${tmpdir}"/>
 	</target>
 
 	<target name="set_natives_changed" if="natives_changed">
