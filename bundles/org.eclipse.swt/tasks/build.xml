@@ -674,7 +674,7 @@
 		<mkdir dir="${tmpdir}"/>
 
 		<!-- update and commit the buildnotes_swt.html file -->
-		<antcall target="update_buildnotes"/>
+		<!--antcall target="update_buildnotes"/-->
 
 		<!-- tags fragments and plugins listed in swt.map -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
@@ -750,10 +750,8 @@
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
 			<commandline>
 				<argument value="diff"/>
-				<argument line="${TAG}"/>
+				<argument line="-rv3550b"/>
 				<argument value="-u"/>
-				<argument value="-D"/>
-				<argument value="${last_build.time}"/>
 				<argument value="org.eclipse.swt"/>
 			</commandline>
 		</cvs>
@@ -788,7 +786,7 @@
 			<property name="fragment" value="${fragment}"/>
 			<property name="build_target" value="${build_target}"/>
 		</ant>
-		<delete dir="${tmpdir}"/>
+		<!--delete dir="${tmpdir}"/-->
 	</target>
 
 	<target name="set_natives_changed" if="natives_changed">
