@@ -113,6 +113,12 @@ public static void main(String [] args) {
 	table.addListener(SWT.FocusOut, focusOutListener);
 	text.addListener(SWT.FocusOut, focusOutListener);
 
+	shell.addListener(SWT.Move, new Listener() {
+		public void handleEvent(Event event) {
+			popupShell.setVisible(false);
+		}
+	});
+
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
