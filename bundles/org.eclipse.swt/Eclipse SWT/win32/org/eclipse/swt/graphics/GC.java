@@ -305,11 +305,9 @@ void checkGC(int mask) {
 			OS.SelectObject(handle, font.handle);
 			int /*long*/[] hFont = new int /*long*/[1];
 			int /*long*/ gdipFont = createGdipFont(handle, font.handle, gdipGraphics, device.fontCollection, null, hFont);
-			if (hFont[0] != 0) {
-				OS.SelectObject(handle, hFont[0]);
-				if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
-				data.hGDIFont = hFont[0];
-			}
+			if (hFont[0] != 0) OS.SelectObject(handle, hFont[0]);
+			if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
+			data.hGDIFont = hFont[0];
 			if (data.gdipFont != 0) Gdip.Font_delete(data.gdipFont);
 			data.gdipFont = gdipFont;
 		}
