@@ -104,6 +104,18 @@ public Label (Composite parent, int style) {
 
 int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
+	/*
+	* Feature in Windows 7.  When the user double clicks 
+	* on the label, the text of the label is copied to the 
+	* clipboard.  This is unwanted. The fix is to avoid 
+	* calling the label window proc.
+	*/
+	switch (msg) {
+		case OS.WM_LBUTTONDBLCLK:
+			if (OS.WIN32_VERSION >= OS.VERSION(6, 1)) {
+				return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+			}
+	}
 	return OS.CallWindowProc (LabelProc, hwnd, msg, wParam, lParam);
 }
 
