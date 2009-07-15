@@ -333,7 +333,7 @@ void drawBullet(Bullet bullet, GC gc, int paintX, int paintY, int index, int lin
 	int type = bullet.type & (ST.BULLET_DOT|ST.BULLET_NUMBER|ST.BULLET_LETTER_LOWER|ST.BULLET_LETTER_UPPER);
 	switch (type) {
 		case ST.BULLET_DOT: string = "\u2022"; break;
-		case ST.BULLET_NUMBER: string = String.valueOf(index); break;
+		case ST.BULLET_NUMBER: string = String.valueOf(index + 1); break;
 		case ST.BULLET_LETTER_LOWER: string = String.valueOf((char) (index % 26 + 97)); break;
 		case ST.BULLET_LETTER_UPPER: string = String.valueOf((char) (index % 26 + 65)); break;
 	}
