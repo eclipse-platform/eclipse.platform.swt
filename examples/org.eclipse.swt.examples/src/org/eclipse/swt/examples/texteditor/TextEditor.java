@@ -891,7 +891,7 @@ public class TextEditor {
 		numberedListItem.setToolTipText(getResourceString("NumberedList")); //$NON-NLS-1$
 		numberedListItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				setBullet(ST.BULLET_CUSTOM);
+				setBullet(ST.BULLET_NUMBER | ST.BULLET_TEXT);
 			}
 		});
 
@@ -1135,33 +1135,19 @@ public class TextEditor {
 	void handlePaintObject(PaintObjectEvent event) {
 		GC gc = event.gc;
 		StyleRange style = event.style;
-		Bullet bullet = event.bullet;
-		if (bullet != null && bullet.type == ST.BULLET_CUSTOM) {
-			Display display = event.display;
-			Font font = style.font;
-			if (font == null) font = styledText.getFont();
-			TextLayout layout = new TextLayout(display);
-			layout.setAscent(event.ascent);
-			layout.setDescent(event.descent);
-			layout.setFont(font);
-			layout.setText(event.bulletIndex + 1 + "."); //$NON-NLS-1$
-			layout.draw(gc, event.x + BULLET_WIDTH * 2 / 3, event.y);
-			layout.dispose();
-		} else {
-			Object data = style.data;
-			if (data instanceof Image) {
-				Image image = (Image)data;
-				int x = event.x;
-				int y = event.y + event.ascent - style.metrics.ascent;
-				gc.drawImage(image, x, y);
-			}
-			if (data instanceof Control) {
-				Control control = (Control)data;
-				Point pt = control.getSize();
-				int x = event.x + MARGIN;
-				int y = event.y + event.ascent - 2 * pt.y / 3;
-				control.setLocation(x, y);
-			}
+		Object data = style.data;
+		if (data instanceof Image) {
+			Image image = (Image)data;
+			int x = event.x;
+			int y = event.y + event.ascent - style.metrics.ascent;
+			gc.drawImage(image, x, y);
+		}
+		if (data instanceof Control) {
+			Control control = (Control)data;
+			Point pt = control.getSize();
+			int x = event.x + MARGIN;
+			int y = event.y + event.ascent - 2 * pt.y / 3;
+			control.setLocation(x, y);
 		}
 	}
 
@@ -1399,6 +1385,7 @@ public class TextEditor {
 		StyleRange styleRange = new StyleRange();
 		styleRange.metrics = new GlyphMetrics(0, 0, BULLET_WIDTH);
 		Bullet bullet = new Bullet(type, styleRange);
+		bullet.text = ".";
 		for (int lineIndex = lineStart; lineIndex <= lineEnd; lineIndex++) {
 			Bullet oldBullet = styledText.getLineBullet(lineIndex);
 			styledText.setLineBullet(lineIndex, 1, oldBullet != null ? null : bullet);
