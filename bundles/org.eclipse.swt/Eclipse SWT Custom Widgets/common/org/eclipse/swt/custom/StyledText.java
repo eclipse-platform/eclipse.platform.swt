@@ -1648,6 +1648,7 @@ static int checkStyle(int style) {
  * deleted lines.
  */
 void claimBottomFreeSpace() {
+	if (ime.getCompositionOffset() != -1) return;
 	if (isFixedLineHeight()) {
 		int newVerticalOffset = Math.max(0, renderer.getHeight() - clientAreaHeight);
 		if (newVerticalOffset < getVerticalScrollOffset()) {
@@ -3616,7 +3617,7 @@ Rectangle getBoundsAtOffset(int offset) {
 	} else {
 		bounds = new Rectangle (0, 0, 0, renderer.getLineHeight());
 	}
-	if (offset == caretOffset) {
+	if (offset == caretOffset && !wordWrap) {
 		int lineEnd = lineOffset + line.length();
 		if (offset == lineEnd) {
 			bounds.width += getCaretWidth();
@@ -5241,7 +5242,7 @@ int getCaretLine() {
 }
 int getWrapWidth () {
 	if (wordWrap && !isSingleLine()) {
-		int width = clientAreaWidth - leftMargin - rightMargin - getCaretWidth();
+		int width = clientAreaWidth - leftMargin - rightMargin;
 		return width > 0 ? width : 1;
 	}
 	return -1;
@@ -5692,7 +5693,7 @@ void handleCompositionChanged(Event event) {
 		caretDirection = SWT.NULL;
 	} else {
 		content.replaceTextRange(start, end - start, text);
-		setCaretOffset(ime.getCaretOffset(), SWT.DEFAULT);
+		int alignment = SWT.DEFAULT;
 		if (ime.getWideCaret()) {
 			start = ime.getCompositionOffset();
 			int lineIndex = getCaretLine();
@@ -5700,7 +5701,9 @@ void handleCompositionChanged(Event event) {
 			TextLayout layout = renderer.getTextLayout(lineIndex);	
 			caretWidth = layout.getBounds(start - lineOffset, start + length - 1 - lineOffset).width;
 			renderer.disposeTextLayout(layout);
+			alignment = OFFSET_LEADING;
 		}
+		setCaretOffset(ime.getCaretOffset(), alignment);
 	}
 	showCaret();
 }
