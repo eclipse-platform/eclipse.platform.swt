@@ -235,14 +235,14 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget();
     OS.SetControl32BitValue (handle, value);
-    /*
-    * Feature in the Macintosh.  Progress bars are always updated
-    * using an event loop timer, even when they are not indeterminate.
-    * This means that nothing is drawn until the event loop.  The
-    * fix is to allow operating system timers to run without dispatching
-    * any other events.
-    */
-	display.runEventLoopTimers ();
+	/*
+	* Feature in Cocoa.  The progress bar does
+	* not redraw right away when a value is
+	* changed.  This is not strictly incorrect
+	* but unexpected.  The fix is to force all
+	* outstanding redraws to be delivered.
+	*/
+	update(false);
 }
 
 /**

@@ -3497,13 +3497,6 @@ boolean runDeferredEvents () {
 	return run;
 }
 
-boolean runEventLoopTimers () {
-	allowTimers = false;
-	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, false, null) == OS.noErr;
-	allowTimers = true;
-	return result;
-}
-
 boolean runPaint () {
 	if (!needsPaint) return false;
 	needsPaint = false;
