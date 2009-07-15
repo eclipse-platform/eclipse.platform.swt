@@ -48,6 +48,8 @@ public class Path extends Resource {
 	 */
 	public NSBezierPath handle;
 
+	boolean closed = true;
+
 /**
  * Constructs a new empty Path.
  * <p>
@@ -220,11 +222,53 @@ public void addArc(float x, float y, float width, float height, float startAngle
 		float eAngle = -(startAngle + arcAngle);
 		path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 		path.transformUsingAffineTransform(transform);
-		handle.appendBezierPath(path);
-		if (Math.abs(arcAngle) >= 360) handle.closePath();
+//		handle.appendBezierPath(path);
+		appendBezierPath(path);
+		if (closed = (Math.abs(arcAngle) >= 360)) {
+			handle.closePath();
+		}
 	} finally { 
 		if (pool != null) pool.release();
 	}
+}
+
+void appendBezierPath (NSBezierPath path) {
+	int count = (int)/*64*/path.elementCount();
+	int /*long*/ points = OS.malloc(3 * NSPoint.sizeof);
+	if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	NSPoint pt1 = new NSPoint();
+	NSPoint pt2 = new NSPoint();
+	NSPoint pt3 = new NSPoint();
+	for (int i = 0; i < count; i++) {
+		int element = (int)/*64*/path.elementAtIndex(i, points);
+		switch (element) {
+			case OS.NSMoveToBezierPathElement:
+				OS.memmove(pt1, points, NSPoint.sizeof);
+				if (closed) {
+					handle.moveToPoint(pt1);
+				} else {
+					handle.lineToPoint(pt1);	
+				}
+				break;
+			case OS.NSLineToBezierPathElement:
+				OS.memmove(pt1, points, NSPoint.sizeof);
+				handle.lineToPoint(pt1);
+				closed = false;
+				break;
+			case OS.NSCurveToBezierPathElement:
+				OS.memmove(pt1, points, NSPoint.sizeof);
+				OS.memmove(pt2, points + NSPoint.sizeof, NSPoint.sizeof);
+				OS.memmove(pt3, points + NSPoint.sizeof + NSPoint.sizeof, NSPoint.sizeof);
+				handle.curveToPoint(pt3, pt1, pt2);
+				closed = false;
+				break;
+			case OS.NSClosePathBezierPathElement:
+				handle.closePath();
+				closed = true;
+				break;
+		}
+	}
+	OS.free(points);
 }
 
 /**
@@ -248,6 +292,7 @@ public void addPath(Path path) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		handle.appendBezierPath(path.handle);
+		closed = path.closed;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -276,6 +321,7 @@ public void addRectangle(float x, float y, float width, float height) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		handle.appendBezierPathWithRect(rect);
+		closed = true;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -305,6 +351,7 @@ public void addString(String string, float x, float y, Font font) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		closed = true;
 		NSString str = NSString.stringWith(string);
 		NSTextStorage textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
@@ -370,6 +417,7 @@ public void close() {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		handle.closePath();
+		closed = true;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -483,6 +531,7 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 		ct2.x = cx2;
 		ct2.y = cy2;
 		handle.curveToPoint(pt, ct1, ct2);
+		closed = false;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -685,6 +734,7 @@ public void lineTo(float x, float y) {
 		pt.x = x;
 		pt.y = y;
 		handle.lineToPoint(pt);
+		closed = false;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -711,6 +761,7 @@ public void moveTo(float x, float y) {
 		pt.x = x;
 		pt.y = y;
 		handle.moveToPoint(pt);
+		closed = true;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -733,13 +784,18 @@ public void quadTo(float cx, float cy, float x, float y) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		NSPoint current = handle.isEmpty() ? new NSPoint() : handle.currentPoint();
+		NSPoint ct1 = new NSPoint();
+		ct1.x = current.x + 2 * (cx - current.x) / 3;
+		ct1.y = current.y + 2 * (cy - current.y) / 3;
+		NSPoint ct2 = new NSPoint();
+		ct2.x = ct1.x + (x - current.x) / 3;
+		ct2.y = ct1.y + (y - current.y) / 3;		
 		NSPoint pt = new NSPoint();
 		pt.x = x;
 		pt.y = y;
-		NSPoint ct = new NSPoint();
-		ct.x = cx;
-		ct.y = cy;
-		handle.curveToPoint(pt, ct, ct);
+		handle.curveToPoint(pt, ct1, ct2);
+		closed = false;
 	} finally {
 		if (pool != null) pool.release();
 	}
