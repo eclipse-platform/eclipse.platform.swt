@@ -110,11 +110,10 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 	* clipboard.  This is unwanted. The fix is to avoid 
 	* calling the label window proc.
 	*/
-	switch (msg) {
-		case OS.WM_LBUTTONDBLCLK:
-			if (OS.WIN32_VERSION >= OS.VERSION(6, 1)) {
-				return OS.DefWindowProc (hwnd, msg, wParam, lParam);
-			}
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(6, 1)) {
+		switch (msg) {
+			case OS.WM_LBUTTONDBLCLK: return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+		}
 	}
 	return OS.CallWindowProc (LabelProc, hwnd, msg, wParam, lParam);
 }
