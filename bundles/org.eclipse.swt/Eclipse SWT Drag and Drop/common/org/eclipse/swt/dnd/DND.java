@@ -14,7 +14,6 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 
 /**
- *
  * Class DND contains all the constants used in defining a 
  * DragSource or a DropTarget.
  *
@@ -163,7 +162,7 @@ public class DND {
 	
 	/**
 	 * DropTarget drag under effect: The widget is scrolled up or down to allow the user to drop on items that 
-	 * are not currently visible;  applies to tables and trees (value is 8).
+	 * are not currently visible; applies to tables and trees (value is 8).
 	 */	
 	public static final int FEEDBACK_SCROLL = 8;
 	
