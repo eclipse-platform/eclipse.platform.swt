@@ -156,7 +156,7 @@ public class DND {
 	public static final int FEEDBACK_INSERT_BEFORE = 2;
 	
 	/**
-	 * DropTarget drag under effect:An insertion mark is shown after the item under the cursor; applies to
+	 * DropTarget drag under effect: An insertion mark is shown after the item under the cursor; applies to
 	 * trees (value is 4).
 	 */	
 	public static final int FEEDBACK_INSERT_AFTER = 4;
