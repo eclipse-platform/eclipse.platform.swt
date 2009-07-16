@@ -353,15 +353,20 @@
 	</target>
 
 	<!-- common build tasks -->
-	<target name="increment_version" depends="check_natives_changed" if="natives_changed">
+	<target name="increment_version">
+		<property name="tmpdir" value="${tmphome}/inc"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<antcall target="increment_version_imp"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+	
+	<target name="increment_version_imp" depends="check_natives_changed" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/version.txt"/>
-		<property name="tmpdir" value="${tmphome}/inc"/>
-		<delete dir="${tmpdir}" quiet="true"/>
-		<mkdir dir="${tmpdir}"/>
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
@@ -404,14 +409,33 @@
 				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
-		<delete dir="${tmpdir}" quiet="true"/>
-
 	</target>
 
+	<!-- Set swt_tag to the current tag in the swt map file -->
 	<target name="get_tag">
-		<property name="tmpdir" value="${tmphome}/tag"/>
-		<delete dir="${tmpdir}" quiet="true"/>
-		<mkdir dir="${tmpdir}"/>
+		<property name="tmpdir" value="."/>
+		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${TAG}"/>
+				<argument value="${map}"/>
+			</commandline>
+		</cvs>
+		<loadfile property="swt_tag" srcfile="${tmpdir}/${map}">
+			<filterchain>
+				<tokenfilter delimoutput="">
+					<containsstring contains="plugin@org.eclipse.swt="/>
+					<replaceregex pattern=".*(v\d\d\d\d[a-z]?).*" replace="\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<echo>Current tag=${swt_tag}.</echo>
+	</target>
+	
+	<!-- Set swt_new_tag to the new tag -->
+	<target name="get_new_tag">
+		<property name="tmpdir" value="."/>
 		<property name="rlog_file" value="org.eclipse.swt/.project"/>
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 		<property name="tags_file" value="${tmpdir}/tags.txt"/>
@@ -436,12 +460,12 @@
 				tags = project.getProperty("tags");
 				swt_version = project.getProperty("swt_version");
 				if (!tags.match(swt_version)) {
-					project.setProperty("version_tag", swt_version);
+					project.setProperty("swt_new_tag", swt_version);
 				} else {
 					for (i=97; i<123; i++) {
 						t = swt_version + String.fromCharCode(i);
 						if (!tags.match(t)) {
-							project.setProperty("version_tag", t);
+							project.setProperty("swt_new_tag", t);
 							break;
 						}
 					}
@@ -451,12 +475,11 @@
 		<fail message="Unable to determine new tag">
 			<condition>
 				<not>
-					<isset property="version_tag"/>
+					<isset property="swt_new_tag"/>
 				</not>
 			</condition>
 		</fail>
-		<delete dir="${tmpdir}" quiet="true"/>
-		<echo>New tag=${version_tag}</echo>
+		<echo>New tag=${swt_new_tag}</echo>
 	</target>
 
 	<target name="get_version" >
@@ -480,10 +503,9 @@
 		<echo>Version ${swt_version} ${old_version}</echo>
 	</target>
 
-	<target name="check_natives_changed" unless="natives_changed">
-		<property name="tmpdir" value="${tmphome}/map"/>
-		<delete dir="${tmpdir}" quiet="true"/>
-		<mkdir dir="${tmpdir}"/>
+	<!-- Set natives_changed if there are changes in the C code -->
+	<target name="check_natives_changed" unless="natives_changed" depends="get_tag">
+		<property name="tmpdir" value="."/>
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
@@ -497,42 +519,21 @@
 				<argument line="${cp_photon}"/>
 			</commandline>
 		</cvs>
-
-		<!-- Read in last tagged revision from map file -->
-		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
-			<commandline>
-				<argument value="checkout"/>
-				<argument line="${TAG}"/>
-				<argument value="${map}"/>
-			</commandline>
-		</cvs>
-
-		<loadfile property="revision" srcfile="${tmpdir}/${map}">
-			<filterchain>
-				<striplinebreaks/>
-				<tokenfilter>
-					<containsstring contains="plugin@org.eclipse.swt="/>
-					<replaceregex pattern="(.*)(v\d\d\d\d[a-z]?)(.*)" replace="\2"/>
-				</tokenfilter>
-			</filterchain>
-		</loadfile>
-
-		<echo>Revision -${revision}-</echo>
+	
 		<!-- Verify for changes in the native code -->
-		<cvs cvsRoot="${cvsRootAnon}" dest="${tmpdir}" output="${tmpdir}/diff.txt">
+		<cvs cvsRoot="${cvsRootAnon}" output="${tmpdir}/diff.txt">
 			<commandline>
 				<argument value="diff"/>
 				<argument value="-u"/>
 				<argument value="-r"/>
-				<argument value="${revision}"/>
+				<argument value="${swt_tag}"/>
 				<argument value="org.eclipse.swt"/>
 			</commandline>
 		</cvs>
 		<condition property="natives_changed">
 			<length file="${tmpdir}/diff.txt" when="greater" length="0"/>
 		</condition>
-		<echo>Natives changed: ${natives_changed}</echo>
+		<echo>Natives changed: ${natives_changed} since ${swt_tag}</echo>
 	</target>
 
 	<target name="new_version" if="is_new_version">
@@ -545,7 +546,7 @@
 	</target>
 
 
-	<!-- Params: cvsRsh, tmpdir, and version_tag -->
+	<!-- Params: cvsRsh, tmpdir, and swt_new_tag -->
 	<target name="update_buildnotes">
 		<tstamp>
 			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
@@ -567,13 +568,13 @@
 		<property name="match_line" value="SWT&lt;/h1&gt;"/>
 		<property name="delimiter" value="&#13;&#10;"/>
 		<property name="url" value="https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc=;bug_file_loc_type=allwordssubstr;bug_id=;bugidtype=include;chfield=resolution;chfieldfrom=${url.from.time};chfieldto=${url.to.time};chfieldvalue=FIXED;classification=Eclipse;component=SWT;email1=;email2=;emailtype1=substring;emailtype2=substring;field-1-0-0=classification;field-1-1-0=product;field-1-2-0=component;field0-0-0=noop;keywords=;keywords_type=allwords;long_desc=;long_desc_type=allwordssubstr;product=Platform;query_format=advanced;remaction=;short_desc=;short_desc_type=allwordssubstr;status_whiteboard=;status_whiteboard_type=allwordssubstr;type-1-0-0=anyexact;type-1-1-0=anyexact;type-1-2-0=anyexact;type0-0-0=noop;value-1-0-0=Eclipse;value-1-1-0=Platform;value-1-2-0=SWT;value0-0-0=;votes=;query_based_on="/>
-		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${version_tag} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
+		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${swt_new_tag} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
 		<replace file="${tmpdir}/${build_notes}" token="${match_line}" value="${match_line}${body}"/>
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
 				<argument value="-m"/>
-				<argument value="'new version v${version_tag}'"/>
+				<argument value="'new version v${swt_new_tag}'"/>
 				<argument value="${build_notes}"/>
 			</commandline>
 		</cvs>
@@ -611,12 +612,17 @@
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 
-	<!-- depends on 'get_new_tag' to define version_tag, swt_version, maj_ver and min_ver -->
-	<target name="tag_projects" depends="get_tag">
-		<property name="cvsRsh" value="plink"/>
+	<!-- depends on 'get_new_tag' to define swt_new_tag, swt_version, maj_ver and min_ver -->
+	<target name="tag_projects">
 		<property name="tmpdir" value="${tmphome}/tag"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
+		<antcall target="tag_projects_imp"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+	
+	<target name="tag_projects_imp" depends="get_new_tag">
+		<property name="cvsRsh" value="plink"/>
 
 		<!-- update and commit the buildnotes_swt.html file -->
 		<antcall target="update_buildnotes"/>
@@ -647,7 +653,7 @@
 			<param name="TAG" expression="${TAG}"/>
 			<param name="cvsRoot" expression="${cvsRoot}"/>
 			<param name="cvsRsh" expression="${cvsRsh}"/>
-			<param name="version_tag" expression="${version_tag}"/>
+			<param name="swt_new_tag" expression="${swt_new_tag}"/>
 			<param name="map" expression="${tmpdir}/${map}"/>
 		</xslt>
 		<ant antfile="${tmpdir}/tagCommand.xml" target="tag_files"/>
@@ -658,12 +664,10 @@
 			<commandline>
 				<argument value="commit"/>
 				<argument value="-m"/>
-				<argument value="'new version ${version_tag}'"/>
+				<argument value="'new version ${swt_new_tag}'"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
-
-		<delete file="${tmpdir}"/>
 	</target>
 
 	<!-- Params: build_target -->
@@ -675,10 +679,8 @@
 	</target>
 
 	<!-- Params: cp, fragment, build_target -->
-	<target name="build_fragment">
+	<target name="build_fragment" depends="get_tag">
 		<property name="cvsRsh" value="ssh"/>
-
-		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		
 		<!-- check out classpath, fragments, and natives -->
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true">
@@ -687,25 +689,14 @@
 				<argument line="${TAG}"/>
 				<argument line="${cp}"/>
 				<argument value="${fragment}"/>
-				<argument value="${map}"/>
 			</commandline>
 		</cvs>
-
-		<!-- Check if there are changes in the native code -->
-		<loadfile property="revision" srcfile="${map}">
-			<filterchain>
-				<striplinebreaks/>
-				<tokenfilter>
-					<containsstring contains="plugin@org.eclipse.swt="/>
-					<replaceregex pattern="(.*)(v\d\d\d\d[a-z]?)(.*)" replace="\2"/>
-				</tokenfilter>
-			</filterchain>
-		</loadfile>
+		
 		<tstamp>
 			<format property="last_build.time" pattern="yyyy-MM-dd hh:mm aa" offset="-1" unit="day"/>
 		</tstamp>
 		<!-- during maintenance builds (TAG is set) there is no nightly, so don't ever use timestamps (which are no good for branch)-->
-		<condition property="diff_tag" value="-r${revision}" else="-D${last_build.time}">
+		<condition property="diff_tag" value="-r${swt_tag}" else="-D${last_build.time}">
 			<length string="${TAG}" trim="true" when="greater" length="0"/>
 		</condition>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
