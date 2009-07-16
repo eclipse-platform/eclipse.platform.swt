@@ -702,7 +702,7 @@
 			<format property="last_build.time" pattern="yyyy-MM-dd hh:mm aa" offset="-1" unit="day"/>
 		</tstamp>
 		<!-- during maintenance builds (TAG is set) there is no nightly, so don't ever use timestamps (which are no good for branch)-->
-		<condition property="diff_tag" value="-r${swt_tag}" else="-D${last_build.time}">
+		<condition property="diff_tag" value="-r${swt_tag}" else="-D'${last_build.time}'">
 			<length string="${TAG}" trim="true" when="greater" length="0"/>
 		</condition>
 		<cvs cvsRoot="${cvsRootAnon}" output="diff.txt">
