@@ -361,12 +361,14 @@
 		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
 	
-	<target name="increment_version_imp" depends="check_natives_changed" if="natives_changed">
+	<target name="increment_version_imp" depends="check_natives_changed, get_version" if="natives_changed">
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/version.txt"/>
+		
+		<!-- Download the files -->
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
@@ -377,27 +379,15 @@
 				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
-		<copy file="${tmpdir}/${make_common}" tofile="${tmpdir}/tmp.txt"/>
-		<replace file="${tmpdir}/tmp.txt" token="min_ver" value="new_min_ver"/>
-		<propertyfile file="${tmpdir}/tmp.txt">
-			<entry key="new_min_ver" value="=" type="int" operation="+"/>
-		</propertyfile>
-		<loadproperties srcFile="${tmpdir}/${make_common}"/>
-		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
-		<property name="swt_version" value="${maj_ver}${min_ver}"/>
-		<property name="new_version" value="${maj_ver}${new_min_ver}"/>
-		<echo>Version current ${swt_version} -> New ${new_version}</echo>
 
+		<!-- Update the files -->
 		<replace file="${tmpdir}/${library_j2se}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
 		<replace file="${tmpdir}/${library_j2me}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
 		<replace file="${tmpdir}/${version_file}" token="version ${maj_ver}.${min_ver}" value="version ${maj_ver}.${new_min_ver}"/>
 		<replace file="${tmpdir}/${make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
-
-		<echo file="${tmpdir}/ver.txt">new_comma_ver=${new_version}</echo>
-		<replaceregexp file="${tmpdir}/ver.txt" match="(\d)(\d)(\d)(\d)" replace="\1,\2,\3,\4" byline="true"/>
-		<loadproperties srcFile="${tmpdir}/ver.txt"/>
 		<replace file="${tmpdir}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
 
+		<!-- Commit the files -->
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
@@ -412,7 +402,7 @@
 	</target>
 
 	<!-- Set swt_tag to the current tag in the swt map file -->
-	<target name="get_tag">
+	<target name="get_tag" unless="swt_tag">
 		<property name="tmpdir" value="."/>
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
@@ -433,11 +423,10 @@
 		<echo>Current tag=${swt_tag}.</echo>
 	</target>
 	
-	<!-- Set swt_new_tag to the new tag -->
-	<target name="get_new_tag">
+	<!-- Set swt_new_tag  -->
+	<target name="get_new_tag" unless="swt_new_tag" depends="get_version">
 		<property name="tmpdir" value="."/>
 		<property name="rlog_file" value="org.eclipse.swt/.project"/>
-		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 		<property name="tags_file" value="${tmpdir}/tags.txt"/>
 		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
 			<commandline>
@@ -445,15 +434,6 @@
 				<argument value="${rlog_file}"/>
 			</commandline>
 		</cvs>
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
-			<commandline>
-				<argument value="checkout"/>
-				<argument line="${TAG}"/>
-				<argument value="${version_file}"/>
-			</commandline>
-		</cvs>
-		<loadproperties srcFile="${tmpdir}/${version_file}"/>
-		<property name="swt_version" value="v${maj_ver}${min_ver}"/>
 		<loadfile property="tags" srcfile="${tags_file}"/>
 		<script language="javascript">
 			<![CDATA[
@@ -482,25 +462,33 @@
 		<echo>New tag=${swt_new_tag}</echo>
 	</target>
 
-	<target name="get_version" >
-		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true">
+	<!-- Set swt_version, new_version, old_version (and min_ver, maj_ver, new_min_ver, old_min_ver) from the make_common.mak  -->
+	<target name="get_version" unless="swt_version">
+		<property name="tmpdir" value="."/>
+		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
+		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
-				<argument value="${version_file}"/>
+				<argument value="${make_common}"/>
 			</commandline>
 		</cvs>
-		<copy file="${version_file}" tofile="tmp"/>
-		<loadproperties srcFile="${version_file}"/>
-		<propertyfile file="tmp">
+		
+		<loadproperties srcFile="${tmpdir}/${make_common}"/>
+		<copy file="${tmpdir}/${make_common}" tofile="${tmpdir}/tmp.txt" overwrite="true"/>
+		<propertyfile file="${tmpdir}/tmp.txt">
 			<entry key="old_min_ver" default="${min_ver}" type="int" operation="-"/>
+			<entry key="new_min_ver" default="${min_ver}" type="int" operation="+"/>
 		</propertyfile>
-		<loadproperties srcFile="tmp"/>
-		<delete file="tmp"/>
+		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
 		<property name="swt_version" value="${maj_ver}${min_ver}"/>
+		<property name="new_version" value="${maj_ver}${new_min_ver}"/>
 		<property name="old_version" value="${maj_ver}${old_min_ver}"/>
-		<echo>Version ${swt_version} ${old_version}</echo>
+		<replace file="${tmpdir}/tmp.txt" token="comma_ver=${comma_ver}" value="new_comma_ver=${new_version}"/>
+		<replaceregexp file="${tmpdir}/tmp.txt" match="new_comma_ver=(\d)(\d)(\d)(\d)" replace="new_comma_ver=\1,\2,\3,\4" byline="true"/>
+		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
+		<delete file="${tmpdir}/tmp.txt"/>
+		<echo>Version=${swt_version}; Old=${old_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
 	</target>
 
 	<!-- Set natives_changed if there are changes in the C code -->
@@ -547,7 +535,7 @@
 
 
 	<!-- Params: cvsRsh, tmpdir, and swt_new_tag -->
-	<target name="update_buildnotes">
+	<target name="update_buildnotes" depends="get_new_tag">
 		<tstamp>
 			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
 		</tstamp>
