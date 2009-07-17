@@ -131,6 +131,26 @@ public class Text extends Scrollable {
  */
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	if (OS.GTK_VERSION >= OS.VERSION (2, 16, 0)) {
+		if ((style & SWT.SEARCH) != 0) {
+			/*
+			 * Ensure that SWT.ICON_CANCEL and ICON_SEARCH are set.
+			 * NOTE: ICON_CANCEL has the same value as H_SCROLL and
+			 * ICON_SEARCH has the same value as V_SCROLL so it is
+			 * necessary to first clear these bits to avoid a scroll
+			 * bar and then reset the bit using the original style
+			 * supplied by the programmer.
+			 */
+			if ((style & SWT.ICON_CANCEL) != 0) {
+				this.style |= SWT.ICON_CANCEL;
+				OS.gtk_entry_set_icon_from_stock (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.GTK_STOCK_CANCEL);
+			}
+			if ((style & SWT.ICON_SEARCH) != 0) {
+				this.style |= SWT.ICON_SEARCH;
+				OS.gtk_entry_set_icon_from_stock (handle, OS.GTK_ENTRY_ICON_PRIMARY, OS.GTK_STOCK_FIND);
+			}
+		}
+	}
 }
 
 static int checkStyle (int style) {
@@ -1360,6 +1380,17 @@ int /*long*/ gtk_grab_focus (int /*long*/ widget) {
 	return result;
 }
 
+int /*long*/ gtk_icon_release (int /*long*/ widget, int icon_pos, int /*long*/ event) {
+	Event e = new Event();
+	if (icon_pos == OS.GTK_ENTRY_ICON_PRIMARY) {
+		e.detail = SWT.ICON_SEARCH;
+	} else {
+		e.detail = SWT.ICON_CANCEL;
+	}
+	postEvent(SWT.DefaultSelection, e);
+	return 0;
+}
+
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
@@ -1462,6 +1493,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
 		OS.g_signal_connect_closure (handle, OS.grab_focus, display.closures [GRAB_FOCUS], false);
 		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
+		OS.g_signal_connect_closure (handle, OS.icon_release, display.closures [ICON_RELEASE], false);
 	} else {
 		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.closures [CHANGED], false);
 		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.closures [TEXT_BUFFER_INSERT_TEXT], false);
@@ -1527,7 +1559,17 @@ int /*long*/ paintWindow () {
 	if ((style & SWT.SINGLE) != 0) {
 		int /*long*/ window = super.paintWindow ();
 		int /*long*/ children = OS.gdk_window_get_children (window);
-		if (children != 0) window = OS.g_list_data (children);
+		if (children != 0) {
+			/*
+			* When search or cancel icons are added to Text, those
+			* icon window(s) are added to the beginning of the list. 
+			* In order to always return the correct window for Text,
+			* browse to the end of the list. 
+			*/
+			do {
+				window = OS.g_list_data (children);
+			} while ((children = OS.g_list_next (children)) != 0);
+		}
 		OS.g_list_free (children);
 		return window;
 	}

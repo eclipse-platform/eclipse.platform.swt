@@ -260,6 +260,8 @@ public class OS extends C {
 	public static final int GTK_DIALOG_MODAL = 1 << 0;
 	public static final int GTK_DIR_TAB_FORWARD = 0;
 	public static final int GTK_DIR_TAB_BACKWARD = 1;
+	public static final int GTK_ENTRY_ICON_PRIMARY = 0;
+	public static final int GTK_ENTRY_ICON_SECONDARY = 1;
 	public static final int GTK_FILE_CHOOSER_ACTION_OPEN = 0;
 	public static final int GTK_FILE_CHOOSER_ACTION_SAVE = 1;
 	public static final int GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2;
@@ -443,6 +445,7 @@ public class OS extends C {
 	public static final byte[] focus_out_event = ascii("focus-out-event");
 	public static final byte[] grab_focus = ascii("grab-focus");
 	public static final byte[] hide = ascii("hide");
+	public static final byte[] icon_release = ascii("icon-release");
 	public static final byte[] input = ascii("input");
 	public static final byte[] insert_text = ascii("insert-text");
 	public static final byte[] key_press_event = ascii("key-press-event");
@@ -510,6 +513,8 @@ public class OS extends C {
 	public static final byte[] xalign = ascii("xalign");
 	public static final byte[] ypad = ascii("ypad");
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = ascii("output-uri");
+	public static final byte[] GTK_STOCK_FIND = ascii("gtk-find");
+	public static final byte[] GTK_STOCK_CANCEL = ascii("gtk-cancel");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
 	
@@ -6250,6 +6255,16 @@ public static final void gtk_entry_set_has_frame(int /*long*/ entry, boolean set
 	lock.lock();
 	try {
 		_gtk_entry_set_has_frame(entry, setting);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_entry_set_icon_from_stock(int /*long*/ entry, int icon, byte[] stock);
+public static final void gtk_entry_set_icon_from_stock(int /*long*/ entry, int icon, byte[] stock) {
+	lock.lock();
+	try {
+		_gtk_entry_set_icon_from_stock(entry, icon, stock);
 	} finally {
 		lock.unlock();
 	}

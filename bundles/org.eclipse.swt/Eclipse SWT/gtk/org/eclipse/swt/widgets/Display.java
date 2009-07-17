@@ -2450,6 +2450,7 @@ void initializeCallbacks () {
 
 	closures [Widget.DELETE_RANGE] = OS.g_cclosure_new (windowProc4, Widget.DELETE_RANGE, 0);
 	closures [Widget.DELETE_TEXT] = OS.g_cclosure_new (windowProc4, Widget.DELETE_TEXT, 0);
+	closures [Widget.ICON_RELEASE] = OS.g_cclosure_new (windowProc4, Widget.ICON_RELEASE, 0);
 	closures [Widget.ROW_ACTIVATED] = OS.g_cclosure_new (windowProc4, Widget.ROW_ACTIVATED, 0);
 	closures [Widget.SCROLL_CHILD] = OS.g_cclosure_new (windowProc4, Widget.SCROLL_CHILD, 0);
 	closures [Widget.STATUS_ICON_POPUP_MENU] = OS.g_cclosure_new (windowProc4, Widget.STATUS_ICON_POPUP_MENU, 0);

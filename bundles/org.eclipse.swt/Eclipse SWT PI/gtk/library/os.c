@@ -7518,6 +7518,28 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1has_1frame)
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1set_1icon_1from_1stock
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1icon_1from_1stock)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1icon_1from_1stock_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_entry_set_icon_from_stock(arg0, arg1, lparg2);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_entry_set_icon_from_stock)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jbyte *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1icon_1from_1stock_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1set_1invisible_1char
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1invisible_1char)
 	(JNIEnv *env, jclass that, jintLong arg0, jchar arg1)

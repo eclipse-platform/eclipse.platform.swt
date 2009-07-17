@@ -633,6 +633,7 @@ typedef enum {
 	_1gtk_1entry_1set_1activates_1default_FUNC,
 	_1gtk_1entry_1set_1alignment_FUNC,
 	_1gtk_1entry_1set_1has_1frame_FUNC,
+	_1gtk_1entry_1set_1icon_1from_1stock_FUNC,
 	_1gtk_1entry_1set_1invisible_1char_FUNC,
 	_1gtk_1entry_1set_1max_1length_FUNC,
 	_1gtk_1entry_1set_1text_FUNC,

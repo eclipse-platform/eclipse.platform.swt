@@ -165,7 +165,8 @@ public abstract class Widget {
 	static final int ROW_INSERTED = 64;
 	static final int ROW_DELETED = 65;
 	static final int DAY_SELECTED_DOUBLE_CLICK = 66;
-	static final int LAST_SIGNAL = 67;
+	static final int ICON_RELEASE = 67;
+	static final int LAST_SIGNAL = 68;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -689,6 +690,10 @@ int /*long*/ gtk_grab_focus (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_hide (int /*long*/ widget) {
+	return 0;
+}
+
+int /*long*/ gtk_icon_release (int /*long*/ widget, int icon_pos, int /*long*/ event) {
 	return 0;
 }
 
@@ -1593,6 +1598,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 	switch ((int)/*64*/user_data) {
 		case DELETE_RANGE: return gtk_delete_range (handle, arg0, arg1);
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
+		case ICON_RELEASE: return gtk_icon_release (handle, arg0, arg1);
 		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
 		case SCROLL_CHILD: return gtk_scroll_child (handle, arg0, arg1);
 		case STATUS_ICON_POPUP_MENU: return gtk_status_icon_popup_menu (handle, arg0, arg1);
