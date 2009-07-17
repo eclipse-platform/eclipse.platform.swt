@@ -96,8 +96,8 @@ public class TextEditor {
 	
 	public static void main(String[] args) {
 		Display display = new Display();
-		TextEditor editor = new TextEditor(display);
-		Shell shell = editor.shell;
+		TextEditor editor = new TextEditor();
+		Shell shell = editor.open(display);
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
@@ -106,7 +106,17 @@ public class TextEditor {
 		display.dispose();
 	}
 
+	/*
+	 * Default constructor is needed so that example launcher can create an instance. 
+	 */
+	public TextEditor() {
+	}
+	
 	public TextEditor(Display display) {
+		open(display);
+	}
+	
+	public Shell open (Display display) {
 		this.display = display;
 		initResources();
 		shell = new Shell(display);
@@ -121,6 +131,7 @@ public class TextEditor {
 		updateStatusBar();
 		shell.setSize(1000, 700);
 		shell.open();
+		return shell;
 	}
 	
 	void addControl(Control control) {
