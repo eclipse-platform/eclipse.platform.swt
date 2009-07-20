@@ -942,6 +942,7 @@ public static final int /*long*/ sel_expandItem_expandChildren_ = sel_registerNa
 public static final int /*long*/ sel_expansionFrameWithFrame_inView_ = sel_registerName("expansionFrameWithFrame:inView:");
 public static final int /*long*/ sel_familyName = sel_registerName("familyName");
 public static final int /*long*/ sel_fieldEditor_forObject_ = sel_registerName("fieldEditor:forObject:");
+public static final int /*long*/ sel_fileExistsAtPath_ = sel_registerName("fileExistsAtPath:");
 public static final int /*long*/ sel_fileExistsAtPath_isDirectory_ = sel_registerName("fileExistsAtPath:isDirectory:");
 public static final int /*long*/ sel_fileSystemRepresentation = sel_registerName("fileSystemRepresentation");
 public static final int /*long*/ sel_fileURLWithPath_ = sel_registerName("fileURLWithPath:");

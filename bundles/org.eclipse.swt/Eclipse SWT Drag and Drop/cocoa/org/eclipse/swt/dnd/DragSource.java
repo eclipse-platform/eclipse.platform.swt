@@ -107,6 +107,9 @@ public class DragSource extends Widget {
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 	static int /*long*/ proc2 = 0, proc3 = 0, proc4 = 0, proc5 = 0, proc6 = 0;
 	
+	NSString paths[];
+	boolean exist[];
+	
 	static {
 		String className = "SWTDragSourceDelegate";
 
@@ -418,6 +421,19 @@ void draggedImage_beganAt(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, 
 
 void draggedImage_endedAt_operation(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2) {
 	int swtOperation = osOpToOp(arg2);
+	NSFileManager fileManager = NSFileManager.defaultManager();
+	if (paths != null) {
+		for (int i = 0; i < paths.length; i++) {
+			if (paths[i] != null && exist[i]) {
+				if (!fileManager.fileExistsAtPath(paths[i])) {
+					swtOperation &= ~DND.DROP_MOVE;
+					swtOperation |= DND.DROP_TARGET_MOVE;
+				}
+			}
+		}
+		paths = null;
+		exist = null;
+	}
 	Event event = new DNDEvent();
 	event.widget = this;
 	event.time = (int)System.currentTimeMillis();	
@@ -821,6 +837,10 @@ DNDEvent startDrag(Event dragEvent) {
 		dragBoard.declareTypes(nativeTypeArray, dragSourceDelegate);
 
 	if (fileTrans != null) {
+		NSFileManager fileManager = NSFileManager.defaultManager();
+		int index = 0;
+		paths = new NSString[4];
+		exist = new boolean[4];
 		int[] types = fileTrans.getTypeIds();
 		TransferData transferData = new TransferData();
 		transferData.type = types[0];
@@ -834,6 +854,22 @@ DNDEvent startDrag(Event dragEvent) {
 				transferData.type = types[j];
 				fileTrans.javaToNative(event2.data, transferData);
 				if (transferData.data != null) {
+					NSArray array = (NSArray) transferData.data;
+					int count = (int) /*64*/ array.count();
+					for (int i = 0; i < count; i++) {
+						if (index == paths.length) {
+							NSString newPaths [] = new NSString[paths.length + 4];
+							System.arraycopy(paths, 0, newPaths, 0, index);
+							paths = newPaths;
+							boolean newExists[] = new boolean [paths.length];
+							System.arraycopy(exist, 0, newExists, 0, index);
+							exist = newExists;
+						}
+						NSString filePath = new NSString(array.objectAtIndex(i));
+						paths[index] = filePath;
+						exist[index] = fileManager.fileExistsAtPath(filePath);
+						index++;
+					}
 					dragBoard.setPropertyList(transferData.data, OS.NSFilenamesPboardType);
 				}
 			}
