@@ -459,7 +459,7 @@
 				</not>
 			</condition>
 		</fail>
-		<echo>New tag=${swt_new_tag}</echo>
+		<echo>New tag=${swt_new_tag}.</echo>
 	</target>
 
 	<!-- Set swt_version, new_version, old_version (and min_ver, maj_ver, new_min_ver, old_min_ver) from the make_common.mak  -->
@@ -631,7 +631,7 @@
 		<property name="cvsRsh" value="plink"/>
 
 		<!-- update and commit the buildnotes_swt.html file -->
-		<antcall target="update_buildnotes"/>
+		<!--antcall target="update_buildnotes"/-->
 
 		<!-- tags fragments and plugins listed in swt.map -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
