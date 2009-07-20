@@ -631,7 +631,7 @@
 		<property name="cvsRsh" value="plink"/>
 
 		<!-- update and commit the buildnotes_swt.html file -->
-		<!--antcall target="update_buildnotes"/-->
+		<antcall target="update_buildnotes"/>
 
 		<!-- tags fragments and plugins listed in swt.map -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
