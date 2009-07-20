@@ -369,7 +369,7 @@
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 		
 		<!-- Download the files -->
-		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -637,7 +637,7 @@
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		<property name="map_copy" value="${tmpdir}/swt_map.txt"/>
 		<property name="map_xml" value="${tmpdir}/swt_map.xml"/>
-		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
