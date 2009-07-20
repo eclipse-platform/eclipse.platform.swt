@@ -3708,10 +3708,11 @@ void setZOrder (Control sibling, boolean above) {
 	}
 
 	NSView otherView = sibling == null ? null : sibling.topView ();
-	view.retain();
-	view.removeFromSuperview();
-	parent.contentView().addSubview(view, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
-	view.release();
+	NSView topView = topView();
+	topView.retain();
+	topView.removeFromSuperview();
+	parent.contentView().addSubview(topView, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
+	topView.release();
 	invalidateVisibleRegion();
 	
 	/* determine the receiver's new index in the parent */
