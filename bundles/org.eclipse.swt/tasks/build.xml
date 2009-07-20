@@ -659,7 +659,7 @@
 			<param name="TAG" expression="${TAG}"/>
 			<param name="cvsRoot" expression="${cvsRoot}"/>
 			<param name="cvsRsh" expression="${cvsRsh}"/>
-			<param name="swt_new_tag" expression="${swt_new_tag}"/>
+			<param name="swt_new_tag" expression="v${swt_new_tag}"/>
 			<param name="map" expression="${tmpdir}/${map}"/>
 		</xslt>
 		<ant antfile="${tmpdir}/tagCommand.xml" target="tag_files"/>
@@ -670,7 +670,7 @@
 			<commandline>
 				<argument value="commit"/>
 				<argument value="-m"/>
-				<argument value="'new version ${swt_new_tag}'"/>
+				<argument value="'new version v${swt_new_tag}'"/>
 				<argument value="${map}"/>
 			</commandline>
 		</cvs>
