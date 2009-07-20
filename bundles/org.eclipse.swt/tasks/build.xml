@@ -362,8 +362,6 @@
 	</target>
 	
 	<target name="increment_version_imp" depends="check_natives_changed, get_version" if="natives_changed">
-		<delete dir="${tmpdir}" quiet="true"/>
-		<mkdir dir="${tmpdir}"/>
 		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
@@ -377,7 +375,7 @@
 				<argument line="${TAG}"/>
 				<argument value="${library_j2se}"/>
 				<argument value="${library_j2me}"/>
-				<argument value="${make_common}"/>
+				<!--argument value="${make_common}"/-->  <!-- downloaded by get_version, cvs doesn't allow double download in different sets -->
 				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
