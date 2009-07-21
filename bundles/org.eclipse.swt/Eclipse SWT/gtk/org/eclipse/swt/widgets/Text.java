@@ -1380,7 +1380,7 @@ int /*long*/ gtk_grab_focus (int /*long*/ widget) {
 	return result;
 }
 
-int /*long*/ gtk_icon_release (int /*long*/ widget, int icon_pos, int /*long*/ event) {
+int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /*long*/ event) {
 	Event e = new Event();
 	if (icon_pos == OS.GTK_ENTRY_ICON_PRIMARY) {
 		e.detail = SWT.ICON_SEARCH;
