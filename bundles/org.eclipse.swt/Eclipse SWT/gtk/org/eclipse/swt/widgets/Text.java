@@ -1386,6 +1386,7 @@ int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /
 		e.detail = SWT.ICON_SEARCH;
 	} else {
 		e.detail = SWT.ICON_CANCEL;
+		OS.gtk_editable_delete_text (handle, 0, -1);
 	}
 	postEvent(SWT.DefaultSelection, e);
 	return 0;
