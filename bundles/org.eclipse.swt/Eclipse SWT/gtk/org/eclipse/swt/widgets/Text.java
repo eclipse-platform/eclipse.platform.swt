@@ -1493,7 +1493,9 @@ void hookEvents () {
 		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
 		OS.g_signal_connect_closure (handle, OS.grab_focus, display.closures [GRAB_FOCUS], false);
 		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
-		OS.g_signal_connect_closure (handle, OS.icon_release, display.closures [ICON_RELEASE], false);
+		if ((style & SWT.SEARCH) != 0 && OS.GTK_VERSION >= OS.VERSION (2, 16, 0)) {
+			OS.g_signal_connect_closure (handle, OS.icon_release, display.closures [ICON_RELEASE], false);
+		}
 	} else {
 		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.closures [CHANGED], false);
 		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.closures [TEXT_BUFFER_INSERT_TEXT], false);
