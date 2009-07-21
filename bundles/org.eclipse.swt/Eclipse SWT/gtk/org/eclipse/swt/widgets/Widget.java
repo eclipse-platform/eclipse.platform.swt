@@ -693,7 +693,7 @@ int /*long*/ gtk_hide (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_icon_release (int /*long*/ widget, int icon_pos, int /*long*/ event) {
+int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /*long*/ event) {
 	return 0;
 }
 
