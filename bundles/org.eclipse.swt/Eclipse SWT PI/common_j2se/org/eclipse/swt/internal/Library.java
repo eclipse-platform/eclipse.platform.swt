@@ -37,6 +37,7 @@ public class Library {
 	public static final int JAVA_VERSION, SWT_VERSION;
 
 	static final String SEPARATOR;
+	static final String DELIMITER;
 	
 	/* 64-bit support */
 	static /*final*/ boolean IS_64 = 0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL;
@@ -45,9 +46,17 @@ public class Library {
 	static final String SWTDIR_64 = "swtlib-64";	//$NON-NLS-1$
 
 static {
-	SEPARATOR = System.getProperty("file.separator");
-	JAVA_VERSION = parseVersion(System.getProperty("java.version"));
+	DELIMITER = System.getProperty("line.separator"); //$NON-NLS-1$
+	SEPARATOR = System.getProperty("file.separator"); //$NON-NLS-1$
+	JAVA_VERSION = parseVersion(System.getProperty("java.version")); //$NON-NLS-1$
 	SWT_VERSION = SWT_VERSION(MAJOR_VERSION, MINOR_VERSION);
+}
+
+static void chmod(String permision, String path) {
+	if (Platform.PLATFORM.equals ("win32")) return; //$NON-NLS-1$
+	try {
+		Runtime.getRuntime ().exec (new String []{"chmod", permision, path}).waitFor(); //$NON-NLS-1$
+	} catch (Throwable e) {}
 }
 
 static int parseVersion(String version) {
@@ -94,7 +103,7 @@ public static int SWT_VERSION (int major, int minor) {
 	return major * 1000 + minor;
 }
 
-static boolean extract (String fileName, String mappedName) {
+static boolean extract (String fileName, String mappedName, StringBuffer message) {
 	FileOutputStream os = null;
 	InputStream is = null;
 	File file = new File(fileName);
@@ -112,14 +121,10 @@ static boolean extract (String fileName, String mappedName) {
 				}
 				os.close ();
 				is.close ();
-				if (!Platform.PLATFORM.equals ("win32")) { //$NON-NLS-1$
-					try {
-						Runtime.getRuntime ().exec (new String []{"chmod", "755", fileName}).waitFor(); //$NON-NLS-1$ //$NON-NLS-2$
-					} catch (Throwable e) {}
-				}
+				chmod ("755", fileName);
+				if (load (fileName, message)) return true;
 			}
 		}
-		if (load (fileName)) return true;
 	} catch (Throwable e) {
 		try {
 			if (os != null) os.close ();
@@ -132,7 +137,7 @@ static boolean extract (String fileName, String mappedName) {
 	return false;
 }
 
-static boolean load (String libName) {
+static boolean load (String libName, StringBuffer message) {
 	try {
 		if (libName.indexOf (SEPARATOR) != -1) {
 			System.load (libName);
@@ -140,7 +145,12 @@ static boolean load (String libName) {
 			System.loadLibrary (libName);
 		}		
 		return true;
-	} catch (UnsatisfiedLinkError e) {}
+	} catch (UnsatisfiedLinkError e) {
+		if (message.length() == 0) message.append(DELIMITER);
+		message.append('\t');
+		message.append(e.getMessage());
+		message.append(DELIMITER);
+	}
 	return false;
 }
 
@@ -207,17 +217,19 @@ public static void loadLibrary (String name, boolean mapName) {
 		libName1 = libName2 = mappedName1 = mappedName2 = name;
 	}
 
+	StringBuffer message = new StringBuffer();
+	
 	/* Try loading library from swt library path */
 	String path = System.getProperty ("swt.library.path"); //$NON-NLS-1$
 	if (path != null) {
 		path = new File (path).getAbsolutePath ();
-		if (load (path + SEPARATOR + mappedName1)) return;
-		if (mapName && load (path + SEPARATOR + mappedName2)) return;
+		if (load (path + SEPARATOR + mappedName1, message)) return;
+		if (mapName && load (path + SEPARATOR + mappedName2, message)) return;
 	}
 
 	/* Try loading library from java library path */
-	if (load (libName1)) return;
-	if (mapName && load (libName2)) return;
+	if (load (libName1, message)) return;
+	if (mapName && load (libName2, message)) return;
 
 	/* Try loading library from the tmp directory if swt library path is not specified */
 	String fileName1 = mappedName1;
@@ -228,11 +240,7 @@ public static void loadLibrary (String name, boolean mapName) {
 		boolean make = false;
 		if ((dir.exists () && dir.isDirectory ()) || (make = dir.mkdir ())) {
 			path = dir.getAbsolutePath ();
-			if (make && !Platform.PLATFORM.equals ("win32")) { //$NON-NLS-1$
-				try {
-					Runtime.getRuntime ().exec (new String []{"chmod", "777", path}).waitFor(); //$NON-NLS-1$ //$NON-NLS-2$
-				} catch (Throwable e) {}
-			}
+			if (make) chmod ("777", path); //$NON-NLS-1$
 		} else {
 			/* fall back to using the tmp directory */
 			if (IS_64) {
@@ -240,18 +248,18 @@ public static void loadLibrary (String name, boolean mapName) {
 				fileName2 = mapLibraryName (libName2 + SUFFIX_64);
 			}
 		}
-		if (load (path + SEPARATOR + fileName1)) return;
-		if (mapName && load (path + SEPARATOR + fileName2)) return;
+		if (load (path + SEPARATOR + fileName1, message)) return;
+		if (mapName && load (path + SEPARATOR + fileName2, message)) return;
 	}
 		
 	/* Try extracting and loading library from jar */
 	if (path != null) {
-		if (extract (path + SEPARATOR + fileName1, mappedName1)) return;
-		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2)) return;
+		if (extract (path + SEPARATOR + fileName1, mappedName1, message)) return;
+		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2, message)) return;
 	}
 	
 	/* Failed to find the library */
-	throw new UnsatisfiedLinkError ("no " + libName1 + " or " + libName2 + " in swt.library.path, java.library.path or the jar file"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	throw new UnsatisfiedLinkError ("Could not load SWT library. Reasons: " + message.toString()); //$NON-NLS-1$
 }
 
 static String mapLibraryName (String libName) {
