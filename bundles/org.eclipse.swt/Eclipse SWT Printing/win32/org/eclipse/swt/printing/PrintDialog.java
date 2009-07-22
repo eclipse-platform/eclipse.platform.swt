@@ -31,6 +31,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 
 public class PrintDialog extends Dialog {
+	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
 	PrinterData printerData = new PrinterData();
 	
 /**
@@ -87,6 +88,18 @@ public PrintDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
+static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
+	int mask = int0 | int1 | int2 | int3 | int4 | int5;
+	if ((style & mask) == 0) style |= int0;
+	if ((style & int0) != 0) style = (style & ~mask) | int0;
+	if ((style & int1) != 0) style = (style & ~mask) | int1;
+	if ((style & int2) != 0) style = (style & ~mask) | int2;
+	if ((style & int3) != 0) style = (style & ~mask) | int3;
+	if ((style & int4) != 0) style = (style & ~mask) | int4;
+	if ((style & int5) != 0) style = (style & ~mask) | int5;
+	return style;
+}
+
 static int checkStyle (Shell parent, int style) {
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & SWT.SHEET) != 0) {
@@ -95,7 +108,17 @@ static int checkStyle (Shell parent, int style) {
 			style |= parent == null ? SWT.APPLICATION_MODAL : SWT.PRIMARY_MODAL;
 		}
 	}
-	return style;
+	if ((style & mask) == 0) {
+		style |= SWT.APPLICATION_MODAL;
+	}
+	style &= ~SWT.MIRRORED;
+	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
+		if (parent != null) {
+			if ((parent.getStyle () & SWT.LEFT_TO_RIGHT) != 0) style |= SWT.LEFT_TO_RIGHT;
+			if ((parent.getStyle () & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.RIGHT_TO_LEFT;
+		}
+	}
+	return checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
 }
 
 /**
@@ -262,10 +285,43 @@ protected void checkSubclass() {
  * </ul>
  */
 public PrinterData open() {
+	/* Get the owner HWND for the dialog */
+	Control parent = getParent();
+	int style = getStyle();
+	int /*long*/ hwndOwner = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
+
+	/*
+	* Feature in Windows.  There is no API to set the orientation of a
+	* file dialog.  It is always inherited from the parent.  The fix is
+	* to create a hidden parent and set the orientation in the hidden
+	* parent for the dialog to inherit.
+	*/
+	boolean enabled = false;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		int parentOrientation = parent.getStyle() & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		if (dialogOrientation != parentOrientation) {
+			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+			hwndOwner = OS.CreateWindowEx (
+				exStyle,
+				DialogClass,
+				null,
+				0,
+				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+				hwndParent,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			enabled = OS.IsWindowEnabled (hwndParent);
+			if (enabled) OS.EnableWindow (hwndParent, false);
+		}
+	}
+
 	PRINTDLG pd = new PRINTDLG();
 	pd.lStructSize = PRINTDLG.sizeof;
-	Control parent = getParent();
-	if (parent != null) pd.hwndOwner = parent.handle;
+	pd.hwndOwner = hwndOwner;
 	
 	/* Initialize PRINTDLG fields, including DEVMODE. */
 	pd.Flags = OS.PD_RETURNDEFAULT;
@@ -407,6 +463,12 @@ public PrinterData open() {
 		if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
 		if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 		printerData = data;
+	}
+	/* Destroy the BIDI orientation window */
+	if (hwndParent != hwndOwner) {
+		if (enabled) OS.EnableWindow (hwndParent, true);
+		OS.SetActiveWindow (hwndParent);
+		OS.DestroyWindow (hwndOwner);
 	}
 	return data;
 }
