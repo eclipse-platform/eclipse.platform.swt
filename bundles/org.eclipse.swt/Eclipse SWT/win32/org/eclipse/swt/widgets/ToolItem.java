@@ -44,6 +44,7 @@ public class ToolItem extends Item {
 	Image disabledImage, hotImage;
 	Image disabledImage2;
 	int id;
+	short cx;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -877,7 +878,7 @@ public void setWidth (int width) {
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_SIZE;
-	info.cx = (short) width;
+	info.cx = cx = (short) width;
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
 	parent.layoutItems ();
 }

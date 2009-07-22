@@ -735,6 +735,33 @@ void layoutItems () {
 			}
 		}
 	}
+
+	/*
+	* Feature on Windows. When SWT.WRAP or SWT.VERTICAL are set
+	* the separator items with control are implemented using BTNS_BUTTON 
+	* instead of BTNS_SEP. When that is the case and TBSTYLE_LIST is 
+	* set, the layout of the ToolBar recalculates the width for all 
+	* BTNS_BUTTON based on the text and bitmap of the item.
+	* This is not strictly wrong, but the user defined width for the
+	* separators has to be respected if set.
+	* The fix is to detect this case and reset the cx width for the item.  
+	*/
+	if ((style & (SWT.WRAP | SWT.VERTICAL)) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.TBSTYLE_LIST) != 0) {
+			TBBUTTONINFO info = new TBBUTTONINFO ();
+			info.cbSize = TBBUTTONINFO.sizeof;
+			info.dwMask = OS.TBIF_SIZE;
+			for (int i=0; i<items.length; i++) {
+				ToolItem item = items [i];
+				if (item != null && item.cx > 0) {
+					info.cx = item.cx;
+					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+				}
+			}
+		}
+	}
+	
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null) item.resizeControl ();
