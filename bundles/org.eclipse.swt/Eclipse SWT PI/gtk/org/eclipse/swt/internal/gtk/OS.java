@@ -469,6 +469,7 @@ public class OS extends C {
 	public static final byte[] scroll_child = ascii("scroll-child");
 	public static final byte[] scroll_event = ascii("scroll-event");
 	public static final byte[] select = ascii("select");
+	public static final byte[] selection_done = ascii("selection-done");
 	public static final byte[] show = ascii("show");
 	public static final byte[] show_help = ascii("show-help");
 	public static final byte[] size_allocate = ascii("size-allocate");

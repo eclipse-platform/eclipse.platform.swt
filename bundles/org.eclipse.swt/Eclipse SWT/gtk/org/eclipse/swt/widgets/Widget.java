@@ -166,7 +166,8 @@ public abstract class Widget {
 	static final int ROW_DELETED = 65;
 	static final int DAY_SELECTED_DOUBLE_CLICK = 66;
 	static final int ICON_RELEASE = 67;
-	static final int LAST_SIGNAL = 68;
+	static final int SELECTION_DONE = 68;
+	static final int LAST_SIGNAL = 69;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -788,6 +789,10 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ event) {
 int /*long*/ gtk_select (int /*long*/ item) {
 	return 0;
 }
+
+int /*long*/ gtk_selection_done (int /*long*/ menushell) {
+	return 0;
+} 
 
 int /*long*/ gtk_show (int /*long*/ widget) {
 	return 0;
@@ -1537,6 +1542,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
 		case REALIZE: return gtk_realize (handle);
 		case SELECT: return gtk_select (handle);
+		case SELECTION_DONE: return gtk_selection_done (handle);
 		case SHOW: return gtk_show (handle);
 		case VALUE_CHANGED: return gtk_value_changed (handle);
 		case UNMAP: return gtk_unmap (handle);
