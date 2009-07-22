@@ -1541,7 +1541,12 @@ int widgetStyle () {
 	
 	/* Set the title bits and no-trim bits */
 	bits &= ~OS.WS_BORDER;
-	if ((style & SWT.NO_TRIM) != 0) return bits;
+	if ((style & SWT.NO_TRIM) != 0) {
+		if (parent == null) {
+			bits |= OS.WS_SYSMENU;
+		}
+		return bits;
+	}
 	if ((style & SWT.TITLE) != 0) bits |= OS.WS_CAPTION;
 	
 	/* Set the min and max button bits */
