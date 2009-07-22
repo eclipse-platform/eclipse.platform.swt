@@ -18,34 +18,29 @@ package org.eclipse.swt.snippets;
  */
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet244 {
 	static String SEARCH_STRING = "box";
     public static void main(String[] args) {
         final Display display = new Display();
-        final Color RED = display.getSystemColor(SWT.COLOR_RED);
         Shell shell = new Shell(display);
         shell.setBounds(10,10,250,250);
         final StyledText text = new StyledText(shell, SWT.NONE);
         text.setBounds(10,10,200,200);
-        text.addListener(SWT.Paint, new Listener() {
-			public void handleEvent(Event event) {
-				String contents = text.getText();
-				int stringWidth = event.gc.stringExtent(SEARCH_STRING).x;
-				int lineHeight = text.getLineHeight();
-				event.gc.setForeground(RED);
-				int index = contents.indexOf(SEARCH_STRING);
-				while (index != -1) {
-					Point topLeft = text.getLocationAtOffset(index);
-					event.gc.drawRectangle(topLeft.x - 1, topLeft.y, stringWidth + 1, lineHeight - 1);
-					index = contents.indexOf(SEARCH_STRING, index + 1);
-				}
-			}
-		});
-        text.setText("This demonstrates drawing a box\naround every occurrence of the word\nbox in the StyledText");
+        StyleRange style = new StyleRange();
+        style.borderColor = display.getSystemColor(SWT.COLOR_RED);
+        style.borderStyle = SWT.BORDER_SOLID;
+        StyleRange[] styles = {style};
+        String contents = "This demonstrates drawing a box\naround every occurrence of the word\nbox in the StyledText";
+        text.setText(contents);
+		int index = contents.indexOf(SEARCH_STRING);
+		while (index != -1) {
+			text.setStyleRanges(0, 0, new int[] {index, SEARCH_STRING.length()}, styles);
+			index = contents.indexOf(SEARCH_STRING, index + 1);
+		}
+        
         shell.open();
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) display.sleep();
