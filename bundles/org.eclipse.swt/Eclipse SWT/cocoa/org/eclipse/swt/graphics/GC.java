@@ -1624,7 +1624,7 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT);
+	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT | FOREGROUND_FILL);
 	try {
 		handle.saveGraphicsState();
 		boolean mode = true;
