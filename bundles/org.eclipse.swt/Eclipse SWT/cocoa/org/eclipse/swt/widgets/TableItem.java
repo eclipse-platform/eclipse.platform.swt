@@ -615,6 +615,10 @@ public Rectangle getTextBounds (int index) {
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing ();
+}
+
 void redraw (int columnIndex) {
 	if (parent.currentItem == this || !isDrawing()) return;
 	/* redraw the full item if columnIndex == -1 */
