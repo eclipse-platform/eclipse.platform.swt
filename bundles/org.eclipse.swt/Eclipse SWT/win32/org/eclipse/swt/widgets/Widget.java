@@ -482,8 +482,7 @@ char [] fixMnemonic (String string, boolean spaces) {
 	while (i < buffer.length) {
 		if (buffer [i] == '&') {
 			if (i + 1 < buffer.length && buffer [i + 1] == '&') {
-				if (spaces) buffer [j] = ' ';
-				j++;
+				buffer [j++] = spaces ? ' ' : buffer [i];
 				i++;
 			}
 			i++;
