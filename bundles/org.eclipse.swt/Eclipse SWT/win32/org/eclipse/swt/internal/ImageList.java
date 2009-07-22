@@ -95,7 +95,7 @@ int /*long*/ copyBitmap (int /*long*/ hImage, int width, int height) {
 	* it to 24-bit depth.
 	*/
 	int /*long*/ hBitmap;
-	if (bm.bmBitsPixel == 32 && OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (bm.bmBitsPixel == 32 && OS.COMCTL32_MAJOR >= 6) {
 		BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 		bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 		bmiHeader.biWidth = width;
