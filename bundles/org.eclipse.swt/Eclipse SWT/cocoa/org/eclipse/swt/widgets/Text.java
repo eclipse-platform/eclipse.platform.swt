@@ -1686,6 +1686,7 @@ public void setSelection (int start, int end) {
 		NSText fieldEditor = ((NSControl)view).currentEditor();
 		if (fieldEditor != null) {
 			fieldEditor.setSelectedRange (selectionRange);
+			fieldEditor.scrollRangeToVisible (selectionRange);
 		}
 	} else {
 		int length = (int)/*64*/((NSTextView) view).textStorage ().length ();
@@ -1694,7 +1695,9 @@ public void setSelection (int start, int end) {
 		NSRange range = new NSRange ();
 		range.location = selStart;
 		range.length = selEnd - selStart;
-		((NSTextView) view).setSelectedRange (range);
+		NSTextView widget = (NSTextView) view;
+		widget.setSelectedRange (range);
+		widget.scrollRangeToVisible (range);
 	}
 }
 
