@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.Hashtable;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -698,6 +700,15 @@ int GetIDsOfNames (int riid, int /*long*/ rgszNames, int cNames, int lcid, int /
 }
 
 int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*long*/ pDispParams, int /*long*/ pVarResult, int /*long*/ pExcepInfo, int /*long*/ pArgErr) {
+	IE ie = (IE)((Browser)getParent ().getParent ()).webBrowser;
+	Hashtable functions = ie.functions;
+	if (functions == null) {
+		if (pVarResult != 0) {
+			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
+		}
+		return COM.S_OK;
+	}
+
 	DISPPARAMS dispParams = new DISPPARAMS ();
 	COM.MoveMemory (dispParams, pDispParams, DISPPARAMS.sizeof);
 	if (dispParams.cArgs != 2) {
@@ -719,9 +730,8 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 	}
 
 	variant = Variant.win32_new (dispParams.rgvarg);
-	IE ie = (IE)((Browser)getParent ().getParent ()).webBrowser;
 	Object key = new Integer (index);
-	BrowserFunction function = (BrowserFunction)ie.functions.get (key);
+	BrowserFunction function = (BrowserFunction)functions.get (key);
 	Object returnValue = null;
 	if (function != null) {
 		try {
