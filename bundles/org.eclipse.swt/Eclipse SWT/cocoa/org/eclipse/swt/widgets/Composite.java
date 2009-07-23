@@ -764,6 +764,7 @@ void releaseWidget () {
 }
 
 void removeControl (Control control) {
+	if (control.hasFocus()) redraw();
 	fixTabList (control);
 }
 
