@@ -1041,10 +1041,59 @@ void handleDOMEvent (OleEvent e) {
 		lastKeyCode = translateKey (pVarResult.getInt());
 		pVarResult.dispose();
 
+		boolean consume = false;
+		OleAutomation document = null;
+		OleAutomation htmlWindow2 = null;
+		OleAutomation htmlEvent = null;
+		/* get IHTMLDocument2 */
+		rgdispid = auto.getIDsOfNames (new String[] {"Document"}); //$NON-NLS-1$
+		pVarResult = auto.getProperty (rgdispid[0]);
+		if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+			if (pVarResult != null) pVarResult.dispose ();
+		} else {
+			document = pVarResult.getAutomation ();
+			pVarResult.dispose ();
+			/* get IHTMLWindow2 */
+			rgdispid = document.getIDsOfNames (new String[] {"parentWindow"}); //$NON-NLS-1$
+			pVarResult = document.getProperty (rgdispid[0]);
+			if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
+				if (pVarResult != null) pVarResult.dispose ();
+			} else {
+				htmlWindow2 = pVarResult.getAutomation ();
+				pVarResult.dispose ();
+				/* get IHTMLEventObj */
+				rgdispid = htmlWindow2.getIDsOfNames (new String[] {"event"}); //$NON-NLS-1$
+				pVarResult = htmlWindow2.getProperty (rgdispid[0]);
+				if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
+					if (pVarResult != null) pVarResult.dispose ();
+				} else {
+					htmlEvent = pVarResult.getAutomation ();
+					pVarResult.dispose ();
+					/* check event's returnValue property */
+					rgdispid = htmlEvent.getIDsOfNames (new String[] {"returnValue"}); //$NON-NLS-1$
+					pVarResult = htmlEvent.getProperty (rgdispid[0]);
+					consume = pVarResult != null && pVarResult.getType () == OLE.VT_BOOL && !pVarResult.getBoolean ();
+					pVarResult.dispose ();
+				}
+			}
+		}
+		if (htmlEvent != null) htmlEvent.dispose ();
+		if (htmlWindow2 != null) htmlWindow2.dispose ();
+		if (document != null) document.dispose ();
+
 		MSG msg = new MSG ();
-		int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
+		int flags = OS.PM_NOYIELD | (consume ? OS.PM_REMOVE : OS.PM_NOREMOVE);
 		if (OS.PeekMessage (msg, frame.handle, OS.WM_CHAR, OS.WM_CHAR, flags)) {
 			/* a keypress will be received for this key so don't send KeyDown here */
+			event.dispose();
+			return;
+		}
+
+		if (consume) {
+			/* 
+			 * an event should not be sent if another listener has vetoed the
+			 * KeyDown (this is for non-character cases like arrow keys, etc.)
+			 */
 			event.dispose();
 			return;
 		}
@@ -1086,12 +1135,13 @@ void handleDOMEvent (OleEvent e) {
 		keyEvent.stateMask = mask;
 		keyEvent.stateMask &= ~lastKeyCode;		/* remove current keydown if it's a state key */
 		/*
-		* keypress events are not received for Enter, Delete and Tab, so
-		* KeyDown events are sent for them here.  Set the KeyDown event's
-		* character field and IE's lastCharCode field for these keys so
-		* that the Browser's key events are consistent with other controls.
+		* keypress events are not received for Backspace, Enter, Delete and
+		* Tab, so KeyDown events are sent for them here.  Set the KeyDown
+		* event's character field and IE's lastCharCode field for these keys
+		* so that the Browser's key events are consistent with other controls.
 		*/
 		switch (lastKeyCode) {
+			case SWT.BS: lastCharCode = keyEvent.character = SWT.BS; break;
 			case SWT.CR: lastCharCode = keyEvent.character = SWT.CR; break;
 			case SWT.DEL: lastCharCode = keyEvent.character = SWT.DEL; break;
 			case SWT.TAB: lastCharCode = keyEvent.character = SWT.TAB; break;

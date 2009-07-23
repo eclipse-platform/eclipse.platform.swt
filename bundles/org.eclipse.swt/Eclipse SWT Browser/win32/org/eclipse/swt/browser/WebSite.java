@@ -340,12 +340,13 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 				 * if it will be within IE or out to another Control.
 				 */
 				break;
+			case OS.VK_BACK:
 			case OS.VK_RETURN:
 				/*
-				* Translating OS.VK_RETURN results in the native control handling it
-				* twice (eg.- inserting two lines instead of one).  So this key is not
-				* translated here, and instead is explicitly handled in the keypress
-				* handler.
+				* Translating OS.VK_BACK or OS.VK_RETURN results in the native control
+				* handling them twice (eg.- inserting two lines instead of one).  So
+				* these keys are not translated here, and instead are explicitly handled
+				* in the keypress handler.
 				*/
 				break;
 			case OS.VK_N:
