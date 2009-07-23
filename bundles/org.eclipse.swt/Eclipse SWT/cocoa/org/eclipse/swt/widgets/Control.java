@@ -806,7 +806,7 @@ NSView contentView () {
 	return view;
 }
 
-NSAttributedString createString (String string, Font font, float /*double*/ [] foreground, int style, boolean enabled, boolean mnemonics) {
+NSAttributedString createString (String string, Font font, float /*double*/ [] foreground, int style, boolean wrap, boolean enabled, boolean mnemonics) {
 	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
 	if (font == null) font = this.font != null ? this.font : defaultFont();
 	dict.setObject (font.handle, OS.NSFontAttributeName);
@@ -819,9 +819,9 @@ NSAttributedString createString (String string, Font font, float /*double*/ [] f
 	} else {
 		dict.setObject (NSColor.disabledControlTextColor (), OS.NSForegroundColorAttributeName);
 	}
+	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+	paragraphStyle.setLineBreakMode (wrap ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
 	if (style != 0) {
-		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
 		int alignment = SWT.LEFT;
 		if ((style & SWT.CENTER) != 0) {
 			alignment = OS.NSCenterTextAlignment;
@@ -829,9 +829,9 @@ NSAttributedString createString (String string, Font font, float /*double*/ [] f
 			alignment = OS.NSRightTextAlignment;
 		}
 		paragraphStyle.setAlignment (alignment);
-		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
-		paragraphStyle.release ();
 	}
+	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+	paragraphStyle.release ();
 	int length = string.length ();
 	char [] chars = new char [length];
 	string.getChars (0, chars.length, chars, 0);
@@ -3764,7 +3764,7 @@ void sort (int [] items) {
 }
 
 NSSize textExtent (String string) {
-	NSAttributedString attribStr = createString(string, null, null, 0, true, false);
+	NSAttributedString attribStr = createString(string, null, null, 0, false, true, false);
 	NSSize size = attribStr.size();
 	attribStr.release();
 	return size;

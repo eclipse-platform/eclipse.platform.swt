@@ -224,7 +224,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cel
 	NSTableHeaderCell headerCell = nsColumn.headerCell ();
 	if (displayText != null) {
 		Font font = Font.cocoa_new(display, headerCell.font ());
-		attrString = parent.createString(displayText, font, null, SWT.LEFT, (parent.state & DISABLED) == 0, false);
+		attrString = parent.createString(displayText, font, null, SWT.LEFT, false, (parent.state & DISABLED) == 0, false);
 		stringSize = attrString.size ();
 		contentWidth += Math.ceil (stringSize.width);
 		if (image != null) contentWidth += MARGIN; /* space between image and text */
@@ -424,7 +424,7 @@ public void pack () {
 	if (displayText != null) {
 		NSTableHeaderCell headerCell = nsColumn.headerCell ();
 		Font font = Font.cocoa_new(display, headerCell.font ());
-		NSAttributedString attrString = parent.createString(displayText, font, null, 0, true, false);
+		NSAttributedString attrString = parent.createString(displayText, font, null, 0, false, true, false);
 		NSSize stringSize = attrString.size ();
 		attrString.release ();
 		width += Math.ceil (stringSize.width);
