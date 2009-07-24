@@ -407,7 +407,7 @@
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
-				<argument value="${manifests}"/>
+				<argument line="${manifests}"/>
 			</commandline>
 		</cvs>
     	
@@ -420,7 +420,7 @@
 				<argument value="commit"/>
 				<argument value="-m"/>
 				<argument value="'new version v${swt_new_tag}'"/>
-				<argument value="${manifests}"/>
+				<argument line="${manifests}"/>
 			</commandline>
 		</cvs-->
     </target>
