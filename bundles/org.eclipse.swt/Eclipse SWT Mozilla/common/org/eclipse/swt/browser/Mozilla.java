@@ -2241,9 +2241,9 @@ public boolean setText (String html) {
 		if (rc != XPCOM.NS_OK) error (rc);
 		webNavigation.Release ();
 	} else {
-		byte[] contentCharsetBuffer = MozillaDelegate.wcsToMbcs (null, "UTF-8", true);	//$NON-NLS-1$
+		byte[] contentCharsetBuffer = MozillaDelegate.wcsToMbcs (null, "UTF-8", false);	//$NON-NLS-1$
 		int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new (contentCharsetBuffer, contentCharsetBuffer.length);
-		byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
+		byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", false); // $NON-NLS-1$
 		int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
 
 		rc = XPCOM.NS_GetServiceManager (result);
@@ -2723,7 +2723,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				nsIWebBrowserStream stream = new nsIWebBrowserStream (result[0]);
 				result[0] = 0;
 
-				byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
+				byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", false); // $NON-NLS-1$
 				int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
 
 				rc = stream.OpenStream (uri.getAddress (), aContentType);
@@ -3372,7 +3372,7 @@ int IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredContentType, in
 			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WEBNAVIGATIONINFO_CONTRACTID, true);
 			rc = serviceManager.GetServiceByContractID (aContractID, nsIWebNavigationInfo.NS_IWEBNAVIGATIONINFO_IID, result);
 			if (rc == XPCOM.NS_OK) {
-				byte[] bytes = MozillaDelegate.wcsToMbcs (null, contentType, true);
+				byte[] bytes = MozillaDelegate.wcsToMbcs (null, contentType, false);
 				int /*long*/ typePtr = XPCOM.nsEmbedCString_new (bytes, bytes.length);
 				nsIWebNavigationInfo info = new nsIWebNavigationInfo (result[0]);
 				result[0] = 0;
