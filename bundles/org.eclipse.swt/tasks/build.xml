@@ -401,6 +401,30 @@
 		</cvs>
 	</target>
 
+    <target name="update_manifest" depends="get_version">
+    	<property name="manifests" value="org.eclipse.swt.carbon.macosx/META-INF/MANIFEST.MF org.eclipse.swt.cocoa.macosx/META-INF/MANIFEST.MF org.eclipse.swt.cocoa.macosx.x86_64/META-INF/MANIFEST.MF org.eclipse.swt.gtk.linux.ppc/META-INF/MANIFEST.MF org.eclipse.swt.gtk.linux.x86/META-INF/MANIFEST.MF org.eclipse.swt.gtk.linux.x86_64/META-INF/MANIFEST.MF org.eclipse.swt.gtk.solaris.sparc/META-INF/MANIFEST.MF org.eclipse.swt.gtk.solaris.x86/META-INF/MANIFEST.MF org.eclipse.swt.motif.aix.ppc/META-INF/MANIFEST.MF org.eclipse.swt.motif.hpux.ia64_32/META-INF/MANIFEST.MF org.eclipse.swt.motif.linux.x86/META-INF/MANIFEST.MF org.eclipse.swt.motif.solaris.sparc/META-INF/MANIFEST.MF org.eclipse.swt.photon.qnx.x86/META-INF/MANIFEST.MF org.eclipse.swt.win32.wce_ppc.arm/META-INF/MANIFEST.MF org.eclipse.swt.win32.win32.ia64/META-INF/MANIFEST.MF org.eclipse.swt.win32.win32.x86/META-INF/MANIFEST.MF org.eclipse.swt.win32.win32.x86_64/META-INF/MANIFEST.MF org.eclipse.swt.wpf.win32.x86/META-INF/MANIFEST.MF"/>
+    	<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${TAG}"/>
+				<argument value="${manifests}"/>
+			</commandline>
+		</cvs>
+    	
+    	<replace dir="${tmpdir}" token="${swt_version}" value="${new_version}">
+    		<include name="**/MANIFEST.MF"/> 	
+    	</replace>
+    	
+		<!--cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="commit"/>
+				<argument value="-m"/>
+				<argument value="'new version v${swt_new_tag}'"/>
+				<argument value="${manifests}"/>
+			</commandline>
+		</cvs-->
+    </target>
+
 	<!-- Set swt_tag to the current tag in the swt map file -->
 	<target name="get_tag" unless="swt_tag">
 		<property name="tmpdir" value="."/>
