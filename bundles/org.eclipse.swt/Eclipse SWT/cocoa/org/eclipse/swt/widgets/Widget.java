@@ -1766,4 +1766,20 @@ int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
+NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSSize result = new NSSize();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, shouldTruncateLabel ? 1 : 0);
+	return result;
+}
+
+void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel, NSRect rect) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, shouldTruncateLabel ? 1 : 0, rect);
+}
+
 }

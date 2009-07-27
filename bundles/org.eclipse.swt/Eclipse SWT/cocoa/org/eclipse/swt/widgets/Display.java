@@ -2048,6 +2048,8 @@ void initClasses () {
 	int /*long*/ canDragRowsWithIndexes_atPoint_Proc = OS.CALLBACK_canDragRowsWithIndexes_atPoint_(proc4);
 	int /*long*/ setNeedsDisplayInRectProc = OS.CALLBACK_setNeedsDisplayInRect_(proc3);
 	int /*long*/ expansionFrameWithFrameProc = OS.CALLBACK_expansionFrameWithFrame_inView_ (proc4);
+	int /*long*/ sizeOfLabelProc = OS.CALLBACK_sizeOfLabel_ (proc3);
+	int /*long*/ drawLabelInRectProc = OS.CALLBACK_drawLabelInRect_ (proc4);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -2374,7 +2376,14 @@ void initClasses () {
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
-
+	
+	className = "SWTTabViewItem";
+	cls = OS.objc_allocateClassPair(OS.class_NSTabViewItem, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_sizeOfLabel_, sizeOfLabelProc, "@::");
+	OS.class_addMethod(cls, OS.sel_drawLabel_inRect_, drawLabelInRectProc, "@::{NSRect}");
+	OS.objc_registerClassPair(cls);
+	
 	className = "SWTTextView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
@@ -4809,6 +4818,12 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.setObjectValue(id, sel, arg0);
 	} else if (sel == OS.sel_updateOpenGLContext_) {
 		widget.updateOpenGLContext(id, sel, arg0);
+	} else if (sel == OS.sel_sizeOfLabel_) {
+		NSSize size = widget.sizeOfLabel(id, sel, arg0 != 0);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc(NSSize.sizeof);
+		OS.memmove(result, size, NSSize.sizeof);
+		return result;
 	}
 	return 0;
 }
@@ -4858,6 +4873,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		int /*long*/ result = OS.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
+	} else if (sel == OS.sel_drawLabel_inRect_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg1, NSRect.sizeof);
+		widget.drawLabelInRect(id, sel, arg0==1, rect);
 	}
 	return 0;
 }

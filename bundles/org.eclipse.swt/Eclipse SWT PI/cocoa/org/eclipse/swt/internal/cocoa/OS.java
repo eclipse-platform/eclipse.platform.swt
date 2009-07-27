@@ -418,6 +418,10 @@ public static final native int /*long*/ CALLBACK_titleRectForBounds_(int /*long*
 public static final native int /*long*/ CALLBACK_view_stringForToolTip_point_userData_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;WebView*;NSRect;,callback_flags=none;none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_webView_setFrame_(int /*long*/ func);
+/** @method callback_types=NSSize;id;SEL;BOOL;,callback_flags=struct;none;none;none; */
+public static final native int /*long*/ CALLBACK_sizeOfLabel_(int /*long*/ func);
+/** @method callback_types=void;id;SEL;BOOL;NSRect;,callback_flags=none;none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_drawLabelInRect_(int /*long*/ func);
 
 /** Classes */
 public static final int /*long*/ class_DOMDocument = objc_getClass("DOMDocument");
@@ -922,6 +926,7 @@ public static final int /*long*/ sel_drawInRect_ = sel_registerName("drawInRect:
 public static final int /*long*/ sel_drawInRect_angle_ = sel_registerName("drawInRect:angle:");
 public static final int /*long*/ sel_drawInRect_fromRect_operation_fraction_ = sel_registerName("drawInRect:fromRect:operation:fraction:");
 public static final int /*long*/ sel_drawInteriorWithFrame_inView_ = sel_registerName("drawInteriorWithFrame:inView:");
+public static final int /*long*/ sel_drawLabel_inRect_ = sel_registerName("drawLabel:inRect:");
 public static final int /*long*/ sel_drawRect_ = sel_registerName("drawRect:");
 public static final int /*long*/ sel_drawSortIndicatorWithFrame_inView_ascending_priority_ = sel_registerName("drawSortIndicatorWithFrame:inView:ascending:priority:");
 public static final int /*long*/ sel_drawStatusBarBackgroundInRect_withHighlight_ = sel_registerName("drawStatusBarBackgroundInRect:withHighlight:");
@@ -1633,6 +1638,7 @@ public static final int /*long*/ sel_shouldAntialias = sel_registerName("shouldA
 public static final int /*long*/ sel_shouldChangeTextInRange_replacementString_ = sel_registerName("shouldChangeTextInRange:replacementString:");
 public static final int /*long*/ sel_shouldDelayWindowOrderingForEvent_ = sel_registerName("shouldDelayWindowOrderingForEvent:");
 public static final int /*long*/ sel_size = sel_registerName("size");
+public static final int /*long*/ sel_sizeOfLabel_ = sel_registerName("sizeOfLabel:");
 public static final int /*long*/ sel_sizeToFit = sel_registerName("sizeToFit");
 public static final int /*long*/ sel_sizeValue = sel_registerName("sizeValue");
 public static final int /*long*/ sel_skipDescendents = sel_registerName("skipDescendents");
@@ -2876,6 +2882,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /**
  * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSRect arg1);
+/**
+ * @method flags=cast
  * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSSize arg0);
@@ -2913,6 +2924,8 @@ public static final native void objc_msgSendSuper_stret(NSRect result, objc_supe
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
+/** @method flags=cast */
+public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel, int /*long*/ arg1);
 
 /** Sends */
 
@@ -3113,6 +3126,11 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSSize arg0);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, boolean arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, boolean arg0, NSRect arg1);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, boolean arg0, int /*long*/ arg1);
 /** @method flags=cast */
@@ -3298,6 +3316,8 @@ public static final native void objc_msgSend_stret(NSSize result, int /*long*/ i
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSSize arg0, int /*long*/ arg1);
+/** @method flags=cast */
+public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, boolean arg0);
 
 /** Sizeof natives */
 public static final native int CGPathElement_sizeof();

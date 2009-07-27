@@ -33,6 +33,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabItem extends Item {
+	static final int IMAGE_GAP = 2;
 	TabFolder parent;
 	Control control;
 	String toolTipText;
@@ -116,9 +117,35 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget (nsItem);
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
+}
+
+void drawLabelInRect(int id, int sel, boolean shouldTruncateLabel, NSRect rect) {
+	if (image != null && !image.isDisposed()) {
+		NSSize imageSize = image.handle.size();
+		NSRect destRect = new NSRect();
+		destRect.x = rect.x;
+		destRect.y = rect.y;
+		destRect.width = imageSize.width;
+		destRect.height = imageSize.height;
+		NSGraphicsContext.static_saveGraphicsState();
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.scaleXBy(1, -1);
+		transform.translateXBy(0, -(destRect.height + 2 * destRect.y));
+		transform.concat();
+		image.handle.drawInRect(destRect, new NSRect(), OS.NSCompositeSourceOver, 1);
+		NSGraphicsContext.static_restoreGraphicsState();
+		rect.x += imageSize.width + IMAGE_GAP;
+		rect.width -= imageSize.width + IMAGE_GAP;		
+	}
+	super.drawLabelInRect(id, sel, shouldTruncateLabel, rect);
 }
 
 /**
@@ -202,6 +229,11 @@ public TabFolder getParent () {
 public String getToolTipText () {
 	checkWidget ();
 	return toolTipText;
+}
+
+void register () {
+	super.register ();
+	display.addWidget (nsItem, this);
 }
 
 void releaseHandle () {
@@ -358,6 +390,15 @@ public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
 	parent.checkToolTip (this);
+}
+
+NSSize sizeOfLabel(int id, int sel, boolean shouldTruncateLabel) {
+	NSSize size = super.sizeOfLabel(id, sel, shouldTruncateLabel);
+	if (image != null && !image.isDisposed()) {
+		NSSize imageSize = image.handle.size();
+		size.width += imageSize.width + IMAGE_GAP;
+	}
+	return size;
 }
 
 String tooltipText () {

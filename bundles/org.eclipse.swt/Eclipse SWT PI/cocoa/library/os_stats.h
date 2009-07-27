@@ -37,6 +37,7 @@ typedef enum {
 	CALLBACK_1draggedImage_1endedAt_1operation_1_FUNC,
 	CALLBACK_1drawImage_1withFrame_1inView_1_FUNC,
 	CALLBACK_1drawInteriorWithFrame_1inView_1_FUNC,
+	CALLBACK_1drawLabelInRect_1_FUNC,
 	CALLBACK_1drawRect_1_FUNC,
 	CALLBACK_1drawWithExpansionFrame_1inView_1_FUNC,
 	CALLBACK_1expansionFrameWithFrame_1inView_1_FUNC,
@@ -53,6 +54,7 @@ typedef enum {
 	CALLBACK_1setMarkedText_1selectedRange_1_FUNC,
 	CALLBACK_1setNeedsDisplayInRect_1_FUNC,
 	CALLBACK_1shouldChangeTextInRange_1replacementString_1_FUNC,
+	CALLBACK_1sizeOfLabel_1_FUNC,
 	CALLBACK_1textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1_FUNC,
 	CALLBACK_1titleRectForBounds_1_FUNC,
 	CALLBACK_1view_1stringForToolTip_1point_1userData_1_FUNC,
@@ -735,6 +737,11 @@ typedef enum {
 	objc_1msgSend__JJZJ_FUNC,
 #endif
 #ifndef JNI64
+	objc_1msgSend__IIZLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSend__JJZLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3B_FUNC,
 #else
 	objc_1msgSend__JJ_3B_FUNC,
@@ -814,6 +821,11 @@ typedef enum {
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC,
 #endif
 #ifndef JNI64
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
 #else
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2J_FUNC,
@@ -863,6 +875,11 @@ typedef enum {
 	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2I_FUNC,
 #else
 	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2J_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC,
+#else
+	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend_1bool__II_FUNC,
@@ -1038,6 +1055,11 @@ typedef enum {
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC,
 #else
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2ZZJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIZ_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJZ_FUNC,
 #endif
 	objc_1registerClassPair_FUNC,
 	objc_1super_1sizeof_FUNC,

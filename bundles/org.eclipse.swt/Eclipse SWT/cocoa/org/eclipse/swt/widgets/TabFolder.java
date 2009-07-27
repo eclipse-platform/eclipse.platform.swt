@@ -177,8 +177,10 @@ void createItem (TabItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
 	itemCount++;
-	NSTabViewItem nsItem = (NSTabViewItem)new NSTabViewItem().alloc().init();
+	NSTabViewItem nsItem = (NSTabViewItem)new SWTTabViewItem().alloc().init();
 	item.nsItem = nsItem;
+	item.createJNIRef ();
+	item.register ();
 	((NSTabView)view).insertTabViewItem(nsItem, index);
 }
 
