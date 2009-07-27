@@ -3276,9 +3276,10 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 	GCData data = new GCData ();
 	data.device = display;
 	int clrSelectionBk = -1;
-	boolean drawSelected = false, drawBackground = false, drawHot = false;
+	boolean drawSelected = false, drawBackground = false, drawHot = false, drawDrophilited = false;
 	if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
 		drawHot = hotIndex == nmcd.dwItemSpec;
+		drawDrophilited = (nmcd.uItemState & OS.CDIS_DROPHILITED) != 0;
 	}
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
@@ -3377,14 +3378,14 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 	}
 	int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
-	if (ignoreDrawForeground && ignoreDrawHot) {
+	if (ignoreDrawForeground && ignoreDrawHot && !drawDrophilited) {
 		if (!ignoreDrawBackground && drawBackground) {
 			RECT backgroundRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, true, false, hDC);
 			fillBackground (hDC, clrTextBk, backgroundRect);
 		}
 	}
 	focusRect = null;
-	if (!ignoreDrawHot || !ignoreDrawSelection || !ignoreDrawFocus) {
+	if (!ignoreDrawHot || !ignoreDrawSelection || !ignoreDrawFocus || drawDrophilited) {
 		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
 		RECT textRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 		if ((style & SWT.FULL_SELECTION) == 0) {
@@ -3398,8 +3399,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 			}
 		}
 		if (explorerTheme) {
-			if (!ignoreDrawHot || (!ignoreDrawSelection && clrSelectionBk != -1)) {
-				boolean hot = drawHot;
+			if (!ignoreDrawHot || drawDrophilited || (!ignoreDrawSelection && clrSelectionBk != -1)) {
 				RECT pClipRect = new RECT ();
 				OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 				RECT rect = new RECT ();
@@ -3420,7 +3420,8 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 				}
 				int /*long*/ hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
 				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
-				if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
+				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
+				if (drawDrophilited) iStateId = OS.LISS_SELECTED;
 				OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
 				OS.CloseThemeData (hTheme);
 			}

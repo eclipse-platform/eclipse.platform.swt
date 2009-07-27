@@ -419,6 +419,7 @@ public class OS extends C {
 	public static final int CDIS_CHECKED = 0x0008;
 	public static final int CDIS_FOCUS = 0x0010;
 	public static final int CDIS_DEFAULT = 0x0020;
+	public static final int CDIS_DROPHILITED = 0x1000;
 	public static final int CDIS_HOT = 0x0040;
 	public static final int CDIS_MARKED = 0x0080;
 	public static final int CDIS_INDETERMINATE = 0x0100;
