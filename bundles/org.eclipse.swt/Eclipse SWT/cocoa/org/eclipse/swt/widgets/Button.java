@@ -229,7 +229,18 @@ void createHandle () {
 //	}
 	int type = OS.NSMomentaryLightButton;
 	if ((style & SWT.PUSH) != 0) {
-		if ((style & SWT.FLAT) != 0) {
+		boolean flat = (style & SWT.FLAT) != 0;
+		if (!flat) {
+			NSView superview = widget.superview();
+			while (superview != null) {
+				if (superview.isKindOfClass(OS.class_NSTableView)) {
+					flat = true;
+					break;
+				}
+				superview = superview.superview();
+			}
+		}
+		if (flat) {
 			widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
 //			if ((style & SWT.BORDER) == 0) widget.setShowsBorderOnlyWhileMouseInside(true);
 		} else {
