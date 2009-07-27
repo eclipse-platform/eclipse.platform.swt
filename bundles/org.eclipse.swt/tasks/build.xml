@@ -399,6 +399,9 @@
 				<argument value="${version_file}"/>
 			</commandline>
 		</cvs>
+	
+		<!-- See bug 201700 -->
+		<!--antcall target="update_manifest"/-->
 	</target>
 
     <target name="update_manifest" depends="get_version">
