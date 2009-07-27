@@ -250,6 +250,8 @@ NSAutoreleasePool checkGC (int mask) {
 				NSRect rect = view.convertRect_toView_(view.bounds(), null);
 				if (data.paintRect == null) {
 					transform.translateXBy(rect.x, rect.y + rect.height);
+					float /*double*/ userSpaceScaleFactor = view.window().userSpaceScaleFactor();
+					transform.scaleXBy(userSpaceScaleFactor, userSpaceScaleFactor);
 				} else {
 					transform.translateXBy(0, rect.height);
 				}

@@ -2832,6 +2832,9 @@
 		<method class_method="true" selector="screens" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="userSpaceScaleFactor" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="visibleFrame" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4304,6 +4307,9 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="toolbar" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="userSpaceScaleFactor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="windowNumber" swt_gen="true">

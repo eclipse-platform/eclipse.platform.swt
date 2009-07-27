@@ -1742,6 +1742,7 @@ public static final int /*long*/ sel_useCredential_forAuthenticationChallenge_ =
 public static final int /*long*/ sel_usedRectForTextContainer_ = sel_registerName("usedRectForTextContainer:");
 public static final int /*long*/ sel_user = sel_registerName("user");
 public static final int /*long*/ sel_userInfo = sel_registerName("userInfo");
+public static final int /*long*/ sel_userSpaceScaleFactor = sel_registerName("userSpaceScaleFactor");
 public static final int /*long*/ sel_usesAlternatingRowBackgroundColors = sel_registerName("usesAlternatingRowBackgroundColors");
 public static final int /*long*/ sel_validAttributesForMarkedText = sel_registerName("validAttributesForMarkedText");
 public static final int /*long*/ sel_validateVisibleColumns = sel_registerName("validateVisibleColumns");

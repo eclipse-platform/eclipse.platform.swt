@@ -639,6 +639,15 @@ static void checkDisplay (Thread thread, boolean multiple) {
 	}
 }
 
+static NSRect convertRect(NSScreen screen, NSRect frame) {
+	float /*double*/ scaleFactor = screen.userSpaceScaleFactor();
+	frame.x /= scaleFactor;
+	frame.y /= scaleFactor;
+	frame.width /= scaleFactor;
+	frame.height /= scaleFactor;
+	return frame;
+}
+
 static String convertToLf(String text) {
 	char Cr = '\r';
 	char Lf = '\n';
@@ -1107,13 +1116,14 @@ public Rectangle getBounds () {
 }
 
 Rectangle getBounds (NSArray screens) {
-	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
+	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
+	NSRect primaryFrame = convertRect(screen, screen.frame());
 	float /*double*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
 	float /*double*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
 	int /*long*/ count = screens.count();
 	for (int i = 0; i < count; i++) {
-		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
-		NSRect frame = screen.frame();
+		screen = new NSScreen(screens.objectAtIndex(i));
+		NSRect frame = convertRect(screen, screen.frame());
 		float /*double*/ x1 = frame.x, x2 = frame.x + frame.width;
 		float /*double*/ y1 = primaryFrame.height - frame.y, y2 = primaryFrame.height - (frame.y + frame.height);
 		if (x1 < minX) minX = x1;
@@ -1162,8 +1172,8 @@ public Rectangle getClientArea () {
 	NSArray screens = NSScreen.screens();
 	if (screens.count() != 1) return getBounds (screens);
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-	NSRect frame = screen.frame();
-	NSRect visibleFrame = screen.visibleFrame();
+	NSRect frame = convertRect(screen, screen.frame());;
+	NSRect visibleFrame = convertRect(screen, screen.visibleFrame());
 	float /*double*/ y = frame.height - (visibleFrame.y + visibleFrame.height);
 	return new Rectangle((int)visibleFrame.x, (int)y, (int)visibleFrame.width, (int)visibleFrame.height);
 }
@@ -1475,18 +1485,19 @@ int getMessageCount () {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
-	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
+	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
+	NSRect primaryFrame = convertRect(screen, screen.frame());
 	int count = (int)/*64*/screens.count();
 	Monitor [] monitors = new Monitor [count];
 	for (int i=0; i<count; i++) {
 		Monitor monitor = new Monitor ();
-		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
-		NSRect frame = screen.frame();
+		screen = new NSScreen(screens.objectAtIndex(i));
+		NSRect frame = convertRect(screen, screen.frame());
 		monitor.x = (int)frame.x;
 		monitor.y = (int)(primaryFrame.height - (frame.y + frame.height));
 		monitor.width = (int)frame.width;
 		monitor.height = (int)frame.height;
-		NSRect visibleFrame = screen.visibleFrame();
+		NSRect visibleFrame = convertRect(screen, screen.visibleFrame());
 		monitor.clientX = (int)visibleFrame.x;
 		monitor.clientY = (int)(primaryFrame.height - (visibleFrame.y + visibleFrame.height));
 		monitor.clientWidth = (int)visibleFrame.width;
@@ -1513,12 +1524,12 @@ public Monitor getPrimaryMonitor () {
 	Monitor monitor = new Monitor ();
 	NSArray screens = NSScreen.screens();
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-	NSRect frame = screen.frame();
+	NSRect frame = convertRect(screen, screen.frame());;
 	monitor.x = (int)frame.x;
 	monitor.y = (int)(frame.height - (frame.y + frame.height));
 	monitor.width = (int)frame.width;
 	monitor.height = (int)frame.height;
-	NSRect visibleFrame = screen.visibleFrame();
+	NSRect visibleFrame = convertRect(screen, screen.visibleFrame());
 	monitor.clientX = (int)visibleFrame.x;
 	monitor.clientY = (int)(frame.height - (visibleFrame.y + visibleFrame.height));
 	monitor.clientWidth = (int)visibleFrame.width;
@@ -2903,10 +2914,15 @@ public Point map (Control from, Control to, int x, int y) {
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
+			float /*double*/ scaleFactor = fromWindow.userSpaceScaleFactor();
+			pt.x /= scaleFactor;
+			pt.y /= scaleFactor;
 		}
 		if (to != null) {
 			NSView view = to.eventView ();
-			pt.y = primaryFrame.height - pt.y;
+			float /*double*/ scaleFactor = toWindow.userSpaceScaleFactor();
+			pt.x *= scaleFactor;
+			pt.y = primaryFrame.height - (pt.y * scaleFactor);
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);
 			if (!view.isFlipped ()) {
@@ -3028,10 +3044,15 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
+			float /*double*/ scaleFactor = fromWindow.userSpaceScaleFactor();
+			pt.x /= scaleFactor;
+			pt.y /= scaleFactor;
 		}
 		if (to != null) {
 			NSView view = to.eventView ();
-			pt.y = primaryFrame.height - pt.y;
+			float /*double*/ scaleFactor = toWindow.userSpaceScaleFactor();
+			pt.x *= scaleFactor;
+			pt.y = primaryFrame.height - (pt.y * scaleFactor);
 			pt = toWindow.convertScreenToBase(pt);
 			pt = view.convertPoint_fromView_(pt, null);
 			if (!view.isFlipped ()) {

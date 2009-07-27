@@ -737,7 +737,13 @@ public Rectangle getBounds () {
 	checkWidget();
 	NSRect frame = (window == null ? view.frame() : window.frame());
 	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-	return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
+	Rectangle rectangle = new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
+	float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+	rectangle.x /= scaleFactor;
+	rectangle.y /= scaleFactor;
+	rectangle.width /= scaleFactor;
+	rectangle.height /= scaleFactor;
+	return rectangle;
 }
 
 public Rectangle getClientArea () {
@@ -1268,6 +1274,11 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	boolean sheet = window.isSheet();
 	if (sheet && move && !resize) return;
 	int screenHeight = (int) display.getPrimaryFrame().height;
+	float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+	x *= scaleFactor;
+	y *= scaleFactor;
+	width *= scaleFactor;
+	height *= scaleFactor;
 	NSRect frame = window.frame();
 	if (!move) {
 		x = (int)frame.x;

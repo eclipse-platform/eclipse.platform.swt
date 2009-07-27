@@ -241,7 +241,13 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	NSRect frame = getPrimaryScreen().frame();
+	NSScreen screen = getPrimaryScreen();
+	NSRect frame = screen.frame();
+	float /*double*/ scaleFactor = screen.userSpaceScaleFactor();
+	frame.x /= scaleFactor;
+	frame.y /= scaleFactor;
+	frame.width /= scaleFactor;
+	frame.height /= scaleFactor;
 	return new Rectangle((int)frame.x, (int)frame.y, (int)frame.width, (int)frame.height);
 }
 

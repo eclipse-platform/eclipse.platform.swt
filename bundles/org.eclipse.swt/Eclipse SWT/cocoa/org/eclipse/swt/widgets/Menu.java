@@ -218,8 +218,9 @@ void _setVisible (boolean visible) {
 			NSView topView = window.contentView();
 			Point shellCoord = display.map(null, shell, new Point(x,y));
 			location = new NSPoint ();
-			location.x = shellCoord.x;
-			location.y = topView.frame().height - shellCoord.y;
+			float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+			location.x = shellCoord.x * scaleFactor;
+			location.y = (topView.frame().height - shellCoord.y) * scaleFactor;
 		} else {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
