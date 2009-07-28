@@ -3,8 +3,8 @@
 
 	<target name="init" depends="properties">
 		<property name="compilerArg" value="" />
-		<condition property="fragment" value="org.eclipse.swt.${ws}.${os}.${arch}" else="org.eclipse.swt.${ws}.${os}">
-			<isset property="arch"/>
+		<condition property="fragment" value="org.eclipse.swt.${swt.ws}.${swt.os}.${swt.arch}" else="org.eclipse.swt.${swt.ws}.${swt.os}">
+			<isset property="swt.arch"/>
 		</condition>
 		<property name="full.name" value="${fragment}_${version.suffix}" />
 		<property name="temp.folder" value="${basedir}/temp.folder" />
@@ -57,7 +57,7 @@
 		<property name="jar.filename" value="swt.jar" />
 		<delete dir="${temp.folder}/@dot.bin" />
 		<mkdir dir="${temp.folder}/@dot.bin" />
-		<antcall target="copy.${ws}.src"/>
+		<antcall target="copy.${swt.ws}.src"/>
 		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="no" classpath="${plugindir}/extra_jars/exceptions.jar" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}">
 			<src path="${temp.folder}/@dot.src/"/>
 			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
@@ -87,7 +87,7 @@
 
 	<target name="src.zip" depends="init" unless="src.zip">
 		<mkdir dir="${build.result.folder}/" />
-		<antcall target="copy.${ws}.src"/>
+		<antcall target="copy.${swt.ws}.src"/>
 		<zip zipfile="${build.result.folder}/src.zip">
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.java"/>
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
@@ -100,7 +100,7 @@
 	</target>
 
 	<target name="copy.src" depends="init">
-		<antcall target="copy.${ws}.src"/>
+		<antcall target="copy.${swt.ws}.src"/>
 		<copy todir="${destination.temp.folder}/" failonerror="true" overwrite="true">
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.java"/>
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
@@ -385,10 +385,10 @@
 	<target name="is64">
 		<condition property="is64" value="true">
 			<or>
-				<equals arg1="${arch}" arg2="x86_64"/>
-				<equals arg1="${arch}" arg2="ia64"/>
-				<equals arg1="${arch}" arg2="ppc64"/>
-				<equals arg1="${arch}" arg2="s390x"/>
+				<equals arg1="${swt.arch}" arg2="x86_64"/>
+				<equals arg1="${swt.arch}" arg2="ia64"/>
+				<equals arg1="${swt.arch}" arg2="ppc64"/>
+				<equals arg1="${swt.arch}" arg2="s390x"/>
 			</or>
 		</condition>
 	</target>
@@ -481,8 +481,8 @@
 		<copy todir="${temp.folder}/swtdownload">
 			<fileset dir="${basedir}" includes="about.html,about_files/" />
 		</copy>
-		<condition property="zipfilename" value="swt-${buildid}-${ws}-${os}-${arch}.zip" else="swt-${buildid}-${ws}-${os}.zip">
-			<isset property="arch"/>
+		<condition property="zipfilename" value="swt-${buildid}-${swt.ws}-${swt.os}-${swt.arch}.zip" else="swt-${buildid}-${swt.ws}-${swt.os}.zip">
+			<isset property="swt.arch"/>
 		</condition>
 		<zip zipfile="${destination}/${zipfilename}">
 			<zipfileset dir="${temp.folder}/swtdownload/" />
