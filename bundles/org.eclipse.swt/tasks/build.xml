@@ -562,7 +562,7 @@
 		</cvs>
 	
 		<!-- Verify for changes in the native code -->
-		<cvs cvsRoot="${cvsRootAnon}" output="${tmpdir}/diff.txt">
+		<cvs cvsRoot="${cvsRootAnon}" dest="${tmpdir}" output="${tmpdir}/diff.txt">
 			<commandline>
 				<argument value="diff"/>
 				<argument value="-u"/>
