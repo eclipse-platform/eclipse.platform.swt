@@ -55,7 +55,6 @@
 		<property name="destdir" value="${temp.folder}/@dot.bin" />
 		<property name="debug" value="true" />
 		<property name="jar.filename" value="swt.jar" />
-		<echo>${jar.filename}</echo>
 		<delete dir="${temp.folder}/@dot.bin" />
 		<mkdir dir="${temp.folder}/@dot.bin" />
 		<antcall target="copy.${ws}.src"/>
@@ -65,7 +64,7 @@
 			<compilerarg line="${compilerArg}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
 		</javac>
 		<property name="includes" value="" />
-		<property name="excludes" value="**/*.java,**/library/,**/package.htm*,**/*._properties,**/*.extras,**/*.idl" />
+		<property name="excludes" value="**/*.java,**/package.htm*,**/library/,**/*._properties,**/*.extras,**/*.idl" />
 		<copy todir="${temp.folder}/@dot.bin">
 			<fileset dir="${temp.folder}/@dot.src/" includes="${includes}" excludes="${excludes}" />
 			<fileset dir="${plugindir}/components/" includes="${includes}" excludes="${excludes}" />
