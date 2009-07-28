@@ -29,17 +29,9 @@
 				</xsl:attribute> 
 			</argument>
 	<xsl:for-each select="project/element">
-	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390'">
-	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390x'">
-	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.ia64'">
-	<xsl:if test="@project != 'org.eclipse.swt.motif.hpux.PA_RISC'">
-			<argument>
-				<xsl:attribute name="value"><xsl:value-of select="@project"/></xsl:attribute>
-			</argument>
-	</xsl:if>
-	</xsl:if>
-	</xsl:if>
-	</xsl:if>
+		<argument>
+			<xsl:attribute name="value"><xsl:value-of select="@project"/></xsl:attribute>
+		</argument>
 	</xsl:for-each>
 	</commandline>
 	</cvs>
@@ -47,10 +39,6 @@
 
 <target name="update_map">
 	<xsl:for-each select="project/element">
-	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390'">
-	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.s390x'">
-	<xsl:if test="@project != 'org.eclipse.swt.gtk.linux.ia64'">
-	<xsl:if test="@project != 'org.eclipse.swt.motif.hpux.PA_RISC'">
 		<replaceregexp byline="true"> 
 			<xsl:attribute name="file">
 				<xsl:value-of select="$map"/>
@@ -58,10 +46,6 @@
 			<xsl:attribute name="match"><xsl:value-of select="@project"/>=v\d\d\d\d[a-z]?</xsl:attribute>
 			<xsl:attribute name="replace"><xsl:value-of select="@project"/>=<xsl:value-of select="$swt_new_tag"/></xsl:attribute>
 		</replaceregexp>
-	</xsl:if>
-	</xsl:if>
-	</xsl:if>
-	</xsl:if>
 	</xsl:for-each>
 </target>
 

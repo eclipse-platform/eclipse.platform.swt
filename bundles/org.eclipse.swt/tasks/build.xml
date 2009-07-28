@@ -239,6 +239,14 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
 		</antcall>
 	</target>
+	
+	<target name="build_gtk_linux_s390" depends="init_build">
+		<echo>gtk_linux_s390 is not being built</echo>
+	</target>
+	
+	<target name="build_gtk_linux_s390x" depends="init_build">
+		<echo>gtk_linux_s390x is not being built</echo>
+	</target>
 
 	<target name="build_motif_linux" depends="init_build">
 		<property name="clean" value="clean"/>
@@ -881,6 +889,22 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 			<param name="build_target" value="build_gtk_linux_ppc"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=${ant_home}/bin:$PATH; "/>
+		</antcall>
+	</target>
+	
+	<target name="gtk_linux_s390">
+		<antcall target="build_local">
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
+			<param name="build_target" value="build_gtk_linux_s390"/>
+		</antcall>
+	</target>
+
+	<target name="gtk_linux_s390x">
+		<antcall target="build_local">
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
+			<param name="build_target" value="build_gtk_linux_s390x"/>
 		</antcall>
 	</target>
 
