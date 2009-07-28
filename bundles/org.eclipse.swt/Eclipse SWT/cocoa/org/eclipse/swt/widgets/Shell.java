@@ -1690,7 +1690,16 @@ void updateParent (boolean visible) {
 	if (visible) {
 		if (parent != null && parent.getVisible ()) {
 			((Shell)parent).window.addChildWindow (window, OS.NSWindowAbove);
-		}		
+			
+			/**
+			 * Feature in Cocoa: When a window is added as a child window,
+			 * its window level resets to its parent's window level. So, we
+			 * have to set the level for ON_TOP child window again.
+			 */
+			if ((style & SWT.ON_TOP) != 0) {
+				window.setLevel(OS.NSStatusWindowLevel);
+			}
+		}
 	} else {
 		NSWindow parentWindow = window.parentWindow ();
 		if (parentWindow != null) parentWindow.removeChildWindow (window);
