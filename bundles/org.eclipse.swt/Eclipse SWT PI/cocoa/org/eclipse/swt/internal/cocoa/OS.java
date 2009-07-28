@@ -378,6 +378,8 @@ public static final native int /*long*/ CALLBACK_draggedImage_endedAt_operation_
 public static final native int /*long*/ CALLBACK_drawImage_withFrame_inView_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
 public static final native int /*long*/ CALLBACK_drawInteriorWithFrame_inView_(int /*long*/ func);
+/** @method callback_types=void;id;SEL;BOOL;NSRect;,callback_flags=none;none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_drawLabel_inRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_drawRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
@@ -410,6 +412,8 @@ public static final native int /*long*/ CALLBACK_setMarkedText_selectedRange_(in
 public static final native int /*long*/ CALLBACK_setNeedsDisplayInRect_(int /*long*/ func);
 /** @method callback_types=BOOL;id;SEL;NSRange;NSString*;,callback_flags=none;none;none;struct;none; */
 public static final native int /*long*/ CALLBACK_shouldChangeTextInRange_replacementString_(int /*long*/ func);
+/** @method callback_types=NSSize;id;SEL;BOOL;,callback_flags=struct;none;none;none; */
+public static final native int /*long*/ CALLBACK_sizeOfLabel_(int /*long*/ func);
 /** @method callback_types=NSRange;id;SEL;NSTextView*;NSRange;NSRange;,callback_flags=struct;none;none;none;struct;struct; */
 public static final native int /*long*/ CALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_(int /*long*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRect;,callback_flags=struct;none;none;struct; */
@@ -418,10 +422,6 @@ public static final native int /*long*/ CALLBACK_titleRectForBounds_(int /*long*
 public static final native int /*long*/ CALLBACK_view_stringForToolTip_point_userData_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;WebView*;NSRect;,callback_flags=none;none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_webView_setFrame_(int /*long*/ func);
-/** @method callback_types=NSSize;id;SEL;BOOL;,callback_flags=struct;none;none;none; */
-public static final native int /*long*/ CALLBACK_sizeOfLabel_(int /*long*/ func);
-/** @method callback_types=void;id;SEL;BOOL;NSRect;,callback_flags=none;none;none;none;struct; */
-public static final native int /*long*/ CALLBACK_drawLabelInRect_(int /*long*/ func);
 
 /** Classes */
 public static final int /*long*/ class_DOMDocument = objc_getClass("DOMDocument");
@@ -2882,16 +2882,16 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /**
  * @method flags=cast
- * @param arg1 flags=struct
- */
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSRect arg1);
-/**
- * @method flags=cast
  * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSSize arg0);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, boolean arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, boolean arg0, NSRect arg1);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0);
 /**
@@ -2925,7 +2925,7 @@ public static final native void objc_msgSendSuper_stret(NSRect result, objc_supe
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
 /** @method flags=cast */
-public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel, int /*long*/ arg1);
+public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel, boolean arg0);
 
 /** Sends */
 

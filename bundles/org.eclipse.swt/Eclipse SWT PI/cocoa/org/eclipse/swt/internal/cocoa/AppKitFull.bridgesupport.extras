@@ -3151,7 +3151,7 @@
 		</method>
 	</class>
 	<class name="NSTabViewItem" swt_gen="mixed">
-		<method selector="drawLabel:inRect:" swt_gen="true">
+		<method selector="drawLabel:inRect:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="shouldTruncateLabel" swt_gen="true"></arg>
 			<arg name="labelRect" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3168,7 +3168,7 @@
 			<arg name="view" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="sizeOfLabel:" swt_gen="true">
+		<method selector="sizeOfLabel:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="computeMin" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

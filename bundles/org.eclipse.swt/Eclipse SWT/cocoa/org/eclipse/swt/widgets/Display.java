@@ -2049,7 +2049,7 @@ void initClasses () {
 	int /*long*/ setNeedsDisplayInRectProc = OS.CALLBACK_setNeedsDisplayInRect_(proc3);
 	int /*long*/ expansionFrameWithFrameProc = OS.CALLBACK_expansionFrameWithFrame_inView_ (proc4);
 	int /*long*/ sizeOfLabelProc = OS.CALLBACK_sizeOfLabel_ (proc3);
-	int /*long*/ drawLabelInRectProc = OS.CALLBACK_drawLabelInRect_ (proc4);
+	int /*long*/ drawLabelInRectProc = OS.CALLBACK_drawLabel_inRect_ (proc4);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;

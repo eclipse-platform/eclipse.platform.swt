@@ -1771,7 +1771,7 @@ NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabe
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	NSSize result = new NSSize();
-	OS.objc_msgSendSuper_stret(result, super_struct, sel, shouldTruncateLabel ? 1 : 0);
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, shouldTruncateLabel);
 	return result;
 }
 
@@ -1779,7 +1779,7 @@ void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLa
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel, shouldTruncateLabel ? 1 : 0, rect);
+	OS.objc_msgSendSuper(super_struct, sel, shouldTruncateLabel, rect);
 }
 
 }
