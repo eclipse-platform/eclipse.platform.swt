@@ -627,7 +627,9 @@
 			<fileset dir="${fragment}" includes="*${old_version}*"/>
 			<regexpmapper from="(.*)${old_version}(.*)" to="\1${swt_version}\2"/>
 		</copy>
-
+		<chmod perm="755">
+			<fileset dir="${fragment}" includes="*${swt_version}*"/>
+		</chmod>
 		<fileset id="removeid" dir="${fragment}" includes="*${old_version}*"/>
 		<property name="rfiles" refid="removeid"/>
 		<echo file="tmp">removed_files=${rfiles}</echo>
