@@ -296,6 +296,9 @@
 	<enum name="NSWarningAlertStyle" swt_gen="true"></enum>
 	<enum name="NSWindowAbove" swt_gen="true"></enum>
 	<enum name="NSWindowBelow" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorCanJoinAllSpaces" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorDefault" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorMoveToActiveSpace" swt_gen="true"></enum>
 	<enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSYearMonthDayDatePickerElementFlag" swt_gen="true"></enum>
 	<function name="NSAccessibilityActionDescription" swt_gen="true">
@@ -4239,6 +4242,10 @@
 		</method>
 		<method selector="setBackgroundColor:" swt_gen="true">
 			<arg name="color" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setCollectionBehavior:" swt_gen="true">
+			<arg name="behavior" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setContentView:" swt_gen="true">

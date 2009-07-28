@@ -245,6 +245,10 @@ public void setBackgroundColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
 }
 
+public void setCollectionBehavior(int /*long*/ behavior) {
+	OS.objc_msgSend(this.id, OS.sel_setCollectionBehavior_, behavior);
+}
+
 public void setContentView(NSView aView) {
 	OS.objc_msgSend(this.id, OS.sel_setContentView_, aView != null ? aView.id : 0);
 }

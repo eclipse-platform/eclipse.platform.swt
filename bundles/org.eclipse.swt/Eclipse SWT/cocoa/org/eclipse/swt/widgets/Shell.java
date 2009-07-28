@@ -607,6 +607,7 @@ void createHandle () {
 		super.createHandle ();
 		style |= SWT.NO_BACKGROUND;
 	}
+	if (parent != null) window.setCollectionBehavior(OS.NSWindowCollectionBehaviorMoveToActiveSpace);
 	window.setAcceptsMouseMovedEvents(true);
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	window.setDelegate(windowDelegate);
