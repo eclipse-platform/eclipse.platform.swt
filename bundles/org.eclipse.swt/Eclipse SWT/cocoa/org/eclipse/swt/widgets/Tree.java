@@ -684,9 +684,20 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 		this.itemCount = count;
 	}
 	ignoreExpand = true;
-	reloadItem (parentItem, true);
+	NSOutlineView widget = (NSOutlineView)view;
+	if (getDrawing()) {
+		TreeItem[] selectedItems = getSelection ();
+		if (parentItem != null) {
+			widget.reloadItem (parentItem.handle, true);
+		} else {
+			widget.reloadData ();
+		}
+		selectItems (selectedItems, true);
+	} else {
+		reloadPending = true;
+	}
 	if (parentItem != null && parentItem.itemCount == 1 && parentItem.expanded) {
-		((NSOutlineView)view).expandItem (parentItem.handle);
+		widget.expandItem (parentItem.handle);
 	}
 	ignoreExpand = false;
 }
@@ -883,7 +894,16 @@ void destroyItem (TreeItem item) {
 	} else {
 		this.itemCount = count;
 	}
-	reloadItem (parentItem, true);
+	NSOutlineView widget = (NSOutlineView)view;
+	if (getDrawing()) {
+		if (parentItem != null) {
+			widget.reloadItem (parentItem.handle, true);
+		} else {
+			widget.reloadData ();
+		}
+	} else {
+		reloadPending = true;
+	}
 	setScrollWidth ();
 	if (this.itemCount == 0) imageBounds = null;
 }
@@ -2139,21 +2159,6 @@ void releaseWidget () {
 	sortColumn = null;
 }
 
-void reloadItem (TreeItem item, boolean recurse) {
-	if (getDrawing()) {
-		NSOutlineView widget = (NSOutlineView)view;
-		TreeItem[] selectedItems = getSelection ();
-		if (item != null) {
-			widget.reloadItem (item.handle, recurse);
-		} else {
-			widget.reloadData ();
-		}
-		selectItems (selectedItems, true);
-	} else {
-		reloadPending = true;
-	}
-}
-
 /**
  * Removes all of the items from the receiver.
  * 
@@ -2557,24 +2562,13 @@ void setItemCount (TreeItem parentItem, int count) {
 		} else {
 			parentItem.itemCount = count;
 		}
-		/*
-		* Bug in Cocoa.  When removing selected items from an NSOutlineView, the selection
-		* is not properly updated.  The fix is to ensure that the item and its subitems
-		* are deselected before the item is removed by the reloadItem call. 
-		*/
-		if (expanded) {
-			for (int index = count; index < itemCount; index ++) {
-				TreeItem item = children [index];
-				if (item != null && !item.isDisposed ()) item.clearSelection ();
-			}
-		}
 		TreeItem[] selectedItems = getSelection ();
 		widget.reloadItem (parentItem != null ? parentItem.handle : null, expanded);
-		selectItems (selectedItems, true);
 		for (int index = count; index < itemCount; index ++) {
 			TreeItem item = children [index];
 			if (item != null && !item.isDisposed()) item.release (false);
 		}
+		selectItems (selectedItems, true);
 		TreeItem [] newItems = new TreeItem [length];
 		if (children != null) {
 			System.arraycopy (children, 0, newItems, 0, count);

@@ -900,6 +900,10 @@ public int indexOf (TreeItem item) {
 	return -1;
 }
 
+boolean isDrawing () {
+	return getDrawing() && parent.isDrawing ();
+}
+
 void redraw (int columnIndex) {
 	if (parent.ignoreRedraw || !isDrawing()) return;
 	/* redraw the full item if columnIndex == -1 */
@@ -929,16 +933,13 @@ void register () {
 }
 
 void release(boolean destroy) {
-	/*
-	* Bug in Cocoa.  When removing selected items from an NSOutlineView, the selection
-	* is not properly updated.  The fix is to ensure that the item and its subitems
-	* are deselected before the item is removed by the reloadItem call. 
-	* 
-	* This has to be done in release to avoid traversing the tree twice when items are
-	* removed from the tree by setItemCount. 
-	*/
-	if (destroy) clearSelection ();
+	TreeItem[] selectedItems = null;
+	Tree parent = this.parent;
+	if (destroy) {
+		if (getDrawing()) selectedItems = parent.getSelection ();
+	}
 	super.release(destroy);
+	if (selectedItems != null) parent.selectItems (selectedItems, true);
 }
 
 void releaseChildren (boolean destroy) {
