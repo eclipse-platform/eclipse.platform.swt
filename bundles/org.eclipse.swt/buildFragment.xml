@@ -63,14 +63,10 @@
 			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
 			<compilerarg line="${compilerArg}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
 		</javac>
-		<property name="includes" value="" />
-		<property name="excludes" value="**/*.java,**/package.htm*,**/library/,**/*._properties,**/*.extras,**/*.idl" />
 		<copy todir="${temp.folder}/@dot.bin">
-			<fileset dir="${temp.folder}/@dot.src/" includes="${includes}" excludes="${excludes}" />
-			<fileset dir="${plugindir}/components/" includes="${includes}" excludes="${excludes}" />
+			<fileset dir="${temp.folder}/@dot.src/" excludes="**/*.java,**/package.htm*,**/library/" />
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
-		<antcall target="copy.translationfiles" />
-
 		<mkdir dir="${build.result.folder}/@dot" />
 		<copy todir="${build.result.folder}/@dot" failonerror="true">
 			<fileset dir="${temp.folder}/@dot.bin" />
@@ -111,23 +107,13 @@
 		<delete dir="${temp.folder}/@dot.src"/>
 	</target>
 
-	<target name="copy.translationfiles" if="includetranslationfiles">
-		<copy todir="${temp.folder}/@dot.bin" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties" excludes="" />
-		</copy>
-		<move todir="${temp.folder}/@dot.bin" overwrite="true">
-			<fileset dir="${temp.folder}/@dot.bin/" includes="**/*._properties" excludes="" />
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</move>
-	</target>
-
 	<target name="copy.carbon.src">
 		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
 		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
@@ -153,6 +139,10 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/carbon/"/>
 		</copy>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
+		</copy>
 		<antcall target="replace64"/>
 	</target>
 			
@@ -162,7 +152,7 @@
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
@@ -181,13 +171,17 @@
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/cocoa/" excludes="**/*.extras"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+		</copy>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
 		</copy>
 		<antcall target="replace64"/>
 	</target>
@@ -198,7 +192,7 @@
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/cairo/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/gtk/"/>
@@ -227,6 +221,10 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/gtk/"/>
 		</copy>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
+		</copy>
 		<antcall target="replace64"/>
 	</target>
 		
@@ -236,7 +234,7 @@
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/cairo/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/datetime"/>
@@ -273,6 +271,10 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 		</copy>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
+		</copy>
 		<antcall target="replace64"/>
 	</target>
 										
@@ -281,7 +283,7 @@
 		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/graphics/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
@@ -310,6 +312,10 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/photon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 		</copy>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
+		</copy>
 		<antcall target="replace64"/>
 	</target>
 													
@@ -318,7 +324,7 @@
 		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/win32/"/>
@@ -343,6 +349,10 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/win32/"/>
 		</copy>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
+		</copy>
 		<antcall target="replace64"/>
 	</target>
 
@@ -351,7 +361,7 @@
 		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/wpf/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/datetime/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
@@ -379,6 +389,10 @@
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Effects/emulated/"/>
 		</copy>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
+		</copy>
 		<antcall target="replace64"/>
 	</target>
 
@@ -391,6 +405,7 @@
 				<equals arg1="${swt.arch}" arg2="s390x"/>
 			</or>
 		</condition>
+		<echo>Is64=${is64}</echo>
 	</target>
 		
     <target name="replace64" depends="is64" if="is64">
