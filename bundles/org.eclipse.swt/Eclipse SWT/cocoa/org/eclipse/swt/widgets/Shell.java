@@ -753,6 +753,10 @@ public Rectangle getClientArea () {
 		rect = window.frame();
 		if (!fixResize ()) {
 			rect = window.contentRectForFrameRect(rect);
+		} else {
+			float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+			rect.width /= scaleFactor;
+			rect.height /= scaleFactor;
 		}
 	} else {
 		rect = scrollView != null ? scrollView.frame() : view.frame();
@@ -1650,6 +1654,9 @@ void setZOrder () {
 	if (fixResize ()) {
 		NSRect rect = window.frame();
 		rect.x = rect.y = 0;
+		float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+		rect.width /= scaleFactor;
+		rect.height /= scaleFactor;
 		window.contentView().setFrame(rect);
 	}
 }
@@ -1759,6 +1766,9 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 	if (fixResize ()) {
 		NSRect rect = window.frame ();
 		rect.x = rect.y = 0;
+		float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+		rect.width /= scaleFactor;
+		rect.height /= scaleFactor;
 		window.contentView ().setFrame (rect);
 	}
 	resized = true;
