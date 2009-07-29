@@ -1105,7 +1105,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		destRect.y = destY;
 		destRect.width = destWidth;
 		destRect.height = destHeight;
-		imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, 1);
+		imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, data.alpha / 255f);
 		handle.restoreGraphicsState();
 	} finally {
 		uncheckGC(pool);
