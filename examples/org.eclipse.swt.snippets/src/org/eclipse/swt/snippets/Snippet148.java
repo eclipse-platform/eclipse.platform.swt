@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
  
 /*
- * Text example snippet: check if the browser is available or not
+ * Browser example snippet: check if the browser is available or not
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
