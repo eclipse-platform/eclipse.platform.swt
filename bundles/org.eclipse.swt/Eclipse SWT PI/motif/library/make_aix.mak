@@ -29,7 +29,7 @@ SWT_PREFIX = swt
 WS_PREFIX = motif
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
 SWT_OBJS = swt.o c.o c_stats.o callback.o os.o os_structs.o os_custom.o os_stats.o
-SWT_LIBS = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext -liconv -lXtst
+SWT_LIBS = -L$(MOTIF_HOME)  -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext -liconv -lXtst
 
 CDE_PREFIX = swt-cde
 CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
@@ -40,12 +40,12 @@ CAIRO_PREFIX = swt-cairo
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
 CAIRO_OBJS = swt.o cairo.o cairo_structs.o cairo_stats.o
 CAIROCFLAGS = `pkg-config --cflags cairo`
-CAIRO_LIBS = -G -bnoentry -bexpall -lc `pkg-config --libs-only-L cairo` -lcairo
+CAIRO_LIBS =  -bnoentry -bexpall -lc `pkg-config --libs-only-L cairo` -lcairo
 
 AWT_PREFIX = swt-awt
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
 AWT_OBJS = swt_awt.o
-AWT_LIBS = -L$(AWT_HOME) -ljawt -G -bnoentry -bexpall -lc
+AWT_LIBS = -L$(AWT_HOME) -ljawt -lX11 -bnoentry -bexpall -lc
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
