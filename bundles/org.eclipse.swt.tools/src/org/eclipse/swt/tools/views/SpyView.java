@@ -49,7 +49,7 @@ public class SpyView extends ViewPart {
 						spyAction.run();
 					}
 					e.type = SWT.None;
-				};
+				}
 			}
 		};
 		parent.getDisplay().addFilter(SWT.KeyDown, keyFilter);

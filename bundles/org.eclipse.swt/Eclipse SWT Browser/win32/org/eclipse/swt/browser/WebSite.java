@@ -404,7 +404,7 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 						}
 						break;
 					}
-				};
+				}
 				if (isAccent) result = COM.S_OK;
 			}
 		}

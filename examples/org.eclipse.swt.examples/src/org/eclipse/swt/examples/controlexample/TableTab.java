@@ -678,7 +678,7 @@ class TableTab extends ScrollableTab {
     		public void widgetSelected(SelectionEvent e) {
     			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + table1.getItem(menuMouseCoords));
     			eventConsole.append ("\n");
-    		};
+    		}
     	});
 	}
 }

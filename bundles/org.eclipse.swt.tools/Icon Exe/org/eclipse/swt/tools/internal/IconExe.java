@@ -507,7 +507,7 @@ public static class IMAGE_FILE_HEADER {
 	int NumberOfSymbols; // DWORD
 	int SizeOfOptionalHeader; // WORD
 	int Characteristics; // WORD
-};
+}
 
 public static class IMAGE_DATA_DIRECTORY {
 	int VirtualAddress; // DWORD
@@ -565,7 +565,7 @@ public static class IMAGE_SECTION_HEADER {
 	int NumberOfRelocations; // WORD
 	int NumberOfLinenumbers; // WORD
 	int Characteristics; // DWORD
-};
+}
 
 public static class IMAGE_RESOURCE_DIRECTORY {
 	int Characteristics; // DWORD
@@ -671,10 +671,10 @@ static int readU2(RandomAccessFile raf) throws IOException {
 	return (b1 << 8 | b0);
 }
 static int read4(RandomAccessFile raf) throws IOException {
-	int b0 = raf.readByte() & 0xFF;;
-	int b1 = raf.readByte() & 0xFF;;
-	int b2 = raf.readByte() & 0xFF;;
-	int b3 = raf.readByte() & 0xFF;;
+	int b0 = raf.readByte() & 0xFF;
+	int b1 = raf.readByte() & 0xFF;
+	int b2 = raf.readByte() & 0xFF;
+	int b3 = raf.readByte() & 0xFF;
 	return b3 << 24 | b2 << 16 | b1 << 8 | b0;
 }
 static void write4(RandomAccessFile raf, int value) throws IOException {
@@ -781,7 +781,7 @@ static void read(RandomAccessFile raf, IMAGE_RESOURCE_DIRECTORY ird) throws IOEx
 	ird.MinorVersion = readU2(raf);
 	ird.NumberOfNamedEntries = readU2(raf);
 	ird.NumberOfIdEntries = readU2(raf);
-};
+}
 static void read(RandomAccessFile raf, IMAGE_RESOURCE_DIRECTORY_ENTRY irde) throws IOException {
 	irde.Name = read4(raf);
 	irde.OffsetToData = read4(raf);

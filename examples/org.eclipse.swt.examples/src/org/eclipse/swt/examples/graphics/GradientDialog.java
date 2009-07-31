@@ -148,7 +148,7 @@ public class GradientDialog extends Dialog {
 		Composite colorButtonComp = new Composite(parent, SWT.NONE);
 		
 		// layout buttons
-		RowLayout layout = new RowLayout();;
+		RowLayout layout = new RowLayout();
 		layout.type = SWT.VERTICAL;
 		layout.pack = false;
 		colorButtonComp.setLayout(layout);

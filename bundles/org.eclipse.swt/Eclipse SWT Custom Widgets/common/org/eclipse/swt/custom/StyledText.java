@@ -5412,7 +5412,7 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 			String line = lines[i];
 			int length = line.length();
 			if (length < maxLength) {
-				int numSpaces = maxLength - length;;
+				int numSpaces = maxLength - length;
 				StringBuffer buffer = new StringBuffer(length + numSpaces);
 				buffer.append(line);
 				for (int j = 0; j < numSpaces; j++) buffer.append(' ');
@@ -6849,7 +6849,7 @@ void redrawLines(int startLine, int lineCount, boolean bottomChanged) {
 		startLine = partialTopIndex;
 	}
 	if (endLine > partialBottomIndex) {
-		endLine = partialBottomIndex;;
+		endLine = partialBottomIndex;
 	}
 	int redrawTop = getLinePixel(startLine);
 	int redrawBottom = getLinePixel(endLine + 1);

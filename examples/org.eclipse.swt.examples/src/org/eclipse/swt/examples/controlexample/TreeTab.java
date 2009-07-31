@@ -776,7 +776,7 @@ class TreeTab extends ScrollableTab {
     		public void widgetSelected(SelectionEvent e) {
     			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + t.getItem(menuMouseCoords));
     			eventConsole.append ("\n");
-    		};
+    		}
     	});
 	}
 }

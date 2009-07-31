@@ -3111,7 +3111,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 					}
 					return 1;
 				}
-			};
+			}
 			MetaFileEnumProc object = new MetaFileEnumProc();
 			/* Avoid compiler warnings */
 			boolean compilerWarningWorkaround = false;

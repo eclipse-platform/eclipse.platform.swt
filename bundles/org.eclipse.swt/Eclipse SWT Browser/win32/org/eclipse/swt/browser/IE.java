@@ -1365,7 +1365,7 @@ void handleDOMEvent (OleEvent e) {
 		case 1: button = 1; break;
 		case 2: button = 3; break;
 		case 4: button = 2; break;
-	};
+	}
 
 	if (eventType.equals(EVENT_MOUSEDOWN)) {
 		newEvent.type = SWT.MouseDown;
