@@ -66,7 +66,7 @@ void setWindowSize(int windowSize) {
 
 void readNextBlockHeader() throws IOException {
 	isLastBlock = stream.getNextIdatBit() != 0;
-	compressionType = (byte)(stream.getNextIdatBits(2) & 0xFF);
+	compressionType = (byte) stream.getNextIdatBits(2);
 	if (compressionType > 2) stream.error();	
 	
 	if (compressionType == UNCOMPRESSED) {
@@ -92,14 +92,7 @@ byte getNextByte() throws IOException {
 		uncompressedBytesRemaining--;
 		return stream.getNextIdatByte();
 	} else {
-		byte value = getNextCompressedByte();
-		if (value == END_OF_COMPRESSED_BLOCK) {
-			if (isLastBlock) stream.error();
-			readNextBlockHeader();
-			return getNextByte();
-		} else {
-			return value;
-		}
+		return getNextCompressedByte();
 	}
 }
 
@@ -136,10 +129,10 @@ private byte getNextCompressedByte() throws IOException {
 	
 	int value = huffmanTables.getNextLiteralValue(stream);
 	if (value < END_OF_COMPRESSED_BLOCK) {
-		window[windowIndex] = (byte) (value & 0xFF);
+		window[windowIndex] = (byte) value;
 		windowIndex++;
 		if (windowIndex >= window.length) windowIndex = 0;
-		return (byte) (value & 0xFF);		
+		return (byte) value;		
 	} else if (value == END_OF_COMPRESSED_BLOCK) {
 		readNextBlockHeader();
 		return getNextByte();

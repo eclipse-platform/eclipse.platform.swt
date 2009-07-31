@@ -85,12 +85,12 @@ int decodePackBits(byte[] src, byte[] dest, int offsetDest) {
 	int srcIndex = 0;
 	while (srcIndex < src.length) {
 		byte n = src[srcIndex];
-		if (0 <= n && n <= 127) {
+		if (n >= 0) {
 			/* Copy next n+1 bytes literally */
 			System.arraycopy(src, ++srcIndex, dest, destIndex, n + 1);
 			srcIndex += n + 1;		
 			destIndex += n + 1;	
-		} else if (-127 <= n && n <= -1) {
+		} else if (n >= -127) {
 			/* Copy next byte -n+1 times */
 			byte value = src[++srcIndex];
 			for (int j = 0; j < -n + 1; j++) {
