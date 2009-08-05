@@ -133,6 +133,7 @@ typedef enum {
 	CFURLCopyLastPathComponent_FUNC,
 	CFURLCopyPathExtension_FUNC,
 	CFURLCreateCopyAppendingPathComponent_FUNC,
+	CFURLCreateCopyAppendingPathExtension_FUNC,
 	CFURLCreateCopyDeletingLastPathComponent_FUNC,
 	CFURLCreateData_FUNC,
 	CFURLCreateFromFSRef_FUNC,

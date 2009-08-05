@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 985;
-int OS_nativeFunctionCallCount[985];
+int OS_nativeFunctionCount = 986;
+int OS_nativeFunctionCallCount[986];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -125,6 +125,7 @@ char * OS_nativeFunctionNames[] = {
 	"CFURLCopyLastPathComponent",
 	"CFURLCopyPathExtension",
 	"CFURLCreateCopyAppendingPathComponent",
+	"CFURLCreateCopyAppendingPathExtension",
 	"CFURLCreateCopyDeletingLastPathComponent",
 	"CFURLCreateData",
 	"CFURLCreateFromFSRef",

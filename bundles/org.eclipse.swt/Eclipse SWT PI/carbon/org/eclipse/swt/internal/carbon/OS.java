@@ -1602,6 +1602,12 @@ public static final native int CFURLCreateCopyAppendingPathComponent(int allocat
 /**
  * @param allocator cast=(CFAllocatorRef)
  * @param url cast=(CFURLRef)
+ * @param extension cast=(CFStringRef)
+ */
+public static final native int CFURLCreateCopyAppendingPathExtension(int allocator, int url, int extension);
+/**
+ * @param allocator cast=(CFAllocatorRef)
+ * @param url cast=(CFURLRef)
  */
 public static final native int CFURLCreateCopyDeletingLastPathComponent(int allocator, int url);
 /**

@@ -1626,6 +1626,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateCopyAppendingPathComponent)
 }
 #endif
 
+#ifndef NO_CFURLCreateCopyAppendingPathExtension
+JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateCopyAppendingPathExtension)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateCopyAppendingPathExtension_FUNC);
+	rc = (jint)CFURLCreateCopyAppendingPathExtension((CFAllocatorRef)arg0, (CFURLRef)arg1, (CFStringRef)arg2);
+	OS_NATIVE_EXIT(env, that, CFURLCreateCopyAppendingPathExtension_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFURLCreateCopyDeletingLastPathComponent
 JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateCopyDeletingLastPathComponent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

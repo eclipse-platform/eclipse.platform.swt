@@ -237,7 +237,6 @@ int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
 						}
 					}
 				}
-				return 0;
 			}
 		}
 	}
@@ -295,31 +294,33 @@ public String open () {
 	int extensions = 0;
 	Callback filterCallback = null, eventCallback = null;
 	int [] outDialog = new int [1];
-	if ((style & SWT.SAVE) != 0) {
-		if (!overwrite) options.optionFlags |= OS.kNavDontConfirmReplacement;
-		OS.NavCreatePutFileDialog (options, 0, 0, 0, 0, outDialog);		
-	} else {
-		if ((style & SWT.MULTI) != 0) options.optionFlags |= OS.kNavAllowMultipleFiles;
-		int filterProc = 0, eventProc = 0;
-		if (filterExtensions != null && filterExtensions.length != 0) {
-			extensions = options.popupExtension = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, filterExtensions.length, 0);
-			for (int i = 0; i < filterExtensions.length; i++) {
-				String str = filterExtensions [i];
-				if (filterNames != null && filterNames.length > i) {
-					str = filterNames [i];
-				}
-				char [] chars = new char [str.length ()];
-				str.getChars (0, chars.length, chars, 0);
-				int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-				if (ptr != 0) OS.CFArrayAppendValue (extensions, ptr);
-			}			
+	int filterProc = 0, eventProc = 0;
+	if (filterExtensions != null && filterExtensions.length != 0) {
+		extensions = options.popupExtension = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, filterExtensions.length, 0);
+		for (int i = 0; i < filterExtensions.length; i++) {
+			String str = filterExtensions [i];
+			if (filterNames != null && filterNames.length > i) {
+				str = filterNames [i];
+			}
+			char [] chars = new char [str.length ()];
+			str.getChars (0, chars.length, chars, 0);
+			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+			if (ptr != 0) OS.CFArrayAppendValue (extensions, ptr);
+		}
+		if ((style & SWT.SAVE) == 0) {
 			filterCallback = new Callback (this, "filterProc", 4);
 			filterProc = filterCallback.getAddress();
 			if (filterProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			eventCallback = new Callback (this, "eventProc", 3);
-			eventProc = eventCallback.getAddress();
-			if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		}
+		eventCallback = new Callback (this, "eventProc", 3);
+		eventProc = eventCallback.getAddress();
+		if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+	if ((style & SWT.SAVE) != 0) {
+		if (!overwrite) options.optionFlags |= OS.kNavDontConfirmReplacement;
+		OS.NavCreatePutFileDialog (options, 0, 0, eventProc, 0, outDialog);	
+	} else {
+		if ((style & SWT.MULTI) != 0) options.optionFlags |= OS.kNavAllowMultipleFiles;
 		OS.NavCreateGetFileDialog(options, 0, eventProc, 0, filterProc, 0, outDialog);
 	}
 	if (outDialog [0] != 0) {
@@ -382,14 +383,39 @@ public String open () {
 
 							/* Full path */
 							int fullUrl = OS.CFURLCreateCopyAppendingPathComponent (OS.kCFAllocatorDefault, pathUrl, record.saveFileName, false);
+							if (filterExtensions != null && filterExtensions.length != 0) {
+								if (0 <= filterIndex && filterIndex < filterExtensions.length) {
+									/* Append extension if not present */
+									int ext = OS.CFURLCopyPathExtension (fullUrl);
+									if (ext == 0) {
+										String exts = filterExtensions [filterIndex];
+										int length = exts.length ();
+										int index = exts.indexOf (EXTENSION_SEPARATOR);
+										if (index == -1) index = length;
+										String filter = exts.substring (0, index).trim ();
+										if (!filter.equals ("*") && !filter.equals ("*.*")) {
+											if (filter.startsWith ("*.")) filter = filter.substring (2);
+											char[] buffer = new char[filter.length()];
+											filter.getChars(0, buffer.length, buffer, 0);
+											ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer, buffer.length);
+											int fullUrlWithExt = OS.CFURLCreateCopyAppendingPathExtension(OS.kCFAllocatorDefault, fullUrl, ext);
+											OS.CFRelease(fullUrl);
+											fullUrl = fullUrlWithExt;
+										}
+									}
+									if (ext != 0) OS.CFRelease(ext);
+								}
+							}
 							int fullString = OS.CFURLCopyFileSystemPath (fullUrl, OS.kCFURLPOSIXPathStyle);
 							fullPath = getString (fullString);
 							OS.CFRelease (fullString);
-							OS.CFRelease (fullUrl);
 
 							/* File name */
-							fileName = fileNames [0] = getString (record.saveFileName);
+							int file = OS.CFURLCopyLastPathComponent(fullUrl);
+							fileName = fileNames [0] = getString (file);
+							OS.CFRelease(file);
 							
+							OS.CFRelease (fullUrl);
 							OS.CFRelease (pathUrl);
 						}
 					} else {
