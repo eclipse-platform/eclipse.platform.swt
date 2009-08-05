@@ -127,7 +127,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-void drawLabelInRect(int id, int sel, boolean shouldTruncateLabel, NSRect rect) {
+void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel, NSRect rect) {
 	if (image != null && !image.isDisposed()) {
 		NSSize imageSize = image.handle.size();
 		NSRect destRect = new NSRect();
@@ -392,7 +392,7 @@ public void setToolTipText (String string) {
 	parent.checkToolTip (this);
 }
 
-NSSize sizeOfLabel(int id, int sel, boolean shouldTruncateLabel) {
+NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel) {
 	NSSize size = super.sizeOfLabel(id, sel, shouldTruncateLabel);
 	if (image != null && !image.isDisposed()) {
 		NSSize imageSize = image.handle.size();
