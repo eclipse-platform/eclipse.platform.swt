@@ -810,7 +810,7 @@
 		<replace dir="." includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
 		<replace dir="." includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
 		<replace dir="." includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
-		<antcall target="init"/>
+		<antcall target="init_build"/>
 	</target>
 
 	<!-- Convert SWT 64 bit java and C source to 32 bit  -->
@@ -820,7 +820,7 @@
 		<replace dir="." includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
 		<replace dir="." includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
 		<replace dir="." includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
-		<antcall target="init"/>
+		<antcall target="init_build"/>
 	</target>
 
 	<!-- all platforms -->
