@@ -266,10 +266,37 @@ public String open () {
 		if (method != 0) OS.method_setImplementation(method, methodImpl);
 		if (callback != null) callback.dispose();
 	}
+	if (popup != null) {
+		filterIndex = (int)/*64*/popup.indexOfSelectedItem();
+	} else {
+		filterIndex = -1;
+	}
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
-		fullPath = filename.getString();
-		if ((style & SWT.SAVE) == 0) {
+		if ((style & SWT.SAVE) != 0) {
+			if (filterExtensions != null && filterExtensions.length != 0) {
+				if (0 <= filterIndex && filterIndex < filterExtensions.length) {
+					/* Append extension if not present */
+					NSString ext = filename.pathExtension();
+					if (ext == null || ext.length() == 0) {
+						String exts = filterExtensions [filterIndex];
+						int length = exts.length ();
+						int index = exts.indexOf (EXTENSION_SEPARATOR);
+						if (index == -1) index = length;
+						String filter = exts.substring (0, index).trim ();
+						if (!filter.equals ("*") && !filter.equals ("*.*")) {
+							if (filter.startsWith ("*.")) filter = filter.substring (2);
+							filename = filename.stringByAppendingPathExtension(NSString.stringWith(filter));
+						}	
+					}
+				}
+			}
+			fullPath = filename.getString();
+			fileNames = new String [1];
+			fileName = fileNames [0] = filename.lastPathComponent().getString();
+			filterPath = filename.stringByDeletingLastPathComponent().getString();
+		} else {
+			fullPath = filename.getString();
 			NSArray filenames = ((NSOpenPanel)panel).filenames();
 			int count = (int)/*64*/filenames.count();
 			fileNames = new String[count];
@@ -294,10 +321,8 @@ public String open () {
 				}
 			}
 		}
-		filterIndex = -1;
 	}
 	if (popup != null) {
-		filterIndex = (int)/*64*/popup.indexOfSelectedItem();
 		panel.setAccessoryView(null);
 		popup.release();
 		popup = null;

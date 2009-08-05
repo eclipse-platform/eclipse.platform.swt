@@ -1656,6 +1656,7 @@ public static final int /*long*/ sel_stopLoading_ = sel_registerName("stopLoadin
 public static final int /*long*/ sel_string = sel_registerName("string");
 public static final int /*long*/ sel_stringByAddingPercentEscapesUsingEncoding_ = sel_registerName("stringByAddingPercentEscapesUsingEncoding:");
 public static final int /*long*/ sel_stringByAppendingPathComponent_ = sel_registerName("stringByAppendingPathComponent:");
+public static final int /*long*/ sel_stringByAppendingPathExtension_ = sel_registerName("stringByAppendingPathExtension:");
 public static final int /*long*/ sel_stringByAppendingString_ = sel_registerName("stringByAppendingString:");
 public static final int /*long*/ sel_stringByDeletingLastPathComponent = sel_registerName("stringByDeletingLastPathComponent");
 public static final int /*long*/ sel_stringByDeletingPathExtension = sel_registerName("stringByDeletingPathExtension");

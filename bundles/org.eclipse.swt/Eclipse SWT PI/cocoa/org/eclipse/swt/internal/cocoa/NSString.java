@@ -98,6 +98,11 @@ public NSString stringByAppendingPathComponent(NSString str) {
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
+public NSString stringByAppendingPathExtension(NSString str) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByAppendingPathExtension_, str != null ? str.id : 0);
+	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
+}
+
 public NSString stringByAppendingString(NSString aString) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByAppendingString_, aString != null ? aString.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
