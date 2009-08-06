@@ -568,7 +568,6 @@
 		<cvs dest="${fragment}" command="add -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 
-
 	<!-- Params: cvsRsh, tmpdir, and swt_new_tag -->
 	<target name="update_buildnotes" depends="get_tag, get_new_tag">
 		<property name="MILESTONE" value=""/>
@@ -576,7 +575,7 @@
 			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
 		</tstamp>
 		<tstamp>
-			<format property="url.to.time" pattern="yyyy-MM-dd"/>
+			<format property="url.to.time" pattern="yyyy-MM-dd'+'HH'%3A'mm'%3A'ss'+%2B0000'" timezone="gmt"/>
 		</tstamp>
 		<property name="build_notes" value="org.eclipse.swt/buildnotes_swt.html"/>
 		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" output="${tmpdir}/rlog.txt">
