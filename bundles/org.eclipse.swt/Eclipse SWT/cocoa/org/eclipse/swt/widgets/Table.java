@@ -76,7 +76,7 @@ public class Table extends Composite {
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
-	boolean ignoreSelect, fixScrollWidth, drawExpansion;
+	boolean ignoreSelect, fixScrollWidth, drawExpansion, wasSelected;
 	Rectangle imageBounds;
 
 	static int NEXT_ID;
@@ -1860,8 +1860,9 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 }
 
 void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSTableView widget = (NSTableView)view;
+	NSEvent nsEvent = new NSEvent(theEvent);
 	if (headerView != null && id == headerView.id) {
-		NSTableView widget = (NSTableView)view;
 		widget.setAllowsColumnReordering(false);
 		NSPoint pt = headerView.convertPoint_fromView_(new NSEvent(theEvent).locationInWindow(), null);
 		int /*long*/ nsIndex = headerView.columnAtPoint(pt);
@@ -1880,10 +1881,22 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		// it from menuForEvent:.  This has the side effect, however, of sending control-click to the NSTableView,
 		// which is interpreted as a single click that clears the selection.  Fix is to ignore control-click if the 
 		// view has a context menu.
-		NSEvent event = new NSEvent(theEvent);
-		if ((event.modifierFlags() & OS.NSControlKeyMask) != 0) return;
+		if ((nsEvent.modifierFlags() & OS.NSControlKeyMask) != 0) return;
 	}
+	wasSelected = false;
 	super.mouseDown(id, sel, theEvent);
+	if (!wasSelected) {
+		NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
+		int /*long*/ row = widget.rowAtPoint(pt);
+		if (row != -1 && widget.isRowSelected(row)) {
+			if (0 < row && row <= itemCount) {
+				Event event = new Event ();
+				event.item = _getItem ((int)/*64*/row);
+				postEvent (SWT.Selection, event);
+			}
+		}
+	}
+	wasSelected = false;
 }
 
 /*
@@ -3010,6 +3023,7 @@ void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ a
 }
 
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	wasSelected = true;
 	if (ignoreSelect) return;
 	NSTableView widget = (NSTableView) view;
 	int row = (int)/*64*/widget.selectedRow ();
