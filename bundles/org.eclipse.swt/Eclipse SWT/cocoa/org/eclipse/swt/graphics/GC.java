@@ -2353,6 +2353,8 @@ public Rectangle getClipping() {
 			}
 			if (data.clipPath != null) {
 				NSRect clip = data.clipPath.bounds();
+				clip.x = (int)clip.x;
+				clip.y = (int)clip.y;
 				OS.NSIntersectionRect(rect, rect, clip);
 			}
 			if (data.inverseTransform != null && rect.width > 0 && rect.height > 0) {
