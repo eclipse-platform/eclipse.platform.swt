@@ -62,4 +62,4 @@ SWT_Download_Location=Enregistrement de {0} depuis {1}
 SWT_Download_Started=T\u00e9l\u00e9chargement \...
 SWT_Download_Status=T\u00e9l\u00e9charger\u00a0: {0,number,integer} ko de {1,number,integer} ko
 SWT_Authentication_Required=Authentification requise
-SWT_Enter_Username_and_Password=Entrer le nom d'utilisateur et le mot de passe pour {0} au niveau de {1}
+SWT_Enter_Username_and_Password=Entrer le nom d''utilisateur et le mot de passe pour {0} au niveau de {1}
