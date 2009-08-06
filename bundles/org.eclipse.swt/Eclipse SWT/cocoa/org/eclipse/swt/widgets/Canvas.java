@@ -174,8 +174,14 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 			destRect.size.width = size.width;
 			destRect.size.height = size.height;
 		 	int /*long*/ data = rep.bitmapData();
+			int /*long*/ format = rep.bitmapFormat();
 		 	int /*long*/ bpr = rep.bytesPerRow();
-			int alphaInfo = rep.hasAlpha() ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaNoneSkipFirst;
+			int alphaInfo;
+			if (rep.hasAlpha()) {
+				alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaLast;
+			} else {
+				alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaNoneSkipLast;
+			}
 		 	int /*long*/ provider = OS.CGDataProviderCreateWithData(0, data, bpr * (int)size.height, 0);
 			int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
 			int /*long*/ cgImage = OS.CGImageCreate((int)size.width, (int)size.height, rep.bitsPerSample(), rep.bitsPerPixel(), bpr, colorspace, alphaInfo, provider, 0, true, 0);

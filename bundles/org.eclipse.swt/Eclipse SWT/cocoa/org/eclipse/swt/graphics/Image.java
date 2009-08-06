@@ -235,20 +235,33 @@ public Image(Device device, Image srcImage, int flag) {
 			alphaData = new byte[srcImage.alphaData.length];
 			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 		}
+		
+		int /*long*/ srcData = srcRep.bitmapData();
+		int /*long*/ format = srcRep.bitmapFormat();
+		int /*long*/ bpp = srcRep.bitsPerPixel();
 
 		/* Create the image */
 		handle = (NSImage)new NSImage().alloc();
 		handle = handle.initWithSize(size);
 		NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.samplesPerPixel() == 4, srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, srcRep.bytesPerRow(), srcRep.bitsPerPixel());
+		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.hasAlpha(), srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, format, srcRep.bytesPerRow(), bpp);
 		handle.addRepresentation(rep);
 		rep.release();
 		handle.setCacheMode(OS.NSImageCacheNever);
 
 		int /*long*/ data = rep.bitmapData();
-		OS.memmove(data, srcRep.bitmapData(), width * height * 4);
+		OS.memmove(data, srcData, width * height * 4);
 		if (flag != SWT.IMAGE_COPY) {
-
+			final int redOffset, greenOffset, blueOffset;
+			if (bpp == 32 && (format & OS.NSAlphaFirstBitmapFormat) == 0) {
+				redOffset = 0;
+				greenOffset = 1;
+				blueOffset = 2;
+			} else {
+				redOffset = 1;
+				greenOffset = 2;
+				blueOffset = 3;
+			}
 			/* Apply transformation */
 			switch (flag) {
 			case SWT.IMAGE_DISABLE: {
@@ -267,18 +280,18 @@ public Image(Device device, Image srcImage, int flag) {
 					OS.memmove(line, data + (y * bpr), bpr);
 					int offset = 0;
 					for (int x=0; x<width; x++) {
-						int red = line[offset+1] & 0xFF;
-						int green = line[offset+2] & 0xFF;
-						int blue = line[offset+3] & 0xFF;
+						int red = line[offset+redOffset] & 0xFF;
+						int green = line[offset+greenOffset] & 0xFF;
+						int blue = line[offset+blueOffset] & 0xFF;
 						int intensity = red * red + green * green + blue * blue;
 						if (intensity < 98304) {
-							line[offset+1] = zeroRed;
-							line[offset+2] = zeroGreen;
-							line[offset+3] = zeroBlue;
+							line[offset+redOffset] = zeroRed;
+							line[offset+greenOffset] = zeroGreen;
+							line[offset+blueOffset] = zeroBlue;
 						} else {
-							line[offset+1] = oneRed;
-							line[offset+2] = oneGreen;
-							line[offset+3] = oneBlue;
+							line[offset+redOffset] = oneRed;
+							line[offset+greenOffset] = oneGreen;
+							line[offset+blueOffset] = oneBlue;
 						}
 						offset += 4;
 					}
@@ -292,11 +305,11 @@ public Image(Device device, Image srcImage, int flag) {
 					OS.memmove(line, data + (y * bpr), bpr);
 					int offset = 0;
 					for (int x=0; x<width; x++) {
-						int red = line[offset+1] & 0xFF;
-						int green = line[offset+2] & 0xFF;
-						int blue = line[offset+3] & 0xFF;
+						int red = line[offset+redOffset] & 0xFF;
+						int green = line[offset+greenOffset] & 0xFF;
+						int blue = line[offset+blueOffset] & 0xFF;
 						byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
-						line[offset+1] = line[offset+2] = line[offset+3] = intensity;
+						line[offset+redOffset] = line[offset+greenOffset] = line[offset+blueOffset] = intensity;
 						offset += 4;
 					}
 					OS.memmove(data + (y * bpr), line, bpr);
@@ -538,22 +551,31 @@ void createAlpha () {
 		NSBitmapImageRep imageRep = getRepresentation();
 		int /*long*/ height = imageRep.pixelsHigh();
 		int /*long*/ bpr = imageRep.bytesPerRow();
+		int /*long*/ bitmapData = imageRep.bitmapData();
+		int /*long*/ format = imageRep.bitmapFormat();
 		int /*long*/ dataSize = height * bpr;
 		byte[] srcData = new byte[(int)/*64*/dataSize];
-		OS.memmove(srcData, imageRep.bitmapData(), dataSize);
+		OS.memmove(srcData, bitmapData, dataSize);
 		if (transparentPixel != -1) {
-			for (int i=0; i<dataSize; i+=4) {
-				int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
-				srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+			if ((format & OS.NSAlphaFirstBitmapFormat) != 0) {
+				for (int i=0; i<dataSize; i+=4) {
+					int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
+					srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+				}
+			} else {
+				for (int i=0; i<dataSize; i+=4) {
+					int pixel = ((srcData[i+0] & 0xFF) << 16) | ((srcData[i+1] & 0xFF) << 8) | (srcData[i+2] & 0xFF);
+					srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+				}
 			}
 		} else if (alpha != -1) {
 			byte a = (byte)this.alpha;
-			for (int i=0; i<dataSize; i+=4) {
+			for (int i=(format & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3; i<dataSize; i+=4) {
 				srcData[i] = a;				
 			}
 		} else {
 			int /*long*/ width = imageRep.pixelsWide();
-			int offset = 0, alphaOffset = 0;
+			int offset = 0, alphaOffset = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3;
 			for (int y = 0; y<height; y++) {
 				for (int x = 0; x<width; x++) {
 					srcData[offset] = alphaData[alphaOffset];
@@ -566,7 +588,7 @@ void createAlpha () {
 		// Since we just calculated alpha for the image rep, tell it that it now has an alpha component.
 		imageRep.setAlpha(true);
 
-		OS.memmove(imageRep.bitmapData(), srcData, dataSize);
+		OS.memmove(bitmapData, srcData, dataSize);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -675,43 +697,60 @@ public ImageData getImageData() {
 		int /*long*/ height = imageRep.pixelsHigh();
 		int /*long*/ bpr = imageRep.bytesPerRow();
 		int /*long*/ bpp = imageRep.bitsPerPixel();
+		int /*long*/ bitmapData = imageRep.bitmapData();
+		int /*long*/ bitmapFormat = imageRep.bitmapFormat();
 		int /*long*/ dataSize = height * bpr;
-
 		byte[] srcData = new byte[(int)/*64*/dataSize];
-		OS.memmove(srcData, imageRep.bitmapData(), dataSize);
-
-		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-		ImageData data = new ImageData((int)/*64*/width, (int)/*64*/height, (int)/*64*/bpp, palette, 4, srcData);
+		OS.memmove(srcData, bitmapData, dataSize);
+		
+		PaletteData palette;
+		if (bpp == 32 && (bitmapFormat & OS.NSAlphaFirstBitmapFormat) == 0) {
+			palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
+		} else {
+			palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		}
+		ImageData data = new ImageData((int)/*64*/width, (int)/*64*/height, (int)/*64*/bpp, palette, 1, srcData);
 		data.bytesPerLine = (int)/*64*/bpr;
-
-		data.transparentPixel = transparentPixel;
-		if (transparentPixel == -1 && type == SWT.ICON) {
-			/* Get the icon mask data */
-			int maskPad = 2;
-			int /*long*/ maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
-			byte[] maskData = new byte[(int)/*64*/(height * maskBpl)];
-			int offset = 0, maskOffset = 0;
-			for (int y = 0; y<height; y++) {
-				for (int x = 0; x<width; x++) {
-					if (srcData[offset] != 0) {
-						maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
-					} else {
-						maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
-					}
-					offset += 4;
-				}
-				maskOffset += maskBpl;
+		if (imageRep.hasAlpha() && transparentPixel == -1 && alpha == -1 && alphaData == null) {
+			byte[] alphaData = new byte[(int)/*64*/(width * height)];
+			int offset = (bitmapFormat & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3, a = 0;
+			for (int i = offset; i < srcData.length; i+= 4) {
+				alphaData[a++] = srcData[i];
 			}
-			data.maskData = maskData;
-			data.maskPad = maskPad;
+			data.alphaData = alphaData;
+		} else {
+			data.transparentPixel = transparentPixel;
+			if (transparentPixel == -1 && type == SWT.ICON) {
+				/* Get the icon mask data */
+				int maskPad = 2;
+				int /*long*/ maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
+				byte[] maskData = new byte[(int)/*64*/(height * maskBpl)];
+				int offset = 0, maskOffset = 0;
+				for (int y = 0; y<height; y++) {
+					for (int x = 0; x<width; x++) {
+						if (srcData[offset] != 0) {
+							maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
+						} else {
+							maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
+						}
+						offset += 4;
+					}
+					maskOffset += maskBpl;
+				}
+				data.maskData = maskData;
+				data.maskPad = maskPad;
+			}
+			data.alpha = alpha;
+			if (alpha == -1 && alphaData != null) {
+				data.alphaData = new byte[alphaData.length];
+				System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
+			}
 		}
-		for (int i = 0; i < srcData.length; i+= 4) {
-			srcData[i] = 0;
-		}
-		data.alpha = alpha;
-		if (alpha == -1 && alphaData != null) {
-			data.alphaData = new byte[alphaData.length];
-			System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
+		if (bpp == 32) {
+			int offset = (bitmapFormat & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3;
+			for (int i = offset; i < srcData.length; i+= 4) {
+				srcData[i] = 0;
+			}
 		}
 		return data;
 	} finally {
@@ -744,11 +783,33 @@ public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 }
 
 NSBitmapImageRep getRepresentation () {
-	NSImageRep rep = handle.bestRepresentationForDevice(null);
-	if (!rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
-		SWT.error(SWT.ERROR_UNSPECIFIED);
+	NSBitmapImageRep rep = new NSBitmapImageRep(handle.bestRepresentationForDevice(null));
+	if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
+		return rep;
 	}
-	return new NSBitmapImageRep(rep);
+	NSArray reps = handle.representations();
+	NSSize size = handle.size();
+	int /*long*/ count = reps.count();
+	NSBitmapImageRep bestRep = null;
+	for (int i = 0; i < count; i++) {
+		rep = new NSBitmapImageRep(reps.objectAtIndex(i));
+		if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) return rep;
+		if (bestRep == null || ((int)size.width == rep.pixelsWide() && (int)size.height == rep.pixelsHigh())) {
+			bestRep = rep;
+		}
+	}
+	bestRep.retain();
+	for (int i = 0; i < count; i++) {
+		handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
+	}
+	handle.addRepresentation(bestRep);
+	NSBitmapImageRep newRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	newRep = newRep.initWithData(handle.TIFFRepresentation());
+	handle.addRepresentation(newRep);
+	handle.removeRepresentation(bestRep);
+	bestRep.release();
+	newRep.release();
+	return newRep;
 }
 
 /**
@@ -1160,14 +1221,26 @@ public void setBackground(Color color) {
 		NSBitmapImageRep imageRep = getRepresentation();
 		int /*long*/ bpr = imageRep.bytesPerRow();
 		int /*long*/ data = imageRep.bitmapData();
+		int /*long*/ format = imageRep.bitmapFormat();
+		int /*long*/ bpp = imageRep.bitsPerPixel();
+		final int redOffset, greenOffset, blueOffset;
+		if (bpp == 32 && (format & OS.NSAlphaFirstBitmapFormat) == 0) {
+			redOffset = 0;
+			greenOffset = 1;
+			blueOffset = 2;
+		} else {
+			redOffset = 1;
+			greenOffset = 2;
+			blueOffset = 3;
+		}
 		byte[] line = new byte[(int)bpr];
 		for (int i = 0, offset = 0; i < height; i++, offset += bpr) {
 			OS.memmove(line, data + offset, bpr);
 			for (int j = 0; j  < line.length; j += 4) {
-				if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
-					line[j + 1] = newRed;
-					line[j + 2] = newGreen;
-					line[j + 3] = newBlue;
+				if (line[j + redOffset] == red && line[j + greenOffset] == green && line[j + blueOffset] == blue) {
+					line[j + redOffset] = newRed;
+					line[j + greenOffset] = newGreen;
+					line[j + blueOffset] = newBlue;
 				}
 			}
 			OS.memmove(data + offset, line, bpr);

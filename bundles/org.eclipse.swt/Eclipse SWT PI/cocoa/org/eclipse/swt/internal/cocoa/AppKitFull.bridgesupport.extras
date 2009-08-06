@@ -805,6 +805,10 @@
 			<arg name="pBits" swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
 		</method>
+		<method selector="initWithData:" swt_gen="true">
+			<arg name="data" swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
+		</method>
 		<method selector="initWithFocusedViewRect:" swt_gen="true">
 			<arg name="rect" swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>

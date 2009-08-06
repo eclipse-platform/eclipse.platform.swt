@@ -73,6 +73,11 @@ public NSBitmapImageRep initWithBitmapDataPlanes(int /*long*/ planes, int /*long
 	return result == this.id ? this : (result != 0 ? new NSBitmapImageRep(result) : null);
 }
 
+public NSBitmapImageRep initWithData(NSData data) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithData_, data != null ? data.id : 0);
+	return result == this.id ? this : (result != 0 ? new NSBitmapImageRep(result) : null);
+}
+
 public NSBitmapImageRep initWithFocusedViewRect(NSRect rect) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFocusedViewRect_, rect);
 	return result == this.id ? this : (result != 0 ? new NSBitmapImageRep(result) : null);
