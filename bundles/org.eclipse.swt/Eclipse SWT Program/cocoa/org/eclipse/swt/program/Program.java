@@ -13,6 +13,7 @@ package org.eclipse.swt.program;
 
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -336,29 +337,11 @@ public ImageData getImageData () {
 				NSSize size = new NSSize();
 				size.width = size.height = 16;
 				nsImage.setSize(size);
-				NSBitmapImageRep imageRep = null;
-				NSImageRep rep = nsImage.bestRepresentationForDevice(null);
-				if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
-					imageRep = new NSBitmapImageRep(rep.id);
-				}
-				if (imageRep != null) {
-					int width = (int)/*64*/imageRep.pixelsWide();
-					int height = (int)/*64*/imageRep.pixelsHigh();
-					int bpr = (int)/*64*/imageRep.bytesPerRow();
-					int bpp = (int)/*64*/imageRep.bitsPerPixel();
-					int dataSize = height * bpr;
-					byte[] srcData = new byte[dataSize];
-					OS.memmove(srcData, imageRep.bitmapData(), dataSize);
-					//TODO: Image representation wrong???
-					PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
-					ImageData data = new ImageData(width, height, bpp, palette, 4, srcData);
-					data.bytesPerLine = bpr;
-					data.alphaData = new byte[width * height];
-					for (int i = 3, o = 0; i < srcData.length; i+= 4, o++) {
-						data.alphaData[o] = srcData[i];
-					}
-					return data;
-				}
+				nsImage.retain();
+				Image image = Image.cocoa_new(Display.getCurrent(), SWT.BITMAP, nsImage);
+				ImageData imageData = image.getImageData();
+				image.dispose();
+				return imageData;
 			}
 		}
 		return null;

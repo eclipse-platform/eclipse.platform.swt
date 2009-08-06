@@ -529,9 +529,16 @@ void copyArea (Image image, int x, int y, int /*long*/ srcImage) {
 	int /*long*/ width = rep.pixelsWide();
 	int /*long*/ height = rep.pixelsHigh();
 	int /*long*/ bpr = rep.bytesPerRow();
-	int alphaInfo = rep.hasAlpha() ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaNoneSkipFirst;
+	int /*long*/ data = rep.bitmapData();
+	int /*long*/ format = rep.bitmapFormat();
+	int alphaInfo;
+	if (rep.hasAlpha()) {
+		alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaLast;
+	} else {
+		alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaNoneSkipLast;
+	}
 	int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-	int /*long*/ context = OS.CGBitmapContextCreate(rep.bitmapData(), width, height, bpc, bpr, colorspace, alphaInfo);
+	int /*long*/ context = OS.CGBitmapContextCreate(data, width, height, bpc, bpr, colorspace, alphaInfo);
 	OS.CGColorSpaceRelease(colorspace);
 	if (context != 0) {
 	 	CGRect rect = new CGRect();

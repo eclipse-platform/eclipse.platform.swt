@@ -24,7 +24,9 @@
 	<enum name="kCGEventSuppressionStateRemoteMouseDrag" swt_gen="true"></enum>
 	<enum name="kCGEventSuppressionStateSuppressionInterval" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaFirst" swt_gen="true"></enum>
+	<enum name="kCGImageAlphaLast" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaNoneSkipFirst" swt_gen="true"></enum>
+	<enum name="kCGImageAlphaNoneSkipLast" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaOnly" swt_gen="true"></enum>
 	<enum name="kCGKeyboardEventKeyboardType" swt_gen="true"></enum>
 	<enum name="kCGLineCapButt" swt_gen="true"></enum>
