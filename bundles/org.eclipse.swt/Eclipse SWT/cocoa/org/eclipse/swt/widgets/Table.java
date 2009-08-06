@@ -614,7 +614,11 @@ void createItem (TableItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	((NSTableView)view).noteNumberOfRowsChanged ();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 	if (index != itemCount) fixSelection (index, true);
 }
 
@@ -848,7 +852,11 @@ void destroyItem (TableItem item) {
 	if (index != itemCount - 1) fixSelection (index, false); 
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	((NSTableView)view).noteNumberOfRowsChanged();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 	if (itemCount == 0) setTableEmpty ();
 }
 
@@ -1969,7 +1977,11 @@ public void remove (int index) {
 	if (index != itemCount - 1) fixSelection (index, false);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	((NSTableView)view).noteNumberOfRowsChanged();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 	if (itemCount == 0) {
 		setTableEmpty ();
 	}
@@ -2001,7 +2013,43 @@ public void remove (int start, int end) {
 		removeAll ();
 	} else {
 		int length = end - start + 1;
-		for (int i=0; i<length; i++) remove (start);
+		for (int i=start; i<length; i++) {
+			TableItem item = items [i];
+			if (item != null) item.release (false);
+		}
+		//fix selection
+		int [] selection = getSelectionIndices ();
+		if (selection.length != 0) {
+			int newCount = 0;
+			boolean fix = false;
+			for (int i = 0; i < selection.length; i++) {
+				if (selection [i] >= start && selection[i] <= end) {
+					fix = true;
+				} else {
+					int newIndex = newCount++;
+					selection [newIndex] = selection [i];
+					if (selection [newIndex] > end) {
+						selection [newIndex] -= length;
+						fix = true;
+					}
+				}
+			}
+			if (fix) select (selection, newCount, true);
+		}
+		//fix items array
+		System.arraycopy (items, start + length, items, start, itemCount - (start + length));
+		for (int i = itemCount; i < items.length; i++) {
+			items [i] = null;
+		}
+		itemCount -= length;
+		NSTableView widget = (NSTableView)view;
+		setRedraw(false);
+		widget.noteNumberOfRowsChanged();
+		widget.tile();
+		setRedraw(true);
+	}
+	if (itemCount == 0) {
+		setTableEmpty ();
 	}
 }
 
@@ -2035,9 +2083,21 @@ public void remove (int [] indices) {
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
 		if (index != last) {
-			remove (index);
+			TableItem item = items [index];
+			if (item != null) item.release (false);
+			if (index != itemCount - 1) fixSelection (index, false);
+			System.arraycopy (items, index + 1, items, index, --itemCount - index);
+			items [itemCount] = null;
 			last = index;
 		}
+	}
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged();
+	widget.tile();
+	setRedraw(true);
+	if (itemCount == 0) {
+		setTableEmpty ();
 	}
 }
 
@@ -2056,7 +2116,11 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	setTableEmpty ();
-	((NSTableView)view).noteNumberOfRowsChanged();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 }
 
 /**
@@ -2385,7 +2449,11 @@ public void setItemCount (int count) {
 	children = newItems;
 	this.items = newItems;
 	this.itemCount = count;
-	((NSTableView) view).noteNumberOfRowsChanged ();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 }
 
 /*public*/ void setItemHeight (int itemHeight) {

@@ -136,7 +136,11 @@ public void add (String string) {
 		items = newItems;
 	}
 	items [itemCount++] = string;
-	((NSTableView)view).noteNumberOfRowsChanged ();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 	setScrollWidth(string);
 }
 
@@ -174,7 +178,11 @@ public void add (String string, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = string;
-	((NSTableView)view).noteNumberOfRowsChanged ();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 	if (index != itemCount) fixSelection (index, true);
 	setScrollWidth(string);
 }
@@ -797,7 +805,11 @@ void remove (int index, boolean fixScroll) {
 	if (index != itemCount - 1) fixSelection (index, false);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	((NSTableView)view).noteNumberOfRowsChanged();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 	if (fixScroll) setScrollWidth();
 }
 
@@ -902,7 +914,11 @@ public void removeAll () {
 	checkWidget();
 	items = new String [4];
 	itemCount = 0;
-	((NSTableView)view).noteNumberOfRowsChanged();
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	widget.noteNumberOfRowsChanged ();
+	widget.tile();
+	setRedraw(true);
 	setScrollWidth();
 }
 
