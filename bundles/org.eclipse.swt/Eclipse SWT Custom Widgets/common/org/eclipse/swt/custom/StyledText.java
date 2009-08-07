@@ -9088,7 +9088,9 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 			super.redraw(0, top, clientAreaWidth, bottom - top, false);		
 		}
 	}
+	int oldColumnX = columnX;
 	setCaretLocation();
+	columnX = oldColumnX;
 	doMouseLinkCursor();
 }
 /** 
