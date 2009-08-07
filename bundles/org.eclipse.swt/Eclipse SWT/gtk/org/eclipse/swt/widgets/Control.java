@@ -3892,6 +3892,7 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
+	OS.gtk_widget_realize (parent.handle);
 	int /*long*/ topHandle = topHandle ();
 	int x = OS.GTK_WIDGET_X (topHandle);
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
