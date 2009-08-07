@@ -139,10 +139,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/carbon/"/>
 		</copy>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</copy>
+		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
 	</target>
 			
@@ -179,10 +176,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 		</copy>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</copy>
+		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
 	</target>
 
@@ -221,10 +215,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/gtk/"/>
 		</copy>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</copy>
+		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
 	</target>
 		
@@ -271,10 +262,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 		</copy>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</copy>
+		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
 	</target>
 										
@@ -312,10 +300,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/photon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 		</copy>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</copy>
+		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
 	</target>
 													
@@ -349,10 +334,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/win32/"/>
 		</copy>
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</copy>
+		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
 	</target>
 
@@ -389,11 +371,15 @@
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Effects/emulated/"/>
 		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+
+	<target name="copy.translationfiles" if="includetranslationfiles">
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
 			<mapper type="glob" from="*._properties" to="*.properties" />
 		</copy>
-		<antcall target="replace64"/>
 	</target>
 
 	<target name="is64">
