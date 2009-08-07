@@ -150,12 +150,12 @@ class DialogTab extends Tab {
 			String result = dialog.open();
 			textWidget.append (ControlExample.getResourceString("FileDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append ("getFilterPath() =" + dialog.getFilterPath() + Text.DELIMITER);
+			textWidget.append ("getFileName() =" + dialog.getFileName() + Text.DELIMITER);
 			textWidget.append ("getFileNames() =" + Text.DELIMITER);
-			if ((dialog.getStyle () & SWT.MULTI) != 0) {
-				String [] files = dialog.getFileNames ();
-				for (int i=0; i<files.length; i++) {
-					textWidget.append ("\t" + files [i] + Text.DELIMITER);
-				}
+			String [] files = dialog.getFileNames ();
+			for (int i=0; i<files.length; i++) {
+				textWidget.append ("\t" + files [i] + Text.DELIMITER);
 			}
 			textWidget.append ("getFilterIndex() = " + dialog.getFilterIndex() + Text.DELIMITER + Text.DELIMITER);
 			return;
