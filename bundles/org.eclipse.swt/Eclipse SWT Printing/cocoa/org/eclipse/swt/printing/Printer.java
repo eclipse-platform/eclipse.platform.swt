@@ -341,7 +341,8 @@ protected void release () {
 }
 
 float scalingFactor() {
-	return new NSNumber(printInfo.dictionary().objectForKey(OS.NSPrintScalingFactor)).floatValue();
+	NSNumber scale = new NSNumber(printInfo.dictionary().objectForKey(OS.NSPrintScalingFactor));
+	return OS.PTR_SIZEOF == 4 ? scale.floatValue() : (float)scale.doubleValue();
 }
 
 /**
