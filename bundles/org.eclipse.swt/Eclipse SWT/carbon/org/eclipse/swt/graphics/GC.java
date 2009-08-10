@@ -908,21 +908,34 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	if (simple) {
  		OS.CGContextDrawImage(handle, rect, imageHandle);
  	} else {
-		int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
-		int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
-		int bpr = OS.CGImageGetBytesPerRow(imageHandle);
-		int colorspace = OS.CGImageGetColorSpace(imageHandle);
-		int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
-		int data = srcImage.data + (srcY * bpr) + srcX * 4;
-		int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
-		if (provider != 0) {
-			int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
-			OS.CGDataProviderRelease(provider);
+ 		if (OS.VERSION >= 0x1040) {
+ 			CGRect srcRect = new CGRect();
+ 			srcRect.x = srcX;
+ 			srcRect.y = srcY;
+ 			srcRect.width = srcWidth;
+ 			srcRect.height = srcHeight;
+ 			int subImage = OS.CGImageCreateWithImageInRect(imageHandle, srcRect);
 			if (subImage != 0) {
-		 		OS.CGContextDrawImage(handle, rect, subImage);
- 				OS.CGImageRelease(subImage);
+				OS.CGContextDrawImage(handle, rect, subImage);
+				OS.CGImageRelease(subImage);
 			}
-		}
+ 		} else {
+			int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
+			int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
+			int bpr = OS.CGImageGetBytesPerRow(imageHandle);
+			int colorspace = OS.CGImageGetColorSpace(imageHandle);
+			int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
+			int data = srcImage.data + (srcY * bpr) + srcX * 4;
+			int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
+			if (provider != 0) {
+				int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
+				OS.CGDataProviderRelease(provider);
+				if (subImage != 0) {
+			 		OS.CGContextDrawImage(handle, rect, subImage);
+	 				OS.CGImageRelease(subImage);
+				}
+			}
+ 		}
  	}
  	OS.CGContextRestoreGState(handle);
  	flush();
