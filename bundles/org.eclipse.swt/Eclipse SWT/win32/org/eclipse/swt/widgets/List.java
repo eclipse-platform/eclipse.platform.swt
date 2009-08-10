@@ -781,8 +781,8 @@ public void remove (int [] indices) {
 	}
 	if (topCount > 0) {
 		topIndex -= topCount;
-		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	if (i < newIndices.length) error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 
@@ -827,8 +827,9 @@ public void remove (int index) {
 	}
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, false);
 	if (index < topIndex) {
-		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex - 1, 0);
+		topIndex -= 1;
 	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 }
 
 /**
@@ -895,8 +896,8 @@ public void remove (int start, int end) {
 	}
 	if (end < topIndex) {
 		topIndex -= end - start + 1;
-		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	}
+	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 
