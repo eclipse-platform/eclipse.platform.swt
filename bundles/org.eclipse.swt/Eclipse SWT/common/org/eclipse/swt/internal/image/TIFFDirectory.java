@@ -23,6 +23,7 @@ final class TIFFDirectory {
 	int depth;
 	
 	/* Directory fields */
+	int subfileType;
 	int imageWidth;
 	int imageLength;
 	int[] bitsPerSample;
@@ -41,19 +42,27 @@ final class TIFFDirectory {
 	
 	static final int NO_VALUE = -1;
 	
+	static final short TAG_NewSubfileType = 254;
+	static final short TAG_SubfileType = 255;
 	static final short TAG_ImageWidth = 256;
 	static final short TAG_ImageLength = 257;
 	static final short TAG_BitsPerSample = 258;
 	static final short TAG_Compression = 259;
 	static final short TAG_PhotometricInterpretation = 262;
+	static final short TAG_FillOrder = 266;
+	static final short TAG_ImageDescription = 270;
 	static final short TAG_StripOffsets = 273;
+	static final short TAG_Orientation = 274;
 	static final short TAG_SamplesPerPixel = 277;
 	static final short TAG_RowsPerStrip = 278;
 	static final short TAG_StripByteCounts = 279;
 	static final short TAG_XResolution = 282;
 	static final short TAG_YResolution = 283;
+	static final short TAG_PlanarConfiguration = 284;
 	static final short TAG_T4Options = 292;
 	static final short TAG_ResolutionUnit = 296;
+	static final short TAG_Software = 305;
+	static final short TAG_DateTime = 306;
 	static final short TAG_ColorMap = 320;
 	
 	static final int TYPE_BYTE = 1;
@@ -61,6 +70,13 @@ final class TIFFDirectory {
 	static final int TYPE_SHORT = 3;
 	static final int TYPE_LONG = 4;
 	static final int TYPE_RATIONAL = 5;
+	
+	static final int FILETYPE_REDUCEDIMAGE = 1;
+	static final int FILETYPE_PAGE = 2;
+	static final int FILETYPE_MASK = 4;
+	static final int OFILETYPE_IMAGE = 1;
+	static final int OFILETYPE_REDUCEDIMAGE = 2;
+	static final int OFILETYPE_PAGE = 3;
 	
 	/* Different compression schemes */
 	static final int COMPRESSION_NONE = 1;
@@ -299,6 +315,15 @@ void parseEntries(byte[] buffer) throws IOException {
 		int type = toInt(buffer, offset + 2, TYPE_SHORT);
 		int count = toInt(buffer, offset + 4, TYPE_LONG);
 		switch (tag) {
+			case TAG_NewSubfileType: {
+				subfileType = getEntryValue(type, buffer, offset);
+				break;
+			}
+			case TAG_SubfileType: {
+				int oldSubfileType = getEntryValue(type, buffer, offset);
+				subfileType = oldSubfileType == OFILETYPE_REDUCEDIMAGE ? FILETYPE_REDUCEDIMAGE : oldSubfileType == OFILETYPE_PAGE ? FILETYPE_PAGE : 0;
+				break;
+			}
 			case TAG_ImageWidth: {
 				imageWidth = getEntryValue(type, buffer, offset);
 				break;
@@ -317,6 +342,14 @@ void parseEntries(byte[] buffer) throws IOException {
 				compression = getEntryValue(type, buffer, offset);
 				break;
 			}
+			case TAG_FillOrder: {
+				/* Ignored: baseline only requires default fill order. */
+				break;
+			}
+			case TAG_ImageDescription: {
+				/* Ignored */
+				break;
+			}
 			case TAG_PhotometricInterpretation: {
 				photometricInterpretation = getEntryValue(type, buffer, offset);
 				break;
@@ -325,6 +358,10 @@ void parseEntries(byte[] buffer) throws IOException {
 				if (type != TYPE_LONG && type != TYPE_SHORT) SWT.error(SWT.ERROR_INVALID_IMAGE);
 				stripOffsets = new int[count];
 				getEntryValue(type, buffer, offset, stripOffsets);
+				break;
+			}
+			case TAG_Orientation: {
+				/* Ignored: baseline only requires top left orientation. */
 				break;
 			}
 			case TAG_SamplesPerPixel: {
@@ -351,6 +388,10 @@ void parseEntries(byte[] buffer) throws IOException {
 				/* Ignored */
 				break;
 			}
+			case TAG_PlanarConfiguration: {
+				/* Ignored: baseline only requires default planar configuration. */
+				break;
+			}
 			case TAG_T4Options: {
 				if (type != TYPE_LONG) SWT.error(SWT.ERROR_INVALID_IMAGE);
 				t4Options = getEntryValue(type, buffer, offset);
@@ -364,6 +405,14 @@ void parseEntries(byte[] buffer) throws IOException {
 				/* Ignored */
 				break;
 			}
+			case TAG_Software: {
+				/* Ignored */
+				break;
+			}
+			case TAG_DateTime: {
+				/* Ignored */
+				break;
+			}
 			case TAG_ColorMap: {
 				if (type != TYPE_SHORT) SWT.error(SWT.ERROR_INVALID_IMAGE);
 				/* Get the offset of the colorMap (use TYPE_LONG) */
@@ -374,7 +423,7 @@ void parseEntries(byte[] buffer) throws IOException {
 	}
 }
 
-public ImageData read() throws IOException {
+public ImageData read(int [] nextIFDOffset) throws IOException {
 	/* Set TIFF default values */
 	bitsPerSample = new int[] {1};
 	colorMapOffset = NO_VALUE;
@@ -392,6 +441,9 @@ public ImageData read() throws IOException {
 	int numberEntries = toInt(buffer, 0, TYPE_SHORT);
 	buffer = new byte[IFD_ENTRY_SIZE * numberEntries];
 	file.read(buffer);
+	byte buffer2[] = new byte[4];
+	file.read(buffer2);
+	nextIFDOffset[0] = toInt(buffer2, 0, TYPE_LONG);
 	parseEntries(buffer);
 	
 	PaletteData palette = null;
