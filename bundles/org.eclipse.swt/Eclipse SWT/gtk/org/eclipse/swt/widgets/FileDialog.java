@@ -49,6 +49,7 @@ public class FileDialog extends Dialog {
 	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
+	static final char FILE_EXTENSION_SEPARATOR = '.';
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -101,7 +102,7 @@ public FileDialog (Shell parent, int style) {
 String computeResultChooserDialog () {
 	/* MULTI is only valid if the native dialog's action is Open */
 	fullPath = null;
-	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
+	if ((style & SWT.MULTI) != 0) {
 		int /*long*/ list = 0;
 		if (uriMode) {
 			list = OS.gtk_file_chooser_get_uris (handle);
@@ -197,9 +198,24 @@ String computeResultChooserDialog () {
 		int separatorIndex = fullPath.lastIndexOf (SEPARATOR);
 		fileName = fullPath.substring (separatorIndex + 1);
 		filterPath = fullPath.substring (0, separatorIndex);
+		int fileExtensionIndex = fileName.indexOf(FILE_EXTENSION_SEPARATOR);
+		if ((style & SWT.SAVE) != 0 && fileExtensionIndex == -1 && filterIndex != -1) {
+			if (filterExtensions.length > filterIndex) {
+				String selection = filterExtensions [filterIndex];
+				int length = selection.length ();
+				int index = selection.indexOf (EXTENSION_SEPARATOR);
+				if (index == -1) index = length;
+				String extension = selection.substring (0, index).trim ();
+				if (!extension.equals ("*") && !extension.equals ("*.*")) {
+					if (extension.startsWith ("*.")) extension = extension.substring (1);
+					fullPath = fullPath + extension;
+				}	
+			}
+		}
 	}
 	return fullPath;
 }
+
 String computeResultClassicDialog () {
 	filterIndex = -1;
 	GtkFileSelection selection = new GtkFileSelection ();
