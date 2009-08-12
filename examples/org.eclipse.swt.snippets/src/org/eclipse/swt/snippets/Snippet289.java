@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Combo example snippet: add an item to a combo box
+ * Combo example snippet: add a new number item to a combo
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -32,9 +32,10 @@ public static void main(String[] args) {
 	combo.setText(combo.getItem(0));
 	combo.addVerifyListener(new VerifyListener() {
 		public void verifyText(VerifyEvent e) {
-			String newText = e.text;
+			String text = combo.getText();
+			String newText = text.substring(0, e.start) + e.text + text.substring(e.end);
 			try {
-				Integer.parseInt(newText);
+				if (newText.length() != 0) Integer.parseInt(newText);
 			} catch (NumberFormatException ex) {
 				e.doit = false;
 			}
