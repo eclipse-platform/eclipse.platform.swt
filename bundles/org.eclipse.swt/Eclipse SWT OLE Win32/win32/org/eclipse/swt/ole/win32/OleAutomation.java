@@ -11,6 +11,7 @@
 package org.eclipse.swt.ole.win32;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -83,6 +84,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public final class OleAutomation {
+	private IUnknown objIUnknown;
 	private IDispatch objIDispatch;
 	private String exceptionDescription;
 	private ITypeInfo objITypeInfo;
@@ -111,7 +113,7 @@ OleAutomation(IDispatch idispatch) {
  *		<li>ERROR_INVALID_INTERFACE_ADDRESS when called with an invalid client site
  *	</ul>
  */
- public OleAutomation(OleClientSite clientSite) {
+public OleAutomation(OleClientSite clientSite) {
 	if (clientSite == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
 	objIDispatch = clientSite.getAutomationObject();
 
@@ -123,7 +125,55 @@ OleAutomation(IDispatch idispatch) {
 	if (result == OLE.S_OK) {
 		objITypeInfo = new ITypeInfo(ppv[0]);
 	}
- }
+}
+/**
+ * Creates an OleAutomation object for the specified progID.
+ *
+ * @param progId the unique program identifier of an OLE Document application; 
+ *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
+ *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
+ *               for Word is Word.Document)
+ *               
+ * @exception SWTException
+ * <ul><li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
+ *     <li>ERROR_INTERFACE_NOT_FOUND when the OLE object specified does not implement IDispatch
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public OleAutomation(String progId) {
+	try {
+		OS.OleInitialize(0);
+		GUID appClsid = getClassID(progId);
+		if (appClsid == null) {
+			OS.OleUninitialize();
+			OLE.error(OLE.ERROR_INVALID_CLASSID);
+		}
+		
+		int[] ppvObject = new int[1];
+		int result = COM.CoCreateInstance(appClsid, 0, COM.CLSCTX_INPROC_SERVER, COM.IIDIUnknown, ppvObject); 
+		if (result != COM.S_OK) {
+			OS.OleUninitialize();
+			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
+		}
+		objIUnknown = new IUnknown(ppvObject[0]);
+		
+		ppvObject[0] = 0;
+		result = objIUnknown.QueryInterface(COM.IIDIDispatch, ppvObject); 
+		if (result != COM.S_OK) OLE.error(OLE.ERROR_INTERFACE_NOT_FOUND);
+		objIDispatch = new IDispatch(ppvObject[0]);
+
+		ppvObject[0] = 0;
+		result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppvObject);
+		if (result == OLE.S_OK) {
+			objITypeInfo = new ITypeInfo(ppvObject[0]);
+		}
+	} catch (SWTException e) {
+		dispose();
+		throw e;
+	}
+}
 /**
  * Disposes the automation object.
  * <p>
@@ -141,10 +191,32 @@ public void dispose() {
 		objITypeInfo.Release();
 	}
 	objITypeInfo = null;
-
+	
+	if (objIUnknown != null){
+		objIUnknown.Release();
+		OS.OleUninitialize();
+	}
+	objIUnknown = null;
 }
 int /*long*/ getAddress() {	
 	return objIDispatch.getAddress();
+}
+GUID getClassID(String clientName) {
+	// create a GUID struct to hold the result
+	GUID guid = new GUID();
+
+	// create a null terminated array of char
+	char[] buffer = null;
+	if (clientName != null) {
+		int count = clientName.length();
+		buffer = new char[count + 1];
+		clientName.getChars(0, count, buffer, 0);
+	}
+	if (COM.CLSIDFromProgID(buffer, guid) != COM.S_OK){
+		int result = COM.CLSIDFromString(buffer, guid);
+		if (result != COM.S_OK) return null;
+	}
+	return guid;
 }
 /**
  * Returns the fully qualified name of the Help file for the given member ID.
