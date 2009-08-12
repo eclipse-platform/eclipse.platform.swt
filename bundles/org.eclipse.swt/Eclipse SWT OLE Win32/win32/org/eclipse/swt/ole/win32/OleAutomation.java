@@ -397,7 +397,18 @@ public Variant getProperty(int dispIdMember, Variant[] rgvarg, int[] rgdispidNam
 	int result = invoke(dispIdMember, COM.DISPATCH_PROPERTYGET, rgvarg, rgdispidNamedArgs, pVarResult);
 	return (result == OLE.S_OK) ? pVarResult : null;
 }
-
+public boolean equals(Object object) {
+	if (object == this) return true;
+	if (object instanceof OleAutomation) {
+		if (objIDispatch == null) return false;
+		OleAutomation oleAutomation = ((OleAutomation) object); 
+		if (oleAutomation.objIDispatch == null) return false;
+		int address1 = objIDispatch.getAddress();
+		int address2 = oleAutomation.objIDispatch.getAddress();
+		return address1 == address2;
+	}
+	return false;
+}
 /** 
  * Invokes a method on the OLE Object; the method has no parameters.
  *
