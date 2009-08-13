@@ -669,7 +669,7 @@
 		<!-- update and commit the buildnotes_swt.html file -->
 		<antcall target="update_buildnotes"/>
 
-		<!-- tags fragments and plugins listed in swt.map -->
+		<!-- download the map file -->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		<property name="map_copy" value="${tmpdir}/swt_map.txt"/>
 		<property name="map_xml" value="${tmpdir}/swt_map.xml"/>
@@ -682,6 +682,7 @@
 		</cvs>
 		<copy file="${tmpdir}/${map}" tofile="${map_copy}"/>
 
+		<!-- tag all files -->
 		<replace file="${map_copy}" token="=" value="&quot; old=&quot;"/>
 		<replace file="${map_copy}" token="fragment@" value="&lt;element project=&quot;"/>
 		<replace file="${map_copy}" token="plugin@" value="&lt;element project=&quot;"/>
@@ -691,7 +692,7 @@
 		<echo file="${map_xml}">&lt;project&gt;</echo>
 		<echo file="${map_xml}" append="true">${body}</echo>
 		<echo file="${map_xml}" append="true">&lt;/project&gt;</echo>
-		<xslt style="${tasks}/swtmap.xls" in="${tmpdir}/swt_map.xml" out="${tmpdir}/tagCommand.xml">
+		<xslt style="${tasks}/swtmap.xls" in="${map_xml}" out="${tmpdir}/tagCommand.xml">
 			<param name="TAG" expression="${TAG}"/>
 			<param name="cvsRoot" expression="${cvsRoot}"/>
 			<param name="cvsRsh" expression="${cvsRsh}"/>
@@ -700,8 +701,8 @@
 		</xslt>
 		<ant antfile="${tmpdir}/tagCommand.xml" target="tag_files"/>
 
+		<!-- update and commit map file -->
 		<ant antfile="${tmpdir}/tagCommand.xml" target="update_map"/>
-
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
