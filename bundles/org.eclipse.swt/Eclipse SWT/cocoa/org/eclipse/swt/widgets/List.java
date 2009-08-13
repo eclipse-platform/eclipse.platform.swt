@@ -1437,7 +1437,7 @@ boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, i
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, foreground, 0, true, false);
+	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, foreground, 0, false, true, false);
 	attribStr.autorelease();
 	return attribStr.id;
 }

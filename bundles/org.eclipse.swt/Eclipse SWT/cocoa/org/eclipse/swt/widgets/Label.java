@@ -255,7 +255,7 @@ void createWidget() {
 }
 
 NSAttributedString createString() {
-	NSAttributedString attribStr = createString(text, null, foreground, (style & SWT.WRAP) == 0 ? style : 0, true, true);
+	NSAttributedString attribStr = createString(text, null, foreground, style, (style & SWT.WRAP) != 0, true, true);
 	attribStr.autorelease();
 	return attribStr;
 }

@@ -136,7 +136,7 @@ int calculateWidth (int index, GC gc) {
 	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
 	NSCell cell = parent.dataCell;
 	if (font.extraTraits != 0) {
-		NSAttributedString attribStr = parent.createString(text, font, null, 0, true, false);
+		NSAttributedString attribStr = parent.createString(text, font, null, 0, false, true, false);
 		cell.setAttributedStringValue(attribStr);
 		attribStr.release();
 	} else {
