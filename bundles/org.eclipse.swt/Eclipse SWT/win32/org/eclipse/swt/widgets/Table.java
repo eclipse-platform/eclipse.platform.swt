@@ -1778,6 +1778,14 @@ void destroyItem (TableColumn column) {
 	boolean first = false;
 	if (index == 0) {
 		first = true;
+		/*
+		* Changing the content of a column using LVM_SETCOLUMN causes
+		* the table control to send paint events. At this point the 
+		* partially disposed column is still part of the table and
+		* paint handler can try to access it. This can cause exceptions.
+		* The fix is to turn redraw off.
+		*/
+		setRedraw (false);
 		if (columnCount > 1) {
 			index = 1;
 			int cchTextMax = 1024;
@@ -1811,6 +1819,7 @@ void destroyItem (TableColumn column) {
 				OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 			}
 		}
+		setRedraw (true);
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
