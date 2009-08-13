@@ -5,7 +5,6 @@
 <xsl:param name="cvsRsh"/>
 <xsl:param name="TAG"/>
 <xsl:param name="swt_new_tag"/>
-<xsl:param name="map"/>
 <xsl:template match="/">
 <project name="test" default="tag_files" basedir=".">
 <target name="tag_files">
@@ -36,19 +35,6 @@
 	</commandline>
 	</cvs>
 </target>
-
-<target name="update_map">
-	<xsl:for-each select="project/element">
-		<replaceregexp byline="true"> 
-			<xsl:attribute name="file">
-				<xsl:value-of select="$map"/>
-			</xsl:attribute> 
-			<xsl:attribute name="match"><xsl:value-of select="@project"/>=v\d\d\d\d[a-z]?</xsl:attribute>
-			<xsl:attribute name="replace"><xsl:value-of select="@project"/>=<xsl:value-of select="$swt_new_tag"/></xsl:attribute>
-		</replaceregexp>
-	</xsl:for-each>
-</target>
-
 </project>
 </xsl:template>
 </xsl:stylesheet>

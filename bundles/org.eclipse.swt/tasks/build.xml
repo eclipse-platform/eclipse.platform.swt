@@ -697,12 +697,11 @@
 			<param name="cvsRoot" expression="${cvsRoot}"/>
 			<param name="cvsRsh" expression="${cvsRsh}"/>
 			<param name="swt_new_tag" expression="v${swt_new_tag}"/>
-			<param name="map" expression="${tmpdir}/${map}"/>
 		</xslt>
 		<ant antfile="${tmpdir}/tagCommand.xml" target="tag_files"/>
 
 		<!-- update and commit map file -->
-		<ant antfile="${tmpdir}/tagCommand.xml" target="update_map"/>
+		<replaceregexp file="${tmpdir}/${map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
