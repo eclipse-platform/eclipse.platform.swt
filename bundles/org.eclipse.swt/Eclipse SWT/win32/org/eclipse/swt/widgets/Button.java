@@ -1105,7 +1105,7 @@ void updateSelection (int flags) {
 		/*
 		* Feature in Windows. When BM_SETCHECK is used
 		* to set the checked state of a radio or check
-		* button, it sets the WM_TABSTOP style.  This
+		* button, it sets the WS_TABSTOP style.  This
 		* is undocumented and unwanted.  The fix is
 		* to save and restore the window style bits.
 		*/
@@ -1205,7 +1205,7 @@ LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows. When Windows sets focus to
-	* a radio button, it sets the WM_TABSTOP style.
+	* a radio button, it sets the WS_TABSTOP style.
 	* This is undocumented and unwanted.  The fix is
 	* to save and restore the window style bits.
 	*/
