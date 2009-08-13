@@ -156,11 +156,11 @@ public Object nativeToJava(TransferData transferData) {
 }
 
 protected int[] getTypeIds(){
-	return new int[]{JPEG_ID, PNG_ID, BMP_ID, EPS_ID, PCX_ID, PPM_ID, RGB_ID, TGA_ID, XBM_ID, XPM_ID, XV_ID};	
+	return new int[]{PNG_ID, BMP_ID, EPS_ID, JPEG_ID, PCX_ID, PPM_ID, RGB_ID, TGA_ID, XBM_ID, XPM_ID, XV_ID};	
 }
 
 protected String[] getTypeNames(){
-	return new String[]{JPEG, PNG, BMP, EPS, PCX, PPM, RGB, TGA, XBM, XPM, XV};
+	return new String[]{PNG, BMP, EPS, JPEG, PCX, PPM, RGB, TGA, XBM, XPM, XV};
 }
 
 boolean checkImage(Object object) {
