@@ -498,6 +498,9 @@ void createWidget () {
 	register ();
 }
 	
+void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
+
 void deregister () {
 }
 
@@ -560,6 +563,13 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {
 	callSuper(id, sel, cellFrame, view);
+}
+
+void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel, NSRect rect) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, shouldTruncateLabel, rect);
 }
 
 void drawWithExpansionFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {
@@ -1630,6 +1640,15 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	return true;
 }
 
+NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSSize result = new NSSize();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, shouldTruncateLabel);
+	return result;
+}
+
 void superKeyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper (id, sel, theEvent);
 }
@@ -1764,22 +1783,6 @@ int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 }
 
 void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-}
-
-NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel) {
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = id;
-	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	NSSize result = new NSSize();
-	OS.objc_msgSendSuper_stret(result, super_struct, sel, shouldTruncateLabel);
-	return result;
-}
-
-void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel, NSRect rect) {
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = id;
-	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel, shouldTruncateLabel, rect);
 }
 
 }

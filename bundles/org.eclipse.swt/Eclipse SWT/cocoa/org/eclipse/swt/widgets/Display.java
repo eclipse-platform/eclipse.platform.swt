@@ -2121,6 +2121,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -2129,6 +2130,7 @@ void initClasses () {
 	
 	cls = registerCellSubclass(NSComboBox.cellClass(), size, align, types);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	OS.class_addMethod(cls, OS.sel_setObjectValue_, proc3, "@:@");
 	NSComboBox.setCellClass(cls);
 
 	className = "SWTDatePicker";
@@ -4824,7 +4826,9 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		int /*long*/ result = OS.malloc(NSSize.sizeof);
 		OS.memmove(result, size, NSSize.sizeof);
 		return result;
-	}
+	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
+		widget.comboBoxSelectionDidChange(id, sel, arg0);
+	} 
 	return 0;
 }
 

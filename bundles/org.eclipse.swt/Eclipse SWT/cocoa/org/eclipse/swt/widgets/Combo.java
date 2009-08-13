@@ -56,9 +56,10 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
+	String text;
 	int textLimit = LIMIT;
 	boolean receivingFocus;
-	boolean ignoreVerify, ignoreSelection;
+	boolean ignoreSetObject, ignoreSelection;
 	NSRange selectionRange;
 
 	/**
@@ -338,6 +339,18 @@ public void clearSelection () {
 	}
 }
 
+void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	super.setObjectValue(id, sel, ignoreSetObject ? arg0 : NSString.stringWith(text).id);
+}
+
+void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	NSComboBox widget = (NSComboBox)view;
+	int /*long*/ tableSelection = widget.indexOfSelectedItem();
+	widget.selectItemAtIndex(tableSelection);
+	setText(new NSString(widget.itemObjectValueAtIndex(tableSelection)).getString(), true);
+	if (!ignoreSelection) sendEvent(SWT.Selection, null, display.trackingControl != this);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -348,7 +361,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	height = (int)Math.ceil (size.height);
 
 	if ((style & SWT.READ_ONLY) == 0) {
-		ignoreVerify = true;
+		ignoreSetObject = true;
 		NSComboBoxCell cell = new NSComboBoxCell (viewCell.id);
 		NSArray array = cell.objectValues ();
 		int length = (int)/*64*/array.count ();
@@ -362,7 +375,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 			cell.release ();
 		}
-		ignoreVerify = false;
+		ignoreSetObject = false;
 	}
 
 	/*
@@ -411,10 +424,13 @@ void createHandle () {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
 		widget.init();
 		widget.setDelegate(widget);
-		widget.setTarget(widget);
-		widget.setAction(OS.sel_sendSelection);
 		view = widget;
 	}
+}
+
+void createWidget() {
+	text = "";
+	super.createWidget();
 }
 
 /**
@@ -905,40 +921,6 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
-void insertEditText (String string) {
-	ignoreVerify = true;
-	int length = string.length ();
-	Point selection = getSelection ();
-	if (hasFocus ()) {
-		if (textLimit != LIMIT) {
-			int charCount = getCharCount();
-			if (charCount - (selection.y - selection.x) + length > textLimit) {
-				length = textLimit - charCount + (selection.y - selection.x);
-			}
-		}
-		char [] buffer = new char [length];
-		string.getChars (0, buffer.length, buffer, 0);
-		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-		NSText fieldEditor = ((NSTextField) view).currentEditor ();
-		fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
-		selectionRange = null;
-	} else {
-		String oldText = getText ();
-		if (textLimit != LIMIT) {
-			int charCount = oldText.length ();
-			if (charCount - (selection.y - selection.x) + length > textLimit) {
-				string = string.substring(0, textLimit - charCount + (selection.y - selection.x));
-			}
-		}
-		String newText = oldText.substring (0, selection.x) + string + oldText.substring (selection.y);
-		NSString nsstring = NSString.stringWith(newText);
-		new NSCell (((NSTextField) view).cell ()).setTitle (nsstring);
-		selectionRange = null;
-		setSelection (new Point(selection.x + string.length (), 0));
-	}
-	ignoreVerify = false;
-}
-
 boolean isEventView (int /*long*/ id) {
 	return true;
 }
@@ -1006,6 +988,7 @@ void releaseWidget () {
 	if ((style & SWT.READ_ONLY) == 0) {
 		((NSControl)view).abortEditing();
 	}
+	text = null;
 	selectionRange = null;
 }
 
@@ -1201,12 +1184,14 @@ public void select (int index) {
 	if (0 <= index && index < count) {
 		if ((style & SWT.READ_ONLY) != 0) {
 			((NSPopUpButton)view).selectItemAtIndex(index);
+			sendEvent (SWT.Modify);
 		} else {
-			((NSComboBox)view).selectItemAtIndex(index);
+			NSComboBox widget = (NSComboBox)view;
+			widget.deselectItemAtIndex(index);
+			widget.selectItemAtIndex(index);
 		}
 	}
 	ignoreSelection = false;
-	sendEvent (SWT.Modify);
 }
 
 void sendSelection () {
@@ -1319,6 +1304,7 @@ public void setItem (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = getItemCount ();
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
+	int selection = getSelectionIndex();
 	NSString str = NSString.stringWith(string);
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSMenuItem nsItem = ((NSPopUpButton)view).itemAtIndex(index);
@@ -1328,6 +1314,7 @@ public void setItem (int index, String string) {
 		widget.insertItemWithObjectValue(str, index);
 		widget.removeItemAtIndex(index + 1);
 	}
+	if (selection != -1) select (selection);
 }
 
 /**
@@ -1477,7 +1464,6 @@ public void setText (String string) {
 }
 
 void setText (String string, boolean notify) {
-	ignoreVerify = true;
 	if (notify) {
 		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 			string = verifyText (string, 0, getCharCount (), null);
@@ -1493,12 +1479,12 @@ void setText (String string, boolean notify) {
 	} else {
 		char[] buffer = new char [Math.min(string.length (), textLimit)];
 		string.getChars (0, buffer.length, buffer, 0);
+		text = new String (buffer,0, buffer.length);
 		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-		new NSCell(((NSComboBox)view).cell()).setTitle(nsstring);
+		((NSComboBox)view).cell().setTitle(nsstring);
 		if (notify) sendEvent (SWT.Modify);
 	}
 	selectionRange = null;
-	ignoreVerify = false;
 }
 
 /**
@@ -1559,17 +1545,38 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
 	boolean result = callSuperBoolean(id, sel, range, replacementString);
 	if (hooks (SWT.Verify)) {
-		String text = new NSString(replacementString).getString();
+		String string = new NSString(replacementString).getString();
 		NSEvent currentEvent = display.application.currentEvent();
 		int /*long*/ type = currentEvent.type();
 		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
-		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
+		String newText = verifyText(string, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
 		if (newText == null) return false;
-		if (text != newText) {
-			insertEditText(newText);
+		if (!string.equals(newText)) {
+			int length = newText.length();
+			Point selection = getSelection();
+			if (textLimit != LIMIT) {
+				int charCount = getCharCount();
+				if (charCount - (selection.y - selection.x) + length > textLimit) {
+					length = textLimit - charCount + (selection.y - selection.x);
+				}
+			}
+			char [] buffer = new char [length];
+			newText.getChars (0, buffer.length, buffer, 0);
+			NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
+			NSText fieldEditor = ((NSTextField) view).currentEditor ();
+			fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
+			text = fieldEditor.string().getString();
+			sendEvent (SWT.Modify);
 			result = false;
-		}
-		if (!result) sendEvent (SWT.Modify);
+		} 
+	}
+	if (result) {
+		char[] chars = new char[text.length()];
+		text.getChars(0, chars.length, chars, 0);
+		NSMutableString mutable = (NSMutableString) NSMutableString.stringWithCharacters(chars, chars.length);
+		mutable.replaceCharactersInRange(range, new NSString(replacementString));
+		text = mutable.getString();
+		selectionRange = null;
 	}
 	return result;
 }

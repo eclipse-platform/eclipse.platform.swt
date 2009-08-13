@@ -533,6 +533,15 @@
 			<arg name="aString" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="replaceCharactersInRange:withString:" swt_gen="true">
+			<arg name="range" swt_gen="true"></arg>
+			<arg name="aString" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setString:" swt_gen="true">
+			<arg name="aString" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSMutableURLRequest" swt_gen="mixed" swt_superclass="NSURLRequest">
 		<method selector="setCachePolicy:" swt_gen="true">
