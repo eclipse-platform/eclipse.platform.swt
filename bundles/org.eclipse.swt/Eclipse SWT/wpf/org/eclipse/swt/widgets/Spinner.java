@@ -778,7 +778,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	if (value <= min) return;
+	if (value < min) return;
 	max = value;
 	if (this.value > value) setSelection (value, true, true, false);
 }
@@ -798,7 +798,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	if (value >= max) return;
+	if (value > max) return;
 	min = value;
 	if (this.value < value) setSelection (value, true, true, false);
 }
@@ -931,7 +931,7 @@ public void setTextLimit (int limit) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (maximum <= minimum) return;
+	if (maximum < minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;

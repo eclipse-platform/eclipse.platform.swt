@@ -712,7 +712,7 @@ public void setMaximum (int value) {
 	checkWidget ();
 	int [] argList1 = {OS.XmNminimumValue, 0, OS.XmNposition, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);	
-	if (value <= argList1 [1]) return;
+	if (value < argList1 [1]) return;
 	int position = argList1 [3];
 	if (value < position) position = value;
 	int [] argList2 = {OS.XmNposition, position, OS.XmNmaximumValue, value};
@@ -735,7 +735,7 @@ public void setMinimum (int value) {
 	checkWidget ();
 	int [] argList1 = {OS.XmNmaximumValue, 0, OS.XmNposition, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	if (value >= argList1 [1]) return;
+	if (value > argList1 [1]) return;
 	int position = argList1 [3];
 	if (value > position) position = value;
 	int [] argList2 = {OS.XmNposition, position, OS.XmNminimumValue, value};
@@ -832,7 +832,7 @@ public void setTextLimit (int limit) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (maximum <= minimum) return;
+	if (maximum < minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;

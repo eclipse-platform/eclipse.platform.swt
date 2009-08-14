@@ -930,7 +930,7 @@ public void setMaximum (int value) {
 	double newValue = value;
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) newValue /= 10;
-	if (newValue <= adjustment.lower) return;
+	if (newValue < adjustment.lower) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_spin_button_set_range (handle, adjustment.lower, newValue);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -957,7 +957,7 @@ public void setMinimum (int value) {
 	double newValue = value;
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) newValue /= 10;
-	if (newValue >= adjustment.upper) return;
+	if (newValue > adjustment.upper) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_spin_button_set_range (handle, newValue, adjustment.upper);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -1113,7 +1113,7 @@ public void setDigits (int value) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (maximum <= minimum) return;
+	if (maximum < minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
