@@ -2108,6 +2108,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -4788,6 +4789,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.setObjectValue(id, sel, arg0);
 	} else if (sel == OS.sel_updateOpenGLContext_) {
 		widget.updateOpenGLContext(id, sel, arg0);
+	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
+		widget.comboBoxSelectionDidChange(id, sel, arg0);
 	}
 	return 0;
 }

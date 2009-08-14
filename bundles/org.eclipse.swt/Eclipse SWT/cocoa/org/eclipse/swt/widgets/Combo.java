@@ -338,6 +338,14 @@ public void clearSelection () {
 	}
 }
 
+void comboBoxSelectionDidChange(int id, int sel, int arg0) {
+	if (!ignoreSelection) { 
+		NSComboBox widget = (NSComboBox)view;
+		widget.selectItemAtIndex(widget.indexOfSelectedItem());
+		sendEvent(SWT.Selection, null, display.trackingControl != this);
+	}
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -411,8 +419,6 @@ void createHandle () {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
 		widget.init();
 		widget.setDelegate(widget);
-		widget.setTarget(widget);
-		widget.setAction(OS.sel_sendSelection);
 		view = widget;
 	}
 }

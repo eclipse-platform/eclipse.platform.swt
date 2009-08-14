@@ -475,6 +475,9 @@ void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*lon
 	OS.objc_msgSendSuper(super_struct, sel, item, children);
 }
 
+void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+}
+
 void copyToClipboard (char [] buffer) {
 	if (buffer.length == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
@@ -1763,5 +1766,7 @@ int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 
 void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
+
+
 
 }
