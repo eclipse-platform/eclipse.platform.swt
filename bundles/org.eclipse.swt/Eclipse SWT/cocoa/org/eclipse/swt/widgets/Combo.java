@@ -338,7 +338,7 @@ public void clearSelection () {
 	}
 }
 
-void comboBoxSelectionDidChange(int id, int sel, int arg0) {
+void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	if (!ignoreSelection) { 
 		NSComboBox widget = (NSComboBox)view;
 		widget.selectItemAtIndex(widget.indexOfSelectedItem());
