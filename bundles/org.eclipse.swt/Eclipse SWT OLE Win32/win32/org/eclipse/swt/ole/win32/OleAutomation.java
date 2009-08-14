@@ -151,7 +151,7 @@ public OleAutomation(String progId) {
 			OLE.error(OLE.ERROR_INVALID_CLASSID);
 		}
 		
-		int[] ppvObject = new int[1];
+		int /*long*/[] ppvObject = new int /*long*/[1];
 		int result = COM.CoCreateInstance(appClsid, 0, COM.CLSCTX_INPROC_SERVER, COM.IIDIUnknown, ppvObject); 
 		if (result != COM.S_OK) {
 			OS.OleUninitialize();
@@ -475,8 +475,8 @@ public boolean equals(Object object) {
 		if (objIDispatch == null) return false;
 		OleAutomation oleAutomation = ((OleAutomation) object); 
 		if (oleAutomation.objIDispatch == null) return false;
-		int address1 = objIDispatch.getAddress();
-		int address2 = oleAutomation.objIDispatch.getAddress();
+		int /*long*/ address1 = objIDispatch.getAddress();
+		int /*long*/ address2 = oleAutomation.objIDispatch.getAddress();
 		return address1 == address2;
 	}
 	return false;
