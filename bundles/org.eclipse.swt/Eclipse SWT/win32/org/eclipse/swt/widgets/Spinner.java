@@ -896,11 +896,11 @@ public void setIncrement (int value) {
 
 /**
  * Sets the maximum value that the receiver will allow.  This new
- * value will be ignored if it is not greater than the receiver's current
+ * value will be ignored if it is less than the receiver's current
  * minimum value.  If the new maximum is applied then the receiver's
  * selection value will be adjusted if necessary to fall within its new range.
  *
- * @param value the new maximum, which must be greater than the current minimum
+ * @param value the new maximum, which must be greater than or equals to the current minimum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -911,7 +911,7 @@ public void setMaximum (int value) {
 	checkWidget ();
 	int [] min = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
-	if (value <= min [0]) return;
+	if (value < min [0]) return;
 	int pos;
 	if (OS.IsWinCE) {
 		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
@@ -924,11 +924,11 @@ public void setMaximum (int value) {
 
 /**
  * Sets the minimum value that the receiver will allow.  This new
- * value will be ignored if it is not less than the receiver's
+ * value will be ignored if it is greater than the receiver's
  * current maximum value.  If the new minimum is applied then the receiver's
  * selection value will be adjusted if necessary to fall within its new range.
  *
- * @param value the new minimum, which must be less than the current maximum
+ * @param value the new minimum, which must be less than or equals to the current maximum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -939,7 +939,7 @@ public void setMinimum (int value) {
 	checkWidget ();
 	int [] max = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
-	if (value >= max [0]) return;
+	if (value > max [0]) return;
 	int pos;
 	if (OS.IsWinCE) {
 		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
@@ -1088,7 +1088,7 @@ void setToolTipText (Shell shell, String string) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (maximum <= minimum) return;
+	if (maximum < minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
