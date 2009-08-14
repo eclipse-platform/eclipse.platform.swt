@@ -1845,6 +1845,7 @@ void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
+		if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
 		OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
 	} else {
 		OS.gtk_widget_modify_base (entryHandle, 0, color);
