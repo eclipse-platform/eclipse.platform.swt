@@ -1651,7 +1651,11 @@ public Point [] getIconSizes () {
 }
 
 int getLastEventTime () {
-	return (int) (OS.GetLastUserEventTime () * 1000.0);
+	double timestamp = OS.GetLastUserEventTime () * 1000.0;
+	while (timestamp > 0x7FFFFFFF) {
+		timestamp -= 0x7FFFFFFF;
+	}
+	return (int)timestamp;
 }
 
 Menu [] getMenus (Decorations shell) {
