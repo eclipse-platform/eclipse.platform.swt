@@ -690,6 +690,10 @@ public boolean getListVisible () {
 	return false;
 }
 
+String getNameText () {
+    return getText ();
+}
+
 int getMininumHeight () {
 	return getTextHeight ();
 }
