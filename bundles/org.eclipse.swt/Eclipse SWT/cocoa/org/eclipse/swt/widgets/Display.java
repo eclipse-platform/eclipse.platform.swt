@@ -2304,6 +2304,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTSlider";

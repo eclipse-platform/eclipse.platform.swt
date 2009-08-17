@@ -1381,6 +1381,17 @@ public void selectAll () {
 	}
 }
 
+void doCommandBySelector(int id, int sel, int selector) {
+	super.doCommandBySelector(id, sel, selector);
+	if ((style & SWT.PASSWORD) == 0) return;
+	NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
+	if (nsEvent.type() != OS.NSKeyDown) return;
+	short keyCode = nsEvent.keyCode();
+	if (keyCode != 9) return; /* V */
+	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	if ((modifierFlags & OS.NSCommandKeyMask) == OS.NSCommandKeyMask) paste(); 
+}
+
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
