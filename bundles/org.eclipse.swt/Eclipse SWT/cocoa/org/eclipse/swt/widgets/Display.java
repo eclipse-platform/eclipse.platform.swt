@@ -1450,7 +1450,12 @@ public Point [] getIconSizes () {
 
 int getLastEventTime () {
 	NSEvent event = application.currentEvent();
-	return event != null ? (int)(event.timestamp() * 1000) : 0;
+	if (event == null) return 0;
+	double timestamp = event.timestamp() * 1000;
+	while (timestamp > 0x7FFFFFFF) {
+		timestamp -= 0x7FFFFFFF;
+	}
+	return (int)timestamp;
 }
 
 Menu [] getMenus (Decorations shell) {
