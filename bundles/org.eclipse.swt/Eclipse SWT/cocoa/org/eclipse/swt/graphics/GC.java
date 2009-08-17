@@ -3475,9 +3475,9 @@ public void setLineAttributes(LineAttributes attributes) {
 	if (join != data.lineJoin) {
 		mask |= LINE_JOIN;
 		switch (join) {
-			case SWT.CAP_ROUND:
-			case SWT.CAP_FLAT:
-			case SWT.CAP_SQUARE:
+			case SWT.JOIN_MITER:
+			case SWT.JOIN_ROUND:
+			case SWT.JOIN_BEVEL:
 				break;
 			default:
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3487,9 +3487,9 @@ public void setLineAttributes(LineAttributes attributes) {
 	if (cap != data.lineCap) {
 		mask |= LINE_CAP;
 		switch (cap) {
-			case SWT.JOIN_MITER:
-			case SWT.JOIN_ROUND:
-			case SWT.JOIN_BEVEL:
+			case SWT.CAP_FLAT:
+			case SWT.CAP_ROUND:
+			case SWT.CAP_SQUARE:
 				break;
 			default:
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
