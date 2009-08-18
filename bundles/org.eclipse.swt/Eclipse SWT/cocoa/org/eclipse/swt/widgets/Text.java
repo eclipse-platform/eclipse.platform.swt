@@ -522,6 +522,14 @@ void createHandle () {
 
 void createWidget () {
 	super.createWidget ();
+	if ((style & SWT.PASSWORD) != 0) {
+		NSText fieldEditor = view.window().fieldEditor(true, view);
+		int /*long*/ nsSecureTextViewClass = OS.objc_lookUpClass("NSSecureTextView");
+		if (fieldEditor != null && nsSecureTextViewClass != 0 && fieldEditor.isKindOfClass(nsSecureTextViewClass)) {
+			int /*long*/ editorClass = OS.objc_getClass("SWTSecureEditorView");
+			OS.object_setClass(fieldEditor.id, editorClass);
+		}
+	}
 	doubleClick = true;
 	message = "";
 }
@@ -1381,17 +1389,6 @@ public void selectAll () {
 	}
 }
 
-void doCommandBySelector(int id, int sel, int selector) {
-	super.doCommandBySelector(id, sel, selector);
-	if ((style & SWT.PASSWORD) == 0) return;
-	NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
-	if (nsEvent.type() != OS.NSKeyDown) return;
-	short keyCode = nsEvent.keyCode();
-	if (keyCode != 9) return; /* V */
-	int /*long*/ modifierFlags = nsEvent.modifierFlags();
-	if ((modifierFlags & OS.NSCommandKeyMask) == OS.NSCommandKeyMask) paste(); 
-}
-
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
@@ -1406,10 +1403,10 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		short keyCode = nsEvent.keyCode ();
 		switch (keyCode) {
 			case 7: /* X */
-				cut ();
+				if ((style & SWT.PASSWORD) == 0) cut ();
 				return false;
 			case 8: /* C */
-				copy ();
+				if ((style & SWT.PASSWORD) == 0) copy ();
 				return false;
 			case 9: /* V */
 				paste ();

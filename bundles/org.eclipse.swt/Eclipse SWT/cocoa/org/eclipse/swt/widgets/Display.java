@@ -2309,9 +2309,20 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
-	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	OS.objc_registerClassPair(cls);
-
+	
+	int /*long*/ nsSecureTextViewClass = OS.objc_lookUpClass("NSSecureTextView");
+	if (nsSecureTextViewClass != 0) {
+		className = "SWTSecureEditorView";
+		cls = OS.objc_allocateClassPair(nsSecureTextViewClass, className, 0);
+		//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
+		addEventMethods(cls, 0, fieldEditorProc3, 0, 0, 0);
+		OS.class_addMethod(cls, OS.sel_insertText_, fieldEditorProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_doCommandBySelector_, fieldEditorProc3, "@::");
+		OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_fieldEditorProc, "@:{NSRange}@");
+		OS.objc_registerClassPair(cls);
+	}
+	
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
