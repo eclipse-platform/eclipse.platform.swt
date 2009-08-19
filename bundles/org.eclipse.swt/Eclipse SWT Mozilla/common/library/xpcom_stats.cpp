@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 213;
-int XPCOM_nativeFunctionCallCount[213];
+int XPCOM_nativeFunctionCount = 226;
+int XPCOM_nativeFunctionCallCount[226];
 char * XPCOM_nativeFunctionNames[] = {
 	"GetAddress",
 #ifndef JNI64
@@ -134,6 +134,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJIIII_3I_3I",
 #endif
 #ifndef JNI64
+	"_1VtblCall__IIIIII_3I_3I_3I",
+#else
+	"_1VtblCall__IJIIII_3I_3I_3I",
+#endif
+#ifndef JNI64
 	"_1VtblCall__IIIII_3B_3BI",
 #else
 	"_1VtblCall__IJIII_3B_3BI",
@@ -147,6 +152,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIIII_3I",
 #else
 	"_1VtblCall__IJIII_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIIII_3I_3I_3I",
+#else
+	"_1VtblCall__IJIII_3I_3I_3I",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIIIJJJJ",
@@ -197,6 +207,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIII_3I",
 #else
 	"_1VtblCall__IJII_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIII_3I_3I",
+#else
+	"_1VtblCall__IJII_3I_3I",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIII_3J",
@@ -324,9 +339,29 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJI_3I",
 #endif
 #ifndef JNI64
+	"_1VtblCall__III_3II",
+#else
+	"_1VtblCall__IJI_3II",
+#endif
+#ifndef JNI64
+	"_1VtblCall__III_3IJ",
+#else
+	"_1VtblCall__IJI_3IJ",
+#endif
+#ifndef JNI64
+	"_1VtblCall__III_3I_3I_3I",
+#else
+	"_1VtblCall__IJI_3I_3I_3I",
+#endif
+#ifndef JNI64
 	"_1VtblCall__III_3I_3I_3I_3I",
 #else
 	"_1VtblCall__IJI_3I_3I_3I_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__III_3I_3I_3J",
+#else
+	"_1VtblCall__IJI_3I_3I_3J",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJ",
@@ -352,6 +387,26 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIJIIJ_3I_3J",
 #else
 	"_1VtblCall__IJJIIJ_3I_3J",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJII_3I",
+#else
+	"_1VtblCall__IJJII_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJIJII",
+#else
+	"_1VtblCall__IJJIJII",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJIJJ_3I_3I_3I",
+#else
+	"_1VtblCall__IJJIJJ_3I_3I_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJIJ_3I_3I_3I",
+#else
+	"_1VtblCall__IJJIJ_3I_3I_3I",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJI_3J",
@@ -444,6 +499,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJJJJ_3B_3BJ",
 #endif
 #ifndef JNI64
+	"_1VtblCall__IIJJJ_3I",
+#else
+	"_1VtblCall__IJJJJ_3I",
+#endif
+#ifndef JNI64
 	"_1VtblCall__IIJJJ_3J",
 #else
 	"_1VtblCall__IJJJJ_3J",
@@ -487,6 +547,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIJJ_3I",
 #else
 	"_1VtblCall__IJJJ_3I",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJJ_3I_3I",
+#else
+	"_1VtblCall__IJJJ_3I_3I",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJJ_3J",

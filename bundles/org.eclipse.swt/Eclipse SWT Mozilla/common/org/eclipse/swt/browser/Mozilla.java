@@ -41,11 +41,12 @@ class Mozilla extends WebBrowser {
 	XPCOMObject uriContentListener;
 	XPCOMObject tooltipListener;
 	XPCOMObject domEventListener;
+	XPCOMObject badCertListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount, lastKeyCode, lastCharCode, authCount;
 	int /*long*/ request;
 	Point location, size;
-	boolean visible, isChild, ignoreDispose;
+	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage;
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
@@ -579,6 +580,10 @@ public void create (Composite parent, int style) {
 				C.free (functionLoad.function);
 				C.free (functionLoad.functionName);
 				C.free (ptr);
+				if (functionPtr == 0) {
+            		browser.dispose ();
+            		error (XPCOM.NS_ERROR_NULL_POINTER);
+				}
 				rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
 				if (rc == XPCOM.NS_OK) {
 					System.setProperty (XULRUNNER_PATH, mozillaPath);
@@ -785,6 +790,35 @@ public void create (Composite parent, int style) {
 				error (rc);
 			}
 			observerService.Release ();
+
+	        if (IsXULRunner) {
+				int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
+				/* alloc memory for two structs, the second is empty to signify the end of the list */
+				ptr = C.malloc (size * 2);
+				C.memset (ptr, 0, size * 2);
+				nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
+				byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_NotifyProfile", true); //$NON-NLS-1$
+				functionLoad.functionName = C.malloc (bytes.length);
+				C.memmove (functionLoad.functionName, bytes, bytes.length);
+				functionLoad.function = C.malloc (C.PTR_SIZEOF);
+				C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
+				XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
+				XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+				C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
+				int /*long*/ functionPtr = result[0];
+				result[0] = 0;
+				C.free (functionLoad.function);
+				C.free (functionLoad.functionName);
+				C.free (ptr);
+				/* functionPtr == 0 for xulrunner < 1.9 */
+				if (functionPtr != 0) {
+					rc = XPCOM.Call (functionPtr);
+	            	if (rc != XPCOM.NS_OK) {
+	            		browser.dispose ();
+	            		error (rc);
+	            	}
+				}
+	        }
 		}
 
 		/*
@@ -1620,6 +1654,13 @@ void createCOMInterfaces () {
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return HandleEvent (args[0]);}
 	};
+
+	badCertListener = new XPCOMObject (new int[] {2, 0, 0, 4}) {
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public int /*long*/ method3 (int /*long*/[] args) {return NotifyCertProblem (args[0], args[1], args[2], args[3]);}
+	};
 }
 
 void deregisterFunction (BrowserFunction function) {
@@ -1675,6 +1716,10 @@ void disposeCOMInterfaces () {
 	if (domEventListener != null) {
 		domEventListener.dispose ();
 		domEventListener = null;
+	}
+	if (badCertListener != null) {
+		badCertListener.dispose ();
+		badCertListener = null;
 	}
 }
 
@@ -2534,6 +2579,11 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
+	if (guid.Equals (nsIBadCertListener2.NS_IBADCERTLISTENER2_IID)) {
+		XPCOM.memmove (ppvObject, new int /*long*/[] {badCertListener.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
 	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -2583,6 +2633,27 @@ int GetWeakReference (int /*long*/ ppvObject) {
 int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateFlags, int aStatus) {
 	if ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) == 0) return XPCOM.NS_OK;
 	if ((aStateFlags & nsIWebProgressListener.STATE_START) != 0) {
+		int /*long*/[] result = new int /*long*/[1];
+
+		/*
+		* When navigating to a site that is known to have a bad certificate, request notification
+		* callbacks on the channel so that our nsIBadCertListener2 will be invoked.
+		*/
+		if (isRetrievingBadCert) {
+			isRetrievingBadCert = false;
+			nsIRequest request = new nsIRequest (aRequest);
+			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+			nsIChannel channel = new nsIChannel (result[0]);
+			result[0] = 0;
+			rc = channel.SetNotificationCallbacks (interfaceRequestor.getAddress ());
+			if (rc != XPCOM.NS_OK) error (rc);
+			channel.Release ();
+			return XPCOM.NS_OK;
+		}
+
 		if (request == 0) request = aRequest;
 		/*
 		 * Add the page's nsIDOMWindow to the collection of windows that will
@@ -2590,7 +2661,6 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		 * process.  These listeners cannot be added yet because the
 		 * nsIDOMWindow is not ready to take them at this stage.
 		 */
-		int /*long*/[] result = new int /*long*/[1];
 		nsIWebProgress progress = new nsIWebProgress (aWebProgress);
 		int rc = progress.GetDOMWindow (result);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -3257,6 +3327,7 @@ int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNod
 /* nsIURIContentListener */
 
 int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
+	if (isRetrievingBadCert) return XPCOM.NS_OK;
 	authCount = 0;
 
 	nsIURI location = new nsIURI (aURI);
@@ -3269,6 +3340,21 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 	XPCOM.memmove (dest, buffer, length);
 	XPCOM.nsEmbedCString_delete (aSpec);
 	String value = new String (dest);
+
+	/*
+	* Navigating to "...aboutCertError.xhtml", or to "javascript:showSecuritySection()" when
+	* the page "netError.xhtml" is showing, indicates that the last attempted page view had
+	* an invalid certificate.  When this happens, veto the current navigate and re-navigate
+	* to the page with the bad certificate so that NotifyCertProblem will be invoked.
+	*/
+	if (value.indexOf ("aboutCertError.xhtml") != -1 || (isViewingErrorPage && value.indexOf ("javascript:showSecuritySection") != -1)) { //$NON-NLS-1$ //$NON-NLS-2$
+		XPCOM.memmove (retval, new int[] {1}, 4); /* PRBool */
+		isRetrievingBadCert = true;
+		setUrl (lastNavigateURL);
+		return XPCOM.NS_OK;
+	}
+	isViewingErrorPage = value.indexOf ("netError.xhtml") != -1; //$NON-NLS-1$
+
 	boolean doit = true;
 	if (request == 0) {
 		/* 
@@ -3308,7 +3394,7 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 					if (rc != XPCOM.NS_OK) error (rc);
 					setup.Release ();
 				}
-				lastNavigateURL = value;
+				if (!isViewingErrorPage) lastNavigateURL = value;
 			}
 		}
 	}
@@ -3787,4 +3873,152 @@ int HandleEvent (int /*long*/ event) {
 	}
 	return XPCOM.NS_OK;
 }
+
+/* nsIBadCertListener2 */
+
+int NotifyCertProblem (int /*long*/ socketInfo, int /*long*/ status, int /*long*/ targetSite, int /*long*/ _suppressError) {
+	/* determine the host name and port */
+	int length = XPCOM.nsEmbedCString_Length (targetSite);
+	int /*long*/ buffer = XPCOM.nsEmbedCString_get (targetSite);
+	byte[] dest = new byte[length];
+	XPCOM.memmove (dest, buffer, length);
+	final String urlPort = new String (dest);
+	int index = urlPort.indexOf (':');
+	final String host = urlPort.substring (0,index);
+	final int port = Integer.valueOf (urlPort.substring (index + 1)).intValue ();
+
+	/* create text descriptions of the certificate problem(s) */
+
+	int /*long*/[] result = new int /*long*/[1];
+	nsISupports supports = new nsISupports (status);
+	int rc = supports.QueryInterface (nsISSLStatus.NS_ISSLSTATUS_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+	nsISSLStatus sslStatus = new nsISSLStatus (result[0]);
+	result[0] = 0;
+	rc = sslStatus.GetServerCert (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+
+	final nsIX509Cert cert = new nsIX509Cert (result[0]);
+	result[0] = 0;
+	String[] problems = new String[3];
+	int problemCount = 0, flags = 0;
+	int[] intResult = new int[1];
+
+	rc = sslStatus.GetIsDomainMismatch (intResult);
+	if (intResult[0] != 0) {
+		int /*long*/ ptr = XPCOM.nsEmbedString_new ();
+		rc = cert.GetCommonName (ptr);
+		if (rc != XPCOM.NS_OK) SWT.error (rc);
+		length = XPCOM.nsEmbedString_Length (ptr);
+		buffer = XPCOM.nsEmbedString_get (ptr);
+		char[] chars = new char[length];
+		XPCOM.memmove (chars, buffer, length * 2);
+		String name = new String (chars);
+		problems[problemCount++] = Compatibility.getMessage ("SWT_InvalidCert_InvalidName", new String[] {name}); //$NON-NLS-1$
+		flags |= nsICertOverrideService.ERROR_MISMATCH;
+		XPCOM.nsEmbedString_delete (ptr);
+	}
+	intResult[0] = 0;
+
+	rc = sslStatus.GetIsNotValidAtThisTime (intResult);
+	if (intResult[0] != 0) {
+		rc = cert.GetValidity (result);
+		if (rc != XPCOM.NS_OK) SWT.error (rc);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+
+		nsIX509CertValidity validity = new nsIX509CertValidity(result[0]);
+		result[0] = 0;
+
+		int /*long*/ ptr = XPCOM.nsEmbedString_new ();
+		rc = validity.GetNotBeforeGMT (ptr);
+		if (rc != XPCOM.NS_OK) SWT.error (rc);
+		length = XPCOM.nsEmbedString_Length (ptr);
+		buffer = XPCOM.nsEmbedString_get (ptr);
+		char[] chars = new char[length];
+		XPCOM.memmove (chars, buffer, length * 2);
+		String notBefore = new String (chars);
+		XPCOM.nsEmbedString_delete (ptr);
+
+		ptr = XPCOM.nsEmbedString_new ();
+		rc = validity.GetNotAfterGMT (ptr);
+		if (rc != XPCOM.NS_OK) SWT.error (rc);
+		length = XPCOM.nsEmbedString_Length (ptr);
+		buffer = XPCOM.nsEmbedString_get (ptr);
+		chars = new char[length];
+		XPCOM.memmove (chars, buffer, length * 2);
+		String notAfter = new String (chars);
+		XPCOM.nsEmbedString_delete (ptr);
+
+		String range = notBefore + " - " + notAfter; //$NON-NLS-1$
+		problems[problemCount++] = Compatibility.getMessage ("SWT_InvalidCert_NotValid", new String[] {range}); //$NON-NLS-1$
+		flags |= nsICertOverrideService.ERROR_TIME;
+		validity.Release ();
+	}
+	intResult[0] = 0;
+
+	rc = sslStatus.GetIsUntrusted (intResult);
+	if (intResult[0] != 0) {
+		int /*long*/ ptr = XPCOM.nsEmbedString_new ();
+		rc = cert.GetIssuerCommonName (ptr);
+		if (rc != XPCOM.NS_OK) SWT.error (rc);
+		length = XPCOM.nsEmbedString_Length (ptr);
+		buffer = XPCOM.nsEmbedString_get (ptr);
+		char[] chars = new char[length];
+		XPCOM.memmove (chars, buffer, length * 2);
+		String name = new String (chars);
+		problems[problemCount++] = Compatibility.getMessage ("SWT_InvalidCert_NotTrusted", new String[] {name}); //$NON-NLS-1$
+		flags |= nsICertOverrideService.ERROR_UNTRUSTED;
+		XPCOM.nsEmbedString_delete (ptr);
+	}
+	intResult[0] = 0;
+	sslStatus.Release ();
+
+	/*
+	* The invalid certificate dialog must be shown asynchronously because
+	* NotifyCertProblem implementations cannot block.
+	*/
+	final int finalFlags = flags;
+	final String[] finalProblems = new String[problemCount];
+	System.arraycopy (problems, 0, finalProblems, 0, problemCount);
+	final String url = lastNavigateURL;
+	browser.getDisplay().asyncExec(new Runnable() {
+		public void run() {
+			if (browser.isDisposed ()) return;
+			if (!url.equals (lastNavigateURL)) return;	/* user has navigated elsewhere */
+
+			String message = Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {urlPort}); //$NON-NLS-1$
+			if (new PromptDialog (browser.getShell ()).invalidCert (browser, message, finalProblems, cert)) {
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTOVERRIDE_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (aContractID, nsICertOverrideService.NS_ICERTOVERRIDESERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				serviceManager.Release ();
+		
+				nsICertOverrideService overrideService = new nsICertOverrideService (result[0]);
+				result[0] = 0;
+				byte[] hostBytes = MozillaDelegate.wcsToMbcs (null, host, false);
+				int /*long*/ hostString = XPCOM.nsEmbedCString_new (hostBytes, hostBytes.length);
+				rc = overrideService.RememberValidityOverride (hostString, port, cert.getAddress (), finalFlags, 1);
+				browser.setUrl (url);
+				XPCOM.nsEmbedCString_delete (hostString);
+				overrideService.Release ();
+			}
+			cert.Release ();
+		}
+	});
+
+	C.memmove (_suppressError, new int[] {1}, 4); /* PRInt32 */
+	return XPCOM.NS_OK;
+}
+
 }
