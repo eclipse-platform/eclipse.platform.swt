@@ -11,6 +11,10 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -67,6 +71,140 @@ class PromptDialog extends Dialog {
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
+	}
+
+	boolean invalidCert(final Browser browser, String message, String[] problems, final nsIX509Cert cert) {
+		Shell parent = getParent();
+		Display display = parent.getDisplay();
+		Monitor monitor = parent.getMonitor();
+		int maxWidth = monitor.getBounds().width * 2 / 3;
+		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		shell.setText(Compatibility.getMessage("SWT_InvalidCert_Title")); //$NON-NLS-1$
+		shell.setLayout(new GridLayout());
+
+		Composite messageComposite = new Composite(shell, SWT.NONE);
+		messageComposite.setLayout(new GridLayout(2, false));
+		Image image = display.getSystemImage(SWT.ICON_WARNING);
+		new Label(messageComposite, SWT.NONE).setImage(image);
+		Text text = new Text(messageComposite, SWT.WRAP);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		text.setEditable(false);
+		text.setBackground(shell.getBackground());
+		text.setText(message);
+		int width = messageComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		GridData data = new GridData();
+		data.widthHint = Math.min(width, maxWidth);
+		data.horizontalAlignment = GridData.FILL;
+		data.grabExcessHorizontalSpace = true;
+		messageComposite.setLayoutData(data);
+
+		StyledText problemsText = new StyledText(shell, SWT.WRAP);
+		problemsText.setMargins(30, 0, 30, 0);
+		problemsText.setEditable(false);
+		problemsText.setBackground(shell.getBackground());
+		for (int i = 0; i < problems.length; i++) {
+			problemsText.append(problems[i] + '\n');
+		}
+		StyleRange style = new StyleRange();
+		style.metrics = new GlyphMetrics(0, 0, 30);
+		Bullet bullet0 = new Bullet (style);
+		problemsText.setLineBullet(0, problems.length, bullet0);
+		width = problemsText.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		data = new GridData();
+		data.widthHint = Math.min(width, maxWidth);
+		data.horizontalAlignment = GridData.FILL;
+		data.grabExcessHorizontalSpace = true;
+		problemsText.setLayoutData(data);
+
+		text = new Text(shell, SWT.SINGLE);
+		text.setEditable(false);
+		text.setBackground(shell.getBackground());
+		text.setText(Compatibility.getMessage("SWT_InvalidCert_Connect")); //$NON-NLS-1$
+
+		new Label(shell, SWT.NONE); /* vertical spacer */
+
+		/*
+		* Create a local invisible Browser to be passed to the ViewCert call,
+		* so that this prompter can be the certificate view dialog's parent.
+		*/
+		final Browser localBrowser = new Browser(shell, browser.getStyle());
+		data = new GridData();
+		data.exclude = true;
+		localBrowser.setLayoutData(data);
+
+		Composite buttonsComposite = new Composite(shell, SWT.NONE);
+		buttonsComposite.setLayout(new GridLayout(3, true));
+		buttonsComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+
+		Button viewCertButton = new Button(buttonsComposite, SWT.PUSH);
+		viewCertButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		viewCertButton.setText(Compatibility.getMessage("View Certificate")); //$NON-NLS-1$
+		viewCertButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+
+				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+				result[0] = 0;
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTIFICATEDIALOGS_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (aContractID, nsICertificateDialogs.NS_ICERTIFICATEDIALOGS_IID, result);
+				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+				serviceManager.Release();
+				
+				nsICertificateDialogs dialogs = new nsICertificateDialogs(result[0]);
+				result[0] = 0;
+				
+				/*
+				* Bug in Mozilla.  The certificate viewer dialog does not show its content when
+				* opened.  The workaround is to periodically wake up the UI thread.
+				*/
+				Runnable runnable = new Runnable() {
+					public void run() {
+						browser.getDisplay().timerExec(1000, this);
+					}
+				};
+				runnable.run();
+
+				rc = ((Mozilla)localBrowser.webBrowser).webBrowser.GetContentDOMWindow(result);
+				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+				nsIDOMWindow window = new nsIDOMWindow(result[0]);
+				result[0] = 0;
+
+				rc = dialogs.ViewCert(window.getAddress(), cert.getAddress());
+				browser.getDisplay().timerExec(-1, runnable);
+				window.Release();
+				dialogs.Release();
+			}
+		});
+
+		final Button okButton = new Button(buttonsComposite, SWT.PUSH);
+		okButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		okButton.setText(Compatibility.getMessage("SWT_OK")); //$NON-NLS-1$
+		Button cancelButton = new Button(buttonsComposite, SWT.PUSH);
+		cancelButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		cancelButton.setText(Compatibility.getMessage("SWT_Cancel")); //$NON-NLS-1$
+		final boolean[] result = new boolean[1];
+		Listener listener = new Listener() {
+			public void handleEvent(Event event) {
+				shell.dispose();
+				result[0] = event.widget == okButton;
+			}
+		};
+		okButton.addListener(SWT.Selection, listener);
+		cancelButton.addListener(SWT.Selection, listener);
+
+		cancelButton.setFocus();
+		shell.setDefaultButton(cancelButton);
+		shell.pack();
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		return result[0];
 	}
 
 	void confirmEx(String title, String text, String check, String button0, String button1, String button2, int defaultIndex, final int[] checkValue, final int[] result) {

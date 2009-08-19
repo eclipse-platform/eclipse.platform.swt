@@ -149,7 +149,7 @@ String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 /* nsIPromptService */
 
 int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) {
-	Browser browser = getBrowser (aParent);
+	final Browser browser = getBrowser (aParent);
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
@@ -160,6 +160,25 @@ int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) 
 	dest = new char[length];
 	XPCOM.memmove (dest, aText, length * 2);
 	String textLabel = new String (dest);
+
+	/*
+	* If mozilla is showing its errors with dialogs (as opposed to pages) then the only
+	* opportunity to detect that a page has an invalid certificate, without receiving
+	* all notification callbacks on the channel, is to detect the displaying of an alert
+	* whose message contains an internal cert error code.  If a such a message is
+	* detected then instead of showing it, re-navigate to the page with the invalid
+	* certificate so that the browser's nsIBadCertListener2 will be invoked.
+	*/
+	if (textLabel.indexOf ("ssl_error_bad_cert_domain") != -1 ||
+		textLabel.indexOf ("sec_error_unknown_issuer") != -1 ||
+		textLabel.indexOf ("sec_error_expired_certificate") != -1) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if (browser != null) {
+				Mozilla mozilla = (Mozilla)browser.webBrowser;
+				mozilla.isRetrievingBadCert = true;
+				browser.setUrl (mozilla.lastNavigateURL);
+				return XPCOM.NS_OK;
+			}
+	}
 
 	Shell shell = browser == null ? new Shell () : browser.getShell (); 
 	MessageBox messageBox = new MessageBox (shell, SWT.OK | SWT.ICON_WARNING);
