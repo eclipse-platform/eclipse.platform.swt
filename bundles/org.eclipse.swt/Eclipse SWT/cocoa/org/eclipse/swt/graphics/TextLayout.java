@@ -425,7 +425,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			range.location = 0;
 			range.length = numberOfGlyphs;
 			float /*double*/ [] fg = gc.data.foreground;
-			boolean defaultFg = fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1;
+			boolean defaultFg = fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1 && gc.data.alpha == 255;
 			if (!defaultFg) {
 				for (int i = 0; i < styles.length - 1; i++) {
 					StyleItem run = styles[i];
