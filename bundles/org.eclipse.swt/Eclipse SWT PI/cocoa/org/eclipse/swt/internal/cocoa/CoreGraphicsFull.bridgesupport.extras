@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
+	<struct name="CGAffineTransform" swt_gen="true">
+		<field name="a" swt_gen="true"></field>
+		<field name="b" swt_gen="true"></field>
+		<field name="c" swt_gen="true"></field>
+		<field name="d" swt_gen="true"></field>
+		<field name="tx" swt_gen="true"></field>
+		<field name="ty" swt_gen="true"></field>
+	</struct>
 	<struct name="CGPathElement" swt_gen="true">
 		<field name="type" swt_gen="true"></field>
 		<field name="points" swt_gen="true"></field>
@@ -42,6 +50,7 @@
 	<enum name="kCGPathElementMoveToPoint" swt_gen="true"></enum>
 	<enum name="kCGPathStroke" swt_gen="true"></enum>
 	<enum name="kCGSessionEventTap" swt_gen="true"></enum>
+	<enum name="kCGTextFillStroke" swt_gen="true"></enum>
 	<function name="CGBitmapContextCreate" swt_gen="true">
 		<arg name="data" swt_gen="true"></arg>
 		<arg name="width" swt_gen="true"></arg>
@@ -58,6 +67,11 @@
 	</function>
 	<function name="CGBitmapContextGetData" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="CGColorCreate" swt_gen="true">
+		<arg name="space" swt_gen="true"></arg>
+		<arg name="components" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGColorSpaceCreateDeviceRGB" swt_gen="true">
@@ -129,6 +143,23 @@
 	<function name="CGContextSetMiterLimit" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>
 		<arg name="limit" swt_gen="true"></arg>
+	</function>
+	<function name="CGContextSetShouldAntialias" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="shouldAntialias" swt_gen="true"></arg>
+	</function>
+	<function name="CGContextSetTextDrawingMode" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="mode" swt_gen="true"></arg>
+	</function>
+	<function name="CGContextSetTextMatrix" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="t" swt_gen="true"></arg>
+	</function>
+	<function name="CGContextSetTextPosition" swt_gen="true">
+		<arg name="c" swt_gen="true"></arg>
+		<arg name="x" swt_gen="true"></arg>
+		<arg name="y" swt_gen="true"></arg>
 	</function>
 	<function name="CGContextStrokePath" swt_gen="true">
 		<arg name="c" swt_gen="true"></arg>
@@ -248,6 +279,11 @@
 		<arg name="m" swt_gen="true"></arg>
 		<arg name="x" swt_gen="true"></arg>
 		<arg name="y" swt_gen="true"></arg>
+	</function>
+	<function name="CGPathAddRect" swt_gen="true">
+		<arg name="path" swt_gen="true"></arg>
+		<arg name="m" swt_gen="true"></arg>
+		<arg name="rect" swt_gen="true"></arg>
 	</function>
 	<function name="CGPathApply" swt_gen="true">
 		<arg name="path" swt_gen="true"></arg>

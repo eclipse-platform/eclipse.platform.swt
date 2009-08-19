@@ -59,17 +59,24 @@ typedef enum {
 	CALLBACK_1titleRectForBounds_1_FUNC,
 	CALLBACK_1view_1stringForToolTip_1point_1userData_1_FUNC,
 	CALLBACK_1webView_1setFrame_1_FUNC,
+	CFAttributedStringCreate_FUNC,
 	CFDataGetBytePtr_FUNC,
 	CFDataGetLength_FUNC,
+	CFDictionaryAddValue_FUNC,
+	CFDictionaryCreateMutable_FUNC,
+	CFRange_1sizeof_FUNC,
 	CFRelease_FUNC,
 	CFRunLoopAddObserver_FUNC,
 	CFRunLoopGetCurrent_FUNC,
 	CFRunLoopObserverCreate_FUNC,
 	CFRunLoopObserverInvalidate_FUNC,
+	CFStringCreateWithCharacters_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
+	CGAffineTransform_1sizeof_FUNC,
 	CGBitmapContextCreate_FUNC,
 	CGBitmapContextCreateImage_FUNC,
 	CGBitmapContextGetData_FUNC,
+	CGColorCreate_FUNC,
 	CGColorSpaceCreateDeviceRGB_FUNC,
 	CGColorSpaceRelease_FUNC,
 	CGContextAddPath_FUNC,
@@ -90,6 +97,10 @@ typedef enum {
 	CGContextSetLineJoin_FUNC,
 	CGContextSetLineWidth_FUNC,
 	CGContextSetMiterLimit_FUNC,
+	CGContextSetShouldAntialias_FUNC,
+	CGContextSetTextDrawingMode_FUNC,
+	CGContextSetTextMatrix_FUNC,
+	CGContextSetTextPosition_FUNC,
 	CGContextStrokePath_FUNC,
 	CGContextTranslateCTM_FUNC,
 	CGDataProviderCreateWithData_FUNC,
@@ -113,6 +124,7 @@ typedef enum {
 	CGImageRelease_FUNC,
 	CGPathAddCurveToPoint_FUNC,
 	CGPathAddLineToPoint_FUNC,
+	CGPathAddRect_FUNC,
 	CGPathApply_FUNC,
 	CGPathCloseSubpath_FUNC,
 	CGPathCreateCopy_FUNC,
@@ -130,6 +142,15 @@ typedef enum {
 	CGSize_1sizeof_FUNC,
 	CGWarpMouseCursorPosition_FUNC,
 	CPSSetProcessName_FUNC,
+	CTFontGetAscent_FUNC,
+	CTFontGetDescent_FUNC,
+	CTFontGetLeading_FUNC,
+	CTLineCreateWithAttributedString_FUNC,
+	CTLineDraw_FUNC,
+	CTLineGetTypographicBounds_FUNC,
+	CTTypesetterCreateLine_FUNC,
+	CTTypesetterCreateWithAttributedString_FUNC,
+	CTTypesetterSuggestLineBreak_FUNC,
 	CancelMenuTracking_FUNC,
 	CloseRgn_FUNC,
 	CopyRgn_FUNC,
@@ -353,7 +374,21 @@ typedef enum {
 	instrumentObjcMessageSends_FUNC,
 	isFlipped_1CALLBACK_FUNC,
 	kCFRunLoopCommonModes_FUNC,
+	kCFTypeDictionaryKeyCallBacks_FUNC,
+	kCFTypeDictionaryValueCallBacks_FUNC,
+	kCTFontAttributeName_FUNC,
+	kCTForegroundColorAttributeName_FUNC,
 	kTISPropertyUnicodeKeyLayoutData_FUNC,
+#ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_cocoa_CGAffineTransform_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_CGAffineTransform_2J_FUNC,
+#endif
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I_FUNC,
 #else
@@ -398,6 +433,16 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II_FUNC,

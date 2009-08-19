@@ -269,6 +269,11 @@ public static final native void NSIntersectionRect (NSRect result, NSRect aRect,
  */
 public static final native void CGDisplayBounds(int display, CGRect rect);
 
+/** @method flags=const address*/
+public static final native int /*long*/ kCFTypeDictionaryKeyCallBacks();
+/** @method flags=const address*/
+public static final native int /*long*/ kCFTypeDictionaryValueCallBacks();
+
 /** Objective-C runtime */
 
 /**
@@ -2008,6 +2013,7 @@ public static final int kCGPathElementCloseSubpath = 4;
 public static final int kCGPathElementMoveToPoint = 0;
 public static final int kCGPathStroke = 2;
 public static final int kCGSessionEventTap = 1;
+public static final int kCGTextFillStroke = 2;
 public static final int NSAllApplicationsDirectory = 100;
 public static final int NSAllDomainsMask = 65535;
 public static final int NSNotFound = 2147483647;
@@ -2450,6 +2456,10 @@ public static final NSString NSViewGlobalFrameDidChangeNotification = new NSStri
 /** @method flags=const */
 public static final native int /*long*/ kCFRunLoopCommonModes();
 /** @method flags=const */
+public static final native int /*long*/ kCTFontAttributeName();
+/** @method flags=const */
+public static final native int /*long*/ kCTForegroundColorAttributeName();
+/** @method flags=const */
 public static final native int /*long*/ NSDefaultRunLoopMode();
 public static final NSString NSDefaultRunLoopMode = new NSString(NSDefaultRunLoopMode());
 /** @method flags=const */
@@ -2514,6 +2524,12 @@ public static final native void NSCopyBits(int /*long*/ srcGState, NSRect srcRec
  */
 public static final native int /*long*/ NSNumberOfColorComponents(int /*long*/ colorSpaceName);
 /**
+ * @param alloc cast=(CFAllocatorRef)
+ * @param str cast=(CFStringRef)
+ * @param attributes cast=(CFDictionaryRef)
+ */
+public static final native int /*long*/ CFAttributedStringCreate(int /*long*/ alloc, int /*long*/ str, int /*long*/ attributes);
+/**
  * @param theData cast=(CFDataRef)
  */
 public static final native int /*long*/ CFDataGetBytePtr(int /*long*/ theData);
@@ -2521,6 +2537,19 @@ public static final native int /*long*/ CFDataGetBytePtr(int /*long*/ theData);
  * @param theData cast=(CFDataRef)
  */
 public static final native int /*long*/ CFDataGetLength(int /*long*/ theData);
+/**
+ * @param theDict cast=(CFMutableDictionaryRef)
+ * @param key cast=(void*)
+ * @param value cast=(void*)
+ */
+public static final native void CFDictionaryAddValue(int /*long*/ theDict, int /*long*/ key, int /*long*/ value);
+/**
+ * @param allocator cast=(CFAllocatorRef)
+ * @param capacity cast=(CFIndex)
+ * @param keyCallBacks cast=(CFDictionaryKeyCallBacks*)
+ * @param valueCallBacks cast=(CFDictionaryValueCallBacks*)
+ */
+public static final native int /*long*/ CFDictionaryCreateMutable(int /*long*/ allocator, int /*long*/ capacity, int /*long*/ keyCallBacks, int /*long*/ valueCallBacks);
 /**
  * @param cf cast=(CFTypeRef)
  */
@@ -2545,6 +2574,12 @@ public static final native int /*long*/ CFRunLoopObserverCreate(int /*long*/ all
  * @param observer cast=(CFRunLoopObserverRef)
  */
 public static final native void CFRunLoopObserverInvalidate(int /*long*/ observer);
+/**
+ * @param alloc cast=(CFAllocatorRef)
+ * @param chars cast=(UniChar*)
+ * @param numChars cast=(CFIndex)
+ */
+public static final native int /*long*/ CFStringCreateWithCharacters(int /*long*/ alloc, char[] chars, int /*long*/ numChars);
 /**
  * @param allocator cast=(CFAllocatorRef)
  * @param originalString cast=(CFStringRef)
@@ -2571,6 +2606,11 @@ public static final native int /*long*/ CGBitmapContextCreateImage(int /*long*/ 
  * @param c cast=(CGContextRef)
  */
 public static final native int /*long*/ CGBitmapContextGetData(int /*long*/ c);
+/**
+ * @param space cast=(CGColorSpaceRef)
+ * @param components cast=(CGFloat*)
+ */
+public static final native int /*long*/ CGColorCreate(int /*long*/ space, float[] /*double[]*/ components);
 public static final native int /*long*/ CGColorSpaceCreateDeviceRGB();
 /**
  * @param space cast=(CGColorSpaceRef)
@@ -2656,6 +2696,27 @@ public static final native void CGContextSetLineWidth(int /*long*/ c, float /*do
  * @param limit cast=(CGFloat)
  */
 public static final native void CGContextSetMiterLimit(int /*long*/ c, float /*double*/ limit);
+/**
+ * @param c cast=(CGContextRef)
+ * @param shouldAntialias cast=(_Bool)
+ */
+public static final native void CGContextSetShouldAntialias(int /*long*/ c, boolean shouldAntialias);
+/**
+ * @param c cast=(CGContextRef)
+ * @param mode cast=(CGTextDrawingMode)
+ */
+public static final native void CGContextSetTextDrawingMode(int /*long*/ c, int mode);
+/**
+ * @param c cast=(CGContextRef)
+ * @param t flags=struct
+ */
+public static final native void CGContextSetTextMatrix(int /*long*/ c, CGAffineTransform t);
+/**
+ * @param c cast=(CGContextRef)
+ * @param x cast=(CGFloat)
+ * @param y cast=(CGFloat)
+ */
+public static final native void CGContextSetTextPosition(int /*long*/ c, float /*double*/ x, float /*double*/ y);
 /**
  * @param c cast=(CGContextRef)
  */
@@ -2779,6 +2840,12 @@ public static final native void CGPathAddCurveToPoint(int /*long*/ path, int /*l
  */
 public static final native void CGPathAddLineToPoint(int /*long*/ path, int /*long*/ m, float /*double*/ x, float /*double*/ y);
 /**
+ * @param path cast=(CGMutablePathRef)
+ * @param m cast=(CGAffineTransform*)
+ * @param rect flags=struct
+ */
+public static final native void CGPathAddRect(int /*long*/ path, int /*long*/ m, CGRect rect);
+/**
  * @param path cast=(CGPathRef)
  * @param info cast=(void*)
  * @param function cast=(CGPathApplierFunction)
@@ -2835,6 +2902,49 @@ public static final native int CGSetLocalEventsSuppressionInterval(double second
  * @param newCursorPosition flags=struct
  */
 public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
+/**
+ * @param font cast=(CTFontRef)
+ */
+public static final native float /*double*/ CTFontGetAscent(int /*long*/ font);
+/**
+ * @param font cast=(CTFontRef)
+ */
+public static final native float /*double*/ CTFontGetDescent(int /*long*/ font);
+/**
+ * @param font cast=(CTFontRef)
+ */
+public static final native float /*double*/ CTFontGetLeading(int /*long*/ font);
+/**
+ * @param string cast=(CFAttributedStringRef)
+ */
+public static final native int /*long*/ CTLineCreateWithAttributedString(int /*long*/ string);
+/**
+ * @param line cast=(CTLineRef)
+ * @param context cast=(CGContextRef)
+ */
+public static final native void CTLineDraw(int /*long*/ line, int /*long*/ context);
+/**
+ * @param line cast=(CTLineRef)
+ * @param ascent cast=(CGFloat*)
+ * @param descent cast=(CGFloat*)
+ * @param leading cast=(CGFloat*)
+ */
+public static final native double CTLineGetTypographicBounds(int /*long*/ line, float[] /*double[]*/ ascent, float[] /*double[]*/ descent, float[] /*double[]*/ leading);
+/**
+ * @param typesetter cast=(CTTypesetterRef)
+ * @param stringRange flags=struct
+ */
+public static final native int /*long*/ CTTypesetterCreateLine(int /*long*/ typesetter, CFRange stringRange);
+/**
+ * @param string cast=(CFAttributedStringRef)
+ */
+public static final native int /*long*/ CTTypesetterCreateWithAttributedString(int /*long*/ string);
+/**
+ * @param typesetter cast=(CTTypesetterRef)
+ * @param startIndex cast=(CFIndex)
+ * @param width cast=(double)
+ */
+public static final native int /*long*/ CTTypesetterSuggestLineBreak(int /*long*/ typesetter, int /*long*/ startIndex, double width);
 /**
  * @param aRect flags=struct
  * @param bRect flags=struct
@@ -3327,6 +3437,8 @@ public static final native void objc_msgSend_stret(NSSize result, int /*long*/ i
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, boolean arg0);
 
 /** Sizeof natives */
+public static final native int CFRange_sizeof();
+public static final native int CGAffineTransform_sizeof();
 public static final native int CGPathElement_sizeof();
 public static final native int CGPoint_sizeof();
 public static final native int CGRect_sizeof();
@@ -3339,6 +3451,26 @@ public static final native int NSSize_sizeof();
 
 /** Memmove natives */
 
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
+public static final native void memmove(int /*long*/ dest, CFRange src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
+public static final native void memmove(CFRange dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
+public static final native void memmove(int /*long*/ dest, CGAffineTransform src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
+public static final native void memmove(CGAffineTransform dest, int /*long*/ src, int /*long*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(void *),flags=critical

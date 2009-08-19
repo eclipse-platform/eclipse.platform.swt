@@ -12,6 +12,86 @@
 #include "swt.h"
 #include "os_structs.h"
 
+#ifndef NO_CFRange
+typedef struct CFRange_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID location, length;
+} CFRange_FID_CACHE;
+
+CFRange_FID_CACHE CFRangeFc;
+
+void cacheCFRangeFields(JNIEnv *env, jobject lpObject)
+{
+	if (CFRangeFc.cached) return;
+	CFRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CFRangeFc.location = (*env)->GetFieldID(env, CFRangeFc.clazz, "location", I_J);
+	CFRangeFc.length = (*env)->GetFieldID(env, CFRangeFc.clazz, "length", I_J);
+	CFRangeFc.cached = 1;
+}
+
+CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
+{
+	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
+	lpStruct->location = (*env)->GetIntLongField(env, lpObject, CFRangeFc.location);
+	lpStruct->length = (*env)->GetIntLongField(env, lpObject, CFRangeFc.length);
+	return lpStruct;
+}
+
+void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
+{
+	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, CFRangeFc.location, (jintLong)lpStruct->location);
+	(*env)->SetIntLongField(env, lpObject, CFRangeFc.length, (jintLong)lpStruct->length);
+}
+#endif
+
+#ifndef NO_CGAffineTransform
+typedef struct CGAffineTransform_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID a, b, c, d, tx, ty;
+} CGAffineTransform_FID_CACHE;
+
+CGAffineTransform_FID_CACHE CGAffineTransformFc;
+
+void cacheCGAffineTransformFields(JNIEnv *env, jobject lpObject)
+{
+	if (CGAffineTransformFc.cached) return;
+	CGAffineTransformFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CGAffineTransformFc.a = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "a", F_D);
+	CGAffineTransformFc.b = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "b", F_D);
+	CGAffineTransformFc.c = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "c", F_D);
+	CGAffineTransformFc.d = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "d", F_D);
+	CGAffineTransformFc.tx = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "tx", F_D);
+	CGAffineTransformFc.ty = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "ty", F_D);
+	CGAffineTransformFc.cached = 1;
+}
+
+CGAffineTransform *getCGAffineTransformFields(JNIEnv *env, jobject lpObject, CGAffineTransform *lpStruct)
+{
+	if (!CGAffineTransformFc.cached) cacheCGAffineTransformFields(env, lpObject);
+	lpStruct->a = (*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.a);
+	lpStruct->b = (*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.b);
+	lpStruct->c = (*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.c);
+	lpStruct->d = (*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.d);
+	lpStruct->tx = (*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.tx);
+	lpStruct->ty = (*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.ty);
+	return lpStruct;
+}
+
+void setCGAffineTransformFields(JNIEnv *env, jobject lpObject, CGAffineTransform *lpStruct)
+{
+	if (!CGAffineTransformFc.cached) cacheCGAffineTransformFields(env, lpObject);
+	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.a, (jfloatDouble)lpStruct->a);
+	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.b, (jfloatDouble)lpStruct->b);
+	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.c, (jfloatDouble)lpStruct->c);
+	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.d, (jfloatDouble)lpStruct->d);
+	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.tx, (jfloatDouble)lpStruct->tx);
+	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.ty, (jfloatDouble)lpStruct->ty);
+}
+#endif
+
 #ifndef NO_CGPathElement
 typedef struct CGPathElement_FID_CACHE {
 	int cached;

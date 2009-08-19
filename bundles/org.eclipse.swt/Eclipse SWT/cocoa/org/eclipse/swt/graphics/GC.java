@@ -811,73 +811,6 @@ NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
 	return bezierPath;	
 }
 
-NSAttributedString createString(String string, int flags, boolean draw) {
-	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
-	Font font = data.font;
-	dict.setObject(font.handle, OS.NSFontAttributeName);
-	font.addTraits(dict);
-	if (draw) {
-		Pattern pattern = data.foregroundPattern;
-		if (pattern != null) {
-			if (pattern.color != null) dict.setObject(pattern.color, OS.NSForegroundColorAttributeName);
-		} else {
-			NSColor fg = data.fg;
-			if (fg == null) {
-				float /*double*/ [] color = data.foreground;
-				fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
-				fg.retain();
-			}
-			dict.setObject(fg, OS.NSForegroundColorAttributeName);
-		}
-	}
-	if ((flags & SWT.DRAW_TAB) == 0) {
-		dict.setObject(device.paragraphStyle, OS.NSParagraphStyleAttributeName);
-	}
-	int length = string.length();
-	char[] chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	int breakCount = 0;
-	int[] breaks = null;
-	if ((flags & SWT.DRAW_MNEMONIC) !=0 || (flags & SWT.DRAW_DELIMITER) == 0) {
-		int i=0, j=0;
-		while (i < chars.length) {
-			char c = chars [j++] = chars [i++];
-			switch (c) {
-				case '&': {
-					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
-						if (i == chars.length) {continue;}
-						if (chars [i] == '&') {i++; continue;}
-						j--;
-					}
-					break;
-				}
-				case '\r':
-				case '\n': {
-					if ((flags & SWT.DRAW_DELIMITER) == 0) {
-						if (c == '\r' && i != chars.length && chars[i] == '\n') i++;
-						j--;
-						if (breaks == null) {
-							breaks = new int[4];
-						} else if (breakCount == breaks.length) {
-							int[] newBreaks = new int[breaks.length + 4];
-							System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
-							breaks = newBreaks;
-						}
-						breaks[breakCount++] = j;
-					}
-					break;
-				}
-			}
-		}
-		length = j;
-	}
-	NSString str = ((NSString)new NSString().alloc()).initWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
-	dict.release();
-	str.release();
-	return attribStr;
-}
-
 void destroy() {
 	/* Free resources */
 	Image image = data.image;
@@ -1635,7 +1568,8 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT | FOREGROUND_FILL);
 	try {
-		handle.saveGraphicsState();
+		int length = string.length();
+		if (length == 0) return;
 		boolean mode = true;
 		switch (data.textAntialias) {
 			case SWT.DEFAULT:
@@ -1645,35 +1579,129 @@ public void drawText (String string, int x, int y, int flags) {
 			case SWT.OFF: mode = false; break;
 			case SWT.ON: mode = true; break;
 		}
-		handle.setShouldAntialias(mode);
-		NSAttributedString str = createString(string, flags, true);
-		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-			NSSize size = str.size();
-			NSRect rect = new NSRect();
-			rect.x = x;
-			rect.y = y;
-			rect.width = size.width;
-			rect.height = size.height;
-			NSColor bg = data.bg;
-			if (bg == null) {
-				float /*double*/ [] color = data.background;
-				bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
-				bg.retain();
-			}
-			bg.setFill();
-			NSBezierPath.fillRect(rect);
-			str.drawInRect(rect);
-		} else {
-			NSPoint pt = new NSPoint();
-			pt.x = x;
-			pt.y = y;
-			str.drawAtPoint(pt);
+		int /*long*/ context = handle.graphicsPort();
+		OS.CGContextSaveGState(context);
+		OS.CGContextSetShouldAntialias(context, mode);
+		CGAffineTransform transform = new CGAffineTransform();
+		transform.a = 1;
+		transform.d = -1;
+		Font font = data.font;
+		int /*long*/ fontID = font.handle.id;
+		if ((font.extraTraits & OS.NSItalicFontMask) != 0) {
+			transform.c = (float)Font.SYNTHETIC_ITALIC;
 		}
-		str.release();
-		handle.restoreGraphicsState();
+		if ((font.extraTraits & OS.NSBoldFontMask) != 0) {
+			OS.CGContextSetTextDrawingMode(context, OS.kCGTextFillStroke);
+			OS.CGContextSetLineWidth(context, (float)(font.handle.pointSize() * -Font.SYNTHETIC_BOLD / 100f));
+		}
+		OS.CGContextSetTextMatrix(context, transform);
+		char[] chars = new char[length];
+		string.getChars(0, length, chars, 0);
+		if ((flags & SWT.DRAW_MNEMONIC) != 0 || (flags & SWT.DRAW_TAB) == 0) {
+			int i=0, j=0;
+			while (i < chars.length) {
+				char c = chars [j++] = chars [i++];
+				switch (c) {
+					case '\t': {
+						if ((flags & SWT.DRAW_TAB) == 0) j--;
+						break;
+					}
+					case '&': {
+						if ((flags & SWT.DRAW_MNEMONIC) != 0) {
+							if (i == chars.length) {continue;}
+							if (chars [i] == '&') {i++; continue;}
+							j--;
+						}
+						break;
+					}
+				}
+			}
+			length = j;
+		}
+		int /*long*/ dict = OS.CFDictionaryCreateMutable(0, 2, OS.kCFTypeDictionaryKeyCallBacks(), OS.kCFTypeDictionaryValueCallBacks());
+		OS.CFDictionaryAddValue(dict, OS.kCTFontAttributeName(), fontID);
+		int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+		float /*double*/ oldAlpha = data.foreground[3];
+		data.foreground[3] = data.alpha / 255f;
+		int /*long*/ color = OS.CGColorCreate(colorspace, data.foreground);
+		data.foreground[3] = oldAlpha;
+		OS.CFDictionaryAddValue(dict, OS.kCTForegroundColorAttributeName(), color);
+		OS.CFRelease(color);
+		OS.CFRelease(colorspace);
+		int /*long*/ str = OS.CFStringCreateWithCharacters(0, chars, length);
+		int /*long*/ attrStr = OS.CFAttributedStringCreate(0, str, dict);
+		OS.CFRelease(dict);
+		OS.CFRelease(str);
+		float /*double*/ drawX = x, drawY = y;
+		float /*double*/ [] ascent = new float /*double*/ [1];
+		float /*double*/ [] descent = new float /*double*/ [1];
+		float /*double*/ [] leading = new float /*double*/ [1];
+		float /*double*/ fontAscent = OS.CTFontGetAscent(fontID);
+		if ((flags & SWT.DRAW_DELIMITER) != 0) {
+			float /*double*/ fontDescent = OS.CTFontGetDescent(fontID);
+			float /*double*/ fontLeading = OS.CTFontGetLeading(fontID);
+			int /*long*/ typesetter = OS.CTTypesetterCreateWithAttributedString(attrStr);
+			int end = 0;
+			CFRange range = new CFRange();
+			while (end < length) {
+				char c = chars[end++];
+				switch (c) {
+					case '\r':
+					case '\n': {
+						range.length = end - range.location - 1;
+						if (c == '\r' && end != chars.length && chars[end] == '\n') end++;
+						if (range.length > 0) { 
+							int /*long*/ line = OS.CTTypesetterCreateLine(typesetter, range);
+							drawText(context, flags, drawX, drawY, line, ascent, descent, leading, fontAscent);
+							OS.CFRelease(line);
+							drawY += ascent[0] + descent[0] + leading[0];
+						} else {
+							drawY += fontAscent + fontDescent + fontLeading;	
+						}
+						range.location = end;
+					}
+				}
+			}
+			if (range.location != end) {
+				range.length = end - range.location;
+				int /*long*/ line = OS.CTTypesetterCreateLine(typesetter, range);
+				drawText(context, flags, drawX, drawY, line, ascent, descent, leading, fontAscent);
+				OS.CFRelease(line);
+			}
+			OS.CFRelease(typesetter);
+		} else {
+			int /*long*/ line = OS.CTLineCreateWithAttributedString(attrStr);
+			drawText(context, flags, drawX, drawY, line, ascent, descent, leading, fontAscent);
+			OS.CFRelease(line);
+		}
+		OS.CFRelease(attrStr);
+		OS.CGContextRestoreGState(context);
 	} finally {
 		uncheckGC(pool);
 	}
+}
+
+void drawText (int /*long*/ context, int flags, float /*double*/ x, float /*double*/ y, int /*long*/ line, float /*double*/ [] ascent, float /*double*/ [] descent, float /*double*/ [] leading, float /*double*/ fontAscent) {
+	double width = 0;
+	if ((flags & SWT.DRAW_DELIMITER) != 0 || (flags & SWT.DRAW_TRANSPARENT) == 0) {
+		width = OS.CTLineGetTypographicBounds(line, ascent, descent, leading);
+	}
+	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+		CGRect rect = new CGRect();
+		rect.origin.x = x;
+		rect.origin.y = y;
+		rect.size.width = (float)Math.ceil(width);
+		rect.size.height = (float)Math.ceil(ascent[0] + descent[0] + leading[0]);
+		OS.CGContextSaveGState(context);
+		float /*double*/ oldAlpha = data.background[3];
+		data.background[3] = data.alpha / 255f;
+		OS.CGContextSetFillColor(context, data.background);
+		data.background[3] = oldAlpha;
+		OS.CGContextFillRect(context, rect);
+		OS.CGContextRestoreGState(context);
+	}
+	OS.CGContextSetTextPosition(context, x, y + fontAscent);
+	OS.CTLineDraw(line, context);
 }
 
 /**
@@ -3894,10 +3922,89 @@ public Point textExtent(String string, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = checkGC(FONT);
 	try {
-		NSAttributedString str = createString(string, flags, false);
-		NSSize size = str.size();
-		str.release();
-		return new Point((int)size.width, (int)size.height);
+		int length = string.length();
+		Font font = data.font;
+		int /*long*/ fontID = font.handle.id;
+		if (length == 0) {
+			return new Point(0, (int)(0.5f + OS.CTFontGetAscent(fontID)) + (int)(0.5f + OS.CTFontGetDescent(fontID) + OS.CTFontGetLeading(fontID)));
+		}
+		char[] chars = new char[length];
+		string.getChars(0, length, chars, 0);
+		if ((flags & SWT.DRAW_MNEMONIC) != 0 || (flags & SWT.DRAW_TAB) == 0) {
+			int i=0, j=0;
+			while (i < chars.length) {
+				char c = chars [j++] = chars [i++];
+				switch (c) {
+					case '\t': {
+						if ((flags & SWT.DRAW_TAB) == 0) j--;
+						break;
+					}
+					case '&': {
+						if ((flags & SWT.DRAW_MNEMONIC) != 0) {
+							if (i == chars.length) {continue;}
+							if (chars [i] == '&') {i++; continue;}
+							j--;
+						}
+						break;
+					}
+				}
+			}
+			length = j;
+		}
+		int /*long*/ dict = OS.CFDictionaryCreateMutable(0, 1, OS.kCFTypeDictionaryKeyCallBacks(), OS.kCFTypeDictionaryValueCallBacks());
+		OS.CFDictionaryAddValue(dict, OS.kCTFontAttributeName(), font.handle.id);
+		int /*long*/ str = OS.CFStringCreateWithCharacters(0, chars, length);
+		int /*long*/ attrStr = OS.CFAttributedStringCreate(0, str, dict);
+		OS.CFRelease(dict);
+		OS.CFRelease(str);
+		float /*double*/ [] ascent = new float /*double*/ [1];
+		float /*double*/ [] descent = new float /*double*/ [1];
+		float /*double*/ [] leading = new float /*double*/ [1];
+		double width = 0, height = 0;
+		if ((flags & SWT.DRAW_DELIMITER) != 0) {
+			float /*double*/ fontAscent = OS.CTFontGetAscent(fontID);
+			float /*double*/ fontDescent = OS.CTFontGetDescent(fontID);
+			float /*double*/ fontLeading = OS.CTFontGetLeading(fontID);
+			int /*long*/ typesetter = OS.CTTypesetterCreateWithAttributedString(attrStr);
+			int end = 0;
+			CFRange range = new CFRange();
+			while (end < length) {
+				char c = chars[end++];
+				switch (c) {
+					case '\r':
+					case '\n': {
+						range.length = end - range.location - 1;
+						if (c == '\r' && end != chars.length && chars[end] == '\n') end++;
+						if (range.length > 0) {
+							int /*long*/ line = OS.CTTypesetterCreateLine(typesetter, range);
+							width = Math.max(width, OS.CTLineGetTypographicBounds(line, ascent, descent, leading));
+							height += ascent[0] + descent[0] + leading[0];
+							OS.CFRelease(line);
+						} else {
+							height += fontAscent + fontDescent + fontLeading;
+						}
+						range.location = end;
+					}
+				}
+			}
+			if (range.location != end) {
+				range.length = end - range.location;
+				int /*long*/ line = OS.CTTypesetterCreateLine(typesetter, range);
+				width = Math.max(width, OS.CTLineGetTypographicBounds(line, ascent, descent, leading));
+				height += ascent[0] + descent[0] + leading[0];
+				OS.CFRelease(line);
+			} else {
+				height += fontAscent + fontDescent + fontLeading;
+			}
+			OS.CFRelease(typesetter);
+		} else {
+			int /*long*/ line = OS.CTLineCreateWithAttributedString(attrStr);
+			width = OS.CTLineGetTypographicBounds(line, ascent, descent, leading);
+			height = ascent[0] + descent[0] + leading[0];
+			OS.CFRelease(line);
+		}
+		OS.CFRelease(attrStr);
+		return new Point((int)Math.ceil(width), (int)Math.ceil(height));
 	} finally {
 		uncheckGC(pool);
 	}

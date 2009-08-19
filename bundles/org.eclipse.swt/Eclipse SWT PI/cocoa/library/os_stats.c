@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 488;
-int OS_nativeFunctionCallCount[488];
+int OS_nativeFunctionCount = 517;
+int OS_nativeFunctionCallCount[517];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -51,17 +51,24 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1titleRectForBounds_1",
 	"CALLBACK_1view_1stringForToolTip_1point_1userData_1",
 	"CALLBACK_1webView_1setFrame_1",
+	"CFAttributedStringCreate",
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
+	"CFDictionaryAddValue",
+	"CFDictionaryCreateMutable",
+	"CFRange_1sizeof",
 	"CFRelease",
 	"CFRunLoopAddObserver",
 	"CFRunLoopGetCurrent",
 	"CFRunLoopObserverCreate",
 	"CFRunLoopObserverInvalidate",
+	"CFStringCreateWithCharacters",
 	"CFURLCreateStringByAddingPercentEscapes",
+	"CGAffineTransform_1sizeof",
 	"CGBitmapContextCreate",
 	"CGBitmapContextCreateImage",
 	"CGBitmapContextGetData",
+	"CGColorCreate",
 	"CGColorSpaceCreateDeviceRGB",
 	"CGColorSpaceRelease",
 	"CGContextAddPath",
@@ -82,6 +89,10 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSetLineJoin",
 	"CGContextSetLineWidth",
 	"CGContextSetMiterLimit",
+	"CGContextSetShouldAntialias",
+	"CGContextSetTextDrawingMode",
+	"CGContextSetTextMatrix",
+	"CGContextSetTextPosition",
 	"CGContextStrokePath",
 	"CGContextTranslateCTM",
 	"CGDataProviderCreateWithData",
@@ -105,6 +116,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGImageRelease",
 	"CGPathAddCurveToPoint",
 	"CGPathAddLineToPoint",
+	"CGPathAddRect",
 	"CGPathApply",
 	"CGPathCloseSubpath",
 	"CGPathCreateCopy",
@@ -122,6 +134,15 @@ char * OS_nativeFunctionNames[] = {
 	"CGSize_1sizeof",
 	"CGWarpMouseCursorPosition",
 	"CPSSetProcessName",
+	"CTFontGetAscent",
+	"CTFontGetDescent",
+	"CTFontGetLeading",
+	"CTLineCreateWithAttributedString",
+	"CTLineDraw",
+	"CTLineGetTypographicBounds",
+	"CTTypesetterCreateLine",
+	"CTTypesetterCreateWithAttributedString",
+	"CTTypesetterSuggestLineBreak",
 	"CancelMenuTracking",
 	"CloseRgn",
 	"CopyRgn",
@@ -345,7 +366,21 @@ char * OS_nativeFunctionNames[] = {
 	"instrumentObjcMessageSends",
 	"isFlipped_1CALLBACK",
 	"kCFRunLoopCommonModes",
+	"kCFTypeDictionaryKeyCallBacks",
+	"kCFTypeDictionaryValueCallBacks",
+	"kCTFontAttributeName",
+	"kCTForegroundColorAttributeName",
 	"kTISPropertyUnicodeKeyLayoutData",
+#ifndef JNI64
+	"memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I",
+#else
+	"memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J",
+#endif
+#ifndef JNI64
+	"memmove__ILorg_eclipse_swt_internal_cocoa_CGAffineTransform_2I",
+#else
+	"memmove__JLorg_eclipse_swt_internal_cocoa_CGAffineTransform_2J",
+#endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I",
 #else
@@ -390,6 +425,16 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II",

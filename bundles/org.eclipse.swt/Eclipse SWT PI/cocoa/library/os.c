@@ -774,6 +774,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1webView_1setFrame_1)
 }
 #endif
 
+#ifndef NO_CFAttributedStringCreate
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFAttributedStringCreate)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFAttributedStringCreate_FUNC);
+	rc = (jintLong)CFAttributedStringCreate((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFDictionaryRef)arg2);
+	OS_NATIVE_EXIT(env, that, CFAttributedStringCreate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFDataGetBytePtr
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFDataGetBytePtr)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -794,6 +806,40 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CFDataGetLength)
 	OS_NATIVE_ENTER(env, that, CFDataGetLength_FUNC);
 	rc = (jintLong)CFDataGetLength((CFDataRef)arg0);
 	OS_NATIVE_EXIT(env, that, CFDataGetLength_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFDictionaryAddValue
+JNIEXPORT void JNICALL OS_NATIVE(CFDictionaryAddValue)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+{
+	OS_NATIVE_ENTER(env, that, CFDictionaryAddValue_FUNC);
+	CFDictionaryAddValue((CFMutableDictionaryRef)arg0, (void*)arg1, (void*)arg2);
+	OS_NATIVE_EXIT(env, that, CFDictionaryAddValue_FUNC);
+}
+#endif
+
+#ifndef NO_CFDictionaryCreateMutable
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFDictionaryCreateMutable)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFDictionaryCreateMutable_FUNC);
+	rc = (jintLong)CFDictionaryCreateMutable((CFAllocatorRef)arg0, (CFIndex)arg1, (CFDictionaryKeyCallBacks*)arg2, (CFDictionaryValueCallBacks*)arg3);
+	OS_NATIVE_EXIT(env, that, CFDictionaryCreateMutable_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFRange_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CFRange_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFRange_1sizeof_FUNC);
+	rc = (jint)CFRange_sizeof();
+	OS_NATIVE_EXIT(env, that, CFRange_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -852,6 +898,22 @@ JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopObserverInvalidate)
 }
 #endif
 
+#ifndef NO_CFStringCreateWithCharacters
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFStringCreateWithCharacters)
+	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jintLong arg2)
+{
+	jchar *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFStringCreateWithCharacters_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)CFStringCreateWithCharacters((CFAllocatorRef)arg0, (UniChar*)lparg1, (CFIndex)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CFStringCreateWithCharacters_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFURLCreateStringByAddingPercentEscapes
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4)
@@ -860,6 +922,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 	OS_NATIVE_ENTER(env, that, CFURLCreateStringByAddingPercentEscapes_FUNC);
 	rc = (jintLong)CFURLCreateStringByAddingPercentEscapes((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (CFStringRef)arg3, (CFStringEncoding)arg4);
 	OS_NATIVE_EXIT(env, that, CFURLCreateStringByAddingPercentEscapes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGAffineTransform_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CGAffineTransform_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGAffineTransform_1sizeof_FUNC);
+	rc = (jint)CGAffineTransform_sizeof();
+	OS_NATIVE_EXIT(env, that, CGAffineTransform_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -896,6 +970,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGBitmapContextGetData)
 	OS_NATIVE_ENTER(env, that, CGBitmapContextGetData_FUNC);
 	rc = (jintLong)CGBitmapContextGetData((CGContextRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGBitmapContextGetData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGColorCreate
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGColorCreate)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDoubleArray arg1)
+{
+	jfloatDouble *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGColorCreate_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)CGColorCreate((CGColorSpaceRef)arg0, (CGFloat*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatDoubleArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGColorCreate_FUNC);
 	return rc;
 }
 #endif
@@ -1140,6 +1230,50 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
 	OS_NATIVE_ENTER(env, that, CGContextSetMiterLimit_FUNC);
 	CGContextSetMiterLimit((CGContextRef)arg0, (CGFloat)arg1);
 	OS_NATIVE_EXIT(env, that, CGContextSetMiterLimit_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetShouldAntialias
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetShouldAntialias)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetShouldAntialias_FUNC);
+	CGContextSetShouldAntialias((CGContextRef)arg0, (_Bool)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetShouldAntialias_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetTextDrawingMode
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetTextDrawingMode)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetTextDrawingMode_FUNC);
+	CGContextSetTextDrawingMode((CGContextRef)arg0, (CGTextDrawingMode)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetTextDrawingMode_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetTextMatrix
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetTextMatrix)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	CGAffineTransform _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextSetTextMatrix_FUNC);
+	if (arg1) if ((lparg1 = getCGAffineTransformFields(env, arg1, &_arg1)) == NULL) goto fail;
+	CGContextSetTextMatrix((CGContextRef)arg0, *lparg1);
+fail:
+	if (arg1 && lparg1) setCGAffineTransformFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetTextMatrix_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetTextPosition
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetTextPosition)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDouble arg1, jfloatDouble arg2)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetTextPosition_FUNC);
+	CGContextSetTextPosition((CGContextRef)arg0, (CGFloat)arg1, (CGFloat)arg2);
+	OS_NATIVE_EXIT(env, that, CGContextSetTextPosition_FUNC);
 }
 #endif
 
@@ -1399,6 +1533,20 @@ JNIEXPORT void JNICALL OS_NATIVE(CGPathAddLineToPoint)
 }
 #endif
 
+#ifndef NO_CGPathAddRect
+JNIEXPORT void JNICALL OS_NATIVE(CGPathAddRect)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)
+{
+	CGRect _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGPathAddRect_FUNC);
+	if (arg2) if ((lparg2 = getCGRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	CGPathAddRect((CGMutablePathRef)arg0, (CGAffineTransform*)arg1, *lparg2);
+fail:
+	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, CGPathAddRect_FUNC);
+}
+#endif
+
 #ifndef NO_CGPathApply
 JNIEXPORT void JNICALL OS_NATIVE(CGPathApply)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
@@ -1603,6 +1751,126 @@ JNIEXPORT jint JNICALL OS_NATIVE(CPSSetProcessName)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, CPSSetProcessName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTFontGetAscent
+JNIEXPORT jfloatDouble JNICALL OS_NATIVE(CTFontGetAscent)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jfloatDouble rc = 0;
+	OS_NATIVE_ENTER(env, that, CTFontGetAscent_FUNC);
+	rc = (jfloatDouble)CTFontGetAscent((CTFontRef)arg0);
+	OS_NATIVE_EXIT(env, that, CTFontGetAscent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTFontGetDescent
+JNIEXPORT jfloatDouble JNICALL OS_NATIVE(CTFontGetDescent)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jfloatDouble rc = 0;
+	OS_NATIVE_ENTER(env, that, CTFontGetDescent_FUNC);
+	rc = (jfloatDouble)CTFontGetDescent((CTFontRef)arg0);
+	OS_NATIVE_EXIT(env, that, CTFontGetDescent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTFontGetLeading
+JNIEXPORT jfloatDouble JNICALL OS_NATIVE(CTFontGetLeading)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jfloatDouble rc = 0;
+	OS_NATIVE_ENTER(env, that, CTFontGetLeading_FUNC);
+	rc = (jfloatDouble)CTFontGetLeading((CTFontRef)arg0);
+	OS_NATIVE_EXIT(env, that, CTFontGetLeading_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTLineCreateWithAttributedString
+JNIEXPORT jintLong JNICALL OS_NATIVE(CTLineCreateWithAttributedString)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CTLineCreateWithAttributedString_FUNC);
+	rc = (jintLong)CTLineCreateWithAttributedString((CFAttributedStringRef)arg0);
+	OS_NATIVE_EXIT(env, that, CTLineCreateWithAttributedString_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTLineDraw
+JNIEXPORT void JNICALL OS_NATIVE(CTLineDraw)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, CTLineDraw_FUNC);
+	CTLineDraw((CTLineRef)arg0, (CGContextRef)arg1);
+	OS_NATIVE_EXIT(env, that, CTLineDraw_FUNC);
+}
+#endif
+
+#ifndef NO_CTLineGetTypographicBounds
+JNIEXPORT jdouble JNICALL OS_NATIVE(CTLineGetTypographicBounds)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloatDoubleArray arg1, jfloatDoubleArray arg2, jfloatDoubleArray arg3)
+{
+	jfloatDouble *lparg1=NULL;
+	jfloatDouble *lparg2=NULL;
+	jfloatDouble *lparg3=NULL;
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, CTLineGetTypographicBounds_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetFloatDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetFloatDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jdouble)CTLineGetTypographicBounds((CTLineRef)arg0, (CGFloat*)lparg1, (CGFloat*)lparg2, (CGFloat*)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseFloatDoubleArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseFloatDoubleArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseFloatDoubleArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CTLineGetTypographicBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTTypesetterCreateLine
+JNIEXPORT jintLong JNICALL OS_NATIVE(CTTypesetterCreateLine)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	CFRange _arg1, *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CTTypesetterCreateLine_FUNC);
+	if (arg1) if ((lparg1 = getCFRangeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jintLong)CTTypesetterCreateLine((CTTypesetterRef)arg0, *lparg1);
+fail:
+	if (arg1 && lparg1) setCFRangeFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CTTypesetterCreateLine_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTTypesetterCreateWithAttributedString
+JNIEXPORT jintLong JNICALL OS_NATIVE(CTTypesetterCreateWithAttributedString)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CTTypesetterCreateWithAttributedString_FUNC);
+	rc = (jintLong)CTTypesetterCreateWithAttributedString((CFAttributedStringRef)arg0);
+	OS_NATIVE_EXIT(env, that, CTTypesetterCreateWithAttributedString_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTTypesetterSuggestLineBreak
+JNIEXPORT jintLong JNICALL OS_NATIVE(CTTypesetterSuggestLineBreak)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CTTypesetterSuggestLineBreak_FUNC);
+	rc = (jintLong)CTTypesetterSuggestLineBreak((CTTypesetterRef)arg0, (CFIndex)arg1, (double)arg2);
+	OS_NATIVE_EXIT(env, that, CTTypesetterSuggestLineBreak_FUNC);
 	return rc;
 }
 #endif
@@ -4560,6 +4828,104 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(kCFRunLoopCommonModes)
 }
 #endif
 
+#ifndef NO_kCFTypeDictionaryKeyCallBacks
+JNIEXPORT jintLong JNICALL OS_NATIVE(kCFTypeDictionaryKeyCallBacks)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFTypeDictionaryKeyCallBacks_FUNC);
+	rc = (jintLong)&kCFTypeDictionaryKeyCallBacks;
+	OS_NATIVE_EXIT(env, that, kCFTypeDictionaryKeyCallBacks_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCFTypeDictionaryValueCallBacks
+JNIEXPORT jintLong JNICALL OS_NATIVE(kCFTypeDictionaryValueCallBacks)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFTypeDictionaryValueCallBacks_FUNC);
+	rc = (jintLong)&kCFTypeDictionaryValueCallBacks;
+	OS_NATIVE_EXIT(env, that, kCFTypeDictionaryValueCallBacks_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCTFontAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(kCTFontAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kCTFontAttributeName_FUNC);
+	rc = (jintLong)kCTFontAttributeName;
+	OS_NATIVE_EXIT(env, that, kCTFontAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCTForegroundColorAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(kCTForegroundColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kCTForegroundColorAttributeName_FUNC);
+	rc = (jintLong)kCTForegroundColorAttributeName;
+	OS_NATIVE_EXIT(env, that, kCTForegroundColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#endif
+{
+	CFRange _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getCFRangeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (void *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setCFRangeFields(env, arg1, lparg1);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CGAffineTransform_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CGAffineTransform_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CGAffineTransform_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_cocoa_CGAffineTransform_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#endif
+{
+	CGAffineTransform _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CGAffineTransform_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CGAffineTransform_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getCGAffineTransformFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (void *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setCGAffineTransformFields(env, arg1, lparg1);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CGAffineTransform_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CGAffineTransform_2J_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CGPathElement_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
@@ -4781,6 +5147,56 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	CFRange _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (void *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setCFRangeFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	CGAffineTransform _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (void *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setCGAffineTransformFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ_FUNC);
 #endif
 }
 #endif

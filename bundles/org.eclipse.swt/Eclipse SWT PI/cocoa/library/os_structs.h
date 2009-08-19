@@ -11,6 +11,30 @@
 
 #include "os.h"
 
+#ifndef NO_CFRange
+void cacheCFRangeFields(JNIEnv *env, jobject lpObject);
+CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
+void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
+#define CFRange_sizeof() sizeof(CFRange)
+#else
+#define cacheCFRangeFields(a,b)
+#define getCFRangeFields(a,b,c) NULL
+#define setCFRangeFields(a,b,c)
+#define CFRange_sizeof() 0
+#endif
+
+#ifndef NO_CGAffineTransform
+void cacheCGAffineTransformFields(JNIEnv *env, jobject lpObject);
+CGAffineTransform *getCGAffineTransformFields(JNIEnv *env, jobject lpObject, CGAffineTransform *lpStruct);
+void setCGAffineTransformFields(JNIEnv *env, jobject lpObject, CGAffineTransform *lpStruct);
+#define CGAffineTransform_sizeof() sizeof(CGAffineTransform)
+#else
+#define cacheCGAffineTransformFields(a,b)
+#define getCGAffineTransformFields(a,b,c) NULL
+#define setCGAffineTransformFields(a,b,c)
+#define CGAffineTransform_sizeof() 0
+#endif
+
 #ifndef NO_CGPathElement
 void cacheCGPathElementFields(JNIEnv *env, jobject lpObject);
 CGPathElement *getCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStruct);
