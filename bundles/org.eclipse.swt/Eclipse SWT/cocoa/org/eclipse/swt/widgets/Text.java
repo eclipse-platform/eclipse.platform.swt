@@ -1237,6 +1237,20 @@ boolean isEventView (int /*long*/ id) {
 	return true;
 }
 
+boolean isNeeded(ScrollBar scrollbar) {
+	boolean result = false;
+	if ((style & SWT.MULTI) != 0) {
+		NSRect docFrame = scrollView.documentView().frame();
+		NSRect contentFrame = scrollView.contentView().frame();
+		if ((scrollbar.style & SWT.VERTICAL) != 0) {
+			result = docFrame.height > contentFrame.height;
+		} else {
+			result = docFrame.width > contentFrame.width;
+		}
+	}
+	return result;
+}
+
 /**
  * Pastes text from clipboard.
  * <p>

@@ -240,6 +240,10 @@ boolean isEventView (int /*long*/ id) {
 	return id == eventView ().id;
 }
 
+boolean isNeeded(ScrollBar scrollbar) {
+	return true;
+}
+
 boolean isTrim (NSView view) {
 	if (scrollView != null) {
 		if (scrollView.id == view.id) return true;
@@ -290,8 +294,8 @@ void sendVerticalSelection () {
 
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
-	if (horizontalBar != null) horizontalBar.enableWidget (enabled);
-	if (verticalBar != null) verticalBar.enableWidget (enabled);
+	if (horizontalBar != null) horizontalBar.enableWidget (enabled && isNeeded(horizontalBar));
+	if (verticalBar != null) verticalBar.enableWidget (enabled && isNeeded(verticalBar));
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
