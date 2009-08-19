@@ -1913,6 +1913,7 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 	wasSelected = false;
 	super.mouseDown(id, sel, theEvent);
+	if (isDisposed()) return;
 	if (!wasSelected) {
 		NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 		int /*long*/ row = widget.rowAtPoint(pt);
