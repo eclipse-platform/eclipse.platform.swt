@@ -48,7 +48,7 @@ public class Snippet217 {
 	
 	public static void main(String [] args) {
 		final Display display = new Display();
-		Font font = new Font(display, "Tahoma", 32, SWT.NORMAL);
+		Font font = new Font(display, "Tahoma", 16, SWT.NORMAL);
 		final Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
@@ -59,11 +59,13 @@ public class Snippet217 {
 		button.setText("Button 1");
 		int offset = text.indexOf('\uFFFC');
 		addControl(button, offset);
+		button.setLocation(styledText.getLocationAtOffset(offset));
 		Combo combo = new Combo(styledText, SWT.NONE);
 		combo.add("item 1");
 		combo.add("another item");
 		offset = text.indexOf('\uFFFC', offset + 1);
 		addControl(combo, offset);
+		combo.setLocation(styledText.getLocationAtOffset(offset));
 		
 		// use a verify listener to dispose the controls
 		styledText.addVerifyListener(new VerifyListener()  {
