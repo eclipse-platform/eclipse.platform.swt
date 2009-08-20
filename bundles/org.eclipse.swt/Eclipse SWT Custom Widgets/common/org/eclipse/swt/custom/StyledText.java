@@ -7291,9 +7291,8 @@ public void scroll(int destX, int destY, int x, int y, int width, int height, bo
  *	false=the widget was not scrolled, the given offset is not valid.
  */
 boolean scrollHorizontal(int pixels, boolean adjustScrollBar) {
-	if (pixels == 0) {
-		return false;
-	}
+	if (pixels == 0) return false;
+	if (wordWrap) return false;
 	ScrollBar horizontalBar = getHorizontalBar();
 	if (horizontalBar != null && adjustScrollBar) {
 		horizontalBar.setSelection(horizontalScrollOffset + pixels);
