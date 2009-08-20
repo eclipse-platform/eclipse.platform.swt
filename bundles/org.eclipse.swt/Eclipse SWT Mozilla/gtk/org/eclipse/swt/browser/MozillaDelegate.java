@@ -35,9 +35,14 @@ class MozillaDelegate {
 
 MozillaDelegate (Browser browser) {
 	super ();
+	/*
+	* The mozilla libraries on SPARC need the C++ runtime library to be loaded, but they do not declare
+	* this dependency because they usually get it for free as a result of the mozilla executable pulling it
+	* in.  Load this library here and scope it globally so that the mozilla libraries can resolve.
+	*/
 	if (IsSparc) {
-		browser.dispose ();
-		SWT.error (SWT.ERROR_NO_HANDLES, null, " [Unsupported platform]"); //$NON-NLS-1$
+		byte[] buffer = Converter.wcsToMbcs (null, "libCrun.so.1", true); //$NON-NLS-1$
+		OS.dlopen (buffer, OS.RTLD_NOW | OS.RTLD_GLOBAL);
 	}
 	this.browser = browser;
 }
