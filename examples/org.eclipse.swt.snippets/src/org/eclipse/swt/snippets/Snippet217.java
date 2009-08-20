@@ -71,12 +71,13 @@ public class Snippet217 {
 				if (event.start == event.end) return;
 				String text = styledText.getText(event.start, event.end - 1);
 				int index = text.indexOf('\uFFFC');
-				if (index != -1) {
+				while (index != -1) {
 					StyleRange style = styledText.getStyleRangeAtOffset(event.start + index);
 					if (style != null) {
 						Control control = (Control)style.data;
 						if (control != null) control.dispose();
 					}
+					index = text.indexOf('\uFFFC', index + 1);
 				}
 			}
 		});
