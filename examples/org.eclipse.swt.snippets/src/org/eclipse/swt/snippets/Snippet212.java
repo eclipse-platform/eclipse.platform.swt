@@ -32,13 +32,12 @@ public class Snippet212 {
 		"This snippet shows how to embed images in a StyledText.\n"+
 		"Here is one: \uFFFC, and here is another: \uFFFC."+
 		"Use the add button to add an image from your filesystem to the StyledText at the current caret offset.";
-	static Image[] images;
-	static int[] offsets;
 
 	static void addImage(Image image, int offset) {
 		StyleRange style = new StyleRange ();
 		style.start = offset;
 		style.length = 1;
+		style.data = image;
 		Rectangle rect = image.getBounds();
 		style.metrics = new GlyphMetrics(rect.height, 0, rect.width);
 		styledText.setStyleRange(style);		
@@ -51,57 +50,51 @@ public class Snippet212 {
 		styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		styledText.setText(text);
-		images = new Image[] {
-			display.getSystemImage(SWT.ICON_QUESTION),
-			display.getSystemImage(SWT.ICON_INFORMATION),
-		};
-		offsets = new int[images.length];
-		int lastOffset = 0;
-		for (int i = 0; i < images.length; i++) {
-			int offset = text.indexOf("\uFFFC", lastOffset);
-			offsets[i] = offset;
-			addImage(images[i], offset);
-			lastOffset = offset + 1;
-		}
-		
-		// use a verify listener to keep the offsets up to date
+		int offset = text.indexOf("\uFFFC", 0);
+		addImage(display.getSystemImage(SWT.ICON_QUESTION), offset);
+		offset = text.indexOf("\uFFFC", offset + 1);
+		addImage(display.getSystemImage(SWT.ICON_INFORMATION), offset);
+
+		// use a verify listener to dispose the images
 		styledText.addVerifyListener(new VerifyListener()  {
-			public void verifyText(VerifyEvent e) {
-				int start = e.start;
-				int replaceCharCount = e.end - e.start;
-				int newCharCount = e.text.length();
-				for (int i = 0; i < offsets.length; i++) {
-					int offset = offsets[i];
-					if (start <= offset && offset < start + replaceCharCount) {
-						// this image is being deleted from the text
-						if (images[i] != null && !images[i].isDisposed()) {
-							images[i].dispose();
-							images[i] = null;
-						}
-						offset = -1;
+			public void verifyText(VerifyEvent event) {
+				if (event.start == event.end) return;
+				String text = styledText.getText(event.start, event.end - 1);
+				int index = text.indexOf('\uFFFC');
+				while (index != -1) {
+					StyleRange style = styledText.getStyleRangeAtOffset(event.start + index);
+					if (style != null) {
+						Image image = (Image)style.data;
+						if (image != null) image.dispose();
 					}
-					if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
-					offsets[i] = offset;
+					index = text.indexOf('\uFFFC', index + 1);
 				}
 			}
 		});
+		// draw images on paint event
 		styledText.addPaintObjectListener(new PaintObjectListener() {
 			public void paintObject(PaintObjectEvent event) {
-				GC gc = event.gc;
 				StyleRange style = event.style;
-				int start = style.start;
-				for (int i = 0; i < offsets.length; i++) {
-					int offset = offsets[i];
-					if (start == offset) {
-						Image image = images[i];
-						int x = event.x;
-						int y = event.y + event.ascent - style.metrics.ascent;						
-						gc.drawImage(image, x, y);
+				Image image = (Image)style.data;
+				if (!image.isDisposed()) {
+					int x = event.x;
+					int y = event.y + event.ascent - style.metrics.ascent;						
+					event.gc.drawImage(image, x, y);
+				}
+			}
+		});
+		styledText.addListener(SWT.Dispose, new Listener() {
+			public void handleEvent(Event event) {
+				StyleRange[] styles = styledText.getStyleRanges();
+				for (int i = 0; i < styles.length; i++) {
+					StyleRange style = styles[i];
+					if (style.data != null) {
+						Image image = (Image)style.data;
+						if (image != null) image.dispose();
 					}
 				}
 			}
 		});
-		
 		Button button = new Button (shell, SWT.PUSH);
 		button.setText("Add Image");
 		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
@@ -114,21 +107,6 @@ public class Snippet212 {
 						Image image = new Image(display, filename);
 						int offset = styledText.getCaretOffset();
 						styledText.replaceTextRange(offset, 0, "\uFFFC");
-						int index = 0;
-						while (index < offsets.length) {
-							if (offsets[index] == -1 && images[index] == null) break;
-							index++;
-						}
-						if (index == offsets.length) {
-							int[] tmpOffsets = new int[index + 1];
-							System.arraycopy(offsets, 0, tmpOffsets, 0, offsets.length);
-							offsets = tmpOffsets;
-							Image[] tmpImages = new Image[index + 1];
-							System.arraycopy(images, 0, tmpImages, 0, images.length);
-							images = tmpImages;
-						}
-						offsets[index] = offset;
-						images[index] = image;
 						addImage(image, offset);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -141,12 +119,6 @@ public class Snippet212 {
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
-		}
-		for (int i = 0; i < images.length; i++) {
-			Image image = images[i];
-			if (image != null && !image.isDisposed()) {
-				image.dispose();
-			}
 		}
 		display.dispose();
 	}
