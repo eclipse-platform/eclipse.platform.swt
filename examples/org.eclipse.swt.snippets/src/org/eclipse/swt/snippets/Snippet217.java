@@ -31,14 +31,13 @@ public class Snippet217 {
 	static String text = 
 		"This snippet shows how to embed widgets in a StyledText.\n"+
 		"Here is one: \uFFFC, and here is another: \uFFFC.";
-	static int[] offsets;
-	static Control[] controls;
 	static int MARGIN = 5;
 	
 	static void addControl(Control control, int offset) {
 		StyleRange style = new StyleRange ();
 		style.start = offset;
 		style.length = 1;
+		style.data = control;
 		control.pack();
 		Rectangle rect = control.getBounds();
 		int ascent = 2*rect.height/3;
@@ -56,41 +55,28 @@ public class Snippet217 {
 		styledText.setFont(font);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		styledText.setText(text);
-		controls = new Control[2];
 		Button button = new Button(styledText, SWT.PUSH);
 		button.setText("Button 1");
-		controls[0] = button;
+		int offset = text.indexOf('\uFFFC');
+		addControl(button, offset);
 		Combo combo = new Combo(styledText, SWT.NONE);
 		combo.add("item 1");
 		combo.add("another item");
-		controls[1] = combo;
-		offsets = new int[controls.length];
-		int lastOffset = 0;
-		for (int i = 0; i < controls.length; i++) {
-			int offset = text.indexOf("\uFFFC", lastOffset);
-			offsets[i] = offset;
-			addControl(controls[i], offsets[i]);
-			lastOffset = offset + 1;
-		}
+		offset = text.indexOf('\uFFFC', offset + 1);
+		addControl(combo, offset);
 		
-		// use a verify listener to keep the offsets up to date
+		// use a verify listener to dispose the controls
 		styledText.addVerifyListener(new VerifyListener()  {
-			public void verifyText(VerifyEvent e) {
-				int start = e.start;
-				int replaceCharCount = e.end - e.start;
-				int newCharCount = e.text.length();
-				for (int i = 0; i < offsets.length; i++) {
-					int offset = offsets[i];
-					if (start <= offset && offset < start + replaceCharCount) {
-						// this widget is being deleted from the text
-						if (controls[i] != null && !controls[i].isDisposed()) {
-							controls[i].dispose();
-							controls[i] = null;
-						}
-						offset = -1;
+			public void verifyText(VerifyEvent event) {
+				if (event.start == event.end) return;
+				String text = styledText.getText(event.start, event.end - 1);
+				int index = text.indexOf('\uFFFC');
+				if (index != -1) {
+					StyleRange style = styledText.getStyleRangeAtOffset(event.start + index);
+					if (style != null) {
+						Control control = (Control)style.data;
+						if (control != null) control.dispose();
 					}
-					if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
-					offsets[i] = offset;
 				}
 			}
 		});
@@ -98,18 +84,11 @@ public class Snippet217 {
 		// reposition widgets on paint event
 		styledText.addPaintObjectListener(new PaintObjectListener() {
 			public void paintObject(PaintObjectEvent event) {
-				StyleRange style = event.style;
-				int start = style.start;
-				for (int i = 0; i < offsets.length; i++) {
-					int offset = offsets[i];
-					if (start == offset) {
-						Point pt = controls[i].getSize();
-						int x = event.x + MARGIN;
-						int y = event.y + event.ascent - 2*pt.y/3;
-						controls[i].setLocation(x, y);
-						break;
-					}
-				}
+				Control control = (Control)event.style.data;
+				Point pt = control.getSize();
+				int x = event.x + MARGIN;
+				int y = event.y + event.ascent - 2*pt.y/3;
+				control.setLocation(x, y);
 			}
 		});
 			
