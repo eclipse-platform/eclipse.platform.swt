@@ -201,7 +201,7 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 #
 # Mozilla lib
 #
-make_mozilla:#$(MOZILLA_LIB)
+make_mozilla: $(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
 	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
