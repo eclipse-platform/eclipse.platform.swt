@@ -409,7 +409,9 @@ public class OS extends C {
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD = 0;
 	public static final int PANGO_WRAP_WORD_CHAR = 2;
+	public static final int RTLD_GLOBAL = 0x100;
 	public static final int RTLD_LAZY = 1;
+	public static final int RTLD_NOW = 2;
 	public static final int XA_CARDINAL = 6;
 	public static final int XA_WINDOW = 33;
 	

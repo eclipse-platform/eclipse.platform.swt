@@ -26,8 +26,24 @@ class MozillaDelegate {
 	static int /*long*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
 
+	static boolean IsSparc;
+	static {
+		String osName = System.getProperty ("os.name").toLowerCase (); //$NON-NLS-1$
+		String osArch = System.getProperty ("os.arch").toLowerCase (); //$NON-NLS-1$
+		IsSparc = (osName.startsWith ("sunos") || osName.startsWith ("solaris")) && osArch.startsWith("sparc"); //$NON-NLS-1$
+	}
+
 MozillaDelegate (Browser browser) {
 	super ();
+	/*
+	* The mozilla libraries on SPARC need the C++ runtime library to be loaded, but they do not declare
+	* this dependency because they usually get it for free as a result of the mozilla executable pulling it
+	* in.  Load this library here and scope it globally so that the mozilla libraries can resolve.
+	*/
+	if (IsSparc) {
+		byte[] buffer = Converter.wcsToMbcs (null, "libCrun.so.1", true); //$NON-NLS-1$
+		OS.dlopen (buffer, OS.RTLD_NOW | OS.RTLD_GLOBAL);
+	}
 	this.browser = browser;
 }
 
