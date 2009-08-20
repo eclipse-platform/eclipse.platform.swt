@@ -24,7 +24,9 @@ SWTPI_PREFIX = swt-pi
 CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 GNOME_PREFIX = swt-gnome
-MOZILLA_PREFIX = swt-mozilla
+MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
+XULRUNNER_PREFIX = swt-xulrunner
+XPCOMINIT_PREFIX = swt-xpcominit
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -35,6 +37,8 @@ CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+XPCOMINIT_LIB = lib$(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
@@ -61,26 +65,26 @@ GLXLIBS = -G -K PIC -L/usr/X11R6/lib -lGL -lGLU -lm
 #NATIVE_STATS = -DNATIVE_STATS
 
 MOZILLACFLAGS = -O \
+	-DSWT_VERSION=$(SWT_VERSION) \
+	$(NATIVE_STATS) \
 	-DMOZILLA_STRICT_API=1 \
-	-fno-rtti \
-	-fno-exceptions \
-	-Wall \
-	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
-	-Wno-non-virtual-dtor \
-	-fPIC \
+	-KPIC \
+	+w \
 	-I. \
-	-I$(MOZILLA_SDK)	\
-	-include $(MOZILLA_SDK)/mozilla-config.h \
-	-I$(MOZILLA_SDK)/nspr/include \
-	-I$(MOZILLA_SDK)/xpcom/include \
-	-I$(MOZILLA_SDK)/string/include \
-	-I$(MOZILLA_SDK)/embed_base/include \
-	-I$(MOZILLA_SDK)/embedstring/include
-MOZILLALIBS = -G -s -Wl,--version-script=mozilla_exports -Bsymbolic \
-	-L$(MOZILLA_SDK)/embedstring/bin -lembedstring \
-	-L$(MOZILLA_SDK)/embed_base/bin -lembed_base_s \
-	-L$(MOZILLA_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
-	-L$(MOZILLA_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
+	-I$(JAVA_HOME)/include \
+	-I$(JAVA_HOME)/include/solaris \
+	${SWT_PTR_CFLAGS}
+MOZILLALIBS =  -G
+MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
+	-DNO__1XPCOMGlueStartup \
+	-DNO__1XPCOMGlueLoadXULFunctions \
+	-DNO_memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I \
+	-DNO_memmove__JLorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2J \
+	-DNO_nsDynamicFunctionLoad_1sizeof \
+	-DNO__1Call__IIIIII \
+	-DNO__1Call__JJJJJI \
+	-DNO_nsDynamicFunctionLoad
+XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
@@ -90,6 +94,8 @@ CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
+XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
+XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
 CFLAGS = -O \
@@ -201,22 +207,59 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 #
 # Mozilla lib
 #
-make_mozilla: $(MOZILLA_LIB)
+make_mozilla:$(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
-	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
+	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS) ${MOZILLA_LIBS}
 
 xpcom.o: xpcom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom.cpp
 
 xpcom_structs.o: xpcom_structs.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_structs.cpp
 	
 xpcom_custom.o: xpcom_custom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_custom.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_custom.cpp
 
 xpcom_stats.o: xpcom_stats.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom_stats.cpp
+
+#
+# XULRunner lib
+#
+make_xulrunner:$(XULRUNNER_LIB)
+
+$(XULRUNNER_LIB): $(XULRUNNER_OBJECTS)
+	$(CXX) -o $(XULRUNNER_LIB) $(XULRUNNER_OBJECTS) $(MOZILLALIBS) ${XULRUNNER_LIBS}
+
+xpcomxul.o: xpcom.cpp
+	$(CXX) -o xpcomxul.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom.cpp
+
+xpcomxul_structs.o: xpcom_structs.cpp
+	$(CXX) -o xpcomxul_structs.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
+	
+xpcomxul_custom.o: xpcom_custom.cpp
+	$(CXX) -o xpcomxul_custom.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
+
+xpcomxul_stats.o: xpcom_stats.cpp
+	$(CXX) -o xpcomxul_stats.o -DXULRUNNER $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
+
+#
+# XPCOMInit lib
+#
+make_xpcominit:$(XPCOMINIT_LIB)
+
+$(XPCOMINIT_LIB): $(XPCOMINIT_OBJECTS)
+	$(CXX) -o $(XPCOMINIT_LIB) $(XPCOMINIT_OBJECTS) $(MOZILLALIBS) ${XULRUNNER_LIBS}
+
+xpcominit.o: xpcominit.cpp
+	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit.cpp
+
+xpcominit_structs.o: xpcominit_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit_structs.cpp
+	
+xpcominit_stats.o: xpcominit_stats.cpp
+	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit_stats.cpp
 
 #
 # GLX lib
