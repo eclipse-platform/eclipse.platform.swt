@@ -150,13 +150,13 @@ public class DND {
 	
 	/**
 	 * DropTarget drag under effect: An insertion mark is shown before the item under the cursor; applies to 
-	 * trees (value is 2).
+	 * tables and trees (value is 2).
 	 */
 	public static final int FEEDBACK_INSERT_BEFORE = 2;
 	
 	/**
 	 * DropTarget drag under effect: An insertion mark is shown after the item under the cursor; applies to
-	 * trees (value is 4).
+	 * tables and trees (value is 4).
 	 */	
 	public static final int FEEDBACK_INSERT_AFTER = 4;
 	

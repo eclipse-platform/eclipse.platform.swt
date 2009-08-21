@@ -588,6 +588,7 @@ typedef enum {
 	LPtoDP_FUNC,
 	LVCOLUMN_1sizeof_FUNC,
 	LVHITTESTINFO_1sizeof_FUNC,
+	LVINSERTMARK_1sizeof_FUNC,
 	LVITEM_1sizeof_FUNC,
 	LineTo_FUNC,
 	LoadBitmapA_FUNC,
@@ -1329,6 +1330,11 @@ typedef enum {
 	SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
 #endif
 #ifndef JNI64
+	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
 #else
 	SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
@@ -1492,6 +1498,11 @@ typedef enum {
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
 #else
 	SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
+	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC,
 #endif
 #ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,

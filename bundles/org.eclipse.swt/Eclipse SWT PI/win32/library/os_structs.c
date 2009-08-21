@@ -2665,6 +2665,46 @@ void setLVHITTESTINFOFields(JNIEnv *env, jobject lpObject, LVHITTESTINFO *lpStru
 }
 #endif
 
+#ifndef NO_LVINSERTMARK
+typedef struct LVINSERTMARK_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, dwFlags, iItem, dwReserved;
+} LVINSERTMARK_FID_CACHE;
+
+LVINSERTMARK_FID_CACHE LVINSERTMARKFc;
+
+void cacheLVINSERTMARKFields(JNIEnv *env, jobject lpObject)
+{
+	if (LVINSERTMARKFc.cached) return;
+	LVINSERTMARKFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	LVINSERTMARKFc.cbSize = (*env)->GetFieldID(env, LVINSERTMARKFc.clazz, "cbSize", "I");
+	LVINSERTMARKFc.dwFlags = (*env)->GetFieldID(env, LVINSERTMARKFc.clazz, "dwFlags", "I");
+	LVINSERTMARKFc.iItem = (*env)->GetFieldID(env, LVINSERTMARKFc.clazz, "iItem", "I");
+	LVINSERTMARKFc.dwReserved = (*env)->GetFieldID(env, LVINSERTMARKFc.clazz, "dwReserved", "I");
+	LVINSERTMARKFc.cached = 1;
+}
+
+LVINSERTMARK *getLVINSERTMARKFields(JNIEnv *env, jobject lpObject, LVINSERTMARK *lpStruct)
+{
+	if (!LVINSERTMARKFc.cached) cacheLVINSERTMARKFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, LVINSERTMARKFc.cbSize);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, LVINSERTMARKFc.dwFlags);
+	lpStruct->iItem = (*env)->GetIntField(env, lpObject, LVINSERTMARKFc.iItem);
+	lpStruct->dwReserved = (*env)->GetIntField(env, lpObject, LVINSERTMARKFc.dwReserved);
+	return lpStruct;
+}
+
+void setLVINSERTMARKFields(JNIEnv *env, jobject lpObject, LVINSERTMARK *lpStruct)
+{
+	if (!LVINSERTMARKFc.cached) cacheLVINSERTMARKFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, LVINSERTMARKFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, LVINSERTMARKFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, LVINSERTMARKFc.iItem, (jint)lpStruct->iItem);
+	(*env)->SetIntField(env, lpObject, LVINSERTMARKFc.dwReserved, (jint)lpStruct->dwReserved);
+}
+#endif
+
 #ifndef NO_LVITEM
 typedef struct LVITEM_FID_CACHE {
 	int cached;

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 971;
-int OS_nativeFunctionCallCount[971];
+int OS_nativeFunctionCount = 974;
+int OS_nativeFunctionCallCount[974];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -580,6 +580,7 @@ char * OS_nativeFunctionNames[] = {
 	"LPtoDP",
 	"LVCOLUMN_1sizeof",
 	"LVHITTESTINFO_1sizeof",
+	"LVINSERTMARK_1sizeof",
 	"LVITEM_1sizeof",
 	"LineTo",
 	"LoadBitmapA",
@@ -1321,6 +1322,11 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 #endif
 #ifndef JNI64
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
+#else
+	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
+#endif
+#ifndef JNI64
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
 #else
 	"SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVITEM_2",
@@ -1484,6 +1490,11 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 #else
 	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
+#endif
+#ifndef JNI64
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
+#else
+	"SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2",
 #endif
 #ifndef JNI64
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2",

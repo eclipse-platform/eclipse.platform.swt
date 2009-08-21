@@ -599,6 +599,18 @@ void setLVHITTESTINFOFields(JNIEnv *env, jobject lpObject, LVHITTESTINFO *lpStru
 #define LVHITTESTINFO_sizeof() 0
 #endif
 
+#ifndef NO_LVINSERTMARK
+void cacheLVINSERTMARKFields(JNIEnv *env, jobject lpObject);
+LVINSERTMARK *getLVINSERTMARKFields(JNIEnv *env, jobject lpObject, LVINSERTMARK *lpStruct);
+void setLVINSERTMARKFields(JNIEnv *env, jobject lpObject, LVINSERTMARK *lpStruct);
+#define LVINSERTMARK_sizeof() sizeof(LVINSERTMARK)
+#else
+#define cacheLVINSERTMARKFields(a,b)
+#define getLVINSERTMARKFields(a,b,c) NULL
+#define setLVINSERTMARKFields(a,b,c)
+#define LVINSERTMARK_sizeof() 0
+#endif
+
 #ifndef NO_LVITEM
 void cacheLVITEMFields(JNIEnv *env, jobject lpObject);
 LVITEM *getLVITEMFields(JNIEnv *env, jobject lpObject, LVITEM *lpStruct);

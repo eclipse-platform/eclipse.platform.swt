@@ -50,6 +50,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	int scrollIndex = -1;
 	long scrollBeginTime;
 	TableItem dropHighlight;
+	int iItemInsert = -1;
 
 	/**
 	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified 
@@ -86,6 +87,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		scrollBeginTime = 0;
 		scrollIndex = -1;
 		dropHighlight = null;
+		iItemInsert = -1;
 	}
 	
 	/**
@@ -110,6 +112,15 @@ public class TableDropTargetEffect extends DropTargetEffect {
 			lvItem.stateMask = OS.LVIS_DROPHILITED;
 			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
 			dropHighlight = null;
+		}
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(5, 1)) {
+			if (iItemInsert != -1) {
+				LVINSERTMARK plvim = new LVINSERTMARK ();
+				plvim.cbSize = LVINSERTMARK.sizeof;
+				plvim.iItem = -1;
+				OS.SendMessage(handle, OS.LVM_SETINSERTMARK, 0, plvim);
+				iItemInsert = -1;
+			}
 		}
 		scrollBeginTime = 0;
 		scrollIndex = -1;
@@ -198,6 +209,25 @@ public class TableDropTargetEffect extends DropTargetEffect {
 				lvItem.stateMask = OS.LVIS_DROPHILITED;
 				OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
 				dropHighlight = null;
+			}
+		}
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(5, 1)) {
+			if (pinfo.iItem != -1 && (effect & (DND.FEEDBACK_INSERT_BEFORE | DND.FEEDBACK_INSERT_AFTER)) != 0) {
+					LVINSERTMARK plvim = new LVINSERTMARK ();
+					plvim.cbSize = LVINSERTMARK.sizeof;
+					plvim.dwFlags = (effect & DND.FEEDBACK_INSERT_AFTER) != 0 ? OS.LVIM_AFTER : 0;
+					plvim.iItem = pinfo.iItem;
+					if (OS.SendMessage(handle, OS.LVM_SETINSERTMARK, 0, plvim) != 0) {
+						iItemInsert = pinfo.iItem;
+					}
+			} else {
+				if (iItemInsert != -1) {
+					LVINSERTMARK plvim = new LVINSERTMARK ();
+					plvim.cbSize = LVINSERTMARK.sizeof;
+					plvim.iItem = -1;
+					OS.SendMessage(handle, OS.LVM_SETINSERTMARK, 0, plvim);
+					iItemInsert = -1;
+				}
 			}
 		}
 	}

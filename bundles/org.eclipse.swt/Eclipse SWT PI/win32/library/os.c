@@ -7707,6 +7707,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LVHITTESTINFO_1sizeof)
 }
 #endif
 
+#ifndef NO_LVINSERTMARK_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(LVINSERTMARK_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LVINSERTMARK_1sizeof_FUNC);
+	rc = (jint)LVINSERTMARK_sizeof();
+	OS_NATIVE_EXIT(env, that, LVINSERTMARK_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LVITEM_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(LVITEM_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -13572,6 +13584,33 @@ fail:
 }
 #endif
 
+#if (!defined(NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2) && !defined(JNI64)) || (!defined(NO_SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jobject arg3)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jobject arg3)
+#endif
+{
+	LVINSERTMARK _arg3, *lparg3=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
+#endif
+	if (arg3) if ((lparg3 = getLVINSERTMARKFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jintLong)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setLVINSERTMARKFields(env, arg3, lparg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2) && !defined(JNI64)) || (!defined(NO_SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVITEM_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jobject arg3)
@@ -14457,6 +14496,33 @@ fail:
 	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2) && !defined(JNI64)) || (!defined(NO_SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jobject arg3)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2)(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jobject arg3)
+#endif
+{
+	LVINSERTMARK _arg3, *lparg3=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
+#endif
+	if (arg3) if ((lparg3 = getLVINSERTMARKFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jintLong)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setLVINSERTMARKFields(env, arg3, lparg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVINSERTMARK_2_FUNC);
 #endif
 	return rc;
 }

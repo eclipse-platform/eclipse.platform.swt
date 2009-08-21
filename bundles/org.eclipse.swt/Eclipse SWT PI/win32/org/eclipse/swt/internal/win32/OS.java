@@ -981,6 +981,7 @@ public class OS extends C {
 	public static final int LVIF_INDENT = 0x10;
 	public static final int LVIF_STATE = 0x8;
 	public static final int LVIF_TEXT = 0x1;
+	public static final int LVIM_AFTER = 0x00000001; 
 	public static final int LVIR_BOUNDS = 0x0;
 	public static final int LVIR_ICON = 0x1;
 	public static final int LVIR_LABEL = 0x2;
@@ -1030,6 +1031,7 @@ public class OS extends C {
 	public static final int LVM_SETCOLUMNWIDTH = 0x101e;
 	public static final int LVM_SETEXTENDEDLISTVIEWSTYLE = 0x1036;
 	public static final int LVM_SETIMAGELIST = 0x1003;
+	public static final int LVM_SETINSERTMARK = LVM_FIRST + 166;
 	public static final int LVM_SETITEM = IsUnicode ? 0x104c : 0x1006;
 	public static final int LVM_SETITEMCOUNT = LVM_FIRST + 47;
 	public static final int LVM_SETITEMSTATE = 0x102b;
@@ -2189,6 +2191,7 @@ public static final native int LOGPEN_sizeof ();
 public static final native int LVCOLUMN_sizeof ();
 public static final native int LVHITTESTINFO_sizeof ();
 public static final native int LVITEM_sizeof ();
+public static final native int LVINSERTMARK_sizeof ();
 public static final native int MARGINS_sizeof ();
 public static final native int MCHITTESTINFO_sizeof ();
 public static final native int MEASUREITEMSTRUCT_sizeof ();
@@ -3124,6 +3127,11 @@ public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*
 }
 
 public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVINSERTMARK lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
@@ -5833,6 +5841,12 @@ public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
+public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVINSERTMARK lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, MARGINS lParam);
 /**
  * @param hWnd cast=(HWND)
@@ -6020,6 +6034,12 @@ public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg
  * @param lParam cast=(LPARAM)
  */
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LITEM lParam);
+/**
+ * @param hWnd cast=(HWND)
+ * @param wParam cast=(WPARAM)
+ * @param lParam cast=(LPARAM)
+ */
+public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVINSERTMARK lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
