@@ -909,6 +909,7 @@ void destroyItem (TreeItem item) {
 	}
 	setScrollWidth ();
 	if (this.itemCount == 0) imageBounds = null;
+	if (insertItem == item) insertItem = null;
 }
 
 boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
@@ -1050,7 +1051,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 		context.restoreGraphicsState ();
 	}
 	
-	if (insertItem != null && !insertItem.isDisposed()) {
+	if (item == insertItem && insertItem != null && !insertItem.isDisposed()) {
 		context.saveGraphicsState ();
 		NSRect contentRect = cell.titleRectForBounds (rect);
 		GCData data = new GCData ();
@@ -2199,6 +2200,7 @@ public void removeAll () {
 	items = new TreeItem [4];
 	itemCount = 0;
 	imageBounds = null;
+	insertItem = null;
 	((NSOutlineView) view).reloadData ();
 	setScrollWidth ();
 }
