@@ -941,7 +941,20 @@ int tableView_validateDrop_proposedRow_proposedDropOperation(int /*long*/ id, in
 	//TODO stop scrolling and expansion when app does not set FEEDBACK_SCROLL and/or FEEDBACK_EXPAND
 	NSTableView widget = new NSTableView(tableView);
 	if (0 <= row && row < widget.numberOfRows()) {
-		widget.setDropRow(row, OS.NSTableViewDropOn);
+		if (feedback == 0) {
+			widget.setDropRow(-1, OS.NSTableViewDropOn);		
+		} else {
+			if ((feedback & DND.FEEDBACK_SELECT) != 0) {
+				widget.setDropRow(row, OS.NSTableViewDropOn);
+			} else {
+				if ((feedback & DND.FEEDBACK_INSERT_AFTER) != 0) {
+					widget.setDropRow(row + 1, OS.NSTableViewDropAbove);
+				}
+				if ((feedback & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+					widget.setDropRow(row, OS.NSTableViewDropAbove);
+				}
+			}
+		}
 	}
 	return opToOsOp(selectedOperation);	
 }
