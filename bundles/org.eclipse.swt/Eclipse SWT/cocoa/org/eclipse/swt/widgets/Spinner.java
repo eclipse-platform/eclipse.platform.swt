@@ -263,6 +263,10 @@ void createHandle () {
 	textWidget.init();
 //	textWidget.setTarget(widget);
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
+	if ((style & SWT.BORDER) == 0) {
+		textWidget.setFocusRingType (OS.NSFocusRingTypeNone);
+		textWidget.setBordered (false);
+	}
 	textFormatter = (NSNumberFormatter)new NSNumberFormatter().alloc();
 	textFormatter.init();
 	widget.addSubview(textWidget);
