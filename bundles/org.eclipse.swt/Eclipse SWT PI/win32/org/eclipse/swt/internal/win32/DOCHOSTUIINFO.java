@@ -14,12 +14,7 @@ public class DOCHOSTUIINFO {
 	public int cbSize;
 	public int dwFlags;
 	public int dwDoubleClick;
-	/*
-	 * TODO uncomment the following two fields when 32-bit swt starts
-	 * compiling with a newer mssdk whose definition of DOCHOSTUIINFO
-	 * includes these fields.
-	 */
-//	public int /*long*/ pchHostCss;
-//	public int /*long*/ pchHostNS;
+	public int /*long*/ pchHostCss;
+	public int /*long*/ pchHostNS;
 	public static final int sizeof = OS.DOCHOSTUIINFO_sizeof ();
 }

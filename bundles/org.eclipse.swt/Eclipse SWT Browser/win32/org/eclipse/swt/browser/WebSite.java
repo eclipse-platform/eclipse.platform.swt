@@ -226,21 +226,10 @@ int GetHostInfo(int /*long*/ pInfo) {
 	int info = IE.DOCHOSTUIFLAG_THEME;
 	IE browser = (IE)((Browser)getParent().getParent()).webBrowser;
 	if ((browser.style & SWT.BORDER) == 0) info |= IE.DOCHOSTUIFLAG_NO3DOUTERBORDER;
-	OS.MoveMemory(pInfo + 4, new int[] {info}, 4);
-
-	/*
-	* TODO replace the implementation above with the one commented below
-	* when 32-bit swt starts compiling with a newer mssdk whose definition
-	* of DOCHOSTUIINFO includes the last two OLECHAR* fields.
-	*/ 
-//	int info = IE.DOCHOSTUIFLAG_THEME;
-//	Browser browser = (Browser)getParent().getParent();
-//	if ((browser.getStyle() & SWT.BORDER) == 0) info |= IE.DOCHOSTUIFLAG_NO3DOUTERBORDER;
-//
-//	DOCHOSTUIINFO uiInfo = new DOCHOSTUIINFO ();
-//	OS.MoveMemory(uiInfo, pInfo, DOCHOSTUIINFO.sizeof);
-//	uiInfo.dwFlags = info;
-//	OS.MoveMemory(pInfo, uiInfo, DOCHOSTUIINFO.sizeof);
+	DOCHOSTUIINFO uiInfo = new DOCHOSTUIINFO ();
+	OS.MoveMemory(uiInfo, pInfo, DOCHOSTUIINFO.sizeof);
+	uiInfo.dwFlags = info;
+	OS.MoveMemory(pInfo, uiInfo, DOCHOSTUIINFO.sizeof);
 	return COM.S_OK;
 }
 

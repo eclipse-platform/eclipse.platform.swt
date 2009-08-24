@@ -20,9 +20,7 @@ IF x.%1==x.ia64 GOTO IA64
 
 :X86
 
-IF x.%DEV_TOOLS%==x. set DEV_TOOLS=S:\PRODUCTS
-call %DEV_TOOLS%\msvc60\vc98\bin\vcvars32.bat
-IF x.%MSSDK%==x. set MSSDK=%DEV_TOOLS%\platsdk\feb2003
+IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Microsoft Platform SDK for Windows Server 2003 R2"
 call %MSSDK%\setenv /XP32 /RETAIL
 IF x.%OUTPUT_DIR%==x. set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-jdk1.4.1
