@@ -655,17 +655,14 @@ void _setAlignment (int alignment) {
 //	}
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	} else {
-		return;	// TODO set to OS default
-	}
+void setBackgroundColor(NSColor nsColor) {
 	NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
 	cell.setBackgroundColor(nsColor);
+}
+
+void setBackgroundImage(NSImage image) {
+	NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
+	cell.setBackgroundColor(NSColor.colorWithPatternImage(image));
 }
 
 void setFont (NSFont font) {

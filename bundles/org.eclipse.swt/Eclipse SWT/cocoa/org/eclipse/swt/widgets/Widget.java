@@ -558,6 +558,10 @@ void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	/* Do nothing */
 }
 
+void drawBackgroundInClipRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+	callSuper(id, sel, rect);
+}
+
 void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
 }
 
@@ -570,6 +574,10 @@ void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLa
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, shouldTruncateLabel, rect);
+}
+
+void drawViewBackgroundInRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+	callSuper(id, sel, rect);
 }
 
 void drawWithExpansionFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {

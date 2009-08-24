@@ -423,6 +423,21 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return dragging;
 }
 
+void drawBackgroundInClipRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+	super.drawViewBackgroundInRect(id, sel, rect);
+	Control control = findBackgroundControl();
+	if (control == null) control = this;
+	Image image = control.backgroundImage;
+	if (image != null && !image.isDisposed()) {
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		if (backgroundImage == null) {
+			control.fillBackground (view, context, rect, -1);
+		} else {
+			control.fillBackground (view, context, rect, image.getBounds().height);
+		}
+	} 
+}
+
 void fixSelection (int index, boolean add) {
 	int [] selection = getSelectionIndices ();
 	if (selection.length == 0) return;
@@ -1111,13 +1126,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	} 
+void setBackgroundColor(NSColor nsColor) {
 	((NSTableView) view).setBackgroundColor (nsColor);
 }
 

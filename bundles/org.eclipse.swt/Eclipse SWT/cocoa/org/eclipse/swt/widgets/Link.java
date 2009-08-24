@@ -413,13 +413,12 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	}
+void setBackgroundColor(NSColor nsColor) {
+	setBackground(nsColor);
+}
+
+void setBackgroundImage(NSImage image) {
+	NSColor nsColor = NSColor.colorWithPatternImage(image);
 	setBackground(nsColor);
 }
 

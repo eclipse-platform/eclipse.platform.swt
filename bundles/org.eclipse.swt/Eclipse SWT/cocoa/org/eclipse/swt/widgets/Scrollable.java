@@ -253,6 +253,20 @@ boolean isTrim (NSView view) {
 	return super.isTrim (view);
 }
 
+void redrawBackgroundImage () {
+	if (scrollView != null) {
+		Control control = findBackgroundControl();
+		if (control != null && control.backgroundImage != null) {
+			redrawWidget(view, false);
+		}
+	}
+}
+
+void reflectScrolledClipView(int id, int sel, int aClipView) {
+	super.reflectScrolledClipView(id, sel, aClipView);
+	redrawBackgroundImage();
+}
+
 void register () {
 	super.register ();
 	if (scrollView != null) display.addWidget (scrollView, this);

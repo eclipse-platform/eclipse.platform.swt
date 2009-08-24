@@ -605,6 +605,24 @@ void deregister() {
 	}
 }
 
+void drawViewBackgroundInRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+	Control control = findBackgroundControl();
+	if (control == null) control = this;
+	Image image = control.backgroundImage;
+	boolean drawImage = image != null && !image.isDisposed();
+	scrollView.setDrawsBackground(!drawImage);
+	((NSTextView)view).setDrawsBackground(!drawImage);
+	super.drawViewBackgroundInRect(id, sel, rect);
+	if (drawImage) {
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		if (backgroundImage == null) {
+			control.fillBackground (view, context, rect, -1);
+		} else {
+			control.fillBackground (view, context, rect, image.getBounds().height);
+		}
+	}
+}
+
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	Point selection = getSelection ();
 	if (selection.x != selection.y) {
@@ -1456,15 +1474,16 @@ void sendCancelSelection () {
 	postEvent (SWT.DefaultSelection, event);
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	} else {
-		nsColor = NSColor.textBackgroundColor ();
+void setBackgroundImage(NSImage image) {
+	if ((style & SWT.SINGLE) != 0) {
+		NSTextField widget = (NSTextField) view;
+		widget.setDrawsBackground(backgroundImage != null);
+		NSColor nsColor = NSColor.colorWithPatternImage(image);
+		widget.setBackgroundColor(nsColor);		
 	}
+}
+
+void setBackgroundColor(NSColor nsColor) {
 	if ((style & SWT.SINGLE) != 0) {
 		((NSTextField) view).setBackgroundColor (nsColor);
 	} else {
@@ -2025,4 +2044,8 @@ String verifyText (String string, int start, int end, NSEvent keyEvent) {
 	return event.text;
 }
 
+
+void updateBackgroundMode () {
+	super.updateBackgroundMode();
+}
 }

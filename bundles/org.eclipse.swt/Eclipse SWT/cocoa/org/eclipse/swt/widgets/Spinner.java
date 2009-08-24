@@ -698,18 +698,14 @@ void sendSelection () {
 	setSelection (getSelection(), false, true, true);
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	} else {
-		nsColor = NSColor.textBackgroundColor ();
-	}
+void setBackgroundColor(NSColor nsColor) {
 	((NSTextField) textView).setBackgroundColor (nsColor);
 }
 
+void setBackgroundImage(NSImage image) {
+	NSColor	nsColor = NSColor.colorWithPatternImage(image);
+	((NSTextField) textView).setBackgroundColor (nsColor);
+}
 /**
  * Sets the number of decimal places used by the receiver.
  * <p>

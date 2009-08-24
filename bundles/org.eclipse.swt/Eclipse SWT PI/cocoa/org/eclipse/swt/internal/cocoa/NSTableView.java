@@ -70,6 +70,10 @@ public NSImage dragImageForRowsWithIndexes(NSIndexSet dragRows, NSArray tableCol
 	return result != 0 ? new NSImage(result) : null;
 }
 
+public void drawBackgroundInClipRect(NSRect clipRect) {
+	OS.objc_msgSend(this.id, OS.sel_drawBackgroundInClipRect_, clipRect);
+}
+
 public NSRect frameOfCellAtColumn(int /*long*/ column, int /*long*/ row) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_frameOfCellAtColumn_row_, column, row);

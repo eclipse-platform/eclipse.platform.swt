@@ -230,6 +230,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1draggedImage_1endedAt_1operation_
 }
 #endif
 
+#ifndef NO_CALLBACK_1drawBackgroundInClipRect_1
+static jintLong CALLBACK_1drawBackgroundInClipRect_1;
+static void proc_CALLBACK_1drawBackgroundInClipRect_1(id arg0, SEL arg1, NSRect arg2) {
+	((void (*)(id, SEL, NSRect*))CALLBACK_1drawBackgroundInClipRect_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_drawBackgroundInClipRect_(jintLong func) {
+	CALLBACK_1drawBackgroundInClipRect_1 = func;
+	return (jintLong)proc_CALLBACK_1drawBackgroundInClipRect_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawBackgroundInClipRect_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawBackgroundInClipRect_1_FUNC);
+	rc = (jintLong)CALLBACK_drawBackgroundInClipRect_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawBackgroundInClipRect_1_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CALLBACK_1drawImage_1withFrame_1inView_1
 static jintLong CALLBACK_1drawImage_1withFrame_1inView_1;
 static void proc_CALLBACK_1drawImage_1withFrame_1inView_1(id arg0, SEL arg1, NSImage* arg2, NSRect arg3, NSView* arg4) {
@@ -306,6 +326,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawRect_1)
 	OS_NATIVE_ENTER(env, that, CALLBACK_1drawRect_1_FUNC);
 	rc = (jintLong)CALLBACK_drawRect_(arg0);
 	OS_NATIVE_EXIT(env, that, CALLBACK_1drawRect_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1drawViewBackgroundInRect_1
+static jintLong CALLBACK_1drawViewBackgroundInRect_1;
+static void proc_CALLBACK_1drawViewBackgroundInRect_1(id arg0, SEL arg1, NSRect arg2) {
+	((void (*)(id, SEL, NSRect*))CALLBACK_1drawViewBackgroundInRect_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_drawViewBackgroundInRect_(jintLong func) {
+	CALLBACK_1drawViewBackgroundInRect_1 = func;
+	return (jintLong)proc_CALLBACK_1drawViewBackgroundInRect_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1drawViewBackgroundInRect_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1drawViewBackgroundInRect_1_FUNC);
+	rc = (jintLong)CALLBACK_drawViewBackgroundInRect_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1drawViewBackgroundInRect_1_FUNC);
 	return rc;
 }
 #endif

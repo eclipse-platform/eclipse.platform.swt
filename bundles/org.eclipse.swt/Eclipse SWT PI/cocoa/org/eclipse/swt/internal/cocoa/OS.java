@@ -383,6 +383,8 @@ public static final native int /*long*/ CALLBACK_dragSelectionWithEvent_offset_s
 public static final native int /*long*/ CALLBACK_draggedImage_beganAt_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSImage*;NSPoint;NSDragOperation;,callback_flags=none;none;none;none;struct;none; */
 public static final native int /*long*/ CALLBACK_draggedImage_endedAt_operation_(int /*long*/ func);
+/** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_drawBackgroundInClipRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSImage*;NSRect;NSView*;,callback_flags=none;none;none;none;struct;none; */
 public static final native int /*long*/ CALLBACK_drawImage_withFrame_inView_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
@@ -391,6 +393,8 @@ public static final native int /*long*/ CALLBACK_drawInteriorWithFrame_inView_(i
 public static final native int /*long*/ CALLBACK_drawLabel_inRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_drawRect_(int /*long*/ func);
+/** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_drawViewBackgroundInRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
 public static final native int /*long*/ CALLBACK_drawWithExpansionFrame_inView_(int /*long*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRect;NSView*;,callback_flags=struct;none;none;struct;none; */
@@ -928,6 +932,7 @@ public static final int /*long*/ sel_draggingUpdated_ = sel_registerName("draggi
 public static final int /*long*/ sel_drawAtPoint_ = sel_registerName("drawAtPoint:");
 public static final int /*long*/ sel_drawAtPoint_fromRect_operation_fraction_ = sel_registerName("drawAtPoint:fromRect:operation:fraction:");
 public static final int /*long*/ sel_drawBackgroundForGlyphRange_atPoint_ = sel_registerName("drawBackgroundForGlyphRange:atPoint:");
+public static final int /*long*/ sel_drawBackgroundInClipRect_ = sel_registerName("drawBackgroundInClipRect:");
 public static final int /*long*/ sel_drawFromPoint_toPoint_options_ = sel_registerName("drawFromPoint:toPoint:options:");
 public static final int /*long*/ sel_drawGlyphsForGlyphRange_atPoint_ = sel_registerName("drawGlyphsForGlyphRange:atPoint:");
 public static final int /*long*/ sel_drawImage_withFrame_inView_ = sel_registerName("drawImage:withFrame:inView:");
@@ -939,6 +944,7 @@ public static final int /*long*/ sel_drawLabel_inRect_ = sel_registerName("drawL
 public static final int /*long*/ sel_drawRect_ = sel_registerName("drawRect:");
 public static final int /*long*/ sel_drawSortIndicatorWithFrame_inView_ascending_priority_ = sel_registerName("drawSortIndicatorWithFrame:inView:ascending:priority:");
 public static final int /*long*/ sel_drawStatusBarBackgroundInRect_withHighlight_ = sel_registerName("drawStatusBarBackgroundInRect:withHighlight:");
+public static final int /*long*/ sel_drawViewBackgroundInRect_ = sel_registerName("drawViewBackgroundInRect:");
 public static final int /*long*/ sel_drawWithExpansionFrame_inView_ = sel_registerName("drawWithExpansionFrame:inView:");
 public static final int /*long*/ sel_drawingRectForBounds_ = sel_registerName("drawingRectForBounds:");
 public static final int /*long*/ sel_elementAtIndex_associatedPoints_ = sel_registerName("elementAtIndex:associatedPoints:");

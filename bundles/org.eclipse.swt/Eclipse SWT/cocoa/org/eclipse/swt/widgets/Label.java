@@ -395,16 +395,14 @@ public void setAlignment (int alignment) {
 	_setAlignment();
 }
 
-void updateBackground () {
+void setBackgroundColor(NSColor nsColor) {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	} else {
-		nsColor = NSColor.clearColor();
-	}
+	((NSBox)view).setFillColor(nsColor);
+}
+
+void setBackgroundImage(NSImage image) {
+	if ((style & SWT.SEPARATOR) != 0) return;
+	NSColor nsColor = NSColor.colorWithPatternImage(image);
 	((NSBox)view).setFillColor(nsColor);
 }
 

@@ -361,21 +361,13 @@ void sendSelection () {
 	}
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	} else {
-		if ((style & SWT.CALENDAR) != 0) {
-			nsColor = NSColor.controlBackgroundColor ();
-		} else {
-			nsColor = NSColor.textBackgroundColor ();
-		}
-
-	}
+void setBackgroundColor(NSColor nsColor) {
 	((NSDatePicker)view).setBackgroundColor(nsColor);
+}
+
+void setBackgroundImage(NSImage image) {
+	NSColor ndColor = NSColor.colorWithPatternImage(image);
+	((NSDatePicker)view).setBackgroundColor(ndColor);
 }
 
 /**

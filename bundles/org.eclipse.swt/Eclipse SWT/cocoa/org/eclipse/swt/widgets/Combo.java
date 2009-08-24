@@ -1240,20 +1240,19 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	} else {
-		nsColor = NSColor.textBackgroundColor ();
-	}
-
+void setBackgroundColor(NSColor nsColor) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		//TODO
 	} else {
 		((NSTextField)view).setBackgroundColor(nsColor);
+	}
+}
+
+void setBackgroundImage(NSImage image) {
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO
+	} else {
+		((NSTextField)view).setBackgroundColor(NSColor.colorWithPatternImage(image));
 	}
 }
 

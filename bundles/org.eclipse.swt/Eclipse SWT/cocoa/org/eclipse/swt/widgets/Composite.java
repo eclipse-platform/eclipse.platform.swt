@@ -966,6 +966,26 @@ int traversalCode (int key, NSEvent theEvent) {
 	return super.traversalCode (key, theEvent);
 }
 
+void updateBackgroundColor () {
+	super.updateBackgroundColor ();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		if ((children [i].state & PARENT_BACKGROUND) != 0) {
+			children [i].updateBackgroundColor ();
+		}
+	}
+}
+
+void updateBackgroundImage () {
+	super.updateBackgroundImage ();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		if ((children [i].state & PARENT_BACKGROUND) != 0) {
+			children [i].updateBackgroundImage ();
+		}
+	}
+}
+
 void updateBackgroundMode () {
 	super.updateBackgroundMode ();
 	Control [] children = _getChildren ();

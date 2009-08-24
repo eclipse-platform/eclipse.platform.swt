@@ -852,6 +852,9 @@ void createWidget () {
 	setDefaultFont ();
 	setZOrder ();
 	setRelations ();
+	if ((state & PARENT_BACKGROUND) != 0) {
+		setBackground ();
+	}
 	display.clearPool ();
 }
 
@@ -2925,7 +2928,15 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 }
 
 void setBackground () {
-//	redrawWidget (handle, false);
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	if (control.backgroundImage != null) {
+		setBackgroundImage (control.backgroundImage.handle);
+	} else {
+		float /*double*/ [] color = control.background != null ? control.background : control.defaultBackground().handle;
+		NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
+		setBackgroundColor (nsColor);
+	}
 }
 
 /**
@@ -2954,7 +2965,7 @@ public void setBackground (Color color) {
 	float /*double*/ [] background = color != null ? color.handle : null;
 	if (equals (background, this.background)) return;
 	this.background = background;
-	updateBackground ();
+	updateBackgroundColor ();
 	redrawWidget(view, true);
 }
 
@@ -2985,14 +2996,15 @@ public void setBackgroundImage (Image image) {
 	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (image == backgroundImage) return;
 	backgroundImage = image;
-	updateBackground();
+	updateBackgroundImage();
 	redrawWidget(view, false);
 }
 
-void updateBackground () {
+void setBackgroundImage (NSImage image) {
+	paintView().setNeedsDisplay(true);
 }
 
-void setBackground (NSColor nsColor) {
+void setBackgroundColor (NSColor nsColor) {
 }
 
 /**
@@ -4073,6 +4085,24 @@ void update (boolean all) {
 	if (display.isPainting.containsObject(view)) return;
 	//TODO - not all
 	view.displayIfNeeded ();
+}
+
+void updateBackgroundColor () {
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	float /*double*/ [] color = control.background != null ? control.background : control.defaultBackground().handle;
+	NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
+	setBackgroundColor (nsColor);
+}
+
+void updateBackgroundImage () {
+	Control control = findBackgroundControl ();
+	Image image = control != null ? control.backgroundImage : backgroundImage;
+	if (image != null) {
+		setBackgroundImage (image.handle);
+	} else {
+		updateBackgroundColor();
+	}
 }
 
 void updateBackgroundMode () {

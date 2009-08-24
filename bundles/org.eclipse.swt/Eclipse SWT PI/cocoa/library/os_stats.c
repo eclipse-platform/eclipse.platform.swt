@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 518;
-int OS_nativeFunctionCallCount[518];
+int OS_nativeFunctionCount = 520;
+int OS_nativeFunctionCallCount[520];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -27,10 +27,12 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1",
 	"CALLBACK_1draggedImage_1beganAt_1",
 	"CALLBACK_1draggedImage_1endedAt_1operation_1",
+	"CALLBACK_1drawBackgroundInClipRect_1",
 	"CALLBACK_1drawImage_1withFrame_1inView_1",
 	"CALLBACK_1drawInteriorWithFrame_1inView_1",
 	"CALLBACK_1drawLabel_1inRect_1",
 	"CALLBACK_1drawRect_1",
+	"CALLBACK_1drawViewBackgroundInRect_1",
 	"CALLBACK_1drawWithExpansionFrame_1inView_1",
 	"CALLBACK_1expansionFrameWithFrame_1inView_1",
 	"CALLBACK_1firstRectForCharacterRange_1",

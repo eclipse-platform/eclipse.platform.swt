@@ -917,6 +917,21 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return false;
 }
 
+void drawBackgroundInClipRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+	super.drawViewBackgroundInRect(id, sel, rect);
+	Control control = findBackgroundControl();
+	if (control == null) control = this;
+	Image image = control.backgroundImage;
+	if (image != null && !image.isDisposed()) {
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		if (backgroundImage == null) {
+			control.fillBackground (view, context, rect, -1);
+		} else {
+			control.fillBackground (view, context, rect, image.getBounds().height);
+		}
+	} 
+}
+
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rect, int /*long*/ view) {
 	boolean hooksErase = hooks (SWT.EraseItem);
 	boolean hooksPaint = hooks (SWT.PaintItem);
@@ -2437,14 +2452,8 @@ NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) 
 	return cellFrame;
 }
 
-void updateBackground () {
-	NSColor nsColor = null;
-	if (backgroundImage != null) {
-		nsColor = NSColor.colorWithPatternImage(backgroundImage.handle);
-	} else if (background != null) {
-		nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], background[3]);
-	}
-	((NSOutlineView) view).setBackgroundColor (nsColor);
+void setBackgroundColor(NSColor nsColor) {
+	((NSTableView) view).setBackgroundColor (nsColor);
 }
 
 /**

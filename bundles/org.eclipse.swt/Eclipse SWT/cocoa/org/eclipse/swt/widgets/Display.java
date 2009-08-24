@@ -2060,6 +2060,8 @@ void initClasses () {
 	int /*long*/ expansionFrameWithFrameProc = OS.CALLBACK_expansionFrameWithFrame_inView_ (proc4);
 	int /*long*/ sizeOfLabelProc = OS.CALLBACK_sizeOfLabel_ (proc3);
 	int /*long*/ drawLabelInRectProc = OS.CALLBACK_drawLabel_inRect_ (proc4);
+	int /*long*/ drawViewBackgroundInRectProc = OS.CALLBACK_drawViewBackgroundInRect_(proc3);
+	int /*long*/ drawBackgroundInClipRectProc = OS.CALLBACK_drawBackgroundInClipRect_(proc3);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -2226,6 +2228,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_writeItems_toPasteboard_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_expandItem_expandChildren_, proc4, "@:@Z");
 	OS.class_addMethod(cls, OS.sel_collapseItem_collapseChildren_, proc4, "@:@Z");
+	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2385,7 +2388,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@");
 	OS.class_addMethod(cls, OS.sel_canDragRowsWithIndexes_atPoint_, canDragRowsWithIndexes_atPoint_Proc, "@:@{NSPoint=ff}");
-	OS.class_addMethod(cls, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, proc5, "@:@@@");	
+	OS.class_addMethod(cls, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, proc5, "@:@@@");
+	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -2420,6 +2424,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textView_clickedOnLink_atIndex_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_dragSelectionWithEvent_offset_slideBack_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_Proc, "@:{NSRange}@");
+	OS.class_addMethod(cls, OS.sel_drawViewBackgroundInRect_, drawViewBackgroundInRectProc, "@:{NSRect}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
@@ -4850,7 +4855,15 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return result;
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
 		widget.comboBoxSelectionDidChange(id, sel, arg0);
-	} 
+	} else if (sel == OS.sel_drawViewBackgroundInRect_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		widget.drawViewBackgroundInRect(id, sel, rect);
+	} else if (sel == OS.sel_drawBackgroundInClipRect_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		widget.drawBackgroundInClipRect(id, sel, rect);
+	}
 	return 0;
 }
 

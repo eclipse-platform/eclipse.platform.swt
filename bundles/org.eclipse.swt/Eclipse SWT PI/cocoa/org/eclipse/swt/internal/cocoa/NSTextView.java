@@ -37,6 +37,10 @@ public boolean dragSelectionWithEvent(NSEvent event, NSSize mouseOffset, boolean
 	return OS.objc_msgSend_bool(this.id, OS.sel_dragSelectionWithEvent_offset_slideBack_, event != null ? event.id : 0, mouseOffset, slideBack);
 }
 
+public void drawViewBackgroundInRect(NSRect rect) {
+	OS.objc_msgSend(this.id, OS.sel_drawViewBackgroundInRect_, rect);
+}
+
 public NSLayoutManager layoutManager() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_layoutManager);
 	return result != 0 ? new NSLayoutManager(result) : null;
