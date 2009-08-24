@@ -74,6 +74,7 @@
 #define NO_HELPINFO
 #define NO_HIGHCONTRAST
 #define NO_LITEM
+#define NO_LVINSERTMARK
 #define NO_MARGINS
 #define NO_MENUBARINFO
 #define NO_MENUINFO
@@ -450,6 +451,7 @@
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2
@@ -473,6 +475,7 @@
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable
 #define NO_SetErrorMode
