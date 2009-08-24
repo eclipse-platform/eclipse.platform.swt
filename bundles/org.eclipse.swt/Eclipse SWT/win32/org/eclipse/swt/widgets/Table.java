@@ -2699,7 +2699,7 @@ int imageIndex (Image image, int column) {
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
 		fixCheckboxImageList (false);
-		if (itemHeight != -1) setItemHeight (false);
+		setItemHeight (false);
 		if (topIndex != 0) {
 			setTopIndex (topIndex);
 			setRedraw (true);
