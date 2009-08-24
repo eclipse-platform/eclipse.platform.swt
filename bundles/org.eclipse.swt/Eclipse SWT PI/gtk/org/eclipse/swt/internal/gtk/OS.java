@@ -109,6 +109,11 @@ public class OS extends C {
 	public static final int GDK_F13 = 0xffca;
 	public static final int GDK_F14 = 0xffcb;
 	public static final int GDK_F15 = 0xffcc;
+	public static final int GDK_F16 = 0xffcd;
+	public static final int GDK_F17 = 0xffce;
+	public static final int GDK_F18 = 0xffcf;
+	public static final int GDK_F19 = 0xffd0;
+	public static final int GDK_F20 = 0xffd1;
 	public static final int GDK_F2 = 0xffbf;
 	public static final int GDK_F3 = 0xffc0;
 	public static final int GDK_F4 = 0xffc1;

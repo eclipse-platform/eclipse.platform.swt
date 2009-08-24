@@ -2267,6 +2267,49 @@ public class SWT {
 	public static final int F15 = KEYCODE_BIT + 24;
 	
 	/**
+	 * Keyboard event constant representing the F16 key
+	 * (value is (1&lt;&lt;25)+25).
+	 * 
+	 * @since 3.6
+	 */
+	public static final int F16 = KEYCODE_BIT + 25;
+
+	
+	/**
+	 * Keyboard event constant representing the F17 key
+	 * (value is (1&lt;&lt;26)+26).
+	 * 
+	 * @since 3.6
+	 */
+	public static final int F17 = KEYCODE_BIT + 26;
+
+	
+	/**
+	 * Keyboard event constant representing the F18 key
+	 * (value is (1&lt;&lt;27)+27).
+	 * 
+	 * @since 3.6
+	 */
+	public static final int F18 = KEYCODE_BIT + 27;
+
+	
+	/**
+	 * Keyboard event constant representing the F19 key
+	 * (value is (1&lt;&lt;28)+28).
+	 * 
+	 * @since 3.6
+	 */
+	public static final int F19 = KEYCODE_BIT + 28;
+	
+	/**
+	 * Keyboard event constant representing the F20 key
+	 * (value is (1&lt;&lt;29)+29).
+	 * 
+	 * @since 3.6
+	 */
+	public static final int F20 = KEYCODE_BIT + 29;
+
+	/**
 	 * Keyboard event constant representing the numeric key
 	 * pad multiply key (value is (1&lt;&lt;24)+42).
 	 * 

@@ -1928,6 +1928,11 @@ public class OS extends C {
 	public static final int VK_F13 = 0x7c;
 	public static final int VK_F14 = 0x7d;
 	public static final int VK_F15 = 0x7e;
+	public static final int VK_F16 = 0x7F;
+	public static final int VK_F17 = 0x80;
+	public static final int VK_F18 = 0x81;
+	public static final int VK_F19 = 0x82;
+	public static final int VK_F20 = 0x83;
 	public static final int VK_F2 = 0x71;
 	public static final int VK_F3 = 0x72;
 	public static final int VK_F4 = 0x73;

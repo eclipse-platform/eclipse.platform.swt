@@ -71,6 +71,11 @@ public class OS extends C {
 	public static final int Key_F13 = 102;
 	public static final int Key_F14 = 103;
 	public static final int Key_F15 = 104;
+	public static final int Key_F16 = 105;
+	public static final int Key_F17 = 106;
+	public static final int Key_F18 = 107;
+	public static final int Key_F19 = 108;
+	public static final int Key_F20 = 109;
 	public static final int Key_Back = 2;
 	public static final int Key_Return = 6;
 	public static final int Key_Delete = 32;

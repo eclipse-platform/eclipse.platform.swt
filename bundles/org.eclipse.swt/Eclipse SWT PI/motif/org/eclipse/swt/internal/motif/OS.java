@@ -242,6 +242,11 @@ public class OS extends C {
 	public static final int XK_F13 = 0xFFCA;
 	public static final int XK_F14 = 0xFFCB;
 	public static final int XK_F15 = 0xFFCC;
+	public static final int XK_F16 = 0xFFCD;
+	public static final int XK_F17 = 0xFFCE;
+	public static final int XK_F18 = 0xFFCF;
+	public static final int XK_F19 = 0xFFD0;
+	public static final int XK_F20 = 0xFFD1;
 	public static final int XK_F2 = 0xFFBF;
 	public static final int XK_F3 = 0xFFC0;
 	public static final int XK_F4 = 0xFFC1;

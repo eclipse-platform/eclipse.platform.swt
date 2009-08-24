@@ -325,6 +325,11 @@ public class Display extends Device {
 		{OS.VK_F13,	SWT.F13},
 		{OS.VK_F14,	SWT.F14},
 		{OS.VK_F15,	SWT.F15},
+		{OS.VK_F16,	SWT.F16},
+		{OS.VK_F17,	SWT.F17},
+		{OS.VK_F18,	SWT.F18},
+		{OS.VK_F19,	SWT.F19},
+		{OS.VK_F20,	SWT.F20},
 		
 		/* Numeric Keypad Keys */
 		{OS.VK_MULTIPLY,	SWT.KEYPAD_MULTIPLY},
