@@ -1569,6 +1569,26 @@ void setEditText (String string) {
 	selectionRange = null;
 }
 
+void setFrameSize(int /*long*/ id, int /*long*/ sel, NSSize size) {
+	super.setFrameSize (id, sel, size);
+	/*
+	* Bug in Cocoa.  When a search field is resized while having
+	* focus, its editor is not properly positioned within the
+	* widget.   The fix is to reposition the editor.
+	*/
+	if ((style & SWT.SEARCH) != 0) {
+		NSSearchField widget = (NSSearchField)view;
+		NSText editor = widget.currentEditor ();
+		if (editor != null) {
+			NSArray subviews = widget.subviews ();
+			if (subviews.count () > 0) {
+				NSRect rect = widget.cell ().drawingRectForBounds (widget.bounds ());
+				new NSView (subviews.objectAtIndex (0)).setFrame (rect);
+			}
+		}
+	}
+}
+
 void setFont(NSFont font) {
 	if ((style & SWT.MULTI) !=  0) {
 		((NSTextView) view).setFont (font);
