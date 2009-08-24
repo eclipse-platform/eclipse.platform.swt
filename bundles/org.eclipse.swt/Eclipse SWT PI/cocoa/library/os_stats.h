@@ -1113,5 +1113,6 @@ typedef enum {
 	object_1getInstanceVariable_FUNC,
 	object_1setClass_FUNC,
 	object_1setInstanceVariable_FUNC,
+	sel_1getName_FUNC,
 	sel_1registerName_FUNC,
 } OS_FUNCS;

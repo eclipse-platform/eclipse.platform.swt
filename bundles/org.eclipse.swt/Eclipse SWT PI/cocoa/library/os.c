@@ -9038,6 +9038,18 @@ fail:
 }
 #endif
 
+#ifndef NO_sel_1getName
+JNIEXPORT jintLong JNICALL OS_NATIVE(sel_1getName)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, sel_1getName_FUNC);
+	rc = (jintLong)sel_getName((SEL)arg0);
+	OS_NATIVE_EXIT(env, that, sel_1getName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_sel_1registerName
 JNIEXPORT jintLong JNICALL OS_NATIVE(sel_1registerName)
 	(JNIEnv *env, jclass that, jstring arg0)

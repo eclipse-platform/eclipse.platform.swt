@@ -317,6 +317,10 @@ public static final native int /*long*/ class_getSuperclass(int /*long*/ cls);
  */
 public static final native int /*long*/ method_setImplementation(int /*long*/ method, int /*long*/ imp);
 /**
+ * @param sel cast=(SEL)
+ */
+public static final native int /*long*/ sel_getName(int /*long*/ sel);
+/**
  * @param cls cast=(Class)
  * @param extraBytes cast=(size_t)
  */

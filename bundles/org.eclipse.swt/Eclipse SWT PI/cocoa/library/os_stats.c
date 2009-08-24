@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 517;
-int OS_nativeFunctionCallCount[517];
+int OS_nativeFunctionCount = 518;
+int OS_nativeFunctionCallCount[518];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -1105,6 +1105,7 @@ char * OS_nativeFunctionNames[] = {
 	"object_1getInstanceVariable",
 	"object_1setClass",
 	"object_1setInstanceVariable",
+	"sel_1getName",
 	"sel_1registerName",
 };
 
