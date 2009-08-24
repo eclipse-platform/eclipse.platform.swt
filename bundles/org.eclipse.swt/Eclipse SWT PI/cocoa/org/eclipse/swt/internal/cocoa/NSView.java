@@ -235,6 +235,10 @@ public void setAutoresizingMask(int /*long*/ mask) {
 	OS.objc_msgSend(this.id, OS.sel_setAutoresizingMask_, mask);
 }
 
+public void setBoundsRotation(float /*double*/ angle) {
+	OS.objc_msgSend(this.id, OS.sel_setBoundsRotation_, angle);
+}
+
 public void setFocusRingType(int /*long*/ focusRingType) {
 	OS.objc_msgSend(this.id, OS.sel_setFocusRingType_, focusRingType);
 }

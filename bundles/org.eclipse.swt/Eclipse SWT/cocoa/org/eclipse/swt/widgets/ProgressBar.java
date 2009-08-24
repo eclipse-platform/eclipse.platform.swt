@@ -102,6 +102,7 @@ void createHandle () {
 	NSProgressIndicator widget = (NSProgressIndicator)new SWTProgressIndicator().alloc();
 	widget.init();
 	widget.setUsesThreadedAnimation(false);
+	if ((style & SWT.VERTICAL) != 0) widget.setBoundsRotation(-90);
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
 	view = widget;
 }

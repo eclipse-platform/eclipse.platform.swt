@@ -1431,6 +1431,7 @@ public static final int /*long*/ sel_setBezelStyle_ = sel_registerName("setBezel
 public static final int /*long*/ sel_setBorderType_ = sel_registerName("setBorderType:");
 public static final int /*long*/ sel_setBorderWidth_ = sel_registerName("setBorderWidth:");
 public static final int /*long*/ sel_setBordered_ = sel_registerName("setBordered:");
+public static final int /*long*/ sel_setBoundsRotation_ = sel_registerName("setBoundsRotation:");
 public static final int /*long*/ sel_setBoxType_ = sel_registerName("setBoxType:");
 public static final int /*long*/ sel_setButtonType_ = sel_registerName("setButtonType:");
 public static final int /*long*/ sel_setCacheMode_ = sel_registerName("setCacheMode:");
