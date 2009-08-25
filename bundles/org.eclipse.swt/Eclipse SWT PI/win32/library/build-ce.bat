@@ -23,12 +23,12 @@ set path=%JAVA_HOME%;%path%
 rem ********
 rem MSVC 6.0
 rem ********
-call s:\products\msvc60\vc98\bin\vcvars32.bat
+call S:\swt-builddir\MSVCs\msvc60\vc98\bin\vcvars32.bat
 
 rem *****************
 rem MS-SDK WinCE
 rem *****************
-set WCEROOT=s:\products\wince.sdk
+set WCEROOT=S:\swt-builddir\MSSDKs\wince.sdk
 
 rem **********************************************************
 rem By default, build library for ARM Pocket PC
