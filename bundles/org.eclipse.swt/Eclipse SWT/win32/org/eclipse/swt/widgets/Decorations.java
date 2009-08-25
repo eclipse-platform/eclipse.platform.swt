@@ -1731,6 +1731,7 @@ LRESULT WM_QUERYOPEN (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
+	if (isDisposed ()) return result;
 	if (savedFocus != this) restoreFocus ();
 	return result;
 }
