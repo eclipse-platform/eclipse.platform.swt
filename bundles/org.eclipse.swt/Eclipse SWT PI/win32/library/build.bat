@@ -13,6 +13,7 @@ rem ****************************************************************************
 @echo off
 
 IF x.%SWT_BUILDDIR%==x. set SWT_BUILDDIR=S:\swt-builddir
+IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Windows Server 2003 SP1 SDK"
 
 IF x.%1==x.x86 GOTO X86
 IF x.%1==x.x86_64 GOTO X86_64
@@ -20,9 +21,7 @@ IF x.%1==x.ia64 GOTO IA64
 
 :X86
 
-IF x.%DEV_TOOLS%==x. set DEV_TOOLS=S:\PRODUCTS
-call %DEV_TOOLS%\msvc60\vc98\bin\vcvars32.bat
-IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Microsoft Platform SDK for Windows Server 2003 R2"
+call "%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 8\Common7\Tools\vsvars32.bat"
 call %MSSDK%\setenv /XP32 /RETAIL
 IF x.%OUTPUT_DIR%==x. set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-jdk1.4.1
@@ -33,7 +32,6 @@ GOTO MAKE
 
 :X86_64
 
-IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Microsoft Platform SDK for Windows Server 2003 R2"
 call %MSSDK%\setenv /X64 /RETAIL
 IF x.%OUTPUT_DIR%==x. set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-sdk50-x86_64
@@ -43,7 +41,6 @@ GOTO MAKE
 
 :IA64
 
-IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Microsoft Platform SDK for Windows Server 2003 R2"
 call %MSSDK%\setenv /SRV64 /RETAIL
 IF x.%OUTPUT_DIR%==x. set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.ia64
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-sdk142-ia64
