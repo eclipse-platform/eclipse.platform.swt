@@ -66,4 +66,5 @@ GOTO MAKE
 
 :MAKE
 Title Environment %OSVERSION% %PLATFORM%
+echo Environment %OSVERSION% %PLATFORM%
 nmake -f make_wince.mak %1 %2 %3 %4
