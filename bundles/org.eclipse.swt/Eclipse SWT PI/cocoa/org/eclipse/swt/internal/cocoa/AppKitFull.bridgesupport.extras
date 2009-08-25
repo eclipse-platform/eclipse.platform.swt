@@ -4006,6 +4006,10 @@
 			<arg name="mask" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setBoundsRotation:" swt_gen="true">
+			<arg name="angle" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setFocusRingType:" swt_gen="true">
 			<arg name="focusRingType" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
