@@ -179,8 +179,10 @@ public PrinterData open() {
 		returnCode = -1;
 		Shell parent = getParent();
 		panel.beginSheetWithPrintInfo(printInfo, parent.view.window(), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
-		NSApplication application = NSApplication.sharedApplication();
-		while (returnCode == -1) application.run();
+		Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+		while (returnCode == -1) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
 		if (delegate != null) delegate.release();
 		if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 		response = returnCode;
@@ -268,8 +270,6 @@ void initClasses () {
 
 void panelDidEnd_returnCode_contextInfo(int /*long*/ id, int /*long*/ sel, int /*long*/ alert, int /*long*/ returnCode, int /*long*/ contextInfo) {
 	this.returnCode = (int)/*64*/returnCode;
-	NSApplication application = NSApplication.sharedApplication();
-	application.stop(null);
 }
 
 /**

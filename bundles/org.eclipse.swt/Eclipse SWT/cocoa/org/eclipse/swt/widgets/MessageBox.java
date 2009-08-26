@@ -220,8 +220,10 @@ public int open () {
 		} else {
 			this.returnCode = 0;
 			NSWindow window = alert.window();
-			NSApplication application = NSApplication.sharedApplication();
-			while (window.isVisible()) application.run();
+			Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+			while (window.isVisible()) {
+				if (!display.readAndDispatch()) display.sleep();
+			}
 			response = this.returnCode;
 		}
 	} else {
@@ -307,9 +309,6 @@ void panelDidEnd_returnCode_contextInfo(int /*long*/ id, int /*long*/ sel, int /
 	this.returnCode = (int)/*64*/returnCode;
 	NSApplication application = NSApplication.sharedApplication();
 	application.endSheet(new NSAlert(alert).window(), returnCode);
-	if ((style & SWT.PRIMARY_MODAL) != 0) {
-		application.stop(null);
-	}
 }
 
 /**
