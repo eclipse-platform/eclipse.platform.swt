@@ -163,7 +163,7 @@
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue" />
 			<arg line="${targets}" />
 		</exec>
-		<copy todir="org.eclipse.swt.gtk.linux.x86">
+		<copy todir="org.eclipse.swt.gtk.linux.x86" overwrite="true">
 			<fileset dir="${basedir}/${builddir}">
 				<include name="*.so" />
 			</fileset>
@@ -214,7 +214,7 @@
 			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86_64/lib/pkgconfig"/>
 			<arg line="${targets}"/>
 		</exec>
-		<copy todir="org.eclipse.swt.gtk.linux.x86_64">
+		<copy todir="org.eclipse.swt.gtk.linux.x86_64" overwrite="true">
 			<fileset dir="${basedir}/${builddir}">
 				<include name="*.so" />
 			</fileset>
