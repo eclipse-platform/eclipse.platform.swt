@@ -887,7 +887,7 @@ public void setIncrement (int value) {
 		int /*long*/ offset = udaccels + (i * UDACCEL.sizeof);
 		OS.MoveMemory (udaccel, offset, UDACCEL.sizeof);
 		if (first == -1) first = udaccel.nInc;
-		udaccel.nInc  =  udaccel.nInc * value / first;
+		udaccel.nInc  = udaccel.nInc / first * value;
 		OS.MoveMemory (offset, udaccel, UDACCEL.sizeof);
 	}
 	OS.SendMessage (hwndUpDown, OS.UDM_SETACCEL, count, udaccels);
