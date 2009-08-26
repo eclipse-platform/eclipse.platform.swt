@@ -1,6 +1,6 @@
 Instructions to build the update size:
 
-1) check out
+1) Check out
 	:extssh:<user>@dev.eclipse.org:/cvsroot/eclipse/org.eclipse.swt.tools
 	:extssh:<user>@dev.eclipse.org:/cvsroot/eclipse/org.eclipse.swt.tools/feature
 	:extssh:<user>@dev.eclipse.org:/cvsroot/org.eclipse/www/swt
