@@ -570,7 +570,7 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	if (frameID == webView.mainFrame().id) {
 		hookDOMKeyListeners(frameID);
 
-		final Display display = browser.getDisplay();
+		Display display = browser.getDisplay();
 		/*
 		* To be consistent with other platforms a title event should be fired when a
 		* page has completed loading.  A page with a <title> tag will do this
@@ -583,56 +583,25 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 		if (dataSource != null) {
 			NSString title = dataSource.pageTitle();
 			if (title == null) {	/* page has no title */
-				final TitleEvent newEvent = new TitleEvent(browser);
+				TitleEvent newEvent = new TitleEvent(browser);
 				newEvent.display = display;
 				newEvent.widget = browser;
 				newEvent.title = url;
 				for (int i = 0; i < titleListeners.length; i++) {
-					final TitleListener listener = titleListeners[i];
-					/*
-					* Note on WebKit.  Running the event loop from a Browser
-					* delegate callback breaks the WebKit (stop loading or
-					* crash).  The workaround is to invoke Display.asyncExec()
-					* so that the Browser does not crash if this is attempted.
-					*/
-					display.asyncExec(
-						new Runnable() {
-							public void run() {
-								if (!display.isDisposed() && !browser.isDisposed()) {
-									listener.changed(newEvent);
-								}
-							}
-						}
-					);
+					titleListeners[i].changed(newEvent);
 				}
+				if (browser.isDisposed()) return;
 			}
 		}
-		final ProgressEvent progress = new ProgressEvent(browser);
+		ProgressEvent progress = new ProgressEvent(browser);
 		progress.display = display;
 		progress.widget = browser;
 		progress.current = MAX_PROGRESS;
 		progress.total = MAX_PROGRESS;
 		for (int i = 0; i < progressListeners.length; i++) {
-			final ProgressListener listener = progressListeners[i];
-			/*
-			* Note on WebKit.  Running the event loop from a Browser
-			* delegate callback breaks the WebKit (stop loading or
-			* crash).  The ProgressBar widget currently touches the
-			* event loop every time the method setSelection is called.  
-			* The workaround is to invoke Display.asyncExec() so that
-			* the Browser does not crash when the user updates the 
-			* selection of the ProgressBar.
-			*/
-			display.asyncExec(
-				new Runnable() {
-					public void run() {
-						if (!display.isDisposed() && !browser.isDisposed()) {
-							listener.completed(progress);
-						}
-					}
-				}
-			);
+			progressListeners[i].completed(progress);
 		}
+		if (browser.isDisposed()) return;
 
 		/*
 		* Feature on Safari.  The identifier is used here as a marker for the events 
@@ -723,7 +692,7 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	 */
 	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
 
-	final Display display = browser.getDisplay();
+	Display display = browser.getDisplay();
 	boolean top = frameID == webView.mainFrame().id;
 	if (top) {
 		/* reset resource status variables */
@@ -737,31 +706,15 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 			execute (function.functionString);
 		}
 
-		final ProgressEvent progress = new ProgressEvent(browser);
+		ProgressEvent progress = new ProgressEvent(browser);
 		progress.display = display;
 		progress.widget = browser;
 		progress.current = 1;
 		progress.total = MAX_PROGRESS;
 		for (int i = 0; i < progressListeners.length; i++) {
-			final ProgressListener listener = progressListeners[i];
-			/*
-			* Note on WebKit.  Running the event loop from a Browser
-			* delegate callback breaks the WebKit (stop loading or
-			* crash).  The widget ProgressBar currently touches the
-			* event loop every time the method setSelection is called.  
-			* The workaround is to invoke Display.asyncexec so that
-			* the Browser does not crash when the user updates the 
-			* selection of the ProgressBar.
-			*/
-			display.asyncExec(
-				new Runnable() {
-					public void run() {
-						if (!display.isDisposed() && !browser.isDisposed())
-							listener.changed(progress);
-					}
-				}
-			);
+			progressListeners[i].changed(progress);
 		}
+		if (browser.isDisposed()) return;
 
 		StatusTextEvent statusText = new StatusTextEvent(browser);
 		statusText.display = display;
@@ -770,6 +723,7 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 		for (int i = 0; i < statusTextListeners.length; i++) {
 			statusTextListeners[i].changed(statusText);
 		}
+		if (browser.isDisposed()) return;
 	}
 	LocationEvent location = new LocationEvent(browser);
 	location.display = display;
@@ -966,32 +920,15 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 }
 
 int /*long*/ webView_identifierForInitialRequest_fromDataSource(int /*long*/ sender, int /*long*/ request, int /*long*/ dataSourceID) {
-	final Display display = browser.getDisplay();
-	final ProgressEvent progress = new ProgressEvent(browser);
-	progress.display = display;
+	ProgressEvent progress = new ProgressEvent(browser);
+	progress.display = browser.getDisplay();
 	progress.widget = browser;
 	progress.current = resourceCount;
 	progress.total = Math.max(resourceCount, MAX_PROGRESS);
 	for (int i = 0; i < progressListeners.length; i++) {
-		final ProgressListener listener = progressListeners[i];
-		/*
-		* Note on WebKit.  Running the event loop from a Browser
-		* delegate callback breaks the WebKit (stop loading or
-		* crash).  The widget ProgressBar currently touches the
-		* event loop every time the method setSelection is called.  
-		* The workaround is to invoke Display.asyncexec so that
-		* the Browser does not crash when the user updates the 
-		* selection of the ProgressBar.
-		*/
-		display.asyncExec(
-			new Runnable() {
-				public void run() {
-					if (!display.isDisposed() && !browser.isDisposed())
-						listener.changed(progress);
-				}
-			}
-		);
+		progressListeners[i].changed(progress);
 	}
+	if (browser.isDisposed()) return 0;
 
 	NSNumber identifier = NSNumber.numberWithInt(resourceCount++);
 	if (this.identifier == 0) {
