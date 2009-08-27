@@ -1433,6 +1433,8 @@ public static final int /*long*/ sel_setAutoresizingMask_ = sel_registerName("se
 public static final int /*long*/ sel_setAutosaveExpandedItems_ = sel_registerName("setAutosaveExpandedItems:");
 public static final int /*long*/ sel_setBackgroundColor_ = sel_registerName("setBackgroundColor:");
 public static final int /*long*/ sel_setBackgroundLayoutEnabled_ = sel_registerName("setBackgroundLayoutEnabled:");
+public static final int /*long*/ sel_setBaseWritingDirection_ = sel_registerName("setBaseWritingDirection:");
+public static final int /*long*/ sel_setBaseWritingDirection_range_ = sel_registerName("setBaseWritingDirection:range:");
 public static final int /*long*/ sel_setBezelStyle_ = sel_registerName("setBezelStyle:");
 public static final int /*long*/ sel_setBorderType_ = sel_registerName("setBorderType:");
 public static final int /*long*/ sel_setBorderWidth_ = sel_registerName("setBorderWidth:");
@@ -1995,6 +1997,9 @@ public static final int NSWindowBelow = -1;
 public static final int NSWindowCollectionBehaviorCanJoinAllSpaces = 1;
 public static final int NSWindowCollectionBehaviorDefault = 0;
 public static final int NSWindowCollectionBehaviorMoveToActiveSpace = 2;
+public static final int NSWritingDirectionLeftToRight = 0;
+public static final int NSWritingDirectionNatural = -1;
+public static final int NSWritingDirectionRightToLeft = 1;
 public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFRunLoopBeforeWaiting = 32;
@@ -2025,6 +2030,10 @@ public static final int kCGPathElementMoveToPoint = 0;
 public static final int kCGPathStroke = 2;
 public static final int kCGSessionEventTap = 1;
 public static final int kCGTextFillStroke = 2;
+public static final int kCTParagraphStyleSpecifierBaseWritingDirection = 13;
+public static final int kCTWritingDirectionLeftToRight = 0;
+public static final int kCTWritingDirectionNatural = -1;
+public static final int kCTWritingDirectionRightToLeft = 1;
 public static final int NSAllApplicationsDirectory = 100;
 public static final int NSAllDomainsMask = 65535;
 public static final int NSNotFound = 2147483647;
@@ -2470,6 +2479,8 @@ public static final native int /*long*/ kCFRunLoopCommonModes();
 public static final native int /*long*/ kCTFontAttributeName();
 /** @method flags=const */
 public static final native int /*long*/ kCTForegroundColorAttributeName();
+/** @method flags=const */
+public static final native int /*long*/ kCTParagraphStyleAttributeName();
 /** @method flags=const */
 public static final native int /*long*/ NSDefaultRunLoopMode();
 public static final NSString NSDefaultRunLoopMode = new NSString(NSDefaultRunLoopMode());
@@ -2941,6 +2952,11 @@ public static final native void CTLineDraw(int /*long*/ line, int /*long*/ conte
  * @param leading cast=(CGFloat*)
  */
 public static final native double CTLineGetTypographicBounds(int /*long*/ line, float[] /*double[]*/ ascent, float[] /*double[]*/ descent, float[] /*double[]*/ leading);
+/**
+ * @param settings cast=(CTParagraphStyleSetting*)
+ * @param settingCount cast=(CFIndex)
+ */
+public static final native int /*long*/ CTParagraphStyleCreate(int /*long*/ settings, int /*long*/ settingCount);
 /**
  * @param typesetter cast=(CTTypesetterRef)
  * @param stringRange flags=struct
@@ -3454,6 +3470,7 @@ public static final native int CGPathElement_sizeof();
 public static final native int CGPoint_sizeof();
 public static final native int CGRect_sizeof();
 public static final native int CGSize_sizeof();
+public static final native int CTParagraphStyleSetting_sizeof();
 public static final native int NSAffineTransformStruct_sizeof();
 public static final native int NSPoint_sizeof();
 public static final native int NSRange_sizeof();
@@ -3522,6 +3539,16 @@ public static final native void memmove(int /*long*/ dest, CGSize src, int /*lon
  * @param src cast=(void *),flags=critical
  */
 public static final native void memmove(CGSize dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
+public static final native void memmove(int /*long*/ dest, CTParagraphStyleSetting src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
+public static final native void memmove(CTParagraphStyleSetting dest, int /*long*/ src, int /*long*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(void *),flags=critical

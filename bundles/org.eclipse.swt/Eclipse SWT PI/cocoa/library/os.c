@@ -1875,6 +1875,30 @@ fail:
 }
 #endif
 
+#ifndef NO_CTParagraphStyleCreate
+JNIEXPORT jintLong JNICALL OS_NATIVE(CTParagraphStyleCreate)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CTParagraphStyleCreate_FUNC);
+	rc = (jintLong)CTParagraphStyleCreate((CTParagraphStyleSetting*)arg0, (CFIndex)arg1);
+	OS_NATIVE_EXIT(env, that, CTParagraphStyleCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CTParagraphStyleSetting_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CTParagraphStyleSetting_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CTParagraphStyleSetting_1sizeof_FUNC);
+	rc = (jint)CTParagraphStyleSetting_sizeof();
+	OS_NATIVE_EXIT(env, that, CTParagraphStyleSetting_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CTTypesetterCreateLine
 JNIEXPORT jintLong JNICALL OS_NATIVE(CTTypesetterCreateLine)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -4916,6 +4940,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(kCTForegroundColorAttributeName)
 }
 #endif
 
+#ifndef NO_kCTParagraphStyleAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(kCTParagraphStyleAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kCTParagraphStyleAttributeName_FUNC);
+	rc = (jintLong)kCTParagraphStyleAttributeName;
+	OS_NATIVE_EXIT(env, that, kCTParagraphStyleAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
@@ -5062,6 +5098,31 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CGSize_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CGSize_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#endif
+{
+	CTParagraphStyleSetting _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getCTParagraphStyleSettingFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (void *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setCTParagraphStyleSettingFields(env, arg1, lparg1);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2J_FUNC);
 #endif
 }
 #endif
@@ -5337,6 +5398,31 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2JJ_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	CTParagraphStyleSetting _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (void *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setCTParagraphStyleSettingFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ_FUNC);
 #endif
 }
 #endif

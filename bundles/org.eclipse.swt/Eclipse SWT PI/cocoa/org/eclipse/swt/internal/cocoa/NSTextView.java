@@ -56,6 +56,10 @@ public NSDictionary markedTextAttributes() {
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
+public void setBaseWritingDirection(int /*long*/ writingDirection, NSRange range) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_range_, writingDirection, range);
+}
+
 public void setDefaultParagraphStyle(NSParagraphStyle paragraphStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setDefaultParagraphStyle_, paragraphStyle != null ? paragraphStyle.id : 0);
 }

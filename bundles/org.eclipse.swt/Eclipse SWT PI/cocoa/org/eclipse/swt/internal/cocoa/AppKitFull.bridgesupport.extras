@@ -299,6 +299,9 @@
 	<enum name="NSWindowCollectionBehaviorCanJoinAllSpaces" swt_gen="true"></enum>
 	<enum name="NSWindowCollectionBehaviorDefault" swt_gen="true"></enum>
 	<enum name="NSWindowCollectionBehaviorMoveToActiveSpace" swt_gen="true"></enum>
+	<enum name="NSWritingDirectionLeftToRight" swt_gen="true"></enum>
+	<enum name="NSWritingDirectionNatural" swt_gen="true"></enum>
+	<enum name="NSWritingDirectionRightToLeft" swt_gen="true"></enum>
 	<enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSYearMonthDayDatePickerElementFlag" swt_gen="true"></enum>
 	<function name="NSAccessibilityActionDescription" swt_gen="true">
@@ -1054,6 +1057,10 @@
 			<arg name="obj" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setBaseWritingDirection:" swt_gen="true">
+			<arg name="writingDirection" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setControlSize:" swt_gen="true">
 			<arg name="size" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -1350,6 +1357,10 @@
 		</method>
 		<method selector="setAlignment:" swt_gen="true">
 			<arg name="mode" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setBaseWritingDirection:" swt_gen="true">
+			<arg name="writingDirection" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setCell:" swt_gen="true">
@@ -2155,6 +2166,11 @@
 			<arg name="str" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setBaseWritingDirection:range:" swt_gen="true">
+			<arg name="writingDirection" swt_gen="true"></arg>
+			<arg name="range" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSMutableParagraphStyle" swt_gen="mixed" swt_superclass="NSParagraphStyle">
 		<method selector="addTabStop:" swt_gen="true">
@@ -2163,6 +2179,10 @@
 		</method>
 		<method selector="setAlignment:" swt_gen="true">
 			<arg name="alignment" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setBaseWritingDirection:" swt_gen="true">
+			<arg name="writingDirection" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setDefaultTabInterval:" swt_gen="true">
@@ -3495,6 +3515,10 @@
 			<arg name="color" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setBaseWritingDirection:" swt_gen="true">
+			<arg name="writingDirection" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setDelegate:" swt_gen="true">
 			<arg name="anObject" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3671,6 +3695,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="markedTextAttributes" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setBaseWritingDirection:range:" swt_gen="true">
+			<arg name="writingDirection" swt_gen="true"></arg>
+			<arg name="range" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setDefaultParagraphStyle:" swt_gen="true">
@@ -4765,26 +4794,26 @@
 	</informal_protocol>
 	<class name="NSSecureTextField" swt_gen="true" swt_superclass="NSTextField"></class>
 	<informal_protocol name="NSTextInput" swt_gen="true">
-		<method selector="markedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
+		<method selector="hasMarkedText" swt_gen="true"></method>
 		<method selector="insertText:" swt_gen="true">
 			<arg name="aString" swt_gen="true"></arg>
 		</method>
 		<method selector="unmarkText" swt_gen="true"></method>
-		<method selector="hasMarkedText" swt_gen="true"></method>
-		<method selector="validAttributesForMarkedText" swt_gen="true"></method>
+		<method selector="selectedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
 		<method selector="characterIndexForPoint:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="thePoint" swt_gen="true"></arg>
-		</method>
-		<method selector="attributedSubstringFromRange:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg name="theRange" swt_gen="true"></arg>
-		</method>
-		<method selector="selectedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
-		<method selector="setMarkedText:selectedRange:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg name="selRange" swt_gen="true"></arg>
-			<arg name="aString" swt_gen="true"></arg>
 		</method>
 		<method selector="firstRectForCharacterRange:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="theRange" swt_gen="true"></arg>
 		</method>
+		<method selector="validAttributesForMarkedText" swt_gen="true"></method>
+		<method selector="attributedSubstringFromRange:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg name="theRange" swt_gen="true"></arg>
+		</method>
+		<method selector="setMarkedText:selectedRange:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg name="selRange" swt_gen="true"></arg>
+			<arg name="aString" swt_gen="true"></arg>
+		</method>
+		<method selector="markedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
 	</informal_protocol>
 </signatures>

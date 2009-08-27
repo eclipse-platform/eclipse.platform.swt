@@ -71,6 +71,10 @@ public void setAlignment(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
 }
 
+public void setBaseWritingDirection(int /*long*/ writingDirection) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
+}
+
 public void setCell(NSCell aCell) {
 	OS.objc_msgSend(this.id, OS.sel_setCell_, aCell != null ? aCell.id : 0);
 }

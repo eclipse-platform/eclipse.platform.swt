@@ -72,6 +72,10 @@ public void setBackgroundColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
 }
 
+public void setBaseWritingDirection(int /*long*/ writingDirection) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
+}
+
 public void setDelegate(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
 }

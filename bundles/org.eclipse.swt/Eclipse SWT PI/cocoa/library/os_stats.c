@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 520;
-int OS_nativeFunctionCallCount[520];
+int OS_nativeFunctionCount = 525;
+int OS_nativeFunctionCallCount[525];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -142,6 +142,8 @@ char * OS_nativeFunctionNames[] = {
 	"CTLineCreateWithAttributedString",
 	"CTLineDraw",
 	"CTLineGetTypographicBounds",
+	"CTParagraphStyleCreate",
+	"CTParagraphStyleSetting_1sizeof",
 	"CTTypesetterCreateLine",
 	"CTTypesetterCreateWithAttributedString",
 	"CTTypesetterSuggestLineBreak",
@@ -372,6 +374,7 @@ char * OS_nativeFunctionNames[] = {
 	"kCFTypeDictionaryValueCallBacks",
 	"kCTFontAttributeName",
 	"kCTForegroundColorAttributeName",
+	"kCTParagraphStyleAttributeName",
 	"kTISPropertyUnicodeKeyLayoutData",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I",
@@ -402,6 +405,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CGSize_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_cocoa_CGSize_2J",
+#endif
+#ifndef JNI64
+	"memmove__ILorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2I",
+#else
+	"memmove__JLorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2J",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2I",
@@ -457,6 +465,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2JJ",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II",

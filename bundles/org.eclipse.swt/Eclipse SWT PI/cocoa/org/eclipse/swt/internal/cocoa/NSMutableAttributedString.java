@@ -37,6 +37,10 @@ public void replaceCharactersInRange(NSRange range, NSString str) {
 	OS.objc_msgSend(this.id, OS.sel_replaceCharactersInRange_withString_, range, str != null ? str.id : 0);
 }
 
+public void setBaseWritingDirection(int /*long*/ writingDirection, NSRange range) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_range_, writingDirection, range);
+}
+
 public void addAttribute(NSString name, id value, NSRange range) {
 	OS.objc_msgSend(this.id, OS.sel_addAttribute_value_range_, name != null ? name.id : 0, value != null ? value.id : 0, range);
 }

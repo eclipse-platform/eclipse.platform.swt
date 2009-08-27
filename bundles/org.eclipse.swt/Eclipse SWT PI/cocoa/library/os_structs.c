@@ -240,6 +240,43 @@ void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
 }
 #endif
 
+#ifndef NO_CTParagraphStyleSetting
+typedef struct CTParagraphStyleSetting_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID spec, valueSize, value;
+} CTParagraphStyleSetting_FID_CACHE;
+
+CTParagraphStyleSetting_FID_CACHE CTParagraphStyleSettingFc;
+
+void cacheCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject)
+{
+	if (CTParagraphStyleSettingFc.cached) return;
+	CTParagraphStyleSettingFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CTParagraphStyleSettingFc.spec = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "spec", "I");
+	CTParagraphStyleSettingFc.valueSize = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "valueSize", I_J);
+	CTParagraphStyleSettingFc.value = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "value", I_J);
+	CTParagraphStyleSettingFc.cached = 1;
+}
+
+CTParagraphStyleSetting *getCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct)
+{
+	if (!CTParagraphStyleSettingFc.cached) cacheCTParagraphStyleSettingFields(env, lpObject);
+	lpStruct->spec = (CTParagraphStyleSpecifier)(*env)->GetIntField(env, lpObject, CTParagraphStyleSettingFc.spec);
+	lpStruct->valueSize = (*env)->GetIntLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize);
+	lpStruct->value = (void *)(*env)->GetIntLongField(env, lpObject, CTParagraphStyleSettingFc.value);
+	return lpStruct;
+}
+
+void setCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct)
+{
+	if (!CTParagraphStyleSettingFc.cached) cacheCTParagraphStyleSettingFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CTParagraphStyleSettingFc.spec, (jint)lpStruct->spec);
+	(*env)->SetIntLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize, (jintLong)lpStruct->valueSize);
+	(*env)->SetIntLongField(env, lpObject, CTParagraphStyleSettingFc.value, (jintLong)lpStruct->value);
+}
+#endif
+
 #ifndef NO_NSAffineTransformStruct
 typedef struct NSAffineTransformStruct_FID_CACHE {
 	int cached;

@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
+	<struct name="CTParagraphStyleSetting" swt_gen="true">
+		<field name="spec" swt_gen="true"></field>
+		<field name="valueSize" swt_gen="true"></field>
+		<field name="value" swt_gen="true"></field>
+	</struct>
 	<constant name="kCTFontAttributeName" swt_gen="true"></constant>
 	<constant name="kCTForegroundColorAttributeName" swt_gen="true"></constant>
+	<constant name="kCTParagraphStyleAttributeName" swt_gen="true"></constant>
+	<enum name="kCTParagraphStyleSpecifierBaseWritingDirection" swt_gen="true"></enum>
+	<enum name="kCTWritingDirectionLeftToRight" swt_gen="true"></enum>
+	<enum name="kCTWritingDirectionNatural" swt_gen="true"></enum>
+	<enum name="kCTWritingDirectionRightToLeft" swt_gen="true"></enum>
 	<function name="CTFontGetAscent" swt_gen="true">
 		<arg name="font" swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
@@ -27,6 +37,11 @@
 		<arg name="ascent" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
 		<arg name="descent" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
 		<arg name="leading" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="CTParagraphStyleCreate" swt_gen="true">
+		<arg name="settings" swt_gen="true"></arg>
+		<arg name="settingCount" swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTTypesetterCreateLine" swt_gen="true">

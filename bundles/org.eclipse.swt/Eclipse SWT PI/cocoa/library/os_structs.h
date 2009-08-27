@@ -83,6 +83,18 @@ void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct);
 #define CGSize_sizeof() 0
 #endif
 
+#ifndef NO_CTParagraphStyleSetting
+void cacheCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject);
+CTParagraphStyleSetting *getCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct);
+void setCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct);
+#define CTParagraphStyleSetting_sizeof() sizeof(CTParagraphStyleSetting)
+#else
+#define cacheCTParagraphStyleSettingFields(a,b)
+#define getCTParagraphStyleSettingFields(a,b,c) NULL
+#define setCTParagraphStyleSettingFields(a,b,c)
+#define CTParagraphStyleSetting_sizeof() 0
+#endif
+
 #ifndef NO_NSAffineTransformStruct
 void cacheNSAffineTransformStructFields(JNIEnv *env, jobject lpObject);
 NSAffineTransformStruct *getNSAffineTransformStructFields(JNIEnv *env, jobject lpObject, NSAffineTransformStruct *lpStruct);

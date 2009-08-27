@@ -42,7 +42,7 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
-	NSMutableParagraphStyle paragraphStyle;
+	int /*long*/ paragraphStyleLTR, paragraphStyleRTL;
 	
 	/* Device DPI */
 	Point dpi;
@@ -519,12 +519,24 @@ protected void init () {
 	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 	
-	paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
-	paragraphStyle.setAlignment(OS.NSLeftTextAlignment);
-	paragraphStyle.setLineBreakMode(OS.NSLineBreakByClipping);
-	NSArray tabs = new NSArray(new NSArray().alloc().init());
-	paragraphStyle.setTabStops(tabs);
-	tabs.release();
+	/* Initialize LTR and RTL CTParagraphStyleRef */
+	CTParagraphStyleSetting setting = new CTParagraphStyleSetting();
+	setting.spec = OS.kCTParagraphStyleSpecifierBaseWritingDirection;
+	setting.valueSize = 1;
+	setting.value = OS.malloc(setting.valueSize);
+	OS.memmove(setting.value, new byte[] {OS.kCTWritingDirectionLeftToRight}, setting.valueSize);
+	int /*long*/ settingsPtr = OS.malloc(CTParagraphStyleSetting.sizeof);
+	OS.memmove(settingsPtr, setting, CTParagraphStyleSetting.sizeof);
+	paragraphStyleLTR = OS.CTParagraphStyleCreate(settingsPtr, 1);
+	OS.free(setting.value);
+	OS.free(settingsPtr);
+	setting.value = OS.malloc(setting.valueSize);
+	OS.memmove(setting.value, new byte[] {OS.kCTWritingDirectionRightToLeft}, setting.valueSize);
+	settingsPtr = OS.malloc(CTParagraphStyleSetting.sizeof);
+	OS.memmove(settingsPtr, setting, CTParagraphStyleSetting.sizeof);
+	paragraphStyleRTL = OS.CTParagraphStyleCreate(settingsPtr, 1);
+	OS.free(setting.value);
+	OS.free(settingsPtr);
 	
 	/* Initialize the system font slot */
 	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
@@ -707,8 +719,10 @@ void printErrors () {
  * @see #destroy
  */
 protected void release () {
-	if (paragraphStyle != null) paragraphStyle.release();
-	paragraphStyle = null;
+	if (paragraphStyleLTR != 0) OS.CFRelease(paragraphStyleLTR);
+	paragraphStyleLTR = 0;
+	if (paragraphStyleRTL != 0) OS.CFRelease(paragraphStyleRTL);
+	paragraphStyleRTL = 0;
 	
 	if (systemFont != null) systemFont.dispose();
 	systemFont = null;

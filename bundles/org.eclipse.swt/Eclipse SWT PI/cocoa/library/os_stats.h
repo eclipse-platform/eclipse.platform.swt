@@ -150,6 +150,8 @@ typedef enum {
 	CTLineCreateWithAttributedString_FUNC,
 	CTLineDraw_FUNC,
 	CTLineGetTypographicBounds_FUNC,
+	CTParagraphStyleCreate_FUNC,
+	CTParagraphStyleSetting_1sizeof_FUNC,
 	CTTypesetterCreateLine_FUNC,
 	CTTypesetterCreateWithAttributedString_FUNC,
 	CTTypesetterSuggestLineBreak_FUNC,
@@ -380,6 +382,7 @@ typedef enum {
 	kCFTypeDictionaryValueCallBacks_FUNC,
 	kCTFontAttributeName_FUNC,
 	kCTForegroundColorAttributeName_FUNC,
+	kCTParagraphStyleAttributeName_FUNC,
 	kTISPropertyUnicodeKeyLayoutData_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I_FUNC,
@@ -410,6 +413,11 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGSize_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_cocoa_CGSize_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2I_FUNC,
@@ -465,6 +473,11 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2JJ_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II_FUNC,

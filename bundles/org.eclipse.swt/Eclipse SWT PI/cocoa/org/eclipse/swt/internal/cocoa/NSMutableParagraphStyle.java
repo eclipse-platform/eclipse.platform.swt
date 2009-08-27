@@ -32,6 +32,10 @@ public void setAlignment(int /*long*/ alignment) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
+public void setBaseWritingDirection(int /*long*/ writingDirection) {
+	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
+}
+
 public void setDefaultTabInterval(float /*double*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setDefaultTabInterval_, aFloat);
 }
