@@ -1628,6 +1628,8 @@ public void drawText (String string, int x, int y, int flags) {
 		OS.CFDictionaryAddValue(dict, OS.kCTForegroundColorAttributeName(), color);
 		OS.CFRelease(color);
 		OS.CFRelease(colorspace);
+		int /*long*/ paragraphStyle = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? device.paragraphStyleRTL : device.paragraphStyleLTR;
+		OS.CFDictionaryAddValue(dict, OS.kCTParagraphStyleAttributeName(), paragraphStyle);
 		int /*long*/ str = OS.CFStringCreateWithCharacters(0, chars, length);
 		int /*long*/ attrStr = OS.CFAttributedStringCreate(0, str, dict);
 		OS.CFRelease(dict);
@@ -3953,6 +3955,8 @@ public Point textExtent(String string, int flags) {
 		}
 		int /*long*/ dict = OS.CFDictionaryCreateMutable(0, 1, OS.kCFTypeDictionaryKeyCallBacks(), OS.kCFTypeDictionaryValueCallBacks());
 		OS.CFDictionaryAddValue(dict, OS.kCTFontAttributeName(), font.handle.id);
+		int /*long*/ paragraphStyle = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? device.paragraphStyleRTL : device.paragraphStyleLTR;
+		OS.CFDictionaryAddValue(dict, OS.kCTParagraphStyleAttributeName(), paragraphStyle);
 		int /*long*/ str = OS.CFStringCreateWithCharacters(0, chars, length);
 		int /*long*/ attrStr = OS.CFAttributedStringCreate(0, str, dict);
 		OS.CFRelease(dict);
