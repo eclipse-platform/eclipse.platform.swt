@@ -902,50 +902,10 @@ void didFinishLoadForFrame(int frame) {
 				newEvent.widget = browser;
 				newEvent.title = url;
 				for (int i = 0; i < titleListeners.length; i++) {
-					final TitleListener listener = titleListeners[i];
-					/*
-					* Note on WebKit.  Running the event loop from a Browser
-					* delegate callback breaks the WebKit (stop loading or
-					* crash).  The workaround is to invoke Display.asyncExec()
-					* so that the Browser does not crash if this is attempted.
-					*/
-					display.asyncExec(
-						new Runnable() {
-							public void run() {
-								if (!display.isDisposed() && !browser.isDisposed()) {
-									listener.changed(newEvent);
-								}
-							}
-						}
-					);
+					titleListeners[i].changed(newEvent);
 				}
+				if (browser.isDisposed()) return;
 			}
-		}
-		final ProgressEvent progress = new ProgressEvent(browser);
-		progress.display = display;
-		progress.widget = browser;
-		progress.current = MAX_PROGRESS;
-		progress.total = MAX_PROGRESS;
-		for (int i = 0; i < progressListeners.length; i++) {
-			final ProgressListener listener = progressListeners[i];
-			/*
-			* Note on WebKit.  Running the event loop from a Browser
-			* delegate callback breaks the WebKit (stop loading or
-			* crash).  The ProgressBar widget currently touches the
-			* event loop every time the method setSelection is called.  
-			* The workaround is to invoke Display.asyncExec() so that
-			* the Browser does not crash when the user updates the 
-			* selection of the ProgressBar.
-			*/
-			display.asyncExec(
-				new Runnable() {
-					public void run() {
-						if (!display.isDisposed() && !browser.isDisposed()) {
-							listener.completed(progress);
-						}
-					}
-				}
-			);
 		}
 
 		/* re-install registered functions */
@@ -954,6 +914,16 @@ void didFinishLoadForFrame(int frame) {
 			BrowserFunction function = (BrowserFunction)elements.nextElement ();
 			execute (function.functionString);
 		}
+
+		ProgressEvent progress = new ProgressEvent(browser);
+		progress.display = display;
+		progress.widget = browser;
+		progress.current = MAX_PROGRESS;
+		progress.total = MAX_PROGRESS;
+		for (int i = 0; i < progressListeners.length; i++) {
+			progressListeners[i].completed(progress);
+		}
+		if (browser.isDisposed()) return;
 
 		/*
 		* Feature on Safari.  The identifier is used here as a marker for the events 
@@ -1135,25 +1105,9 @@ void didCommitLoadForFrame(int frame) {
 		progress.current = 1;
 		progress.total = MAX_PROGRESS;
 		for (int i = 0; i < progressListeners.length; i++) {
-			final ProgressListener listener = progressListeners[i];
-			/*
-			* Note on WebKit.  Running the event loop from a Browser
-			* delegate callback breaks the WebKit (stop loading or
-			* crash).  The widget ProgressBar currently touches the
-			* event loop every time the method setSelection is called.  
-			* The workaround is to invoke Display.asyncexec so that
-			* the Browser does not crash when the user updates the 
-			* selection of the ProgressBar.
-			*/
-			display.asyncExec(
-				new Runnable() {
-					public void run() {
-						if (!display.isDisposed() && !browser.isDisposed())
-							listener.changed(progress);
-					}
-				}
-			);
+			progressListeners[i].changed(progress);
 		}
+		if (browser.isDisposed()) return;
 		
 		StatusTextEvent statusText = new StatusTextEvent(browser);
 		statusText.display = display;
@@ -1162,6 +1116,7 @@ void didCommitLoadForFrame(int frame) {
 		for (int i = 0; i < statusTextListeners.length; i++) {
 			statusTextListeners[i].changed(statusText);
 		}
+		if (browser.isDisposed()) return;
 	}
 	LocationEvent location = new LocationEvent(browser);
 	location.display = display;
@@ -1394,25 +1349,9 @@ int identifierForInitialRequest(int request, int dataSource) {
 	progress.current = resourceCount;
 	progress.total = Math.max(resourceCount, MAX_PROGRESS);
 	for (int i = 0; i < progressListeners.length; i++) {
-		final ProgressListener listener = progressListeners[i];
-		/*
-		* Note on WebKit.  Running the event loop from a Browser
-		* delegate callback breaks the WebKit (stop loading or
-		* crash).  The widget ProgressBar currently touches the
-		* event loop every time the method setSelection is called.  
-		* The workaround is to invoke Display.asyncexec so that
-		* the Browser does not crash when the user updates the 
-		* selection of the ProgressBar.
-		*/
-		display.asyncExec(
-			new Runnable() {
-				public void run() {
-					if (!display.isDisposed() && !browser.isDisposed())
-						listener.changed(progress);
-				}
-			}
-		);
+		progressListeners[i].changed(progress);
 	}
+	if (browser.isDisposed()) return 0;
 
 	/*
 	* Note.  numberWithInt uses autorelease.  The resulting object
@@ -1426,7 +1365,6 @@ int identifierForInitialRequest(int request, int dataSource) {
 		if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) this.identifier = identifier;
 	}
 	return identifier;
-		
 }
 
 int willSendRequest(int identifier, int request, int redirectResponse, int dataSource) {
