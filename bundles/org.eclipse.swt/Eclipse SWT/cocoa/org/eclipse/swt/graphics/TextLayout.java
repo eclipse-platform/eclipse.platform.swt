@@ -164,6 +164,11 @@ void computeRuns() {
 				align = OS.NSRightTextAlignment;
 		}
 	}
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
+		paragraph.setBaseWritingDirection(OS.NSWritingDirectionRightToLeft);
+	} else {
+		paragraph.setBaseWritingDirection(OS.NSWritingDirectionLeftToRight);
+	}
 	paragraph.setAlignment(align);
 	paragraph.setLineSpacing(spacing);
 	paragraph.setFirstLineHeadIndent(indent);
