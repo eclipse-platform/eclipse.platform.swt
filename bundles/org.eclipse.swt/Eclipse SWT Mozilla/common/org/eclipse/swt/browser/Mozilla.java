@@ -562,7 +562,7 @@ public void create (Composite parent, int style) {
 				error (XPCOM.NS_ERROR_NULL_POINTER);
 			}
 
-			nsIFile localFile = new nsILocalFile (retVal[0]);
+			nsILocalFile localFile = new nsILocalFile (retVal[0]);
 			if (IsXULRunner) {
 				int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
 				/* alloc memory for two structs, the second is empty to signify the end of the list */
