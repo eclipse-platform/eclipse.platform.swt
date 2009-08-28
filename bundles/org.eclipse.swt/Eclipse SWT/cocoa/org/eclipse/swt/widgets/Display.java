@@ -759,13 +759,9 @@ void createDisplay (DeviceData data) {
 	addPool(new NSAutoreleasePool(id.integerValue()));
 
 	application = NSApplication.sharedApplication();
+	isEmbedded = application.isRunning();
 
-	/*
-	 * TODO: If an NSApplication is already running we don't want to create another NSApplication.
-	 * But if we don't we won't get mouse events, since we currently need to subclass NSApplication and intercept sendEvent to
-	 * deliver mouse events correctly to widgets.   
-	 */
-	if (!application.isRunning()) {
+	if (!isEmbedded) {
 		/*
 		 * Feature in the Macintosh.  On OS 10.2, it is necessary
 		 * to explicitly check in with the Process Manager and set
@@ -795,51 +791,51 @@ void createDisplay (DeviceData data) {
 				application.setApplicationIconImage(image);
 			}
 		}
+	}
 
-		String className = "SWTApplication";
-		int /*long*/ cls;
-		if ((cls = OS.objc_lookUpClass (className)) == 0) {
-			Class clazz = getClass();
-			applicationCallback2 = new Callback(clazz, "applicationProc", 2);
-			int /*long*/ proc2 = applicationCallback2.getAddress();
-			if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-			applicationCallback3 = new Callback(clazz, "applicationProc", 3);
-			int /*long*/ proc3 = applicationCallback3.getAddress();
-			if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-			applicationCallback6 = new Callback(clazz, "applicationProc", 6);
-			int /*long*/ proc6 = applicationCallback6.getAddress();
-			if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-			cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
-			OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
-			OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
-			OS.class_addMethod(cls, OS.sel_finishLaunching, proc2, "@:");
-			OS.objc_registerClassPair(cls);
-		}
-		applicationClass = OS.object_setClass(application.id, cls);
+	String className = "SWTApplication";
+	int /*long*/ cls;
+	if ((cls = OS.objc_lookUpClass (className)) == 0) {
+		Class clazz = getClass();
+		applicationCallback2 = new Callback(clazz, "applicationProc", 2);
+		int /*long*/ proc2 = applicationCallback2.getAddress();
+		if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		applicationCallback3 = new Callback(clazz, "applicationProc", 3);
+		int /*long*/ proc3 = applicationCallback3.getAddress();
+		if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		applicationCallback6 = new Callback(clazz, "applicationProc", 6);
+		int /*long*/ proc6 = applicationCallback6.getAddress();
+		if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		cls = OS.objc_allocateClassPair(OS.object_getClass(application.id), className, 0);
+		OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
+		OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_finishLaunching, proc2, "@:");
+		OS.objc_registerClassPair(cls);
+	}
+	applicationClass = OS.object_setClass(application.id, cls);
 		
-		className = "SWTApplicationDelegate";
-		if (OS.objc_lookUpClass (className) == 0) {
-			int /*long*/ appProc3 = applicationCallback3.getAddress();
-			if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-			cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-			OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_quitRequested_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
-			OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
-			OS.objc_registerClassPair(cls);
-		}
+	className = "SWTApplicationDelegate";
+	if (OS.objc_lookUpClass (className) == 0) {
+		int /*long*/ appProc3 = applicationCallback3.getAddress();
+		if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+		OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_quitRequested_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
+		OS.objc_registerClassPair(cls);
+	}
+	if (!isEmbedded) {
 		if (applicationDelegate == null) {
 			applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
 			application.setDelegate(applicationDelegate);
 		}
-	} else {
-		isEmbedded = true;
 	}
 }
 
@@ -4390,7 +4386,12 @@ void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*lo
 static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
 	//TODO optimize getting the display
 	Display display = getCurrent ();
-	if (display == null) return 0;
+	if (display == null) {
+		objc_super super_struct = new objc_super ();
+		super_struct.receiver = id;
+		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
+		return OS.objc_msgSendSuper (super_struct, sel);
+	}
 	if (sel == OS.sel_isRunning) {
 		// #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
 		return display.isDisposed() ? 0 : 1;
@@ -4405,6 +4406,12 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 	//TODO optimize getting the display
 	Display display = getCurrent ();
 	if (display == null) return 0;
+	if (display == null) {
+		objc_super super_struct = new objc_super ();
+		super_struct.receiver = id;
+		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
+		return OS.objc_msgSendSuper (super_struct, sel, arg0);
+	}
 	NSApplication application = display.application;
 	if (sel == OS.sel_sendEvent_) {
 		display.applicationSendEvent (id, sel, arg0);
@@ -4439,7 +4446,12 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 static int /*long*/ applicationProc(int /*long*/ id, int /*long*/sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	//TODO optimize getting the display
 	Display display = getCurrent ();
-	if (display == null) return 0;
+	if (display == null) {
+		objc_super super_struct = new objc_super ();
+		super_struct.receiver = id;
+		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
+		return OS.objc_msgSendSuper (super_struct, sel, arg0, arg1, arg2, arg3 != 0);
+	}
 	if (sel == OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_) {
 		return display.applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
 	}
