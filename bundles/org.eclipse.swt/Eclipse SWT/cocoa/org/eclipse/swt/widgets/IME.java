@@ -444,7 +444,7 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 		end = event.end;
 	}
 	NSString str = new NSString (string);
-	if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
+	if (str.isKindOfClass (OS.class_NSAttributedString)) {
 		NSAttributedString attribStr = new NSAttributedString (string);
 		str = attribStr.string ();
 		int length = (int)/*64*/str.length ();
