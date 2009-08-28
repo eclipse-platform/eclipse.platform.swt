@@ -829,6 +829,11 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
+void setOrientation () {
+	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
+	textView.setBaseWritingDirection(direction);
+}
+
 /**
  * Sets the <em>selection</em>, which is the receiver's
  * position, to the argument. If the argument is not within

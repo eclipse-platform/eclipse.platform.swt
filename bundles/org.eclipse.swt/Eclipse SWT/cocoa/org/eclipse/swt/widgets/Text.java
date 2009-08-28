@@ -1651,6 +1651,17 @@ public void setOrientation (int orientation) {
 	checkWidget ();
 }
 
+void setOrientation () {
+	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
+	if ((style & SWT.SINGLE) != 0) {
+		NSTextField widget = (NSTextField)view;
+		widget.setBaseWritingDirection(direction);
+	} else {
+		NSTextView widget = (NSTextView)view;
+		widget.setBaseWritingDirection(direction);
+	}
+}
+
 /**
  * Sets the widget message. The message text is displayed
  * as a hint for the user, indicating the purpose of the field.

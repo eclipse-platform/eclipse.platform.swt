@@ -202,6 +202,12 @@ void setForeground (float /*double*/ [] color) {
 	cell.setTextColor (nsColor);
 }
 
+void setOrientation () {
+	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
+	NSTextFieldCell cell = new NSTextFieldCell (((NSBox)view).titleCell ().id);
+	cell.setBaseWritingDirection(direction);
+}
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,

@@ -447,6 +447,12 @@ void setForeground (float /*double*/ [] color) {
 	((NSTextView) view).setTextColor (nsColor);
 }
 
+void setOrientation () {
+	NSTextView widget = (NSTextView)view;
+	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
+	widget.setBaseWritingDirection(direction);
+}
+
 /**
  * Sets the receiver's text.
  * <p>

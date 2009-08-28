@@ -806,7 +806,7 @@ NSView contentView () {
 	return view;
 }
 
-NSAttributedString createString (String string, Font font, float /*double*/ [] foreground, int style, boolean wrap, boolean enabled, boolean mnemonics) {
+NSAttributedString createString (String string, Font font, float /*double*/ [] foreground, int alignment, boolean wrap, boolean enabled, boolean mnemonics) {
 	NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(5);
 	if (font == null) font = this.font != null ? this.font : defaultFont();
 	dict.setObject (font.handle, OS.NSFontAttributeName);
@@ -821,14 +821,19 @@ NSAttributedString createString (String string, Font font, float /*double*/ [] f
 	}
 	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 	paragraphStyle.setLineBreakMode (wrap ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
-	if (style != 0) {
-		int alignment = SWT.LEFT;
-		if ((style & SWT.CENTER) != 0) {
-			alignment = OS.NSCenterTextAlignment;
-		} else if ((style & SWT.RIGHT) != 0) {
-			alignment = OS.NSRightTextAlignment;
+	if (alignment != 0) {
+		int align = SWT.LEFT;
+		if ((alignment & SWT.CENTER) != 0) {
+			align = OS.NSCenterTextAlignment;
+		} else if ((alignment & SWT.RIGHT) != 0) {
+			align = OS.NSRightTextAlignment;
 		}
-		paragraphStyle.setAlignment (alignment);
+		paragraphStyle.setAlignment (align);
+	}
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		paragraphStyle.setBaseWritingDirection(OS.NSWritingDirectionRightToLeft);
+	} else {
+		paragraphStyle.setBaseWritingDirection(OS.NSWritingDirectionLeftToRight);
 	}
 	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 	paragraphStyle.release ();

@@ -495,6 +495,7 @@ void createJNIRef () {
 void createWidget () {
 	createJNIRef ();
 	createHandle ();
+	setOrientation();
 	register ();
 }
 	
@@ -1438,6 +1439,9 @@ public void setData (String key, Object value) {
 }
 
 void setOpenGLContext(Object value) {
+}
+
+void setOrientation () {
 }
 
 void setFrameOrigin (int /*long*/ id, int /*long*/ sel, NSPoint point) {
