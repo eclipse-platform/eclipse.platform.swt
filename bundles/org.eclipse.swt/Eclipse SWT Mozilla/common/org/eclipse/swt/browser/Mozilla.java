@@ -1244,7 +1244,7 @@ public void create (Composite parent, int style) {
 
 					nsIPrefService prefService = new nsIPrefService (result[0]);
 					result[0] = 0;
-					rc = prefService.SavePrefFile(prefFile.getAddress ());
+					rc = prefService.SavePrefFile (prefFile.getAddress ());
 					prefService.Release ();
 					prefFile.Release ();
 				}
@@ -1252,19 +1252,11 @@ public void create (Composite parent, int style) {
 
 				if (XPCOMWasGlued) {
 					/*
-					* XULRunner 1.9 can crash on Windows if XPCOMGlueShutdown is invoked here,
-					* presumably because one or more of its unloaded symbols are referenced when
-					* this callback returns.  The workaround is to delay invoking XPCOMGlueShutdown
-					* so that its symbols are still available once this callback returns.
+					* The following is intentionally commented because it causes subsequent
+					* browser instantiations within the process to fail.  Mozilla does not
+					* support being unloaded and then re-initialized in a process, see
+					* http://www.mail-archive.com/dev-embedding@lists.mozilla.org/msg01732.html . 
 					*/
-					display.asyncExec (new Runnable () {
-						public void run () {
-							XPCOM.XPCOMGlueShutdown ();
-						}
-					});
-
-					// the following is intentionally commented, because calling XRE_TermEmbedding
-					// causes subsequent browser instantiations within the process to fail
 
 //					int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
 //					/* alloc memory for two structs, the second is empty to signify the end of the list */
@@ -1286,6 +1278,7 @@ public void create (Composite parent, int style) {
 //					C.free (ptr);
 //					XPCOM.Call (functionPtr);
 
+//					XPCOM.XPCOMGlueShutdown ();
 					XPCOMWasGlued = false;
 				}
 				if (XPCOMInitWasGlued) {
