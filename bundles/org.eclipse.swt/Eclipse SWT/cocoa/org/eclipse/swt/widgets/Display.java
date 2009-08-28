@@ -4405,7 +4405,6 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
 static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	//TODO optimize getting the display
 	Display display = getCurrent ();
-	if (display == null) return 0;
 	if (display == null) {
 		objc_super super_struct = new objc_super ();
 		super_struct.receiver = id;
