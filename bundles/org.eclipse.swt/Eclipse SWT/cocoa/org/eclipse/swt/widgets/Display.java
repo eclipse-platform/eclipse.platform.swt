@@ -841,7 +841,7 @@ void createDisplay (DeviceData data) {
 
 void createMainMenu () {
 	NSString appName = getAppName();
-	NSString emptyStr = NSString.stringWith("");
+	NSString emptyStr = NSString.string();
 	NSMenu mainMenu = (NSMenu)new NSMenu().alloc();
 	mainMenu.initWithTitle(emptyStr);
 	

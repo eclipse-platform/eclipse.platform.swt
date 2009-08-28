@@ -169,7 +169,7 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 	// Accessibility Verifier queries for a title or description.  NSOutlineView doesn't
 	// seem to return either, so we return a default description value here.
 	if (attributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
-		return NSString.stringWith("").id;
+		return NSString.string().id;
 	}
 	
 	return super.accessibilityAttributeValue(id, sel, arg0);
@@ -556,7 +556,7 @@ void createHandle () {
 	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
 	widget.setHeaderView (null);
 	
-	NSString str = NSString.stringWith ("");  //$NON-NLS-1$
+	NSString str = NSString.string();
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 		checkColumn = checkColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
@@ -620,7 +620,7 @@ void createItem (TreeColumn column, int index) {
 	} else {
 		//TODO - set attributes, alignment etc.
 		NSOutlineView outlineView = (NSOutlineView)view;
-		NSString str = NSString.stringWith ("");
+		NSString str = NSString.string();
 		nsColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 		nsColumn = nsColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
 		nsColumn.setMinWidth(0);

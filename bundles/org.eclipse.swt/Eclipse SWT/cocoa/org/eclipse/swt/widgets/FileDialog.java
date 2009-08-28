@@ -242,7 +242,7 @@ public String open () {
 				str = filterNames [i];
 			}
 			NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
-			nsItem.initWithTitle(NSString.stringWith(str), 0, NSString.stringWith(""));
+			nsItem.initWithTitle(NSString.stringWith(str), 0, NSString.string());
 			menu.addItem(nsItem);
 			nsItem.release();
 		}

@@ -577,7 +577,7 @@ void createHandle () {
 		}
 		if ((style & SWT.NO_TRIM) == 0) {
 			NSSize size = window.minSize();
-			size.width = NSWindow.minFrameWidthWithTitle(NSString.stringWith(""), styleMask);
+			size.width = NSWindow.minFrameWidthWithTitle(NSString.string(), styleMask);
 			window.setMinSize(size);
 		}
 		if (fixResize ()) {

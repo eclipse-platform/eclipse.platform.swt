@@ -157,7 +157,7 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 		if (!(accessibleText == null || accessibleText.equals(""))) {
 			return NSString.stringWith(accessibleText).id;
 		} else {
-			return NSString.stringWith("").id;
+			return NSString.string().id;
 		}
 	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityValueAttribute) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		NSNumber value = NSNumber.numberWithInt(selection ? 1 : 0);
@@ -270,8 +270,7 @@ void createHandle () {
 		Font font = parent.font != null ? parent.font : parent.defaultFont ();
 		button.setFont(font.handle);
 		button.setImagePosition(OS.NSImageOverlaps);
-		NSString emptyStr = NSString.stringWith("");
-		button.setTitle(emptyStr);
+		button.setTitle(NSString.string());
 		button.setEnabled(parent.getEnabled());
 		widget.addSubview(button);
 		view = widget;

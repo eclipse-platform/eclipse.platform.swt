@@ -195,7 +195,7 @@ public class Accessible {
 	
 	public id internal_accessibilityActionDescription(NSString action, int childID) {
 		// TODO No action support for now.
-		return NSString.stringWith("");
+		return NSString.string();
 	}
 
 	public NSArray internal_accessibilityActionNames(int childID) {
@@ -615,7 +615,7 @@ public class Accessible {
 	
 	id getTitleAttribute (int childID) {
 		
-		id returnValue = null;//NSString.stringWith("");
+		id returnValue = null;//NSString.string();
 		
 		/*
 		* Feature of the Macintosh.  The text of a Label is returned in its value,
@@ -959,7 +959,7 @@ public class Accessible {
 		// If no description was provided, and this is a composite or canvas, return a blank string
 		// -- otherwise, let the Cocoa control handle it.
 		if (returnValue == null) {
-			if (control instanceof Composite) returnValue = NSString.stringWith("");
+			if (control instanceof Composite) returnValue = NSString.string();
 		}
 
 		return returnValue;
@@ -1027,7 +1027,7 @@ public class Accessible {
 	}
 	
 	id getSelectedTextAttribute (int childID) {
-		id returnValue = NSString.stringWith("");
+		id returnValue = NSString.string();
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.childID = childID;
 		event.offset = -1;

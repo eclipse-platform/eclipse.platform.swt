@@ -213,7 +213,7 @@ void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSBox widget = (NSBox)new SWTBox().alloc();
 	widget.init();
-	widget.setTitle(NSString.stringWith(""));
+	widget.setTitle(NSString.string());
 	if ((style & SWT.SEPARATOR) != 0) {
 		widget.setBoxType(OS.NSBoxSeparator);
 		NSView child = (NSView) new SWTView().alloc().init();

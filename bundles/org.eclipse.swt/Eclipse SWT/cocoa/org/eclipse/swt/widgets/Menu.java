@@ -291,7 +291,7 @@ public void addMenuListener (MenuListener listener) {
 void createHandle () {
 	display.addMenu (this);
 	NSMenu widget = (NSMenu)new SWTMenu().alloc();
-	widget = widget.initWithTitle(NSString.stringWith(""));
+	widget = widget.initWithTitle(NSString.string());
 	widget.setAutoenablesItems(false);
 	widget.setDelegate(widget);	
 	nsMenu = widget;	
@@ -305,7 +305,8 @@ void createItem (MenuItem item, int index) {
 		nsItem.retain();
 	} else {
 		nsItem = (NSMenuItem)new SWTMenuItem().alloc();
-		nsItem.initWithTitle(NSString.stringWith(""), 0, NSString.stringWith(""));
+		NSString empty = NSString.string();
+		nsItem.initWithTitle(empty, 0, empty);
 		nsItem.setTarget(nsItem);
 		nsItem.setAction(OS.sel_sendSelection);
 	}

@@ -262,7 +262,7 @@ void createHandle () {
 		widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
 	}
 	widget.setButtonType(type);
-	widget.setTitle(NSString.stringWith(""));
+	widget.setTitle(NSString.string());
 	widget.setImagePosition(OS.NSImageLeft);
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
