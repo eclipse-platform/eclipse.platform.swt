@@ -51,6 +51,10 @@ public void setAction(int /*long*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
 }
 
+public void setAttributedTitle(NSAttributedString string) {
+	OS.objc_msgSend(this.id, OS.sel_setAttributedTitle_, string != null ? string.id : 0);
+}
+
 public void setEnabled(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setEnabled_, flag);
 }
