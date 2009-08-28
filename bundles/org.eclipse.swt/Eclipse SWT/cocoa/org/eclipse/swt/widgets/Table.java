@@ -2783,8 +2783,7 @@ public void setSortColumn (TableColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (column == sortColumn) return;
-	sortColumn = column;
-	((NSTableView)view).setHighlightedTableColumn (column == null ? null : column.nsColumn);
+	setSort(column, sortDirection);
 }
 
 /**
@@ -2804,13 +2803,25 @@ public void setSortDirection  (int direction) {
 	checkWidget ();
 	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
 	if (direction == sortDirection) return;
+	setSort(sortColumn, direction);
+}
+
+void setSort (TableColumn column, int direction) {
+	NSImage image = null;
+	NSTableColumn nsColumn = null;
+	if (column != null) {
+		nsColumn = column.nsColumn;
+		if (direction == SWT.DOWN) image = NSImage.imageNamed(NSString.stringWith("NSDescendingSortIndicator"));
+		if (direction == SWT.UP) image = NSImage.imageNamed(NSString.stringWith("NSAscendingSortIndicator"));
+	}
+	NSTableView widget = (NSTableView)view;
+	if (sortColumn != null && sortColumn != column) {
+		widget.setIndicatorImage(null, sortColumn.nsColumn);
+	}
+	widget.setHighlightedTableColumn(nsColumn);
+	widget.setIndicatorImage(image, nsColumn);
 	sortDirection = direction;
-	if (sortColumn == null) return;
-	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
-	if (headerView == null) return;
-	int index = indexOf (sortColumn.nsColumn);
-	NSRect rect = headerView.headerRectOfColumn (index);
-	headerView.setNeedsDisplayInRect (rect);
+	sortColumn = column;
 }
 
 void setTableEmpty () {
