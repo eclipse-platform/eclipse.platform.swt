@@ -339,7 +339,7 @@ boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (startOffset == -1) return true;
 	NSString str = new NSString (string);
-	if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
+	if (str.isKindOfClass (OS.class_NSAttributedString)) {
 		str = new NSAttributedString (string).string ();
 	}
 	int length = (int)/*64*/str.length ();
