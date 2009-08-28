@@ -268,6 +268,7 @@ public final class TextLayout extends Resource {
 	String text;
 	int textPtr;
 	StyleItem[] styles;
+	int stylesCount;
 	int layout;
 	int spacing, ascent, descent, indent;
 	int indentStyle;
@@ -313,6 +314,7 @@ public TextLayout (Device device) {
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
+	stylesCount = 2;
 	init();
 }
 
@@ -361,7 +363,7 @@ void computeRuns() {
 
 	int[] buffer = new int[1];
 	Font font = this.font != null ? this.font : device.systemFont;
-	for (int i = 0; i < styles.length - 1; i++) {
+	for (int i = 0; i < stylesCount - 1; i++) {
 		StyleItem run = styles[i];
 		run.createStyle(device, font);
 		//set the default font in the ZWS when text is empty fixes text metrics
@@ -583,12 +585,12 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	*/
 	int rgn = 0;
 	CGRect rect = null;
-	for (int j = 0; j < styles.length; j++) {
+	for (int j = 0; j < stylesCount; j++) {
 		StyleItem run = styles[j];
 		TextStyle style = run.style;
 		if (style == null || style.background == null) continue;
 		int start = translateOffset(run.start);
-		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
+		int end = j + 1 < stylesCount ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
 			int lineBreak = breaks[i];
 			int lineEnd = lineBreak - 1;
@@ -676,16 +678,16 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (restoreColor) setLayoutControl(OS.kATSULineHighlightCGColorTag, 0, 4);
 	OS.CGContextRestoreGState(gc.handle);
 
-	for (int j = 0; j < styles.length; j++) {
+	for (int j = 0; j < stylesCount; j++) {
 		StyleItem run = styles[j];
 		TextStyle style = run.style;
 		if (style == null) continue;
 		boolean drawUnderline = style.underline && !isUnderlineSupported(style);
-		drawUnderline = drawUnderline && (j + 1 == styles.length || !style.isAdherentUnderline(styles[j + 1].style)); 
+		drawUnderline = drawUnderline && (j + 1 == stylesCount || !style.isAdherentUnderline(styles[j + 1].style)); 
 		boolean drawBorder = style.borderStyle != SWT.NONE;
-		drawBorder = drawBorder && (j + 1 == styles.length || !style.isAdherentBorder(styles[j + 1].style)); 
+		drawBorder = drawBorder && (j + 1 == stylesCount || !style.isAdherentBorder(styles[j + 1].style)); 
 		if (!drawUnderline && !drawBorder) continue;
-		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
+		int end = j + 1 < stylesCount ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
 			int lineBreak = breaks[i];
 			int lineEnd = lineBreak - 1;
@@ -863,7 +865,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 
 void freeRuns() {
 	if (breaks == null) return;
-	for (int i = 0; i < styles.length; i++) {
+	for (int i = 0; i < stylesCount; i++) {
 		StyleItem run = styles[i];
 		run.freeStyle();
 	}
@@ -1518,9 +1520,9 @@ public int getPreviousOffset (int index, int movement) {
  */
 public int[] getRanges () {
 	checkLayout();
-	int[] result = new int[styles.length * 2];
+	int[] result = new int[stylesCount * 2];
 	int count = 0;
-	for (int i=0; i<styles.length - 1; i++) {
+	for (int i=0; i<stylesCount - 1; i++) {
 		if (styles[i].style != null) {
 			result[count++] = styles[i].start;
 			result[count++] = styles[i + 1].start - 1;
@@ -1615,7 +1617,7 @@ public TextStyle getStyle (int offset) {
 	checkLayout();
 	int length = text.length();
 	if (!(0 <= offset && offset < length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	for (int i=1; i<styles.length; i++) {
+	for (int i=1; i<stylesCount; i++) {
 		StyleItem item = styles[i];
 		if (item.start > offset) {
 			return styles[i - 1].style;
@@ -1639,9 +1641,9 @@ public TextStyle getStyle (int offset) {
  */
 public TextStyle[] getStyles () {
 	checkLayout();
-	TextStyle[] result = new TextStyle[styles.length];
+	TextStyle[] result = new TextStyle[stylesCount];
 	int count = 0;
-	for (int i=0; i<styles.length; i++) {
+	for (int i=0; i<stylesCount; i++) {
 		if (styles[i].style != null) {
 			result[count++] = styles[i].style;
 		}
@@ -1995,7 +1997,7 @@ public void setStyle (TextStyle style, int start, int end) {
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
 	int low = -1;
-	int high = styles.length;
+	int high = stylesCount;
 	while (high - low > 1) {
 		int index = (high + low) / 2;
 		if (styles[index + 1].start > start) {
@@ -2004,7 +2006,7 @@ public void setStyle (TextStyle style, int start, int end) {
 			low = index;
 		}
 	}
-	if (0 <= high && high < styles.length) {
+	if (0 <= high && high < stylesCount) {
 		StyleItem item = styles[high];
 		if (item.start == start && styles[high + 1].start - 1 == end) {
 			if (style == null) {
@@ -2017,7 +2019,7 @@ public void setStyle (TextStyle style, int start, int end) {
 	freeRuns();
 	int modifyStart = high;
 	int modifyEnd = modifyStart;
-	while (modifyEnd < styles.length) {
+	while (modifyEnd < stylesCount) {
 		if (styles[modifyEnd + 1].start > end) break;
 		modifyEnd++;
 	}
@@ -2029,33 +2031,42 @@ public void setStyle (TextStyle style, int start, int end) {
 			return;
 		}
 		if (styleStart != start && styleEnd != end) {
-			StyleItem[] newStyles = new StyleItem[styles.length + 2];
-			System.arraycopy(styles, 0, newStyles, 0, modifyStart + 1);
+			int newLength = stylesCount + 2; 
+			if (newLength > styles.length) {
+				int newSize = Math.min(newLength + 1024, Math.max(64, newLength * 2));
+				StyleItem[] newStyles = new StyleItem[newSize];
+				System.arraycopy(styles, 0, newStyles, 0, stylesCount);
+				styles = newStyles;
+			}
+			System.arraycopy(styles, modifyEnd + 1, styles, modifyEnd + 3, stylesCount - modifyEnd - 1);
 			StyleItem item = new StyleItem();
 			item.start = start;
 			item.style = style;
-			newStyles[modifyStart + 1] = item;	
+			styles[modifyStart + 1] = item;	
 			item = new StyleItem();
 			item.start = end + 1;
 			item.style = styles[modifyStart].style;
-			newStyles[modifyStart + 2] = item;
-			System.arraycopy(styles, modifyEnd + 1, newStyles, modifyEnd + 3, styles.length - modifyEnd - 1);
-			styles = newStyles;
+			styles[modifyStart + 2] = item;
+			stylesCount = newLength;
 			return;
 		}
 	}
 	if (start == styles[modifyStart].start) modifyStart--;
 	if (end == styles[modifyEnd + 1].start - 1) modifyEnd++;
-	int newLength = styles.length + 1 - (modifyEnd - modifyStart - 1);
-	StyleItem[] newStyles = new StyleItem[newLength];
-	System.arraycopy(styles, 0, newStyles, 0, modifyStart + 1);	
+	int newLength = stylesCount + 1 - (modifyEnd - modifyStart - 1);
+	if (newLength > styles.length) {
+		int newSize = Math.min(newLength + 1024, Math.max(64, newLength * 2));
+		StyleItem[] newStyles = new StyleItem[newSize];
+		System.arraycopy(styles, 0, newStyles, 0, stylesCount);
+		styles = newStyles;
+	}
+	System.arraycopy(styles, modifyEnd, styles, modifyStart + 2, stylesCount - modifyEnd);
 	StyleItem item = new StyleItem();
 	item.start = start;
 	item.style = style;
-	newStyles[modifyStart + 1] = item;
-	styles[modifyEnd].start = end + 1;
-	System.arraycopy(styles, modifyEnd, newStyles, modifyStart + 2, styles.length - modifyEnd);
-	styles = newStyles;
+	styles[modifyStart + 1] = item;
+	styles[modifyStart + 2].start = end + 1;
+	stylesCount = newLength;
 }
 
 /**
@@ -2135,7 +2146,8 @@ public void setText (String text) {
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
-	styles[styles.length - 1].start = text.length();
+	styles[1].start = text.length();
+	stylesCount = 2;
 }
 
 /**
