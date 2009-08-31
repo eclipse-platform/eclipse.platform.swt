@@ -610,8 +610,6 @@ void drawViewBackgroundInRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
 	boolean drawImage = image != null && !image.isDisposed();
-	scrollView.setDrawsBackground(!drawImage);
-	((NSTextView)view).setDrawsBackground(!drawImage);
 	super.drawViewBackgroundInRect(id, sel, rect);
 	if (drawImage) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
@@ -1480,6 +1478,9 @@ void setBackgroundImage(NSImage image) {
 		widget.setDrawsBackground(backgroundImage != null);
 		NSColor nsColor = NSColor.colorWithPatternImage(image);
 		widget.setBackgroundColor(nsColor);		
+	} else {
+		scrollView.setDrawsBackground(backgroundImage != null);
+		((NSTextView)view).setDrawsBackground(backgroundImage != null);
 	}
 }
 
