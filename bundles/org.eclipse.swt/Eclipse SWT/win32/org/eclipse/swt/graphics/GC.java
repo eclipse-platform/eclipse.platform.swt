@@ -1195,7 +1195,19 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		return;
 	}
 
-	if (OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+	boolean alphaBlendSupport = OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION(4, 10);
+	boolean isPrinter = OS.GetDeviceCaps(handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER;
+	if (alphaBlendSupport && isPrinter) {
+		int caps = OS.GetDeviceCaps(handle, OS.SHADEBLENDCAPS);
+		if (caps != 0) {
+			if (srcImage.alpha != -1) {
+				alphaBlendSupport = (caps & OS.SB_CONST_ALPHA) != 0;
+			} else {
+				alphaBlendSupport = (caps & OS.SB_PIXEL_ALPHA) != 0;
+			}
+		}
+	}
+	if (alphaBlendSupport) {
 		BLENDFUNCTION blend = new BLENDFUNCTION();
 		blend.BlendOp = OS.AC_SRC_OVER;
 		int /*long*/ srcHdc = OS.CreateCompatibleDC(handle);
@@ -1316,8 +1328,10 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	* stretch to a temporary HDC and blit back into the original HDC.
 	* Note that on WinCE StretchBlt correctly compresses the image when the
 	* source and destination HDCs are the same.
+	* 
+	* Note that this also fails when drawing to a printer.
 	*/
-	if ((OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) || (!OS.IsWinNT && !OS.IsWinCE)) {
+	if (isPrinter || (OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) || (!OS.IsWinNT && !OS.IsWinCE)) {
 		int /*long*/ tempHdc = OS.CreateCompatibleDC(handle);
 		int /*long*/ tempDib = Image.createDIB(destWidth, destHeight, 32);
 		if (tempDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);		

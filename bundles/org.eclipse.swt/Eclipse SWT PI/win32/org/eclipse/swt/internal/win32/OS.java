@@ -1411,6 +1411,10 @@ public class OS extends C {
 	public static final int SBS_VERT = 0x1;
 	public static final int SB_BOTH = 0x3;
 	public static final int SB_BOTTOM = 0x7;
+	public static final int SB_NONE = 0;
+	public static final int SB_CONST_ALPHA = 0x00000001;
+	public static final int SB_PIXEL_ALPHA = 0x00000002;
+	public static final int SB_PREMULT_ALPHA = 0x00000004;
 	public static final int SB_CTL = 0x2;
 	public static final int SB_ENDSCROLL = 0x8;
 	public static final int SB_HORZ = 0x0;
@@ -1442,6 +1446,7 @@ public class OS extends C {
 	public static final int SEM_FAILCRITICALERRORS = 0x1;
 	public static final int SET_FEATURE_ON_PROCESS = 0x2;
 	public static final int SF_RTF = 0x2;
+	public static final int SHADEBLENDCAPS = 120;
 	public static final int SHCMBF_HIDDEN = 0x2;
 	public static final int SHCMBM_OVERRIDEKEY = 0x400 + 403;
 	public static final int SHCMBM_SETSUBMENU = 0x590;
