@@ -3134,6 +3134,7 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 	} else {
 		color = NSColor.disabledControlTextColor();
 	}
+	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
 	int alignment = OS.NSLeftTextAlignment;
 	if (columnCount > 0) {
 		int style = columns [index].style;
@@ -3155,6 +3156,7 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
 		paragraphStyle.setAlignment (alignment);
+		paragraphStyle.setBaseWritingDirection(direction);
 		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 		paragraphStyle.release ();
 		NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (textCell.title(), dict);
@@ -3165,6 +3167,7 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 		textCell.setFont(font.handle);
 		textCell.setTextColor(color);
 		textCell.setAlignment (alignment);
+		textCell.setBaseWritingDirection(direction);
 	}
 }
 
