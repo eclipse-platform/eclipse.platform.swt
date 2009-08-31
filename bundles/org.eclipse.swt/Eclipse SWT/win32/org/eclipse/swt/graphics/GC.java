@@ -1331,7 +1331,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	* 
 	* Note that this also fails when drawing to a printer.
 	*/
-	if (isPrinter || (OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) || (!OS.IsWinNT && !OS.IsWinCE)) {
+	if ((OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) || (!OS.IsWinNT && !OS.IsWinCE) || isPrinter) {
 		int /*long*/ tempHdc = OS.CreateCompatibleDC(handle);
 		int /*long*/ tempDib = Image.createDIB(destWidth, destHeight, 32);
 		if (tempDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);		
