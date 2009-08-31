@@ -74,6 +74,21 @@ public static void main (String[] args) {
 			}
 		}
 	});
+	/*
+	 * The following listener scrolls the Tree one item at a time
+	 * in response to MouseWheel events.
+	 */
+	tree.addListener(SWT.MouseWheel, new Listener() {
+		public void handleEvent(Event event) {
+			Point origin = sc.getOrigin();
+			if (event.count < 0) {
+				origin.y = Math.min(origin.y + tree.getItemHeight(), tree.getSize().y);
+			} else {
+				origin.y = Math.max(origin.y - tree.getItemHeight(), 0);
+			}
+			sc.setOrigin(origin);
+		}
+	});
 
 	Button downButton = new Button (shell, SWT.PUSH);
 	downButton.setBounds (10, 220, 120, 30);
