@@ -1247,8 +1247,12 @@ DOCHOSTUIINFO *getDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIIN
 	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.cbSize);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwFlags);
 	lpStruct->dwDoubleClick = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwDoubleClick);
+#ifndef _WIN32_WCE
 	lpStruct->pchHostCss = (OLECHAR*)(*env)->GetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss);
+#endif
+#ifndef _WIN32_WCE
 	lpStruct->pchHostNS = (OLECHAR*)(*env)->GetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS);
+#endif
 	return lpStruct;
 }
 
@@ -1258,8 +1262,12 @@ void setDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStru
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.cbSize, (jint)lpStruct->cbSize);
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.dwFlags, (jint)lpStruct->dwFlags);
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.dwDoubleClick, (jint)lpStruct->dwDoubleClick);
+#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss, (jintLong)lpStruct->pchHostCss);
+#endif
+#ifndef _WIN32_WCE
 	(*env)->SetIntLongField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS, (jintLong)lpStruct->pchHostNS);
+#endif
 }
 #endif
 
