@@ -1,3 +1,4 @@
 bin
 .classpath
+.build64
 ws
