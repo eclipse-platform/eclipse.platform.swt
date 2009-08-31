@@ -925,7 +925,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
 			<param name="build_target" value="build_gtk_solaris_sparc"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14/; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/local/bin:${ant_home}/bin:$PATH; "/>
+			<param name="pre_commands" value="export JAVA_HOME=/usr/j2se; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/local/bin:${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -952,11 +952,10 @@
 	<target name="motif_solaris">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_solaris_sparc}"/>
-			<param name="java_home" value="~/build/JRE/SPARC/jdk1.6.0_14"/>
 			<param name="cp" value="${cp_motif}"/>
 			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
 			<param name="build_target" value="build_motif_solaris"/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/SPARC/jdk1.6.0_14; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:${ant_home}/bin:$PATH; "/>
+			<param name="pre_commands" value="export JAVA_HOME=/usr/j2se; export PATH=/export/home/SUNWspro/bin:/usr/ccs/bin:${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 
