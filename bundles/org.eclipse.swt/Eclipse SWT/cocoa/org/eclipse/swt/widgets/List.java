@@ -95,7 +95,7 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 	// Accessibility Verifier queries for a title or description.  NSOutlineView doesn't
 	// seem to return either, so we return a default description value here.
 	if (attributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
-		return NSString.stringWith("").id;
+		return NSString.string().id;
 	}
 
 //	if (attributeName.isEqualToString(OS.NSAccessibilityHeaderAttribute)) {
@@ -1446,7 +1446,8 @@ boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, i
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, foreground, 0, false, true, false);
+	float /*double*/ [] fg = ((NSTableView)view).isRowSelected(rowIndex) ? null : foreground;
+	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, fg, 0, false, getEnabled(), false);
 	attribStr.autorelease();
 	return attribStr.id;
 }
