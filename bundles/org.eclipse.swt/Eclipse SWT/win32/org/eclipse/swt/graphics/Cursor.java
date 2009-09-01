@@ -332,10 +332,60 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	ImageData mask = source.getTransparencyMask();
-	int /*long*/ [] result = Image.init(this.device, null, source, mask);
-	int /*long*/ hBitmap = result[0];
-	int /*long*/ hMask = result[1];
+	int /*long*/ hBitmap = 0;
+	int /*long*/ hMask = 0;
+	if (source.maskData == null && source.transparentPixel == -1 && (source.alpha != -1 || source.alphaData != null)) {
+		PaletteData palette = source.palette;
+		PaletteData newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
+		ImageData img = new ImageData(source.width, source.height, 32, newPalette);
+		if (palette.isDirect) {
+			ImageData.blit(ImageData.BLIT_SRC, 
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+				img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+				false, false);
+		} else {
+			RGB[] rgbs = palette.getRGBs();
+			int length = rgbs.length;
+			byte[] srcReds = new byte[length];
+			byte[] srcGreens = new byte[length];
+			byte[] srcBlues = new byte[length];
+			for (int i = 0; i < rgbs.length; i++) {
+				RGB rgb = rgbs[i];
+				if (rgb == null) continue;
+				srcReds[i] = (byte)rgb.red;
+				srcGreens[i] = (byte)rgb.green;
+				srcBlues[i] = (byte)rgb.blue;
+			}
+			ImageData.blit(ImageData.BLIT_SRC,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+				img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+				false, false);
+		}
+		hBitmap = Image.createDIB(source.width, source.height, 32);
+		if (hBitmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		BITMAP dibBM = new BITMAP();
+		OS.GetObject(hBitmap, BITMAP.sizeof, dibBM);
+		byte[] srcData = img.data;
+		if (source.alpha != -1) {
+			for (int i = 3, ap=0; i < srcData.length; i+=4, ap++) {
+				srcData[i] = (byte)source.alpha;
+			}
+		} else if (source.alphaData != null) {
+			for (int sp = 3, ap=0; sp < srcData.length; sp+=4, ap++) {
+				srcData[sp] = source.alphaData[ap];
+			}
+		}
+		OS.MoveMemory(dibBM.bmBits, srcData, srcData.length);
+		hMask = OS.CreateBitmap(source.width, source.height, 1, 1, new byte[(((source.width + 7) / 8) + 3) / 4 * 4 * source.height]);
+		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	} else {
+		ImageData mask = source.getTransparencyMask();
+		int /*long*/ [] result = Image.init(this.device, null, source, mask);
+		hBitmap = result[0];
+		hMask = result[1];
+	}
 	/* Create the icon */
 	ICONINFO info = new ICONINFO();
 	info.fIcon = false;
@@ -344,9 +394,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	info.xHotspot = hotspotX;
 	info.yHotspot = hotspotY;
 	handle = OS.CreateIconIndirect(info);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.DeleteObject(hBitmap);
 	OS.DeleteObject(hMask);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	isIcon = true;
 	init();
 }
