@@ -477,7 +477,7 @@ int GetSecuritySite(int /*long*/ ppSite) {
 	return IE.INET_E_DEFAULT_ACTION;
 }
 
-int MapUrlToZone(int /*long*/ pwszUrl, int /*long*/ pdwZone, int dwFlags) {	
+int MapUrlToZone(int /*long*/ pwszUrl, int /*long*/ pdwZone, int dwFlags) {
 	/*
 	* Feature in IE 6 sp1.  HTML rendered in memory
 	* does not enable local links but the exact same
@@ -485,9 +485,13 @@ int MapUrlToZone(int /*long*/ pwszUrl, int /*long*/ pdwZone, int dwFlags) {
 	* permitted to follow local links.  The workaround is
 	* to return URLZONE_INTRANET instead of the default
 	* value URLZONE_LOCAL_MACHINE.
-	*/	
-	COM.MoveMemory(pdwZone, new int[] {IE.URLZONE_INTRANET}, 4);
-	return COM.S_OK;
+	*/
+	IE ie = (IE)((Browser)getParent().getParent()).webBrowser;
+	if (ie.getUrl().startsWith(IE.ABOUT_BLANK)) {
+		COM.MoveMemory(pdwZone, new int[] {IE.URLZONE_INTRANET}, 4);
+		return COM.S_OK;
+	}
+	return IE.INET_E_DEFAULT_ACTION;
 }
 
 int GetSecurityId(int /*long*/ pwszUrl, int /*long*/ pbSecurityId, int /*long*/ pcbSecurityId, int /*long*/ dwReserved) {
@@ -497,20 +501,7 @@ int GetSecurityId(int /*long*/ pwszUrl, int /*long*/ pbSecurityId, int /*long*/ 
 int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, int cbPolicy, int /*long*/ pContext, int cbContext, int dwFlags, int dwReserved) {
 	ignoreNextMessage = false;
 
-	/*
-	* Feature in IE 6 sp1.  HTML rendered in memory
-	* containing an OBJECT tag referring to a local file
-	* brings up a warning dialog asking the user whether
-	* it should proceed or not.  The workaround is to
-	* set the policy to URLPOLICY_ALLOW in this case (dwAction
-	* value of 0x1406).
-	* 
-	* Feature in IE. Security Patches and user settings
-	* affect the way the embedded web control behaves.  The current
-	* approach is to consider the content trusted and allow
-	* all URLs by default.
-	*/
-	int policy = IE.URLPOLICY_ALLOW;
+	int policy = IE.INET_E_DEFAULT_ACTION;
 
 	if (dwAction >= IE.URLACTION_JAVA_MIN && dwAction <= IE.URLACTION_JAVA_MAX) {
 		if (canExecuteApplets ()) {
@@ -534,11 +525,10 @@ int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, i
 	}
 	if (dwAction == IE.URLACTION_SCRIPT_RUN) {
 		IE browser = (IE)((Browser)getParent ().getParent ()).webBrowser;
-		if (!browser.jsEnabled) {
-			policy = IE.URLPOLICY_DISALLOW;
-		}
+		policy = browser.jsEnabled ? IE.URLPOLICY_ALLOW : IE.URLPOLICY_DISALLOW;
 	}
 
+	if (policy == IE.INET_E_DEFAULT_ACTION) return IE.INET_E_DEFAULT_ACTION;
 	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
 	return policy == IE.URLPOLICY_ALLOW ? COM.S_OK : COM.S_FALSE;
 }
