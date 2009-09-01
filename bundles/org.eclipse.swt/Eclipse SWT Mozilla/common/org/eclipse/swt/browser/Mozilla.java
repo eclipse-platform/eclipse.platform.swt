@@ -77,6 +77,7 @@ class Mozilla extends WebBrowser {
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENWINDOWSTATUSHIDE = "dom.disable_window_open_feature.status"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEWINDOWSTATUSCHANGE = "dom.disable_window_status_change"; //$NON-NLS-1$
+	static final String PREFERENCE_JAVASCRIPTENABLED = "javascript.enabled"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
 	static final String PREFERENCE_PROXYHOST_FTP = "network.proxy.ftp"; //$NON-NLS-1$
 	static final String PREFERENCE_PROXYPORT_FTP = "network.proxy.ftp_port"; //$NON-NLS-1$
@@ -1099,6 +1100,14 @@ public void create (Composite parent, int style) {
 		/* Ensure that the status line can be hidden when opening a window from javascript */ 
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_DISABLEOPENWINDOWSTATUSHIDE, true);
 		rc = prefBranch.SetBoolPref (buffer, 0);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+
+		/* Ensure that javascript execution is enabled since this is the Browser's default behaviour */ 
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_JAVASCRIPTENABLED, true);
+		rc = prefBranch.SetBoolPref (buffer, 1);
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
 			error (rc);
