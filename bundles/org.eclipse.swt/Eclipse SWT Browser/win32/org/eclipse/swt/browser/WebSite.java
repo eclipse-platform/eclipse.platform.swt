@@ -285,7 +285,7 @@ int ShowUI(int dwID, int /*long*/ pActiveObject, int /*long*/ pCommandTarget, in
 
 int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCmdID) {
 	/*
-	* Feature on Internet Explorer.  By default the embedded Internet Explorer control runs
+	* Feature in Internet Explorer.  By default the embedded Internet Explorer control runs
 	* the Internet Explorer shortcuts (e.g. Ctrl+F for Find).  This overrides the shortcuts
 	* defined by SWT.  The workaround is to forward the accelerator keys to the parent window
 	* and have Internet Explorer ignore the ones handled by the parent window.
@@ -479,15 +479,17 @@ int GetSecuritySite(int /*long*/ ppSite) {
 
 int MapUrlToZone(int /*long*/ pwszUrl, int /*long*/ pdwZone, int dwFlags) {
 	/*
-	* Feature in IE 6 sp1.  HTML rendered in memory
-	* does not enable local links but the exact same
-	* HTML document loaded through a local file is
-	* permitted to follow local links.  The workaround is
-	* to return URLZONE_INTRANET instead of the default
-	* value URLZONE_LOCAL_MACHINE.
+	* Feature in IE.  HTML rendered in memory does not enable local links
+	* but the same HTML document loaded through a local file is permitted
+	* to follow local links.  The workaround is to return URLZONE_INTRANET
+	* instead of the default value URLZONE_LOCAL_MACHINE.
 	*/
 	IE ie = (IE)((Browser)getParent().getParent()).webBrowser;
-	if (ie.getUrl().startsWith(IE.ABOUT_BLANK)) {
+	/*
+	* For some reason IE8 invokes this function after the Browser has
+	* been disposed.  To detect this case check for ie.auto != null. 
+	*/
+	if (ie.auto != null && ie.getUrl().startsWith(IE.ABOUT_BLANK)) {
 		COM.MoveMemory(pdwZone, new int[] {IE.URLZONE_INTRANET}, 4);
 		return COM.S_OK;
 	}
