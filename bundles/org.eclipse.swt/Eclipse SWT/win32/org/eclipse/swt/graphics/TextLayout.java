@@ -878,6 +878,8 @@ RECT drawBorderGDIP(int /*long*/ graphics, int x, int y, int lineHeight, StyleIt
 		int /*long*/ pen = Gdip.Pen_new(brush, lineWidth);
 		Gdip.Pen_SetDashStyle(pen, lineStyle);
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
+		int smoothingMode = Gdip.Graphics_GetSmoothingMode(graphics);
+		Gdip.Graphics_SetSmoothingMode(graphics, Gdip.SmoothingModeNone);
 		if (clipRect != null) {
 			int gstate = Gdip.Graphics_Save(graphics);
 			if (clipRect.left == -1) clipRect.left = 0;
@@ -901,6 +903,7 @@ RECT drawBorderGDIP(int /*long*/ graphics, int x, int y, int lineHeight, StyleIt
 			Gdip.Graphics_DrawRectangle(graphics, pen, x + left, y, run.x + run.width - left - 1, lineHeight - 1);
 		}
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_SetSmoothingMode(graphics, smoothingMode);
 		Gdip.Pen_delete(pen);
 		if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
 		return null;
@@ -1385,6 +1388,8 @@ RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnde
 		}
 		int gstate = 0;
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
+		int smoothingMode = Gdip.Graphics_GetSmoothingMode(graphics);
+		Gdip.Graphics_SetSmoothingMode(graphics, Gdip.SmoothingModeNone);
 		switch (style.underlineStyle) {
 			case SWT.UNDERLINE_SQUIGGLE:
 			case SWT.UNDERLINE_ERROR: {
@@ -1481,6 +1486,7 @@ RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnde
 		}
 		if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_SetSmoothingMode(graphics, smoothingMode);
 		return null;
 	}
 	return clipRect;
