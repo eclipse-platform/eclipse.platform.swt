@@ -216,7 +216,7 @@ void createHandle () {
 	widget.setTitle(NSString.string());
 	if ((style & SWT.SEPARATOR) != 0) {
 		widget.setBoxType(OS.NSBoxSeparator);
-		NSView child = (NSView) new SWTView().alloc().init();
+		NSView child = (NSView) new NSView().alloc().init();
 		widget.setContentView(child);
 		child.release();
 	} else {
