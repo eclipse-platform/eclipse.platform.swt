@@ -2222,8 +2222,9 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
 	Shell shell = getShell ();
 	Control control = this;
+	int type = wheelAxis [0] == OS.kEventMouseWheelAxisY ? SWT.MouseWheel : SWT.MouseHorizontalWheel;
 	while (control != null) {
-		if (!control.sendMouseEvent (SWT.MouseWheel, (short) 0, wheelDelta [0], SWT.SCROLL_LINE, true, theEvent)) {
+		if (!control.sendMouseEvent (type, (short) 0, wheelDelta [0], SWT.SCROLL_LINE, true, theEvent)) {
 			break;
 		}
 		if (control.sendMouseWheel (wheelAxis [0], wheelDelta [0])) break;
