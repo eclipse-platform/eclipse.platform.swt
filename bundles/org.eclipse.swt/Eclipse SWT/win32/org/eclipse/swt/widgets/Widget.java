@@ -1064,6 +1064,38 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	return event.doit;
 }
 
+boolean sendMouseWheelEvent (int type, int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
+	int detail = 0;
+	if (type == SWT.MouseWheel) {
+		int [] linesToScroll = new int [1];
+		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
+		if (linesToScroll [0] == OS.WHEEL_PAGESCROLL) {
+			detail = SWT.SCROLL_PAGE;
+		} else {
+			detail = SWT.SCROLL_LINE;
+			delta *= linesToScroll [0];
+		}
+		/* Check if the delta and the remainder have the same direction (sign) */
+		if ((delta ^ display.scrollRemainder) >= 0) delta += display.scrollRemainder;
+		display.scrollRemainder = delta % OS.WHEEL_DELTA;
+	} else {
+		/* Check if the delta and the remainder have the same direction (sign) */
+		if ((delta ^ display.scrollHRemainder) >= 0) delta += display.scrollHRemainder;
+		display.scrollHRemainder = delta % OS.WHEEL_DELTA;
+		
+		delta = -delta;
+	}
+
+	if (!hooks (type) && !filters (type)) return true;
+	int count = delta / OS.WHEEL_DELTA;
+	POINT pt = new POINT ();
+	OS.POINTSTOPOINT (pt, lParam);
+	OS.ScreenToClient (hwnd, pt);
+	lParam = OS.MAKELPARAM (pt.x, pt.y);
+	return sendMouseEvent (type, 0, count, detail, true, hwnd, OS.WM_MOUSEWHEEL, wParam, lParam);
+}
+
 /**
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
@@ -2066,38 +2098,6 @@ LRESULT wmMouseMove (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam
 	} 
 	display.captureChanged = false;
 	return result;
-}
-
-boolean sendMouseWheelEvent (int type, int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
-	int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
-	int detail = 0;
-	if (type == SWT.MouseWheel) {
-		int [] linesToScroll = new int [1];
-		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
-		if (linesToScroll [0] == OS.WHEEL_PAGESCROLL) {
-			detail = SWT.SCROLL_PAGE;
-		} else {
-			detail = SWT.SCROLL_LINE;
-			delta *= linesToScroll [0];
-		}
-		/* Check if the delta and the remainder have the same direction (sign) */
-		if ((delta ^ display.scrollRemainder) >= 0) delta += display.scrollRemainder;
-		display.scrollRemainder = delta % OS.WHEEL_DELTA;
-	} else {
-		/* Check if the delta and the remainder have the same direction (sign) */
-		if ((delta ^ display.scrollHRemainder) >= 0) delta += display.scrollHRemainder;
-		display.scrollHRemainder = delta % OS.WHEEL_DELTA;
-		
-		delta = -delta;
-	}
-
-	if (!hooks (type) && !filters (type)) return true;
-	int count = delta / OS.WHEEL_DELTA;
-	POINT pt = new POINT ();
-	OS.POINTSTOPOINT (pt, lParam);
-	OS.ScreenToClient (hwnd, pt);
-	lParam = OS.MAKELPARAM (pt.x, pt.y);
-	return sendMouseEvent (type, 0, count, detail, true, hwnd, OS.WM_MOUSEWHEEL, wParam, lParam);
 }
 
 LRESULT wmMouseWheel (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
