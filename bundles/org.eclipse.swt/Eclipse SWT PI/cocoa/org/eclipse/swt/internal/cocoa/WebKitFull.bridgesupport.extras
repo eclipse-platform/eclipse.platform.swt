@@ -358,9 +358,19 @@
 			<arg name="sender" swt_gen="true"></arg>
 			<arg name="message" swt_gen="true"></arg>
 		</method>
+		<method selector="webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<arg name="message" swt_gen="true"></arg>
+			<arg name="frame" swt_gen="true"></arg>
+		</method>
 		<method selector="webView:runJavaScriptConfirmPanelWithMessage:" swt_gen="true">
 			<arg name="sender" swt_gen="true"></arg>
 			<arg name="message" swt_gen="true"></arg>
+		</method>
+		<method selector="webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<arg name="message" swt_gen="true"></arg>
+			<arg name="frame" swt_gen="true"></arg>
 		</method>
 		<method selector="webView:runOpenPanelForFileButtonWithResultListener:" swt_gen="true">
 			<arg name="sender" swt_gen="true"></arg>

@@ -1807,7 +1807,9 @@ public static final int /*long*/ sel_webView_resource_didReceiveAuthenticationCh
 public static final int /*long*/ sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_ = sel_registerName("webView:resource:willSendRequest:redirectResponse:fromDataSource:");
 public static final int /*long*/ sel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_ = sel_registerName("webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:");
 public static final int /*long*/ sel_webView_runJavaScriptAlertPanelWithMessage_ = sel_registerName("webView:runJavaScriptAlertPanelWithMessage:");
+public static final int /*long*/ sel_webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_ = sel_registerName("webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:");
 public static final int /*long*/ sel_webView_runJavaScriptConfirmPanelWithMessage_ = sel_registerName("webView:runJavaScriptConfirmPanelWithMessage:");
+public static final int /*long*/ sel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_ = sel_registerName("webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:");
 public static final int /*long*/ sel_webView_runOpenPanelForFileButtonWithResultListener_ = sel_registerName("webView:runOpenPanelForFileButtonWithResultListener:");
 public static final int /*long*/ sel_webView_setFrame_ = sel_registerName("webView:setFrame:");
 public static final int /*long*/ sel_webView_setResizable_ = sel_registerName("webView:setResizable:");

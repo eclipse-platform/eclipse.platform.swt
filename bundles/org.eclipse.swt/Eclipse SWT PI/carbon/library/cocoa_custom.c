@@ -243,7 +243,17 @@ fail:
 	proc((int)sender, user_data, 26, (int)message, 0, 0, 0);
 }
 
+- (void)webView:(WebView *)sender runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WebFrame *)frame
+{
+	proc((int)sender, user_data, 26, (int)message, 0, 0, 0);
+}
+
 - (BOOL)webView:(WebView *)sender runJavaScriptConfirmPanelWithMessage:(NSString *)message
+{
+	return (BOOL) proc((int)sender, user_data, 27, (int)message, 0, 0, 0);
+}
+
+- (BOOL)webView:(WebView *)sender runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WebFrame *)frame
 {
 	return (BOOL) proc((int)sender, user_data, 27, (int)message, 0, 0, 0);
 }

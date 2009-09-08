@@ -161,7 +161,9 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_webViewUnfocus_, proc3, "@:@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptAlertPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptConfirmPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_runOpenPanelForFileButtonWithResultListener_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_mouseDidMoveOverElement_modifierFlags_, proc5, "@:@@I"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_printFrameView_, proc4, "@:@@"); //$NON-NLS-1$
@@ -352,6 +354,10 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		safari.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_) {
 		return safari.webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(arg0, arg1, arg2) ? 1 : 0;
+	} else if (sel == OS.sel_webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_) {
+		safari.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
+	} else if (sel == OS.sel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_) {
+		return safari.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_callJava) {
 		id result = safari.callJava (arg0, arg1, arg2);
 		return result == null ? 0 : result.id;
