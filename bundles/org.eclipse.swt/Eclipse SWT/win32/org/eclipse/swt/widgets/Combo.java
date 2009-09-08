@@ -1315,10 +1315,13 @@ boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lPara
 	}
 
 	/*
-	* If the left button is down, the text widget refuses the character.
+	* Feature in Windows.  If the left button is down in
+	* the text widget, it refuses the character.  The fix
+	* is to detect this case and avoid sending a verify
+	* event.
 	*/
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
-		return true;
+		if (OS.GetDlgItem (handle, CBID_EDIT) == OS.GetCapture()) return true;
 	}
 
 	/* Verify the character */
