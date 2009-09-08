@@ -2064,6 +2064,7 @@ public class OS extends C {
 	public static final int WM_MOUSELEAVE = 0x2a3;
 	public static final int WM_MOUSEMOVE = 0x200;
 	public static final int WM_MOUSEWHEEL = 0x20a;
+	public static final int WM_MOUSEHWHEEL = 0x20e;
 	public static final int WM_MOUSELAST = 0x20d;
 	public static final int WM_MOVE = 0x3;
 	public static final int WM_NCACTIVATE = 0x86;

@@ -3996,6 +3996,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		case OS.WM_MOUSELEAVE:			result = WM_MOUSELEAVE (wParam, lParam); break;
 		case OS.WM_MOUSEMOVE:			result = WM_MOUSEMOVE (wParam, lParam); break;
 		case OS.WM_MOUSEWHEEL:			result = WM_MOUSEWHEEL (wParam, lParam); break;
+		case OS.WM_MOUSEHWHEEL:			result = WM_MOUSEHWHEEL (wParam, lParam); break;
 		case OS.WM_MOVE:				result = WM_MOVE (wParam, lParam); break;
 		case OS.WM_NCACTIVATE:			result = WM_NCACTIVATE (wParam, lParam); break;
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
@@ -4464,6 +4465,10 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmMouseWheel (handle, wParam, lParam);
+}
+
+LRESULT WM_MOUSEHWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
+	return wmMouseHWheel (handle, wParam, lParam);
 }
 
 LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {

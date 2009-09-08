@@ -554,6 +554,28 @@ public class SWT {
 	public static final int SetData = 36;
 
 	/**
+	 * The mouse vertical wheel event type (value is 37).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.6
+	 */
+	public static final int MouseVerticalWheel = 37;
+	
+	/**
+	 * The mouse horizontal wheel event type (value is 38).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.6
+	 */
+	public static final int MouseHorizontalWheel = 38;
+
+	/**
 	 * The mouse wheel event type (value is 37).
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#addListener
@@ -562,7 +584,7 @@ public class SWT {
 	 * 
 	 * @since 3.1
 	 */
-	public static final int MouseWheel = 37;
+	public static final int MouseWheel = MouseVerticalWheel;
 
 	/**
 	 * The settings changed event type (value is 39).

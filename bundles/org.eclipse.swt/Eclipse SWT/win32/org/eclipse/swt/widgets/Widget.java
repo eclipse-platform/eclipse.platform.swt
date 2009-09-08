@@ -1774,7 +1774,7 @@ LRESULT wmKeyUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT wmKillFocus (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
-	display.scrollRemainder = 0;
+	display.scrollRemainder = display.scrollHRemainder = 0;
 	int /*long*/ code = callWindowProc (hwnd, OS.WM_KILLFOCUS, wParam, lParam);
 	sendFocusEvent (SWT.FocusOut);
 	// widget could be disposed at this point
@@ -2068,31 +2068,44 @@ LRESULT wmMouseMove (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam
 	return result;
 }
 
-LRESULT wmMouseWheel (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+boolean sendMouseWheelEvent (int type, int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
-	int [] linesToScroll = new int [1];
-	int detail;
-	OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
-	if (linesToScroll [0] == OS.WHEEL_PAGESCROLL) {
-		detail = SWT.SCROLL_PAGE;
+	int detail = 0;
+	if (type == SWT.MouseWheel) {
+		int [] linesToScroll = new int [1];
+		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
+		if (linesToScroll [0] == OS.WHEEL_PAGESCROLL) {
+			detail = SWT.SCROLL_PAGE;
+		} else {
+			detail = SWT.SCROLL_LINE;
+			delta *= linesToScroll [0];
+		}
+		/* Check if the delta and the remainder have the same direction (sign) */
+		if ((delta ^ display.scrollRemainder) >= 0) delta += display.scrollRemainder;
+		display.scrollRemainder = delta % OS.WHEEL_DELTA;
 	} else {
-		detail = SWT.SCROLL_LINE;
-		delta *= linesToScroll [0];
+		/* Check if the delta and the remainder have the same direction (sign) */
+		if ((delta ^ display.scrollHRemainder) >= 0) delta += display.scrollHRemainder;
+		display.scrollHRemainder = delta % OS.WHEEL_DELTA;
+		
+		delta = -delta;
 	}
-	/* Check if the delta and the remainder have the same direction (sign) */
-	if ((delta ^ display.scrollRemainder) >= 0) delta += display.scrollRemainder;
-	display.scrollRemainder = delta % OS.WHEEL_DELTA; 
 
-	if (!hooks (SWT.MouseWheel) && !filters (SWT.MouseWheel)) return null;
+	if (!hooks (type) && !filters (type)) return true;
 	int count = delta / OS.WHEEL_DELTA;
 	POINT pt = new POINT ();
 	OS.POINTSTOPOINT (pt, lParam);
 	OS.ScreenToClient (hwnd, pt);
 	lParam = OS.MAKELPARAM (pt.x, pt.y);
-	if (!sendMouseEvent (SWT.MouseWheel, 0, count, detail, true, hwnd, OS.WM_MOUSEWHEEL, wParam, lParam)) {
-		return LRESULT.ZERO;
-	}
-	return null;
+	return sendMouseEvent (type, 0, count, detail, true, hwnd, OS.WM_MOUSEWHEEL, wParam, lParam);
+}
+
+LRESULT wmMouseWheel (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	return sendMouseWheelEvent(SWT.MouseWheel, hwnd, wParam, lParam) ? null : LRESULT.ZERO;
+}
+
+LRESULT wmMouseHWheel (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	return sendMouseWheelEvent(SWT.MouseHorizontalWheel, hwnd, wParam, lParam) ? null : LRESULT.ZERO;
 }
 
 LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
