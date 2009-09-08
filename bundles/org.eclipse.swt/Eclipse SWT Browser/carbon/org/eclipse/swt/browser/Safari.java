@@ -718,6 +718,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 33: windowScriptObjectAvailable(arg0); break;
 		case 34: ret = callJava(arg0, arg1, arg2); break;
 		case 35: didReceiveAuthenticationChallengefromDataSource(arg0, arg1, arg2); break;
+		case 36: ret = runBeforeUnloadConfirmPanelWithMessage(arg0, arg1); break;
 	}
 	return ret;
 }
@@ -1468,6 +1469,20 @@ void webViewFocus() {
 }
 
 void webViewUnfocus() {
+}
+
+int runBeforeUnloadConfirmPanelWithMessage(int message, int frame) {
+	int length = OS.CFStringGetLength(message);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(message, range, buffer);
+	String text = new String(buffer);
+	text = Compatibility.getMessage("SWT_OnBeforeUnload_Message", new String[] {"\n\n" + text + "\n\n"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+	messageBox.setMessage(text);
+	return messageBox.open() == SWT.OK ? 1 : 0;
 }
 
 void runJavaScriptAlertPanelWithMessage(int message) {

@@ -159,6 +159,7 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_webView_setStatusText_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webViewFocus_, proc3, "@:@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webViewUnfocus_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptAlertPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_runJavaScriptConfirmPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_runOpenPanelForFileButtonWithResultListener_, proc4, "@:@@"); //$NON-NLS-1$
@@ -349,6 +350,8 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		safari.webView_mouseDidMoveOverElement_modifierFlags(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_unableToImplementPolicyWithError_frame_) {
 		safari.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
+	} else if (sel == OS.sel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_) {
+		return safari.webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_callJava) {
 		id result = safari.callJava (arg0, arg1, arg2);
 		return result == null ? 0 : result.id;
@@ -1032,6 +1035,15 @@ void webViewFocus(int /*long*/ sender) {
 }
 
 void webViewUnfocus(int /*long*/ sender) {
+}
+
+boolean webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(int /*long*/ sender, int /*long*/ messageID, int /*long*/ frame) {
+	NSString message = new NSString(messageID);
+	String text = message.getString();
+	text = Compatibility.getMessage("SWT_OnBeforeUnload_Message", new String[] {"\n\n" + text + "\n\n"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION | SWT.SHEET);
+	messageBox.setMessage(text);
+	return messageBox.open() == SWT.OK;
 }
 
 void webView_runJavaScriptAlertPanelWithMessage(int /*long*/ sender, int /*long*/ messageID) {

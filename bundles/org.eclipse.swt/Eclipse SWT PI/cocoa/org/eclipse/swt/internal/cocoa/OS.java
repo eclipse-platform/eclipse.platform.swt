@@ -1805,6 +1805,7 @@ public static final int /*long*/ sel_webView_resource_didFailLoadingWithError_fr
 public static final int /*long*/ sel_webView_resource_didFinishLoadingFromDataSource_ = sel_registerName("webView:resource:didFinishLoadingFromDataSource:");
 public static final int /*long*/ sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_ = sel_registerName("webView:resource:didReceiveAuthenticationChallenge:fromDataSource:");
 public static final int /*long*/ sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_ = sel_registerName("webView:resource:willSendRequest:redirectResponse:fromDataSource:");
+public static final int /*long*/ sel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_ = sel_registerName("webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:");
 public static final int /*long*/ sel_webView_runJavaScriptAlertPanelWithMessage_ = sel_registerName("webView:runJavaScriptAlertPanelWithMessage:");
 public static final int /*long*/ sel_webView_runJavaScriptConfirmPanelWithMessage_ = sel_registerName("webView:runJavaScriptConfirmPanelWithMessage:");
 public static final int /*long*/ sel_webView_runOpenPanelForFileButtonWithResultListener_ = sel_registerName("webView:runOpenPanelForFileButtonWithResultListener:");

@@ -233,6 +233,11 @@ fail:
 	proc((int)sender, user_data, 25, 0, 0, 0, 0);
 }
 
+- (BOOL)webView:(WebView *)sender runBeforeUnloadConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WebFrame *)frame
+{
+	return proc((int)sender, user_data, 36, (int)message, (int)frame, 0, 0);
+}
+
 - (void)webView:(WebView *)sender runJavaScriptAlertPanelWithMessage:(NSString *)message
 {
 	proc((int)sender, user_data, 26, (int)message, 0, 0, 0);
