@@ -1778,7 +1778,7 @@ static void blit(int op,
 	if ((destWidth <= 0) || (destHeight <= 0) || (alphaMode == ALPHA_TRANSPARENT)) return;
 
 	// these should be supplied as params later
-	final int srcAlphaMask = 0, destAlphaMask = 0;
+	int srcAlphaMask = 0, destAlphaMask = 0;
 
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
