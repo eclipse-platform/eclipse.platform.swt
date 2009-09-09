@@ -666,7 +666,7 @@ jintLong callback(int index, ...)
 	
 #ifdef JNI_VERSION_1_4
 	if (env == NULL) {
-		if (JNI_VERSION == JNI_VERSION_1_4) {
+		if (JNI_VERSION >= JNI_VERSION_1_4) {
 			(*jvm)->AttachCurrentThreadAsDaemon(jvm, (void **)&env, NULL);
 		}
 	}
