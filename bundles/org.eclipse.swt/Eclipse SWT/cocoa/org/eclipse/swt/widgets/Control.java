@@ -2089,17 +2089,26 @@ Decorations menuShell () {
 }
 
 void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	boolean handled = false;
 	if (id == view.id) {
 		if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
 			NSEvent nsEvent = new NSEvent(theEvent);
 			if (nsEvent.deltaY() != 0) {
 				if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
-					return;
+					handled = true;
+				}
+			}
+		}
+		if (hooks (SWT.MouseHorizontalWheel) || filters (SWT.MouseHorizontalWheel)) {
+			NSEvent nsEvent = new NSEvent(theEvent);
+			if (nsEvent.deltaX() != 0) {
+				if (!sendMouseEvent(nsEvent, SWT.MouseHorizontalWheel, true)) {
+					handled = true;
 				}
 			}
 		}
 	}
-	super.scrollWheel(id, sel, theEvent); 
+	if (!handled) super.scrollWheel(id, sel, theEvent); 
 }
 
 boolean isEventView (int /*long*/ id) {
@@ -2900,11 +2909,17 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 				case 4: event.button = 5; break;
 			}
 			break;
-		case SWT.MouseWheel:
+		case SWT.MouseWheel: {
 			event.detail = SWT.SCROLL_LINE;
 			float /*double*/ delta = nsEvent.deltaY();
 			event.count = delta > 0 ? Math.max (1, (int)delta) : Math.min (-1, (int)delta);
 			break;
+		}
+		case SWT.MouseHorizontalWheel: {
+			float /*double*/ delta = nsEvent.deltaX();
+			event.count = delta > 0 ? Math.max (1, (int)delta) : Math.min (-1, (int)delta);
+			break;
+		}
 	}
 	if (event.button != 0) event.count = (int)/*64*/nsEvent.clickCount();
 	NSPoint windowPoint;
