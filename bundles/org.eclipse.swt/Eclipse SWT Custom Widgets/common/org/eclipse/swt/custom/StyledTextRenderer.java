@@ -759,6 +759,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	int indent = 0;
 	int alignment = SWT.LEFT;
 	boolean justify = false;
+	int[] tabs = {tabWidth};
 	Bullet bullet = null;
 	int[] ranges = null;
 	StyleRange[] styles = null;
@@ -770,6 +771,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		indent = styledText.indent;
 		alignment = styledText.alignment;
 		justify = styledText.justify;
+		if (styledText.tabs != null) tabs = styledText.tabs;
 	}
 	if (event != null) {
 		indent = event.indent;
@@ -844,7 +846,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setSegments(segments);
 	layout.setWidth(width);
 	layout.setSpacing(lineSpacing);
-	layout.setTabs(new int[]{tabWidth});
+	layout.setTabs(tabs);
 	layout.setIndent(indent);
 	layout.setAlignment(alignment);
 	layout.setJustify(justify);

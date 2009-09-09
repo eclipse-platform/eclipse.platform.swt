@@ -117,6 +117,7 @@ public class StyledText extends Canvas {
 	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new visible lines during Resize callback
 	int clientAreaWidth = 0;			// the client area width. Needed during Resize callback to determine if line wrap needs to be recalculated
 	int tabLength = 4;					// number of characters in a tab
+	int [] tabs;
 	int leftMargin;
 	int topMargin;
 	int rightMargin;
@@ -4995,11 +4996,33 @@ public StyleRange[] getStyleRanges(int start, int length, boolean includeRanges)
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getTabsStop()
  */
 public int getTabs() {
 	checkWidget();
 	return tabLength;
 }
+
+/**
+ * Returns the tab list of the receiver.
+ *
+ * @return the tab list
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public int[] getTabsStop() {
+	checkWidget();
+	if (tabs == null) return new int [] {renderer.tabWidth};
+	int[] result = new int[tabs.length];
+	System.arraycopy(tabs, 0, result, 0, tabs.length);
+	return result;
+}
+
 /**
  * Returns a copy of the widget content.
  *
@@ -5749,6 +5772,7 @@ void handleDispose(Event event) {
 	background = null;
 	foreground = null;
 	clipboard = null;
+	tabs = null;
 }
 /** 
  * Scrolls the widget horizontally.
@@ -9134,6 +9158,8 @@ public void setStyleRanges(StyleRange[] ranges) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #setTabStops(int[])
  */
 public void setTabs(int tabs) {
 	checkWidget();	
@@ -9143,6 +9169,44 @@ public void setTabs(int tabs) {
 	setCaretLocation();
 	super.redraw();
 }
+
+/**
+ * Sets the receiver's tab list. Each value in the tab list specifies
+ * the space in pixels from the origin of the document to the respective
+ * tab stop.  The last tab stop width is repeated continuously.
+ * 
+ * @param tabs the new tab list (or null)
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if a tab stop is negavite or less than the previous stop in the list</li>
+ * </ul>
+ * 
+ * @see StyledText#getTabsStop()
+ * 
+ * @since 3.6
+ */
+public void setTabStops(int [] tabs) {
+	checkWidget();
+	if (tabs != null) {
+		int pos = 0;
+		int[] newTabs = new int[tabs.length];
+		for (int i = 0; i < tabs.length; i++) {
+			if (tabs[i] < pos) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			newTabs[i] = pos = tabs[i];
+		}
+		this.tabs = newTabs;
+	} else {
+		this.tabs = null;
+	}
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
+	super.redraw();
+}
+
 /** 
  * Sets the widget content. 
  * If the widget has the SWT.SINGLE style and "text" contains more than 
