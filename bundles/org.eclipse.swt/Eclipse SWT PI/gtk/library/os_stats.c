@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1292;
-int OS_nativeFunctionCallCount[1292];
+int OS_nativeFunctionCount = 1289;
+int OS_nativeFunctionCallCount[1289];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -108,7 +108,6 @@ char * OS_nativeFunctionNames[] = {
 	"PangoLogAttr_1sizeof",
 	"PangoRectangle_1sizeof",
 	"XAnyEvent_1sizeof",
-	"XButtonEvent_1sizeof",
 	"XClientMessageEvent_1sizeof",
 	"XCrossingEvent_1sizeof",
 	"XEvent_1sizeof",
@@ -1452,11 +1451,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__JLorg_eclipse_swt_internal_gtk_PangoAttribute_2J",
 #endif
 #ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_XButtonEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XButtonEvent_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J",
@@ -1650,11 +1644,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II",

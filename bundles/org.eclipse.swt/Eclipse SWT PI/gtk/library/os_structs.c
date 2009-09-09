@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -2368,67 +2368,6 @@ void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
 	(*env)->SetIntField(env, lpObject, XAnyEventFc.send_event, (jint)lpStruct->send_event);
 	(*env)->SetIntLongField(env, lpObject, XAnyEventFc.display, (jintLong)lpStruct->display);
 	(*env)->SetIntLongField(env, lpObject, XAnyEventFc.window, (jintLong)lpStruct->window);
-}
-#endif
-
-#ifndef NO_XButtonEvent
-typedef struct XButtonEvent_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID root, subwindow, time, x, y, x_root, y_root, state, button, same_screen;
-} XButtonEvent_FID_CACHE;
-
-XButtonEvent_FID_CACHE XButtonEventFc;
-
-void cacheXButtonEventFields(JNIEnv *env, jobject lpObject)
-{
-	if (XButtonEventFc.cached) return;
-	cacheXAnyEventFields(env, lpObject);
-	XButtonEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	XButtonEventFc.root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "root", "I");
-	XButtonEventFc.subwindow = (*env)->GetFieldID(env, XButtonEventFc.clazz, "subwindow", "I");
-	XButtonEventFc.time = (*env)->GetFieldID(env, XButtonEventFc.clazz, "time", "I");
-	XButtonEventFc.x = (*env)->GetFieldID(env, XButtonEventFc.clazz, "x", "I");
-	XButtonEventFc.y = (*env)->GetFieldID(env, XButtonEventFc.clazz, "y", "I");
-	XButtonEventFc.x_root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "x_root", "I");
-	XButtonEventFc.y_root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "y_root", "I");
-	XButtonEventFc.state = (*env)->GetFieldID(env, XButtonEventFc.clazz, "state", "I");
-	XButtonEventFc.button = (*env)->GetFieldID(env, XButtonEventFc.clazz, "button", "I");
-	XButtonEventFc.same_screen = (*env)->GetFieldID(env, XButtonEventFc.clazz, "same_screen", "I");
-	XButtonEventFc.cached = 1;
-}
-
-XButtonEvent *getXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct)
-{
-	if (!XButtonEventFc.cached) cacheXButtonEventFields(env, lpObject);
-	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
-	lpStruct->root = (*env)->GetIntField(env, lpObject, XButtonEventFc.root);
-	lpStruct->subwindow = (*env)->GetIntField(env, lpObject, XButtonEventFc.subwindow);
-	lpStruct->time = (*env)->GetIntField(env, lpObject, XButtonEventFc.time);
-	lpStruct->x = (*env)->GetIntField(env, lpObject, XButtonEventFc.x);
-	lpStruct->y = (*env)->GetIntField(env, lpObject, XButtonEventFc.y);
-	lpStruct->x_root = (*env)->GetIntField(env, lpObject, XButtonEventFc.x_root);
-	lpStruct->y_root = (*env)->GetIntField(env, lpObject, XButtonEventFc.y_root);
-	lpStruct->state = (*env)->GetIntField(env, lpObject, XButtonEventFc.state);
-	lpStruct->button = (*env)->GetIntField(env, lpObject, XButtonEventFc.button);
-	lpStruct->same_screen = (*env)->GetIntField(env, lpObject, XButtonEventFc.same_screen);
-	return lpStruct;
-}
-
-void setXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct)
-{
-	if (!XButtonEventFc.cached) cacheXButtonEventFields(env, lpObject);
-	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.root, (jint)lpStruct->root);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.subwindow, (jint)lpStruct->subwindow);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.time, (jint)lpStruct->time);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.x, (jint)lpStruct->x);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.y, (jint)lpStruct->y);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.x_root, (jint)lpStruct->x_root);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.y_root, (jint)lpStruct->y_root);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.state, (jint)lpStruct->state);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.button, (jint)lpStruct->button);
-	(*env)->SetIntField(env, lpObject, XButtonEventFc.same_screen, (jint)lpStruct->same_screen);
 }
 #endif
 

@@ -1479,28 +1479,6 @@ boolean filters (int eventType) {
 }
 
 int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data) {
-	if (data == 0) {
-		/*
-		* Feature in GTK.  When button 4, 5, 6, or 7 is released, GTK
-		* does not deliver a corresponding GTK event.  Button 6 and 7
-		* are mapped to buttons 4 and 5 in SWT.  The fix is to change
-		* the button number of the event to a negative number so that
-		* it gets dispatched by GTK.  SWT has been modified to look
-		* for negative button numbers.
-		*/
-		XButtonEvent mouseEvent = new XButtonEvent ();
-		OS.memmove (mouseEvent, xEvent, 4);
-		if (mouseEvent.type == OS.ButtonRelease) {
-			OS.memmove (mouseEvent, xEvent, XButtonEvent.sizeof);
-			switch (mouseEvent.button) {
-				case 6:
-				case 7:
-					mouseEvent.button = -mouseEvent.button;
-					OS.memmove (xEvent, mouseEvent, XButtonEvent.sizeof);
-					break;
-			}
-		}
-	}
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.filterProc (xEvent, gdkEvent, data);

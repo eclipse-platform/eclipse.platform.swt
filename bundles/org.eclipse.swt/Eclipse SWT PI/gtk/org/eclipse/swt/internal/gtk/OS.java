@@ -594,7 +594,6 @@ public static final native int PangoLayoutRun_sizeof();
 public static final native int PangoLogAttr_sizeof();
 public static final native int PangoRectangle_sizeof();
 public static final native int XAnyEvent_sizeof();
-public static final native int XButtonEvent_sizeof();
 public static final native int XClientMessageEvent_sizeof();
 public static final native int XEvent_sizeof();
 public static final native int XCrossingEvent_sizeof();
@@ -1179,12 +1178,6 @@ public static final void gdk_window_remove_filter(int /*long*/ window, int /*lon
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove(int /*long*/ dest, XButtonEvent src, int /*long*/ size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);
 /**
  * @param dest cast=(void *)
@@ -1204,12 +1197,6 @@ public static final native void memmove(int /*long*/ dest, XExposeEvent src, int
  * @param size cast=(size_t)
  */
 public static final native void memmove(int /*long*/ dest, XFocusChangeEvent src, int /*long*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(XButtonEvent dest, int /*long*/ src, int /*long*/ size);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

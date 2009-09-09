@@ -116,7 +116,6 @@ typedef enum {
 	PangoLogAttr_1sizeof_FUNC,
 	PangoRectangle_1sizeof_FUNC,
 	XAnyEvent_1sizeof_FUNC,
-	XButtonEvent_1sizeof_FUNC,
 	XClientMessageEvent_1sizeof_FUNC,
 	XCrossingEvent_1sizeof_FUNC,
 	XEvent_1sizeof_FUNC,
@@ -1460,11 +1459,6 @@ typedef enum {
 	memmove__JLorg_eclipse_swt_internal_gtk_PangoAttribute_2J_FUNC,
 #endif
 #ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_gtk_XButtonEvent_2I_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_gtk_XButtonEvent_2J_FUNC,
-#endif
-#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J_FUNC,
@@ -1658,11 +1652,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_XButtonEvent_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II_FUNC,

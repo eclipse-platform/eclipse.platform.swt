@@ -2632,20 +2632,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event, bo
 int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	/*
-	* Feature in GTK.  When button 4, 5, 6, or 7 is released, GTK
-	* does not deliver a corresponding GTK event.  Button 6 and 7
-	* are mapped to buttons 4 and 5 in SWT.  The fix is to change
-	* the button number of the event to a negative number so that
-	* it gets dispatched by GTK.  SWT has been modified to look
-	* for negative button numbers.
-	*/
-	int button = gdkEvent.button;
-	switch (button) {
-		case -6: button = 4; break;
-		case -7: button = 5; break;
-	}
-	return sendMouseEvent (SWT.MouseUp, button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+	return sendMouseEvent (SWT.MouseUp, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 }
 
 int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
@@ -2936,9 +2923,9 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		case OS.GDK_SCROLL_DOWN:
 			return sendMouseEvent (SWT.MouseWheel, 0, -3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 		case OS.GDK_SCROLL_LEFT:
-			return sendMouseEvent (SWT.MouseDown, 4, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+			return sendMouseEvent (SWT.MouseHorizontalWheel, 0, 3, 0, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 		case OS.GDK_SCROLL_RIGHT:
-			return sendMouseEvent (SWT.MouseDown, 5, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+			return sendMouseEvent (SWT.MouseHorizontalWheel, 0, -3, 0, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 	}
 	return 0;
 }
