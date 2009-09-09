@@ -54,6 +54,7 @@ public final class TextLayout extends Resource {
 	int[] lineOffsets;
 	NSRect[] lineBounds;
 	
+	static final int TAB_COUNT = 32;
 	static final int UNDERLINE_THICK = 1 << 16;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	int[] invalidOffsets;
@@ -176,17 +177,28 @@ void computeRuns() {
 	paragraph.setFirstLineHeadIndent(indent);
 	paragraph.setLineBreakMode(wrapWidth != -1 ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
 	paragraph.setTabStops(NSArray.array());
-	if (tabs != null) {
+	if (tabs != null && tabs.length > 0) {
 		int count = tabs.length;
-		for (int i = 0, pos = 0; i < count; i++) {
-			pos += tabs[i];
-			NSTextTab tab = (NSTextTab)new NSTextTab().alloc();
-			tab = tab.initWithType(OS.NSLeftTabStopType, pos);
-			paragraph.addTabStop(tab);
-			tab.release();
+		if (count == 1) {
+			paragraph.setDefaultTabInterval(tabs[0]);
+		} else {
+			int i, pos = 0;
+			for (i = 0; i < count; i++) {
+				pos = tabs[i];
+				NSTextTab tab = (NSTextTab)new NSTextTab().alloc();
+				tab = tab.initWithType(OS.NSLeftTabStopType, pos);
+				paragraph.addTabStop(tab);
+				tab.release();
+			}
+			int width = tabs[count - 1] - tabs[count - 2];
+			for (; i < TAB_COUNT; i++) {
+				pos += width;
+				NSTextTab tab = (NSTextTab)new NSTextTab().alloc();
+				tab = tab.initWithType(OS.NSLeftTabStopType, pos);
+				paragraph.addTabStop(tab);
+				tab.release();
+			}
 		}
-		int width = count - 2 >= 0 ? tabs[count - 1] - tabs[count - 2] : tabs[count - 1];
-		paragraph.setDefaultTabInterval(width);
 	}
 	attrStr.addAttribute(OS.NSParagraphStyleAttributeName, paragraph, range);
 	paragraph.release();
