@@ -2196,18 +2196,20 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 	switch (button) {
 		case 4:
 		case 5:
-			/* Use MouseDown button 4 and 5 to emulated MouseWheel */
+		case 6:
+		case 7:
 			if (type != SWT.MouseDown) return true;
-			type = SWT.MouseWheel;
+			type = button == 4 || button == 5 ? SWT.MouseWheel : SWT.MouseHorizontalWheel;
 			if (!hooks (type) && !filters (type)) return true;
+			int count = button == 4 || button == 6 ? 3 : -3;
+			int detail = button == 4 || button == 5 ? SWT.SCROLL_LINE : SWT.NONE;
 			short [] x_root = new short [1], y_root = new short [1];
 			OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 			int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-			int count = button == 4 ? 3 : -3;
 			Control control = this;
 			Shell shell = getShell ();
 			do {
-				if (!control.sendMouseEvent (type, 0, count, SWT.SCROLL_LINE, true, xEvent.time, x, y, xEvent.state)) {
+				if (!control.sendMouseEvent (type, 0, count, detail, true, xEvent.time, x, y, xEvent.state)) {
 					return false;
 				}
 				if (control == shell) break;
@@ -2217,12 +2219,6 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 				y = xEvent.y_root - y_root [0];			
 			} while (control != null);
 			return true;
-		case 6:
-			button = 4;
-			break;
-		case 7:
-			button = 5;
-			break;
 	}
 	if (!hooks (type) && !filters (type)) return true;
 	short [] x_root = new short [1], y_root = new short [1];
