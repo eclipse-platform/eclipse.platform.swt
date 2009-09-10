@@ -309,13 +309,16 @@ fail:
 
 + (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector
 {
-	return aSelector != @selector(callJava:index:arg:);
+	return !(aSelector == @selector(callJava:index:arg:) || aSelector == @selector(callRunBeforeUnloadConfirmPanelWithMessage:arg:));
 }
 
 + (NSString *)webScriptNameForSelector:(SEL)aSelector
 {
 	if (aSelector == @selector(callJava:index:arg:)) {
 		return @"callJava";
+	}
+	if (aSelector == @selector(callRunBeforeUnloadConfirmPanelWithMessage:arg:)) {
+		return @"callRunBeforeUnloadConfirmPanelWithMessage";
 	}
 	return 0;
 }
@@ -327,5 +330,9 @@ fail:
 	return (id)proc(0, user_data, 34, (int)arg, (int)index, (int)arg0, 0);
 }
 
-@end
+- (id)callRunBeforeUnloadConfirmPanelWithMessage:(NSString *)arg arg:(NSObject *)arg0
+{
+	return (id)proc(0, user_data, 37, (int)arg, (int)arg0, 0, 0);
+}
 
+@end

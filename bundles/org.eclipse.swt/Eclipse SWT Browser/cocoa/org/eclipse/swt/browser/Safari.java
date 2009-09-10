@@ -176,6 +176,7 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_webView_setFrame_, setFrameProc, "@:@{NSRect}"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_windowScriptObjectAvailable_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_callJava, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_callRunBeforeUnloadConfirmPanelWithMessage, proc4, "@:@@"); //$NON-NLS-1$
 		OS.objc_registerClassPair(delegateClass);
 
  		int /*long*/ metaClass = OS.objc_getMetaClass (className);
@@ -330,6 +331,8 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		safari.webView_printFrameView(arg0, arg1);
 	} else if (sel == OS.sel_webView_windowScriptObjectAvailable_) {
 		safari.webView_windowScriptObjectAvailable (arg0, arg1);
+	} else if (sel == OS.sel_callRunBeforeUnloadConfirmPanelWithMessage) {
+		return safari.callRunBeforeUnloadConfirmPanelWithMessage (arg0, arg1).id;
 	}
 	return 0;
 }
@@ -394,14 +397,34 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 static boolean isSelectorExcludedFromWebScript (int /*long*/ aSelector) {
-	return aSelector != OS.sel_callJava;
+	return !(aSelector == OS.sel_callJava || aSelector == OS.sel_callRunBeforeUnloadConfirmPanelWithMessage);
 }
 
 static int /*long*/ webScriptNameForSelector (int /*long*/ aSelector) {
 	if (aSelector == OS.sel_callJava) {
 		return NSString.stringWith ("callJava").id; //$NON-NLS-1$
 	}
+	if (aSelector == OS.sel_callRunBeforeUnloadConfirmPanelWithMessage) {
+		return NSString.stringWith ("callRunBeforeUnloadConfirmPanelWithMessage").id; //$NON-NLS-1$
+	}
 	return 0;
+}
+
+public boolean close () {
+	String functionName = EXECUTE_ID + "CLOSE"; // $NON-NLS-1$
+	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append ("(win) {\n"); // $NON-NLS-1$
+	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {var str = null; try {str = fn();} catch (e) {}"); // $NON-NLS-1$
+	buffer.append ("if (str != null) {var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str);if (!result) return false;}}"); // $NON-NLS-1$
+	buffer.append ("for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append ("(win.frames[i]); if (!result) return false;} return true;"); // $NON-NLS-1$
+	buffer.append ("\n};"); // $NON-NLS-1$
+	execute (buffer.toString ());
+
+	Boolean result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
+	return result.booleanValue ();
 }
 
 public boolean execute (String script) {
@@ -1041,6 +1064,11 @@ void webViewFocus(int /*long*/ sender) {
 }
 
 void webViewUnfocus(int /*long*/ sender) {
+}
+
+NSNumber callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int /*long*/ arg) {
+	boolean result = webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame (0, messageID, 0);
+	return NSNumber.numberWithBool (result);
 }
 
 boolean webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(int /*long*/ sender, int /*long*/ messageID, int /*long*/ frame) {

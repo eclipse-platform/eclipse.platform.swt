@@ -436,6 +436,23 @@ public boolean back() {
 	return Cocoa.objc_msgSend(webView, Cocoa.S_goBack) != 0;
 }
 
+public boolean close () {
+	String functionName = EXECUTE_ID + "CLOSE"; // $NON-NLS-1$
+	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append ("(win) {\n"); // $NON-NLS-1$
+	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {var str = null; try {str = fn();} catch (e) {}"); // $NON-NLS-1$
+	buffer.append ("if (str != null) {var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str);if (!result) return false;}}"); // $NON-NLS-1$
+	buffer.append ("for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
+	buffer.append (functionName);
+	buffer.append ("(win.frames[i]); if (!result) return false;} return true;"); // $NON-NLS-1$
+	buffer.append ("\n};"); // $NON-NLS-1$
+	execute (buffer.toString ());
+
+	Boolean result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
+	return result.booleanValue ();
+}
+
 public boolean execute(String script) {
 	int length = script.length();
 	char[] buffer = new char[length];
@@ -719,6 +736,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 34: ret = callJava(arg0, arg1, arg2); break;
 		case 35: didReceiveAuthenticationChallengefromDataSource(arg0, arg1, arg2); break;
 		case 36: ret = runBeforeUnloadConfirmPanelWithMessage(arg0, arg1); break;
+		case 37: ret = callRunBeforeUnloadConfirmPanelWithMessage(arg0, arg1); break;
 	}
 	return ret;
 }
@@ -1469,6 +1487,11 @@ void webViewFocus() {
 }
 
 void webViewUnfocus() {
+}
+
+int callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int /*long*/ arg) {
+	int result = runBeforeUnloadConfirmPanelWithMessage (messageID, 0);
+	return Cocoa.objc_msgSend (Cocoa.C_NSNumber, Cocoa.S_numberWithBool, result);
 }
 
 int runBeforeUnloadConfirmPanelWithMessage(int message, int frame) {

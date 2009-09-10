@@ -47,6 +47,7 @@ public class OS extends C {
 	public static final int /*long*/ sel_timerProc_ = sel_registerName("timerProc:");
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
+	public static final int /*long*/ sel_callRunBeforeUnloadConfirmPanelWithMessage = sel_registerName("callRunBeforeUnloadConfirmPanelWithMessage:arg:");
 	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
 	public static final int /*long*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");
 	public static final int /*long*/ sel_panelDidEnd_returnCode_contextInfo_ = sel_registerName("panelDidEnd:returnCode:contextInfo:");

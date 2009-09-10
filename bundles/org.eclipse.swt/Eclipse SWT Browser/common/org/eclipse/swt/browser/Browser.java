@@ -491,6 +491,31 @@ public boolean execute (String script) {
 }
 
 /**
+ * Attempts to dispose the receiver, but allows the dispose to be vetoed
+ * by the user in response to an <code>onbeforeunload</code> listener
+ * in the Browser's current page.
+ *
+ * @return <code>true</code> if the receiver was disposed, and <code>false</code> otherwise
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #dispose
+ * 
+ * @since 3.6
+ */
+public boolean close () {
+	checkWidget();
+	if (webBrowser.close ()) {
+		dispose ();
+		return true;
+	}
+	return false;
+}
+
+/**
  * Returns the result, if any, of executing the specified script.
  * <p>
  * Evaluates a script containing javascript commands in the context of

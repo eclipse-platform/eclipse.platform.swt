@@ -271,6 +271,8 @@ public void create(Composite parent, int style) {
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
+//					execute("window.location.href='about:blank';");
+
 					/*
 					* It is possible for the Browser's OLE frame to have been disposed
 					* by a Dispose listener that was invoked by notifyListeners above,
@@ -776,6 +778,58 @@ public boolean back() {
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "GoBack" }); //$NON-NLS-1$
 	Variant pVarResult = auto.invoke(rgdispid[0]);
 	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
+}
+
+public boolean close() {
+	boolean result = true;
+	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
+	int dispIdMember = rgdispid[0];
+	Variant pVarResult = auto.getProperty(dispIdMember);
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+		if (pVarResult != null) pVarResult.dispose();
+	} else {
+		OleAutomation document = pVarResult.getAutomation();
+		pVarResult.dispose();
+		rgdispid = document.getIDsOfNames(new String[]{"parentWindow"}); //$NON-NLS-1$
+		/* rgdispid != null implies HTML content */
+		if (rgdispid != null) {
+			dispIdMember = rgdispid[0];
+			pVarResult = document.getProperty(dispIdMember);
+			if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+				if (pVarResult != null) pVarResult.dispose();
+			} else {
+				OleAutomation window = pVarResult.getAutomation();
+				pVarResult.dispose();
+				rgdispid = window.getIDsOfNames(new String[]{"location"}); //$NON-NLS-1$
+				dispIdMember = rgdispid[0];
+				pVarResult = window.getProperty(dispIdMember);
+				if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
+					if (pVarResult != null) pVarResult.dispose();
+				} else {
+					OleAutomation location = pVarResult.getAutomation();
+					pVarResult.dispose();
+					LocationListener[] oldListeners = locationListeners;
+					locationListeners = new LocationListener[0];
+					rgdispid = location.getIDsOfNames(new String[]{"replace"}); //$NON-NLS-1$
+					dispIdMember = rgdispid[0];
+					Variant[] args = new Variant[] {new Variant("about:blank")}; //$NON-NLS-1$
+					pVarResult = location.invoke(dispIdMember, args);
+					if (pVarResult == null) {
+						/* cancelled by user */
+						result = false;
+					} else {
+						pVarResult.dispose();				
+					}
+					args[0].dispose();
+					locationListeners = oldListeners;
+					location.dispose();
+				}
+				window.dispose();
+			}
+		}
+		document.dispose();
+	}
+	return result;
 }
 
 public boolean execute(String script) {

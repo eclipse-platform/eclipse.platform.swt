@@ -1553,6 +1553,22 @@ public boolean back () {
 	return rc == XPCOM.NS_OK;
 }
 
+public boolean close () {
+	final boolean[] result = new boolean[] {false};
+	LocationListener[] oldListeners = locationListeners;
+	locationListeners = new LocationListener[] {
+		new LocationAdapter () {
+			public void changing (LocationEvent event) {
+				/* implies that the user did not veto the page unload */
+				result[0] = true;
+			}
+		} 
+	};
+	execute ("window.location.replace('about:blank');"); //$NON-NLS-1$
+	locationListeners = oldListeners;
+	return result[0];
+}
+
 void createCOMInterfaces () {
 	// Create each of the interfaces that this object implements
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {

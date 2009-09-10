@@ -288,6 +288,10 @@ static String ExtractError (String error) {
 	return error.substring (ERROR_ID.length ());
 }
 
+public boolean close () {
+	return true;
+}
+
 public void createFunction (BrowserFunction function) {
 	/* 
 	 * If an existing function with the same name is found then
