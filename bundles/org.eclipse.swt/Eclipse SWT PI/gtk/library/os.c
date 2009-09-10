@@ -5932,6 +5932,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1resize)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1restack
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1restack)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1restack_FUNC);
+/*
+	gdk_window_restack((GdkWindow *)arg0, (GdkWindow *)arg1, (gboolean)arg2);
+*/
+	{
+		LOAD_FUNCTION(fp, gdk_window_restack)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkWindow *, GdkWindow *, gboolean))fp)((GdkWindow *)arg0, (GdkWindow *)arg1, (gboolean)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1restack_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1window_1scroll
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1scroll)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)

@@ -4885,6 +4885,21 @@ public static final void gdk_window_resize(int /*long*/ window, int width, int h
 		lock.unlock();
 	}
 }
+/** 
+ * @method flags=dynamic
+ * @param window cast=(GdkWindow *)
+ * @param sibling cast=(GdkWindow *)
+ * @param above cast=(gboolean)
+ */
+public static final native void _gdk_window_restack(int /*long*/ window, int /*long*/ sibling, boolean above);
+public static final void gdk_window_restack(int /*long*/ window, int /*long*/ sibling, boolean above) {
+	lock.lock();
+	try {
+		_gdk_window_restack(window, sibling, above);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param window cast=(GdkWindow *) */
 public static final native void _gdk_window_scroll(int /*long*/ window, int dx, int dy);
 public static final void gdk_window_scroll(int /*long*/ window, int dx, int dy) {
