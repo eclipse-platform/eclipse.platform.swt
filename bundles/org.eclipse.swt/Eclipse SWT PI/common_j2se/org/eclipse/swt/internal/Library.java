@@ -40,7 +40,7 @@ public class Library {
 	static final String DELIMITER;
 	
 	/* 64-bit support */
-	static /*final*/ boolean IS_64 = 0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL;
+	static final boolean IS_64 = longConst() == (int /*long*/)longConst();
 	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
 	static final String SWTDIR_32 = "swtlib-32";	//$NON-NLS-1$
 	static final String SWTDIR_64 = "swtlib-64";	//$NON-NLS-1$
@@ -57,6 +57,11 @@ static void chmod(String permision, String path) {
 	try {
 		Runtime.getRuntime ().exec (new String []{"chmod", permision, path}).waitFor(); //$NON-NLS-1$
 	} catch (Throwable e) {}
+}
+
+/* Use method instead of in-lined constants to avoid compiler warnings */
+static long longConst() {
+	return 0x1FFFFFFFFL;
 }
 
 static int parseVersion(String version) {
