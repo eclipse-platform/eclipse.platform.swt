@@ -4091,9 +4091,6 @@ void setClipping(int /*long*/ clipRgn) {
 			OS.OffsetRgn(hRgn, pt.x, pt.y);
 		}
 	}
-	if (hRgn != 0 && hRgn != clipRgn) {
-		OS.DeleteObject(hRgn);
-	}
 }
 
 /**
