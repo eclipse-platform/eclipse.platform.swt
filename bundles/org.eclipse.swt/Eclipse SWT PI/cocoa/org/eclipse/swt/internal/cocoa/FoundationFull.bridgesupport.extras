@@ -938,6 +938,9 @@
 		<method selector="isFileURL" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="path" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSURLAuthenticationChallenge" swt_gen="mixed">
 		<method selector="previousFailureCount" swt_gen="true">

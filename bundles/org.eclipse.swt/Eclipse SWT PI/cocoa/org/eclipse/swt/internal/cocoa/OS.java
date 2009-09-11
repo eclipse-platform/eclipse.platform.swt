@@ -36,6 +36,9 @@ public class OS extends C {
 	public static final int kUIModeNormal = 0;
 	public static final int kUIModeContentHidden = 2;
 	public static final int kUIModeAllHidden = 3;
+	public static final int kLSUnknownType = 0;
+	public static final int kLSUnknownCreator = 0;
+	public static final int kLSRolesAll = 0xFFFFFFFF;
 	
 	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
 	public static final int /*long*/ sel_sendCancelSelection = sel_registerName("sendCancelSelection");
@@ -183,6 +186,15 @@ public static final native byte LMGetKbdType();
 public static final native int /*long*/ AcquireRootMenu ();
 /** @method flags=dynamic */
 public static final native int CancelMenuTracking (int /*long*/ inRootMenu, boolean inImmediate, int inDismissalReason);
+/**
+ * @param inType cast=(OSType)
+ * @param inCreator cast=(OSType)
+ * @param inExtension cast=(CFStringRef)
+ * @param inRoleMask cast=(LSRolesMask)
+ * @param outAppRef cast=(FSRef *)
+ * @param outAppURL cast=(CFURLRef *)
+ */
+public static final native int /*long*/ LSGetApplicationForInfo(int inType, int inCreator,int /*long*/ inExtension, int inRoleMask, byte[] outAppRef, int[] outAppURL);
 
 /** C calls */
 
@@ -1274,6 +1286,7 @@ public static final int /*long*/ sel_password = sel_registerName("password");
 public static final int /*long*/ sel_paste_ = sel_registerName("paste:");
 public static final int /*long*/ sel_pasteboard_provideDataForType_ = sel_registerName("pasteboard:provideDataForType:");
 public static final int /*long*/ sel_pasteboardWithName_ = sel_registerName("pasteboardWithName:");
+public static final int /*long*/ sel_path = sel_registerName("path");
 public static final int /*long*/ sel_pathExtension = sel_registerName("pathExtension");
 public static final int /*long*/ sel_pathForResource_ofType_ = sel_registerName("pathForResource:ofType:");
 public static final int /*long*/ sel_performDragOperation_ = sel_registerName("performDragOperation:");
@@ -2478,6 +2491,8 @@ public static final NSString NSUnderlineStyleAttributeName = new NSString(NSUnde
 public static final native int /*long*/ NSViewGlobalFrameDidChangeNotification();
 public static final NSString NSViewGlobalFrameDidChangeNotification = new NSString(NSViewGlobalFrameDidChangeNotification());
 /** @method flags=const */
+public static final native int /*long*/ kCFAllocatorDefault();
+/** @method flags=const */
 public static final native int /*long*/ kCFRunLoopCommonModes();
 /** @method flags=const */
 public static final native int /*long*/ kCTFontAttributeName();
@@ -2606,6 +2621,11 @@ public static final native void CFRunLoopObserverInvalidate(int /*long*/ observe
  * @param numChars cast=(CFIndex)
  */
 public static final native int /*long*/ CFStringCreateWithCharacters(int /*long*/ alloc, char[] chars, int /*long*/ numChars);
+/**
+ * @param allocator cast=(CFAllocatorRef)
+ * @param fsRef cast=(struct FSRef*)
+ */
+public static final native int /*long*/ CFURLCreateFromFSRef(int /*long*/ allocator, byte[] fsRef);
 /**
  * @param allocator cast=(CFAllocatorRef)
  * @param originalString cast=(CFStringRef)

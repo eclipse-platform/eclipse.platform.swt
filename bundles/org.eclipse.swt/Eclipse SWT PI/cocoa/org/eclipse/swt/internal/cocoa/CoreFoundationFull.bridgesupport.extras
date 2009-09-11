@@ -4,6 +4,7 @@
 		<field name="location" swt_gen="true"></field>
 		<field name="length" swt_gen="true"></field>
 	</struct>
+	<constant name="kCFAllocatorDefault" swt_gen="true"></constant>
 	<constant name="kCFRunLoopCommonModes" swt_gen="true"></constant>
 	<enum name="kCFRunLoopBeforeWaiting" swt_gen="true"></enum>
 	<enum name="kCFStringEncodingUTF8" swt_gen="true"></enum>
@@ -65,6 +66,11 @@
 		<arg name="alloc" swt_gen="true"></arg>
 		<arg name="chars" swt_gen="true" swt_java_type="char[]"></arg>
 		<arg name="numChars" swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="CFURLCreateFromFSRef" swt_gen="true">
+		<arg name="allocator" swt_gen="true"></arg>
+		<arg name="fsRef" swt_gen="true" swt_java_type="byte[]"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CFURLCreateStringByAddingPercentEscapes" swt_gen="true">

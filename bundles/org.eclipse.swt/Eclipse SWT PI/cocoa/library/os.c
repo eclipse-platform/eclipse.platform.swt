@@ -954,6 +954,22 @@ fail:
 }
 #endif
 
+#ifndef NO_CFURLCreateFromFSRef
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateFromFSRef)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateFromFSRef_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)CFURLCreateFromFSRef((CFAllocatorRef)arg0, (struct FSRef*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CFURLCreateFromFSRef_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFURLCreateStringByAddingPercentEscapes
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4)
@@ -2271,6 +2287,25 @@ JNIEXPORT jbyte JNICALL OS_NATIVE(LMGetKbdType)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, LMGetKbdType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LSGetApplicationForInfo
+JNIEXPORT jintLong JNICALL OS_NATIVE(LSGetApplicationForInfo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintLong arg2, jint arg3, jbyteArray arg4, jintArray arg5)
+{
+	jbyte *lparg4=NULL;
+	jint *lparg5=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, LSGetApplicationForInfo_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jintLong)LSGetApplicationForInfo((OSType)arg0, (OSType)arg1, (CFStringRef)arg2, (LSRolesMask)arg3, (FSRef *)lparg4, (CFURLRef *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, LSGetApplicationForInfo_FUNC);
 	return rc;
 }
 #endif
@@ -4877,6 +4912,18 @@ JNIEXPORT void JNICALL OS_NATIVE(instrumentObjcMessageSends)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, instrumentObjcMessageSends_FUNC);
+}
+#endif
+
+#ifndef NO_kCFAllocatorDefault
+JNIEXPORT jintLong JNICALL OS_NATIVE(kCFAllocatorDefault)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFAllocatorDefault_FUNC);
+	rc = (jintLong)kCFAllocatorDefault;
+	OS_NATIVE_EXIT(env, that, kCFAllocatorDefault_FUNC);
+	return rc;
 }
 #endif
 

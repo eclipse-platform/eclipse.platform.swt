@@ -56,64 +56,29 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
-	if (extension.charAt(0) != '.') extension = "." + extension;
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-		int /*long*/ appName = OS.malloc(C.PTR_SIZEOF);
-		int /*long*/ type = OS.malloc(C.PTR_SIZEOF);
-		NSString temp = new NSString(OS.NSTemporaryDirectory());
-		NSString fileName = NSString.stringWith("swt" + System.currentTimeMillis() + extension);
-		NSString fullPath = temp.stringByAppendingPathComponent(fileName);
-		NSFileManager fileManager = NSFileManager.defaultManager();
-		fileManager.createFileAtPath(fullPath, null, null);
-		if (!workspace.getInfoForFile(fullPath, appName, type)) return null;
-		fileManager.removeItemAtPath(fullPath, 0);
-		int /*long*/ [] buffer = new int /*long*/[1];
-		int /*long*/ [] buffer2 = new int /*long*/[1];
-		OS.memmove(buffer, appName, C.PTR_SIZEOF);
-		OS.memmove(buffer2, type, C.PTR_SIZEOF);
-		OS.free(appName);
-		OS.free(type);
-		if (buffer [0] != 0) {
-			NSString appPath = new NSString(buffer[0]);
-			NSString appType = new NSString(buffer2[0]);
-			NSBundle bundle = NSBundle.bundleWithPath(appPath);
-			if (bundle != null) {
-				NSString textEditId = NSString.stringWith("com.apple.TextEdit");
-				NSString bundleId = NSString.stringWith("CFBundleIdentifier");
-				NSDictionary infoDictionary = bundle.infoDictionary();
-				boolean textEdit = textEditId.isEqual(infoDictionary.objectForKey(bundleId));
-				if (!textEdit) return getProgram(bundle);
-				// if text edit, make sure we're really one of the extensions that
-				// text edit says it can handle.
-				NSString CFBundleDocumentTypes = NSString.stringWith("CFBundleDocumentTypes");
-				NSString CFBundleTypeExtensions = NSString.stringWith("CFBundleTypeExtensions");
-				id id = infoDictionary.objectForKey(CFBundleDocumentTypes);
-				if (id != null) {
-					NSDictionary documentTypes = new NSDictionary(id.id);
-					NSEnumerator documentTypesEnumerator = documentTypes.objectEnumerator();
-					while ((id = documentTypesEnumerator.nextObject()) != null) {
-						NSDictionary documentType = new NSDictionary(id.id);
-						NSDictionary supportedExtensions = new NSDictionary(documentType.objectForKey(CFBundleTypeExtensions));
-						if (supportedExtensions != null) {
-							NSEnumerator supportedExtensionsEnumerator = supportedExtensions.objectEnumerator();
-							if (supportedExtensionsEnumerator != null) {
-								id ext = null;
-								while((ext = supportedExtensionsEnumerator.nextObject()) != null) {
-									NSString strExt = new NSString(ext);
-									if (appType.isEqual(strExt)) return getProgram (bundle);
-								}
-							}
-						}
-					}
-				}
+	Program program = null;
+	char[] chars;
+	if (extension.charAt (0) != '.') {
+		chars = new char[extension.length()];
+		extension.getChars(0, chars.length, chars, 0);
+	} else {
+		chars = new char[extension.length() - 1];
+		extension.getChars(1, extension.length(), chars, 0);		
+	}
+	NSString ext = NSString.stringWithCharacters(chars, chars.length);
+	if (ext != null) {
+		byte[] fsRef = new byte[80];
+		if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext.id, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
+			int /*long*/ url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
+			if (url != 0) {
+				NSString bundlePath = new NSURL(url).path();
+				NSBundle bundle = NSBundle.bundleWithPath(bundlePath);
+				program = getProgram(bundle);
+				OS.CFRelease(url);
 			}
 		}
-		return null;
-	} finally {
-		pool.release();
 	}
+	return program;
 }
 
 /**

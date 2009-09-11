@@ -52,4 +52,9 @@ public boolean isFileURL() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isFileURL);
 }
 
+public NSString path() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_path);
+	return result != 0 ? new NSString(result) : null;
+}
+
 }

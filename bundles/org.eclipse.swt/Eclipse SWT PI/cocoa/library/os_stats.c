@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 525;
-int OS_nativeFunctionCallCount[525];
+int OS_nativeFunctionCount = 528;
+int OS_nativeFunctionCallCount[528];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -65,6 +65,7 @@ char * OS_nativeFunctionNames[] = {
 	"CFRunLoopObserverCreate",
 	"CFRunLoopObserverInvalidate",
 	"CFStringCreateWithCharacters",
+	"CFURLCreateFromFSRef",
 	"CFURLCreateStringByAddingPercentEscapes",
 	"CGAffineTransform_1sizeof",
 	"CGBitmapContextCreate",
@@ -165,6 +166,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIThemeDrawFocusRect",
 	"JNIGetObject",
 	"LMGetKbdType",
+	"LSGetApplicationForInfo",
 	"LineTo",
 	"MoveTo",
 	"NSAccessibilityActionDescription",
@@ -369,6 +371,7 @@ char * OS_nativeFunctionNames[] = {
 	"getpid",
 	"instrumentObjcMessageSends",
 	"isFlipped_1CALLBACK",
+	"kCFAllocatorDefault",
 	"kCFRunLoopCommonModes",
 	"kCFTypeDictionaryKeyCallBacks",
 	"kCFTypeDictionaryValueCallBacks",
