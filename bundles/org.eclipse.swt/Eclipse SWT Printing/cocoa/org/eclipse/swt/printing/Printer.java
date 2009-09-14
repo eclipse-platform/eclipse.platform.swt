@@ -243,6 +243,7 @@ protected void create(DeviceData deviceData) {
 		operation.retain();
 		operation.setShowsPrintPanel(false);
 		operation.setShowsProgressPanel(false);
+		operation.createContext();
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -257,11 +258,14 @@ protected void destroy() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		if (operation != null) {
+			operation.destroyContext();
+			operation.release();
+		}
 		if (printer != null) printer.release();
 		if (printInfo != null) printInfo.release();
 		if (view != null) view.release();
 		if (window != null) window.release();
-		if (operation != null) operation.release();
 		printer = null;
 		printInfo = null;
 		view = null;
@@ -376,8 +380,7 @@ public boolean startJob(String jobName) {
 		}
 		printInfo.setUpPrintOperationDefaultValues();
 		NSPrintOperation.setCurrentOperation(operation);
-		NSGraphicsContext context = operation.createContext();
-		if (context != null) {
+		if (operation.context() != null) {
 			view.beginDocument();
 			return true;
 		}
@@ -405,7 +408,6 @@ public void endJob() {
 	try {
 		view.endDocument();
 		operation.deliverResult();
-		operation.destroyContext();
 		operation.cleanUpOperation();
 	} finally {
 		if (pool != null) pool.release();
@@ -424,7 +426,6 @@ public void cancelJob() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		operation.destroyContext();
 		operation.cleanUpOperation();
 	} finally {
 		if (pool != null) pool.release();
