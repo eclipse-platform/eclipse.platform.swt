@@ -315,7 +315,13 @@ public int /*long*/ internal_new_GC(GCData data) {
 }
 
 protected void init () {
-	super.init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		super.init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**	 
