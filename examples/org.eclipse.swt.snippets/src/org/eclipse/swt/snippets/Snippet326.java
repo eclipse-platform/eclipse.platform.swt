@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
  
 /*
- * Browser example snippet: Close a Browser such that the close can be
+ * Browser example snippet: Close a Browser such that it can be
  * cancelled by an onbeforeunload handler.
  *
  * For a list of all SWT example snippets see
