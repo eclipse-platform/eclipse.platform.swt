@@ -84,7 +84,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion, wasSelected;
+	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion;
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
@@ -1889,9 +1889,8 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 }
 
 void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	NSOutlineView widget = (NSOutlineView)view;
-	NSEvent nsEvent = new NSEvent(theEvent);
 	if (headerView != null && id == headerView.id) {
+		NSTableView widget = (NSTableView)view;
 		widget.setAllowsColumnReordering(false);
 		NSPoint pt = headerView.convertPoint_fromView_(new NSEvent(theEvent).locationInWindow(), null);
 		int /*long*/ nsIndex = headerView.columnAtPoint(pt);
@@ -1909,28 +1908,10 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		// Bug/feature in Cocoa:  If the tree has a context menu we just set it visible instead of returning
 		// it from menuForEvent:.  This has the side effect, however, of sending control-click to the NSTableView,
 		// which is interpreted as a single click that clears the selection.  Fix is to ignore control-click,
-		if ((nsEvent.modifierFlags() & OS.NSControlKeyMask) != 0) return;
+		NSEvent event = new NSEvent(theEvent);
+		if ((event.modifierFlags() & OS.NSControlKeyMask) != 0) return;
 	}
-	wasSelected = false;
 	super.mouseDown(id, sel, theEvent);
-	if (isDisposed()) return;
-	if (!wasSelected) {
-		NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
-		int /*long*/ row = widget.rowAtPoint(pt);
-		if (row != -1 && widget.isRowSelected(row)) {
-			NSRect rect = widget.frameOfOutlineCellAtRow(row);
-			if (!OS.NSPointInRect(pt, rect)) {
-				id itemID = widget.itemAtRow(row);
-				Widget item = itemID != null ? display.getWidget (itemID.id) : null;
-				if (item != null && item instanceof TreeItem) {
-					Event event = new Event ();
-					event.item = item;
-					postEvent (SWT.Selection, event);
-				}
-			}
-		}
-	}
-	wasSelected = false;
 }
 
 /*
@@ -2101,7 +2082,6 @@ void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/
 }
 
 void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	wasSelected = true;
 	if (ignoreSelect) return;
 	NSOutlineView widget = (NSOutlineView) view;
 	int row = (int)/*64*/widget.selectedRow ();
