@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
  
 /*
- * Browser example snippet: Provide a page from memory in response to a link click.
+ * Browser example snippet: Render HTML from memory in response to a link click.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
