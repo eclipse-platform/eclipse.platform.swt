@@ -28,7 +28,7 @@ public class Snippet326 {
 	static final String HTML =
 		"<html><head><script>" +
 		"function doit() {" +
-		"  return 'The text box may contain some unsaved text';" +
+		"  return 'The box may contain some unsaved text.';" +
 		"}" +
 		"window.onbeforeunload = doit;" +
 		"</script></head><body><textarea rows=\"5\" cols=\"22\">some text</textarea></body></html>";
