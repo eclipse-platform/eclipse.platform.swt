@@ -1492,8 +1492,6 @@ void setBackgroundImage(NSImage image) {
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget = (NSTextField) view;
 		widget.setDrawsBackground(image == null);
-		NSText editor = widget.window().fieldEditor(true, widget);
-		editor.setDrawsBackground(image == null);
 	} else {
 		((NSTextView) view).setDrawsBackground(image == null);
 		scrollView.setDrawsBackground(image == null);
