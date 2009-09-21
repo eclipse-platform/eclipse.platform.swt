@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.SWT;
+import java.util.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.awt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -557,7 +560,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle () {
 	state |= HIDDEN;
-	if (window == null) {
+	if (window == null && view == null) {
 		window = (NSWindow) new SWTWindow ().alloc ();
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.NO_TRIM) == 0) {
@@ -600,20 +603,37 @@ void createHandle () {
 		super.createHandle ();
 		topView ().setHidden (true);
 	} else {
-//		int /*long*/ cls = OS.objc_lookUpClass ("SWTWindow");
-//		OS.object_setClass(window.id, cls);
 		state &= ~HIDDEN;
-		//TODO - get the content of the foreign window instead of creating it
-		super.createHandle ();
+		
+		// 'view' is set to the NSView we should add the window's content view to as a subview.
+		// If that is null but 'window' is not we are in the foreign-handle case and shouldn't modify
+		// the window since we don't own it.
+		if (window != null) {
+			view = window.contentView();
+			
+			if (view == null) {
+				super.createHandle();
+			} else {
+				view.retain();
+			}
+		} else {
+			NSView parentView = view;			
+			super.createHandle();
+			parentView.addSubview(view);
+		}
+
 		style |= SWT.NO_BACKGROUND;
 	}
-	if (parent != null) window.setCollectionBehavior(OS.NSWindowCollectionBehaviorMoveToActiveSpace);
-	window.setAcceptsMouseMovedEvents(true);
-	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
-	window.setDelegate(windowDelegate);
-	id id = window.fieldEditor (true, null);
-	if (id != null) {
-		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+	
+	if (window != null) {
+		if (parent != null) window.setCollectionBehavior(OS.NSWindowCollectionBehaviorMoveToActiveSpace);
+		window.setAcceptsMouseMovedEvents(true);
+		windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+		window.setDelegate(windowDelegate);
+		id id = window.fieldEditor (true, null);
+		if (id != null) {
+			OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+		}
 	}
 }
 
@@ -729,7 +749,6 @@ public void forceActive () {
  */
 public int getAlpha () {
 	checkWidget ();
-	// TODO: Should we support embedded frame alpha?
 	if (window == null) return 255;
 	return (int)(window.alphaValue() * 255);
 }
@@ -739,11 +758,15 @@ public Rectangle getBounds () {
 	NSRect frame = (window == null ? view.frame() : window.frame());
 	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	Rectangle rectangle = new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
-	float /*double*/ scaleFactor = window.userSpaceScaleFactor();
-	rectangle.x /= scaleFactor;
-	rectangle.y /= scaleFactor;
-	rectangle.width /= scaleFactor;
-	rectangle.height /= scaleFactor;
+	
+	if (window != null) {
+		float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+		rectangle.x /= scaleFactor;
+		rectangle.y /= scaleFactor;
+		rectangle.width /= scaleFactor;
+		rectangle.height /= scaleFactor;
+	}
+	
 	return rectangle;
 }
 
@@ -817,10 +840,26 @@ public int getImeInputMode () {
 
 public Point getLocation () {
 	checkWidget();
-	// TODO: frame is relative to superview. What does getLocation mean in the embedded case?
-	NSRect frame = (window != null ? window.frame() : view.frame());
-	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-	return new Point ((int)frame.x, (int)y);
+	
+	if (window != null) {
+		NSRect frame = window.frame();
+		float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+		return new Point ((int)frame.x, (int)y);
+	} else {
+		// Start from view's origin, (0, 0)
+		NSPoint pt = new NSPoint();
+		NSRect primaryFrame = display.getPrimaryFrame();
+		if (!view.isFlipped ()) {
+			pt.y = view.bounds().height - pt.y;
+		}
+		pt = view.convertPoint_toView_(pt, null);
+		pt = view.window().convertBaseToScreen(pt);
+		pt.y = primaryFrame.height - pt.y;
+		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+		pt.x /= scaleFactor;
+		pt.y /= scaleFactor;
+		return new Point((int)pt.x, (int)pt.y);
+	}
 }
 
 public boolean getMaximized () {
@@ -1273,8 +1312,17 @@ public void setAlpha (int alpha) {
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	// Embedded Shells are not resizable.
-	if (window == null) return;
+	if (window == null) {
+		// Embedded shells aren't movable.
+		if (move) return;
+		if (resize) {
+			NSSize frameSize = new NSSize();
+			frameSize.width = width;
+			frameSize.height = height;
+			view.setFrameSize(frameSize);
+			return;
+		}
+	}
 	if (fullScreen) setFullScreen (false);
 	boolean sheet = window.isSheet();
 	if (sheet && move && !resize) return;
@@ -1599,6 +1647,7 @@ void setWindowVisible (boolean visible, boolean key) {
 		if (isDisposed ()) return;
 		topView ().setHidden (false);
 		invalidateVisibleRegion();
+		if (window != null) {
 		if ((style & (SWT.SHEET)) != 0) {
 			NSApplication application = NSApplication.sharedApplication();
 			application.beginSheet(window, ((Shell)parent).window, null, 0, 0);
@@ -1616,6 +1665,7 @@ void setWindowVisible (boolean visible, boolean key) {
 					window.orderFront (null);
 				}
 			}
+		}
 		}
 		updateParent (visible);
 		opened = true;
@@ -1635,11 +1685,14 @@ void setWindowVisible (boolean visible, boolean key) {
 		}
 	} else {
 		updateParent (visible);
-		if ((style & (SWT.SHEET)) != 0) {
-			NSApplication application = NSApplication.sharedApplication();
-			application.endSheet(window, 0);
+		if (window != null) {
+			if ((style & (SWT.SHEET)) != 0) {
+				NSApplication application = NSApplication.sharedApplication();
+				application.endSheet(window, 0);
+			} 
+			window.orderOut (null);
 		}
-		window.orderOut (null);
+
 		topView ().setHidden (true);
 		invalidateVisibleRegion();
 		sendEvent (SWT.Hide);
