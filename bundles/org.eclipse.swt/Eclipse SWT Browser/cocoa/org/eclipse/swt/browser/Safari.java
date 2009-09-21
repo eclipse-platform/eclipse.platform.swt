@@ -217,14 +217,17 @@ public void create (Composite parent, int style) {
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
-					/* invoke onbeforeunload handler(s) */
-					if (!browser.isClosing) {
-						acceptAllBeforeUnloadConfirms = true;
-						close (); 
-						acceptAllBeforeUnloadConfirms = false;
-					}
+					/* Browser could have been disposed by one of the Dispose listeners */
+					if (!browser.isDisposed()) {
+						/* invoke onbeforeunload handlers */
+						if (!browser.isClosing) {
+							acceptAllBeforeUnloadConfirms = true;
+							close ();
+							acceptAllBeforeUnloadConfirms = false;
+						}
 
-					e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
+						e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
+					}
 
 					Safari.this.webView.setFrameLoadDelegate(null);
 					Safari.this.webView.setResourceLoadDelegate(null);
