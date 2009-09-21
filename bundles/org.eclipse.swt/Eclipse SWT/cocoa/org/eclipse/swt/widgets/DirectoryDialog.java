@@ -124,6 +124,7 @@ public String getMessage () {
 public String open () {
 	String directoryPath = null;
 	NSOpenPanel panel = NSOpenPanel.openPanel();
+    OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	panel.setCanCreateDirectories(true);
 	panel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
