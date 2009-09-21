@@ -975,7 +975,8 @@ void updateImages (boolean enabled) {
 	info.dwMask |= OS.TBIF_SIZE;
 	info.cx = 0;	
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
-	
+	int /*long*/ hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
 	parent.layoutItems ();
 }
 
