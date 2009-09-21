@@ -409,65 +409,18 @@ public void create(Composite parent, int style) {
 							url = PROTOCOL_FILE + url.replace('\\', '/');
 						}
 						if (html != null && url.equals(ABOUT_BLANK)) {
-							Runnable runnable = new Runnable () {
-								public void run() {
-									if (browser.isDisposed() || html == null) return;
-									int charCount = html.length();
-									char[] chars = new char[charCount];
-									html.getChars(0, charCount, chars, 0);
-									html = null;
-									int byteCount = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, null, 0, null, null);
-									/*
-									* Note. Internet Explorer appears to treat the data loaded with 
-									* nsIPersistStreamInit.Load as if it were encoded using the default
-									* local charset.  There does not seem to be an API to set the
-									* desired charset explicitly in this case.  The fix is to
-									* prepend the UTF-8 Byte Order Mark signature to the data.
-									*/
-									byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
-									int /*long*/ hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
-									if (hGlobal != 0) {
-										OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
-										OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
-										int /*long*/ [] ppstm = new int /*long*/ [1];
-										/* 
-										* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
-										* If the call succeeds the buffer hGlobal is freed automatically
-										* when the IStream object is released. If the call fails, free the buffer
-										* hGlobal.
-										*/
-										if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
-											int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
-											Variant pVarResult = auto.getProperty(rgdispid[0]);
-											IDispatch dispatchDocument = pVarResult.getDispatch();
-											int /*long*/ [] ppvObject = new int /*long*/ [1];
-											int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
-											if (result == OS.S_OK) {
-												IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);
-												if (persistStreamInit.InitNew() == OS.S_OK) {
-													persistStreamInit.Load(ppstm[0]);
-												}
-												persistStreamInit.Release();
-											}
-											pVarResult.dispose();
-											/*
-											* This code is intentionally commented.  The IDispatch obtained from a Variant
-											* did not increase the reference count for the enclosed interface.
-											*/
-											//dispatchDocument.Release();
-											IUnknown stream = new IUnknown(ppstm[0]);
-											stream.Release();
-										} else {
-											OS.GlobalFree(hGlobal);
-										}
-									}
-								}
-							};
 							if (delaySetText) {
 								delaySetText = false;
-								browser.getDisplay().asyncExec(runnable);
+								browser.getDisplay().asyncExec(new Runnable() {
+									public void run() {
+										if (browser.isDisposed() || html == null) return;
+										setHTML(html);
+										html = null;
+									}
+								});
 							} else {
-								runnable.run();
+								setHTML(html);
+								html = null;
 							}
 						} else {
 							Variant variant = new Variant(auto);
@@ -952,7 +905,58 @@ public void refresh() {
 	auto.invoke(rgdispid[0]);
 }
 
-public boolean setText(String html) {
+void setHTML (String string) {
+	int charCount = string.length();
+	char[] chars = new char[charCount];
+	string.getChars(0, charCount, chars, 0);
+	int byteCount = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, null, 0, null, null);
+	/*
+	* Internet Explorer appears to treat the data loaded with 
+	* nsIPersistStreamInit.Load as if it were encoded using the default
+	* local charset.  There does not seem to be an API to set the
+	* desired charset explicitly in this case.  The fix is to
+	* prepend the UTF-8 Byte Order Mark signature to the data.
+	*/
+	byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
+	int /*long*/ hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
+	if (hGlobal != 0) {
+		OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
+		OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
+		int /*long*/ [] ppstm = new int /*long*/ [1];
+		/* 
+		* CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
+		* If the call succeeds the buffer hGlobal is freed automatically
+		* when the IStream object is released. If the call fails, free the
+		* buffer hGlobal.
+		*/
+		if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
+			int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
+			Variant pVarResult = auto.getProperty(rgdispid[0]);
+			IDispatch dispatchDocument = pVarResult.getDispatch();
+			int /*long*/ [] ppvObject = new int /*long*/ [1];
+			int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
+			if (result == OS.S_OK) {
+				IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);
+				if (persistStreamInit.InitNew() == OS.S_OK) {
+					persistStreamInit.Load(ppstm[0]);
+				}
+				persistStreamInit.Release();
+			}
+			pVarResult.dispose();
+			/*
+			* This code is intentionally commented.  The IDispatch obtained from a Variant
+			* did not increase the reference count for the enclosed interface.
+			*/
+			//dispatchDocument.Release();
+			IUnknown stream = new IUnknown(ppstm[0]);
+			stream.Release();
+		} else {
+			OS.GlobalFree(hGlobal);
+		}
+	}
+}
+
+public boolean setText(final String html) {
 	/*
 	* If the html field is non-null then the about:blank page is already being
 	* loaded, so no Stop or Navigate is required.  Just set the html that is to
@@ -996,6 +1000,39 @@ public boolean setText(String html) {
 		rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 		auto.invoke(rgdispid[0]);
 	}
+
+	/*
+	* Feature in IE.  If the current page is about:blank then a DocumentComplete
+	* callback will not be received by re-navigating to about:blank, and the new
+	* content will not be set.  The workaround is to skip this re-navigation and
+	* just set the content here if not vetoed by a LocationListener.  
+	*/
+	if (getUrl().equals(ABOUT_BLANK)) {
+		Runnable runnable = new Runnable() {
+			public void run() {
+				if (browser.isDisposed()) return;
+				LocationEvent newEvent = new LocationEvent(browser);
+				newEvent.display = browser.getDisplay();
+				newEvent.widget = browser;
+				newEvent.location = ABOUT_BLANK;
+				newEvent.doit = true;
+				for (int i = 0; i < locationListeners.length; i++) {
+					locationListeners[i].changing(newEvent);
+				}
+				boolean doit = newEvent.doit && !browser.isDisposed();
+				if (doit) setHTML(html);
+			}
+		};
+
+		if (delaySetText) {
+			delaySetText = false;
+			browser.getDisplay().asyncExec(runnable);
+		} else {
+			runnable.run();
+		}
+		return true;
+	}
+
 	rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	navigate = true;
 	Variant[] rgvarg = new Variant[1];

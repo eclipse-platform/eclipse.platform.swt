@@ -530,7 +530,14 @@ void webView_didChangeLocationWithinPageForFrame(int /*long*/ sender, int /*long
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
+	if (url2.equals (URI_FROMMEMORY)) {
+		url2 = ABOUT_BLANK;
+	} else {
+		length = URI_FROMMEMORY.length ();
+		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+			url2 = ABOUT_BLANK + url2.substring (length);
+		}
+	}
 
 	final Display display = browser.getDisplay();
 	boolean top = frameID == webView.mainFrame().id;
@@ -722,7 +729,14 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
+	if (url2.equals (URI_FROMMEMORY)) {
+		url2 = ABOUT_BLANK;
+	} else {
+		length = URI_FROMMEMORY.length ();
+		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+			url2 = ABOUT_BLANK + url2.substring (length);
+		}
+	}
 
 	Display display = browser.getDisplay();
 	boolean top = frameID == webView.mainFrame().id;
@@ -1259,7 +1273,14 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
+	if (url2.equals (URI_FROMMEMORY)) {
+		url2 = ABOUT_BLANK;
+	} else {
+		int length = URI_FROMMEMORY.length ();
+		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+			url2 = ABOUT_BLANK + url2.substring (length);
+		}
+	}
 
 	LocationEvent newEvent = new LocationEvent(browser);
 	newEvent.display = browser.getDisplay();

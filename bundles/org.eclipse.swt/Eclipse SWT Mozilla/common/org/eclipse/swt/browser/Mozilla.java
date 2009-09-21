@@ -2037,7 +2037,14 @@ public String getUrl () {
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (location.equals (URI_FROMMEMORY)) location = ABOUT_BLANK;
+	if (location.equals (URI_FROMMEMORY)) {
+		location = ABOUT_BLANK;
+	} else {
+		int length = URI_FROMMEMORY.length ();
+		if (location.startsWith (URI_FROMMEMORY) && location.charAt (length) == '#') {
+			location = ABOUT_BLANK + location.substring (length);
+		}
+	}
 	return location;
 }
 
@@ -3026,7 +3033,14 @@ int OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*lo
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (event.location.equals (URI_FROMMEMORY)) event.location = ABOUT_BLANK;
+	if (event.location.equals (URI_FROMMEMORY)) {
+		event.location = ABOUT_BLANK;
+	} else {
+		length = URI_FROMMEMORY.length ();
+		if (event.location.startsWith (URI_FROMMEMORY) && event.location.charAt (length) == '#') {
+			event.location = ABOUT_BLANK + event.location.substring (length);
+		}
+	}
 	event.top = aTop[0] == aDOMWindow[0];
 	for (int i = 0; i < locationListeners.length; i++) {
 		locationListeners[i].changed (event);
@@ -3419,7 +3433,14 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 				 * If the URI indicates that the page is being rendered from memory
 				 * (via setText()) then set it to about:blank to be consistent with IE.
 				 */
-				if (event.location.equals (URI_FROMMEMORY)) event.location = ABOUT_BLANK;
+				if (event.location.equals (URI_FROMMEMORY)) {
+					event.location = ABOUT_BLANK;
+				} else {
+					length = URI_FROMMEMORY.length ();
+					if (event.location.startsWith (URI_FROMMEMORY) && event.location.charAt (length) == '#') {
+						event.location = ABOUT_BLANK + event.location.substring (length);
+					}
+				}
 				event.doit = doit;
 				for (int i = 0; i < locationListeners.length; i++) {
 					locationListeners[i].changing (event);
