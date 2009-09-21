@@ -79,6 +79,13 @@ public class LineStyleEvent extends TypedEvent {
 	 * @since 3.2
 	 */
 	public int bulletIndex;
+
+	/**
+	 * line tab stops (output)
+	 * @since 3.6
+	 */
+	public int[] tabStops;
+
 	
 	static final long serialVersionUID = 3906081274027192884L;
 
@@ -99,5 +106,6 @@ public LineStyleEvent(StyledTextEvent e) {
 	indent = e.indent;
 	bullet = e.bullet;
 	bulletIndex = e.bulletIndex;
+	tabStops = e.tabStops;
 }
 }

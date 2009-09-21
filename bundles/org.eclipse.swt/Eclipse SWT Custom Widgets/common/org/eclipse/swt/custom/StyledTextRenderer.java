@@ -67,6 +67,7 @@ class StyledTextRenderer {
 	final static int INDENT = 1 << 2;
 	final static int JUSTIFY = 1 << 3;
 	final static int SEGMENTS = 1 << 5;
+	final static int TABSTOPS = 1 << 6;
 	
 	static class LineInfo {
 		int flags;
@@ -75,6 +76,7 @@ class StyledTextRenderer {
 		int indent;
 		boolean justify;
 		int[] segments;
+		int[] tabStops;
 
 		public LineInfo() {
 		}
@@ -86,6 +88,7 @@ class StyledTextRenderer {
 				indent = info.indent;
 				justify = info.justify;
 				segments = info.segments;
+				tabStops = info.tabStops;
 			}
 		}
 	}
@@ -267,7 +270,7 @@ void clearLineStyle(int startLine, int count) {
 	for (int i = startLine; i < startLine + count; i++) {
 		LineInfo info = lines[i];
 		if (info != null) {
-			info.flags &= ~(ALIGNMENT | INDENT | JUSTIFY);
+			info.flags &= ~(ALIGNMENT | INDENT | JUSTIFY | TABSTOPS);
 			if (info.flags == 0) lines[i] = null;
 		}
 	}
@@ -584,6 +587,14 @@ int[] getLineSegments(int index, int[] defaultSegments) {
 	}
 	return defaultSegments;
 }
+int[] getLineTabStops(int index, int[] defaultTabStops) {
+	if (lines == null) return defaultTabStops;
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & TABSTOPS) != 0) {
+		return info.tabStops;
+	}
+	return defaultTabStops;
+}
 int getRangeIndex(int offset, int low, int high) {
 	if (styleCount == 0) return 0;
 	if (ranges != null)  {
@@ -780,6 +791,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		bullet = event.bullet;
 		ranges = event.ranges;
 		styles = event.styles;
+		if (event.tabStops != null) tabs = event.tabStops;
 		if (styles != null) {
 			styleCount = styles.length;
 			if (styledText.isFixedLineHeight()) {
@@ -810,6 +822,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				if ((info.flags & ALIGNMENT) != 0) alignment = info.alignment;
 				if ((info.flags & JUSTIFY) != 0) justify = info.justify;
 				if ((info.flags & SEGMENTS) != 0) segments = info.segments;
+				if ((info.flags & TABSTOPS) != 0) tabs = info.tabStops;
 			}
 		}
 		if (bulletsIndices != null) {
@@ -1155,6 +1168,16 @@ void setLineSegments(int startLine, int count, int[] segments) {
 		}
 		lines[i].flags |= SEGMENTS;
 		lines[i].segments = segments;
+	}
+}
+void setLineTabStops(int startLine, int count, int[] tabStops) {
+	if (lines == null) lines = new LineInfo[lineCount];
+	for (int i = startLine; i < startLine + count; i++) {
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= TABSTOPS;
+		lines[i].tabStops = tabStops;
 	}
 }
 void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {

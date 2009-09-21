@@ -52,6 +52,7 @@ public void handleEvent(Event e) {
 			((StyledTextEvent) e).justify = lineStyleEvent.justify;
 			((StyledTextEvent) e).bullet = lineStyleEvent.bullet;
 			((StyledTextEvent) e).bulletIndex = lineStyleEvent.bulletIndex;
+			((StyledTextEvent) e).tabStops = lineStyleEvent.tabStops;
 			break;
 		case StyledText.PaintObject:
 			PaintObjectEvent paintObjectEvent = new PaintObjectEvent((StyledTextEvent) e);

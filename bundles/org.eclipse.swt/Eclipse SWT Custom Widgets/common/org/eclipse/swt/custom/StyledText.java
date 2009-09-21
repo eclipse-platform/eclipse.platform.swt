@@ -4216,6 +4216,38 @@ public int getLineIndex(int y) {
 	}
 	return line;
 }
+/**
+ * Returns the tab stops of the line at the given index.
+ * 
+ * @param index the index of the line
+ * 
+ * @return the tab stops for the line 
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
+ * </ul>
+ * 
+ * @see #getTabsStop()
+ * 
+ * @since 3.6
+ */
+public int[] getLineTabStops(int index) {
+	checkWidget();
+	if (index < 0 || index > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (isListening(LineGetStyle)) return null;
+	int[] tabs = renderer.getLineTabStops(index, null);
+	if (tabs == null) tabs = this.tabs;
+	if (tabs == null) return new int [] {renderer.tabWidth};
+	int[] result = new int[tabs.length];
+	System.arraycopy(tabs, 0, result, 0, tabs.length);
+	return result;
+}
 /** 
  * Returns the left margin.
  *
@@ -8538,6 +8570,63 @@ public void setLineSpacing(int lineSpacing) {
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
 	super.redraw();
+}
+/**
+ * Sets the tab stops of the specified lines.
+ * <p>
+ * Should not be called if a LineStyleListener has been set since the listener 
+ * maintains the line attributes.
+ * </p><p>
+ * All line attributes are maintained relative to the line text, not the 
+ * line index that is specified in this method call.
+ * During text changes, when entire lines are inserted or removed, the line 
+ * attributes that are associated with the lines after the change 
+ * will "move" with their respective text. An entire line is defined as 
+ * extending from the first character on a line to the last and including the 
+ * line delimiter. 
+ * </p><p>
+ * When two lines are joined by deleting a line delimiter, the top line 
+ * attributes take precedence and the attributes of the bottom line are deleted. 
+ * For all other text changes line attributes will remain unchanged.
+ * </p>
+ *  
+ * @param startLine first line the justify is applied to, 0 based
+ * @param lineCount number of lines the justify applies to.
+ * @param tabStop tab stops
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the specified line range is invalid</li>
+ * </ul>
+ * @see #setTabStops(int[])
+ * @since 3.6
+ */
+public void setLineTabStops(int startLine, int lineCount, int[] tabStops) {
+	checkWidget();
+	if (isListening(LineGetStyle)) return;
+	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (tabStops != null) {
+		int pos = 0;
+		int[] newTabs = new int[tabStops.length];
+		for (int i = 0; i < tabStops.length; i++) {
+			if (tabStops[i] < pos) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			newTabs[i] = pos = tabStops[i];
+		}
+		renderer.setLineTabStops(startLine, lineCount, newTabs);
+	} else {
+		renderer.setLineTabStops(startLine, lineCount, null);
+	}
+	resetCache(startLine, lineCount);
+	redrawLines(startLine, lineCount, false);
+	int caretLine = getCaretLine();
+	if (startLine <= caretLine && caretLine < startLine + lineCount) {
+		setCaretLocation();
+	}
 }
 /** 
  * Sets the color of the margins.

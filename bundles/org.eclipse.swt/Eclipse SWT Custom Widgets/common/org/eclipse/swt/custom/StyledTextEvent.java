@@ -25,6 +25,7 @@ class StyledTextEvent extends Event {
 	boolean justify;
 	Bullet bullet;
 	int bulletIndex;
+	int[] tabStops;
 	// used by LineBackgroundEvent
 	Color lineBackground;
 	// used by BidiSegmentEvent
