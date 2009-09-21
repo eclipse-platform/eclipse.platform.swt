@@ -27,7 +27,7 @@ class WebSite extends OleControlSite {
 	COMObject iOleCommandTarget;
 	COMObject iAuthenticate;
 	COMObject iDispatch;
-	boolean ignoreNextMessage;
+	boolean ignoreNextMessage, ignoreAllMessages;
 	Boolean canExecuteApplets;
 
 	static final int OLECMDID_SHOWSCRIPTERROR = 40;
@@ -412,7 +412,7 @@ int UpdateUI() {
 /* IDocHostShowUI */
 
 int ShowMessage(int /*long*/ hwnd, int /*long*/ lpstrText, int /*long*/ lpstrCaption, int dwType, int /*long*/ lpstrHelpFile, int dwHelpContext, int /*long*/ plResult) {
-	boolean ignore = ignoreNextMessage;
+	boolean ignore = ignoreNextMessage || ignoreAllMessages;
 	ignoreNextMessage = false;
 	return ignore ? COM.S_OK : COM.S_FALSE;
 }

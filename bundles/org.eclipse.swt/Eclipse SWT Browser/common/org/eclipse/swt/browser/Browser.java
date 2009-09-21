@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.*;
 public class Browser extends Composite {
 	WebBrowser webBrowser;
 	int userStyle;
+	boolean isClosing;
 
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
@@ -509,7 +510,9 @@ public boolean execute (String script) {
 public boolean close () {
 	checkWidget();
 	if (webBrowser.close ()) {
+		isClosing = true;
 		dispose ();
+		isClosing = false;
 		return true;
 	}
 	return false;

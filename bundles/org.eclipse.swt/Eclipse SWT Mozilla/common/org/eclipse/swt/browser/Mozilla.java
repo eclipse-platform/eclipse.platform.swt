@@ -47,7 +47,7 @@ class Mozilla extends WebBrowser {
 	int refCount, lastKeyCode, lastCharCode, authCount;
 	int /*long*/ request;
 	Point location, size;
-	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage;
+	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage, ignoreAllMessages;
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
@@ -2104,6 +2104,16 @@ static String error (int code) {
 }
 
 void onDispose (Display display) {
+	/* invoke onbeforeunload handlers */
+	if (!browser.isClosing && !browser.isDisposed()) {
+		LocationListener[] oldLocationListeners = locationListeners;
+		locationListeners = new LocationListener[0];
+		ignoreAllMessages = true;
+		execute ("window.location.replace('about:blank');"); //$NON-NLS-1$
+		ignoreAllMessages = false;
+		locationListeners = oldLocationListeners;	
+	}
+
 	int rc = webBrowser.RemoveWebBrowserListener (weakReference.getAddress (), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) error (rc);
 
@@ -2114,21 +2124,6 @@ void onDispose (Display display) {
 	if (rc != XPCOM.NS_OK) error (rc);
 
 	unhookDOMListeners ();
-	if (listener != null) {
-		int[] folderEvents = new int[] {
-			SWT.Dispose,
-			SWT.Resize,  
-			SWT.FocusIn,
-			SWT.Activate,
-			SWT.Deactivate,
-			SWT.Show,
-			SWT.KeyDown,
-		};
-		for (int i = 0; i < folderEvents.length; i++) {
-			browser.removeListener (folderEvents[i], listener);
-		}
-		listener = null;
-	}
 
 	int /*long*/[] result = new int /*long*/[1];
 	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
@@ -2146,6 +2141,7 @@ void onDispose (Display display) {
 	webBrowserObject = null;
 	lastNavigateURL = null;
 	htmlBytes = null;
+	listener = null;
 
 	if (tip != null && !tip.isDisposed ()) tip.dispose ();
 	tip = null;

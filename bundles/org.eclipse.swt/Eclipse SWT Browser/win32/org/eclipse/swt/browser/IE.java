@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.*;
 class IE extends WebBrowser {
 
 	OleFrame frame;
-	OleControlSite site;
+	WebSite site;
 	OleAutomation auto;
 	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
@@ -271,7 +271,15 @@ public void create(Composite parent, int style) {
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
-//					execute("window.location.href='about:blank';");
+					/* invoke onbeforeunload handlers */
+					if (!browser.isClosing) {
+						LocationListener[] oldLocationListeners = locationListeners;
+						locationListeners = new LocationListener[0];
+						site.ignoreAllMessages = true;
+						execute ("window.location.href='about:blank'"); //$NON-NLS-1$
+						site.ignoreAllMessages = false;
+						locationListeners = oldLocationListeners;
+					}
 
 					/*
 					* It is possible for the Browser's OLE frame to have been disposed

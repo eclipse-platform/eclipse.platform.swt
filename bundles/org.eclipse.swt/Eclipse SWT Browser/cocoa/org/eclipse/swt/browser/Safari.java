@@ -31,7 +31,7 @@ class Safari extends WebBrowser {
 	String url = ""; //$NON-NLS-1$
 	Point location;
 	Point size;
-	boolean statusBar = true, toolBar = true, ignoreDispose;
+	boolean statusBar = true, toolBar = true, ignoreDispose, acceptAllBeforeUnloadConfirms;
 	int lastMouseMoveX, lastMouseMoveY;
 	//TEMPORARY CODE
 //	boolean doit;
@@ -216,6 +216,13 @@ public void create (Composite parent, int style) {
 					ignoreDispose = true;
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
+
+					/* invoke onbeforeunload handler(s) */
+					if (!browser.isClosing) {
+						acceptAllBeforeUnloadConfirms = true;
+						close (); 
+						acceptAllBeforeUnloadConfirms = false;
+					}
 
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
 
@@ -415,11 +422,11 @@ public boolean close () {
 	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(win) {\n"); // $NON-NLS-1$
-	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {var str = null; try {str = fn();} catch (e) {}"); // $NON-NLS-1$
-	buffer.append ("if (str != null) {var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str);if (!result) return false;}}"); // $NON-NLS-1$
-	buffer.append ("for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
+	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {try {var str = fn(); if (str != null) { "); // $NON-NLS-1$
+	buffer.append ("var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str); if (!result) return false;}} catch (e) {}} "); // $NON-NLS-1$
+	buffer.append ("try {for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
 	buffer.append (functionName);
-	buffer.append ("(win.frames[i]); if (!result) return false;} return true;"); // $NON-NLS-1$
+	buffer.append ("(win.frames[i]); if (!result) return false;}} catch (e) {} return true;"); // $NON-NLS-1$
 	buffer.append ("\n};"); // $NON-NLS-1$
 	execute (buffer.toString ());
 
@@ -1081,7 +1088,10 @@ void webViewUnfocus(int /*long*/ sender) {
 }
 
 NSNumber callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int /*long*/ arg) {
-	boolean result = webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame (0, messageID, 0);
+	boolean result = true;
+	if (!acceptAllBeforeUnloadConfirms) {
+		result = webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame (0, messageID, 0);
+	}
 	return NSNumber.numberWithBool (result);
 }
 
