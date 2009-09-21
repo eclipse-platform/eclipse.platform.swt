@@ -602,10 +602,11 @@ void createHandle () {
 	} else {
 		state &= ~HIDDEN;
 		
-		// 'view' is set to the NSView we should add the window's content view to as a subview.
-		// If that is null but 'window' is not we are in the foreign-handle case and shouldn't modify
-		// the window since we don't own it.
 		if (window != null) {
+			// In the FOREIGN_HANDLE case, 'window' is an NSWindow created on our behalf.
+			// It may already have a content view, so if it does, grab and retain, since we release()
+			// the view at disposal time.  Otherwise, create a new 'view' that will be used as the window's
+			// content view in setZOrder.
 			view = window.contentView();
 			
 			if (view == null) {
@@ -614,6 +615,9 @@ void createHandle () {
 				view.retain();
 			}
 		} else {
+			// In the embedded case, 'view' is already set to the NSView we should add the window's content view to as a subview.
+			// In that case we will hold on to the foreign view, create our own SWTCanvasView (which overwrites 'view') and then
+			// add it to the foreign view.
 			NSView parentView = view;			
 			super.createHandle();
 			parentView.addSubview(view);
@@ -627,11 +631,15 @@ void createHandle () {
 		window.setAcceptsMouseMovedEvents(true);
 		windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 		window.setDelegate(windowDelegate);
-		id id = window.fieldEditor (true, null);
-		if (id != null) {
-			OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
-		}
 	}
+	
+	NSWindow fieldEditorWindow = window;
+	if (fieldEditorWindow == null) fieldEditorWindow = view.window();
+	id id = fieldEditorWindow.fieldEditor (true, null);
+	if (id != null) {
+		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+	}
+
 }
 
 void deregister () {
@@ -752,19 +760,27 @@ public int getAlpha () {
 
 public Rectangle getBounds () {
 	checkWidget();
-	NSRect frame = (window == null ? view.frame() : window.frame());
-	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-	Rectangle rectangle = new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 	
 	if (window != null) {
-		float /*double*/ scaleFactor = window.userSpaceScaleFactor();
-		rectangle.x /= scaleFactor;
-		rectangle.y /= scaleFactor;
-		rectangle.width /= scaleFactor;
-		rectangle.height /= scaleFactor;
+		NSRect frame = window.frame();
+		float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+		return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
+	} else {
+		NSRect frame = view.frame();
+		// Start from view's origin, (0, 0)
+		NSPoint pt = new NSPoint();
+		NSRect primaryFrame = display.getPrimaryFrame();
+		if (!view.isFlipped ()) {
+			pt.y = view.bounds().height - pt.y;
+		}
+		pt = view.convertPoint_toView_(pt, null);
+		pt = view.window().convertBaseToScreen(pt);
+		pt.y = primaryFrame.height - pt.y;
+		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+		pt.x /= scaleFactor;
+		pt.y /= scaleFactor;
+		return new Rectangle((int)pt.x, (int)pt.y, (int)frame.width, (int)frame.height);
 	}
-	
-	return rectangle;
 }
 
 public Rectangle getClientArea () {

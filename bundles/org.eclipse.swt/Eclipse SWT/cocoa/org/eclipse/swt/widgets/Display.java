@@ -752,6 +752,12 @@ void createDisplay (DeviceData data) {
 	}
 
 	NSThread nsthread = NSThread.currentThread();
+	
+	if (!NSThread.isMainThread()) {
+		System.out.println ("***WARNING: Display must be created on main thread due to Cocoa restrictions."); //$NON-NLS-1$
+		error(SWT.ERROR_THREAD_INVALID_ACCESS);
+	}
+	
 	NSMutableDictionary dictionary = nsthread.threadDictionary();
 	NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
 	NSNumber id = new NSNumber(dictionary.objectForKey(key));
