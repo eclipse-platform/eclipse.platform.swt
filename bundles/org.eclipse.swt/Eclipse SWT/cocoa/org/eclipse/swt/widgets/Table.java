@@ -870,17 +870,8 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 
 void drawBackgroundInClipRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	super.drawViewBackgroundInRect(id, sel, rect);
-	Control control = findBackgroundControl();
-	if (control == null) control = this;
-	Image image = control.backgroundImage;
-	if (image != null && !image.isDisposed()) {
-		NSGraphicsContext context = NSGraphicsContext.currentContext();
-		if (backgroundImage == null) {
-			control.fillBackground (view, context, rect, -1);
-		} else {
-			control.fillBackground (view, context, rect, image.getBounds().height);
-		}
-	} 
+	if (id != view.id) return;
+	fillBackground (view, NSGraphicsContext.currentContext(), rect, -1);
 }
 
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rect, int /*long*/ view) {

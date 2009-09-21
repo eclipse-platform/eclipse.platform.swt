@@ -1119,6 +1119,9 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 		NSColor.colorWithPatternImage(image.handle).setFill();
 		NSPoint phase = new NSPoint();
 		NSView controlView = control.view;
+		if (!controlView.isFlipped()) {
+			phase.y = controlView.bounds().height;
+		}
 		if (imgHeight == -1) {
 			NSView contentView = controlView.window().contentView();
 			phase = controlView.convertPoint_toView_(phase, contentView);
@@ -3017,11 +3020,10 @@ public void setBackgroundImage (Image image) {
 	if (image == backgroundImage) return;
 	backgroundImage = image;
 	updateBackgroundImage();
-	redrawWidget(view, false);
 }
 
 void setBackgroundImage (NSImage image) {
-	paintView().setNeedsDisplay(true);
+	redrawWidget(view, true);
 }
 
 void setBackgroundColor (NSColor nsColor) {
@@ -4118,11 +4120,7 @@ void updateBackgroundColor () {
 void updateBackgroundImage () {
 	Control control = findBackgroundControl ();
 	Image image = control != null ? control.backgroundImage : backgroundImage;
-	if (image != null) {
-		setBackgroundImage (image.handle);
-	} else {
-		updateBackgroundColor();
-	}
+	setBackgroundImage (image != null ? image.handle : null);
 }
 
 void updateBackgroundMode () {

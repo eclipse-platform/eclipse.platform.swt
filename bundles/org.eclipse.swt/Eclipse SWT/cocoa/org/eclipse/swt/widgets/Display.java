@@ -164,7 +164,6 @@ public class Display extends Device {
 	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	static Callback dialogCallback3, dialogCallback4, dialogCallback5;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
-	static Callback fieldEditorCallback3, fieldEditorCallback4;
 	
 	/* Display Shutdown */
 	Runnable [] disposeList;
@@ -2020,13 +2019,7 @@ void initClasses () {
 	windowCallback6 = new Callback(clazz, "windowProc", 6);
 	int /*long*/ proc6 = windowCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	fieldEditorCallback3 = new Callback(clazz, "fieldEditorProc", 3);
-	int /*long*/ fieldEditorProc3 = fieldEditorCallback3.getAddress();
-	if (fieldEditorProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	fieldEditorCallback4 = new Callback(clazz, "fieldEditorProc", 4);
-	int /*long*/ fieldEditorProc4 = fieldEditorCallback4.getAddress();
-	if (fieldEditorProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
+	
 	int /*long*/ isFlippedProc = OS.isFlipped_CALLBACK();
 	int /*long*/ drawRectProc = OS.CALLBACK_drawRect_(proc3);
 	int /*long*/ drawInteriorWithFrameInViewProc = OS.CALLBACK_drawInteriorWithFrame_inView_ (proc4);
@@ -2048,8 +2041,7 @@ void initClasses () {
 	int /*long*/ firstRectForCharacterRangeProc = OS.CALLBACK_firstRectForCharacterRange_(proc3);	
 	int /*long*/ textWillChangeSelectionProc = OS.CALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_(proc5);
 	int /*long*/ accessibilityHitTestProc = OS.CALLBACK_accessibilityHitTest_(proc3);
-	int /*long*/ shouldChangeTextInRange_replacementString_Proc = OS.CALLBACK_shouldChangeTextInRange_replacementString_(fieldEditorProc4);
-	int /*long*/ shouldChangeTextInRange_replacementString_fieldEditorProc = shouldChangeTextInRange_replacementString_Proc;
+	int /*long*/ shouldChangeTextInRange_replacementString_Proc = OS.CALLBACK_shouldChangeTextInRange_replacementString_(proc4);
 	int /*long*/ view_stringForToolTip_point_userDataProc = OS.CALLBACK_view_stringForToolTip_point_userData_(proc6);
 	int /*long*/ canDragRowsWithIndexes_atPoint_Proc = OS.CALLBACK_canDragRowsWithIndexes_atPoint_(proc4);
 	int /*long*/ setNeedsDisplayInRectProc = OS.CALLBACK_setNeedsDisplayInRect_(proc3);
@@ -2153,11 +2145,11 @@ void initClasses () {
 	
 	className = "SWTEditorView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-	//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
-	addEventMethods(cls, 0, fieldEditorProc3, 0, 0, 0);
-	OS.class_addMethod(cls, OS.sel_insertText_, fieldEditorProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, fieldEditorProc3, "@::");
-	OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_fieldEditorProc, "@:{NSRange}@");
+	//TODO hitTestProc should be set Control.setRegion()? 
+	addEventMethods(cls, 0, proc3, drawRectProc, 0, 0);
+	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
+	OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_Proc, "@:{NSRange}@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTImageView";
@@ -2320,10 +2312,10 @@ void initClasses () {
 		className = "SWTSecureEditorView";
 		cls = OS.objc_allocateClassPair(nsSecureTextViewClass, className, 0);
 		//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
-		addEventMethods(cls, 0, fieldEditorProc3, 0, 0, 0);
-		OS.class_addMethod(cls, OS.sel_insertText_, fieldEditorProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_doCommandBySelector_, fieldEditorProc3, "@::");
-		OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_fieldEditorProc, "@:{NSRange}@");
+		addEventMethods(cls, 0, proc3, drawRectProc, 0, 0);
+		OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
+		OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_Proc, "@:{NSRange}@");
 		OS.objc_registerClassPair(cls);
 	}
 	
@@ -2437,6 +2429,7 @@ void initClasses () {
 	OS.objc_registerClassPair(cls);
 	
 	cls = registerCellSubclass(NSTextField.cellClass(), size, align, types);
+	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
 	NSTextField.setCellClass(cls);
 
@@ -4508,69 +4501,17 @@ static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	return 0;
 }
 
-static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	Widget widget = null;
-	NSView view = new NSView (id);
-	do {
-		widget = GetWidget (view.id);
-		if (widget != null) break;
-		view = view.superview ();
-	} while (view != null);
-	if (widget == null) return 0;
-	if (sel == OS.sel_keyDown_) {
-		widget.keyDown (id, sel, arg0);
-	} else if (sel == OS.sel_keyUp_) {
-		widget.keyUp (id, sel, arg0);
-	} else if (sel == OS.sel_flagsChanged_) {
-		widget.flagsChanged(id, sel, arg0);
-	} else if (sel == OS.sel_insertText_) {
-		return widget.insertText (id, sel, arg0) ? 1 : 0;
-	} else if (sel == OS.sel_doCommandBySelector_) {
-		widget.doCommandBySelector (id, sel, arg0);
-	} else if (sel == OS.sel_menuForEvent_) {
-		return widget.menuForEvent (id, sel, arg0);
-	} else if (sel == OS.sel_mouseDown_) {
-		widget.mouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_mouseUp_) {
-		widget.mouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_mouseMoved_) {
-		widget.mouseMoved(id, sel, arg0);
-	} else if (sel == OS.sel_mouseDragged_) {
-		widget.mouseDragged(id, sel, arg0);
-	} else if (sel == OS.sel_mouseEntered_) {
-		widget.mouseEntered(id, sel, arg0);
-	} else if (sel == OS.sel_mouseExited_) {
-		widget.mouseExited(id, sel, arg0);
-	} else if (sel == OS.sel_cursorUpdate_) {
-		widget.cursorUpdate(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseDown_) {
-		widget.rightMouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseDragged_) {
-		widget.rightMouseDragged(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseUp_) {
-		widget.rightMouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseDown_) {
-		widget.otherMouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseUp_) {
-		widget.otherMouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseDragged_) {
-		widget.otherMouseDragged(id, sel, arg0);
+static Widget LookupWidget (int /*long*/ id, int /*long*/ sel) {
+	Widget widget = GetWidget(id);
+	if (widget == null) {
+		NSView view = new NSView (id);
+		if (view.isKindOfClass(OS.class_NSView)) {
+			while (widget == null && (view = view.superview ()) != null) {
+				widget = GetWidget (view.id);
+			}
+		}
 	}
-	return 0;
-}
-
-static int /*long*/ fieldEditorProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	Widget widget = null;
-	NSView view = new NSView (id);
-	do {
-		widget = GetWidget (view.id);
-		if (widget != null) break;
-		view = view.superview ();
-	} while (view != null);
-	if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
-		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
-	}
-	return 0;
+	return widget;
 }
 
 static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
@@ -4588,7 +4529,7 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 			return 1;
 		}
 	}
-	Widget widget = GetWidget(id);
+	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
 	if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
@@ -4694,7 +4635,7 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		display.runSettings = true;
 		return 0;
 	}
-	Widget widget = GetWidget(id);
+	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_) {
 		widget.windowWillClose(id, sel, arg0);
@@ -4879,7 +4820,7 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 }
 
 static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	Widget widget = GetWidget(id);
+	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
 		widget.tabView_willSelectTabViewItem(id, sel, arg0, arg1);
@@ -4932,7 +4873,7 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 }
 
 static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
-	Widget widget = GetWidget(id);
+	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
 		return widget.tableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2);
@@ -4971,7 +4912,7 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 }
 
 static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
-	Widget widget = GetWidget(id);
+	Widget widget = LookupWidget(id, sel);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_willDisplayCell_forTableColumn_row_) {
 		widget.tableView_willDisplayCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);

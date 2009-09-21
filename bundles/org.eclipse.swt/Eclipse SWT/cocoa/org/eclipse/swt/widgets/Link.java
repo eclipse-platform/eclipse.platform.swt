@@ -182,6 +182,10 @@ void deregister () {
 	if (scrollView != null) display.removeWidget (scrollView);
 }
 
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	fillBackground (view, context, rect, -1);
+}
+
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	NSColor nsColor = null; 
@@ -418,8 +422,7 @@ void setBackgroundColor(NSColor nsColor) {
 }
 
 void setBackgroundImage(NSImage image) {
-	NSColor nsColor = NSColor.colorWithPatternImage(image);
-	setBackground(nsColor);
+	((NSTextView) view).setDrawsBackground(image == null);
 }
 
 void setBackground(NSColor nsColor) {

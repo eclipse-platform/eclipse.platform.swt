@@ -211,6 +211,11 @@ void destroyItem (TabItem item) {
 	((NSTabView)view).removeTabViewItem(item.nsItem);
 }
 
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (id != view.id) return;
+	fillBackground (view, context, rect, -1);
+}
+
 Widget findTooltip (NSPoint pt) {
 	pt = view.convertPoint_fromView_ (pt, null);
 	NSTabViewItem nsItem = ((NSTabView)view).tabViewItemAtPoint (pt);

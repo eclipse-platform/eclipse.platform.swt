@@ -1249,11 +1249,7 @@ void setBackgroundColor(NSColor nsColor) {
 }
 
 void setBackgroundImage(NSImage image) {
-	if ((style & SWT.READ_ONLY) != 0) {
-		//TODO
-	} else {
-		((NSTextField)view).setBackgroundColor(NSColor.colorWithPatternImage(image));
-	}
+	//TODO setDrawsBackground is ignored by NSComboBox?
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {

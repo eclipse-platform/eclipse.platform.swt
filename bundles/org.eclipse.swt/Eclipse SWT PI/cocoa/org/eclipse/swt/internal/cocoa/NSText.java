@@ -42,6 +42,10 @@ public NSFont font() {
 	return result != 0 ? new NSFont(result) : null;
 }
 
+public boolean isFieldEditor() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isFieldEditor);
+}
+
 public void paste(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_paste_, sender != null ? sender.id : 0);
 }

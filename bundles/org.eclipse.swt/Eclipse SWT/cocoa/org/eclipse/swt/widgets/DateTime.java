@@ -181,6 +181,11 @@ NSFont defaultNSFont() {
 	return display.datePickerFont;
 }
 
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (id != view.id) return;
+	fillBackground (view, context, rect, -1);
+}
+
 NSCalendarDate getCalendarDate () {
 	NSDate date = ((NSDatePicker)view).dateValue();
 	return date.dateWithCalendarFormat(null, null);
@@ -366,8 +371,7 @@ void setBackgroundColor(NSColor nsColor) {
 }
 
 void setBackgroundImage(NSImage image) {
-	NSColor ndColor = NSColor.colorWithPatternImage(image);
-	((NSDatePicker)view).setBackgroundColor(ndColor);
+	((NSDatePicker)view).setDrawsBackground(image == null);
 }
 
 /**

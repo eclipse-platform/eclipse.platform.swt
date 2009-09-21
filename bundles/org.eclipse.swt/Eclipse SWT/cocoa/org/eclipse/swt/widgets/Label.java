@@ -276,6 +276,11 @@ void deregister () {
 	}
 }
 
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (id != view.id) return;
+	fillBackground(view, context, rect, -1);
+}
+
 NSView eventView () {
 	return ((NSBox)view).contentView();
 }
@@ -393,17 +398,6 @@ public void setAlignment (int alignment) {
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	_setAlignment();
-}
-
-void setBackgroundColor(NSColor nsColor) {
-	if ((style & SWT.SEPARATOR) != 0) return;
-	((NSBox)view).setFillColor(nsColor);
-}
-
-void setBackgroundImage(NSImage image) {
-	if ((style & SWT.SEPARATOR) != 0) return;
-	NSColor nsColor = NSColor.colorWithPatternImage(image);
-	((NSBox)view).setFillColor(nsColor);
 }
 
 void _setAlignment() {

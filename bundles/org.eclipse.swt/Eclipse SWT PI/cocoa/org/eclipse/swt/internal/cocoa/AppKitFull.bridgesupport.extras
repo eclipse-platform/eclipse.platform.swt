@@ -954,6 +954,9 @@
 		</method>
 	</class>
 	<class name="NSButtonCell" swt_gen="mixed" swt_superclass="NSActionCell">
+		<method selector="backgroundColor" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="drawImage:withFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="image" swt_gen="true"></arg>
 			<arg name="frame" swt_gen="true"></arg>
@@ -1714,6 +1717,9 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isDrawingToScreen" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="isFlipped" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="restoreGraphicsState" swt_gen="true">
@@ -3491,6 +3497,9 @@
 		<method selector="font" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="isFieldEditor" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="paste:" swt_gen="true">
 			<arg name="sender" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4165,6 +4174,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="enableCursorRects" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="endEditingFor:" swt_gen="true">
+			<arg name="anObject" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="fieldEditor:forObject:" swt_gen="true">

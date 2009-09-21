@@ -323,6 +323,26 @@ void deregister () {
 	}
 }
 
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if (backgroundImage == null) return;
+	if (new NSView(id).isKindOfClass(OS.class_NSText)) {
+		NSText text = new NSText(id);
+		if (!text.isFieldEditor()) return;
+	}
+	fillBackground (view, context, rect, -1);
+}
+
+void drawInteriorWithFrame_inView(int id, int sel, NSRect cellFrame, int viewid) {
+	Control control = findBackgroundControl();
+	if (control == null) control = this;
+	Image image = control.backgroundImage;
+	if (image != null && !image.isDisposed()) {
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+ 	 	control.fillBackground (view, context, cellFrame, -1);
+	}
+	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
+}
+
 NSView focusView () {
 	return textView;
 }
@@ -703,8 +723,10 @@ void setBackgroundColor(NSColor nsColor) {
 }
 
 void setBackgroundImage(NSImage image) {
-	NSColor	nsColor = NSColor.colorWithPatternImage(image);
-	((NSTextField) textView).setBackgroundColor (nsColor);
+	NSTextField widget = (NSTextField) textView;
+	widget.setDrawsBackground(image == null);
+	NSText editor = widget.window().fieldEditor(true, widget);
+	editor.setDrawsBackground(image == null);
 }
 /**
  * Sets the number of decimal places used by the receiver.

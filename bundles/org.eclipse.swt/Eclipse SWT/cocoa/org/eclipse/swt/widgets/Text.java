@@ -605,21 +605,29 @@ void deregister() {
 	}
 }
 
-void drawViewBackgroundInRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	if ((style & SWT.SINGLE) != 0) {
+		if (backgroundImage == null) return;
+		if (new NSView(id).isKindOfClass(OS.class_NSText)) {
+			NSText text = new NSText(id);
+			if (!text.isFieldEditor()) return;
+		}
+	}
+	if ((style & SWT.MULTI) != 0 && id != scrollView.id) return;
+	fillBackground (view, context, rect, -1);
+}
+
+void drawInteriorWithFrame_inView(int id, int sel, NSRect cellFrame, int viewid) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
-	boolean drawImage = image != null && !image.isDisposed();
-	super.drawViewBackgroundInRect(id, sel, rect);
-	if (drawImage) {
+	if (image != null && !image.isDisposed()) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
-		if (backgroundImage == null) {
-			control.fillBackground (view, context, rect, -1);
-		} else {
-			control.fillBackground (view, context, rect, image.getBounds().height);
-		}
+ 	 	control.fillBackground (view, context, cellFrame, -1);
 	}
+	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
 }
+
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	Point selection = getSelection ();
@@ -1472,23 +1480,23 @@ void sendCancelSelection () {
 	postEvent (SWT.DefaultSelection, event);
 }
 
-void setBackgroundImage(NSImage image) {
-	if ((style & SWT.SINGLE) != 0) {
-		NSTextField widget = (NSTextField) view;
-		widget.setDrawsBackground(backgroundImage != null);
-		NSColor nsColor = NSColor.colorWithPatternImage(image);
-		widget.setBackgroundColor(nsColor);		
-	} else {
-		scrollView.setDrawsBackground(backgroundImage != null);
-		((NSTextView)view).setDrawsBackground(backgroundImage != null);
-	}
-}
-
 void setBackgroundColor(NSColor nsColor) {
 	if ((style & SWT.SINGLE) != 0) {
 		((NSTextField) view).setBackgroundColor (nsColor);
 	} else {
 		((NSTextView) view).setBackgroundColor (nsColor);
+	}
+}
+
+void setBackgroundImage(NSImage image) {
+	if ((style & SWT.SINGLE) != 0) {
+		NSTextField widget = (NSTextField) view;
+		widget.setDrawsBackground(image == null);
+		NSText editor = widget.window().fieldEditor(true, widget);
+		editor.setDrawsBackground(image == null);
+	} else {
+		((NSTextView) view).setDrawsBackground(image == null);
+		scrollView.setDrawsBackground(image == null);
 	}
 }
 
@@ -2056,8 +2064,4 @@ String verifyText (String string, int start, int end, NSEvent keyEvent) {
 	return event.text;
 }
 
-
-void updateBackgroundMode () {
-	super.updateBackgroundMode();
-}
 }

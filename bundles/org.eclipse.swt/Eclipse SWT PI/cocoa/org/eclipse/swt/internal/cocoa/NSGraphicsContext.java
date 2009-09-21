@@ -60,6 +60,10 @@ public boolean isDrawingToScreen() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isDrawingToScreen);
 }
 
+public boolean isFlipped() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isFlipped);
+}
+
 public void restoreGraphicsState() {
 	OS.objc_msgSend(this.id, OS.sel_restoreGraphicsState);
 }

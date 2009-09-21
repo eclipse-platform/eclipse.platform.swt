@@ -98,6 +98,10 @@ public void enableCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_enableCursorRects);
 }
 
+public void endEditingFor(id anObject) {
+	OS.objc_msgSend(this.id, OS.sel_endEditingFor_, anObject != null ? anObject.id : 0);
+}
+
 public NSText fieldEditor(boolean createFlag, id anObject) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_fieldEditor_forObject_, createFlag, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSText(result) : null;

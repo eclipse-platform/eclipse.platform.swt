@@ -304,6 +304,9 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 }
 
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ viewid) {
+	if ((style & (SWT.CHECK|SWT.RADIO)) != 0 && backgroundImage != null) {
+		fillBackground (new NSView(viewid), NSGraphicsContext.currentContext(), cellRect, -1);
+	}
 	super.drawInteriorWithFrame_inView(id, sel, cellRect, viewid);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
@@ -614,11 +617,6 @@ void _setAlignment (int alignment) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-//		int orientation = OS.kThemeDisclosureRight;
-//		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureUp;
-//		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
-//		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
-//		OS.SetControl32BitValue (handle, orientation);
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
@@ -628,41 +626,21 @@ void _setAlignment (int alignment) {
 	if (text != null) {
 		((NSButton)view).setAttributedTitle(createString());
 	}
-//	/* Alignment not honoured when image and text is visible */
-//	boolean bothVisible = text != null && text.length () > 0 && image != null;
-//	if (bothVisible) {
-//		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
-//		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
-//	}
-//	int textAlignment = 0;
-//	int graphicAlignment = 0;
-//	if ((alignment & SWT.LEFT) != 0) {
-//		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
-//		graphicAlignment = OS.kControlBevelButtonAlignLeft;
-//	}
-//	if ((alignment & SWT.CENTER) != 0) {
-//		textAlignment = OS.kControlBevelButtonAlignTextCenter;
-//		graphicAlignment = OS.kControlBevelButtonAlignCenter;
-//	}
-//	if ((alignment & SWT.RIGHT) != 0) {
-//		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
-//		graphicAlignment = OS.kControlBevelButtonAlignRight;
-//	}
-//	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
-//	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
-//	if (bothVisible) {
-//		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextPlaceTag, 2, new short [] {(short)OS.kControlBevelButtonPlaceToRightOfGraphic});
-//	}
 }
 
 void setBackgroundColor(NSColor nsColor) {
-	NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
-	cell.setBackgroundColor(nsColor);
+	Control control = findBackgroundControl();
+	if (control == null || control.backgroundImage == null) {
+		NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
+		cell.setBackgroundColor(nsColor);
+	}
 }
 
 void setBackgroundImage(NSImage image) {
-	NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
-	cell.setBackgroundColor(NSColor.colorWithPatternImage(image));
+	if (image != null) {
+		NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
+		cell.setBackgroundColor(null);
+	}
 }
 
 void setFont (NSFont font) {
