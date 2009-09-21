@@ -57,7 +57,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals)
 #ifdef _WIN32
 		LOAD_FUNCTION(fp, JS_EvaluateUCScriptForPrincipals)
 		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jchar *, jint, jbyte *, jint, jintLong *))fp)(arg0, arg1, arg2, lparg3, arg4, lparg5, arg6, lparg7);
+			rc = (jint)((jint (*)(jintLong, jintLong, jintLong, jchar *, jint, jbyte *, jint, jintLong *))fp)(arg0, arg1, arg2, lparg3, arg4, lparg5, arg6, lparg7);
 		}
 #else
 #define CALLING_CONVENTION
