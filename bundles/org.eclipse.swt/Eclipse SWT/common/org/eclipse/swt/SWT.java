@@ -577,7 +577,10 @@ public class SWT {
 
 	/**
 	 * The mouse wheel event type (value is 37).
-	 * 
+	 * This is a synonym for MouseVerticalWheel (value is 37).  
+	 * Newer applications should use MouseVerticalWheel instead 
+	 * of MouseWheel to make code more understandable.
+	 *  
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
