@@ -412,6 +412,61 @@ public String getText () {
 	return text;
 }
 
+boolean mnemonicHit (char key) {
+	if (mnemonics != null) {
+		char uckey = Character.toUpperCase (key);
+		String parsedText = parse(text);
+		for (int i = 0; i < mnemonics.length - 1; i++) {
+			if (mnemonics[i] != -1) {
+				char mnemonic = parsedText.charAt(mnemonics[i]);
+				if (uckey == Character.toUpperCase (mnemonic)) {
+					if (!setFocus ()) return false;
+					if (OS.COMCTL32_MAJOR >= 6) {
+						int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+						LITEM item = new LITEM ();
+						item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
+						item.stateMask = OS.LIS_FOCUSED;
+						while (item.iLink < mnemonics.length) {
+							if (item.iLink != i) OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
+							item.iLink++;
+						}
+						item.iLink = i;
+						item.state = OS.LIS_FOCUSED;
+						OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
+						
+						/* Feature in Windows. For some reason, setting the focus to 
+						 * any item but first causes the control to clear the WS_TABSTOP
+						 * bit. The fix is always to reset the bit. 
+						 */
+						OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+					} else {
+						focusIndex = i;
+						redraw ();
+					}
+					return  true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+boolean mnemonicMatch (char key) {
+	if (mnemonics != null) {
+		char uckey = Character.toUpperCase (key);
+		String parsedText = parse(text);
+		for (int i = 0; i < mnemonics.length - 1; i++) {
+			if (mnemonics[i] != -1) {
+				char mnemonic = parsedText.charAt(mnemonics[i]);
+				if (uckey == Character.toUpperCase (mnemonic)) { 
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 String parse (String string) {
 	int length = string.length ();
 	offsets = new Point [length / 4];
