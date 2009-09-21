@@ -190,6 +190,7 @@ public void add (int[] pointArray) {
 }
 	
 void add(int[] pointArray, int count) {
+	count = count / 2 * 2;
 	if (count <= 2) return;
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
