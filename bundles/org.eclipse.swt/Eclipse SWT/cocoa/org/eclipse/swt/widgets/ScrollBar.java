@@ -421,8 +421,9 @@ void sendSelection () {
 	} else {
 		value = getSelection ();
 	}
+	NSPoint point = view.window().mouseLocationOutsideOfEventStream();
+	int hitPart = (int)/*64*/((NSScroller)view).testPart(point);
 	Event event = new Event();
-	int hitPart = (int)/*64*/((NSScroller)view).hitPart();
 	switch (hitPart) {
 	    case OS.NSScrollerDecrementLine:
 	        value -= increment;

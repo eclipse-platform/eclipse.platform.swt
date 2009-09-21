@@ -1735,6 +1735,7 @@ public static final int /*long*/ sel_tableViewColumnDidResize_ = sel_registerNam
 public static final int /*long*/ sel_tableViewSelectionDidChange_ = sel_registerName("tableViewSelectionDidChange:");
 public static final int /*long*/ sel_target = sel_registerName("target");
 public static final int /*long*/ sel_terminate_ = sel_registerName("terminate:");
+public static final int /*long*/ sel_testPart_ = sel_registerName("testPart:");
 public static final int /*long*/ sel_textBackgroundColor = sel_registerName("textBackgroundColor");
 public static final int /*long*/ sel_textColor = sel_registerName("textColor");
 public static final int /*long*/ sel_textContainer = sel_registerName("textContainer");

@@ -48,6 +48,10 @@ public void setFloatValue(float aFloat, float /*double*/ proportion) {
 	OS.objc_msgSend(this.id, OS.sel_setFloatValue_knobProportion_, aFloat, proportion);
 }
 
+public int /*long*/ testPart(NSPoint thePoint) {
+	return OS.objc_msgSend(this.id, OS.sel_testPart_, thePoint);
+}
+
 public static int /*long*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSScroller, OS.sel_cellClass);
 }

@@ -2963,6 +2963,10 @@
 			<arg name="proportion" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="testPart:" swt_gen="true">
+			<arg name="thePoint" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSSearchField" swt_gen="mixed" swt_superclass="NSTextField">
 		<method selector="recentSearches" swt_gen="true">
