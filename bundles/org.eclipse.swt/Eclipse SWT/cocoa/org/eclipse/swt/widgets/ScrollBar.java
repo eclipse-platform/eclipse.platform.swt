@@ -421,7 +421,14 @@ void sendSelection () {
 	} else {
 		value = getSelection ();
 	}
-	NSPoint point = view.window().mouseLocationOutsideOfEventStream();
+	NSPoint point;
+	NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
+	if (nsEvent != null) {
+		point = nsEvent.locationInWindow();
+		if (nsEvent.window() == null) point = view.window().convertScreenToBase(point);
+	} else {
+		point = view.window().mouseLocationOutsideOfEventStream();
+	}
 	int hitPart = (int)/*64*/((NSScroller)view).testPart(point);
 	Event event = new Event();
 	switch (hitPart) {
