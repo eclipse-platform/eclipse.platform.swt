@@ -293,10 +293,10 @@ public void create (Composite parent, int style) {
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
-					/* invoke onbeforeunload handler(s) */
-					if (!browser.isClosing) {
+					/* invoke onbeforeunload handlers */
+					if (!browser.isClosing && !browser.isDisposed()) {
 						acceptAllBeforeUnloadConfirms = true;
-						close (); 
+						close ();
 						acceptAllBeforeUnloadConfirms = false;
 					}
 
