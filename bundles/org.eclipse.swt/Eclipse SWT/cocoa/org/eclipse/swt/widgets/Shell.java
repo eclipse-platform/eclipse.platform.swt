@@ -760,11 +760,16 @@ public int getAlpha () {
 
 public Rectangle getBounds () {
 	checkWidget();
-	
 	if (window != null) {
 		NSRect frame = window.frame();
 		float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-		return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
+		Rectangle rectangle = new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
+		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+		rectangle.x /= scaleFactor;
+		rectangle.y /= scaleFactor;
+		rectangle.width /= scaleFactor;
+		rectangle.height /= scaleFactor;
+		return rectangle;
 	} else {
 		NSRect frame = view.frame();
 		// Start from view's origin, (0, 0)
@@ -776,9 +781,6 @@ public Rectangle getBounds () {
 		pt = view.convertPoint_toView_(pt, null);
 		pt = view.window().convertBaseToScreen(pt);
 		pt.y = primaryFrame.height - pt.y;
-		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
-		pt.x /= scaleFactor;
-		pt.y /= scaleFactor;
 		return new Rectangle((int)pt.x, (int)pt.y, (int)frame.width, (int)frame.height);
 	}
 }
@@ -857,7 +859,11 @@ public Point getLocation () {
 	if (window != null) {
 		NSRect frame = window.frame();
 		float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
-		return new Point ((int)frame.x, (int)y);
+		Point point = new Point ((int)frame.x, (int)y);
+		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+		point.x /= scaleFactor;
+		point.y /= scaleFactor;
+		return point;
 	} else {
 		// Start from view's origin, (0, 0)
 		NSPoint pt = new NSPoint();
@@ -1018,7 +1024,11 @@ public Shell [] getShells () {
 public Point getSize () {
 	checkWidget();
 	NSRect frame = (window != null ? window.frame() : view.frame());
-	return new Point ((int) frame.width, (int) frame.height);
+	Point point = new Point ((int) frame.width, (int) frame.height);
+	float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+	point.x /= scaleFactor;
+	point.y /= scaleFactor;
+	return point;
 }
 
 float getThemeAlpha () {
