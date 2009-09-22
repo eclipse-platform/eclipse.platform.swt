@@ -8592,7 +8592,7 @@ public void setLineSpacing(int lineSpacing) {
  *  
  * @param startLine first line the justify is applied to, 0 based
  * @param lineCount number of lines the justify applies to.
- * @param tabStop tab stops
+ * @param tabStops tab stops
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
