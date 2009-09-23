@@ -523,6 +523,7 @@ public class OS extends C {
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = ascii("output-uri");
 	public static final byte[] GTK_STOCK_FIND = ascii("gtk-find");
 	public static final byte[] GTK_STOCK_CANCEL = ascii("gtk-cancel");
+	public static final byte[] GTK_STOCK_CLEAR = ascii("gtk-clear");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
 	

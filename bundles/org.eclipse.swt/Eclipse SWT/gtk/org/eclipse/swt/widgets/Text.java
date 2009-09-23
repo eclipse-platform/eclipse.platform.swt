@@ -143,7 +143,7 @@ public Text (Composite parent, int style) {
 			 */
 			if ((style & SWT.ICON_CANCEL) != 0) {
 				this.style |= SWT.ICON_CANCEL;
-				OS.gtk_entry_set_icon_from_stock (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.GTK_STOCK_CANCEL);
+				OS.gtk_entry_set_icon_from_stock (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.GTK_STOCK_CLEAR);
 			}
 			if ((style & SWT.ICON_SEARCH) != 0) {
 				this.style |= SWT.ICON_SEARCH;
