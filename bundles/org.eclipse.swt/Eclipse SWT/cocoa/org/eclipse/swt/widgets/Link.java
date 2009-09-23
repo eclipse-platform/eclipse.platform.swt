@@ -161,6 +161,7 @@ void createHandle () {
 	widget.setDelegate(widget);
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 	widget.textContainer().setLineFragmentPadding(0);
+	widget.setAlignment (OS.NSLeftTextAlignment);
 	
 	scrollView = scrollWidget;
 	view = widget;
