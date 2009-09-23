@@ -457,6 +457,10 @@ public boolean close () {
 	execute (buffer.toString ());
 
 	Boolean result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
+	
+	// TEMPORARY CODE while the details of setJavaScriptEnabled() are finalized
+	if (result == null) result = Boolean.FALSE;
+
 	return result.booleanValue ();
 }
 
