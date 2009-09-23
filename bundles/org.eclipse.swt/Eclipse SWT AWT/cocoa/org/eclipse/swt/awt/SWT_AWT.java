@@ -18,7 +18,6 @@ import java.lang.reflect.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
