@@ -174,7 +174,7 @@ void createWidget () {
 }
 
 NSFont defaultNSFont () {
-	return display.textViewFont;
+	return display.textFieldFont;
 }
 
 void deregister () {
@@ -231,7 +231,7 @@ public String getText () {
 
 void register () {
 	super.register ();
-	if (scrollView != null) display.addWidget (scrollView, this);
+	display.addWidget(scrollView, this);
 }
 
 void releaseWidget () {
@@ -488,8 +488,10 @@ public void setText (String string) {
 	NSTextView widget = (NSTextView)view;
 	widget.setString(NSString.stringWith(parse(string)));
 	NSTextStorage textStorage = widget.textStorage();
+	if (font == null) font = this.font != null ? this.font : defaultFont();
 	NSRange range = new NSRange();
 	range.length = textStorage.length();
+	textStorage.addAttribute(OS.NSFontAttributeName, font.handle, range); 
 	textStorage.removeAttribute(OS.NSLinkAttributeName, range);
 	for (int i = 0; i < offsets.length; i++) {
 		range.location = offsets[i].x;
