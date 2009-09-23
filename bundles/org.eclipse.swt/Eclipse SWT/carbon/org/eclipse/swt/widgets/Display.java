@@ -981,7 +981,6 @@ void createDisplay (DeviceData data) {
 	}
 
 	int identifier = OS.CFBundleGetIdentifier(OS.CFBundleGetMainBundle());
-	System.out.println(identifier);
 	if (identifier == 0) {
 		/*
 		 * Feature in the Macintosh.  On OS 10.2, it is necessary
