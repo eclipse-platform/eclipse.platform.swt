@@ -60,6 +60,6 @@ SWT_FileDownload=Datei-Download
 SWT_Download_File=Herunterladen: {0}
 SWT_Download_Location=Speichern von {0} von {1}
 SWT_Download_Started=Herunterladen...
-SWT_Download_Status=Download: {0,Zahl,Ganzzahl} KB von {1,Zahl,Ganzzahl} KB
+SWT_Download_Status=Download: {0,number,integer} KB von {1,number,integer} KB
 SWT_Authentication_Required=Authentifizierung erforderlich
 SWT_Enter_Username_and_Password=Benutzernamen und Kennwort f\u00fcr {0} unter {1} eingeben
