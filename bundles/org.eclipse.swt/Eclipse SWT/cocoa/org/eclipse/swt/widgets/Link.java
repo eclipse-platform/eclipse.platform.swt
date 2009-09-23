@@ -161,6 +161,7 @@ void createHandle () {
 	widget.setDelegate(widget);
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 	widget.textContainer().setLineFragmentPadding(0);
+	widget.setFont(getFont().handle);
 	widget.setAlignment (OS.NSLeftTextAlignment);
 	
 	scrollView = scrollWidget;
@@ -489,10 +490,8 @@ public void setText (String string) {
 	NSTextView widget = (NSTextView)view;
 	widget.setString(NSString.stringWith(parse(string)));
 	NSTextStorage textStorage = widget.textStorage();
-	if (font == null) font = this.font != null ? this.font : defaultFont();
 	NSRange range = new NSRange();
 	range.length = textStorage.length();
-	textStorage.addAttribute(OS.NSFontAttributeName, font.handle, range); 
 	textStorage.removeAttribute(OS.NSLinkAttributeName, range);
 	for (int i = 0; i < offsets.length; i++) {
 		range.location = offsets[i].x;
