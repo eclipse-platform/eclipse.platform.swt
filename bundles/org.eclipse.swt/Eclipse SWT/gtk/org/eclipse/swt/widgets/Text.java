@@ -144,6 +144,7 @@ public Text (Composite parent, int style) {
 			if ((style & SWT.ICON_CANCEL) != 0) {
 				this.style |= SWT.ICON_CANCEL;
 				OS.gtk_entry_set_icon_from_stock (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.GTK_STOCK_CLEAR);
+				OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, false);
 			}
 			if ((style & SWT.ICON_SEARCH) != 0) {
 				this.style |= SWT.ICON_SEARCH;
@@ -1165,6 +1166,10 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 		postEvent (SWT.Modify);
 	} else {
 		sendEvent (SWT.Modify);
+	}
+	if ((style & SWT.ICON_CANCEL) != 0) {
+		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.g_utf8_strlen (ptr, -1) > 0);
 	}
 	return 0;
 }

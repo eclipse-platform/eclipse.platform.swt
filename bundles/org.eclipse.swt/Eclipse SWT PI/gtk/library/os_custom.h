@@ -94,6 +94,7 @@
 #define gtk_tree_view_set_grid_lines_LIB "libgtk-x11-2.0.so.0"
 #define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so.0"
 #define gtk_entry_set_icon_from_stock_LIB "libgtk-x11-2.0.so.0"
+#define gtk_entry_set_icon_sensitive_LIB "libgtk-x11-2.0.so.0"
 #define gdk_cursor_new_from_pixbuf_LIB "libgdk-x11-2.0.so.0"
 #define gdk_display_get_default_LIB "libgdk-x11-2.0.so.0"
 #define gdk_display_supports_cursor_color_LIB "libgdk-x11-2.0.so.0"

@@ -7546,6 +7546,24 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1set_1icon_1sensitive
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1icon_1sensitive)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jboolean arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1icon_1sensitive_FUNC);
+/*
+	gtk_entry_set_icon_sensitive(arg0, arg1, arg2);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_entry_set_icon_sensitive)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jboolean))fp)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1icon_1sensitive_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1set_1invisible_1char
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1invisible_1char)
 	(JNIEnv *env, jclass that, jintLong arg0, jchar arg1)

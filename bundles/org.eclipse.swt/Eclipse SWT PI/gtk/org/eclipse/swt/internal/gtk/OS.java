@@ -6280,6 +6280,16 @@ public static final void gtk_entry_set_icon_from_stock(int /*long*/ entry, int i
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native void _gtk_entry_set_icon_sensitive(int /*long*/ entry, int icon_pos, boolean sensitive);
+public static final void gtk_entry_set_icon_sensitive(int /*long*/ entry, int icon_pos, boolean sensitive) {
+	lock.lock();
+	try {
+		_gtk_entry_set_icon_sensitive(entry, icon_pos, sensitive);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param entry cast=(GtkEntry *)
  * @param ch cast=(gint)
