@@ -1438,7 +1438,7 @@ boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, i
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	float /*double*/ [] fg = ((NSTableView)view).isRowSelected(rowIndex) ? null : foreground;
-	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, fg, 0, false, getEnabled(), false);
+	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, fg, SWT.LEFT, false, getEnabled(), false);
 	attribStr.autorelease();
 	return attribStr.id;
 }
