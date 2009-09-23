@@ -489,6 +489,8 @@ public void setText (String string) {
 	widget.setString(NSString.stringWith(parse(string)));
 	NSTextStorage textStorage = widget.textStorage();
 	NSRange range = new NSRange();
+	range.length = textStorage.length();
+	textStorage.removeAttribute(OS.NSLinkAttributeName, range);
 	for (int i = 0; i < offsets.length; i++) {
 		range.location = offsets[i].x;
 		range.length = offsets[i].y - offsets[i].x + 1;
