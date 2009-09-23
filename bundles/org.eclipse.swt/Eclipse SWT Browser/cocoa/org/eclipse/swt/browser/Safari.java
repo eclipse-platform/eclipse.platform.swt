@@ -421,6 +421,8 @@ static int /*long*/ webScriptNameForSelector (int /*long*/ aSelector) {
 }
 
 public boolean close () {
+	if (!jsEnabled) return true;
+
 	String functionName = EXECUTE_ID + "CLOSE"; // $NON-NLS-1$
 	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
 	buffer.append (functionName);
@@ -434,10 +436,6 @@ public boolean close () {
 	execute (buffer.toString ());
 
 	Boolean result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
-	
-	// TEMPORARY CODE while the details of setJavaScriptEnabled() are finalized
-	if (result == null) result = Boolean.FALSE;
-
 	return result.booleanValue ();
 }
 
