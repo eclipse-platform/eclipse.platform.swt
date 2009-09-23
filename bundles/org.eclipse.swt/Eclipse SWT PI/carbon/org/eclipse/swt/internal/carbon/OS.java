@@ -1504,6 +1504,9 @@ public static final native int CFArrayCreateMutable(int allocator, int capacity,
 public static final native int CFArrayGetCount(int theArray);
 /** @param theArray cast=(CFArrayRef) */
 public static final native int CFArrayGetValueAtIndex(int theArray, int idx); 
+public static final native int CFBundleGetMainBundle();
+/** @param bundle cast=(CFBundleRef) */
+public static final native int CFBundleGetIdentifier(int bundle);
 /**
  * @param theData cast=(CFDataRef)
  * @param range flags=struct

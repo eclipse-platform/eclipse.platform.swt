@@ -1236,6 +1236,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFArrayGetValueAtIndex)
 }
 #endif
 
+#ifndef NO_CFBundleGetIdentifier
+JNIEXPORT jint JNICALL OS_NATIVE(CFBundleGetIdentifier)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFBundleGetIdentifier_FUNC);
+	rc = (jint)CFBundleGetIdentifier((CFBundleRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFBundleGetIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFBundleGetMainBundle
+JNIEXPORT jint JNICALL OS_NATIVE(CFBundleGetMainBundle)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFBundleGetMainBundle_FUNC);
+	rc = (jint)CFBundleGetMainBundle();
+	OS_NATIVE_EXIT(env, that, CFBundleGetMainBundle_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFDataGetBytePtr
 JNIEXPORT jint JNICALL OS_NATIVE(CFDataGetBytePtr)
 	(JNIEnv *env, jclass that, jint arg0)

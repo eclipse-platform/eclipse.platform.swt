@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 986;
-int OS_nativeFunctionCallCount[986];
+int OS_nativeFunctionCount = 988;
+int OS_nativeFunctionCallCount[988];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -94,6 +94,8 @@ char * OS_nativeFunctionNames[] = {
 	"CFArrayCreateMutable",
 	"CFArrayGetCount",
 	"CFArrayGetValueAtIndex",
+	"CFBundleGetIdentifier",
+	"CFBundleGetMainBundle",
 	"CFDataGetBytePtr",
 	"CFDataGetBytes",
 	"CFDataGetLength",

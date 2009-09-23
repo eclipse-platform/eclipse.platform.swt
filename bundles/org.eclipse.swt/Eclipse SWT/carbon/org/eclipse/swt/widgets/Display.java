@@ -980,55 +980,59 @@ void createDisplay (DeviceData data) {
 		System.out.println ("***WARNING: Detected: " + Integer.toHexString((OS.VERSION & 0xFF00) >> 8) + "." + Integer.toHexString((OS.VERSION & 0xF0) >> 4) + "." + Integer.toHexString(OS.VERSION & 0xF)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
-	/*
-	* Feature in the Macintosh.  On OS 10.2, it is necessary
-	* to explicitly check in with the Process Manager and set
-	* the current process to be the front process in order for
-	* windows to come to the front by default.  The fix is call
-	* both GetCurrentProcess() and SetFrontProcess().
-	* 
-	* NOTE: It is not actually necessary to use the process
-	* serial number returned by GetCurrentProcess() in the
-	* call to SetFrontProcess() (ie. kCurrentProcess can be
-	* used) but both functions must be called in order for
-	* windows to come to the front.
-	*/
-	int [] psn = new int [2];
-	if (OS.GetCurrentProcess (psn) == OS.noErr) {
-		int pid = OS.getpid ();
-		byte [] buffer = null;
-		int ptr = OS.getenv (ascii ("APP_NAME_" + pid)); //$NON-NLS-1$
-		if (ptr != 0) {
-			buffer = new byte [OS.strlen (ptr) + 1];
-			OS.memmove (buffer, ptr, buffer.length);
-		} else {
-			if (APP_NAME != null) {
-				char [] chars = new char [APP_NAME.length ()];
-				APP_NAME.getChars (0, chars.length, chars, 0);
-				int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-				if (cfstring != 0) {
-					CFRange range = new CFRange ();
-					range.length = chars.length;
-					int encoding = OS.CFStringGetSystemEncoding ();
-					int [] size = new int [1];
-					int numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, null, 0, size);
-					if (numChars != 0) {
-						buffer = new byte [size [0] + 1];
-						numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, buffer, size [0], size);
+	int identifier = OS.CFBundleGetIdentifier(OS.CFBundleGetMainBundle());
+	System.out.println(identifier);
+	if (identifier == 0) {
+		/*
+		 * Feature in the Macintosh.  On OS 10.2, it is necessary
+		 * to explicitly check in with the Process Manager and set
+		 * the current process to be the front process in order for
+		 * windows to come to the front by default.  The fix is call
+		 * both GetCurrentProcess() and SetFrontProcess().
+		 * 
+		 * NOTE: It is not actually necessary to use the process
+		 * serial number returned by GetCurrentProcess() in the
+		 * call to SetFrontProcess() (ie. kCurrentProcess can be
+		 * used) but both functions must be called in order for
+		 * windows to come to the front.
+		 */
+		int [] psn = new int [2];
+		if (OS.GetCurrentProcess (psn) == OS.noErr) {
+			int pid = OS.getpid ();
+			byte [] buffer = null;
+			int ptr = OS.getenv (ascii ("APP_NAME_" + pid)); //$NON-NLS-1$
+			if (ptr != 0) {
+				buffer = new byte [OS.strlen (ptr) + 1];
+				OS.memmove (buffer, ptr, buffer.length);
+			} else {
+				if (APP_NAME != null) {
+					char [] chars = new char [APP_NAME.length ()];
+					APP_NAME.getChars (0, chars.length, chars, 0);
+					int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+					if (cfstring != 0) {
+						CFRange range = new CFRange ();
+						range.length = chars.length;
+						int encoding = OS.CFStringGetSystemEncoding ();
+						int [] size = new int [1];
+						int numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, null, 0, size);
+						if (numChars != 0) {
+							buffer = new byte [size [0] + 1];
+							numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, buffer, size [0], size);
+						}
+						OS.CFRelease (cfstring);
 					}
-					OS.CFRelease (cfstring);
 				}
 			}
-		}
-		if (buffer != null) OS.CPSSetProcessName (psn, buffer);	
-		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
-		OS.SetFrontProcess (psn);
-		ptr = OS.getenv (ascii ("APP_ICON_" + pid)); //$NON-NLS-1$
-		if (ptr != 0) {
-			int image = readImageRef (ptr);
-			if (image != 0) {
-				dockImage = image;
-				OS.SetApplicationDockTileImage (dockImage);
+			if (buffer != null) OS.CPSSetProcessName (psn, buffer);	
+			OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
+			OS.SetFrontProcess (psn);
+			ptr = OS.getenv (ascii ("APP_ICON_" + pid)); //$NON-NLS-1$
+			if (ptr != 0) {
+				int image = readImageRef (ptr);
+				if (image != 0) {
+					dockImage = image;
+					OS.SetApplicationDockTileImage (dockImage);
+				}
 			}
 		}
 	}

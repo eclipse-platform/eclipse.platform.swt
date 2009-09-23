@@ -102,6 +102,8 @@ typedef enum {
 	CFArrayCreateMutable_FUNC,
 	CFArrayGetCount_FUNC,
 	CFArrayGetValueAtIndex_FUNC,
+	CFBundleGetIdentifier_FUNC,
+	CFBundleGetMainBundle_FUNC,
 	CFDataGetBytePtr_FUNC,
 	CFDataGetBytes_FUNC,
 	CFDataGetLength_FUNC,
