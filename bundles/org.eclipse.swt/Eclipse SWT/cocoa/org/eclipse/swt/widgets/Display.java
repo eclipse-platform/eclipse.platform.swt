@@ -766,8 +766,8 @@ void createDisplay (DeviceData data) {
 	application = NSApplication.sharedApplication();
 	isEmbedded = application.isRunning();
 
-	boolean bundled = NSBundle.mainBundle().bundleIdentifier() == null;
-	if (bundled) {
+	NSString identifier = NSBundle.mainBundle().bundleIdentifier();
+	if (identifier == null) {
 		/*
 		 * Feature in the Macintosh.  On OS 10.2, it is necessary
 		 * to explicitly check in with the Process Manager and set
