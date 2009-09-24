@@ -6316,22 +6316,6 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			}
 			
 			/*
-			* When an item is being deleted from a virtual table, do not
-			* allow the application to provide data for a new item that
-			* becomes visible until the item has been removed from the
-			* items array.  Because arbitrary application code can run
-			* during the callback, the items array might be accessed
-			* in an inconsistent state.  Rather than answering the data
-			* right away, queue a redraw for later.
-			*/
-			if ((style & SWT.VIRTUAL) != 0) {
-				if (ignoreShrink) {
-					OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
-					break;
-				}
-			}
-
-			/*
 			* Feature in Windows.  When a new table item is inserted
 			* using LVM_INSERTITEM in a table that is transparent
 			* (ie. LVM_SETBKCOLOR has been called with CLR_NONE),
@@ -6341,6 +6325,22 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			*/
 			TableItem item = _getItem (plvfi.iItem);
 			if (item == null) break;
+			
+			/*
+			* When an item is being deleted from a virtual table, do not
+			* allow the application to provide data for a new item that
+			* becomes visible until the item has been removed from the
+			* items array.  Because arbitrary application code can run
+			* during the callback, the items array might be accessed
+			* in an inconsistent state.  Rather than answering the data
+			* right away, queue a redraw for later.
+			*/
+			if ((style & SWT.VIRTUAL) != 0 && !item.cached) {
+				if (ignoreShrink) {
+					OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
+					break;
+				}
+			}
 			
 			/*
 			* The cached flag is used by both virtual and non-virtual
