@@ -32,7 +32,7 @@ class IE extends WebBrowser {
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int /*long*/ globalDispatch;
-	String html, lastNavigateURL;
+	String html, lastNavigateURL, uncRedirect;
 	int style, lastKeyCode, lastCharCode;
 	int lastMouseMoveX, lastMouseMoveY;
 
@@ -58,10 +58,12 @@ class IE extends WebBrowser {
 	static final int WindowSetResizable = 0x106;
 	static final int WindowSetTop = 0x109;
 	static final int WindowSetWidth = 0x10a;
+	static final int NavigateError = 0x10f;
 
 	static final short CSC_NAVIGATEFORWARD = 1;
 	static final short CSC_NAVIGATEBACK = 2;
 	static final int INET_E_DEFAULT_ACTION = 0x800C0011;
+	static final int INET_E_RESOURCE_NOT_FOUND = 0x800C0005;
 	static final int READYSTATE_COMPLETE = 4;
 	static final int URLPOLICY_ALLOW = 0x00;
 	static final int URLPOLICY_DISALLOW = 0x03;
@@ -299,7 +301,7 @@ public void create(Composite parent, int style) {
 					}
 					functions = null;
 
-					lastNavigateURL = null;
+					lastNavigateURL = uncRedirect = null;
 					domListener = null;
 					if (auto != null) auto.dispose();
 					auto = null;
@@ -348,6 +350,31 @@ public void create(Composite parent, int style) {
 					case BeforeNavigate2: {
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
+
+						if (uncRedirect != null) {
+							/*
+							* Silently allow the navigate to proceed if the url is the first segment of a
+							* UNC path being navigated to (initiated by the NavigateError listener to show
+							* a name/password prompter), or if the url is the full UNC path (initiated by
+							* the NavigateComplete listener to redirect from the UNC's first segment to its
+ 							* full path).
+							*/
+							if (uncRedirect.equals(url) || (uncRedirect.startsWith(url) && uncRedirect.indexOf('\\', 2) == url.length())) {
+								Variant cancel = event.arguments[6];
+								if (cancel != null) {
+									int /*long*/ pCancel = cancel.getByRef();
+									COM.MoveMemory(pCancel, new short[] {COM.VARIANT_FALSE}, 2);
+								}
+								break;
+							} else {
+								/*
+								* This navigate does not correspond to the previously-initiated
+								* UNC navigation so clear this state since it's no longer valid.
+								*/
+								uncRedirect = null;
+							}
+						}
+
 						/*
 						* Bug in IE.  For navigations on the local machine, BeforeNavigate2's url
 						* field contains a string representing the file path in a non-URL format.
@@ -477,12 +504,30 @@ public void create(Composite parent, int style) {
 						break;
 					}
 					case NavigateComplete2: {
-						Variant varResult = event.arguments[0];
+						Variant varResult = event.arguments[1];
+						String url = varResult.getString();
+						if (uncRedirect != null) {
+							if (uncRedirect.equals(url)) {
+								/* full UNC path has been successfully navigated */
+								uncRedirect = null;
+								break;
+							}
+							if (uncRedirect.startsWith(url)) {
+								/*
+								* UNC first segment has been successfully navigated,
+								* now redirect to the full UNC path.
+								*/ 
+								navigate(uncRedirect, true);
+								break;
+							}
+							uncRedirect = null;
+						}
+
+						varResult = event.arguments[0];
 						IDispatch dispatch = varResult.getDispatch();
 						if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
 	
 						OleAutomation webBrowser = varResult.getAutomation();
-						varResult = event.arguments[1];
 						Variant variant = new Variant(auto);
 						IDispatch top = variant.getDispatch();
 						boolean isTop = top.getAddress() == dispatch.getAddress();
@@ -496,6 +541,51 @@ public void create(Composite parent, int style) {
 						}
 						hookDOMListeners(webBrowser, isTop);
 						webBrowser.dispose();
+						break;
+					}
+					case NavigateError: {
+						if (uncRedirect != null) {
+							/*
+							* This is the second error attempting to reach this UNC path, so
+							* it does not exist.  Don't override the default error handling.
+							*/
+							uncRedirect = null;
+							break;
+						}
+						Variant varResult = event.arguments[1];
+						final String url = varResult.getString();
+						if (url.startsWith("\\\\")) { //$NON-NLS-1$
+							varResult = event.arguments[3];
+							int statusCode = varResult.getInt();
+							if (statusCode == INET_E_RESOURCE_NOT_FOUND) {
+								int index = url.indexOf('\\', 2);
+								if (index != -1) {
+									final String host = url.substring(0, index);
+									Variant cancel = event.arguments[4];
+									if (cancel != null) {
+										int /*long*/ pCancel = cancel.getByRef();
+										COM.MoveMemory(pCancel, new short[] {COM.VARIANT_TRUE}, 2);
+									}
+									browser.getDisplay().asyncExec(new Runnable() {
+										public void run() {
+											if (browser.isDisposed()) return;
+											/*
+											* Feature of IE.  When a UNC path ends with a '\' character IE
+											* drops this character when providing the path as an argument
+											* to some IE listeners.  Remove this character here too in
+											* order to match these other listener argument values.
+											*/
+											if (url.endsWith("\\")) { //$NON-NLS-1$
+												uncRedirect = url.substring(0, url.length() - 1);
+											} else {
+												uncRedirect = url;
+											}
+											navigate(host, true);
+										}
+									});
+								}
+							}
+						}
 						break;
 					}
 					case NewWindow2: {
@@ -710,6 +800,7 @@ public void create(Composite parent, int style) {
 	site.addEventListener(CommandStateChange, oleListener);
 	site.addEventListener(DocumentComplete, oleListener);
 	site.addEventListener(NavigateComplete2, oleListener);
+	site.addEventListener(NavigateError, oleListener);
 	site.addEventListener(NewWindow2, oleListener);
 	site.addEventListener(OnMenuBar, oleListener);
 	site.addEventListener(OnStatusBar, oleListener);
@@ -909,6 +1000,7 @@ public boolean isFocusControl () {
 }
 
 public void refresh() {
+	uncRedirect = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Refresh" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
 }
@@ -1064,8 +1156,32 @@ public boolean setText(final String html) {
 	return result;
 }
 
+boolean navigate(String url, boolean silent) {
+	navigate = true;
+	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
+	Variant[] rgvarg = new Variant[1];
+	rgvarg[0] = new Variant(url);
+	int[] rgdispidNamedArgs = new int[1];
+	rgdispidNamedArgs[0] = rgdispid[1];
+	boolean oldValue = false;
+	if (silent && !OS.IsWinCE && IsIE7) {
+		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
+		oldValue = hResult == COM.S_OK;
+		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
+	}
+	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+	if (silent && !OS.IsWinCE && IsIE7) {
+		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
+	}
+	rgvarg[0].dispose();
+	if (pVarResult == null) return false;
+	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
+	pVarResult.dispose();
+	return result;
+}
+
 public boolean setUrl(String url) {
-	html = null;
+	html = uncRedirect = null;
 
 	/*
 	* Bug in Internet Explorer.  For some reason, Navigating to an xml document before
@@ -1082,42 +1198,16 @@ public boolean setUrl(String url) {
 		* issuing Stop so that the 'Action cancelled' page is not displayed.
 		*/
 		if (!navigate) {
-			int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
-			Variant[] rgvarg = new Variant[1];
-			rgvarg[0] = new Variant(ABOUT_BLANK);
-			int[] rgdispidNamedArgs = new int[1];
-			rgdispidNamedArgs[0] = rgdispid[1];
-			boolean oldValue = false;
-			if (!OS.IsWinCE && IsIE7) {
-				int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
-				oldValue = hResult == COM.S_OK;
-				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
-			}
-			auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-			if (!OS.IsWinCE && IsIE7) {
-				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
-			}
-			rgvarg[0].dispose();
+			navigate (ABOUT_BLANK, true);
 		}
 		int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 		auto.invoke(rgdispid[0]);
 	}
-
-	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
-	navigate = true;
-	Variant[] rgvarg = new Variant[1];
-	rgvarg[0] = new Variant(url);
-	int[] rgdispidNamedArgs = new int[1];
-	rgdispidNamedArgs[0] = rgdispid[1];
-	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	rgvarg[0].dispose();
-	if (pVarResult == null) return false;
-	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
-	pVarResult.dispose();
-	return result;
+	return navigate(url, false);
 }
 
 public void stop() {
+	uncRedirect = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
 }
