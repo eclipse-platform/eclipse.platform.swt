@@ -1426,20 +1426,20 @@ public class Accessible {
 		return ACC.ROLE_CLIENT_AREA;
 	}
 
-	VARIANT getVARIANT(int variant) {
+	VARIANT getVARIANT(int /*long*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
 		return v;
 	}
 
-	void setVARIANT(int variant, short vt, int lVal) {
+	void setVARIANT(int /*long*/ variant, short vt, int lVal) {
 		if (vt == COM.VT_I4 || vt == COM.VT_EMPTY) {
 			COM.MoveMemory(variant, new short[] { vt }, 2);
 			COM.MoveMemory(variant + 8, new int[] { lVal }, 4);
 		}
 	}
 
-	void setPtrVARIANT(int variant, short vt, int /*long*/ lVal) {
+	void setPtrVARIANT(int /*long*/ variant, short vt, int /*long*/ lVal) {
 		if (vt == COM.VT_DISPATCH || vt == COM.VT_UNKNOWN) {
 			COM.MoveMemory(variant, new short[] { vt }, 2);
 			COM.MoveMemory(variant + 8, new int /*long*/[] { lVal }, OS.PTR_SIZEOF);
