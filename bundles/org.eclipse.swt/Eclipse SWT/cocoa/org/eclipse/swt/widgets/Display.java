@@ -140,6 +140,7 @@ public class Display extends Device {
 	NSImage dockImage;
 	boolean isEmbedded;
 	static boolean launched = false;
+	int systemUIMode, systemUIOptions;
 	
 	/* Focus */
 	Control focusControl, currentFocusControl;
@@ -843,6 +844,11 @@ void createDisplay (DeviceData data) {
 			application.setDelegate(applicationDelegate);
 		}
 	}
+	
+	int[] bufferMode = new int[1], bufferOptions = new int[1];
+	OS.GetSystemUIMode(bufferMode, bufferOptions);
+	systemUIMode = bufferMode[0];
+	systemUIOptions = bufferOptions[0];	
 }
 
 void createMainMenu () {

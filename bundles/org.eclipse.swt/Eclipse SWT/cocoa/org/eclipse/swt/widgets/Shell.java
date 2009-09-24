@@ -1792,16 +1792,17 @@ void updateParent (boolean visible) {
 
 void updateSystemUIMode () {
 	if (!getMonitor ().equals (display.getPrimaryMonitor ())) return;
-	int mode = OS.kUIModeNormal;
+	int mode = display.systemUIMode, options = display.systemUIOptions;
 	if (fullScreen) {
 		mode = OS.kUIModeAllHidden;
 		if (menuBar != null) {
 			mode = OS.kUIModeContentHidden;
 		}
+		options = 0;
 	}
-	int uiMode[] = new int[1];
-	OS.GetSystemUIMode(uiMode, null);
-	if (uiMode[0] != mode) OS.SetSystemUIMode (mode, 0);
+	int[] uiMode = new int[1], uiOptions = new int[1];
+	OS.GetSystemUIMode(uiMode, uiOptions);
+	if (uiMode[0] != mode || uiOptions[0] != options) OS.SetSystemUIMode (mode, options);
 	if (fullScreen)	window.setFrame(fullScreenFrame, true);
 }
 

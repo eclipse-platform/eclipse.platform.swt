@@ -2023,15 +2023,17 @@ void updateSystemUIMode () {
 		current = (Shell) current.parent;
 	}
 	if (!isActive) return;
+	int mode = display.systemUIMode, options = display.systemUIOptions;
 	if (fullScreen) {
-		int mode = OS.kUIModeAllHidden;
+		mode = OS.kUIModeAllHidden;
 		if (menuBar != null) {
 			mode = OS.kUIModeContentHidden;
 		}
-		OS.SetSystemUIMode (mode, 0);
-	} else {
-		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
+		options = 0;
 	}
+	int[] uiMode = new int[1], uiOptions = new int[1];
+	OS.GetSystemUIMode(uiMode, uiOptions);
+	if (uiMode[0] != mode || uiOptions[0] != options) OS.SetSystemUIMode (mode, options);
 }
 
 }

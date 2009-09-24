@@ -218,6 +218,7 @@ public class Display extends Device {
 
 	/* Dock icon */
 	int dockImage;
+	int systemUIMode, systemUIOptions;
 
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -1049,6 +1050,11 @@ void createDisplay (DeviceData data) {
 	runLoop = OS.GetCFRunLoopFromEventLoop (OS.GetCurrentEventLoop ());
 	OS.TXNInitTextension (0, 0, 0);
 	
+	int[] bufferMode = new int[1], bufferOptions = new int[1];
+	OS.GetSystemUIMode(bufferMode, bufferOptions);
+	systemUIMode = bufferMode[0];
+	systemUIOptions = bufferOptions[0];	
+
 	/* Save the current highlight color */
 	OS.RegisterAppearanceClient ();
 	highlightColor = new RGBColor ();
