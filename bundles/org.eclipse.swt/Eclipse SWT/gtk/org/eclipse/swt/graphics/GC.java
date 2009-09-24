@@ -1089,12 +1089,12 @@ void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
 		short[] xRects = new short[nRects[0] * 4];
 		for (int i=0, j=0; i<nRects[0]; i++, j+=4) {
 			OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
-			xRects[j] = (short)rect.x;
-			xRects[j+1] = (short)rect.y;
+			xRects[j] = (short)(translateX + rect.x);
+			xRects[j+1] = (short)(translateY + rect.y);
 			xRects[j+2] = (short)rect.width;
 			xRects[j+3] = (short)rect.height;
 		}
-		OS.XRenderSetPictureClipRectangles(xDisplay, destPict, translateX, translateY, xRects, nRects[0]);
+		OS.XRenderSetPictureClipRectangles(xDisplay, destPict, 0, 0, xRects, nRects[0]);
 		if (clipping != data.clipRgn && clipping != data.damageRgn) {
 			OS.gdk_region_destroy(clipping);
 		}
