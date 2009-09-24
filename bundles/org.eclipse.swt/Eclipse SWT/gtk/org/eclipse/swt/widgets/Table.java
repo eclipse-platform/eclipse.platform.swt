@@ -2590,6 +2590,11 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				}
 			}
 
+			//send out measure before erase
+			int /*long*/ textRenderer =  getTextRenderer (columnHandle);
+			if (textRenderer != 0) OS.gtk_cell_renderer_get_size (textRenderer, handle, null, null, null, null, null);
+			
+
 			if (hooks (SWT.EraseItem)) {
 				boolean wasSelected = false; 
 				if ((drawState & SWT.SELECTED) != 0) {
