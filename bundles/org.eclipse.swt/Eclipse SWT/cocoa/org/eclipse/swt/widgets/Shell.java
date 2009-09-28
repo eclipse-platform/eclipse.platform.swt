@@ -620,7 +620,7 @@ void createHandle () {
 			// add it to the foreign view.
 			NSView parentView = view;			
 			super.createHandle();
-			parentView.addSubview(view);
+			parentView.addSubview(topView());
 		}
 
 		style |= SWT.NO_BACKGROUND;
@@ -651,6 +651,8 @@ void deregister () {
 void destroyWidget () {
 	NSWindow window = this.window;
 	Display display = this.display;
+	NSView view = topView();
+	
 	boolean sheet = (style & (SWT.SHEET)) != 0;
 	releaseHandle ();
 	if (window != null) {
@@ -659,10 +661,16 @@ void destroyWidget () {
 			application.endSheet(window, 0);
 		}
 		window.close();
+	} else if (view != null) {
+		view.removeFromSuperview();
 	}
-	//If another shell is not going to become active, clear the menu bar.
-	if (!display.isDisposed () && display.getShells ().length == 0) {
-		display.setMenuBar (null);
+	
+	// If another shell is not going to become active, clear the menu bar.
+	// Don't modify the menu bar if we are an embedded Shell, though.
+	if (window != null) {
+		if (!display.isDisposed () && display.getShells ().length == 0) {
+			display.setMenuBar (null);
+		}
 	}
 }
 
@@ -1764,22 +1772,24 @@ void updateModal () {
 }
 
 void updateParent (boolean visible) {
-	if (visible) {
-		if (parent != null && parent.getVisible ()) {
-			((Shell)parent).window.addChildWindow (window, OS.NSWindowAbove);
-			
-			/**
-			 * Feature in Cocoa: When a window is added as a child window,
-			 * its window level resets to its parent's window level. So, we
-			 * have to set the level for ON_TOP child window again.
-			 */
-			if ((style & SWT.ON_TOP) != 0) {
-				window.setLevel(OS.NSStatusWindowLevel);
+	if (window != null) {
+		if (visible) {
+			if (parent != null && parent.getVisible ()) {
+				((Shell)parent).window.addChildWindow (window, OS.NSWindowAbove);
+				
+				/**
+				 * Feature in Cocoa: When a window is added as a child window,
+				 * its window level resets to its parent's window level. So, we
+				 * have to set the level for ON_TOP child window again.
+				 */
+				if ((style & SWT.ON_TOP) != 0) {
+					window.setLevel(OS.NSStatusWindowLevel);
+				}
 			}
+		} else {
+			NSWindow parentWindow = window.parentWindow ();
+			if (parentWindow != null) parentWindow.removeChildWindow (window);
 		}
-	} else {
-		NSWindow parentWindow = window.parentWindow ();
-		if (parentWindow != null) parentWindow.removeChildWindow (window);
 	}
 	Shell [] shells = getShells ();
 	for (int i = 0; i < shells.length; i++) {

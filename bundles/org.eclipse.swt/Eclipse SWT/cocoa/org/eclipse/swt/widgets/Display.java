@@ -4127,6 +4127,8 @@ void updateDefaultButton () {
 }
 
 void updateQuitMenu () {
+	// If we did not create the menu bar, don't modify it.
+	if (isEmbedded) return;
 	boolean enabled = true;
 	Shell [] shells = getShells ();
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
