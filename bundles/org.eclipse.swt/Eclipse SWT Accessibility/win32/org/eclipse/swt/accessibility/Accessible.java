@@ -534,7 +534,7 @@ public class Accessible {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		// Currently, we don't let the application override this. Forward to the proxy.
 		int code = iaccessible.accDoDefaultAction(varChild);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+		if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
 		return code;
 	}
 
@@ -548,6 +548,7 @@ public class Accessible {
 		if (code == COM.S_OK) {
 			VARIANT v = getVARIANT(pvarChild);
 			if (v.vt == COM.VT_I4) osChild = osToChildID(v.lVal);
+			/* Should also handle v.vt == COM.VT_DISPATCH */
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -559,9 +560,7 @@ public class Accessible {
 			listener.getChildAtPoint(event);
 		}
 		int childID = event.childID;
-		if (childID == ACC.CHILDID_NONE) {
-			return iaccessible.accHitTest(xLeft, yTop, pvarChild);
-		}
+		if (childID == ACC.CHILDID_NONE) return COM.S_FALSE;
 		setVARIANT(pvarChild, COM.VT_I4, childIDToOs(childID));
 		return COM.S_OK;
 	}
@@ -574,7 +573,7 @@ public class Accessible {
 		/* Get the default location from the OS. */
 		int osLeft = 0, osTop = 0, osWidth = 0, osHeight = 0;
 		int code = iaccessible.accLocation(pxLeft, pyTop, pcxWidth, pcyHeight, varChild);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+		if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
 		if (accessibleControlListeners.size() == 0) return code;
 		if (code == COM.S_OK) {
 			int[] pLeft = new int[1], pTop = new int[1], pWidth = new int[1], pHeight = new int[1];
@@ -603,10 +602,13 @@ public class Accessible {
 	}
 	
 	int accNavigate(int navDir, int /*long*/ varStart, int /*long*/ pvarEndUpAt) {
-		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
-		// Currently, we don't let the application override this. Forward to the proxy.
+		/* MSAA: "The accNavigate method is deprecated and should not be used."
+		 * 
+		 * NOTE: Since many of the native controls still handle accNavigate,
+		 * we will continue to send this through to the proxy.
+		 */
 		int code = iaccessible.accNavigate(navDir, varStart, pvarEndUpAt);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+		if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
 		return code;
 	}
 	
@@ -614,7 +616,7 @@ public class Accessible {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		// Currently, we don't let the application override this. Forward to the proxy.
 		int code = iaccessible.accSelect(flagsSelect, varChild);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+		if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
 		return code;
 	}
 
@@ -708,6 +710,14 @@ public class Accessible {
 	}
 	
 	int get_accDescription(int /*long*/ varChild, int /*long*/ pszDescription) {
+		/* 
+		 * MSAA: "The accDescription property is not supported in the transition to
+		 * UI Automation. MSAA servers and applications should not use it."
+		 * 
+		 * NOTE: Description was exposed as SWT API. We will need to either deprecate this,
+		 * or find a suitable replacement. Note that the trick to expose tree columns
+		 * was not supported by screen readers, so it should be replaced.
+		 */
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -842,6 +852,7 @@ public class Accessible {
 			listener.getHelp(event);
 		}
 		if (event.result == null) return code;
+		if (event.result.length() == 0) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
 		int /*long*/ ptr = COM.SysAllocString(data);
 		COM.MoveMemory(pszHelp, new int /*long*/[] { ptr }, OS.PTR_SIZEOF);
@@ -849,10 +860,13 @@ public class Accessible {
 	}
 	
 	int get_accHelpTopic(int /*long*/ pszHelpFile, int /*long*/ varChild, int /*long*/ pidTopic) {
-		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
-		// Currently, we don't let the application override this. Forward to the proxy.
+		/* MSAA: "The accHelpTopic property is deprecated and should not be used."
+		 * 
+		 * NOTE: Since it is possible that a native control might still handle get_accHelpTopic,
+		 * we will continue to send this through to the proxy.
+		 */
 		int code = iaccessible.get_accHelpTopic(pszHelpFile, varChild, pidTopic);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+		if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
 		return code;
 	}
 
@@ -920,6 +934,7 @@ public class Accessible {
 			listener.getName(event);
 		}
 		if (event.result == null) return code;
+		if (event.result.length() == 0) return COM.S_FALSE;
 		char[] data = (event.result + "\0").toCharArray();
 		int /*long*/ ptr = COM.SysAllocString(data);
 		COM.MoveMemory(pszName, new int /*long*/[] { ptr }, OS.PTR_SIZEOF);
@@ -944,9 +959,6 @@ public class Accessible {
 		/* Get the default role from the OS. */
 		int osRole = COM.ROLE_SYSTEM_CLIENT;
 		int code = iaccessible.get_accRole(varChild, pvarRole);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		// TEMPORARY CODE - process tree and table even if there are no apps listening
-		if (accessibleControlListeners.size() == 0 && !(control instanceof Tree || control instanceof Table)) return code;
 		if (code == COM.S_OK) {
 			VARIANT v2 = getVARIANT(pvarRole);
 			if (v2.vt == COM.VT_I4) osRole = osToChildID(v2.lVal);
@@ -956,12 +968,10 @@ public class Accessible {
 		event.childID = osToChildID(v.lVal);
 		event.detail = osToRole(osRole);
 		// TEMPORARY CODE
-		/* Currently our checkbox table and tree are emulated using state mask
-		 * images, so we need to specify 'checkbox' role for the items. */
-		if (v.lVal != COM.CHILDID_SELF) {
-			if (control instanceof Tree || control instanceof Table) {
-				if ((control.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
-			}
+		/* Currently our checkbox table and tree are emulated using state mask images,
+		 * so we need to specify 'checkbox' role for the items. */
+		if (control instanceof Tree || control instanceof Table) {
+			if (v.lVal != COM.CHILDID_SELF && (control.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
 		}
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -1032,9 +1042,6 @@ public class Accessible {
 		/* Get the default state from the OS. */
 		int osState = 0;
 		int code = iaccessible.get_accState(varChild, pvarState);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		// TEMPORARY CODE - process tree and table even if there are no apps listening
-		if (accessibleControlListeners.size() == 0 && !(control instanceof Tree || control instanceof Table)) return code;
 		if (code == COM.S_OK) {
 			VARIANT v2 = getVARIANT(pvarState);
 			if (v2.vt == COM.VT_I4) osState = v2.lVal;
@@ -1092,7 +1099,7 @@ public class Accessible {
 		/* Get the default value string from the OS. */
 		String osValue = null;
 		int code = iaccessible.get_accValue(varChild, pszValue);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+		if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
 		if (accessibleControlListeners.size() == 0) return code;
 		if (code == COM.S_OK) {
 			int /*long*/[] pValue = new int /*long*/[1];
@@ -1120,12 +1127,8 @@ public class Accessible {
 	}
 	
 	int put_accName(int /*long*/ varChild, int /*long*/ szName) {
-		// MSAA: this method is no longer supported
-		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
-		// We don't implement this. Forward to the proxy.
-		int code = iaccessible.put_accName(varChild, szName);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		return code;
+		/* MSAA: "The IAccessible::put_accName method is no longer supported. Servers should return E_NOTIMPL." */
+		return COM.E_NOTIMPL;
 	}
 	
 	int put_accValue(int /*long*/ varChild, int /*long*/ szValue) {
@@ -1133,7 +1136,7 @@ public class Accessible {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		// We don't implement this. Forward to the proxy.
 		int code = iaccessible.put_accValue(varChild, szValue);
-		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+		if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
 		return code;
 	}
 
