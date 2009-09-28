@@ -1673,6 +1673,7 @@ public class SWT {
 	 * since align DOWN and align BOTTOM are considered the same).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * <li><code>TabFolder</code></li>
 	 * </ul></p>
 	 */
 	public static final int BOTTOM             = DOWN;
