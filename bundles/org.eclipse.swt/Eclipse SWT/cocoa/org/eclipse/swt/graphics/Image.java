@@ -1054,9 +1054,22 @@ void initNative(String filename) {
 				int green = (int) (color.greenComponent() * 255);
 				int blue = (int) (color.blueComponent() * 255);
 				this.transparentPixel = (red << 16) + (green << 8) + blue;
-			} else {
-				this.alphaData = alphaData;
-			}
+				
+				/*
+				* If the image has opaque pixels that have the same color as the transparent
+				* pixel, create an alpha image instead of using transparent pixel. 
+				*/
+				for (int j = 0; j < srcData.length; j+=4) {
+					if (srcData [j] != 0) {
+						int pixel = (srcData[j+1] << 16) + (srcData[j+2] << 8) + srcData[j+3];
+						if (pixel == this.transparentPixel){
+							this.transparentPixel = -1;
+							break;
+						}
+					}
+				}
+			} 
+			if (this.transparentPixel == -1) this.alphaData = alphaData;
 		}
 		
 		// For compatibility, images created from .ico files are treated as SWT.ICON format, even though
