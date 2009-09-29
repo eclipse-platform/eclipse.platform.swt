@@ -17,6 +17,7 @@ import java.awt.event.*;
 import java.lang.reflect.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
@@ -146,6 +147,7 @@ public class SWT_AWT {
 			SWT.error (SWT.ERROR_UNSPECIFIED , e, " [Error while starting AWT]");		
 		}
 		
+		initializeSwing();
 		Object value = null;
 		Constructor constructor = null;
 		try {
@@ -155,25 +157,105 @@ public class SWT_AWT {
 			SWT.error(SWT.ERROR_NOT_IMPLEMENTED, e);
 		}
 		final Frame frame = (Frame) value;
+		frame.addNotify();
+		
 		parent.setData(EMBEDDED_FRAME_KEY, frame);
 		
-		Listener listener = new Listener() {
-			public void handleEvent(Event e) {
+		/* Forward the iconify and deiconify events */
+		final Listener shellListener = new Listener () {
+			public void handleEvent (Event e) {
 				switch (e.type) {
-					case SWT.Dispose: {
-						parent.setVisible(false);
+					case SWT.Deiconify:
 						EventQueue.invokeLater(new Runnable () {
 							public void run () {
-								frame.dispose ();
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
 							}
 						});
 						break;
-					}
+					case SWT.Iconify:
+						EventQueue.invokeLater(new Runnable () {
+							public void run () {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
+							}
+						});
+						break;
+				}
+			}
+		};
+		Shell shell = parent.getShell ();
+		shell.addListener (SWT.Deiconify, shellListener);
+		shell.addListener (SWT.Iconify, shellListener);
+		
+		/*
+		 * Generate the appropriate events to activate and deactivate
+		 * the embedded frame. This is needed in order to make keyboard
+		 * focus work properly for lightweights.
+		 */
+		Listener listener = new Listener () {
+			public void handleEvent (Event e) {
+				switch (e.type) {
+					case SWT.Dispose:
+						Shell shell = parent.getShell ();
+						shell.removeListener (SWT.Deiconify, shellListener);
+						shell.removeListener (SWT.Iconify, shellListener);
+						parent.setVisible(false);
+						EventQueue.invokeLater(new Runnable () {
+							public void run () {
+								try {
+									frame.dispose ();
+								} catch (Throwable e) {}
+							}
+						});
+						break;
+					case SWT.FocusIn:
+						EventQueue.invokeLater(new Runnable () {
+							public void run () {
+								if (frame.isActive()) return;
+								try {
+									Class clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
+									if (method != null) method.invoke(frame, new Object[]{new Boolean(true)});
+								} catch (Throwable e) {e.printStackTrace();}
+							}
+						});
+						break;
+					case SWT.Deactivate:
+						EventQueue.invokeLater(new Runnable () {
+							public void run () {
+								if (!frame.isActive()) return;
+								try {
+									Class clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
+									if (method != null) method.invoke(frame, new Object[]{new Boolean(false)});
+								} catch (Throwable e) {e.printStackTrace();}
+							}
+						});
+						break;
 				}
 			}
 		};
 		
-		parent.addListener(SWT.Dispose, listener);
+		parent.addListener (SWT.FocusIn, listener);
+		parent.addListener (SWT.Deactivate, listener);
+		parent.addListener (SWT.Dispose, listener);
+		
+		parent.getDisplay().asyncExec(new Runnable() {
+			public void run () {
+				if (parent.isDisposed()) return;
+				final Rectangle clientArea = parent.getClientArea();
+				EventQueue.invokeLater(new Runnable () {
+					public void run () {
+						frame.setSize (clientArea.width, clientArea.height);
+						frame.validate();
+						
+						// Bug in Cocoa AWT? For some reason the frame isn't showing up on first draw.
+						// Toggling visibility seems to be the only thing that works.
+						frame.setVisible(false);
+						frame.setVisible(true);
+					}
+				});
+			}
+		});
 		
 		return frame;
 	}
