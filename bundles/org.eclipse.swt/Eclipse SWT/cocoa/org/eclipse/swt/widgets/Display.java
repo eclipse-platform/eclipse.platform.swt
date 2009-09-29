@@ -2487,6 +2487,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_timerProc_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_systemSettingsChanged_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidMiniaturize_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidDeminiaturize_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);	
 }
 
@@ -4830,6 +4832,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		widget.drawBackgroundInClipRect(id, sel, rect);
+	} else if (sel == OS.sel_windowDidMiniaturize_) {
+		widget.windowDidMiniturize(id, sel, arg0);
+	} else if (sel == OS.sel_windowDidDeminiaturize_) {
+		widget.windowDidDeminiturize(id, sel, arg0);
 	}
 	return 0;
 }

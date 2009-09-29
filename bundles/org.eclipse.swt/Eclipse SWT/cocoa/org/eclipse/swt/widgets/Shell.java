@@ -1511,6 +1511,7 @@ public void setMinimized (boolean minimized) {
 	checkWidget();
 	super.setMinimized (minimized);
 	if (window == null) return;
+	if (!getVisible()) return;
 	if (minimized) {
 		window.miniaturize (null);
 	} else {
@@ -1695,6 +1696,13 @@ void setWindowVisible (boolean visible, boolean key) {
 				} else {
 					window.orderFront (null);
 				}
+				if (minimized != window.isMiniaturized()) {
+					if (minimized) {
+						window.miniaturize (null);
+					} else {
+						window.deminiaturize (null);
+					}
+				}
 			}
 		}
 		}
@@ -1848,6 +1856,16 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	} else {
 		parentShell.updateSystemUIMode ();
 	}
+}
+
+void windowDidDeminiturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	minimized = false;
+	sendEvent(SWT.Deiconify);
+}
+
+void windowDidMiniturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	minimized = true;
+	sendEvent(SWT.Iconify);
 }
 
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {

@@ -4800,6 +4800,12 @@
 		<method selector="windowDidBecomeKey:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>
+		<method selector="windowDidDeminiaturize:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
+		<method selector="windowDidMiniaturize:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
 		<method selector="windowDidMove:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>
