@@ -1181,8 +1181,8 @@ void fixFocus (Control focusControl) {
 		if (control.setFocus ()) return;
 	}
 	shell.setSavedFocus (focusControl);
-//	int window = OS.GetControlOwner (handle);
-//	OS.ClearKeyboardFocus (window);
+	NSWindow window = view.window();
+	window.makeFirstResponder(window);
 }
 
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

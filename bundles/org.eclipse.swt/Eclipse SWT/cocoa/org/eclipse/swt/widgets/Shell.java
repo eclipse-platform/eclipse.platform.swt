@@ -1941,7 +1941,7 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 }
 
 boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window) {
-	closeWidget ();
+	if (isEnabled()) closeWidget ();
 	return false;
 }
 
