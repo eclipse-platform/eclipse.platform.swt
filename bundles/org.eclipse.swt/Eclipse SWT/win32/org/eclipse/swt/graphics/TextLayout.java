@@ -731,7 +731,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						if (hFont != lastHFont) {
 							lastHFont = hFont;
 							if (gdipFont != 0) Gdip.Font_delete(gdipFont);
+							int /*long*/ oldFont = OS.SelectObject(hdc, hFont);
 							gdipFont = Gdip.Font_new(hdc, hFont);
+							OS.SelectObject(hdc, oldFont);
 							if (gdipFont == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 							if (!Gdip.Font_IsAvailable(gdipFont)) {
 								Gdip.Font_delete(gdipFont);
