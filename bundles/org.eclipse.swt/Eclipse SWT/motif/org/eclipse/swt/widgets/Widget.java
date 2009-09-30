@@ -798,6 +798,7 @@ boolean setKeyState (Event event, XKeyEvent xEvent) {
 	int [] keysym = new int [1];
 	OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
 	boolean isNull = display.fixKey (keysym, buffer, xEvent.state);
+	setLocationState (event, keysym [0]);
 	if (keysym [0] != 0) {
 		event.keyCode = Display.translateKey (keysym [0]);
 	}
@@ -821,6 +822,56 @@ boolean setKeyState (Event event, XKeyEvent xEvent) {
 		if (!isNull) return false;
 	}
 	return setInputState (event, xEvent.state);
+}
+void setLocationState (Event event, int keysym) {
+	switch (keysym) {
+		case OS.XK_Alt_L:
+		case OS.XK_Meta_L:
+		case OS.XK_Control_L:
+		case OS.XK_Shift_L:
+			event.stateMask |= SWT.LOCATION_LEFT;
+			break;
+		case OS.XK_Alt_R:
+		case OS.XK_Meta_R:
+		case OS.XK_Control_R:
+		case OS.XK_Shift_R:
+			event.stateMask |= SWT.LOCATION_RIGHT;
+			break;
+		case OS.XK_KP_Enter:
+		case OS.XK_KP_F1:
+		case OS.XK_KP_F2:
+		case OS.XK_KP_F3:
+		case OS.XK_KP_F4:
+		case OS.XK_KP_Home:
+		case OS.XK_KP_Left:
+		case OS.XK_KP_Up:
+		case OS.XK_KP_Right:
+		case OS.XK_KP_Down:
+		case OS.XK_KP_Page_Up:
+		case OS.XK_KP_Page_Down:
+		case OS.XK_KP_End:
+		case OS.XK_KP_Insert:
+		case OS.XK_KP_Delete:
+		case OS.XK_KP_Equal:
+		case OS.XK_KP_Multiply:
+		case OS.XK_KP_Add:
+		case OS.XK_KP_Subtract:
+		case OS.XK_KP_Decimal:
+		case OS.XK_KP_Divide:
+		case OS.XK_KP_0:
+		case OS.XK_KP_1:
+		case OS.XK_KP_2:
+		case OS.XK_KP_3:
+		case OS.XK_KP_4:
+		case OS.XK_KP_5:
+		case OS.XK_KP_6:
+		case OS.XK_KP_7:
+		case OS.XK_KP_8:
+		case OS.XK_KP_9:
+		case OS.XK_Num_Lock:
+			event.stateMask |= SWT.LOCATION_KEYPAD;
+			break;
+	}
 }
 void sendEvent (Event event) {
 	Display display = event.display;
