@@ -1950,6 +1950,9 @@ public class OS extends C {
 	public static final int VK_INSERT = 0x2d;
 	public static final int VK_LBUTTON = 0x1;
 	public static final int VK_LEFT = 0x25;
+	public static final int VK_LCONTROL = 0xA2;
+	public static final int VK_LMENU = 0xA4;
+	public static final int VK_LSHIFT = 0xA0;
 	public static final int VK_MBUTTON = 0x4;
 	public static final int VK_MENU = 0x12;
 	public static final int VK_MULTIPLY = 0x6A;
@@ -1971,6 +1974,9 @@ public class OS extends C {
 	public static final int VK_RBUTTON = 0x2;
 	public static final int VK_RETURN = 0xd;
 	public static final int VK_RIGHT = 0x27;
+	public static final int VK_RCONTROL = 0xA3;
+	public static final int VK_RMENU = 0xA5;
+	public static final int VK_RSHIFT = 0xA1;
 	public static final int VK_SCROLL = 0x91;
 	public static final int VK_SEPARATOR = 0x6C;
 	public static final int VK_SHIFT = 0x10;
