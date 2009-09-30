@@ -1466,10 +1466,56 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 			}
 		}
 	}
+	setLocationState(event, keyEvent);
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!isNull) return false;
 	}
 	return setInputState (event, keyEvent.state);
+}
+
+void setLocationState (Event event, GdkEventKey keyEvent) {
+	switch (keyEvent.keyval) {
+		case OS.GDK_Alt_L:
+		case OS.GDK_Shift_L:
+		case OS.GDK_Control_L:
+			event.stateMask |= SWT.LOCATION_LEFT;
+			break;
+		case OS.GDK_Alt_R:
+		case OS.GDK_Shift_R:
+		case OS.GDK_Control_R:
+				event.stateMask |= SWT.LOCATION_RIGHT;
+			break;
+		case OS.GDK_KP_0:
+		case OS.GDK_KP_1:
+		case OS.GDK_KP_2:
+		case OS.GDK_KP_3:
+		case OS.GDK_KP_4:
+		case OS.GDK_KP_5:
+		case OS.GDK_KP_6:
+		case OS.GDK_KP_7:
+		case OS.GDK_KP_8:
+		case OS.GDK_KP_9:
+		case OS.GDK_KP_Add:
+		case OS.GDK_KP_Decimal:
+		case OS.GDK_KP_Delete:
+		case OS.GDK_KP_Divide:
+		case OS.GDK_KP_Down:
+		case OS.GDK_KP_End:
+		case OS.GDK_KP_Enter:
+		case OS.GDK_KP_Equal:
+		case OS.GDK_KP_Home:
+		case OS.GDK_KP_Insert:
+		case OS.GDK_KP_Left:
+		case OS.GDK_KP_Multiply:
+		case OS.GDK_KP_Page_Down:
+		case OS.GDK_KP_Page_Up:
+		case OS.GDK_KP_Right:
+		case OS.GDK_KP_Subtract:
+		case OS.GDK_KP_Up:
+		case OS.GDK_Num_Lock:
+			event.stateMask |= SWT.LOCATION_KEYPAD;
+			break;
+	}
 }
 
 void setOrientation () {
