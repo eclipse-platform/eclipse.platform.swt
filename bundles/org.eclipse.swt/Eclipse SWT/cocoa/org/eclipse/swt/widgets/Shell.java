@@ -1680,32 +1680,34 @@ void setWindowVisible (boolean visible, boolean key) {
 		topView ().setHidden (false);
 		invalidateVisibleRegion();
 		if (window != null) {
-		if ((style & (SWT.SHEET)) != 0) {
-			NSApplication application = NSApplication.sharedApplication();
-			application.beginSheet(window, ((Shell)parent).window, null, 0, 0);
-			if (OS.VERSION <= 0x1060 && window.respondsToSelector(OS.sel__setNeedsToUseHeartBeatWindow_)) {
-				OS.objc_msgSend(window.id, OS.sel__setNeedsToUseHeartBeatWindow_, 0);
-			}
-		} else {
-			// If the parent window is miniaturized, the window will be shown
-			// when its parent is shown.
-			boolean parentMinimized = parent != null && ((Shell)parent).window.isMiniaturized();
-			if (!parentMinimized) {
-				if (key) {
-					makeKeyAndOrderFront ();
-				} else {
-					window.orderFront (null);
+			if ((style & (SWT.SHEET)) != 0) {
+				NSApplication application = NSApplication.sharedApplication();
+				application.beginSheet(window, ((Shell)parent).window, null, 0, 0);
+				if (OS.VERSION <= 0x1060 && window.respondsToSelector(OS.sel__setNeedsToUseHeartBeatWindow_)) {
+					OS.objc_msgSend(window.id, OS.sel__setNeedsToUseHeartBeatWindow_, 0);
 				}
-				if (minimized != window.isMiniaturized()) {
-					if (minimized) {
-						window.miniaturize (null);
+			} else {
+				// If the parent window is miniaturized, the window will be shown
+				// when its parent is shown.
+				boolean parentMinimized = parent != null && ((Shell)parent).window.isMiniaturized();
+				if (!parentMinimized) {
+					if (key) {
+						makeKeyAndOrderFront ();
 					} else {
-						window.deminiaturize (null);
+						window.orderFront (null);
+					}
+					if (isDisposed()) return;
+					if (minimized != window.isMiniaturized()) {
+						if (minimized) {
+							window.miniaturize (null);
+						} else {
+							window.deminiaturize (null);
+						}
 					}
 				}
 			}
 		}
-		}
+		if (isDisposed()) return;
 		updateParent (visible);
 		opened = true;
 		if (!moved) {
