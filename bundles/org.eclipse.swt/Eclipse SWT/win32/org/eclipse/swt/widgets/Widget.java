@@ -1278,6 +1278,8 @@ boolean setKeyState (Event event, int type, int /*long*/ wParam, int /*long*/ lP
 	if (display.lastKey == SWT.CR && display.lastAscii == SWT.CR) {
 		if ((lParam & 0x1000000) != 0) display.lastKey = SWT.KEYPAD_CR;
 	}
+
+	setLocationMask(event, type, wParam, lParam);
 	
 	if (display.lastVirtual) {
 		/*
@@ -1310,6 +1312,48 @@ boolean setKeyState (Event event, int type, int /*long*/ wParam, int /*long*/ lP
 		if (!display.lastNull) return false;
 	}
 	return setInputState (event, type);
+}
+
+int setLocationMask (Event event, int type, int /*long*/ wParam, int /*long*/ lParam) {
+	int location = SWT.NONE;
+	if (display.lastVirtual) {
+		switch (display.lastKey) {
+			case OS.VK_SHIFT:
+				if (OS.GetKeyState(OS.VK_LSHIFT) < 0) location = SWT.LOCATION_LEFT;
+				if (OS.GetKeyState(OS.VK_RSHIFT) < 0) location = SWT.LOCATION_RIGHT;
+				break;
+			case OS.VK_NUMLOCK:
+				location = SWT.LOCATION_KEYPAD;
+				break;
+			case OS.VK_CONTROL:	
+			case OS.VK_MENU:	
+				location = (lParam & 0x1000000) == 0 ? SWT.LOCATION_LEFT : SWT.LOCATION_RIGHT;
+				break;
+			case OS.VK_INSERT:
+			case OS.VK_DELETE:
+			case OS.VK_HOME:
+			case OS.VK_END:
+			case OS.VK_PRIOR:
+			case OS.VK_NEXT:
+			case OS.VK_UP:
+			case OS.VK_DOWN:
+			case OS.VK_LEFT:
+			case OS.VK_RIGHT:
+				if ((lParam & 0x1000000) == 0) {
+					location = SWT.LOCATION_KEYPAD;
+				}
+				break;
+		}
+		if (display.numpadKey(display.lastKey) != 0) {
+			location = SWT.LOCATION_KEYPAD;
+		}
+	} else {
+		if (display.lastKey == SWT.KEYPAD_CR) {
+			location = SWT.LOCATION_KEYPAD;
+		}
+	}
+	event.stateMask |= location;
+	return location;
 }
 
 boolean setTabGroupFocus () {
