@@ -332,10 +332,15 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 					vVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
 				}
 				RECT cornerRect = new RECT ();
-				cornerRect.right = windowRect.right - windowRect.left - trimRect.right;
 				cornerRect.bottom = windowRect.bottom - windowRect.top - trimRect.bottom;
-				cornerRect.left = cornerRect.right - (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
 				cornerRect.top = cornerRect.bottom - (vVisible ? OS.GetSystemMetrics (OS.SM_CYHSCROLL) : 0);
+				if ((bits2 & OS.WS_EX_LEFTSCROLLBAR) != 0) {
+					cornerRect.left = trimRect.left;
+					cornerRect.right = cornerRect.left + (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
+				} else {
+					cornerRect.right = windowRect.right - windowRect.left - trimRect.right;
+					cornerRect.left = cornerRect.right - (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
+				}
 				if (cornerRect.left != cornerRect.right && cornerRect.top != cornerRect.bottom) {
 					int /*long*/ hDC = OS.GetWindowDC (hwnd);
 					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
