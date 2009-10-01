@@ -1589,8 +1589,45 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!isNull) return false;
 	}
+	setLocationMask (event, nsEvent);
 	setInputState (event, nsEvent, type);
 	return true;
+}
+
+void setLocationMask (Event event, NSEvent nsEvent) {
+	switch (nsEvent.keyCode ()) {
+		case 55: /* LEFT COMMAND */
+		case 56: /* LEFT SHIFT */
+		case 58: /* LEFT ALT */
+		case 59: /* LEFT CONTROL */
+			event.stateMask |= SWT.LOCATION_LEFT;
+			break;
+		case 54: /* RIGHT COMMAND */
+		case 60: /* RIGHT SHIFT */
+		case 61: /* RIGHT ALT */
+		case 62: /* RIGHT CONTROL */
+			event.stateMask |= SWT.LOCATION_RIGHT;
+			break;
+		case 67:  /* KEYPAD_MULTIPLY */
+		case 69:  /* KEYPAD_ADD */
+		case 76:  /* KEYPAD_CR */
+		case 78:  /* KEYPAD_SUBTRACT */
+		case 65:  /* KEYPAD_DECIMAL */
+		case 75:  /* KEYPAD_DIVIDE */
+		case 82:  /* KEYPAD_0 */
+		case 83:  /* KEYPAD_1 */
+		case 84:  /* KEYPAD_2 */
+		case 85:  /* KEYPAD_3 */
+		case 86:  /* KEYPAD_4 */
+		case 87:  /* KEYPAD_5 */
+		case 88:  /* KEYPAD_6 */
+		case 89:  /* KEYPAD_7 */
+		case 91:  /* KEYPAD_8 */
+		case 92:  /* KEYPAD_9 */
+		case 81:  /* KEYPAD_EQUAL */
+			event.stateMask |= SWT.LOCATION_KEYPAD;
+			break;
+	}
 }
 
 boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {

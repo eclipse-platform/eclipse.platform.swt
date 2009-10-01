@@ -1214,6 +1214,7 @@ void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 				if (type == SWT.KeyDown) s.keyInputHappened = true;
 				Event event = new Event();
 				event.keyCode = keyCode;
+				setLocationMask(event, nsEvent);
 				setInputState (event, nsEvent, type);
 				if (!sendKeyEvent (type, event)) return;
 			}
