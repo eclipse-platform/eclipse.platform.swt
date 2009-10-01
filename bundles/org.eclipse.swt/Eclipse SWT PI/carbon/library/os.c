@@ -1243,6 +1243,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFArrayGetValueAtIndex)
 }
 #endif
 
+#ifndef NO_CFBundleCreateBundlesFromDirectory
+JNIEXPORT jint JNICALL OS_NATIVE(CFBundleCreateBundlesFromDirectory)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFBundleCreateBundlesFromDirectory_FUNC);
+	rc = (jint)CFBundleCreateBundlesFromDirectory((CFAllocatorRef)arg0, (CFURLRef)arg1, (CFStringRef)arg2);
+	OS_NATIVE_EXIT(env, that, CFBundleCreateBundlesFromDirectory_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFBundleGetIdentifier
 JNIEXPORT jint JNICALL OS_NATIVE(CFBundleGetIdentifier)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1281,6 +1293,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, CFBundleGetPackageInfo_FUNC);
+}
+#endif
+
+#ifndef NO_CFBundleGetValueForInfoDictionaryKey
+JNIEXPORT jint JNICALL OS_NATIVE(CFBundleGetValueForInfoDictionaryKey)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFBundleGetValueForInfoDictionaryKey_FUNC);
+	rc = (jint)CFBundleGetValueForInfoDictionaryKey((CFBundleRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, CFBundleGetValueForInfoDictionaryKey_FUNC);
+	return rc;
 }
 #endif
 
@@ -1516,6 +1540,64 @@ JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopWakeUp)
 	OS_NATIVE_ENTER(env, that, CFRunLoopWakeUp_FUNC);
 	CFRunLoopWakeUp((CFRunLoopRef)arg0);
 	OS_NATIVE_EXIT(env, that, CFRunLoopWakeUp_FUNC);
+}
+#endif
+
+#ifndef NO_CFSetAddValue
+JNIEXPORT void JNICALL OS_NATIVE(CFSetAddValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CFSetAddValue_FUNC);
+	CFSetAddValue((CFMutableSetRef)arg0, (const void *)arg1);
+	OS_NATIVE_EXIT(env, that, CFSetAddValue_FUNC);
+}
+#endif
+
+#ifndef NO_CFSetCreateMutable
+JNIEXPORT jint JNICALL OS_NATIVE(CFSetCreateMutable)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFSetCreateMutable_FUNC);
+	rc = (jint)CFSetCreateMutable((CFAllocatorRef)arg0, (CFIndex)arg1, (const CFSetCallBacks *)arg2);
+	OS_NATIVE_EXIT(env, that, CFSetCreateMutable_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFSetGetCount
+JNIEXPORT jint JNICALL OS_NATIVE(CFSetGetCount)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFSetGetCount_FUNC);
+	rc = (jint)CFSetGetCount((CFMutableSetRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFSetGetCount_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFSetGetValues
+JNIEXPORT void JNICALL OS_NATIVE(CFSetGetValues)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CFSetGetValues_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	CFSetGetValues((CFMutableSetRef)arg0, (const void **)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CFSetGetValues_FUNC);
+}
+#endif
+
+#ifndef NO_CFSetRemoveValue
+JNIEXPORT void JNICALL OS_NATIVE(CFSetRemoveValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CFSetRemoveValue_FUNC);
+	CFSetRemoveValue((CFMutableSetRef)arg0, (const void *)arg1);
+	OS_NATIVE_EXIT(env, that, CFSetRemoveValue_FUNC);
 }
 #endif
 
@@ -13596,6 +13678,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(kCFTypeArrayCallBacks)
 	OS_NATIVE_ENTER(env, that, kCFTypeArrayCallBacks_FUNC);
 	rc = (jint)&kCFTypeArrayCallBacks;
 	OS_NATIVE_EXIT(env, that, kCFTypeArrayCallBacks_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCFTypeSetCallBacks
+JNIEXPORT jint JNICALL OS_NATIVE(kCFTypeSetCallBacks)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFTypeSetCallBacks_FUNC);
+	rc = (jint)&kCFTypeSetCallBacks;
+	OS_NATIVE_EXIT(env, that, kCFTypeSetCallBacks_FUNC);
 	return rc;
 }
 #endif

@@ -1072,6 +1072,8 @@ public static final native int kCFRunLoopCommonModes();
 public static final native int kCFRunLoopDefaultMode();
 /** @method flags=const address */
 public static final native int kCFTypeArrayCallBacks();
+/** @method flags=const address */
+public static final native int kCFTypeSetCallBacks();
 /** @method flags=const */
 public static final native int kFontPanelAttributesKey();
 /** @method flags=const */
@@ -1506,7 +1508,41 @@ public static final native int CFArrayCreateMutable(int allocator, int capacity,
 /** @param theArray cast=(CFArrayRef) */
 public static final native int CFArrayGetCount(int theArray);
 /** @param theArray cast=(CFArrayRef) */
-public static final native int CFArrayGetValueAtIndex(int theArray, int idx); 
+public static final native int CFArrayGetValueAtIndex(int theArray, int idx);
+/**
+ * @param theSet cast=(CFMutableSetRef)
+ * @param value cast=(const void *)
+ */
+public static final native void CFSetAddValue(int theSet, int value);
+/**
+ * @param allocator cast=(CFAllocatorRef)
+ * @param capacity cast=(CFIndex)
+ * @param callBacks cast=(const CFSetCallBacks *)
+ */
+public static final native int CFSetCreateMutable(int allocator, int capacity, int callBacks);
+/** @param theSet cast=(CFMutableSetRef) */
+public static final native int CFSetGetCount(int theSet);
+/**
+ * @param theSet cast=(CFMutableSetRef)
+ * @param values cast=(const void **)
+ */
+public static final native void CFSetGetValues(int theSet, int[] values);
+/**
+ * @param theSet cast=(CFMutableSetRef)
+ * @param value cast=(const void *)
+ */
+public static final native void CFSetRemoveValue(int theSet, int value);
+/** 
+ * @param allocater cast=(CFAllocatorRef)
+ * @param directoryURL cast=(CFURLRef)
+ * @param bundleType cast=(CFStringRef)
+ */
+public static final native int CFBundleCreateBundlesFromDirectory(int allocater, int directoryURL, int bundleType);
+/** 
+ * @param bundle cast=(CFBundleRef)
+ * @param cFBundleDocumentTypes cast=(CFStringRef)
+ */
+public static final native int CFBundleGetValueForInfoDictionaryKey(int bundle, int cFBundleDocumentTypes);
 public static final native int CFBundleGetMainBundle();
 /** @param bundle cast=(CFBundleRef) */
 public static final native int CFBundleGetIdentifier(int bundle);

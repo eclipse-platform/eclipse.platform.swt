@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 990;
-int OS_nativeFunctionCallCount[990];
+int OS_nativeFunctionCount = 998;
+int OS_nativeFunctionCallCount[998];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -94,9 +94,11 @@ char * OS_nativeFunctionNames[] = {
 	"CFArrayCreateMutable",
 	"CFArrayGetCount",
 	"CFArrayGetValueAtIndex",
+	"CFBundleCreateBundlesFromDirectory",
 	"CFBundleGetIdentifier",
 	"CFBundleGetMainBundle",
 	"CFBundleGetPackageInfo",
+	"CFBundleGetValueForInfoDictionaryKey",
 	"CFDataGetBytePtr",
 	"CFDataGetBytes",
 	"CFDataGetLength",
@@ -117,6 +119,11 @@ char * OS_nativeFunctionNames[] = {
 	"CFRunLoopSourceSignal",
 	"CFRunLoopStop",
 	"CFRunLoopWakeUp",
+	"CFSetAddValue",
+	"CFSetCreateMutable",
+	"CFSetGetCount",
+	"CFSetGetValues",
+	"CFSetRemoveValue",
 	"CFStringCreateWithBytes",
 	"CFStringCreateWithCharacters__III",
 	"CFStringCreateWithCharacters__I_3CI",
@@ -977,6 +984,7 @@ char * OS_nativeFunctionNames[] = {
 	"kCFRunLoopCommonModes",
 	"kCFRunLoopDefaultMode",
 	"kCFTypeArrayCallBacks",
+	"kCFTypeSetCallBacks",
 	"kFontPanelAttributeSizesKey",
 	"kFontPanelAttributeTagsKey",
 	"kFontPanelAttributeValuesKey",

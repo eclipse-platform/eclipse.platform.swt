@@ -234,6 +234,7 @@ public static final int NSURLCredentialPersistenceForSession = 1;
 public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 
 public static final int NSAllDomainsMask = 0xffff;
+public static final int NSAllApplicationsDirectory = 100;
 public static final int NSDesktopDirectory = 12;
 public static final int NSDocumentDirectory = 9;
 public static final int NSDownloadsDirectory = 15;

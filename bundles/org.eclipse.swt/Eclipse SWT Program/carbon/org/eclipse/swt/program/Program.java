@@ -14,6 +14,7 @@ package org.eclipse.swt.program;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.LSApplicationParameters;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.Cocoa;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -86,199 +87,75 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-	return new String [] {
-		// From System-Declared Uniform Type Identifiers
-		".txt",
-		".rtf",
-		".html",
-		".htm",
-		".xml",
-		".c",
-		".m",
-		".cp", ".cpp", ".c++", ".cc", ".cxx",
-		".mm",
-		".h",
-		".hpp",
-		".h++",
-		".hxx",
-		".java",
-		".jav",
-		".s",
-		".r",
-		".defs",
-		".mig",
-		".exp",
-		".js",
-		".jscript",
-		".javascript",
-		".sh",
-		".command",
-		".csh",
-		".pl",
-		".pm",
-		".py",
-		".rb",
-		".rbw",
-		".php",
-		".php3",
-		".php4",
-		".ph3",
-		".ph4",
-		".phtml",
-		".jnlp",
-		".applescript",
-		".scpt",
-		".o",
-		".exe",
-		".dll",
-		".class",
-		".jar",
-		".qtz",
-		".gtar",
-		".tar",
-		".gz",
-		".gzip",
-		".tgz",
-		".hqx",
-		".bin",
-		".vcf",
-		".vcard",
-		".jpg",
-		".jpeg",
-		".jp2",
-		".tif",
-		".tiff",
-		".pic",
-		".pct",
-		".pict",
-		".pntg",
-		".png",
-		".xbm",
-		".qif",
-		".qtif",
-		".icns",
-		".mov",
-		".qt",
-		".avi",
-		".vfw",
-		".mpg",
-		".mpeg",
-		".m75",
-		".m15",
-		".mp4",
-		".3gp",
-		".3gpp",
-		".3g2",
-		".3gp2",
-		".mp3",
-		".m4a",
-		".m4p",
-		".m4b",
-		".au",
-		".ulw",
-		".snd",
-		".aifc",
-		".aiff",
-		".aif",
-		".caf",
-		".bundle",
-		".app",
-		".plugin",
-		".mdimporter",
-		".wdgt",
-		".cpio",
-		".zip",
-		".framework",
-		".rtfd",
-		".dfont",
-		".otf",
-		".ttf",
-		".ttc",
-		".suit",
-		".pfb",
-		".pfa",
-		".icc",
-		".icm",
-		".pf",
-		".pdf",
-		".ps",
-		".eps",
-		".psd",
-		".ai",
-		".gif",
-		".bmp",
-		".ico",
-		".doc",
-		".xls",
-		".ppt",
-		".wav",
-		".wave",
-		".asf",
-		".wm",
-		".wmv",
-		".wmp",
-		".wma",
-		".asx",
-		".wmx",
-		".wvx",
-		".wax",
-		".key",
-		".kth",
-		".tga",
-		".sgi",
-		".exr",
-		".fpx",
-		".jfx",
-		".efx",
-		".sd2",
-		".rm",
-		".ram",
-		".ra",
-		".smil",
-		".sit",
-		".sitx",
-		// Others
-		".plist",
-		".nib",
-		".lproj",
-		// iChat
-		".iPhoto",
-		// iChat
-		".iChat",
-		".chat",
-		// acrobat reader
-		".rmf",
-		".xfdf",
-		".fdf",
-		// Chess
-		".game",
-		".pgn",
-		// iCal
-		".ics",
-		".vcs",
-		".aplmodel",
-		".icbu",
-		".icalevent",
-		".icaltodo",
-		// Mail
-		".mailhold",
-		".mbox",
-		".imapmbox",
-		".emlx",
-		".mailextract",
-		// Sherlock
-		".sherlock",
-		// Stickies
-		".tpl",
-		// System Preferences
-		".prefPane",
-		".sliderSaver",
-		".saver",
-		// Console
-		".log",
-		// Grapher
-		".gcx",
-	};
+	final String CFBundleDocumentTypesStr = "CFBundleDocumentTypes";
+	char [] chars = new char[CFBundleDocumentTypesStr.length()];
+	CFBundleDocumentTypesStr.getChars(0, chars.length, chars, 0);
+	int CFBundleDocumentTypes = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	
+	final String CFBundleTypeExtensionsStr = "CFBundleTypeExtensions";
+	chars = new char[CFBundleTypeExtensionsStr.length()];
+	CFBundleTypeExtensionsStr.getChars(0, chars.length, chars, 0);
+	int CFBundleTypeExtensions = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	
+	int folders = Cocoa.NSSearchPathForDirectoriesInDomains (Cocoa.NSAllApplicationsDirectory, Cocoa.NSAllDomainsMask, true);
+	int folderCount = OS.CFArrayGetCount(folders);
+	int supportedDocumentTypes = OS.CFSetCreateMutable(OS.kCFAllocatorDefault, 0, OS.kCFTypeSetCallBacks());	
+	for (int i = 0; i < folderCount; i++) {
+		int string = OS.CFArrayGetValueAtIndex(folders, i);
+		int folderUrl = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, string, OS.kCFURLPOSIXPathStyle, true);
+		if (folderUrl != 0) {
+			int bundlesArray = OS.CFBundleCreateBundlesFromDirectory(OS.kCFAllocatorDefault, folderUrl, 0);
+			if (bundlesArray != 0) {
+				int bundleCount = OS.CFArrayGetCount(bundlesArray);
+				for (int j = 0; j < bundleCount; j++) {
+					int bundleRef = OS.CFArrayGetValueAtIndex(bundlesArray, j);
+					if (bundleRef == 0) continue;
+					int documentTypes = OS.CFBundleGetValueForInfoDictionaryKey(bundleRef, CFBundleDocumentTypes);
+					if (documentTypes != 0) {
+						int count = OS.CFArrayGetCount(documentTypes);
+						for (int k = 0; k < count; k++) {
+							int documentType = OS.CFArrayGetValueAtIndex(documentTypes, k);
+							if (documentType == 0) continue;
+							int[] value = new int[1];
+							if (OS.CFDictionaryGetValueIfPresent(documentType, CFBundleTypeExtensions, value)) {
+								if (value[0] != 0) {
+									int extCount = OS.CFArrayGetCount(value[0]);
+									for (int x = 0; x < extCount; x++) {
+										int ext = OS.CFArrayGetValueAtIndex(value[0], x);
+										OS.CFSetAddValue(supportedDocumentTypes, ext);
+									}
+								}
+							}
+						}
+					}
+				}
+				OS.CFRelease(bundlesArray);
+			}
+			OS.CFRelease(folderUrl);
+		}
+	}
+	OS.CFRelease(CFBundleDocumentTypes);
+	OS.CFRelease(CFBundleTypeExtensions);
+	
+	int s = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, new char[]{'*'}, 1);
+	OS.CFSetRemoveValue(supportedDocumentTypes, s);
+	OS.CFRelease(s);
+	
+	int count = OS.CFSetGetCount(supportedDocumentTypes);
+	String[] extensions = new String[count];
+	int [] values = new int[count];
+	OS.CFSetGetValues(supportedDocumentTypes, values);
+	for (int i = 0; i < count; i++) {
+		int ext = values[i];
+		int length = OS.CFStringGetLength(ext);
+		char[] buffer = new char[length];
+		CFRange range = new CFRange();
+		range.length = length;
+		OS.CFStringGetCharacters(ext, range, buffer);
+		extensions[i] = "." + new String(buffer);
+	}
+	OS.CFRelease(supportedDocumentTypes);
+	return extensions;
 }
 
 /**
