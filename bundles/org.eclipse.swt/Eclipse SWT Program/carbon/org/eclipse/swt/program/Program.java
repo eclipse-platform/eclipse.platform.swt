@@ -104,11 +104,11 @@ public static String [] getExtensions () {
 		int string = OS.CFArrayGetValueAtIndex(folders, i);
 		int folderUrl = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, string, OS.kCFURLPOSIXPathStyle, true);
 		if (folderUrl != 0) {
-			int bundlesArray = OS.CFBundleCreateBundlesFromDirectory(OS.kCFAllocatorDefault, folderUrl, 0);
-			if (bundlesArray != 0) {
-				int bundleCount = OS.CFArrayGetCount(bundlesArray);
+			int bundles = OS.CFBundleCreateBundlesFromDirectory(OS.kCFAllocatorDefault, folderUrl, 0);
+			if (bundles != 0) {
+				int bundleCount = OS.CFArrayGetCount(bundles);
 				for (int j = 0; j < bundleCount; j++) {
-					int bundleRef = OS.CFArrayGetValueAtIndex(bundlesArray, j);
+					int bundleRef = OS.CFArrayGetValueAtIndex(bundles, j);
 					if (bundleRef == 0) continue;
 					int documentTypes = OS.CFBundleGetValueForInfoDictionaryKey(bundleRef, CFBundleDocumentTypes);
 					if (documentTypes != 0) {
@@ -129,7 +129,7 @@ public static String [] getExtensions () {
 						}
 					}
 				}
-				OS.CFRelease(bundlesArray);
+				OS.CFRelease(bundles);
 			}
 			OS.CFRelease(folderUrl);
 		}
