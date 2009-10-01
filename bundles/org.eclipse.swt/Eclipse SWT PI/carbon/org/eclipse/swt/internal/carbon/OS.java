@@ -28,6 +28,7 @@ public class OS extends C {
 	}
 
 	/** Constants */
+	public static final int APPL = ('A'<<24) + ('P'<<16) + ('P'<<8) + 'L';
 	public static final int RGBDirect = 16;
 	public static final int alphaLock = 0x0400;
 	public static final int badDragFlavorErr = -1852;
@@ -1507,6 +1508,12 @@ public static final native int CFArrayGetValueAtIndex(int theArray, int idx);
 public static final native int CFBundleGetMainBundle();
 /** @param bundle cast=(CFBundleRef) */
 public static final native int CFBundleGetIdentifier(int bundle);
+/**
+ * @param bundle cast=(CFBundleRef)
+ * @param packageType cast=(UInt32 *)
+ * @param packageCreator cast=(UInt32 *)
+ */
+public static final native void CFBundleGetPackageInfo(int bundle, int[] packageType, int[] packageCreator);
 /**
  * @param theData cast=(CFDataRef)
  * @param range flags=struct

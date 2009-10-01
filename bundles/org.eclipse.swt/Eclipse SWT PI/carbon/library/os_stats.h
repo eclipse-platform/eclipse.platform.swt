@@ -104,6 +104,7 @@ typedef enum {
 	CFArrayGetValueAtIndex_FUNC,
 	CFBundleGetIdentifier_FUNC,
 	CFBundleGetMainBundle_FUNC,
+	CFBundleGetPackageInfo_FUNC,
 	CFDataGetBytePtr_FUNC,
 	CFDataGetBytes_FUNC,
 	CFDataGetLength_FUNC,

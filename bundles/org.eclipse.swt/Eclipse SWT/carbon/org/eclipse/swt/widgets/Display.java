@@ -981,8 +981,7 @@ void createDisplay (DeviceData data) {
 		System.out.println ("***WARNING: Detected: " + Integer.toHexString((OS.VERSION & 0xFF00) >> 8) + "." + Integer.toHexString((OS.VERSION & 0xF0) >> 4) + "." + Integer.toHexString(OS.VERSION & 0xF)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
-	int identifier = OS.CFBundleGetIdentifier(OS.CFBundleGetMainBundle());
-	if (identifier == 0) {
+	if (!isBundled ()) {
 		/*
 		 * Feature in the Macintosh.  On OS 10.2, it is necessary
 		 * to explicitly check in with the Process Manager and set
@@ -2385,6 +2384,17 @@ public void internal_dispose_GC (int context, GCData data) {
 //	OS.CGContextFlush (context);
 	OS.CGContextSynchronize (context);
 	OS.CGContextRelease (context);
+}
+
+boolean isBundled () {
+	int mainBundle = OS.CFBundleGetMainBundle ();
+	if (mainBundle != 0) {
+		int [] packageType = new int [1];
+		int [] packageCreator = new int [1];
+		OS.CFBundleGetPackageInfo (mainBundle, packageType, packageCreator);
+		if (packageType[0] == OS.APPL) return true;
+	}
+	return false;
 }
 
 static boolean isValidClass (Class clazz) {

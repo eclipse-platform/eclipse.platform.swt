@@ -767,8 +767,7 @@ void createDisplay (DeviceData data) {
 	application = NSApplication.sharedApplication();
 	isEmbedded = application.isRunning();
 
-	NSString identifier = NSBundle.mainBundle().bundleIdentifier();
-	if (identifier == null) {
+	if (!isBundled ()) {
 		/*
 		 * Feature in the Macintosh.  On OS 10.2, it is necessary
 		 * to explicitly check in with the Process Manager and set
@@ -2620,6 +2619,17 @@ public int /*long*/ internal_new_GC (GCData data) {
 public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	
+}
+
+boolean isBundled () {
+	NSBundle mainBundle = NSBundle.mainBundle();
+	if (mainBundle != null) {
+		NSDictionary info = mainBundle.infoDictionary();
+		if (info != null) {
+			return NSString.stringWith("APPL").isEqual(info.objectForKey(NSString.stringWith("CFBundlePackageType"))); //$NON-NLS-1$ $NON-NLS-2$
+		}
+	}
+	return false;
 }
 
 static boolean isValidClass (Class clazz) {
