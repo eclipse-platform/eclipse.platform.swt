@@ -50,7 +50,6 @@ public class CCombo extends Composite {
 	Text text;
 	List list;
 	int visibleItemCount = 5;
-	Shell popup;
 	Button arrow;
 	boolean hasFocus;
 	Listener listener, filter;
@@ -103,7 +102,7 @@ public CCombo (Composite parent, int style) {
 	listener = new Listener () {
 		public void handleEvent (Event event) {
 			if (isDisposed ()) return;
-			if (popup == event.widget) {
+			if (getPopup() == event.widget) {
 				popupEvent (event);
 				return;
 			}
@@ -361,9 +360,10 @@ void comboEvent (Event event) {
 			notifyListeners(SWT.Dispose, event);
 			event.type = SWT.None;
 
+			Shell popup = getPopup();
 			if (popup != null && !popup.isDisposed ()) {
 				list.removeListener (SWT.Dispose, listener);
-				popup.dispose ();
+				list.dispose ();
 			}
 			Shell shell = getShell ();
 			shell.removeListener (SWT.Deactivate, listener);
@@ -432,24 +432,30 @@ public void copy () {
 	checkWidget ();
 	text.copy ();
 }
-void createPopup(String[] items, int selectionIndex) {		
-	// create shell and list
-	popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
-	int style = getStyle ();
-	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
-	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
-	if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
-	list = new List (popup, listStyle);
-	if (font != null) list.setFont (font);
-	if (foreground != null) list.setForeground (foreground);
-	if (background != null) list.setBackground (background);
 
-	int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
-	for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
-	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
-	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
-
+void createPopup(String[] items, int selectionIndex) {
+	Shell popup = getPopup();
+	if (popup == null) {
+		// create shell and list
+		popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
+		getShell().setData("ccombolist", popup);
+	}
+	if (list == null) {
+		int style = getStyle ();
+		int listStyle = SWT.SINGLE | SWT.V_SCROLL;
+		if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
+		if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
+		list = new List (popup, listStyle);
+		if (font != null) list.setFont (font);
+		if (foreground != null) list.setForeground (foreground);
+		if (background != null) list.setBackground (background);
+	
+		int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
+		for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
+		int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
+		for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
+	}
 	if (items != null) list.setItems (items);
 	if (selectionIndex != -1) list.setSelection (selectionIndex);
 }
@@ -513,6 +519,7 @@ public void deselectAll () {
 }
 void dropDown (boolean drop) {
 	if (drop == isDropped ()) return;
+	Shell popup = getPopup();
 	if (!drop) {
 		popup.setVisible (false);
 		if (!isDisposed () && isFocusControl()) {
@@ -537,6 +544,7 @@ void dropDown (boolean drop) {
 	int itemHeight = list.getItemHeight () * itemCount;
 	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight, false);
 	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
+	list.moveAbove(null);
 	
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
@@ -701,6 +709,10 @@ public boolean getListVisible () {
 }
 public Menu getMenu() {
 	return text.getMenu();
+}
+Shell getPopup() {
+	Shell shell = getShell();
+	return (Shell)shell.getData("ccombolist");
 }
 /**
  * Returns a <code>Point</code> whose x coordinate is the start
@@ -995,11 +1007,11 @@ void initAccessible() {
 	});
 }
 boolean isDropped () {
-	return popup.getVisible ();
+	return getPopup().getVisible ();
 }
 public boolean isFocusControl () {
 	checkWidget();
-	if (text.isFocusControl () || arrow.isFocusControl () || list.isFocusControl () || popup.isFocusControl ()) {
+	if (text.isFocusControl () || arrow.isFocusControl () || list.isFocusControl () || getPopup().isFocusControl ()) {
 		return true;
 	} 
 	return super.isFocusControl ();
@@ -1016,6 +1028,7 @@ void internalLayout (boolean changed) {
 void listEvent (Event event) {
 	switch (event.type) {
 		case SWT.Dispose:
+			Shell popup = getPopup();
 			if (getShell () != popup.getParent ()) {
 				String[] items = list.getItems ();
 				int selectionIndex = list.getSelectionIndex ();
@@ -1168,7 +1181,7 @@ public void redraw () {
 	super.redraw();
 	text.redraw();
 	arrow.redraw();
-	if (popup.isVisible()) list.redraw();
+	if (getPopup().isVisible()) list.redraw();
 }
 public void redraw (int x, int y, int width, int height, boolean all) {
 	super.redraw(x, y, width, height, true);
@@ -1369,6 +1382,7 @@ public void setEditable (boolean editable) {
 }
 public void setEnabled (boolean enabled) {
 	super.setEnabled(enabled);
+	Shell popup = getPopup();
 	if (popup != null) popup.setVisible (false);
 	if (text != null) text.setEnabled(enabled);
 	if (arrow != null) arrow.setEnabled(enabled);
@@ -1569,6 +1583,7 @@ public void setVisible (boolean visible) {
 	 */
 	if (isDisposed ()) return;
 	// TEMPORARY CODE
+	Shell popup = getPopup();
 	if (popup == null || popup.isDisposed ()) return;
 	if (!visible) popup.setVisible (false);
 }
