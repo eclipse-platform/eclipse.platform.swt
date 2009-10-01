@@ -130,6 +130,12 @@ public static void main (String [] args) {
 			string += " stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask (e.stateMask) + ",";
 			string += " keyCode=0x" + Integer.toHexString (e.keyCode) + " " + keyCode (e.keyCode) + ",";
 			string += " character=0x" + Integer.toHexString (e.character) + " " + character (e.character);
+			if ((e.stateMask & SWT.LOCATION_MASK) != 0) {
+				string +=  " location="; 
+				if ((e.stateMask & SWT.LOCATION_LEFT) != 0) string +=  "LEFT"; 
+				if ((e.stateMask & SWT.LOCATION_RIGHT) != 0) string +=  "RIGHT"; 
+				if ((e.stateMask & SWT.LOCATION_KEYPAD) != 0) string +=  "KEYPAD"; 
+			}
 			System.out.println (string);
 		}
 	};
