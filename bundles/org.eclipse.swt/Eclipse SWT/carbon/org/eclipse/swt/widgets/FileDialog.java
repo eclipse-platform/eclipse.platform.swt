@@ -201,14 +201,16 @@ int eventProc (int callBackSelector, int callBackParms, int callBackUD) {
 }
 
 int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
+	int result = 1;
 	if (filterMode == OS.kNavFilteringBrowserList) {
 		if (filterExtensions != null && 0 <= filterIndex && filterIndex < filterExtensions.length) {
 			NavFileOrFolderInfo info = new NavFileOrFolderInfo();
 			OS.memmove (info, infoPtr, NavFileOrFolderInfo.sizeof);
 			if (!info.isFolder) {
-				OS.AECoerceDesc (theItem, OS.typeFSRef, theItem);
+				AEDesc desc = new AEDesc();
+				OS.AECoerceDesc (theItem, OS.typeFSRef, desc);
 				byte [] fsRef = new byte [80];
-				if (OS.AEGetDescData (theItem, fsRef, fsRef.length) == OS.noErr) {
+				if (OS.AEGetDescData (desc, fsRef, fsRef.length) == OS.noErr) {
 					int url = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
 					if (url != 0) {
 						int ext = OS.CFURLCopyPathExtension (url);
@@ -224,23 +226,30 @@ int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
 							String extension = new String (buffer);
 							String extensions = filterExtensions [filterIndex];
 							int start = 0, length = extensions.length ();
+							result = 0;
 							while (start < length) {
 								int index = extensions.indexOf (EXTENSION_SEPARATOR, start);
 								if (index == -1) index = length;
 								String filter = extensions.substring (start, index).trim ();
-								if (filter.equals ("*") || filter.equals ("*.*")) return 1;
+								if (filter.equals ("*") || filter.equals ("*.*")) {
+									result = 1;
+									break;
+								}
 								if (filter.startsWith ("*.")) filter = filter.substring (2);
-								if (filter.toLowerCase ().equals(extension.toLowerCase ())) return 1;
+								if (filter.toLowerCase ().equals(extension.toLowerCase ()))  {
+									result = 1;
+									break;
+								}
 								start = index + 1;
 							}
-							return 0;
 						}
 					}
 				}
+				OS.AEDisposeDesc(desc);
 			}
 		}
 	}
-	return 1;
+	return result;
 }
 
 String getString (int cfString) {
@@ -296,7 +305,7 @@ public String open () {
 	int [] outDialog = new int [1];
 	int filterProc = 0, eventProc = 0;
 	if (filterExtensions != null && filterExtensions.length != 0) {
-		extensions = options.popupExtension = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, filterExtensions.length, 0);
+		extensions = options.popupExtension = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, filterExtensions.length, OS.kCFTypeArrayCallBacks ());
 		for (int i = 0; i < filterExtensions.length; i++) {
 			String str = filterExtensions [i];
 			if (filterNames != null && filterNames.length > i) {
@@ -305,7 +314,10 @@ public String open () {
 			char [] chars = new char [str.length ()];
 			str.getChars (0, chars.length, chars, 0);
 			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-			if (ptr != 0) OS.CFArrayAppendValue (extensions, ptr);
+			if (ptr != 0) {
+				OS.CFArrayAppendValue (extensions, ptr);
+				OS.CFRelease(ptr);
+			}
 		}
 		if ((style & SWT.SAVE) == 0) {
 			filterCallback = new Callback (this, "filterProc", 4);
@@ -468,13 +480,7 @@ public String open () {
 	if (titlePtr != 0) OS.CFRelease (titlePtr);
 	if (fileNamePtr != 0) OS.CFRelease (fileNamePtr);	
 	if (outDialog [0] != 0) OS.NavDialogDispose (outDialog [0]);
-	if (extensions != 0) {
-		int count = OS.CFArrayGetCount (extensions);
-		for (int i = 0; i < count; i++) {
-			OS.CFRelease (OS.CFArrayGetValueAtIndex (extensions, i));
-		}			
-		OS.CFRelease (extensions);
-	}
+	if (extensions != 0) OS.CFRelease (extensions);
 	if (filterCallback != null) filterCallback.dispose();
 	if (eventCallback != null) eventCallback.dispose();
 	return fullPath;	

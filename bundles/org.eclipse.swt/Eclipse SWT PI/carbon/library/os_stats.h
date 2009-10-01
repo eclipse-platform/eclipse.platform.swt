@@ -984,6 +984,7 @@ typedef enum {
 	kCFNumberFormatterDecimalSeparator_FUNC,
 	kCFRunLoopCommonModes_FUNC,
 	kCFRunLoopDefaultMode_FUNC,
+	kCFTypeArrayCallBacks_FUNC,
 	kFontPanelAttributeSizesKey_FUNC,
 	kFontPanelAttributeTagsKey_FUNC,
 	kFontPanelAttributeValuesKey_FUNC,

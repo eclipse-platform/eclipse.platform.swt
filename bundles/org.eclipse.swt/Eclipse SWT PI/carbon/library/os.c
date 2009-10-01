@@ -17,11 +17,15 @@
 
 #ifndef NO_AECoerceDesc
 JNIEXPORT jint JNICALL OS_NATIVE(AECoerceDesc)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
+	AEDesc _arg2, *lparg2=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, AECoerceDesc_FUNC);
-	rc = (jint)AECoerceDesc((AEDesc *)arg0, arg1, (AEDesc *)arg2);
+	if (arg2) if ((lparg2 = getAEDescFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)AECoerceDesc((AEDesc *)arg0, arg1, (AEDesc *)lparg2);
+fail:
+	if (arg2 && lparg2) setAEDescFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, AECoerceDesc_FUNC);
 	return rc;
 }
@@ -83,15 +87,18 @@ fail:
 
 #ifndef NO_AEGetDescData
 JNIEXPORT jint JNICALL OS_NATIVE(AEGetDescData)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+	(JNIEnv *env, jclass that, jobject arg0, jbyteArray arg1, jint arg2)
 {
+	AEDesc _arg0, *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, AEGetDescData_FUNC);
+	if (arg0) if ((lparg0 = getAEDescFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)AEGetDescData((AEDesc *)arg0, (void *)lparg1, arg2);
+	rc = (jint)AEGetDescData((AEDesc *)lparg0, (void *)lparg1, arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) setAEDescFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, AEGetDescData_FUNC);
 	return rc;
 }
@@ -13577,6 +13584,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(kCFRunLoopDefaultMode)
 	OS_NATIVE_ENTER(env, that, kCFRunLoopDefaultMode_FUNC);
 	rc = (jint)kCFRunLoopDefaultMode;
 	OS_NATIVE_EXIT(env, that, kCFRunLoopDefaultMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCFTypeArrayCallBacks
+JNIEXPORT jint JNICALL OS_NATIVE(kCFTypeArrayCallBacks)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFTypeArrayCallBacks_FUNC);
+	rc = (jint)&kCFTypeArrayCallBacks;
+	OS_NATIVE_EXIT(env, that, kCFTypeArrayCallBacks_FUNC);
 	return rc;
 }
 #endif

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 989;
-int OS_nativeFunctionCallCount[989];
+int OS_nativeFunctionCount = 990;
+int OS_nativeFunctionCallCount[990];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -976,6 +976,7 @@ char * OS_nativeFunctionNames[] = {
 	"kCFNumberFormatterDecimalSeparator",
 	"kCFRunLoopCommonModes",
 	"kCFRunLoopDefaultMode",
+	"kCFTypeArrayCallBacks",
 	"kFontPanelAttributeSizesKey",
 	"kFontPanelAttributeTagsKey",
 	"kFontPanelAttributeValuesKey",

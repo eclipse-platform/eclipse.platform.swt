@@ -434,11 +434,12 @@ public boolean execute (String fileName) {
 				int unescapedStr = OS.CFStringCreateWithCharacters(0, unescapedChars, unescapedChars.length);
 				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unescapedStr, 0, OS.kCFStringEncodingUTF8);
 				if (escapedStr != 0) {
-					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
+					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, OS.kCFTypeArrayCallBacks ());
 					if (urls != 0) {
 						int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
 						if (url != 0) {
 							OS.CFArrayAppendValue(urls, url);
+							OS.CFRelease(url);
 							rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
 						}
 						OS.CFRelease(urls);

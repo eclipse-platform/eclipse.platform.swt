@@ -1070,6 +1070,8 @@ public static final native boolean __BIG_ENDIAN__();
 public static final native int kCFRunLoopCommonModes();
 /** @method flags=const */
 public static final native int kCFRunLoopDefaultMode();
+/** @method flags=const address */
+public static final native int kCFTypeArrayCallBacks();
 /** @method flags=const */
 public static final native int kFontPanelAttributesKey();
 /** @method flags=const */
@@ -1098,7 +1100,7 @@ public static final native int AECountItems(AEDesc theAEDescList, int[] theCount
  * @param theAEDesc cast=(AEDesc *)
  * @param result cast=(AEDesc *)
  */
-public static final native int AECoerceDesc(int theAEDesc, int toType, int result);
+public static final native int AECoerceDesc(int theAEDesc, int toType, AEDesc result);
 /**
  * @param typeCode cast=(DescType)
  * @param dataPtr cast=(const void *)
@@ -1110,7 +1112,7 @@ public static final native int AEDisposeDesc(AEDesc theAEDesc);
  * @param theAEDesc cast=(AEDesc *)
  * @param dataPtr cast=(void *)
  */
-public static final native int AEGetDescData(int theAEDesc, byte[] dataPtr, int maximumSize);
+public static final native int AEGetDescData(AEDesc theAEDesc, byte[] dataPtr, int maximumSize);
 /**
  * @param theAEDescList cast=(const AEDescList *)
  * @param desiredType cast=(DescType)
