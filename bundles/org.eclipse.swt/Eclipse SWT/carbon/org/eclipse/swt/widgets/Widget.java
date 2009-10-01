@@ -2030,11 +2030,36 @@ boolean setKeyState (Event event, int type, int theEvent) {
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!isNull) return false;
 	}
+	setLocationMask (event, keyCode [0]);
 	int [] chord = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 	return setInputState (event, type, chord [0], modifiers [0]);
+}
+
+void setLocationMask (Event event, int keyCode) {
+	switch (keyCode) {
+		case 67:  /* KEYPAD_MULTIPLY */
+		case 69:  /* KEYPAD_ADD */
+		case 76:  /* KEYPAD_CR */
+		case 78:  /* KEYPAD_SUBTRACT */
+		case 65:  /* KEYPAD_DECIMAL */
+		case 75:  /* KEYPAD_DIVIDE */
+		case 82:  /* KEYPAD_0 */
+		case 83:  /* KEYPAD_1 */
+		case 84:  /* KEYPAD_2 */
+		case 85:  /* KEYPAD_3 */
+		case 86:  /* KEYPAD_4 */
+		case 87:  /* KEYPAD_5 */
+		case 88:  /* KEYPAD_6 */
+		case 89:  /* KEYPAD_7 */
+		case 91:  /* KEYPAD_8 */
+		case 92:  /* KEYPAD_9 */
+		case 81:  /* KEYPAD_EQUAL */
+			event.stateMask |= SWT.LOCATION_KEYPAD;
+			break;
+	}
 }
 
 void setVisible (int control, boolean visible) {
