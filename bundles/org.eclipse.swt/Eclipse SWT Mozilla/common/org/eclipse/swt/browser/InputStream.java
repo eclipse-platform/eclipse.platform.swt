@@ -108,7 +108,10 @@ int Read(int /*long*/ aBuf, int aCount, int /*long*/ _retval) {
 }
 
 int ReadSegments (int /*long*/ aWriter, int /*long*/ aClosure, int aCount, int /*long*/ _retval) {
-	int max = Math.min (aCount, buffer == null ? 0 : buffer.length - index);
+	int max = buffer == null ? 0 : buffer.length - index;
+	if (aCount != -1) {
+		max = Math.min (max, aCount);
+	}
 	int cnt = max;
 	while (cnt > 0) {
 		int[] aWriteCount = new int[1];

@@ -57,6 +57,8 @@ class Safari extends WebBrowser {
 	static final String URI_APPLEWEBDATA = "applewebdata://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String HEADER_SETCOOKIE = "Set-Cookie"; //$NON-NLS-1$
+	static final String POST = "POST"; //$NON-NLS-1$
+	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
@@ -90,27 +92,21 @@ class Safari extends WebBrowser {
 		NativeGetCookie = new Runnable () {
 			public void run () {
 				int storage = Cocoa.objc_msgSend (Cocoa.C_NSHTTPCookieStorage, Cocoa.S_sharedHTTPCookieStorage);
-				int length = CookieUrl.length ();
-				char[] buffer = new char[length];
-				CookieUrl.getChars (0, length, buffer, 0);
-				int urlString = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int urlString = createNSString (CookieUrl);
 				int url = Cocoa.objc_msgSend (Cocoa.C_NSURL, Cocoa.S_URLWithString, urlString);
 				OS.CFRelease (urlString);
 				int cookies = Cocoa.objc_msgSend (storage, Cocoa.S_cookiesForURL, url);
 				int count = Cocoa.objc_msgSend (cookies, Cocoa.S_count);
 				if (count == 0) return;
 
-				length = CookieName.length ();
-				buffer = new char[length];
-				CookieName.getChars (0, length, buffer, 0);
-				int name = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int name = createNSString (CookieName);
 				for (int i = 0; i < count; i++) {
 					int current = Cocoa.objc_msgSend (cookies, Cocoa.S_objectAtIndex, i);
 					int currentName = Cocoa.objc_msgSend (current, Cocoa.S_name);
 					if (Cocoa.objc_msgSend (currentName, Cocoa.S_compare, name) == Cocoa.NSOrderedSame) {
 						int value = Cocoa.objc_msgSend (current, Cocoa.S_value);
-						length = OS.CFStringGetLength (value);
-						buffer = new char[length];
+						int length = OS.CFStringGetLength (value);
+						char[] buffer = new char[length];
 						CFRange range = new CFRange ();
 						range.length = length;
 						OS.CFStringGetCharacters (value, range, buffer);
@@ -125,21 +121,12 @@ class Safari extends WebBrowser {
 
 		NativeSetCookie = new Runnable () {
 			public void run () {
-				int length = CookieUrl.length ();
-				char[] buffer = new char[length];
-				CookieUrl.getChars (0, length, buffer, 0);
-				int urlString = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int urlString = createNSString(CookieUrl);
 				int url = Cocoa.objc_msgSend (Cocoa.C_NSURL, Cocoa.S_URLWithString, urlString);
 				OS.CFRelease (urlString);
 
-				length = CookieValue.length ();
-				buffer = new char[length];
-				CookieValue.getChars (0, length, buffer, 0);
-				int value = OS.CFStringCreateWithCharacters (0, buffer, length);
-				length = HEADER_SETCOOKIE.length ();
-				buffer = new char[length];
-				HEADER_SETCOOKIE.getChars (0, length, buffer, 0);
-				int key = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int value = createNSString (CookieValue);
+				int key = createNSString (HEADER_SETCOOKIE);
 				int headers = Cocoa.objc_msgSend (Cocoa.C_NSMutableDictionary, Cocoa.S_dictionaryWithCapacity, 1);
 				Cocoa.objc_msgSend (headers, Cocoa.S_setValue, value, key);
 				OS.CFRelease (key);
@@ -394,10 +381,7 @@ public void create (Composite parent, int style) {
 	Cocoa.objc_msgSend(webView, Cocoa.S_setDownloadDelegate, delegate);
 
 	// [webView setApplicationNameForUserAgent:applicationName];
-	int length = AGENT_STRING.length();
-	char[] chars = new char[length];
-	AGENT_STRING.getChars(0, length, chars, 0);
-	int sHandle = OS.CFStringCreateWithCharacters(0, chars, length);
+	int sHandle = createNSString(AGENT_STRING);
 	Cocoa.objc_msgSend(webView, Cocoa.S_setApplicationNameForUserAgent, sHandle);
 	OS.CFRelease(sHandle);
 
@@ -427,6 +411,13 @@ static int eventProc7(int webview, int userData, int selector, int arg0, int arg
 		return ((Safari)((Browser)widget).webBrowser).handleCallback(selector, arg0, arg1, arg2, arg3);
 	}
 	return 0;
+}
+
+static int createNSString(String string) {
+	int length = string.length ();
+	char[] buffer = new char[length];
+	string.getChars (0, length, buffer, 0);
+	return OS.CFStringCreateWithCharacters (0, buffer, length);
 }
 
 static String getString (int ptr) {
@@ -463,11 +454,7 @@ public boolean close () {
 }
 
 public boolean execute(String script) {
-	int length = script.length();
-	char[] buffer = new char[length];
-	script.getChars(0, length, buffer, 0);
-	int string = OS.CFStringCreateWithCharacters(0, buffer, length);
-
+	int string = createNSString(script);
 	int value = Cocoa.objc_msgSend(webView, Cocoa.S_stringByEvaluatingJavaScriptFromString, string);
 	OS.CFRelease(string);
 	return value != 0;
@@ -776,16 +763,9 @@ public boolean setText(String html) {
 	return true;
 }
 	
-void _setText(String html) {	
-	int length = html.length();
-	char[] buffer = new char[length];
-	html.getChars(0, length, buffer, 0);
-	int string = OS.CFStringCreateWithCharacters(0, buffer, length);
-
-	length = URI_FROMMEMORY.length();
-	buffer = new char[length];
-	URI_FROMMEMORY.getChars(0, length, buffer, 0);
-	int URLString = OS.CFStringCreateWithCharacters(0, buffer, length);
+void _setText(String html) {
+	int string = createNSString(html);
+	int URLString = createNSString(URI_FROMMEMORY);
 	
 	/*
 	* Note.  URLWithString uses autorelease.  The resulting URL
@@ -803,7 +783,7 @@ void _setText(String html) {
 	OS.CFRelease(string);
 }
 
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String[] headers) {
 	html = null;
 
 	if (url.indexOf('/') == 0) {
@@ -813,9 +793,7 @@ public boolean setUrl(String url) {
 	}
 
 	int inURL = 0;
-	char[] chars = new char[url.length()];
-	url.getChars(0, chars.length, chars, 0);
-	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+	int str = createNSString(url);
 	if (str != 0) {
 		char[] unescapedChars = new char[] {'%', '#'};
 		int unescapedStr = OS.CFStringCreateWithCharacters(0, unescapedChars, unescapedChars.length);
@@ -829,16 +807,49 @@ public boolean setUrl(String url) {
 	}
 	if (inURL == 0) return false;
 
-	//request = [NSURLRequest requestWithURL:(NSURL*)inURL];
-	int request = Cocoa.objc_msgSend(Cocoa.C_NSURLRequest, Cocoa.S_requestWithURL, inURL);
+	int request = Cocoa.objc_msgSend(Cocoa.C_NSMutableURLRequest, Cocoa.S_requestWithURL, inURL);
 	OS.CFRelease(inURL);
 
-	//mainFrame = [webView mainFrame];
+	if (postData != null) {
+		int post = createNSString(POST);
+		Cocoa.objc_msgSend(request, Cocoa.S_setHTTPMethod, post);
+		OS.CFRelease (post);
+		byte[] bytes = postData.getBytes();
+		int data = Cocoa.objc_msgSend(Cocoa.C_NSData, Cocoa.S_dataWithBytes, bytes, bytes.length);
+		Cocoa.objc_msgSend(request, Cocoa.S_setHTTPBody, data);
+	}
+	if (headers != null) {
+		for (int i = 0; i < headers.length; i++) {
+			String current = headers[i];
+			int index = current.indexOf(':');
+			if (index != -1) {
+				String key = current.substring(0, index).trim();
+				String value = current.substring(index + 1).trim();
+				if (key.length() > 0 && value.length() > 0) {
+					if (key.equals(USER_AGENT)) {
+						/*
+						* Feature of Safari.  The user-agent header value cannot be overridden
+						* here.  The workaround is to temporarily set the value on the WebView
+						* and then remove it after the loading of the request has begun.
+						*/
+						int string = createNSString(value);
+						Cocoa.objc_msgSend(webView, Cocoa.S_setCustomUserAgent, string);
+						OS.CFRelease (string);
+					} else {
+						int keyString = createNSString(key);
+						int valueString = createNSString(value);
+						Cocoa.objc_msgSend(request, Cocoa.S_setValueForHTTPHeaderField, keyString, valueString);
+						OS.CFRelease (valueString);
+						OS.CFRelease (keyString);
+					}
+				}
+			}
+		}
+	}
+
 	int mainFrame = Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
-
-	//[mainFrame loadRequest:request];
 	Cocoa.objc_msgSend(mainFrame, Cocoa.S_loadRequest, request);
-
+	Cocoa.objc_msgSend(webView, Cocoa.S_setCustomUserAgent, 0);
 	return true;
 }
 
@@ -989,19 +1000,11 @@ void hookDOMFocusListeners(int frame) {
 	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
 	if (document == 0) return;
 
-	String string = DOMEVENT_FOCUSIN;
-	int length = string.length();
-	char[] chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	int ptr = createNSString(DOMEVENT_FOCUSIN);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
-	string = DOMEVENT_FOCUSOUT;
-	length = string.length();
-	chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	ptr = createNSString(DOMEVENT_FOCUSOUT);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 }
@@ -1016,19 +1019,11 @@ void hookDOMKeyListeners(int frame) {
 	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
 	if (document == 0) return;
 
-	String string = DOMEVENT_KEYDOWN;
-	int length = string.length();
-	char[] chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	int ptr = createNSString(DOMEVENT_KEYDOWN);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
-	string = DOMEVENT_KEYUP;
-	length = string.length();
-	chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	ptr = createNSString(DOMEVENT_KEYUP);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 }
@@ -1043,35 +1038,19 @@ void hookDOMMouseListeners(int frame) {
 	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
 	if (document == 0) return;
 
-	String string = DOMEVENT_MOUSEDOWN;
-	int length = string.length();
-	char[] chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	int ptr = createNSString(DOMEVENT_MOUSEDOWN);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
-	string = DOMEVENT_MOUSEUP;
-	length = string.length();
-	chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	ptr = createNSString(DOMEVENT_MOUSEUP);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
-	string = DOMEVENT_MOUSEMOVE;
-	length = string.length();
-	chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	ptr = createNSString(DOMEVENT_MOUSEMOVE);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
-	string = DOMEVENT_MOUSEWHEEL;
-	length = string.length();
-	chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	ptr = createNSString(DOMEVENT_MOUSEWHEEL);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 }
@@ -1171,10 +1150,7 @@ void didCommitLoadForFrame(int frame) {
 }
 
 void windowScriptObjectAvailable (int windowScriptObject) {
-	String objectName = "external"; //$NON-NLS-1$
-	char[] chars = new char[objectName.length ()];
-	objectName.getChars (0, chars.length, chars, 0);
-	int str = OS.CFStringCreateWithCharacters (0, chars, chars.length);
+	int str = createNSString("external"); //$NON-NLS-1$
 	if (str != 0) {
 		Cocoa.objc_msgSend (windowScriptObject, Cocoa.S_setValue, delegate, str);
 		OS.CFRelease (str);
@@ -1238,14 +1214,8 @@ void didReceiveAuthenticationChallengefromDataSource (int identifier, int challe
 			}
 			if (event.user != null && event.password != null) {
 				int challengeSender = Cocoa.objc_msgSend (challenge, Cocoa.S_sender);
-				int length = event.user.length ();
-				char[] buffer = new char[length];
-				event.user.getChars (0, length, buffer, 0);
-				int user = OS.CFStringCreateWithCharacters (0, buffer, length);
-				length = event.password.length ();
-				buffer = new char[length];
-				event.password.getChars (0, length, buffer, 0);
-				int password = OS.CFStringCreateWithCharacters (0, buffer, length);
+				int user = createNSString(event.user);
+				int password = createNSString(event.password);
 				int credential = Cocoa.objc_msgSend (Cocoa.C_NSURLCredential, Cocoa.S_credentialWithUser, user, password, Cocoa.NSURLCredentialPersistenceForSession);
 				Cocoa.objc_msgSend (challengeSender, Cocoa.S_useCredential, credential, challenge);
 				OS.CFRelease (password);
@@ -1296,14 +1266,8 @@ void didReceiveAuthenticationChallengefromDataSource (int identifier, int challe
 		return;
 	}
 
-	int length = userReturn[0].length ();
-	char[] buffer = new char[length];
-	userReturn[0].getChars (0, length, buffer, 0);
-	int user = OS.CFStringCreateWithCharacters (0, buffer, length);
-	length = passwordReturn[0].length ();
-	buffer = new char[length];
-	passwordReturn[0].getChars (0, length, buffer, 0);
-	int password = OS.CFStringCreateWithCharacters (0, buffer, length);
+	int user = createNSString(userReturn[0]);
+	int password = createNSString(passwordReturn[0]);
 	int credential = Cocoa.objc_msgSend (Cocoa.C_NSURLCredential, Cocoa.S_credentialWithUser, user, password, Cocoa.NSURLCredentialPersistenceForSession);
 	Cocoa.objc_msgSend (challengeSender, Cocoa.S_useCredential, credential, challenge);
 	OS.CFRelease (password);
@@ -1569,10 +1533,7 @@ void runOpenPanelForFileButtonWithResultListener(int resultListener) {
 		Cocoa.objc_msgSend(resultListener, Cocoa.S_cancel);
 		return;
 	}
-	int length = result.length();
-	char[] buffer = new char[length];
-	result.getChars(0, length, buffer, 0);
-	int filename = OS.CFStringCreateWithCharacters(0, buffer, length);
+	int filename = createNSString(result);
 	Cocoa.objc_msgSend(resultListener, Cocoa.S_chooseFilename, filename);
 	OS.CFRelease(filename);
 }
@@ -1655,10 +1616,7 @@ void mouseDidMoveOverElement (int elementInformation, int modifierFlags) {
 	if (elementInformation == 0) return;
 	if (!browser.isEnabled ()) return;
 
-	int length = WebElementLinkURLKey.length();
-	char[] chars = new char[length];
-	WebElementLinkURLKey.getChars(0, length, chars, 0);
-	int key = OS.CFStringCreateWithCharacters(0, chars, length);
+	int key = createNSString(WebElementLinkURLKey);
 	int value = Cocoa.objc_msgSend(elementInformation, Cocoa.S_valueForKey, key);
 	OS.CFRelease(key);
 	if (value == 0) {
@@ -1676,12 +1634,12 @@ void mouseDidMoveOverElement (int elementInformation, int modifierFlags) {
 	}
 
 	int stringPtr = Cocoa.objc_msgSend(value, Cocoa.S_absoluteString);
-	length = OS.CFStringGetLength(stringPtr);
+	int length = OS.CFStringGetLength(stringPtr);
 	String urlString;
 	if (length == 0) {
 		urlString = "";	//$NON-NLS-1$
 	} else {
-		chars = new char[length];
+		char[] chars = new char[length];
 		CFRange range = new CFRange();
 		range.length = length;
 		OS.CFStringGetCharacters(stringPtr, range, chars);
@@ -1829,10 +1787,7 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 		Cocoa.objc_msgSend(download, Cocoa.S_cancel);
 		return;
 	}
-	length = path.length();
-	char[] chars = new char[length];
-	path.getChars(0, length, chars, 0);
-	int result = OS.CFStringCreateWithCharacters(0, chars, length);
+	int result = createNSString(path);
 	Cocoa.objc_msgSend(download, Cocoa.S_setDestinationAllowOverwrite, result, 1);
 	OS.CFRelease(result);
 }
@@ -1995,10 +1950,7 @@ Object convertToJava (int value) {
 		}
 	}
 	if (Cocoa.objc_msgSend (value, Cocoa.S_isKindOfClass, Cocoa.C_WebScriptObject) != 0) {
-		String string = "length"; //$NON-NLS-1$
-		char[] chars = new char[string.length ()];
-		string.getChars (0, chars.length, chars, 0);
-		int str = OS.CFStringCreateWithCharacters (0, chars, chars.length);
+		int str = createNSString ("length"); //$NON-NLS-1$
 		int numberValue = Cocoa.objc_msgSend (value, Cocoa.S_valueForKey, str);
 		OS.CFRelease (str);
 		int length = Cocoa.objc_msgSend (numberValue, Cocoa.S_intValue);
@@ -2024,10 +1976,7 @@ int convertToJS (Object value) {
 		return Cocoa.objc_msgSend (Cocoa.C_WebUndefined, Cocoa.S_undefined);
 	}
 	if (value instanceof String) {
-		String result = (String)value;
-		char[] chars = new char[result.length ()];
-		result.getChars (0, chars.length, chars, 0);
-		return OS.CFStringCreateWithCharacters (0, chars, chars.length);
+		return createNSString((String)value);
 	}
 	if (value instanceof Boolean) {
 		int booleanValue = ((Boolean)value).booleanValue () ? 1 : 0;

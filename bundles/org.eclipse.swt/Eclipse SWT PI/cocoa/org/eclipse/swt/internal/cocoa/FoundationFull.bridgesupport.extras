@@ -548,8 +548,21 @@
 			<arg name="policy" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setHTTPBody:" swt_gen="true">
+			<arg name="data" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setHTTPMethod:" swt_gen="true">
+			<arg name="method" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setURL:" swt_gen="true">
 			<arg name="URL" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setValue:forHTTPHeaderField:" swt_gen="true">
+			<arg name="value" swt_gen="true"></arg>
+			<arg name="field" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>

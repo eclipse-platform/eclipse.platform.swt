@@ -201,7 +201,7 @@ public boolean setText(String html) {
 //	return result;
 }
 
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String[] headers) {
 	if (url.indexOf(':') == -1) url = "http://" + url;
 	int length = url.length ();
 	char [] buffer = new char [length + 1];

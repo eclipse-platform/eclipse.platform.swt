@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 974;
-int OS_nativeFunctionCallCount[974];
+int OS_nativeFunctionCount = 977;
+int OS_nativeFunctionCallCount[977];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -758,6 +758,11 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_RECT_2I",
 #endif
 #ifndef JNI64
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_SAFEARRAY_2I",
+#else
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_SAFEARRAY_2I",
+#endif
+#ifndef JNI64
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I",
 #else
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I",
@@ -1219,6 +1224,8 @@ char * OS_nativeFunctionNames[] = {
 	"ReplyMessage",
 	"RestoreDC",
 	"RoundRect",
+	"SAFEARRAYBOUND_1sizeof",
+	"SAFEARRAY_1sizeof",
 	"SCRIPT_1ANALYSIS_1sizeof",
 	"SCRIPT_1CONTROL_1sizeof",
 	"SCRIPT_1DIGITSUBSTITUTE_1sizeof",

@@ -74,6 +74,10 @@ public void setApplicationNameForUserAgent(NSString applicationName) {
 	OS.objc_msgSend(this.id, OS.sel_setApplicationNameForUserAgent_, applicationName != null ? applicationName.id : 0);
 }
 
+public void setCustomUserAgent(NSString userAgentString) {
+	OS.objc_msgSend(this.id, OS.sel_setCustomUserAgent_, userAgentString != null ? userAgentString.id : 0);
+}
+
 public void setDownloadDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setDownloadDelegate_, delegate != null ? delegate.id : 0);
 }

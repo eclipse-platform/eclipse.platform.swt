@@ -25,7 +25,7 @@ public static final int C_NSHTTPCookieStorage = Cocoa.objc_getClass("NSHTTPCooki
 public static final int C_NSNotificationCenter = Cocoa.objc_getClass("NSNotificationCenter"); //$NON-NLS-1$
 public static final int C_NSNumber = Cocoa.objc_getClass("NSNumber"); //$NON-NLS-1$
 public static final int C_NSURL = Cocoa.objc_getClass("NSURL"); //$NON-NLS-1$
-public static final int C_NSURLRequest = Cocoa.objc_getClass("NSURLRequest"); //$NON-NLS-1$
+public static final int C_NSMutableURLRequest = Cocoa.objc_getClass("NSMutableURLRequest"); //$NON-NLS-1$
 public static final int C_NSURLCredential = Cocoa.objc_getClass("NSURLCredential"); //$NON-NLS-1$
 public static final int C_WebKitDelegate = Cocoa.objc_getClass("WebKitDelegate"); //$NON-NLS-1$
 public static final int C_WebDownload = Cocoa.objc_getClass("WebDownload"); //$NON-NLS-1$
@@ -49,6 +49,7 @@ public static final int C_NSMutableDictionary = Cocoa.objc_getClass("NSMutableDi
 public static final int C_WebPanelAuthenticationHandler = Cocoa.objc_getClass("WebPanelAuthenticationHandler"); //$NON-NLS-1$
 public static final int C_WebScriptObject = Cocoa.objc_getClass("WebScriptObject"); //$NON-NLS-1$
 public static final int C_WebUndefined = Cocoa.objc_getClass("WebUndefined"); //$NON-NLS-1$
+public static final int C_NSData = Cocoa.objc_getClass("NSData"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
@@ -72,6 +73,7 @@ public static final int S_copy = Cocoa.sel_registerName("copy:"); //$NON-NLS-1$
 public static final int S_count = Cocoa.sel_registerName("count"); //$NON-NLS-1$
 public static final int S_credentialWithUser = Cocoa.sel_registerName("credentialWithUser:password:persistence:"); //$NON-NLS-1$
 public static final int S_cut = Cocoa.sel_registerName("cut:"); //$NON-NLS-1$
+public static final int S_dataWithBytes = Cocoa.sel_registerName("dataWithBytes:length:"); //$NON-NLS-1$
 public static final int S_dataSource = Cocoa.sel_registerName("dataSource"); //$NON-NLS-1$
 public static final int S_defaultCenter = Cocoa.sel_registerName("defaultCenter"); //$NON-NLS-1$
 public static final int S_deleteCookie = Cocoa.sel_registerName("deleteCookie:"); //$NON-NLS-1$
@@ -217,6 +219,10 @@ public static final int S_getCharacters_ = Cocoa.sel_registerName("getCharacters
 public static final int S_objCType = Cocoa.sel_registerName("objCType"); //$NON-NLS-1$
 public static final int S_setPreferences = Cocoa.sel_registerName("setPreferences:"); //$NON-NLS-1$
 public static final int S_value = Cocoa.sel_registerName("value"); //$NON-NLS-1$
+public static final int S_setHTTPBody = Cocoa.sel_registerName("setHTTPBody:"); //$NON-NLS-1$
+public static final int S_setHTTPMethod = Cocoa.sel_registerName("setHTTPMethod:"); //$NON-NLS-1$
+public static final int S_setCustomUserAgent = Cocoa.sel_registerName("setCustomUserAgent:"); //$NON-NLS-1$
+public static final int S_setValueForHTTPHeaderField = Cocoa.sel_registerName("setValue:forHTTPHeaderField:"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
@@ -287,6 +293,8 @@ public static final native int objc_msgSend(int object, int selector, float arg0
 public static final native int objc_msgSend(int object, int selector, double arg0);
 /** @method flags=cast */
 public static final native int objc_msgSend(int object, int selector, char[] arg0);
+/** @method flags=cast */
+public static final native int objc_msgSend(int object, int selector, byte[] arg0, int arg1);
 /**
  * @method flags=cast
  * @param object cast=(id)

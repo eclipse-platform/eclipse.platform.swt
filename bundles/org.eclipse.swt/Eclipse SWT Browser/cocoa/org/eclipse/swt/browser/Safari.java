@@ -50,6 +50,8 @@ class Safari extends WebBrowser {
 	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String HEADER_SETCOOKIE = "Set-Cookie"; //$NON-NLS-1$
+	static final String POST = "POST"; //$NON-NLS-1$
+	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
@@ -501,7 +503,7 @@ void _setText(String html) {
 	mainFrame.loadHTMLString(string, URL);
 }
 
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String[] headers) {
 	html = null;
 
 	if (url.indexOf('/') == 0) {
@@ -516,9 +518,38 @@ public boolean setUrl(String url) {
 	NSString escapedString = new NSString(ptr);
 	NSURL inURL = NSURL.URLWithString(escapedString);
 	OS.CFRelease(ptr);
-	NSURLRequest request = NSURLRequest.requestWithURL(inURL);
+	NSMutableURLRequest request = (NSMutableURLRequest)NSMutableURLRequest.requestWithURL(inURL);
+	if (postData != null) {
+		request.setHTTPMethod(NSString.stringWith(POST));
+		byte[] bytes = postData.getBytes();
+		NSData data = NSData.dataWithBytes(bytes, bytes.length);
+		request.setHTTPBody(data);
+	}
+	if (headers != null) {
+		for (int i = 0; i < headers.length; i++) {
+			String current = headers[i];
+			int index = current.indexOf(':');
+			if (index != -1) {
+				String key = current.substring(0, index).trim();
+				String value = current.substring(index + 1).trim();
+				if (key.length() > 0 && value.length() > 0) {
+					if (key.equals(USER_AGENT)) {
+						/*
+						* Feature of Safari.  The user-agent header value cannot be overridden
+						* here.  The workaround is to temporarily set the value on the WebView
+						* and then remove it after the loading of the request has begun.
+						*/
+						webView.setCustomUserAgent(NSString.stringWith(value));
+					} else {
+						request.setValue(NSString.stringWith(value), NSString.stringWith(key));						
+					}
+				}
+			}
+		}
+	}
 	WebFrame mainFrame = webView.mainFrame();
 	mainFrame.loadRequest(request);
+	webView.setCustomUserAgent(null);
 	return true;
 }
 

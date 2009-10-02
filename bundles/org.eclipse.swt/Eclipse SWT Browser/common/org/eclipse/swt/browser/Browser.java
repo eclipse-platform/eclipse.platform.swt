@@ -999,8 +999,13 @@ public boolean setText (String html) {
  */
 public boolean setUrl (String url) {
 	checkWidget();
+	return setUrl (url, null, null);
+}
+
+public boolean setUrl (String url, String postData, String[] headers) {
+	checkWidget();
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return webBrowser.setUrl (url);
+	return webBrowser.setUrl (url, postData, headers);
 }
 
 /**

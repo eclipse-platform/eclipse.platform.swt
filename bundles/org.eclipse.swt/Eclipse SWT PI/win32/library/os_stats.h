@@ -766,6 +766,11 @@ typedef enum {
 	MoveMemory__JLorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
 #endif
 #ifndef JNI64
+	MoveMemory__ILorg_eclipse_swt_internal_win32_SAFEARRAY_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_SAFEARRAY_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC,
 #else
 	MoveMemory__JLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC,
@@ -1227,6 +1232,8 @@ typedef enum {
 	ReplyMessage_FUNC,
 	RestoreDC_FUNC,
 	RoundRect_FUNC,
+	SAFEARRAYBOUND_1sizeof_FUNC,
+	SAFEARRAY_1sizeof_FUNC,
 	SCRIPT_1ANALYSIS_1sizeof_FUNC,
 	SCRIPT_1CONTROL_1sizeof_FUNC,
 	SCRIPT_1DIGITSUBSTITUTE_1sizeof_FUNC,

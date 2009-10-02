@@ -6409,6 +6409,92 @@ void setRECTFields(JNIEnv *env, jobject lpObject, RECT *lpStruct)
 }
 #endif
 
+#ifndef NO_SAFEARRAY
+typedef struct SAFEARRAY_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cDims, fFeatures, cbElements, cLocks, pvData, rgsabound;
+} SAFEARRAY_FID_CACHE;
+
+SAFEARRAY_FID_CACHE SAFEARRAYFc;
+
+void cacheSAFEARRAYFields(JNIEnv *env, jobject lpObject)
+{
+	if (SAFEARRAYFc.cached) return;
+	SAFEARRAYFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SAFEARRAYFc.cDims = (*env)->GetFieldID(env, SAFEARRAYFc.clazz, "cDims", "S");
+	SAFEARRAYFc.fFeatures = (*env)->GetFieldID(env, SAFEARRAYFc.clazz, "fFeatures", "S");
+	SAFEARRAYFc.cbElements = (*env)->GetFieldID(env, SAFEARRAYFc.clazz, "cbElements", "I");
+	SAFEARRAYFc.cLocks = (*env)->GetFieldID(env, SAFEARRAYFc.clazz, "cLocks", "I");
+	SAFEARRAYFc.pvData = (*env)->GetFieldID(env, SAFEARRAYFc.clazz, "pvData", I_J);
+	SAFEARRAYFc.rgsabound = (*env)->GetFieldID(env, SAFEARRAYFc.clazz, "rgsabound", "Lorg/eclipse/swt/internal/win32/SAFEARRAYBOUND;");
+	SAFEARRAYFc.cached = 1;
+}
+
+SAFEARRAY *getSAFEARRAYFields(JNIEnv *env, jobject lpObject, SAFEARRAY *lpStruct)
+{
+	if (!SAFEARRAYFc.cached) cacheSAFEARRAYFields(env, lpObject);
+	lpStruct->cDims = (*env)->GetShortField(env, lpObject, SAFEARRAYFc.cDims);
+	lpStruct->fFeatures = (*env)->GetShortField(env, lpObject, SAFEARRAYFc.fFeatures);
+	lpStruct->cbElements = (*env)->GetIntField(env, lpObject, SAFEARRAYFc.cbElements);
+	lpStruct->cLocks = (*env)->GetIntField(env, lpObject, SAFEARRAYFc.cLocks);
+	lpStruct->pvData = (PVOID)(*env)->GetIntLongField(env, lpObject, SAFEARRAYFc.pvData);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SAFEARRAYFc.rgsabound);
+	if (lpObject1 != NULL) getSAFEARRAYBOUNDFields(env, lpObject1, &lpStruct->rgsabound[0]);
+	}
+	return lpStruct;
+}
+
+void setSAFEARRAYFields(JNIEnv *env, jobject lpObject, SAFEARRAY *lpStruct)
+{
+	if (!SAFEARRAYFc.cached) cacheSAFEARRAYFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, SAFEARRAYFc.cDims, (jshort)lpStruct->cDims);
+	(*env)->SetShortField(env, lpObject, SAFEARRAYFc.fFeatures, (jshort)lpStruct->fFeatures);
+	(*env)->SetIntField(env, lpObject, SAFEARRAYFc.cbElements, (jint)lpStruct->cbElements);
+	(*env)->SetIntField(env, lpObject, SAFEARRAYFc.cLocks, (jint)lpStruct->cLocks);
+	(*env)->SetIntLongField(env, lpObject, SAFEARRAYFc.pvData, (jintLong)lpStruct->pvData);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SAFEARRAYFc.rgsabound);
+	if (lpObject1 != NULL) setSAFEARRAYBOUNDFields(env, lpObject1, &lpStruct->rgsabound[0]);
+	}
+}
+#endif
+
+#ifndef NO_SAFEARRAYBOUND
+typedef struct SAFEARRAYBOUND_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cElements, lLbound;
+} SAFEARRAYBOUND_FID_CACHE;
+
+SAFEARRAYBOUND_FID_CACHE SAFEARRAYBOUNDFc;
+
+void cacheSAFEARRAYBOUNDFields(JNIEnv *env, jobject lpObject)
+{
+	if (SAFEARRAYBOUNDFc.cached) return;
+	SAFEARRAYBOUNDFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SAFEARRAYBOUNDFc.cElements = (*env)->GetFieldID(env, SAFEARRAYBOUNDFc.clazz, "cElements", "I");
+	SAFEARRAYBOUNDFc.lLbound = (*env)->GetFieldID(env, SAFEARRAYBOUNDFc.clazz, "lLbound", "I");
+	SAFEARRAYBOUNDFc.cached = 1;
+}
+
+SAFEARRAYBOUND *getSAFEARRAYBOUNDFields(JNIEnv *env, jobject lpObject, SAFEARRAYBOUND *lpStruct)
+{
+	if (!SAFEARRAYBOUNDFc.cached) cacheSAFEARRAYBOUNDFields(env, lpObject);
+	lpStruct->cElements = (*env)->GetIntField(env, lpObject, SAFEARRAYBOUNDFc.cElements);
+	lpStruct->lLbound = (*env)->GetIntField(env, lpObject, SAFEARRAYBOUNDFc.lLbound);
+	return lpStruct;
+}
+
+void setSAFEARRAYBOUNDFields(JNIEnv *env, jobject lpObject, SAFEARRAYBOUND *lpStruct)
+{
+	if (!SAFEARRAYBOUNDFc.cached) cacheSAFEARRAYBOUNDFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SAFEARRAYBOUNDFc.cElements, (jint)lpStruct->cElements);
+	(*env)->SetIntField(env, lpObject, SAFEARRAYBOUNDFc.lLbound, (jint)lpStruct->lLbound);
+}
+#endif
+
 #ifndef NO_SCRIPT_ANALYSIS
 typedef struct SCRIPT_ANALYSIS_FID_CACHE {
 	int cached;

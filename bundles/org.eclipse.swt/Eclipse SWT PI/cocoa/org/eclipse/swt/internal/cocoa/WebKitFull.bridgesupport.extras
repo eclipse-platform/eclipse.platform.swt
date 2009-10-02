@@ -206,6 +206,10 @@
 			<arg name="applicationName" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setCustomUserAgent:" swt_gen="true">
+			<arg name="userAgentString" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setDownloadDelegate:" swt_gen="true">
 			<arg name="delegate" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>

@@ -14,6 +14,7 @@ import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
@@ -517,7 +518,7 @@ public void create(Composite parent, int style) {
 								* UNC first segment has been successfully navigated,
 								* now redirect to the full UNC path.
 								*/ 
-								navigate(uncRedirect, true);
+								navigate(uncRedirect, null, null, true);
 								break;
 							}
 							uncRedirect = null;
@@ -580,7 +581,7 @@ public void create(Composite parent, int style) {
 											} else {
 												uncRedirect = url;
 											}
-											navigate(host, true);
+											navigate(host, null, null, true);
 										}
 									});
 								}
@@ -884,6 +885,34 @@ public boolean close() {
 	return result;
 }
 
+static Variant createSafeArray(String string) {
+	/* Create a pointer and copy the data into it */
+	byte[] bytes = string.getBytes();
+	int length = bytes.length;
+	int /*long*/ pvData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, length);
+	C.memmove(pvData, bytes, length);
+	int cElements1 = length;
+
+	/* Create a SAFEARRAY in memory */
+	int /*long*/ pSafeArray = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, SAFEARRAY.sizeof);
+	SAFEARRAY safeArray = new SAFEARRAY();
+	safeArray.cDims = 1;
+	safeArray.fFeatures = OS.FADF_FIXEDSIZE | OS.FADF_HAVEVARTYPE;
+	safeArray.cbElements = 1;
+	safeArray.pvData = pvData;
+	SAFEARRAYBOUND safeArrayBound = new SAFEARRAYBOUND(); 
+	safeArray.rgsabound = safeArrayBound;
+	safeArrayBound.cElements = cElements1;
+	OS.MoveMemory (pSafeArray, safeArray, SAFEARRAY.sizeof);
+
+	/* Return a Variant that holds the SAFEARRAY */
+	int /*long*/ pVariant = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
+	short vt = (short)(OLE.VT_ARRAY | OLE.VT_UI1);
+	OS.MoveMemory(pVariant, new short[] {vt}, 2);
+	OS.MoveMemory(pVariant + 8, new int /*long*/[] {pSafeArray}, C.PTR_SIZEOF);
+	return new Variant(pVariant, (short)(OLE.VT_BYREF | OLE.VT_VARIANT));
+}
+
 public boolean execute(String script) {
 	/* get IHTMLDocument2 */
 	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
@@ -997,6 +1026,59 @@ public boolean isForwardEnabled() {
 
 public boolean isFocusControl () {
 	return site.isFocusControl() || frame.isFocusControl();
+}
+
+boolean navigate(String url, String postData, String headers[], boolean silent) {
+	navigate = true;
+	int count = 1;
+	if (postData != null) count++;
+	if (headers != null) count++;
+	Variant[] rgvarg = new Variant[count];
+	int[] rgdispidNamedArgs = new int[count];
+	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL", "PostData", "Headers" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	int index = 0;
+	rgvarg[index] = new Variant(url);
+	rgdispidNamedArgs[index++] = rgdispid[1];
+	if (postData != null) {
+		rgvarg[index] = createSafeArray(postData);
+		rgdispidNamedArgs[index++] = rgdispid[2];
+	}
+	if (headers != null) {
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < headers.length; i++) {
+			String current = headers[i];
+			int sep = current.indexOf(':');
+			if (sep != -1) {
+				String key = current.substring(0, sep).trim();
+				String value = current.substring(sep + 1).trim();
+				if (key.length() > 0 && value.length() > 0) {
+					buffer.append(key);
+					buffer.append(':');
+					buffer.append(value);
+					buffer.append("\r\n");
+				}
+			}
+		}
+		rgvarg[index] = new Variant(buffer.toString());
+		rgdispidNamedArgs[index++] = rgdispid[3];
+	}
+	boolean oldValue = false;
+	if (silent && !OS.IsWinCE && IsIE7) {
+		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
+		oldValue = hResult == COM.S_OK;
+		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
+	}
+	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+	if (silent && !OS.IsWinCE && IsIE7) {
+		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
+	}
+	for (int i = 0; i < count; i++) {
+		rgvarg[i].dispose();
+	}
+	if (pVarResult == null) return false;
+	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
+	pVarResult.dispose();
+	return result;
 }
 
 public void refresh() {
@@ -1156,31 +1238,7 @@ public boolean setText(final String html) {
 	return result;
 }
 
-boolean navigate(String url, boolean silent) {
-	navigate = true;
-	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
-	Variant[] rgvarg = new Variant[1];
-	rgvarg[0] = new Variant(url);
-	int[] rgdispidNamedArgs = new int[1];
-	rgdispidNamedArgs[0] = rgdispid[1];
-	boolean oldValue = false;
-	if (silent && !OS.IsWinCE && IsIE7) {
-		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
-		oldValue = hResult == COM.S_OK;
-		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
-	}
-	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	if (silent && !OS.IsWinCE && IsIE7) {
-		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
-	}
-	rgvarg[0].dispose();
-	if (pVarResult == null) return false;
-	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
-	pVarResult.dispose();
-	return result;
-}
-
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String headers[]) {
 	html = uncRedirect = null;
 
 	/*
@@ -1198,12 +1256,12 @@ public boolean setUrl(String url) {
 		* issuing Stop so that the 'Action cancelled' page is not displayed.
 		*/
 		if (!navigate) {
-			navigate (ABOUT_BLANK, true);
+			navigate (ABOUT_BLANK, null, null, true);
 		}
 		int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 		auto.invoke(rgdispid[0]);
 	}
-	return navigate(url, false);
+	return navigate(url, postData, headers, false);
 }
 
 public void stop() {

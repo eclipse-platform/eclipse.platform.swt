@@ -8881,6 +8881,30 @@ fail:
 }
 #endif
 
+#if (!defined(NO_MoveMemory__ILorg_eclipse_swt_internal_win32_SAFEARRAY_2I) && !defined(JNI64)) || (!defined(NO_MoveMemory__JLorg_eclipse_swt_internal_win32_SAFEARRAY_2I) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_SAFEARRAY_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_SAFEARRAY_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+#endif
+{
+	SAFEARRAY _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_SAFEARRAY_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_SAFEARRAY_2I_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getSAFEARRAYFields(env, arg1, &_arg1)) == NULL) goto fail;
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_SAFEARRAY_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_SAFEARRAY_2I_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I) && !defined(JNI64)) || (!defined(NO_MoveMemory__JLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
@@ -12438,6 +12462,30 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(RoundRect)
 	OS_NATIVE_ENTER(env, that, RoundRect_FUNC);
 	rc = (jboolean)RoundRect((HDC)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 	OS_NATIVE_EXIT(env, that, RoundRect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SAFEARRAYBOUND_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(SAFEARRAYBOUND_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SAFEARRAYBOUND_1sizeof_FUNC);
+	rc = (jint)SAFEARRAYBOUND_sizeof();
+	OS_NATIVE_EXIT(env, that, SAFEARRAYBOUND_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SAFEARRAY_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(SAFEARRAY_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SAFEARRAY_1sizeof_FUNC);
+	rc = (jint)SAFEARRAY_sizeof();
+	OS_NATIVE_EXIT(env, that, SAFEARRAY_1sizeof_FUNC);
 	return rc;
 }
 #endif

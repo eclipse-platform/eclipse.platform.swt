@@ -663,6 +663,8 @@ public class OS extends C {
 	public static final int EVENT_OBJECT_SELECTIONWITHIN = 0x8009;
 //	public static final int EVENT_OBJECT_STATECHANGE = 0x800A;
 	public static final int EVENT_OBJECT_VALUECHANGE = 0x800E;
+	public static final short FADF_FIXEDSIZE = 0x10;
+	public static final short FADF_HAVEVARTYPE = 0x80;
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
 	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
@@ -2262,6 +2264,8 @@ public static final native int PRINTDLG_sizeof ();
 public static final native int PROCESS_INFORMATION_sizeof ();
 public static final native int REBARBANDINFO_sizeof ();
 public static final native int RECT_sizeof ();
+public static final native int SAFEARRAY_sizeof ();
+public static final native int SAFEARRAYBOUND_sizeof ();
 public static final native int SCRIPT_ANALYSIS_sizeof ();
 public static final native int SCRIPT_CONTROL_sizeof ();
 public static final native int SCRIPT_DIGITSUBSTITUTE_sizeof ();
@@ -5047,6 +5051,11 @@ public static final native void MoveMemory (int /*long*/ Destination, OPENFILENA
  * @param Source cast=(CONST VOID *),flags=no_out
  */
 public static final native void MoveMemory (int /*long*/ Destination, RECT Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (int /*long*/ Destination, SAFEARRAY Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out

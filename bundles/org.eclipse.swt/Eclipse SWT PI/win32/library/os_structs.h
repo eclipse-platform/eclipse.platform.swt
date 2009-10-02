@@ -1307,6 +1307,30 @@ void setRECTFields(JNIEnv *env, jobject lpObject, RECT *lpStruct);
 #define RECT_sizeof() 0
 #endif
 
+#ifndef NO_SAFEARRAY
+void cacheSAFEARRAYFields(JNIEnv *env, jobject lpObject);
+SAFEARRAY *getSAFEARRAYFields(JNIEnv *env, jobject lpObject, SAFEARRAY *lpStruct);
+void setSAFEARRAYFields(JNIEnv *env, jobject lpObject, SAFEARRAY *lpStruct);
+#define SAFEARRAY_sizeof() sizeof(SAFEARRAY)
+#else
+#define cacheSAFEARRAYFields(a,b)
+#define getSAFEARRAYFields(a,b,c) NULL
+#define setSAFEARRAYFields(a,b,c)
+#define SAFEARRAY_sizeof() 0
+#endif
+
+#ifndef NO_SAFEARRAYBOUND
+void cacheSAFEARRAYBOUNDFields(JNIEnv *env, jobject lpObject);
+SAFEARRAYBOUND *getSAFEARRAYBOUNDFields(JNIEnv *env, jobject lpObject, SAFEARRAYBOUND *lpStruct);
+void setSAFEARRAYBOUNDFields(JNIEnv *env, jobject lpObject, SAFEARRAYBOUND *lpStruct);
+#define SAFEARRAYBOUND_sizeof() sizeof(SAFEARRAYBOUND)
+#else
+#define cacheSAFEARRAYBOUNDFields(a,b)
+#define getSAFEARRAYBOUNDFields(a,b,c) NULL
+#define setSAFEARRAYBOUNDFields(a,b,c)
+#define SAFEARRAYBOUND_sizeof() 0
+#endif
+
 #ifndef NO_SCRIPT_ANALYSIS
 void cacheSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject);
 SCRIPT_ANALYSIS *getSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_ANALYSIS *lpStruct);

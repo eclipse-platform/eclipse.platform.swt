@@ -28,8 +28,20 @@ public void setCachePolicy(int /*long*/ policy) {
 	OS.objc_msgSend(this.id, OS.sel_setCachePolicy_, policy);
 }
 
+public void setHTTPBody(NSData data) {
+	OS.objc_msgSend(this.id, OS.sel_setHTTPBody_, data != null ? data.id : 0);
+}
+
+public void setHTTPMethod(NSString method) {
+	OS.objc_msgSend(this.id, OS.sel_setHTTPMethod_, method != null ? method.id : 0);
+}
+
 public void setURL(NSURL URL) {
 	OS.objc_msgSend(this.id, OS.sel_setURL_, URL != null ? URL.id : 0);
+}
+
+public void setValue(NSString value, NSString field) {
+	OS.objc_msgSend(this.id, OS.sel_setValue_forHTTPHeaderField_, value != null ? value.id : 0, field != null ? field.id : 0);
 }
 
 public static NSURLRequest requestWithURL(NSURL URL) {

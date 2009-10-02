@@ -72,6 +72,8 @@ class Mozilla extends WebBrowser {
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String DISPOSE_LISTENER_HOOKED = "org.eclipse.swt.browser.Mozilla.disposeListenerHooked"; //$NON-NLS-1$
+	static final String HEADER_CONTENTTYPE = "Content-Type"; //$NON-NLS-1
+	static final String MIMETYPE_FORMURLENCODED = "application/x-www-form-urlencoded"; //$NON-NLS-1$
 	static final String PREFIX_JAVASCRIPT = "javascript:"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
@@ -2373,7 +2375,7 @@ public boolean setText (String html) {
 	return true;
 }
 
-public boolean setUrl (String url) {
+public boolean setUrl (String url, String postData, String[] headers) {
 	htmlBytes = null;
 
 	int /*long*/[] result = new int /*long*/[1];
@@ -2389,9 +2391,69 @@ public boolean setUrl (String url) {
 	delegate.removeWindowSubclass ();
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
+	result[0] = 0;
     char[] uri = new char[url.length () + 1];
     url.getChars (0, url.length (), uri, 0);
-	rc = webNavigation.LoadURI (uri, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
+
+    nsIMIMEInputStream postDataStream = null;
+    InputStream dataStream = null;
+	if (postData != null) {
+    	rc = XPCOM.NS_GetComponentManager (result);
+    	if (rc != XPCOM.NS_OK) error (rc);
+    	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+    	nsIComponentManager componentManager = new nsIComponentManager (result[0]);
+    	result[0] = 0;
+    	byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MIMEINPUTSTREAM_CONTRACTID, true);
+    	rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIMIMEInputStream.NS_IMIMEINPUTSTREAM_IID, result);
+    	componentManager.Release();
+
+    	if (rc == XPCOM.NS_OK && result[0] != 0) { /* nsIMIMEInputStream is not in mozilla 1.4 */
+    		byte[] bytes = MozillaDelegate.wcsToMbcs (null, postData, false);
+    		dataStream = new InputStream (bytes);
+    		dataStream.AddRef ();
+    		postDataStream = new nsIMIMEInputStream (result[0]);
+    		rc = postDataStream.SetData (dataStream.getAddress ());
+    		if (rc != XPCOM.NS_OK) error (rc);
+    		rc = postDataStream.SetAddContentLength (1);
+    		if (rc != XPCOM.NS_OK) error (rc);
+    		byte[] name = MozillaDelegate.wcsToMbcs (null, HEADER_CONTENTTYPE, true);
+    		byte[] value = MozillaDelegate.wcsToMbcs (null, MIMETYPE_FORMURLENCODED, true);
+    		rc = postDataStream.AddHeader (name, value);
+    		if (rc != XPCOM.NS_OK) error (rc);
+    	}
+    	result[0] = 0;
+	}
+
+    InputStream headersStream = null;
+    if (headers != null) {
+		StringBuffer buffer = new StringBuffer ();
+		for (int i = 0; i < headers.length; i++) {
+			String current = headers[i];
+			int sep = current.indexOf (':');
+			if (sep != -1) {
+				String key = current.substring (0, sep).trim ();
+				String value = current.substring (sep + 1).trim ();
+				if (key.length () > 0 && value.length () > 0) {
+					buffer.append (key);
+					buffer.append (':');
+					buffer.append (value);
+					buffer.append ("\r\n");
+				}
+			}
+		}
+    	byte[] bytes = MozillaDelegate.wcsToMbcs (null, buffer.toString (), true);
+    	headersStream = new InputStream (bytes);
+    	headersStream.AddRef ();
+    }
+
+	rc = webNavigation.LoadURI (
+		uri,
+		nsIWebNavigation.LOAD_FLAGS_NONE,
+		0,
+		postDataStream == null ? 0 : postDataStream.getAddress (),
+		headersStream == null ? 0 : headersStream.getAddress ());
+	if (dataStream != null) dataStream.Release ();
+	if (headersStream != null) headersStream.Release ();
 	webNavigation.Release ();
 	return rc == XPCOM.NS_OK;
 }
@@ -3408,7 +3470,7 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 	if (value.indexOf ("aboutCertError.xhtml") != -1 || (isViewingErrorPage && value.indexOf ("javascript:showSecuritySection") != -1)) { //$NON-NLS-1$ //$NON-NLS-2$
 		XPCOM.memmove (retval, new int[] {1}, 4); /* PRBool */
 		isRetrievingBadCert = true;
-		setUrl (lastNavigateURL);
+		setUrl (lastNavigateURL, null, null);
 		return XPCOM.NS_OK;
 	}
 	isViewingErrorPage = value.indexOf ("netError.xhtml") != -1; //$NON-NLS-1$

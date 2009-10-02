@@ -260,7 +260,7 @@ public boolean setText(String html) {
 	return true;
 }
 
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String[] headers) {
 	int state = OS.WebBrowser_ReadyState(webBrowser);
 	if (!(state == OS.WebBrowserReadyState_Uninitialized || state == OS.WebBrowserReadyState_Complete)) {
 		OS.WebBrowser_Stop(webBrowser);

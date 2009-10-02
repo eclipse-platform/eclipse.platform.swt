@@ -419,6 +419,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__II_3BI
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg2=NULL;
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__II_3BI_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (*)(jint, jint, jbyte *, jint))objc_msgSend)(arg0, arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__II_3BI_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__II_3C
 JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II_3C)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2)

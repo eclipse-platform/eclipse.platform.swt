@@ -454,7 +454,7 @@ public boolean setText(String html) {
 	return true;
 }
 
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String[] headers) {
 	byte[] buffer = Converter.wcsToMbcs(null, url, true);
 	int ptr = OS.malloc(buffer.length);
 	OS.memmove(ptr, buffer, buffer.length);
