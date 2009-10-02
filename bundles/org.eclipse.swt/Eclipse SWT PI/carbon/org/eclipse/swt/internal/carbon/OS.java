@@ -800,6 +800,8 @@ public class OS extends C {
 	public static final int kTXNFlushLeft = 1;
 	public static final int kTXNFlushRight = 2;
 	public static final int kTXNCenter = 4;
+	public static final int kTXNLeftToRight = 0;
+	public static final int kTXNRightToLeft = 1;
 	public static final int kTXNDisableDragAndDropTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'g';
 	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('S'<<16) + ('u'<<8) + 'b';
 	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
@@ -807,6 +809,7 @@ public class OS extends C {
 	public static final int kTXNEndOffset = 2147483647;
 	public static final int kTXNIOPrivilegesTag = ('i'<<24) + ('o'<<16) + ('p'<<8) + 'v';
 	public static final int kTXNJustificationTag = ('j'<<24) + ('u'<<16) + ('s'<<8) + 't';
+	public static final int kTXNLineDirectionTag = ('l'<<24) + ('n'<<16) + ('d'<<8) + 'r';
 	public static final int kTXNMarginsTag = ('m'<<24) + ('a'<<16) + ('r'<<8) + 'g';
 	public static final int kTXNMonostyledTextMask = 1 << 17;
 	public static final int kTXNQDFontFamilyIDAttribute = ('f'<<24) + ('o'<<16) + ('n'<<8) + 't';

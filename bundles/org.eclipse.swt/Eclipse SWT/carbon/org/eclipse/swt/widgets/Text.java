@@ -591,16 +591,20 @@ void createHandle () {
 			OS.kTXNIOPrivilegesTag,
 			OS.kTXNMarginsTag,
 			OS.kTXNJustificationTag,
+			OS.kTXNLineDirectionTag,
 		};
 		int just = OS.kTXNFlushLeft;
 		if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
 		if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
+		int direction = OS.kTXNLeftToRight;
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) direction = OS.kTXNRightToLeft;
 		int [] datas = new int [] {
 			1,
 			1,
 			(style & SWT.READ_ONLY) != 0 ? 1 : 0,
 			ptr,
 			just,
+			direction,
 		};
 		OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 		OS.DisposePtr (ptr);
