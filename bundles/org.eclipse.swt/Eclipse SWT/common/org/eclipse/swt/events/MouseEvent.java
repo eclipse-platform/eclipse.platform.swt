@@ -42,6 +42,9 @@ public class MouseEvent extends TypedEvent {
 	/**
 	 * the state of the keyboard modifier keys and mouse masks
 	 * at the time the event was generated.
+	 * 
+	 * @see org.eclipse.swt.SWT#MODIFIER_MASK
+	 * @see org.eclipse.swt.SWT#BUTTON_MASK
 	 */
 	public int stateMask;
 	

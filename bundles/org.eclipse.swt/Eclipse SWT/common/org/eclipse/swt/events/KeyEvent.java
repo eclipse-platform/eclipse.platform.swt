@@ -83,11 +83,11 @@ public class KeyEvent extends TypedEvent {
 	public int keyLocation;
 	
 	/**
-	 * the state of the keyboard modifier keys at the time
-	 * the event was generated, as defined by the key code
-	 * constants in class <code>SWT</code>.
+	 * the state of the keyboard modifier keys and mouse masks
+	 * at the time the event was generated.
 	 * 
-	 * @see org.eclipse.swt.SWT
+	 * @see org.eclipse.swt.SWT#MODIFIER_MASK
+	 * @see org.eclipse.swt.SWT#BUTTON_MASK
 	 */
 	public int stateMask;
 	
