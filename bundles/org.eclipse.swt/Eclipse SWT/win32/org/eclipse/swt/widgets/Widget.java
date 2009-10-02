@@ -1319,15 +1319,15 @@ int setLocationMask (Event event, int type, int /*long*/ wParam, int /*long*/ lP
 	if (display.lastVirtual) {
 		switch (display.lastKey) {
 			case OS.VK_SHIFT:
-				if (OS.GetKeyState(OS.VK_LSHIFT) < 0) location = SWT.LOCATION_LEFT;
-				if (OS.GetKeyState(OS.VK_RSHIFT) < 0) location = SWT.LOCATION_RIGHT;
+				if (OS.GetKeyState(OS.VK_LSHIFT) < 0) location = SWT.LEFT;
+				if (OS.GetKeyState(OS.VK_RSHIFT) < 0) location = SWT.RIGHT;
 				break;
 			case OS.VK_NUMLOCK:
-				location = SWT.LOCATION_KEYPAD;
+				location = SWT.KEYPAD;
 				break;
 			case OS.VK_CONTROL:	
 			case OS.VK_MENU:	
-				location = (lParam & 0x1000000) == 0 ? SWT.LOCATION_LEFT : SWT.LOCATION_RIGHT;
+				location = (lParam & 0x1000000) == 0 ? SWT.LEFT : SWT.RIGHT;
 				break;
 			case OS.VK_INSERT:
 			case OS.VK_DELETE:
@@ -1340,19 +1340,19 @@ int setLocationMask (Event event, int type, int /*long*/ wParam, int /*long*/ lP
 			case OS.VK_LEFT:
 			case OS.VK_RIGHT:
 				if ((lParam & 0x1000000) == 0) {
-					location = SWT.LOCATION_KEYPAD;
+					location = SWT.KEYPAD;
 				}
 				break;
 		}
 		if (display.numpadKey(display.lastKey) != 0) {
-			location = SWT.LOCATION_KEYPAD;
+			location = SWT.KEYPAD;
 		}
 	} else {
 		if (display.lastKey == SWT.KEYPAD_CR) {
-			location = SWT.LOCATION_KEYPAD;
+			location = SWT.KEYPAD;
 		}
 	}
-	event.stateMask |= location;
+	event.keyLocation = location;
 	return location;
 }
 
