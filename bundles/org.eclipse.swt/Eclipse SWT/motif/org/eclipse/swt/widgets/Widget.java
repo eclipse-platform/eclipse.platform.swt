@@ -829,13 +829,13 @@ void setLocationState (Event event, int keysym) {
 		case OS.XK_Meta_L:
 		case OS.XK_Control_L:
 		case OS.XK_Shift_L:
-			event.stateMask |= SWT.LOCATION_LEFT;
+			event.keyLocation = SWT.LEFT;
 			break;
 		case OS.XK_Alt_R:
 		case OS.XK_Meta_R:
 		case OS.XK_Control_R:
 		case OS.XK_Shift_R:
-			event.stateMask |= SWT.LOCATION_RIGHT;
+			event.keyLocation = SWT.RIGHT;
 			break;
 		case OS.XK_KP_Enter:
 		case OS.XK_KP_F1:
@@ -869,7 +869,7 @@ void setLocationState (Event event, int keysym) {
 		case OS.XK_KP_8:
 		case OS.XK_KP_9:
 		case OS.XK_Num_Lock:
-			event.stateMask |= SWT.LOCATION_KEYPAD;
+			event.keyLocation = SWT.KEYPAD;
 			break;
 	}
 }
