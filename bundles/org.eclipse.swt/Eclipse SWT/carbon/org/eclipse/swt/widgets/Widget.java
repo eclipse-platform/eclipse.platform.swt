@@ -2057,7 +2057,7 @@ void setLocationMask (Event event, int keyCode) {
 		case 91:  /* KEYPAD_8 */
 		case 92:  /* KEYPAD_9 */
 		case 81:  /* KEYPAD_EQUAL */
-			event.stateMask |= SWT.LOCATION_KEYPAD;
+			event.keyLocation = SWT.KEYPAD;
 			break;
 	}
 }
