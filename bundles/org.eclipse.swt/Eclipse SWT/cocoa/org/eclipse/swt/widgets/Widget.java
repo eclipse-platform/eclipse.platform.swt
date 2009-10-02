@@ -1600,13 +1600,13 @@ void setLocationMask (Event event, NSEvent nsEvent) {
 		case 56: /* LEFT SHIFT */
 		case 58: /* LEFT ALT */
 		case 59: /* LEFT CONTROL */
-			event.stateMask |= SWT.LOCATION_LEFT;
+			event.keyLocation = SWT.LEFT;
 			break;
 		case 54: /* RIGHT COMMAND */
 		case 60: /* RIGHT SHIFT */
 		case 61: /* RIGHT ALT */
 		case 62: /* RIGHT CONTROL */
-			event.stateMask |= SWT.LOCATION_RIGHT;
+			event.keyLocation = SWT.RIGHT;
 			break;
 		case 67:  /* KEYPAD_MULTIPLY */
 		case 69:  /* KEYPAD_ADD */
@@ -1625,7 +1625,7 @@ void setLocationMask (Event event, NSEvent nsEvent) {
 		case 91:  /* KEYPAD_8 */
 		case 92:  /* KEYPAD_9 */
 		case 81:  /* KEYPAD_EQUAL */
-			event.stateMask |= SWT.LOCATION_KEYPAD;
+			event.keyLocation = SWT.KEYPAD;
 			break;
 	}
 }
