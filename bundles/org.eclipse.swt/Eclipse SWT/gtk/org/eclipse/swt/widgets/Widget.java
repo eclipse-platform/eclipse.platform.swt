@@ -1478,12 +1478,12 @@ void setLocationState (Event event, GdkEventKey keyEvent) {
 		case OS.GDK_Alt_L:
 		case OS.GDK_Shift_L:
 		case OS.GDK_Control_L:
-			event.stateMask |= SWT.LOCATION_LEFT;
+			event.keyLocation = SWT.LEFT;
 			break;
 		case OS.GDK_Alt_R:
 		case OS.GDK_Shift_R:
 		case OS.GDK_Control_R:
-				event.stateMask |= SWT.LOCATION_RIGHT;
+				event.keyLocation = SWT.RIGHT;
 			break;
 		case OS.GDK_KP_0:
 		case OS.GDK_KP_1:
@@ -1513,7 +1513,7 @@ void setLocationState (Event event, GdkEventKey keyEvent) {
 		case OS.GDK_KP_Subtract:
 		case OS.GDK_KP_Up:
 		case OS.GDK_Num_Lock:
-			event.stateMask |= SWT.LOCATION_KEYPAD;
+			event.keyLocation = SWT.KEYPAD;
 			break;
 	}
 }
