@@ -24,6 +24,11 @@ public NSMenuItem(id id) {
 	super(id);
 }
 
+public NSAttributedString attributedTitle() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributedTitle);
+	return result != 0 ? new NSAttributedString(result) : null;
+}
+
 public NSMenuItem initWithTitle(NSString aString, int /*long*/ aSelector, NSString charCode) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSMenuItem(result) : null);

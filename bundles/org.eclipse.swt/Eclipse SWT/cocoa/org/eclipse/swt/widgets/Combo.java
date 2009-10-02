@@ -130,13 +130,15 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	NSString str = NSString.stringWith(string);
+	NSAttributedString str = createString(string);
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSPopUpButton widget = (NSPopUpButton)view;
 		int /*long*/ selection = widget.indexOfSelectedItem();
 		NSMenu nsMenu = widget.menu();
 		NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
-		nsItem.initWithTitle(str, 0, NSString.stringWith(""));
+		NSString empty = NSString.string();
+		nsItem.initWithTitle(empty, 0, empty);
+		nsItem.setAttributedTitle(str);
 		nsMenu.addItem(nsItem);
 		nsItem.release();
 		if (selection == -1) widget.selectItemAtIndex(-1);
@@ -173,13 +175,15 @@ public void add (String string, int index) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = getItemCount ();
 	if (0 > index || index > count) error (SWT.ERROR_INVALID_RANGE);
-	NSString str = NSString.stringWith(string);
+	NSAttributedString str = createString(string);
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSPopUpButton widget = (NSPopUpButton)view;
 		int /*long*/ selection = widget.indexOfSelectedItem();
 		NSMenu nsMenu = widget.menu();
 		NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
-		nsItem.initWithTitle(str, 0, NSString.stringWith(""));
+		NSString empty = NSString.string();
+		nsItem.initWithTitle(empty, 0, empty);
+		nsItem.setAttributedTitle(str);
 		nsMenu.insertItem(nsItem, index);
 		nsItem.release();
 		if (selection == -1) widget.selectItemAtIndex(-1);
@@ -340,14 +344,16 @@ public void clearSelection () {
 }
 
 void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	super.setObjectValue(id, sel, ignoreSetObject ? arg0 : NSString.stringWith(text).id);
+	super.setObjectValue(id, sel, ignoreSetObject ? arg0 : createString(text).id);
 }
 
 void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	NSComboBox widget = (NSComboBox)view;
 	int /*long*/ tableSelection = widget.indexOfSelectedItem();
 	widget.selectItemAtIndex(tableSelection);
-	setText(new NSString(widget.itemObjectValueAtIndex(tableSelection)).getString(), true);
+	NSAttributedString attStr = new NSAttributedString (widget.itemObjectValueAtIndex(tableSelection));
+	NSString nsString = attStr.string();
+	if (nsString != null) setText(nsString.getString(), true);
 	if (!ignoreSelection) sendEvent(SWT.Selection, null, display.trackingControl != this);
 }
 
@@ -368,8 +374,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (length > 0) {
 			cell = new NSComboBoxCell (cell.copy ());
 			for (int i = 0; i < length; i++) {
-				id object = array.objectAtIndex (i);
-				cell.setTitle (new NSString (object));
+				NSAttributedString attStr = new NSAttributedString (array.objectAtIndex (i));
+				cell.setAttributedStringValue(attStr);
 				size = cell.cellSize ();
 				width = Math.max (width, (int)Math.ceil (size.width));
 			}
@@ -426,6 +432,12 @@ void createHandle () {
 		widget.setDelegate(widget);
 		view = widget;
 	}
+}
+
+NSAttributedString createString(String string) {
+	NSAttributedString attribStr = createString(string, null, foreground, SWT.LEFT, false, true, false);
+	attribStr.autorelease();
+	return attribStr;
 }
 
 void createWidget() {
@@ -596,11 +608,12 @@ public String getItem (int index) {
 	checkWidget ();
 	int count = getItemCount ();
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
-	NSString str;
+	NSString str = null;
 	if ((style & SWT.READ_ONLY) != 0) {
 		str = ((NSPopUpButton)view).itemTitleAtIndex(index);
 	} else {
-		str = new NSString(((NSComboBox)view).itemObjectValueAtIndex(index));
+		NSAttributedString attString = new NSAttributedString(((NSComboBox)view).itemObjectValueAtIndex(index));
+		if (attString != null) str = attString.string();
 	}
 	if (str == null) error(SWT.ERROR_CANNOT_GET_ITEM);
 	return str.getString();
@@ -1268,16 +1281,21 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	super.setBounds (x, y, width, height, move, resize);
 }
 
+void setFont (NSFont font) {
+	super.setFont(font);
+	updateItems();
+}
+
 void setForeground (float /*double*/ [] color) {
-	NSColor nsColor;
-	if (color == null) {
-		nsColor = NSColor.textColor ();
-	} else {
-		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
-	}
-	if ((style & SWT.READ_ONLY) != 0) {
-		//TODO
-	} else {
+	super.setForeground(color);
+	updateItems();
+	if ((style & SWT.READ_ONLY) == 0) {
+		NSColor nsColor;
+		if (color == null) {
+			nsColor = NSColor.textColor ();
+		} else {
+			nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+		}
 		((NSTextField)view).setTextColor(nsColor);
 	}
 }
@@ -1304,10 +1322,10 @@ public void setItem (int index, String string) {
 	int count = getItemCount ();
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	int selection = getSelectionIndex();
-	NSString str = NSString.stringWith(string);
+	NSAttributedString str = createString(string);
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSMenuItem nsItem = ((NSPopUpButton)view).itemAtIndex(index);
-		nsItem.setTitle(str);
+		nsItem.setAttributedTitle(str);
 	} else {
 		NSComboBox widget = (NSComboBox)view;
 		widget.insertItemWithObjectValue(str, index);
@@ -1339,11 +1357,13 @@ public void setItems (String [] items) {
 	removeAll();
 	if (items.length == 0) return;
 	for (int i= 0; i < items.length; i++) {
-		NSString str = NSString.stringWith(items[i]);
+		NSAttributedString str = createString(items[i]);
 		if ((style & SWT.READ_ONLY) != 0) {
 			NSMenu nsMenu = ((NSPopUpButton)view).menu();
 			NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
-			nsItem.initWithTitle(str, 0, NSString.stringWith(""));
+			NSString empty = NSString.string();
+			nsItem.initWithTitle(empty, 0, empty);
+			nsItem.setAttributedTitle(str);
 			nsMenu.addItem(nsItem);
 			nsItem.release();
 			//clear the selection
@@ -1396,6 +1416,11 @@ public void setListVisible (boolean visible) {
  */
 public void setOrientation (int orientation) {
 	checkWidget();
+}
+
+void setOrientation () {
+	int direction = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
+	((NSControl)view).setBaseWritingDirection(direction);
 }
 
 /**
@@ -1479,8 +1504,7 @@ void setText (String string, boolean notify) {
 		char[] buffer = new char [Math.min(string.length (), textLimit)];
 		string.getChars (0, buffer.length, buffer, 0);
 		text = new String (buffer,0, buffer.length);
-		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-		((NSComboBox)view).cell().setTitle(nsstring);
+		((NSComboBox)view).cell().setAttributedStringValue(createString(text));
 		if (notify) sendEvent (SWT.Modify);
 	}
 	selectionRange = null;
@@ -1603,6 +1627,29 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*lo
 	NSRange result = new NSRange();
 	OS.memmove(result, newSelectedCharRange, NSRange.sizeof);
 	return result;
+}
+
+void updateItems () {
+	if ((style & SWT.READ_ONLY) != 0) {
+		NSPopUpButton widget = (NSPopUpButton)view;
+		int count = (int)/*64*/ widget.numberOfItems();
+		for (int i = 0; i < count; i++) {
+			NSMenuItem item = new NSMenuItem (widget.itemAtIndex(i));
+			NSAttributedString attStr = item.attributedTitle();
+			String string = attStr.string().getString();
+			item.setAttributedTitle(createString(string));
+		}
+	} else {
+		NSComboBox widget = (NSComboBox)view;
+		int count = (int)/*64*/ widget.numberOfItems();
+		for (int i = 0; i < count; i++) {
+			NSAttributedString attStr = new NSAttributedString (widget.itemObjectValueAtIndex(i));
+			String string = attStr.string().getString();
+			widget.insertItemWithObjectValue(createString(string), i);
+			widget.removeItemAtIndex(i + 1);
+		}
+		widget.cell().setAttributedStringValue(createString(text));
+	}
 }
 
 String verifyText (String string, int start, int end, NSEvent keyEvent) {

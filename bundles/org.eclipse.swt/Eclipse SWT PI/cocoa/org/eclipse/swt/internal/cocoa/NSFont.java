@@ -56,6 +56,11 @@ public float /*double*/ leading() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_leading);
 }
 
+public static NSFont menuFontOfSize(float /*double*/ fontSize) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_menuFontOfSize_, fontSize);
+	return result != 0 ? new NSFont(result) : null;
+}
+
 public float /*double*/ pointSize() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_pointSize);
 }
