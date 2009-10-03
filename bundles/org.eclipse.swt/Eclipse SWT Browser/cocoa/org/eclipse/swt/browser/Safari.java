@@ -528,20 +528,22 @@ public boolean setUrl(String url, String postData, String[] headers) {
 	if (headers != null) {
 		for (int i = 0; i < headers.length; i++) {
 			String current = headers[i];
-			int index = current.indexOf(':');
-			if (index != -1) {
-				String key = current.substring(0, index).trim();
-				String value = current.substring(index + 1).trim();
-				if (key.length() > 0 && value.length() > 0) {
-					if (key.equals(USER_AGENT)) {
-						/*
-						* Feature of Safari.  The user-agent header value cannot be overridden
-						* here.  The workaround is to temporarily set the value on the WebView
-						* and then remove it after the loading of the request has begun.
-						*/
-						webView.setCustomUserAgent(NSString.stringWith(value));
-					} else {
-						request.setValue(NSString.stringWith(value), NSString.stringWith(key));						
+			if (current != null) {
+				int index = current.indexOf(':');
+				if (index != -1) {
+					String key = current.substring(0, index).trim();
+					String value = current.substring(index + 1).trim();
+					if (key.length() > 0 && value.length() > 0) {
+						if (key.equals(USER_AGENT)) {
+							/*
+							* Feature of Safari.  The user-agent header value cannot be overridden
+							* here.  The workaround is to temporarily set the value on the WebView
+							* and then remove it after the loading of the request has begun.
+							*/
+							webView.setCustomUserAgent(NSString.stringWith(value));
+						} else {
+							request.setValue(NSString.stringWith(value), NSString.stringWith(key));						
+						}
 					}
 				}
 			}

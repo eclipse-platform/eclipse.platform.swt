@@ -1047,15 +1047,17 @@ boolean navigate(String url, String postData, String headers[], boolean silent) 
 		StringBuffer buffer = new StringBuffer();
 		for (int i = 0; i < headers.length; i++) {
 			String current = headers[i];
-			int sep = current.indexOf(':');
-			if (sep != -1) {
-				String key = current.substring(0, sep).trim();
-				String value = current.substring(sep + 1).trim();
-				if (key.length() > 0 && value.length() > 0) {
-					buffer.append(key);
-					buffer.append(':');
-					buffer.append(value);
-					buffer.append("\r\n");
+			if (current != null) {
+				int sep = current.indexOf(':');
+				if (sep != -1) {
+					String key = current.substring(0, sep).trim();
+					String value = current.substring(sep + 1).trim();
+					if (key.length() > 0 && value.length() > 0) {
+						buffer.append(key);
+						buffer.append(':');
+						buffer.append(value);
+						buffer.append("\r\n");
+					}
 				}
 			}
 		}

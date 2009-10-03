@@ -948,7 +948,6 @@ public void setJavascriptEnabled (boolean enabled) {
 
 /**
  * Renders a string containing HTML.  The rendering of the content occurs asynchronously.
- * 
  * <p>
  * The html parameter is Unicode encoded since it is a java <code>String</code>.
  * As a result, the HTML meta tag charset should not be set. The charset is implied
@@ -994,6 +993,7 @@ public boolean setText (String html) {
  * </ul>
  *  
  * @see #getUrl
+ * @see #setUrl(String,String,String[])
  * 
  * @since 3.0
  */
@@ -1002,6 +1002,32 @@ public boolean setUrl (String url) {
 	return setUrl (url, null, null);
 }
 
+/**
+ * Begins loading a URL.  The loading of its content occurs asynchronously.
+ * <p>
+ * If the URL causes an HTTP request to be initiated then the provided
+ * <code>postData</code> and <code>header</code> arguments, if any, are
+ * sent with the request.  A value in the <code>headers</code> argument
+ * must be a name-value pair with a colon separator in order to be sent
+ * (for example: "<code>user-agent: custom</code>").
+ * 
+ * @param url the URL to be loaded
+ * @param postData post data to be sent with the request, or <code>null</code>
+ * @param headers header lines to be sent with the request, or <code>null</code> 
+ *
+ * @return true if the operation was successful and false otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+ * </ul>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
 public boolean setUrl (String url, String postData, String[] headers) {
 	checkWidget();
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
