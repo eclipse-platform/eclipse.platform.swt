@@ -166,6 +166,7 @@ public class StyledText extends Canvas {
 	int indent;
 	int lineSpacing;
 	int alignmentMargin;
+	int newOrientation = SWT.NONE;
 	
 	//block selection
 	boolean blockSelection;
@@ -5887,6 +5888,10 @@ void handleKeyDown(Event event) {
 	if (clipboardSelection == null) {
 		clipboardSelection = new Point(selection.x, selection.y);
 	}
+	newOrientation = SWT.NONE;
+	if ((event.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL && event.keyCode == SWT.SHIFT && isBidiCaret()) {
+		newOrientation = event.keyLocation == SWT.LEFT ? SWT.LEFT_TO_RIGHT : SWT.RIGHT_TO_LEFT; 
+	}
 	
 	Event verifyEvent = new Event();
 	verifyEvent.character = event.character;
@@ -5910,6 +5915,11 @@ void handleKeyUp(Event event) {
 		}
 	}
 	clipboardSelection = null;
+	
+	if (newOrientation != SWT.NONE) {
+		setOrientation(newOrientation);
+		newOrientation = SWT.NONE;
+	}
 }
 /** 
  * Updates the caret location and selection if mouse button 1 has been 
