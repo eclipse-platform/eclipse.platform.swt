@@ -883,16 +883,33 @@ static int /*long*/ create32bitDIB (Image image) {
 	} else if (alpha != -1) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
-				srcData [dp + 3] = (byte)alpha;
-				if (srcData [dp + 3] == 0) srcData [dp + 0] = srcData [dp + 1] = srcData [dp + 2] = 0;
+				int r = ((srcData[dp + 0] & 0xFF) * alpha) + 128;
+				r = (r + (r >> 8)) >> 8;
+				int g = ((srcData[dp + 1] & 0xFF) * alpha) + 128;
+				g = (g + (g >> 8)) >> 8;
+				int b = ((srcData[dp + 2] & 0xFF) * alpha) + 128;
+				b = (b + (b >> 8)) >> 8;
+				srcData[dp+0] = (byte)r;
+				srcData[dp+1] = (byte)g;
+				srcData[dp+2] = (byte)b;
+				srcData[dp+3] = (byte)alpha;
 				dp += 4;
 			}
 		}
 	} else if (alphaData != null) {
 		for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
-				srcData [dp + 3] = alphaData [ap++];
-				if (srcData [dp + 3] == 0) srcData [dp + 0] = srcData [dp + 1] = srcData [dp + 2] = 0;
+				int a = alphaData[ap++] & 0xFF;
+				int r = ((srcData[dp + 0] & 0xFF) * a) + 128;
+				r = (r + (r >> 8)) >> 8;
+				int g = ((srcData[dp + 1] & 0xFF) * a) + 128;
+				g = (g + (g >> 8)) >> 8;
+				int b = ((srcData[dp + 2] & 0xFF) * a) + 128;
+				b = (b + (b >> 8)) >> 8;
+				srcData[dp+0] = (byte)r;
+				srcData[dp+1] = (byte)g;
+				srcData[dp+2] = (byte)b;
+				srcData[dp+3] = (byte)a;
 				dp += 4;
 			}
 		}
