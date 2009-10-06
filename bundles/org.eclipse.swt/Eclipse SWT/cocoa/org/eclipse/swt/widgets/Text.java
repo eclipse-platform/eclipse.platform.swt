@@ -1234,6 +1234,7 @@ void insertEditText (String string) {
 			int charCount = getCharCount();
 			if (charCount - (selection.y - selection.x) + length > textLimit) {
 				length = textLimit - charCount + (selection.y - selection.x);
+				length = Math.max(0, length);
 			}
 		}
 		char [] buffer = new char [length];
@@ -1949,6 +1950,11 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 		newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length),  currentEvent);
 	}
 	if (newText == null) return false;
+	Point selection = getSelection();
+	int start = selection.x, end = selection.y;
+	if (getCharCount() - (end - start) + newText.length() > textLimit) {
+		return false;
+	}
 	if ((style & SWT.SINGLE) != 0) {
 		if (text != newText || echoCharacter != '\0') {
 			 //handle backspace and delete
@@ -1962,7 +1968,6 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	} else {
 		if (text != newText) {
 			NSTextView widget = (NSTextView) view;
-			Point selection = getSelection();
 			NSRange selRange = new NSRange();
 			selRange.location = selection.x;
 			selRange.length = selection.x + selection.y;
