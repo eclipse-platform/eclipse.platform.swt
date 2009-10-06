@@ -1877,7 +1877,9 @@ public void setText (String string) {
 		setEditText (string);
 	} else {
 		NSTextView widget = (NSTextView)view;
-		NSString str = NSString.stringWith (string);
+		char[] buffer = new char [Math.min(string.length (), textLimit)];
+		string.getChars (0, buffer.length, buffer, 0);
+		NSString str = NSString.stringWithCharacters(buffer, buffer.length);
 		widget.setString (str);
 		widget.setSelectedRange(new NSRange());
 	}
@@ -1950,9 +1952,7 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 		newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length),  currentEvent);
 	}
 	if (newText == null) return false;
-	Point selection = getSelection();
-	int start = selection.x, end = selection.y;
-	if (getCharCount() - (end - start) + newText.length() > textLimit) {
+	if (getCharCount() - range.length + newText.length() > textLimit) {
 		return false;
 	}
 	if ((style & SWT.SINGLE) != 0) {
@@ -1969,6 +1969,7 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 		if (text != newText) {
 			NSTextView widget = (NSTextView) view;
 			NSRange selRange = new NSRange();
+			Point selection = getSelection();
 			selRange.location = selection.x;
 			selRange.length = selection.x + selection.y;
 			widget.textStorage ().replaceCharactersInRange (selRange, NSString.stringWith(newText));
