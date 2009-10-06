@@ -566,6 +566,10 @@ void onDispose () {
 	COM.CoLockObjectExternal(iDropTarget.getAddress(), false, true);
 	
 	this.Release();
+	if (iDataObject != null) {
+		iDataObject.Release();
+	}
+	iDataObject = null;
 	
 	COM.CoFreeUnusedLibraries();
 }
