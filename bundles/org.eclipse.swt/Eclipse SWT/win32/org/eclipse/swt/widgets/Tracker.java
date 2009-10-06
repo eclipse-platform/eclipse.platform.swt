@@ -51,6 +51,8 @@ public class Tracker extends Widget {
 	boolean inEvent = false;
 	int /*long*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
 	int oldX, oldY;
+	
+	static boolean IsVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
 
 	/*
 	* The following values mirror step sizes on Windows
@@ -353,7 +355,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * Draw the rectangles displayed by the tracker.
  */
 void drawRectangles (Rectangle [] rects, boolean stippled) {
-	if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+	if (hwndOpaque != 0) {
 		RECT rect1 = new RECT();
 		int bandWidth = stippled ? 3 : 1;
 		for (int i = 0; i < rects.length; i++) {
@@ -367,8 +369,7 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
 		return;
 	}
 	int bandWidth = 1;
-	int /*long*/ hwndTrack = OS.GetDesktopWindow ();
-	if (parent != null) hwndTrack = parent.handle;
+	int /*long*/ hwndTrack = parent == null ? OS.GetDesktopWindow () : parent.handle;
 	int /*long*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
 	int /*long*/ hBitmap = 0, hBrush = 0, oldBrush = 0;
 	if (stippled) {
@@ -474,57 +475,78 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
-	/*
-	* If this tracker is being created without a mouse drag then
-	* we need to create a transparent window that fills the screen
-	* in order to get all mouse/keyboard events that occur
-	* outside of our visible windows (ie.- over the desktop).
-	*/
 	Callback newProc = null;
 	boolean mouseDown = OS.GetKeyState(OS.VK_LBUTTON) < 0;
-	boolean isVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
-	if ((parent == null && isVista) || !mouseDown) {
-		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
-		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
+	/*
+	* Bug in Vista. Drawing directly to the screen with XOR does not
+	* perform well. The fix is to draw on layered window instead.
+	* 
+	* Note that one window (almost opaque) is used for catching all events and a
+	* second window is used for drawing the rectangles. 
+	*/
+	if (IsVista && parent == null) {
+		Rectangle bounds = display.getBounds();
 		hwndTransparent = OS.CreateWindowEx (
-			isVista ? OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE : OS.WS_EX_TRANSPARENT,
+			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
 			display.windowClass,
 			null,
 			OS.WS_POPUP,
-			0, 0,
-			width, height,
+			bounds.x, bounds.y,
+			bounds.width, bounds.height,
 			0,
 			0,
 			OS.GetModuleHandle (null),
 			null);
-		if (isVista) {
-			OS.SetLayeredWindowAttributes (hwndTransparent, 0xFFFFFF, (byte)0x01, OS.LWA_ALPHA);
-		}
-		OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
+		OS.SetLayeredWindowAttributes (hwndTransparent, 0, (byte)0x01, OS.LWA_ALPHA);
+		hwndOpaque = OS.CreateWindowEx (
+			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+			display.windowClass,
+			null,
+			OS.WS_POPUP,
+			bounds.x, bounds.y,
+			bounds.width, bounds.height,
+			hwndTransparent,
+			0,
+			OS.GetModuleHandle (null),
+			null);
+		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);		
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 		int /*long*/ newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		if (isVista) {
-			hwndOpaque = OS.CreateWindowEx (
-				OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+		oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
+		OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
+		oldOpaqueProc = OS.GetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC);
+		OS.SetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC, newProcAddress);
+		OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
+		OS.ShowWindow (hwndOpaque, OS.SW_SHOWNOACTIVATE);
+	} else {
+		/*
+		* If this tracker is being created without a mouse drag then
+		* we need to create a transparent window that fills the screen
+		* in order to get all mouse/keyboard events that occur
+		* outside of our visible windows (ie.- over the desktop).
+		*/
+		if (!mouseDown) {
+			Rectangle bounds = display.getBounds();
+			System.out.println(bounds);
+			hwndTransparent = OS.CreateWindowEx (
+				OS.WS_EX_TRANSPARENT,
 				display.windowClass,
 				null,
 				OS.WS_POPUP,
-				0, 0,
-				width, height,
-				hwndTransparent,
+				bounds.x, bounds.y,
+				bounds.width, bounds.height,
+				0,
 				0,
 				OS.GetModuleHandle (null),
 				null);
-			oldOpaqueProc = OS.GetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC);
-			OS.SetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC, newProcAddress);
-		} else {
-			hwndOpaque = hwndTransparent;
+			newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
+			int /*long*/ newProcAddress = newProc.getAddress ();
+			if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
+			OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
+			OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
 		}
-		oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
-		OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
-		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
-		OS.ShowWindow (hwndOpaque, OS.SW_SHOWNOACTIVATE);
 	}
 
 	update ();
@@ -568,14 +590,14 @@ public boolean open () {
 			}
 			if (OS.WM_KEYFIRST <= msg.message && msg.message <= OS.WM_KEYLAST) continue;
 			if (OS.WM_MOUSEFIRST <= msg.message && msg.message <= OS.WM_MOUSELAST) continue;
-			if (!(parent == null && isVista)) {
+			if (hwndOpaque == 0) {
 				if (msg.message == OS.WM_PAINT) {
 					update ();
 					drawRectangles (rectangles, stippled);
 				}
 			}
 			OS.DispatchMessage (msg);
-			if (!(parent == null && isVista)) {
+			if (hwndOpaque == 0) {
 				if (msg.message == OS.WM_PAINT) {
 					drawRectangles (rectangles, stippled);
 				}
@@ -857,20 +879,17 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 			if (inEvent) return OS.HTTRANSPARENT;
 			break;
 		case OS.WM_SETCURSOR:
-			if (hwndOpaque == hwnd) {
-				if (clientCursor != null) {
-					OS.SetCursor (clientCursor.handle);
-					return 1;
-				}
-				if (resizeCursor != 0) {
-					OS.SetCursor (resizeCursor);
-					return 1;
-				}
+			if (clientCursor != null) {
+				OS.SetCursor (clientCursor.handle);
+				return 1;
+			}
+			if (resizeCursor != 0) {
+				OS.SetCursor (resizeCursor);
+				return 1;
 			}
 			break;
 		case OS.WM_PAINT:
-			boolean isVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
-			if (parent == null && isVista && hwndOpaque == hwnd) {
+			if (hwndOpaque == hwnd) {
 				PAINTSTRUCT ps = new PAINTSTRUCT();
 				int /*long*/ hDC = OS.BeginPaint (hwnd, ps);
 				int /*long*/ hBitmap = 0, hBrush = 0, oldBrush = 0;			
@@ -911,7 +930,7 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 }
 
 void update () {
-	if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) return;
+	if (hwndOpaque != 0) return;
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		Shell shell = parent.getShell ();
