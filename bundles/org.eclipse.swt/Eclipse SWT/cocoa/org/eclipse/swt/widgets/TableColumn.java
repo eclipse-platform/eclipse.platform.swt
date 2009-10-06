@@ -252,7 +252,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cel
 	if (image != null) {
 		NSRect destRect = new NSRect ();
 		destRect.x = drawX;
-		destRect.y = cellRect.y;
+		destRect.y = Math.max(cellRect.y, cellRect.y + (cellRect.height - imageSize.height)/2);
 		destRect.width = Math.min (imageSize.width, cellRect.width - 2 * MARGIN);
 		destRect.height = Math.min (imageSize.height, cellRect.height);
 		boolean isFlipped = new NSView (view).isFlipped(); 
