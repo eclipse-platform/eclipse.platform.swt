@@ -3860,6 +3860,15 @@ public static final int gdk_keyval_to_unicode(int keyval) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_pango_attr_embossed_new(boolean embossed);
+public static final int /*long*/ gdk_pango_attr_embossed_new(boolean embossed) {
+	lock.lock();
+	try {
+		return _gdk_pango_attr_embossed_new(embossed);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_pango_context_get();
 public static final int /*long*/ gdk_pango_context_get() {
 	lock.lock();
