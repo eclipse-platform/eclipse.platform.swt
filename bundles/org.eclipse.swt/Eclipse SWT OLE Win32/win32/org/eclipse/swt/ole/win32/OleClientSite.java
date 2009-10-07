@@ -78,6 +78,7 @@ public class OleClientSite extends Composite {
 	private int     aspect;    // the display aspect of the embedded object, e.g., DvaspectContent or DvaspectIcon
 	private int     type;      // Indicates the type of client that can be supported inside this container
 	private boolean isStatic;  // Indicates item's display is static, i.e., a bitmap, metafile, etc.
+	boolean isActivated;
 
 	private RECT borderWidths = new RECT();
 	private RECT indent = new RECT();
@@ -131,6 +132,8 @@ protected OleClientSite(Composite parent, int style) {
 			case SWT.Paint:    onPaint(e); break;
 			case SWT.Traverse: onTraverse(e); break;
 			case SWT.KeyDown: /* required for traversal */ break;
+			case SWT.Activate: isActivated = true; break;
+			case SWT.Deactivate: isActivated = false; break;
 			default :
 				OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
 			}
@@ -145,6 +148,8 @@ protected OleClientSite(Composite parent, int style) {
 	addListener(SWT.Paint, listener);
 	addListener(SWT.Traverse, listener);
 	addListener(SWT.KeyDown, listener);
+	addListener(SWT.Activate, listener);
+	addListener(SWT.Deactivate, listener);
 }
 /**
  * Create an OleClientSite child widget using the OLE Document type associated with the
