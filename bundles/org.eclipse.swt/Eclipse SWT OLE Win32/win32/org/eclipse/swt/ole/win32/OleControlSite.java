@@ -664,7 +664,7 @@ void onFocusIn(Event e) {
 		return;
 	}
 	if (objIOleInPlaceObject == null) return;
-	doVerb(OLE.OLEIVERB_UIACTIVATE);
+	if (!isActivated) doVerb(OLE.OLEIVERB_UIACTIVATE);
 	if (isFocusControl()) return;
 	int /*long*/[] phwnd = new int /*long*/[1];
 	objIOleInPlaceObject.GetWindow(phwnd);
