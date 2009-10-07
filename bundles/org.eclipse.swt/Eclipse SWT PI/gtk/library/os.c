@@ -4726,6 +4726,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1keyval_1to_1unicode)
 }
 #endif
 
+#ifndef NO__1gdk_1pango_1attr_1embossed_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pango_1attr_1embossed_1new)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pango_1attr_1embossed_1new_FUNC);
+	rc = (jintLong)gdk_pango_attr_embossed_new(arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pango_1attr_1embossed_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1pango_1context_1get
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pango_1context_1get)
 	(JNIEnv *env, jclass that)

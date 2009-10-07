@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1291;
-int OS_nativeFunctionCallCount[1291];
+int OS_nativeFunctionCount = 1292;
+int OS_nativeFunctionCallCount[1292];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -414,6 +414,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1keymap_1translate_1keyboard_1state",
 	"_1gdk_1keyval_1to_1lower",
 	"_1gdk_1keyval_1to_1unicode",
+	"_1gdk_1pango_1attr_1embossed_1new",
 	"_1gdk_1pango_1context_1get",
 	"_1gdk_1pango_1context_1set_1colormap",
 	"_1gdk_1pango_1layout_1get_1clip_1region",
