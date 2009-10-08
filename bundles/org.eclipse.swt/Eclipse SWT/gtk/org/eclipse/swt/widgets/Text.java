@@ -1167,9 +1167,11 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	} else {
 		sendEvent (SWT.Modify);
 	}
-	if ((style & SWT.ICON_CANCEL) != 0) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-		OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.g_utf8_strlen (ptr, -1) > 0);
+	if ((style & SWT.SEARCH) != 0) {
+		if ((style & SWT.ICON_CANCEL) != 0) {
+			int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+			OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.g_utf8_strlen (ptr, -1) > 0);
+		}
 	}
 	return 0;
 }
