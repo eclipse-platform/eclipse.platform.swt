@@ -465,6 +465,38 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
+boolean mnemonicHit (char key) {
+	char uckey = Character.toUpperCase (key);
+	String parsedText = layout.getText();
+	for (int i = 0; i < mnemonics.length - 1; i++) {
+		if (mnemonics[i] != -1) {
+			char mnemonic = parsedText.charAt(mnemonics[i]);
+			if (uckey == Character.toUpperCase (mnemonic)) {
+				if (!setFocus ()) return false;
+				focusIndex = i;
+				redraw ();
+				return  true;
+			}
+		}
+	}
+	return false;
+}
+
+boolean mnemonicMatch (char key) {
+	char uckey = Character.toUpperCase (key);
+	String parsedText = layout.getText();
+	for (int i = 0; i < mnemonics.length - 1; i++) {
+		if (mnemonics[i] != -1) {
+			char mnemonic = parsedText.charAt(mnemonics[i]);
+			if (uckey == Character.toUpperCase (mnemonic)) { 
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
 void releaseWidget () {
 	super.releaseWidget ();
 	if (layout != null)	layout.dispose ();
