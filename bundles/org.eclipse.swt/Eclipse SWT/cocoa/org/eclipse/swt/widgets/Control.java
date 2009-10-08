@@ -1790,7 +1790,16 @@ public int /*long*/ internal_new_GC (GCData data) {
 		context = graphicsContext.id;
 		if (!view.isFlipped()) data.state &= ~VISIBLE_REGION;
 	} else {
-		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (view.window ());
+		NSWindow window = view.window();
+		/*
+		 * Force the device to be created before attempting
+		 * to create a GC on a deferred NSWindow.
+		 */
+		if (window.windowNumber() <= 0) {
+			window.orderBack(null);
+			window.orderOut(null);			
+		}
+		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (window);
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
 		graphicsContext = flippedContext;
 		context = graphicsContext.id;
