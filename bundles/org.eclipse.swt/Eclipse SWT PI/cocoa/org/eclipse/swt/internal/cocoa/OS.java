@@ -1186,6 +1186,7 @@ public static final int /*long*/ sel_maximumFractionDigits = sel_registerName("m
 public static final int /*long*/ sel_maximumIntegerDigits = sel_registerName("maximumIntegerDigits");
 public static final int /*long*/ sel_menu = sel_registerName("menu");
 public static final int /*long*/ sel_menu_willHighlightItem_ = sel_registerName("menu:willHighlightItem:");
+public static final int /*long*/ sel_menuBarFontOfSize_ = sel_registerName("menuBarFontOfSize:");
 public static final int /*long*/ sel_menuDidClose_ = sel_registerName("menuDidClose:");
 public static final int /*long*/ sel_menuFontOfSize_ = sel_registerName("menuFontOfSize:");
 public static final int /*long*/ sel_menuForEvent_ = sel_registerName("menuForEvent:");
