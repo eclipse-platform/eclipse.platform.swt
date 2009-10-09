@@ -156,6 +156,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return super.computeTrim (x, y, width, height);
 }
 
+NSAttributedString createString(String text) {
+	NSAttributedString attribStr = createString(text, null, foreground, 0, false, true, true);
+	return attribStr;
+}
+
 void createHandle () {
 	NSTabView widget = (NSTabView)new SWTTabView().alloc();
 	widget.init ();
@@ -482,6 +487,16 @@ public void removeSelectionListener (SelectionListener listener) {
 
 void setFont (NSFont font) {
 	((NSTabView)view).setFont(font);
+	for (int i = 0; i < itemCount; i++) {
+		items[i].updateText();
+	}
+}
+
+void setForeground (float /*double*/ [] color) {
+	super.setForeground(color);
+	for (int i = 0; i < itemCount; i++) {
+		items[i].updateText();
+	}
 }
 
 /**

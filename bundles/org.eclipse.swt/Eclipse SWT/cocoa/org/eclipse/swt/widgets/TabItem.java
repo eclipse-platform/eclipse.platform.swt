@@ -38,6 +38,7 @@ public class TabItem extends Item {
 	Control control;
 	String toolTipText;
 	NSTabViewItem nsItem;
+	NSAttributedString attriStr;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -145,6 +146,9 @@ void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLa
 		rect.x += imageSize.width + IMAGE_GAP;
 		rect.width -= imageSize.width + IMAGE_GAP;		
 	}
+	if (attriStr != null) {
+		attriStr.drawInRect(rect);
+	}
 	super.drawLabelInRect(id, sel, shouldTruncateLabel, rect);
 }
 
@@ -240,6 +244,8 @@ void releaseHandle () {
 	super.releaseHandle ();
 	if (nsItem != null) nsItem.release();
 	nsItem = null;
+	if (attriStr != null) attriStr.release();
+	attriStr = null;
 	parent = null;
 }
 
@@ -325,6 +331,8 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
+	//force parent to resize
+	nsItem.setLabel(NSString.string());
 }
 
 /**
@@ -359,11 +367,7 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	char [] chars = new char [string.length ()];
-	string.getChars (0, chars.length, chars, 0);
-	int length = fixMnemonic (chars);
-	NSString str = NSString.stringWithCharacters (chars, length);
-	nsItem.setLabel (str);
+	updateText ();
 }
 
 /**
@@ -398,6 +402,10 @@ NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabe
 		NSSize imageSize = image.handle.size();
 		size.width += imageSize.width + IMAGE_GAP;
 	}
+	if (attriStr != null) {
+		NSSize textSize = attriStr.size();
+		size.width += textSize.width;
+	}
 	return size;
 }
 
@@ -405,10 +413,13 @@ String tooltipText () {
 	return toolTipText;
 }
 
-void update () {
-	setText (text);
-	setImage (image);
-	setToolTipText (toolTipText);
+void updateText () {
+	if (attriStr != null) {
+		attriStr.release();
+	}
+	attriStr = parent.createString(getText());
+	//force parent to resize
+	nsItem.setLabel(NSString.string());
 }
 
 }
