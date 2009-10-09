@@ -785,6 +785,13 @@ void updateText () {
 		NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (label, dict);
 		dict.release();
 		nsItem.setAttributedTitle(attribStr);
+		/*
+		 * Feature in Cocoa.  Setting the attributed title on an NSMenuItem
+		 * also sets the title, but clearing the attributed title does not
+		 * clear the title.  The fix is to explicitly set the title to an
+		 * empty string in this case.  
+		 */
+		if (text.length() == 0) nsItem.setTitle(NSString.string());
 		attribStr.release();
 	}
 }

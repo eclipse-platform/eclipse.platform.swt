@@ -1326,6 +1326,13 @@ public void setItem (int index, String string) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSMenuItem nsItem = ((NSPopUpButton)view).itemAtIndex(index);
 		nsItem.setAttributedTitle(str);
+		/*
+		 * Feature in Cocoa.  Setting the attributed title on an NSMenuItem
+		 * also sets the title, but clearing the attributed title does not
+		 * clear the title.  The fix is to explicitly set the title to an
+		 * empty string in this case.  
+		 */
+		if (string.length() == 0) nsItem.setTitle(NSString.string());
 	} else {
 		NSComboBox widget = (NSComboBox)view;
 		widget.insertItemWithObjectValue(str, index);
