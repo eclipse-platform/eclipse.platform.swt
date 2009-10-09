@@ -90,12 +90,20 @@ public void disableCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_disableCursorRects);
 }
 
+public void disableFlushWindow() {
+	OS.objc_msgSend(this.id, OS.sel_disableFlushWindow);
+}
+
 public void display() {
 	OS.objc_msgSend(this.id, OS.sel_display);
 }
 
 public void enableCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_enableCursorRects);
+}
+
+public void enableFlushWindow() {
+	OS.objc_msgSend(this.id, OS.sel_enableFlushWindow);
 }
 
 public void endEditingFor(id anObject) {
