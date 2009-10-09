@@ -775,7 +775,17 @@ void updateText () {
 	if(submenu != null && (parent.getStyle () & SWT.BAR) != 0) {
 		submenu.setTitle (label);
 	} else {
-		nsItem.setTitle (label);
+		int direction = (parent.getStyle () & SWT.RIGHT_TO_LEFT) != 0 ? OS.NSWritingDirectionRightToLeft : OS.NSWritingDirectionLeftToRight;
+		NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(2);
+		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+		paragraphStyle.setBaseWritingDirection(direction);
+		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+		paragraphStyle.release ();
+		dict.setObject (NSFont.menuBarFontOfSize(0), OS.NSFontAttributeName);
+		NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (label, dict);
+		dict.release();
+		nsItem.setAttributedTitle(attribStr);
+		attribStr.release();
 	}
 }
 
