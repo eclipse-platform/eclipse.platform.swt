@@ -28,7 +28,7 @@ class IE extends WebBrowser {
 	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, navigate, delaySetText, ignoreDispose;
+	boolean back, forward, navigate, delaySetText, ignoreDispose, installFunctionsOnDocumentComplete;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -487,6 +487,17 @@ public void create(Composite parent, int style) {
 								/* final document complete */
 								globalDispatch = 0;
 
+								/* re-install registered functions iff needed */
+								IE ie = (IE)browser.webBrowser;
+								if (ie.installFunctionsOnDocumentComplete) {
+									ie.installFunctionsOnDocumentComplete = false;
+									Enumeration elements = functions.elements ();
+									while (elements.hasMoreElements ()) {
+										BrowserFunction function = (BrowserFunction)elements.nextElement ();
+										execute (function.functionString);
+									}
+								}
+
 								ProgressEvent progressEvent = new ProgressEvent(browser);
 								progressEvent.display = browser.getDisplay();
 								progressEvent.widget = browser;
@@ -605,6 +616,14 @@ public void create(Composite parent, int style) {
 						}
 						boolean doit = browser != null && !browser.browser.isDisposed();
 						if (doit) {
+							/*
+							* When a Browser is opened in a new window, BrowserFunctions that are
+							* installed in it in the NavigateComplete2 callback are not retained
+							* through the loading of the page.  The workaround is to re-install
+							* the functions when DocumentComplete is received. 
+							*/
+							browser.installFunctionsOnDocumentComplete = true;
+
 							Variant variant = new Variant(browser.auto);
 							IDispatch iDispatch = variant.getDispatch();
 							Variant ppDisp = event.arguments[0];
