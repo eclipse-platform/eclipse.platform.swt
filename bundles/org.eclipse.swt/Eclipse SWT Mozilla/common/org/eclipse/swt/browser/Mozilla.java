@@ -1801,7 +1801,6 @@ public boolean execute (String script) {
 				securityManager.Release ();
 			}
 		}
-		serviceManager.Release ();
 
 		if (principal != null) {
 			rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
@@ -1849,8 +1848,24 @@ public boolean execute (String script) {
 								} catch (UnsupportedEncodingException e) {
 									pathBytes = mozillaPath.getBytes ();
 								}
-								rc = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result);
-								return rc != 0;
+
+								aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
+								rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
+								if (rc != XPCOM.NS_OK) error (rc);
+								if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+								serviceManager.Release ();
+
+								nsIJSContextStack stack = new nsIJSContextStack (result[0]);
+								result[0] = 0;
+								rc = stack.Push (nativeContext);
+								if (rc != XPCOM.NS_OK) error (rc);
+								boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+								result[0] = 0;
+								rc = stack.Pop (result);
+								if (rc != XPCOM.NS_OK) error (rc);
+								stack.Release ();
+
+								return success;
 							}
 						}
 					}
@@ -1858,6 +1873,7 @@ public boolean execute (String script) {
 			}
 			principal.Release ();
 		}
+		serviceManager.Release ();
 	}
 
 	/* fall back to the pre-1.9 approach */
