@@ -1182,7 +1182,7 @@ void fixFocus (Control focusControl) {
 	}
 	shell.setSavedFocus (focusControl);
 	NSWindow window = view.window();
-	window.makeFirstResponder(window);
+	window.becomeKeyWindow();
 }
 
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
