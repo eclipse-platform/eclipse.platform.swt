@@ -735,6 +735,23 @@ void layoutItems () {
 			}
 		}
 	}
+
+	if ((style & (SWT.WRAP | SWT.VERTICAL)) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.TBSTYLE_LIST) != 0) {
+			TBBUTTONINFO info = new TBBUTTONINFO ();
+			info.cbSize = TBBUTTONINFO.sizeof;
+			info.dwMask = OS.TBIF_SIZE;
+			for (int i=0; i<items.length; i++) {
+				ToolItem item = items [i];
+				if (item != null && item.control != null && item.cx > 0) {
+					info.cx = item.cx;
+					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+				}
+			}
+		}
+	}
+	
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null) item.resizeControl ();
