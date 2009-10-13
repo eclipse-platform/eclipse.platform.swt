@@ -1775,6 +1775,12 @@ void setToolTipTitle (int /*long*/ hwndToolTip, String text, int icon) {
 		}
 	}
 	if (text != null) {
+		/*
+		* Feature in Windows. The text point to by pszTitle
+		* must not exceed 100 characters in length, including
+		* the null terminator.
+		*/
+		if (text.length () > 99) text = text.substring (0, 99);
 		TCHAR pszTitle = new TCHAR (getCodePage (), text, true);
 		OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
 	} else {
