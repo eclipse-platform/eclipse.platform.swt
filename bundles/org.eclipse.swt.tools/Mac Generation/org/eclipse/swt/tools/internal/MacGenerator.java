@@ -366,6 +366,17 @@ void generateExtraMethods(String className) {
 		outln();
 		outln();
 		/* create NSString */
+		out("public NSString initWithString(String str) {");
+		outln();
+		out("\tchar[] buffer = new char[str.length()];");
+		outln();
+		out("\tstr.getChars(0, buffer.length, buffer, 0);");
+		outln();
+		out("\treturn initWithCharacters(buffer, buffer.length);");
+		outln();
+		out("}");
+		outln();
+		outln();
 		out("public static NSString stringWith(String str) {");
 		outln();
 		out("\tchar[] buffer = new char[str.length()];");
