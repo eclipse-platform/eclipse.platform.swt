@@ -70,17 +70,17 @@ public class Browser6 {
 				Browser browser = (Browser)event.widget;
 				String url = browser.getUrl();
 				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
-				if (event.title.equals(expectedTitle)) {
-					passed = true;
-					shell.close();
+				passed = event.title.equals(expectedTitle);
+				Runnable runnable = new Runnable() {
+					public void run() {
+						shell.close();
+					}
+				};
+				if (isMozilla) {
+					display.asyncExec(runnable);
+				} else {
+					runnable.run();
 				}
-			}
-		});
-		browser.addProgressListener(new ProgressListener() {
-			public void changed(ProgressEvent event) {
-			}
-			public void completed(ProgressEvent event) {
-				shell.close();
 			}
 		});
 		shell.open();
@@ -123,12 +123,9 @@ public class Browser6 {
 		
 		String[] urls = {"http://www.google.com"};
 		for (int i = 0; i < urls.length; i++) {
-			// TEST1 TEMPORARILY NOT RUN FOR MOZILLA
-			if (!isMozilla) {
-				boolean result = test1(urls[i]); 
-				if (verbose) System.out.print(result ? "." : "E");
-				if (!result) fail++;
-			}
+			boolean result = test1(urls[i]); 
+			if (verbose) System.out.print(result ? "." : "E");
+			if (!result) fail++;
 		}
 		
 		String pluginPath = System.getProperty("PLUGIN_PATH");
