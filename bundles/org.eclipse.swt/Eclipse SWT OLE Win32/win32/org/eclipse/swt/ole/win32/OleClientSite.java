@@ -866,6 +866,7 @@ private boolean isOffice2007(boolean program) {
 			programID = programID.substring(0, lastDot);
 			GUID guid = getClassID(programID); 
 			programID = getProgID(guid);
+			if (programID == null) return false;
 		}
 	}
 	if (programID.equals("Word.Document.12")) return true; //$NON-NLS-1$ 
