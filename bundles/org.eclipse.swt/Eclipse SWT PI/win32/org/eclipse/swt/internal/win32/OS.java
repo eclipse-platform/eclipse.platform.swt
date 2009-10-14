@@ -1936,6 +1936,7 @@ public class OS extends C {
 	public static final int VK_F9 = 0x78;
 	public static final int VK_HOME = 0x24;
 	public static final int VK_INSERT = 0x2d;
+	public static final int VK_L = 0x4c;
 	public static final int VK_LBUTTON = 0x1;
 	public static final int VK_LEFT = 0x25;
 	public static final int VK_MBUTTON = 0x4;

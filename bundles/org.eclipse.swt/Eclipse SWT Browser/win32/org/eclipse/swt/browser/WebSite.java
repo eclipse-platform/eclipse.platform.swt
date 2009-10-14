@@ -311,10 +311,14 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 		}
 	}
 	/*
-	* By default the IE shortcuts are run.  However, F5 causes a refresh, which is not
-	* appropriate when rendering HTML from memory, and CTRL-N opens a standalone IE,
-	* which is undesirable and can cause a crash in some contexts.  The workaround is
-	* to block IE from handling these shortcuts by answering COM.S_OK.
+	* By default the IE shortcuts are run.  However, the shortcuts below should not run
+	* in this context.  The workaround is to block IE from handling these shortcuts by
+	* answering COM.S_OK.
+	* 
+	* - F5 causes a refresh, which is not appropriate when rendering HTML from memory
+	* - CTRL+L opens an Open Location dialog in IE8, which is undesirable and can
+	* crash in some contexts
+	* - CTRL+N opens a standalone IE, which is undesirable and can crash in some contexts
 	*/
 	int result = COM.S_FALSE;
 	MSG msg = new MSG();
@@ -348,11 +352,14 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 				* handler.
 				*/
 				break;
+			case OS.VK_L:
 			case OS.VK_N:
 				if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_MENU) >= 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
-					frame.setData(CONSUME_KEY, "false"); //$NON-NLS-1$
-					result = COM.S_OK;
-					break;
+					if (msg.wParam == OS.VK_N || IE.IEVersion >= 8) {
+						frame.setData(CONSUME_KEY, "false"); //$NON-NLS-1$
+						result = COM.S_OK;
+						break;
+					}
 				}
 				// FALL THROUGH
 			default:
@@ -568,7 +575,7 @@ boolean canExecuteApplets () {
 	* executing applets with IE6 embedded can crash, so do not
 	* attempt this if the version is less than IE7
 	*/
-	if (!IE.IsIE7) return false;
+	if (IE.IEVersion < 7) return false;
 
 	if (canExecuteApplets == null) {
 		WebBrowser webBrowser = ((Browser)getParent ().getParent ()).webBrowser;

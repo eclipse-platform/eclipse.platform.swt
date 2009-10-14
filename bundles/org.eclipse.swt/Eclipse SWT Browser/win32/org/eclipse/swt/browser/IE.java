@@ -36,7 +36,7 @@ class IE extends WebBrowser {
 	int style, lastKeyCode, lastCharCode;
 	int lastMouseMoveX, lastMouseMoveY;
 
-	static boolean IsIE7;
+	static int IEVersion;
 	static String ProgId = "Shell.Explorer";	//$NON-NLS-1$
 
 	static final int BeforeNavigate2 = 0xfa;
@@ -188,13 +188,11 @@ class IE extends WebBrowser {
 					int index = versionString.indexOf ("."); //$NON-NLS-1$
 					if (index != -1) {
 						String majorString = versionString.substring (0, index);
-						int major = 0;
 						try {
-							major = Integer.valueOf (majorString).intValue ();
+							IEVersion = Integer.valueOf (majorString).intValue ();
 						} catch (NumberFormatException e) {
 							/* just continue, version-specific features will not be enabled */
 						}
-						IsIE7 = major >= 7;
 					}
 				}
 			}
@@ -948,13 +946,13 @@ public boolean setText(String html) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	boolean oldValue = false;
-	if (!OS.IsWinCE && IsIE7) {
+	if (!OS.IsWinCE && IEVersion >= 7) {
 		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 		oldValue = hResult == COM.S_OK;
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 	}
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	if (!OS.IsWinCE && IsIE7) {
+	if (!OS.IsWinCE && IEVersion >= 7) {
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 	}
 	rgvarg[0].dispose();
@@ -988,13 +986,13 @@ public boolean setUrl(String url) {
 			int[] rgdispidNamedArgs = new int[1];
 			rgdispidNamedArgs[0] = rgdispid[1];
 			boolean oldValue = false;
-			if (!OS.IsWinCE && IsIE7) {
+			if (!OS.IsWinCE && IEVersion >= 7) {
 				int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 				oldValue = hResult == COM.S_OK;
 				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 			}
 			auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-			if (!OS.IsWinCE && IsIE7) {
+			if (!OS.IsWinCE && IEVersion >= 7) {
 				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 			}
 			rgvarg[0].dispose();
