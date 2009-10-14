@@ -127,7 +127,10 @@ float[] computePolyline(int left, int top, int right, int bottom) {
 void computeRuns() {
 	if (textStorage != null) return;
 	String segmentsText = getSegmentsText();
-	NSString str = NSString.stringWith(segmentsText);
+	char[] chars = new char[segmentsText.length()];
+	segmentsText.getChars(0, chars.length, chars, 0);
+	NSString str = (NSString) new NSString().alloc();
+	str = str.initWithCharacters(chars, chars.length);
 	textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 	layoutManager.setBackgroundLayoutEnabled(NSThread.isMainThread());
@@ -272,6 +275,7 @@ void computeRuns() {
 	attrStr.endEditing();
 	textStorage.setAttributedString(attrStr);
 	attrStr.release();
+	str.release();
 
 	textContainer.setLineFragmentPadding(0);
 	layoutManager.glyphRangeForTextContainer(textContainer);
