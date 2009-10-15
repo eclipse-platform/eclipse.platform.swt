@@ -5896,6 +5896,7 @@ void handleKeyDown(Event event) {
 	Event verifyEvent = new Event();
 	verifyEvent.character = event.character;
 	verifyEvent.keyCode = event.keyCode;
+	verifyEvent.keyLocation = event.keyLocation;
 	verifyEvent.stateMask = event.stateMask;
 	verifyEvent.doit = true;
 	notifyListeners(VerifyKey, verifyEvent);
