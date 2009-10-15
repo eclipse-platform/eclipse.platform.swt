@@ -550,13 +550,11 @@ public void setAccelerator (int accelerator) {
 	this.accelerator = accelerator;
 	int key = accelerator & SWT.KEY_MASK;
 	int virtualKey = keyChar (key);
-	NSString string = null;
-	if (virtualKey != 0) {
-		string = NSString.stringWith ((char)virtualKey + "");
-	} else {
-		string = NSString.stringWith ((char)key + "");
-	}
-	nsItem.setKeyEquivalent (string.lowercaseString());
+	String string = virtualKey != 0 ? (char)virtualKey + "" : (char)key + "";
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString(string);
+	nsItem.setKeyEquivalent (nsstring.lowercaseString());
+	nsstring.release();
 	int mask = 0;
 	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.NSShiftKeyMask;
 	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.NSControlKeyMask;
@@ -771,7 +769,8 @@ void updateText () {
 	}
 	String text = new String (buffer, 0, j);
 	NSMenu submenu = nsItem.submenu ();
-	NSString label = NSString.stringWith (text);
+	NSString label = (NSString) new NSString().alloc();
+	label = label.initWithString(text);
 	if(submenu != null && (parent.getStyle () & SWT.BAR) != 0) {
 		submenu.setTitle (label);
 	} else {
@@ -794,6 +793,7 @@ void updateText () {
 		if (text.length() == 0) nsItem.setTitle(NSString.string());
 		attribStr.release();
 	}
+	label.release();
 }
 
 void updateAccelerator (boolean show) {
@@ -858,9 +858,11 @@ void updateAccelerator (boolean show) {
 			}
 		}
 	}
-	NSString string = NSString.stringWith (key == 0 ? "" : String.valueOf ((char)key));
 	nsItem.setKeyEquivalentModifierMask (mask);
-	nsItem.setKeyEquivalent (string.lowercaseString ());
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString(key == 0 ? "" : String.valueOf ((char)key));
+	nsItem.setKeyEquivalent (nsstring.lowercaseString ());
+	nsstring.release();
 }
 
 }

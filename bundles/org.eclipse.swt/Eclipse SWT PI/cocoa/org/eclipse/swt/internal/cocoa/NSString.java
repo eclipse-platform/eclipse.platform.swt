@@ -30,6 +30,12 @@ public String getString() {
 	return new String(buffer);
 }
 
+public NSString initWithString(String str) {
+	char[] buffer = new char[str.length()];
+	str.getChars(0, buffer.length, buffer, 0);
+	return initWithCharacters(buffer, buffer.length);
+}
+
 public static NSString stringWith(String str) {
 	char[] buffer = new char[str.length()];
 	str.getChars(0, buffer.length, buffer, 0);

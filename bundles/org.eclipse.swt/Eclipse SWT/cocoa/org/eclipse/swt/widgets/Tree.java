@@ -559,7 +559,10 @@ void createHandle () {
 	NSString str = NSString.string();
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn) new NSTableColumn ().alloc ();
-		checkColumn = checkColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
+		NSString nsstring = (NSString) new NSString().alloc();
+		nsstring = nsstring.initWithString(String.valueOf(++NEXT_ID));
+		checkColumn = checkColumn.initWithIdentifier(nsstring);
+		nsstring.release();
 		checkColumn.headerCell ().setTitle (str);
 		widget.addTableColumn (checkColumn);
 		widget.setOutlineTableColumn (checkColumn);
@@ -576,7 +579,10 @@ void createHandle () {
 	}
 	
 	firstColumn = (NSTableColumn) new NSTableColumn ().alloc ();
-	firstColumn = firstColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString(String.valueOf(++NEXT_ID));
+	firstColumn = firstColumn.initWithIdentifier(nsstring);
+	nsstring.release();
 	/*
 	* Feature in Cocoa.  If a column's width is too small to show any content
 	* then outlineView_objectValueForTableColumn_byItem is never invoked to
@@ -622,7 +628,10 @@ void createItem (TreeColumn column, int index) {
 		NSOutlineView outlineView = (NSOutlineView)view;
 		NSString str = NSString.string();
 		nsColumn = (NSTableColumn) new NSTableColumn ().alloc ();
-		nsColumn = nsColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
+		NSString nsstring = (NSString) new NSString().alloc();
+		nsstring = nsstring.initWithString(String.valueOf(++NEXT_ID));
+		nsColumn = nsColumn.initWithIdentifier(nsstring);
+		nsstring.release();
 		nsColumn.setMinWidth(0);
 		nsColumn.headerCell ().setTitle (str);
 		outlineView.addTableColumn (nsColumn);
@@ -2050,8 +2059,14 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
-	id nsOldIndex = userInfo.valueForKey (NSString.stringWith ("NSOldColumn")); //$NON-NLS-1$
-	id nsNewIndex = userInfo.valueForKey (NSString.stringWith ("NSNewColumn")); //$NON-NLS-1$
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString("NSOldColumn"); //$NON-NLS-1$
+	id nsOldIndex = userInfo.valueForKey (nsstring); 
+	nsstring.release();
+	nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString("NSNewColumn"); //$NON-NLS-1$
+	id nsNewIndex = userInfo.valueForKey (nsstring);
+	nsstring.release();
 	int oldIndex = new NSNumber (nsOldIndex).intValue ();
 	int newIndex = new NSNumber (nsNewIndex).intValue ();
 	int startIndex = Math.min (oldIndex, newIndex);
@@ -2071,7 +2086,10 @@ void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ a
 void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
-	id columnId = userInfo.valueForKey (NSString.stringWith ("NSTableColumn")); //$NON-NLS-1$
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString("NSTableColumn"); //$NON-NLS-1$
+	id columnId = userInfo.valueForKey (nsstring);
+	nsstring.release();
 	TreeColumn column = getColumn (columnId);
 	if (column == null) return; /* either CHECK column or firstColumn in 0-column Tree */
 

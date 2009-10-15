@@ -94,8 +94,10 @@ int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, in
 	int start = (int)/*64*/range.location;
 	int end = (int)/*64*/(range.location + range.length);
 	if (event.start <= start && start <= event.end && event.start <= end && end <= event.end) {
-		NSString str = NSString.stringWith (event.text.substring(start - event.start, end - event.start));
+		NSString str = (NSString) new NSString().alloc();
+		str = str.initWithString(event.text.substring(start - event.start, end - event.start));
 		NSAttributedString attriStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, null);
+		str.release();
 		attriStr.autorelease ();
 		return attriStr.id;
 	}

@@ -526,7 +526,10 @@ void createHandle () {
 	NSString str = NSString.string();
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn)new NSTableColumn().alloc();
-		checkColumn = checkColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
+		NSString nsstring = (NSString) new NSString().alloc();
+		nsstring = nsstring.initWithString(String.valueOf(++NEXT_ID));
+		checkColumn = checkColumn.initWithIdentifier(nsstring);
+		nsstring.release();
 		checkColumn.headerCell().setTitle(str);
 		widget.addTableColumn (checkColumn);
 		checkColumn.setResizingMask(OS.NSTableColumnNoResizing);
@@ -542,7 +545,10 @@ void createHandle () {
 	}
 
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
-	firstColumn = firstColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString(String.valueOf(++NEXT_ID));
+	firstColumn = firstColumn.initWithIdentifier(nsstring);
+	nsstring.release();
 	/*
 	* Feature in Cocoa.  If a column's width is too small to show any content
 	* then tableView_objectValueForTableColumn_row is never invoked to
@@ -580,7 +586,10 @@ void createItem (TableColumn column, int index) {
 	} else {
 		//TODO - set attributes, alignment etc.
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
-		nsColumn = nsColumn.initWithIdentifier(NSString.stringWith(String.valueOf(++NEXT_ID)));
+		NSString nsstring = (NSString) new NSString().alloc();
+		nsstring = nsstring.initWithString(String.valueOf(++NEXT_ID));
+		nsColumn = nsColumn.initWithIdentifier(nsstring);
+		nsstring.release();
 		nsColumn.setMinWidth(0);
 		((NSTableView)view).addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
@@ -2982,8 +2991,14 @@ void sendMeasureItem (TableItem item, int columnIndex, NSSize size) {
 void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
-	id nsOldIndex = userInfo.valueForKey (NSString.stringWith ("NSOldColumn")); //$NON-NLS-1$
-	id nsNewIndex = userInfo.valueForKey (NSString.stringWith ("NSNewColumn")); //$NON-NLS-1$
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString("NSOldColumn"); //$NON-NLS-1$
+	id nsOldIndex = userInfo.valueForKey (nsstring); 
+	nsstring.release();
+	nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString("NSNewColumn"); //$NON-NLS-1$
+	id nsNewIndex = userInfo.valueForKey (nsstring);
+	nsstring.release();
 	int oldIndex = new NSNumber (nsOldIndex).intValue ();
 	int newIndex = new NSNumber (nsNewIndex).intValue ();
 	int startIndex = Math.min (oldIndex, newIndex);
@@ -3003,7 +3018,10 @@ void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNo
 void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
-	id columnId = userInfo.valueForKey (NSString.stringWith ("NSTableColumn")); //$NON-NLS-1$
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString("NSTableColumn"); //$NON-NLS-1$
+	id columnId = userInfo.valueForKey (nsstring);
+	nsstring.release();
 	TableColumn column = getColumn (columnId);
 	if (column == null) return; /* either CHECK column or firstColumn in 0-column Table */
 

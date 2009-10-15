@@ -141,7 +141,10 @@ int calculateWidth (int index, GC gc) {
 		attribStr.release();
 	} else {
 		cell.setFont (font.handle);
-		cell.setTitle (NSString.stringWith(text != null ? text : ""));
+		NSString str = (NSString) new NSString().alloc();
+		str = str.initWithString(text != null ? text : "");
+		cell.setTitle (str);
+		str.release();
 	}
 
 	/* This code is inlined for performance */
@@ -285,7 +288,10 @@ public Rectangle getBounds () {
 		attribStr.release ();
 	} else {
 		cell.setFont (font.handle);
-		cell.setTitle (NSString.stringWith (text));
+		NSString str = (NSString) new NSString().alloc();
+		str = str.initWithString(text);
+		cell.setTitle (str);
+		str.release();
 	}
 	NSSize size = cell.cellSize ();
 	NSRect columnRect = widget.rectOfColumn (columnIndex);
