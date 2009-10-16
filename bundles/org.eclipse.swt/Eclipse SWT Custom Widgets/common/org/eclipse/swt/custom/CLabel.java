@@ -48,13 +48,15 @@ public class CLabel extends Canvas {
 	/** Gap between icon and text */
 	private static final int GAP = 5;
 	/** Left and right margins */
-	private static final int INDENT = 3;
+	private static final int DEFAULT_MARGIN = 3;
 	/** a string inserted in the middle of text that has been shortened */
 	private static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use the ellipsis glyph on some platforms "\u2026"
 	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT*/
 	private int align = SWT.LEFT;
-	private int hIndent = INDENT;
-	private int vIndent = INDENT;
+	private int leftMargin = DEFAULT_MARGIN;
+	private int topMargin = DEFAULT_MARGIN;
+	private int rightMargin = DEFAULT_MARGIN;
+	private int bottomMargin = DEFAULT_MARGIN;
 	/** the current text */
 	private String text;
 	/** the current icon */
@@ -158,12 +160,12 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
 	Point e = getTotalSize(image, text);
 	if (wHint == SWT.DEFAULT){
-		e.x += 2*hIndent;
+		e.x += leftMargin + rightMargin;
 	} else {
 		e.x = wHint;
 	}
 	if (hHint == SWT.DEFAULT) {
-		e.y += 2*vIndent;
+		e.y += topMargin + bottomMargin;
 	} else {
 		e.y = hHint;
 	}
@@ -199,7 +201,7 @@ char _findMnemonic (String string) {
  	return '\0';
 }
 /**
- * Returns the alignment.
+ * Returns the horizontal alignment.
  * The alignment style (LEFT, CENTER or RIGHT) is returned.
  * 
  * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
@@ -209,6 +211,17 @@ public int getAlignment() {
 	return align;
 }
 /**
+ * Return the CLabel's bottom margin.
+ * 
+ * @return the bottom margin of the label
+ * 
+ * @since 3.6
+ */
+public int getBottomMargin() {
+	//checkWidget();
+	return bottomMargin;
+}
+/**
  * Return the CLabel's image or <code>null</code>.
  * 
  * @return the image of the label or null
@@ -216,6 +229,28 @@ public int getAlignment() {
 public Image getImage() {
 	//checkWidget();
 	return image;
+}
+/**
+ * Return the CLabel's left margin.
+ * 
+ * @return the left margin of the label
+ * 
+ * @since 3.6
+ */
+public int getLeftMargin() {
+	//checkWidget();
+	return leftMargin;
+}
+/**
+ * Return the CLabel's right margin.
+ * 
+ * @return the right margin of the label
+ * 
+ * @since 3.6
+ */
+public int getRightMargin() {
+	//checkWidget();
+	return rightMargin;
 }
 /**
  * Compute the minimum size.
@@ -264,6 +299,17 @@ public String getText() {
 public String getToolTipText () {
 	checkWidget();
 	return appToolTipText;
+}
+/**
+ * Return the CLabel's top margin.
+ *  
+ * @return the top margin of the label
+ * 
+ * @since 3.6
+ */
+public int getTopMargin() {
+	//checkWidget();
+	return topMargin;
 }
 private void initAccessible() {
 	Accessible accessible = getAccessible();
@@ -352,7 +398,7 @@ void onPaint(PaintEvent event) {
 	boolean shortenText = false;
 	String t = text;
 	Image img = image;
-	int availableWidth = Math.max(0, rect.width - 2*hIndent);
+	int availableWidth = Math.max(0, rect.width - (leftMargin + rightMargin));
 	Point extent = getTotalSize(img, t);
 	if (extent.x > availableWidth) {
 		img = null;
@@ -385,12 +431,12 @@ void onPaint(PaintEvent event) {
 	}
 		
 	// determine horizontal position
-	int x = rect.x + hIndent;
+	int x = rect.x + leftMargin;
 	if (align == SWT.CENTER) {
 		x = (rect.width - extent.x)/2;
 	}
 	if (align == SWT.RIGHT) {
-		x = rect.width - hIndent - extent.x;
+		x = rect.width - rightMargin - extent.x;
 	}
 	
 	// draw a background image behind the text
@@ -466,19 +512,47 @@ void onPaint(PaintEvent event) {
 		paintBorder(gc, rect);
 	}
 
+	/*
+	 * Compute text height and image height. If image height is more than
+	 * the text height, draw image starting from top margin. Else draw text
+	 * starting from top margin.
+	 */
+	Rectangle imageRect = null;
+	int lineHeight = 0, textHeight = 0, imageHeight = 0;
+	
+	if (img != null) {
+	    imageRect = img.getBounds();
+	    imageHeight = imageRect.height;
+	}
+	if (lines != null) {
+	    lineHeight = gc.getFontMetrics().getHeight();
+	    textHeight = lines.length * lineHeight;
+	}
+	
+	int imageY = 0, midPoint = 0, lineY = 0;
+	if (imageHeight > textHeight ) {
+	    if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) imageY = rect.y + (rect.height - imageHeight) / 2;
+	    else imageY = topMargin;
+	    midPoint = imageY + imageHeight/2;
+	    lineY = midPoint - textHeight / 2;
+	}
+	else {
+	    if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) lineY = rect.y + (rect.height - textHeight) / 2;
+	    else lineY = topMargin;
+	    midPoint = lineY + textHeight/2;
+	    imageY = midPoint - imageHeight / 2;
+	}
+	
 	// draw the image
 	if (img != null) {
-		Rectangle imageRect = img.getBounds();
-		gc.drawImage(img, 0, 0, imageRect.width, imageRect.height, 
-		                x, (rect.height-imageRect.height)/2, imageRect.width, imageRect.height);
+		gc.drawImage(img, 0, 0, imageRect.width, imageHeight, 
+		                x, imageY, imageRect.width, imageHeight);
 		x +=  imageRect.width + GAP;
 		extent.x -= imageRect.width + GAP;
 	}
+	
 	// draw the text
 	if (lines != null) {
-		int lineHeight = gc.getFontMetrics().getHeight();
-		int textHeight = lines.length * lineHeight;
-		int lineY = Math.max(vIndent, rect.y + (rect.height - textHeight) / 2);
 		gc.setForeground(getForeground());
 		for (int i = 0; i < lines.length; i++) {
 			int lineX = x;
@@ -489,7 +563,7 @@ void onPaint(PaintEvent event) {
 				}
 				if (align == SWT.RIGHT) {
 					int lineWidth = gc.textExtent(lines[i], DRAW_FLAGS).x;
-					lineX = Math.max(x, rect.x + rect.width - hIndent - lineWidth);
+					lineX = Math.max(x, rect.x + rect.width - rightMargin - lineWidth);
 				}
 			}
 			gc.drawText(lines[i], lineX, lineY, DRAW_FLAGS);
@@ -522,7 +596,7 @@ private void paintBorder(GC gc, Rectangle r) {
 	}
 }
 /**
- * Set the alignment of the CLabel.
+ * Set the horizontal alignment of the CLabel.
  * Use the values LEFT, CENTER and RIGHT to align image and text within the available space.
  * 
  * @param align the alignment style of LEFT, RIGHT or CENTER
@@ -703,6 +777,24 @@ public void setBackground(Image image) {
 	redraw();
 	
 }
+/**
+ * Set the label's bottom margin, in pixels.
+ * 
+ * @param bottomMargin the bottom margin of the label, which must be equal to or greater than zero
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public void setBottomMargin(int bottomMargin) {
+    checkWidget();
+    if (this.bottomMargin == bottomMargin || bottomMargin < 0) return;
+    this.bottomMargin = bottomMargin;
+    redraw();
+}
 public void setFont(Font font) {
 	super.setFont(font);
 	redraw();
@@ -724,6 +816,64 @@ public void setImage(Image image) {
 		this.image = image;
 		redraw();
 	}
+}
+/**
+ * Set the label's horizontal left margin, in pixels.
+ * 
+ * @param leftMargin the left margin of the label, which must be equal to or greater than zero
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public void setLeftMargin(int leftMargin) {
+    checkWidget();
+    if (this.leftMargin == leftMargin || leftMargin < 0) return;
+    this.leftMargin = leftMargin;
+    redraw();
+}
+/** 
+ * Set the label's margins, in pixels.
+ * 
+ * @param leftMargin the left margin.
+ * @param topMargin the top margin.
+ * @param rightMargin the right margin.
+ * @param bottomMargin the bottom margin.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
+	checkWidget();
+	this.leftMargin = Math.max(0, leftMargin);
+	this.topMargin = Math.max(0, topMargin);
+	this.rightMargin = Math.max(0, rightMargin);
+	this.bottomMargin = Math.max(0, bottomMargin);
+	redraw();
+}
+/**
+ * Set the label's right margin, in pixels.
+ * 
+ * @param rightMargin the right margin of the label, which must be equal to or greater than zero
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public void setRightMargin(int rightMargin) {
+    checkWidget();
+    if (this.rightMargin == rightMargin || rightMargin < 0) return;
+    this.rightMargin = rightMargin;
+    redraw();
 }
 /**
  * Set the label's text.
@@ -757,6 +907,24 @@ public void setText(String text) {
 public void setToolTipText (String string) {
 	super.setToolTipText (string);
 	appToolTipText = super.getToolTipText();
+}
+/**
+ * Set the label's top margin, in pixels.
+ * 
+ * @param topMargin the top margin of the label, which must be equal to or greater than zero
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public void setTopMargin(int topMargin) {
+    checkWidget();
+    if (this.topMargin == topMargin || topMargin < 0) return;
+    this.topMargin = topMargin;
+    redraw();
 }
 /**
  * Shorten the given text <code>t</code> so that its length doesn't exceed

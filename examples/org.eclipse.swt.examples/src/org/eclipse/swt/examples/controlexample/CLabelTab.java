@@ -97,7 +97,7 @@ class CLabelTab extends AlignableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Text", "ToolTipText"};
+		return new String[] {"BottomMargin", "LeftMargin", "RightMargin", "Text", "ToolTipText", "TopMargin"};
 	}
 
 	/**
