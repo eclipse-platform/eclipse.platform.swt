@@ -665,7 +665,24 @@ public class SWT {
 	 * @since 3.4
 	 */
 	public static final int ImeComposition = 43;
-	
+
+	/**
+	 * The orientation change event type (value is 43).  
+	 * <p>
+	 * On some platforms of orientation of text widgets
+	 * can be changed by keyboard shortcut.
+	 * The application can use the <code>doit</code> field
+	 * of the event to stop the change from happening.
+	 * </p> 
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.6
+	 */
+	public static final int OrientationChange = 44;
+
 	/* Event Details */
 	
 	/**

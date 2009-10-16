@@ -42,7 +42,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>DROP_DOWN, READ_ONLY, SIMPLE</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Modify, Selection, Verify</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify, OrientationChange</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles DROP_DOWN and SIMPLE may be specified.
@@ -2408,6 +2408,26 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 			if ((style & SWT.READ_ONLY) != 0) break;
 			sendFocusEvent (SWT.FocusOut);
 			if (isDisposed ()) return LRESULT.ZERO;
+			break;
+		case OS.EN_ALIGN_LTR_EC:
+		case OS.EN_ALIGN_RTL_EC:
+			Event event = new Event ();
+			event.doit = true;
+			sendEvent (SWT.OrientationChange, event);
+			if (!event.doit) {
+				int /*long*/ hwnd = lParam;
+				int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+				if (code == OS.EN_ALIGN_LTR_EC) {
+					bits1 |= (OS.WS_EX_RTLREADING | OS.WS_EX_RIGHT);
+					bits2 |= OS.ES_RIGHT;
+				} else {
+					bits1 &= ~(OS.WS_EX_RTLREADING | OS.WS_EX_RIGHT);
+					bits2 &= ~OS.ES_RIGHT;
+				}
+				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits1);
+				OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits2);
+			}
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);

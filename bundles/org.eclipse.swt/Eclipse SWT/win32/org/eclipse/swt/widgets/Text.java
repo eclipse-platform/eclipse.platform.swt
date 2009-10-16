@@ -31,7 +31,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>CENTER, ICON_CANCEL, ICON_SEARCH, LEFT, MULTI, PASSWORD, SEARCH, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Modify, Verify</dd>
+ * <dd>DefaultSelection, Modify, Verify, OrientationChange</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles MULTI and SINGLE may be specified,
@@ -2527,14 +2527,31 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
 		case OS.EN_ALIGN_LTR_EC:
-			style &= ~SWT.RIGHT_TO_LEFT;
-			style |= SWT.LEFT_TO_RIGHT;
-			fixAlignment ();
-			break;
 		case OS.EN_ALIGN_RTL_EC:
-			style &= ~SWT.LEFT_TO_RIGHT;
-			style |= SWT.RIGHT_TO_LEFT;
-			fixAlignment ();
+			int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			if ((bits & OS.WS_EX_RTLREADING) != 0) {
+				style &= ~SWT.LEFT_TO_RIGHT;
+				style |= SWT.RIGHT_TO_LEFT;
+			} else {
+				style &= ~SWT.RIGHT_TO_LEFT;
+				style |= SWT.LEFT_TO_RIGHT;
+			}
+			Event event = new Event();
+			event.doit = true;
+			sendEvent(SWT.OrientationChange, event);
+			if (!event.doit) {
+				if (code == OS.EN_ALIGN_LTR_EC) {
+					bits |= (OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR);
+					style &= ~SWT.LEFT_TO_RIGHT;
+					style |= SWT.RIGHT_TO_LEFT;
+				} else {
+					bits &= ~(OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR);
+					style &= ~SWT.RIGHT_TO_LEFT;
+					style |= SWT.LEFT_TO_RIGHT;
+				}	
+				OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+			}
+			fixAlignment();
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);
