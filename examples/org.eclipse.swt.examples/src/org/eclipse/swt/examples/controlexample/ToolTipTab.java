@@ -163,6 +163,10 @@ class ToolTipTab extends Tab {
 		// ToolTip does not need a size group.
 	}
 	
+	void createBackgroundModeGroup () {
+		// ToolTip does not need a background mode group.
+	}
+	
 	/**
 	 * Disposes the "Example" widgets.
 	 */

@@ -245,6 +245,7 @@ abstract class Tab {
 		if (rtlSupport()) {
 			createOrientationGroup ();
 		}
+		createBackgroundModeGroup ();
 	
 		/*
 		 * For each Button child in the style group, add a selection
@@ -497,9 +498,6 @@ abstract class Tab {
 	 * Creates the "Background Mode" group.
 	 */
 	void createBackgroundModeGroup () {
-		// note that this method must be called after createExampleWidgets
-		if (getExampleControls ().length == 0) return;
-		
 		/* Create the group */
 		backgroundModeGroup = new Group (controlGroup, SWT.NONE);
 		backgroundModeGroup.setLayout (new GridLayout ());
@@ -1258,7 +1256,6 @@ abstract class Tab {
 		createExampleWidgets ();
 		hookExampleWidgetListeners ();
 		createControlWidgets ();
-		createBackgroundModeGroup ();
 		setExampleWidgetState ();
 		
 		return tabFolderPage;
