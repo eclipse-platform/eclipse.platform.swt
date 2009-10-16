@@ -68,7 +68,7 @@ import org.eclipse.swt.widgets.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b><dd>FULL_SELECTION, MULTI, READ_ONLY, SINGLE, WRAP
- * <dt><b>Events:</b><dd>ExtendedModify, LineGetBackground, LineGetSegments, LineGetStyle, Modify, Selection, Verify, VerifyKey
+ * <dt><b>Events:</b><dd>ExtendedModify, LineGetBackground, LineGetSegments, LineGetStyle, Modify, Selection, Verify, VerifyKey, OrientationChange
  * </dl>
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -5889,9 +5889,6 @@ void handleKeyDown(Event event) {
 		clipboardSelection = new Point(selection.x, selection.y);
 	}
 	newOrientation = SWT.NONE;
-	if ((event.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL && event.keyCode == SWT.SHIFT && isBidiCaret()) {
-		newOrientation = event.keyLocation == SWT.LEFT ? SWT.LEFT_TO_RIGHT : SWT.RIGHT_TO_LEFT; 
-	}
 	
 	Event verifyEvent = new Event();
 	verifyEvent.character = event.character;
@@ -5901,6 +5898,9 @@ void handleKeyDown(Event event) {
 	verifyEvent.doit = true;
 	notifyListeners(VerifyKey, verifyEvent);
 	if (verifyEvent.doit) {
+		if ((event.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL && event.keyCode == SWT.SHIFT && isBidiCaret()) {
+			newOrientation = event.keyLocation == SWT.LEFT ? SWT.LEFT_TO_RIGHT : SWT.RIGHT_TO_LEFT; 
+		}
 		handleKey(event);
 	}
 }
@@ -5918,7 +5918,14 @@ void handleKeyUp(Event event) {
 	clipboardSelection = null;
 	
 	if (newOrientation != SWT.NONE) {
-		setOrientation(newOrientation);
+		if (newOrientation != getOrientation()) {
+			Event e = new Event();
+			e.doit = true;
+			notifyListeners(SWT.OrientationChange, e);
+			if (e.doit) {
+				setOrientation(newOrientation);
+			}
+		}
 		newOrientation = SWT.NONE;
 	}
 }
