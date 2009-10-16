@@ -70,16 +70,18 @@ public class Browser6 {
 				Browser browser = (Browser)event.widget;
 				String url = browser.getUrl();
 				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
-				passed = event.title.equals(expectedTitle);
-				Runnable runnable = new Runnable() {
-					public void run() {
-						shell.close();
+				if (event.title.equals(expectedTitle)) {
+					passed = true;
+					Runnable runnable = new Runnable() {
+						public void run() {
+							shell.close();
+						}
+					};
+					if (isMozilla) {
+						display.asyncExec(runnable);
+					} else {
+						runnable.run();
 					}
-				};
-				if (isMozilla) {
-					display.asyncExec(runnable);
-				} else {
-					runnable.run();
 				}
 			}
 		});
