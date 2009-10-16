@@ -1524,6 +1524,7 @@ public static final int /*long*/ sel_setFormatter_ = sel_registerName("setFormat
 public static final int /*long*/ sel_setFrame_ = sel_registerName("setFrame:");
 public static final int /*long*/ sel_setFrame_display_ = sel_registerName("setFrame:display:");
 public static final int /*long*/ sel_setFrame_display_animate_ = sel_registerName("setFrame:display:animate:");
+public static final int /*long*/ sel_setFrameFromContentFrame_ = sel_registerName("setFrameFromContentFrame:");
 public static final int /*long*/ sel_setFrameLoadDelegate_ = sel_registerName("setFrameLoadDelegate:");
 public static final int /*long*/ sel_setFrameOrigin_ = sel_registerName("setFrameOrigin:");
 public static final int /*long*/ sel_setFrameSize_ = sel_registerName("setFrameSize:");

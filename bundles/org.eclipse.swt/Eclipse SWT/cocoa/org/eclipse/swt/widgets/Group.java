@@ -42,6 +42,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Group extends Composite {
 	NSView contentView;
 	String text = "";
+	boolean ignoreResize;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -98,11 +99,19 @@ protected void checkSubclass () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSBox widget = (NSBox)view;
-	int border = (int)Math.ceil (widget.borderWidth ());
-	NSSize margins = widget.contentViewMargins();
-	NSRect frame = contentView.frame();
-	width += (margins.width + border) * 2;
-	height += (margins.height + border) * 2 + frame.y;
+	NSRect newRect = new NSRect();
+	newRect.width = width;
+	newRect.height = height;
+	NSRect oldRect = widget.frame();
+	ignoreResize = true;
+	widget.setFrameFromContentFrame(newRect);
+	newRect = widget.frame();
+	widget.setFrame(oldRect);
+	ignoreResize = false;
+	x = (int) Math.ceil(newRect.x);
+	y = (int) Math.ceil(newRect.y);
+	width = (int) Math.ceil(newRect.width);
+	height = (int) Math.ceil(newRect.height);
 	return super.computeTrim(x, y, width, height);
 }
 
@@ -185,6 +194,10 @@ void releaseHandle () {
 	super.releaseHandle ();
 	if (contentView != null) contentView.release();
 	contentView = null;
+}
+
+void resized() {
+	if (!ignoreResize) super.resized();
 }
 
 void setFont(NSFont font) {

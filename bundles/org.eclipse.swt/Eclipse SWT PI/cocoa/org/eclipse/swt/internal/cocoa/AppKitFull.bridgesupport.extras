@@ -863,6 +863,10 @@
 			<arg name="fillColor" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setFrameFromContentFrame:" swt_gen="true">
+			<arg name="contentFrame" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setTitle:" swt_gen="true">
 			<arg name="aString" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
