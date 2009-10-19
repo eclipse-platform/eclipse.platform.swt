@@ -11,7 +11,12 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.HIThemeTrackDrawInfo;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.ScrollBarTrackInfo;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -380,6 +385,46 @@ public Point getSize () {
 public int getThumb () {
 	checkWidget();
     return OS.GetControlViewSize (handle);
+}
+
+public Rectangle getThumbBounds () {
+	checkWidget();
+	int rgnHandle = OS.NewRgn ();
+	OS.GetControlRegion (handle, (short)OS.kControlIndicatorPart, rgnHandle);
+	Rect rect = new Rect ();
+	OS.GetRegionBounds (rgnHandle, rect);
+	OS.DisposeRgn (rgnHandle);
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, handle, parent.handle);
+	Rectangle result = new Rectangle(rect.left, rect.top, (rect.right - rect.left), (rect.bottom - rect.top));
+	result.x += (int) pt.x;
+	result.y += (int) pt.y;
+	return result;
+}
+
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	HIThemeTrackDrawInfo info = new HIThemeTrackDrawInfo();
+	info.min = OS.GetControl32BitMinimum (handle);
+	info.max = OS.GetControl32BitMaximum (handle);
+	info.value = OS.GetControl32BitValue (handle);	
+	info.kind = OS.kThemeScrollBarMedium;
+	info.attributes = OS.kThemeTrackShowThumb;
+	if ((style & SWT.HORIZONTAL) != 0) info.attributes |= OS.kThemeTrackHorizontal;
+	info.enableState = OS.kThemeTrackActive;
+	info.scrollbar = new ScrollBarTrackInfo();
+	info.scrollbar.viewsize = OS.GetControlViewSize (handle);
+	CGRect rect = new CGRect ();
+	OS.HIViewGetFrame (handle, rect);
+	info.bounds_x = rect.x;
+	info.bounds_y = rect.y;
+	info.bounds_width = rect.width;
+	info.bounds_height = rect.height;
+	OS.HIThemeGetTrackPartBounds(info, (short) OS.kControlPageDownPart, rect);
+	CGRect rect1 = new CGRect ();
+	OS.HIThemeGetTrackPartBounds(info, (short) OS.kControlPageUpPart, rect1);
+	OS.CGRectUnion(rect, rect1, rect);
+	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 /**

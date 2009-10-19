@@ -302,6 +302,20 @@ public int getThumb () {
 	return thumb;
 }
 
+public Rectangle getThumbBounds () {
+	checkWidget();
+	NSRect rect = view.rectForPart(OS.NSScrollerKnob);
+	rect = view.convertRect_toView_(rect, parent.view);
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+}
+
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	NSRect rect = view.rectForPart(OS.NSScrollerKnobSlot);
+	rect = view.convertRect_toView_(rect, parent.view);
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
