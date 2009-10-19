@@ -56,6 +56,11 @@ public NSDictionary markedTextAttributes() {
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
+public NSDictionary selectedTextAttributes() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_selectedTextAttributes);
+	return result != 0 ? new NSDictionary(result) : null;
+}
+
 public void setBaseWritingDirection(int /*long*/ writingDirection, NSRange range) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_range_, writingDirection, range);
 }
@@ -76,8 +81,16 @@ public void setRichText(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setRichText_, flag);
 }
 
+public void setSelectedTextAttributes(NSDictionary attributeDictionary) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectedTextAttributes_, attributeDictionary != null ? attributeDictionary.id : 0);
+}
+
 public boolean shouldChangeTextInRange(NSRange affectedCharRange, NSString replacementString) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_shouldChangeTextInRange_replacementString_, affectedCharRange, replacementString != null ? replacementString.id : 0);
+}
+
+public boolean shouldDrawInsertionPoint() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_shouldDrawInsertionPoint);
 }
 
 public NSTextContainer textContainer() {

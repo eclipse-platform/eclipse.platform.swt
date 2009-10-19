@@ -1423,6 +1423,7 @@ public static final int /*long*/ sel_selectedRange = sel_registerName("selectedR
 public static final int /*long*/ sel_selectedRow = sel_registerName("selectedRow");
 public static final int /*long*/ sel_selectedRowIndexes = sel_registerName("selectedRowIndexes");
 public static final int /*long*/ sel_selectedTabViewItem = sel_registerName("selectedTabViewItem");
+public static final int /*long*/ sel_selectedTextAttributes = sel_registerName("selectedTextAttributes");
 public static final int /*long*/ sel_selectedTextBackgroundColor = sel_registerName("selectedTextBackgroundColor");
 public static final int /*long*/ sel_selectedTextColor = sel_registerName("selectedTextColor");
 public static final int /*long*/ sel_sendAction_to_ = sel_registerName("sendAction:to:");
@@ -1627,6 +1628,7 @@ public static final int /*long*/ sel_setSelectable_ = sel_registerName("setSelec
 public static final int /*long*/ sel_setSelected_forSegment_ = sel_registerName("setSelected:forSegment:");
 public static final int /*long*/ sel_setSelectedRange_ = sel_registerName("setSelectedRange:");
 public static final int /*long*/ sel_setSelectedSegment_ = sel_registerName("setSelectedSegment:");
+public static final int /*long*/ sel_setSelectedTextAttributes_ = sel_registerName("setSelectedTextAttributes:");
 public static final int /*long*/ sel_setServicesMenu_ = sel_registerName("setServicesMenu:");
 public static final int /*long*/ sel_setShouldAntialias_ = sel_registerName("setShouldAntialias:");
 public static final int /*long*/ sel_setShowsPrintPanel_ = sel_registerName("setShowsPrintPanel:");
@@ -1683,6 +1685,7 @@ public static final int /*long*/ sel_shiftKey = sel_registerName("shiftKey");
 public static final int /*long*/ sel_shouldAntialias = sel_registerName("shouldAntialias");
 public static final int /*long*/ sel_shouldChangeTextInRange_replacementString_ = sel_registerName("shouldChangeTextInRange:replacementString:");
 public static final int /*long*/ sel_shouldDelayWindowOrderingForEvent_ = sel_registerName("shouldDelayWindowOrderingForEvent:");
+public static final int /*long*/ sel_shouldDrawInsertionPoint = sel_registerName("shouldDrawInsertionPoint");
 public static final int /*long*/ sel_size = sel_registerName("size");
 public static final int /*long*/ sel_sizeOfLabel_ = sel_registerName("sizeOfLabel:");
 public static final int /*long*/ sel_sizeToFit = sel_registerName("sizeToFit");
@@ -2381,6 +2384,9 @@ public static final NSString NSBaselineOffsetAttributeName = new NSString(NSBase
 /** @method flags=const */
 public static final native int /*long*/ NSCalibratedRGBColorSpace();
 public static final NSString NSCalibratedRGBColorSpace = new NSString(NSCalibratedRGBColorSpace());
+/** @method flags=const */
+public static final native int /*long*/ NSCursorAttributeName();
+public static final NSString NSCursorAttributeName = new NSString(NSCursorAttributeName());
 /** @method flags=const */
 public static final native int /*long*/ NSDeviceRGBColorSpace();
 public static final NSString NSDeviceRGBColorSpace = new NSString(NSDeviceRGBColorSpace());

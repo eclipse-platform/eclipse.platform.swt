@@ -3713,6 +3713,18 @@ fail:
 }
 #endif
 
+#ifndef NO_NSCursorAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSCursorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSCursorAttributeName_FUNC);
+	rc = (jintLong)NSCursorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSCursorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSDefaultRunLoopMode
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSDefaultRunLoopMode)
 	(JNIEnv *env, jclass that)

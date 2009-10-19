@@ -101,6 +101,7 @@
 	<constant name="NSBackgroundColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
 	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
+	<constant name="NSCursorAttributeName" swt_gen="true"></constant>
 	<constant name="NSDeviceRGBColorSpace" swt_gen="true"></constant>
 	<constant name="NSDeviceResolution" swt_gen="true"></constant>
 	<constant name="NSDragPboard" swt_gen="true"></constant>
@@ -3734,6 +3735,9 @@
 		<method selector="markedTextAttributes" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="selectedTextAttributes" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setBaseWritingDirection:range:" swt_gen="true">
 			<arg name="writingDirection" swt_gen="true"></arg>
 			<arg name="range" swt_gen="true"></arg>
@@ -3755,9 +3759,16 @@
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setSelectedTextAttributes:" swt_gen="true">
+			<arg name="attributeDictionary" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="shouldChangeTextInRange:replacementString:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg name="affectedCharRange" swt_gen="true"></arg>
 			<arg name="replacementString" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="shouldDrawInsertionPoint" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="textContainer" swt_gen="true">

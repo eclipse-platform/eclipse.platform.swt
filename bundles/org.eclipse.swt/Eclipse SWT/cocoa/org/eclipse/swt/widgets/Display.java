@@ -2425,6 +2425,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_dragSelectionWithEvent_offset_slideBack_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_shouldChangeTextInRange_replacementString_, shouldChangeTextInRange_replacementString_Proc, "@:{NSRange}@");
 	OS.class_addMethod(cls, OS.sel_drawViewBackgroundInRect_, drawViewBackgroundInRectProc, "@:{NSRect}");
+	OS.class_addMethod(cls, OS.sel_shouldDrawInsertionPoint, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
@@ -4630,6 +4631,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 		widget.viewDidMoveToWindow(id, sel);
 	} else if (sel == OS.sel_image) {
 		return widget.image(id, sel);
+	} else if (sel == OS.sel_shouldDrawInsertionPoint) {
+		return widget.shouldDrawInsertionPoint(id, sel) ? 1 : 0;
 	}
 	return 0;
 }

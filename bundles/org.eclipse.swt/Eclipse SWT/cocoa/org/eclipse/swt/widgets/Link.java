@@ -157,13 +157,18 @@ void createHandle () {
 	NSTextView widget = (NSTextView)new SWTTextView().alloc();
 	widget.init();
 	widget.setEditable(false);
-	widget.setSelectable(false);
 	widget.setDrawsBackground(false);
 	widget.setDelegate(widget);
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 	widget.textContainer().setLineFragmentPadding(0);
 	widget.setFont(getFont().handle);
 	widget.setAlignment (OS.NSLeftTextAlignment);
+
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+	dict.setDictionary(widget.selectedTextAttributes());
+	dict.removeObjectForKey(OS.NSBackgroundColorAttributeName);
+	dict.setObject(NSCursor.arrowCursor(), OS.NSCursorAttributeName);
+	widget.setSelectedTextAttributes(dict);
 	
 	scrollView = scrollWidget;
 	view = widget;
@@ -230,6 +235,10 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	return text;
+}
+
+public boolean shouldDrawInsertionPoint(int id, int sel) {
+	return false;
 }
 
 void register () {
@@ -494,6 +503,7 @@ public void setText (String string) {
 	NSRange range = new NSRange();
 	range.length = textStorage.length();
 	textStorage.removeAttribute(OS.NSLinkAttributeName, range);
+	textStorage.addAttribute(OS.NSCursorAttributeName, NSCursor.arrowCursor(), range);
 	for (int i = 0; i < offsets.length; i++) {
 		range.location = offsets[i].x;
 		range.length = offsets[i].y - offsets[i].x + 1;

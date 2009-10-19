@@ -291,6 +291,7 @@ typedef enum {
 	NSBitsPerPixelFromDepth_FUNC,
 	NSCalibratedRGBColorSpace_FUNC,
 	NSCopyBits_FUNC,
+	NSCursorAttributeName_FUNC,
 	NSDefaultRunLoopMode_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
 	NSDeviceResolution_FUNC,

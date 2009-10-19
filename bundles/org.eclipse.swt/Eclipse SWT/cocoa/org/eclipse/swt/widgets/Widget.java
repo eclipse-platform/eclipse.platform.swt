@@ -1840,4 +1840,8 @@ int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
 void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
+public boolean shouldDrawInsertionPoint(int /*long*/ id, int /*long*/ sel) {
+	return callSuperBoolean(id, sel);
+}
+
 }
