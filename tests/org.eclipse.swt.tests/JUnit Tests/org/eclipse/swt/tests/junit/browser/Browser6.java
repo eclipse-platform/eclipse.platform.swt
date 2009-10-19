@@ -125,9 +125,11 @@ public class Browser6 {
 		
 		String[] urls = {"http://www.google.com"};
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test1(urls[i]); 
-			if (verbose) System.out.print(result ? "." : "E");
-			if (!result) fail++;
+			if (!isMozilla) {
+				boolean result = test1(urls[i]); 
+				if (verbose) System.out.print(result ? "." : "E");
+				if (!result) fail++;
+			}
 		}
 		
 		String pluginPath = System.getProperty("PLUGIN_PATH");
@@ -138,9 +140,11 @@ public class Browser6 {
 		urls = new String[] {url};
 		String[] titles = {"This is a test title that must be carefully checked when that page is loaded"};
 		for (int i = 0; i < urls.length; i++) {
-			boolean result = test2(urls[i], titles[i]); 
-			if (verbose) System.out.print(result ? "." : "E");
-			if (!result) fail++; 
+			if (!isMozilla) {
+				boolean result = test2(urls[i], titles[i]); 
+				if (verbose) System.out.print(result ? "." : "E");
+				if (!result) fail++;
+			}
 		}
 		
 		
