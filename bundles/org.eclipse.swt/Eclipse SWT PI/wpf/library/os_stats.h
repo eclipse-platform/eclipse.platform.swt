@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -840,6 +840,7 @@ typedef enum {
 	ScrollBar_1Orientation__I_FUNC,
 	ScrollBar_1Orientation__II_FUNC,
 	ScrollBar_1Scroll_FUNC,
+	ScrollBar_1Track_FUNC,
 	ScrollBar_1ViewportSize__I_FUNC,
 	ScrollBar_1ViewportSize__ID_FUNC,
 	ScrollBar_1typeid_FUNC,
@@ -1068,6 +1069,7 @@ typedef enum {
 	ToolBar_1SeparatorStyleKey_FUNC,
 	ToolBar_1SetOverflowMode_FUNC,
 	ToolBar_1typeid_FUNC,
+	Track_1Thumb_FUNC,
 	TransformCollection_1Add_FUNC,
 	TransformGroup_1Children_FUNC,
 	Transform_1Clone_FUNC,

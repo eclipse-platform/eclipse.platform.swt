@@ -3949,6 +3949,16 @@ public static final native void ScrollBar_ViewportSize(int sender, double value)
 /** @method accessor=ScrollBar::typeid,flags=const gcobject */
 public static final native int ScrollBar_typeid();
 /**
+ * @method flags=getter gcobject
+ * @param sender cast=(ScrollBar^),flags=gcobject
+ */
+public static final native int ScrollBar_Track(int sender);
+/**
+ * @method flags=getter gcobject
+ * @param sender cast=(Track^),flags=gcobject
+ */
+public static final native int Track_Thumb(int sender);
+/**
  * @method flags=getter
  * @param sender cast=(ScrollEventArgs^),flags=gcobject
  */

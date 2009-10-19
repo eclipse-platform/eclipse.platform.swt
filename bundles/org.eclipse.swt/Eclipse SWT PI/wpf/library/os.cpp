@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9796,6 +9796,19 @@ JNIEXPORT void JNICALL OS_NATIVE(ScrollBar_1Scroll)
 }
 #endif
 
+#ifndef NO_ScrollBar_1Track
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ScrollBar_1Track)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(ScrollBar_1Track)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScrollBar_1Track_FUNC);
+	rc = (jint)TO_HANDLE(((ScrollBar^)TO_OBJECT(arg0))->Track);
+	OS_NATIVE_EXIT(env, that, ScrollBar_1Track_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ScrollBar_1ViewportSize__I
 extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(ScrollBar_1ViewportSize__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jdouble JNICALL OS_NATIVE(ScrollBar_1ViewportSize__I)
@@ -12562,6 +12575,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1typeid)
 	OS_NATIVE_ENTER(env, that, ToolBar_1typeid_FUNC);
 	rc = (jint)TO_HANDLE(ToolBar::typeid);
 	OS_NATIVE_EXIT(env, that, ToolBar_1typeid_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Track_1Thumb
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Track_1Thumb)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Track_1Thumb)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Track_1Thumb_FUNC);
+	rc = (jint)TO_HANDLE(((Track^)TO_OBJECT(arg0))->Thumb);
+	OS_NATIVE_EXIT(env, that, Track_1Thumb_FUNC);
 	return rc;
 }
 #endif

@@ -32,6 +32,12 @@ public int /*long*/ hitPart() {
 	return OS.objc_msgSend(this.id, OS.sel_hitPart);
 }
 
+public NSRect rectForPart(int /*long*/ partCode) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_rectForPart_, partCode);
+	return result;
+}
+
 public static float /*double*/ scrollerWidth() {
 	return (float)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
 }

@@ -147,6 +147,78 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1ENTRY_1IM_1CONTEXT)
 }
 #endif
 
+#ifndef NO_GTK_1RANGE_1HAS_1STEPPER_1A
+JNIEXPORT jboolean JNICALL OS_NATIVE(GTK_1RANGE_1HAS_1STEPPER_1A)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1HAS_1STEPPER_1A_FUNC);
+	rc = (jboolean)GTK_RANGE_HAS_STEPPER_A((GtkRange *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1HAS_1STEPPER_1A_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GTK_1RANGE_1HAS_1STEPPER_1B
+JNIEXPORT jboolean JNICALL OS_NATIVE(GTK_1RANGE_1HAS_1STEPPER_1B)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1HAS_1STEPPER_1B_FUNC);
+	rc = (jboolean)GTK_RANGE_HAS_STEPPER_B((GtkRange *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1HAS_1STEPPER_1B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GTK_1RANGE_1HAS_1STEPPER_1C
+JNIEXPORT jboolean JNICALL OS_NATIVE(GTK_1RANGE_1HAS_1STEPPER_1C)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1HAS_1STEPPER_1C_FUNC);
+	rc = (jboolean)GTK_RANGE_HAS_STEPPER_C((GtkRange *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1HAS_1STEPPER_1C_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GTK_1RANGE_1HAS_1STEPPER_1D
+JNIEXPORT jboolean JNICALL OS_NATIVE(GTK_1RANGE_1HAS_1STEPPER_1D)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1HAS_1STEPPER_1D_FUNC);
+	rc = (jboolean)GTK_RANGE_HAS_STEPPER_D((GtkRange *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1HAS_1STEPPER_1D_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GTK_1RANGE_1SLIDER_1END
+JNIEXPORT jint JNICALL OS_NATIVE(GTK_1RANGE_1SLIDER_1END)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1SLIDER_1END_FUNC);
+	rc = (jint)GTK_RANGE_SLIDER_END((GtkRange *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1SLIDER_1END_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GTK_1RANGE_1SLIDER_1START
+JNIEXPORT jint JNICALL OS_NATIVE(GTK_1RANGE_1SLIDER_1START)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1RANGE_1SLIDER_1START_FUNC);
+	rc = (jint)GTK_RANGE_SLIDER_START((GtkRange *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1RANGE_1SLIDER_1START_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GTK_1SCROLLED_1WINDOW_1HSCROLLBAR
 JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1SCROLLED_1WINDOW_1HSCROLLBAR)
 	(JNIEnv *env, jclass that, jintLong arg0)

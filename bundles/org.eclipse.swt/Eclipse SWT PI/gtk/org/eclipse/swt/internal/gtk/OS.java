@@ -629,6 +629,18 @@ public static final native int /*long*/ GTK_WIDGET_WINDOW(int /*long*/ widget);
 public static final native int GTK_WIDGET_X(int /*long*/ widget);
 /** @param widget cast=(GtkWidget *) */
 public static final native int GTK_WIDGET_Y(int /*long*/ widget);
+/** @param widget cast=(GtkRange *) */
+public static final native int GTK_RANGE_SLIDER_START(int /*long*/ widget);
+/** @param widget cast=(GtkRange *) */
+public static final native int GTK_RANGE_SLIDER_END(int /*long*/ widget);
+/** @param widget cast=(GtkRange *) */
+public static final native boolean GTK_RANGE_HAS_STEPPER_A(int /*long*/ widget);
+/** @param widget cast=(GtkRange *) */
+public static final native boolean GTK_RANGE_HAS_STEPPER_B(int /*long*/ widget);
+/** @param widget cast=(GtkRange *) */
+public static final native boolean GTK_RANGE_HAS_STEPPER_C(int /*long*/ widget);
+/** @param widget cast=(GtkRange *) */
+public static final native boolean GTK_RANGE_HAS_STEPPER_D(int /*long*/ widget);
 /** @param widget cast=(GtkScrolledWindow *) */
 public static final native int /*long*/ GTK_SCROLLED_WINDOW_HSCROLLBAR(int /*long*/ widget);
 /** @param widget cast=(GtkScrolledWindow *) */

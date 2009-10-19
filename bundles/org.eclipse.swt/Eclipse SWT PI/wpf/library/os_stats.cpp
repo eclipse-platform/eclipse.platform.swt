@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1426;
-int OS_nativeFunctionCallCount[1426];
+int OS_nativeFunctionCount = 1428;
+int OS_nativeFunctionCallCount[1428];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -832,6 +832,7 @@ char * OS_nativeFunctionNames[] = {
 	"ScrollBar_1Orientation__I",
 	"ScrollBar_1Orientation__II",
 	"ScrollBar_1Scroll",
+	"ScrollBar_1Track",
 	"ScrollBar_1ViewportSize__I",
 	"ScrollBar_1ViewportSize__ID",
 	"ScrollBar_1typeid",
@@ -1060,6 +1061,7 @@ char * OS_nativeFunctionNames[] = {
 	"ToolBar_1SeparatorStyleKey",
 	"ToolBar_1SetOverflowMode",
 	"ToolBar_1typeid",
+	"Track_1Thumb",
 	"TransformCollection_1Add",
 	"TransformGroup_1Children",
 	"Transform_1Clone",
