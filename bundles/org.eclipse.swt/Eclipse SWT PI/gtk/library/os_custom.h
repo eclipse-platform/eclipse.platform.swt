@@ -218,6 +218,12 @@
 #define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
 #define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->accel_string
+#define GTK_RANGE_SLIDER_START(arg0) (arg0)->slider_start
+#define GTK_RANGE_SLIDER_END(arg0) (arg0)->slider_end
+#define GTK_RANGE_HAS_STEPPER_A(arg0) (arg0)->has_stepper_a
+#define GTK_RANGE_HAS_STEPPER_B(arg0) (arg0)->has_stepper_b
+#define GTK_RANGE_HAS_STEPPER_C(arg0) (arg0)->has_stepper_c
+#define GTK_RANGE_HAS_STEPPER_D(arg0) (arg0)->has_stepper_d
 #define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) (arg0)->hscrollbar
 #define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)		
 #define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) (arg0)->vscrollbar
