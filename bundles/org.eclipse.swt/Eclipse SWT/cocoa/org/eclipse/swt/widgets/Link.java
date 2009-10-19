@@ -237,7 +237,7 @@ public String getText () {
 	return text;
 }
 
-public boolean shouldDrawInsertionPoint(int id, int sel) {
+boolean shouldDrawInsertionPoint(int /*long*/ id, int /*long*/ sel) {
 	return false;
 }
 
