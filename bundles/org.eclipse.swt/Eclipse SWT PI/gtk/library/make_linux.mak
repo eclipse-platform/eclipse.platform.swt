@@ -109,7 +109,7 @@ CFLAGS = -O -Wall \
 		-I$(JAVA_HOME)/include/linux \
 		-fPIC \
 		${SWT_PTR_CFLAGS}
-LIBS = -shared -fPIC
+LIBS = -shared -fPIC ${SWT_LFLAGS}
 
 ifndef NO_STRIP
 	AWT_LIBS := $(AWT_LIBS) -s

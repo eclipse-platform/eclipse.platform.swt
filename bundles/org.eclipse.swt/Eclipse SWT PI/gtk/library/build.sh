@@ -77,11 +77,16 @@ esac
 # For 64-bit CPUs, we have a switch
 if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 's390x' ]; then
 	SWT_PTR_CFLAGS=-DJNI64
-	export SWT_PTR_CFLAGS
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64
 		export XLIB64
 	fi
+	if [ ${MODEL} = 'ppc64' ]; then
+		SWT_PTR_CFLAGS+=" -m64"	
+		SWT_LFLAGS=-m64
+		export SWT_LFLAGS
+	fi
+	export SWT_PTR_CFLAGS
 fi
 
 if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES" ]; then
