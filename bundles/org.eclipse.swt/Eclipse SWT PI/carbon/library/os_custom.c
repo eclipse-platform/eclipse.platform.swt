@@ -207,6 +207,24 @@ fail:
 }
 #endif
 
+#ifndef NO_CGRectUnion
+JNIEXPORT void JNICALL OS_NATIVE(CGRectUnion)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)
+{
+	CGRect _arg0, *lparg0=NULL;
+	CGRect _arg1, *lparg1=NULL;
+	CGRect _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGRectUnion_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
+	*lparg2 = CGRectUnion(*lparg0, *lparg1);
+fail:
+	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, CGRectUnion_FUNC);
+}
+#endif
+
 #ifndef NO_CGPathGetBoundingBox
 JNIEXPORT void JNICALL OS_NATIVE(CGPathGetBoundingBox)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)

@@ -2182,6 +2182,13 @@ public static final native int CGPostScrollWheelEvent(int wheelCount, int wheel1
  */
 public static final native int CGRectContainsPoint(CGRect rect, CGPoint point);
 /**
+ * @method flags=no_gen
+ * @param r1 flags=struct no_out
+ * @param r2 flags=struct no_out
+ * @param result flags=struct no_in
+ */
+public static final native void CGRectUnion (CGRect r1, CGRect r2, CGRect result);
+/**
  * @param colorspace cast=(CGColorSpaceRef)
  * @param start flags=struct
  * @param end flags=struct

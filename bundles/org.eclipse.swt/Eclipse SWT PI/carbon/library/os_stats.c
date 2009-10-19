@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 998;
-int OS_nativeFunctionCallCount[998];
+int OS_nativeFunctionCount = 999;
+int OS_nativeFunctionCallCount[999];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -272,6 +272,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGPostMouseEvent",
 	"CGPostScrollWheelEvent",
 	"CGRectContainsPoint",
+	"CGRectUnion",
 	"CGShadingCreateAxial",
 	"CGShadingCreateRadial",
 	"CGShadingRelease",

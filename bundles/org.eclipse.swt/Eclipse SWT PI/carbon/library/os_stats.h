@@ -280,6 +280,7 @@ typedef enum {
 	CGPostMouseEvent_FUNC,
 	CGPostScrollWheelEvent_FUNC,
 	CGRectContainsPoint_FUNC,
+	CGRectUnion_FUNC,
 	CGShadingCreateAxial_FUNC,
 	CGShadingCreateRadial_FUNC,
 	CGShadingRelease_FUNC,
