@@ -272,6 +272,7 @@
 	<enum name="NSScrollerIncrementLine" swt_gen="true"></enum>
 	<enum name="NSScrollerIncrementPage" swt_gen="true"></enum>
 	<enum name="NSScrollerKnob" swt_gen="true"></enum>
+	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>
 	<enum name="NSShadowlessSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
 	<enum name="NSSmallControlSize" swt_gen="true"></enum>
@@ -2960,6 +2961,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="hitPart" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="rectForPart:" swt_gen="true">
+			<arg name="partCode" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="scrollerWidth" swt_gen="true">
