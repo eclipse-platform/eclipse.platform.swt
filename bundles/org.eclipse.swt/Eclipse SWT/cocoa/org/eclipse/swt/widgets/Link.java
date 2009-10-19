@@ -157,6 +157,7 @@ void createHandle () {
 	NSTextView widget = (NSTextView)new SWTTextView().alloc();
 	widget.init();
 	widget.setEditable(false);
+	widget.setSelectable(false);
 	widget.setDrawsBackground(false);
 	widget.setDelegate(widget);
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
