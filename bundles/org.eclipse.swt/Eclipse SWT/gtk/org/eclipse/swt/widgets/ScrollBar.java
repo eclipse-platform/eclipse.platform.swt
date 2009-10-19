@@ -325,6 +325,82 @@ public int getThumb () {
 	return (int) adjustment.page_size;
 }
 
+public Rectangle getThumbBounds () {
+	checkWidget();
+	int slider_start = OS.GTK_RANGE_SLIDER_START (handle);
+	int slider_end = OS.GTK_RANGE_SLIDER_END (handle);
+	int x, y, width, height;
+	if ((style & SWT.VERTICAL) != 0) {
+		x = OS.GTK_WIDGET_X (handle);
+		y = slider_start;
+		width = OS.GTK_WIDGET_WIDTH (handle);
+		height = slider_end - slider_start;
+	} else {
+		x = slider_start;
+		y = OS.GTK_WIDGET_Y (handle);
+		width = slider_end - slider_start;
+		height = OS.GTK_WIDGET_HEIGHT (handle);
+	}
+	Rectangle rect = new Rectangle(x, y, width, height);
+	int [] origin_x = new int [1], origin_y = new int [1];
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (parent.scrolledHandle);
+	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	rect.x += origin_x [0];
+	rect.y += origin_y [0];
+	window = OS.GTK_WIDGET_WINDOW (parent.handle);
+	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	rect.x -= origin_x [0];
+	rect.y -= origin_y [0];
+	return rect;
+}
+
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	int x = 0, y = 0, width, height;
+	boolean hasA = OS.GTK_RANGE_HAS_STEPPER_A (handle);
+	boolean hasB = OS.GTK_RANGE_HAS_STEPPER_B (handle);
+	boolean hasC = OS.GTK_RANGE_HAS_STEPPER_C (handle);
+	boolean hasD = OS.GTK_RANGE_HAS_STEPPER_D (handle);
+	if ((style & SWT.VERTICAL) != 0) {
+		int stepperSize = OS.GTK_WIDGET_WIDTH (handle);
+		x = OS.GTK_WIDGET_X (handle);
+		if (hasA) y += stepperSize;
+		if (hasB) y += stepperSize;
+		width = OS.GTK_WIDGET_WIDTH (handle);
+		height = OS.GTK_WIDGET_HEIGHT (handle) - y;
+		if (hasC) height -= stepperSize;
+		if (hasD) height -= stepperSize;
+		if (height < 0) {
+			y = OS.GTK_RANGE_SLIDER_START (handle);
+			height = 0;
+		}
+	} else {
+		int stepperSize = OS.GTK_WIDGET_HEIGHT (handle);
+		if (hasA) x += stepperSize;
+		if (hasB) x += stepperSize;
+		y = OS.GTK_WIDGET_Y (handle);
+		width = OS.GTK_WIDGET_WIDTH (handle) - x;
+		if (hasC) width -= stepperSize;
+		if (hasD) width -= stepperSize;
+		height = OS.GTK_WIDGET_HEIGHT (handle);
+		if (width < 0) {
+			x = OS.GTK_RANGE_SLIDER_START (handle);
+			width = 0;
+		}
+	}
+	Rectangle rect = new Rectangle(x, y, width, height);
+	int [] origin_x = new int [1], origin_y = new int [1];
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (parent.scrolledHandle);
+	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	rect.x += origin_x [0];
+	rect.y += origin_y [0];
+	window = OS.GTK_WIDGET_WINDOW (parent.handle);
+	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
+	rect.x -= origin_x [0];
+	rect.y -= origin_y [0];
+	return rect;
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.

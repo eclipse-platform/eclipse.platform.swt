@@ -312,6 +312,90 @@ public int getThumb () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+public Rectangle getThumbBounds () {
+	checkWidget();
+	int [] argList = {
+			OS.XmNsliderSize, 0, //1
+			OS.XmNwidth, 0, //3
+			OS.XmNheight, 0, //5
+			OS.XmNminimum, 0, //7 
+			OS.XmNmaximum, 0, //9
+			OS.XmNvalue, 0, //11
+		};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	Rectangle rect;
+	if ((style & SWT.VERTICAL) != 0) {
+		int slideSize = argList [5], sliderSize, sliderPos;
+		if (slideSize > 2 * argList [3]) {
+			slideSize -= 2 * argList [3];
+			float factor = (float)slideSize / (argList[9] - argList[7]);
+			sliderSize = (int)(0.5f + argList[1] * factor);
+			sliderPos = (int) (((argList[11] - argList[7]) * factor) + 0.5) + argList [3];
+		} else {
+			sliderPos = slideSize / 2;
+			sliderSize = 0;
+		}
+		rect = new Rectangle(0, sliderPos, argList[3], sliderSize);
+	} else {
+		int slideSize = argList [3], sliderSize, sliderPos;
+		if (slideSize > 2 * argList [5]) {
+			slideSize -= 2 * argList [5];
+			float factor = (float)slideSize / (argList[9] - argList[7]);
+			sliderSize = (int)(0.5f + argList[1] * factor);
+			sliderPos = (int) (((argList[11] - argList[7]) * factor) + 0.5) + argList [5];
+		} else {
+			sliderPos = slideSize / 2;
+			sliderSize = 0;
+		}
+		rect = new Rectangle(sliderPos, 0, sliderSize, argList[5]);
+	}
+	short [] root_x = new short [1], root_y = new short [1];
+	OS.XtTranslateCoords (handle, (short) rect.x, (short) rect.y, root_x, root_y);
+	rect.x = root_x [0];
+	rect.y = root_y [0];
+	OS.XtTranslateCoords (parent.handle, (short) 0, (short) 0, root_x, root_y);
+	rect.x -= root_x [0];
+	rect.y -= root_y [0];
+	return rect;
+}
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	int [] argList = {
+			OS.XmNwidth, 0, //1
+			OS.XmNheight, 0, //3
+		};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	Rectangle rect;
+	if ((style & SWT.VERTICAL) != 0) {
+		int slideSize = argList [3], slidePos;
+		if (slideSize > 2 * argList [1]) {
+			slidePos = argList [1];
+			slideSize -= 2 * (argList [1]);
+		} else {
+			slidePos = slideSize / 2;
+			slideSize = 0;
+		}
+		rect = new Rectangle(0, slidePos, argList[1], slideSize);
+	} else {
+		int slideSize = argList [1], slidePos;
+		if (slideSize > 2 * argList [3]) {
+			slidePos = argList [3];
+			slideSize -= 2 * (argList [3]);
+		} else {
+			slidePos = slideSize / 2;
+			slideSize = 0;
+		}
+		rect = new Rectangle(slidePos, 0, slideSize, argList[3]);
+	}
+	short [] root_x = new short [1], root_y = new short [1];
+	OS.XtTranslateCoords (handle, (short) rect.x, (short) rect.y, root_x, root_y);
+	rect.x = root_x [0];
+	rect.y = root_y [0];
+	OS.XtTranslateCoords (parent.handle, (short) 0, (short) 0, root_x, root_y);
+	rect.x -= root_x [0];
+	rect.y -= root_y [0];
+	return rect;
+}
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.

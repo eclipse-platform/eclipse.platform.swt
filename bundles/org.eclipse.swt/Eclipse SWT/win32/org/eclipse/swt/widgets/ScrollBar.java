@@ -406,6 +406,103 @@ public int getThumb () {
 }
 
 /**
+ * Returns a rectangle describing the size and location of the
+ * receiver's thumb relative to its parent.
+ * 
+ * @return the thumb bounds, relative to the {@link #getParent() parent}
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public Rectangle getThumbBounds () {
+	checkWidget();
+	parent.forceResize ();
+	SCROLLBARINFO info = new SCROLLBARINFO();
+	info.cbSize = SCROLLBARINFO.sizeof;
+	int x, y, width, height;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		OS.GetScrollBarInfo(parent.handle, OS.OBJID_HSCROLL, info);
+		x = info.rcScrollBar.left + info.xyThumbTop;
+		y = info.rcScrollBar.top;
+		width = info.xyThumbBottom - info.xyThumbTop;
+		height = info.rcScrollBar.bottom - info.rcScrollBar.top;
+	} else {
+		OS.GetScrollBarInfo(parent.handle, OS.OBJID_VSCROLL, info);
+		x = info.rcScrollBar.left;
+		y = info.rcScrollBar.top + info.xyThumbTop;
+		width = info.rcScrollBar.right - info.rcScrollBar.left;
+		height = info.xyThumbBottom - info.xyThumbTop;
+	}
+	RECT rect = new RECT ();
+	rect.left = x;
+	rect.top  = y;
+	rect.right = x + width;
+	rect.bottom = y + height;
+	OS.MapWindowPoints (0, parent.handle, rect, 2);
+	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+}
+
+/**
+ * Returns a rectangle describing the size and location of the
+ * receiver's thumb track relative to its parent. This rectangle
+ * comprises the areas 2, 3, and 4 as described in {@link ScrollBar}.
+ * 
+ * @return the thumb track bounds, relative to the {@link #getParent() parent}
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	parent.forceResize ();
+	SCROLLBARINFO info = new SCROLLBARINFO();
+	info.cbSize = SCROLLBARINFO.sizeof;
+	int x = 0, y = 0, width, height;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		OS.GetScrollBarInfo(parent.handle, OS.OBJID_HSCROLL, info);
+		int size = OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		y = info.rcScrollBar.top;
+		width = info.rcScrollBar.right - info.rcScrollBar.left;
+		height = size;
+		if (width <= 2 * size) {
+			x = info.rcScrollBar.left + width / 2;
+			width = 0;
+		} else {
+			x = info.rcScrollBar.left + size;
+			width -= 2 * size;
+		}
+	} else {
+		OS.GetScrollBarInfo(parent.handle, OS.OBJID_VSCROLL, info);
+		int size = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+		x = info.rcScrollBar.left;
+		width = size;
+		height = info.rcScrollBar.bottom - info.rcScrollBar.top;
+		if (height <= 2 * size) {
+			y = info.rcScrollBar.top + height / 2;
+			height = 0;
+		} else {
+			y = info.rcScrollBar.top + size;
+			height -= 2 * size;
+		}
+	}
+	RECT rect = new RECT ();
+	rect.left = x;
+	rect.top  = y;
+	rect.right = x + width;
+	rect.bottom = y + height;
+	OS.MapWindowPoints (0, parent.handle, rect, 2);
+	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+}
+
+/**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
  * <p>

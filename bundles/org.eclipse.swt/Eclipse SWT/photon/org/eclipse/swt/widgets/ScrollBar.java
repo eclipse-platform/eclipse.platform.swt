@@ -338,6 +338,18 @@ public int getThumb () {
 	return args [1];
 }
 
+public Rectangle getThumbBounds () {
+	checkWidget();
+	//TODO implement getThumbBounds()
+	return null;
+}
+
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	//TODO implement getThumbTrackBounds()
+	return null;
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.

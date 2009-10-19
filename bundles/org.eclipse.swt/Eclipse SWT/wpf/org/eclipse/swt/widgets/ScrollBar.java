@@ -339,6 +339,37 @@ public int getThumb () {
 	return (int) OS.ScrollBar_ViewportSize (handle);
 }
 
+public Rectangle getThumbBounds () {
+	checkWidget();
+	int track = OS.ScrollBar_Track(handle);
+	int thumb = OS.Track_Thumb(track);
+	int point = OS.gcnew_Point (0, 0);
+	int newPoint = OS.UIElement_TranslatePoint (thumb, point, parent.handle);
+	int x = (int) (OS.Point_X (newPoint) + 0.5);
+	int y = (int) (OS.Point_Y (newPoint) + 0.5);
+	int width = (int) (OS.FrameworkElement_ActualWidth(thumb) + 0.5);
+	int height = (int) (OS.FrameworkElement_ActualHeight(thumb) + 0.5);
+	Rectangle rect =  new Rectangle(x, y, width, height);
+	OS.GCHandle_Free (point);
+	OS.GCHandle_Free (newPoint);
+	return rect;
+}
+
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	int track = OS.ScrollBar_Track(handle);
+	int point = OS.gcnew_Point (0, 0);
+	int newPoint = OS.UIElement_TranslatePoint (track, point, parent.handle);
+	int x = (int) (OS.Point_X (newPoint) + 0.5);
+	int y = (int) (OS.Point_Y (newPoint) + 0.5);
+	int width = (int) (OS.FrameworkElement_ActualWidth(track) + 0.5);
+	int height = (int) (OS.FrameworkElement_ActualHeight(track) + 0.5);
+	Rectangle rect =  new Rectangle(x, y, width, height);
+	OS.GCHandle_Free (point);
+	OS.GCHandle_Free (newPoint);
+	return rect;
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
