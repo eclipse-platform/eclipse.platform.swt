@@ -633,7 +633,7 @@ void generateFunctionCallRightSide(JNIMethod method, JNIParameter[] params, int 
 			if (i != paramStart) output(", ");
 			if (param.getFlag(FLAG_STRUCT)) output("*");
 			output(param.getCast());
-			if (param.getFlag(FLAG_GCOBJECT)) output("TO_OBJECT(");
+			if (param.getFlag(FLAG_OBJECT)) output("TO_OBJECT(");
 			if (i == params.length - 1 && param.getFlag(FLAG_SENTINEL)) {
 				output("NULL");
 			} else {
@@ -641,7 +641,7 @@ void generateFunctionCallRightSide(JNIMethod method, JNIParameter[] params, int 
 				if (!paramType.isPrimitive() && !isSystemClass(paramType)) output("lp");
 				output("arg" + i);
 			}
-			if (param.getFlag(FLAG_GCOBJECT)) output(")");
+			if (param.getFlag(FLAG_OBJECT)) output(")");
 		}
 		output(")");
 	}
@@ -695,7 +695,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		output(" **)arg1)[arg0])");
 		paramStart = 1;
 	} else if (method.getFlag(FLAG_CPP) || method.getFlag(FLAG_SETTER) || method.getFlag(FLAG_GETTER) || method.getFlag(FLAG_ADDER)) {
-		if (method.getFlag(FLAG_GCOBJECT)) {
+		if (method.getFlag(FLAG_OBJECT)) {
 			output("TO_HANDLE(");
 		}
 		output("(");
@@ -705,11 +705,11 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		if (cast.length() != 0 && !cast.equals("()")) {
 			output(cast);
 		}
-		if (param.getFlag(FLAG_GCOBJECT)) {
+		if (param.getFlag(FLAG_OBJECT)) {
 			output("TO_OBJECT(");
 		}
 		output("arg0");
-		if (param.getFlag(FLAG_GCOBJECT)) {
+		if (param.getFlag(FLAG_OBJECT)) {
 			output(")");
 		}
 		output(")->");
@@ -739,6 +739,9 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 			}
 		}
 	} else if (method.getFlag(FLAG_NEW)) {
+		if (method.getFlag(FLAG_OBJECT)) {
+			output("TO_HANDLE(");
+		}
 		output("new ");
 		String accessor = method.getAccessor();
 		if (accessor.length() != 0) {
@@ -765,7 +768,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		outputln("arg0;");
 		return;
 	} else {
-		if (method.getFlag(FLAG_GCOBJECT)) {
+		if (method.getFlag(FLAG_OBJECT)) {
 			output("TO_HANDLE(");				
 		}
 		if (method.getFlag(Flags.FLAG_CAST)) {
@@ -815,7 +818,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 	if (!method.getFlag(FLAG_GETTER)) {
 		generateFunctionCallRightSide(method, params, paramStart);
 	}
-	if (method.getFlag(FLAG_GCNEW) || method.getFlag(FLAG_GCOBJECT)) {
+	if (method.getFlag(FLAG_GCNEW) || method.getFlag(FLAG_OBJECT)) {
 		output(")");
 	}
 	output(";");

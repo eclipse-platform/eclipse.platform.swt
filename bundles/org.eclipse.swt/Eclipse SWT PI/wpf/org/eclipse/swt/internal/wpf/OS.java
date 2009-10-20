@@ -458,2107 +458,2107 @@ public static final native Object JNIGetObject(int globalRef);
 
 /**
  * @method flags=getter
- * @param sender cast=(AccessText^),flags=gcobject
+ * @param sender cast=(AccessText^),flags=object
  */
 public static final native char AccessText_AccessKey(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(AccessText^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(AccessText^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void AccessText_Text(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(AccessText^),flags=gcobject
+ * @param sender cast=(AccessText^),flags=object
  * @param value cast=(TextWrapping)
  */
 public static final native void AccessText_TextWrapping(int sender, int value);
-/** @method accessor=ApplicationCommands::Cut,flags=const gcobject */
+/** @method accessor=ApplicationCommands::Cut,flags=const object */
 public static final native int ApplicationCommands_Cut();
-/** @method accessor=ApplicationCommands::Paste,flags=const gcobject */
+/** @method accessor=ApplicationCommands::Paste,flags=const object */
 public static final native int ApplicationCommands_Paste();
-/** @method accessor=ApplicationCommands::Redo,flags=const gcobject */
+/** @method accessor=ApplicationCommands::Redo,flags=const object */
 public static final native int ApplicationCommands_Redo();
-/** @method accessor=ApplicationCommands::Undo,flags=const gcobject */
+/** @method accessor=ApplicationCommands::Undo,flags=const object */
 public static final native int ApplicationCommands_Undo();
-/** @method accessor=Application::Current,flags=const gcobject */
+/** @method accessor=Application::Current,flags=const object */
 public static final native int Application_Current();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Application ^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Application ^),flags=object
  */
 public static final native int Application_Dispatcher(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Application^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Application^),flags=object
  */
 public static final native int Application_Resources(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Application^),flags=gcobject
- * @param value cast=(ResourceDictionary^),flags=gcobject
+ * @param sender cast=(Application^),flags=object
+ * @param value cast=(ResourceDictionary^),flags=object
  */
 public static final native void Application_Resources(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(Application^),flags=gcobject
+ * @param sender cast=(Application^),flags=object
  */
 public static final native void Application_Run(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Application^),flags=gcobject
+ * @param sender cast=(Application^),flags=object
  */
 public static final native void Application_Shutdown(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Application^),flags=gcobject
+ * @param sender cast=(Application^),flags=object
  * @param value cast=(ShutdownMode)
  */
 public static final native void Application_ShutdownMode(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Application^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Application^),flags=object
  */
 public static final native int Application_Windows(int sender);
 /**
- * @method accessor=Array::CreateInstance,flags=gcobject
- * @param elementType cast=(Type^),flags=gcobject
+ * @method accessor=Array::CreateInstance,flags=object
+ * @param elementType cast=(Type^),flags=object
  */
 public static final native int Array_CreateInstance(int elementType, int length);
 /**
  * @method flags=cpp
- * @param sender cast=(Array^),flags=gcobject
+ * @param sender cast=(Array^),flags=object
  */
 public static final native int Array_GetLength(int sender, int dimension);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Array^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Array^),flags=object
  */
 public static final native int Array_GetValue (int sender, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(Array^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(Array^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void Array_SetValue (int sender, int value, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(ArrayList^),flags=gcobject
+ * @param sender cast=(ArrayList^),flags=object
  */
 public static final native void ArrayList_Clear(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(ArrayList^),flags=gcobject
+ * @param sender cast=(ArrayList^),flags=object
  */
 public static final native int ArrayList_Count(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ArrayList^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ArrayList^),flags=object
  */
 public static final native int ArrayList_default(int sender, int index);
 /**
  * @method flags=setter
- * @param sender cast=(ArrayList^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(ArrayList^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void ArrayList_default(int sender, int index, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(ArrayList^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(ArrayList^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void ArrayList_Insert(int sender, int index, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(ArrayList^),flags=gcobject
+ * @param sender cast=(ArrayList^),flags=object
  */
 public static final native void ArrayList_RemoveAt(int sender, int index);
 /**
  * @method flags=setter
- * @param sender cast=(Binding^),flags=gcobject
- * @param value cast=(RelativeSource^),flags=gcobject
+ * @param sender cast=(Binding^),flags=object
+ * @param value cast=(RelativeSource^),flags=object
  */
 public static final native void Binding_RelativeSource(int sender, int value);
 /**
  * @method flags=no_gen cpp
- * @param sender cast=(System::Drawing::Bitmap^),flags=gcobject
+ * @param sender cast=(System::Drawing::Bitmap^),flags=object
  */
 public static final native int Bitmap_GetHicon(int sender);
 /**
- * @method accessor=BitmapDecoder::Create,flags=gcobject
- * @param stream cast=(System::IO::Stream^),flags=gcobject
+ * @method accessor=BitmapDecoder::Create,flags=object
+ * @param stream cast=(System::IO::Stream^),flags=object
  * @param createOptions cast=(BitmapCreateOptions)
  * @param cacheOption cast=(BitmapCacheOption)
  */
 public static final native int BitmapDecoder_Create(int stream, int createOptions, int cacheOption);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(BitmapDecoder^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(BitmapDecoder^),flags=object
  */
 public static final native int BitmapDecoder_Frames(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(BitmapEncoder^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(BitmapEncoder^),flags=object
  */
 public static final native int BitmapEncoder_Frames(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(BitmapEncoder^),flags=gcobject
- * @param stream cast=(System::IO::Stream^),flags=gcobject
+ * @param sender cast=(BitmapEncoder^),flags=object
+ * @param stream cast=(System::IO::Stream^),flags=object
  */
 public static final native void BitmapEncoder_Save(int sender, int stream);
 /**
- * @method accessor=BitmapFrame::Create,flags=gcobject
- * @param source cast=(BitmapSource^),flags=gcobject
+ * @method accessor=BitmapFrame::Create,flags=object
+ * @param source cast=(BitmapSource^),flags=object
  */
 public static final native int BitmapFrame_Create(int source);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Collections::Generic::IList<BitmapFrame^>^),flags=gcobject
- * @param frame cast=(BitmapFrame^),flags=gcobject
+ * @param sender cast=(System::Collections::Generic::IList<BitmapFrame^>^),flags=object
+ * @param frame cast=(BitmapFrame^),flags=object
  */
 public static final native void BitmapFrameCollection_Add(int sender, int frame);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Collections::Generic::IList<BitmapFrame^>^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Collections::Generic::IList<BitmapFrame^>^),flags=object
  */
 public static final native int BitmapFrameCollection_default(int sender, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(BitmapImage^),flags=gcobject
+ * @param sender cast=(BitmapImage^),flags=object
  */
 public static final native void BitmapImage_BeginInit(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(BitmapImage^),flags=gcobject
+ * @param sender cast=(BitmapImage^),flags=object
  * @param value cast=(BitmapCreateOptions)
  */
 public static final native void BitmapImage_CreateOptions(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(BitmapImage^),flags=gcobject
+ * @param sender cast=(BitmapImage^),flags=object
  */
 public static final native void BitmapImage_EndInit(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(BitmapImage^),flags=gcobject
- * @param uri cast=(Uri^),flags=gcobject
+ * @param sender cast=(BitmapImage^),flags=object
+ * @param uri cast=(Uri^),flags=object
  */
 public static final native void BitmapImage_UriSource(int sender, int uri);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(BitmapPalette^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(BitmapPalette^),flags=object
  */
 public static final native int BitmapPalette_Colors(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(BitmapSource^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(BitmapSource^),flags=object
  */
 public static final native int BitmapSource_Clone(int sender);
 /**
- * @method accessor=BitmapSource::Create,flags=gcobject
- * @param pixelFormat cast=(PixelFormat),flags=gcobject
- * @param palette cast=(BitmapPalette^),flags=gcobject
+ * @method accessor=BitmapSource::Create,flags=object
+ * @param pixelFormat cast=(PixelFormat),flags=object
+ * @param palette cast=(BitmapPalette^),flags=object
  * @param buffer cast=(IntPtr)
  */
 public static final native int BitmapSource_Create(int pixelWidth, int pixelHeight, double dpiX, double dpiY, int pixelFormat, int palette, byte[] buffer, int bufferSize, int stride);
 /**
  * @method flags=cpp
- * @param sender cast=(BitmapSource^),flags=gcobject
- * @param sourceRect cast=(Int32Rect),flags=gcobject
+ * @param sender cast=(BitmapSource^),flags=object
+ * @param sourceRect cast=(Int32Rect),flags=object
  * @param buffer cast=(IntPtr)
  */
 public static final native void BitmapSource_CopyPixels(int sender, int sourceRect, byte[] buffer, int bufferSize, int stride);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(BitmapSource^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(BitmapSource^),flags=object
  */
 public static final native int BitmapSource_Format(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(BitmapSource^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(BitmapSource^),flags=object
  */
 public static final native int BitmapSource_Palette(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(BitmapSource^),flags=gcobject
+ * @param sender cast=(BitmapSource^),flags=object
  */
 public static final native int BitmapSource_PixelHeight(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(BitmapSource^),flags=gcobject
+ * @param sender cast=(BitmapSource^),flags=object
  */
 public static final native int BitmapSource_PixelWidth(int sender);
-/** @method accessor=Border::typeid,flags=const gcobject */
+/** @method accessor=Border::typeid,flags=const object */
 public static final native int Border_typeid();
-/** @method accessor=Brushes::White,flags=const gcobject */
+/** @method accessor=Brushes::White,flags=const object */
 public static final native int Brushes_White();
-/** @method accessor=Brushes::Black,flags=const gcobject */
+/** @method accessor=Brushes::Black,flags=const object */
 public static final native int Brushes_Black();
-/** @method accessor=Brushes::Navy,flags=const gcobject */
+/** @method accessor=Brushes::Navy,flags=const object */
 public static final native int Brushes_Navy();
-/** @method accessor=Brushes::Red,flags=const gcobject */
+/** @method accessor=Brushes::Red,flags=const object */
 public static final native int Brushes_Red();
-/** @method accessor=Brushes::Transparent,flags=const gcobject */
+/** @method accessor=Brushes::Transparent,flags=const object */
 public static final native int Brushes_Transparent();
-/** @method accessor=Brushes::LightSkyBlue,flags=const gcobject */
+/** @method accessor=Brushes::LightSkyBlue,flags=const object */
 public static final native int Brushes_LightSkyBlue();
 /**
  * @method flags=setter
- * @param sender cast=(Brush^),flags=gcobject
+ * @param sender cast=(Brush^),flags=object
  */
 public static final native void Brush_Opacity(int sender, double opacity);
 /**
  * @method flags=getter
- * @param sender cast=(Button^),flags=gcobject
+ * @param sender cast=(Button^),flags=object
  */
 public static final native boolean Button_IsDefault(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Button^),flags=gcobject
+ * @param sender cast=(Button^),flags=object
  */
 public static final native void Button_IsDefault(int sender, boolean value);
 /**
  * @method flags=adder
- * @param sender cast=(ButtonBase^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(ButtonBase^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void ButtonBase_Click(int sender, int handler);
-/** @method accessor=ButtonBase::ClickEvent,flags=const gcobject */
+/** @method accessor=ButtonBase::ClickEvent,flags=const object */
 public static final native int ButtonBase_ClickEvent();
-/** @method accessor=Byte::typeid,flags=const gcobject */
+/** @method accessor=Byte::typeid,flags=const object */
 public static final native int Byte_typeid();
 /**
  * @method flags=setter
- * @param sender cast=(CancelEventArgs^),flags=gcobject
+ * @param sender cast=(CancelEventArgs^),flags=object
  */
 public static final native void CancelEventArgs_Cancel(int sender, boolean value);
 /**
  * @method accessor=Canvas::GetLeft
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native double Canvas_GetLeft(int element);
 /**
  * @method accessor=Canvas::GetTop
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native double Canvas_GetTop(int element);
 /**
  * @method accessor=Canvas::SetLeft
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native void Canvas_SetLeft(int element, double length);
 /**
  * @method accessor=Canvas::SetTop
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native void Canvas_SetTop(int element, double length);
-/** @method accessor=Canvas::typeid,flags=const gcobject */
+/** @method accessor=Canvas::typeid,flags=const object */
 public static final native int Canvas_typeid();
 /**
  * @method flags=getter
- * @param sender cast=(CharacterHit^),flags=gcobject
+ * @param sender cast=(CharacterHit^),flags=object
  */
 public static final native int CharacterHit_FirstCharacterIndex(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(CharacterHit^),flags=gcobject
+ * @param sender cast=(CharacterHit^),flags=object
  */
 public static final native int CharacterHit_TrailingLength(int sender);
-/** @method accessor=CheckBox::typeid,flags=const gcobject */
+/** @method accessor=CheckBox::typeid,flags=const object */
 public static final native int CheckBox_typeid();
 /** @method accessor=Clipboard::Clear */
 public static final native void Clipboard_Clear();
 /**
  * @method accessor=Clipboard::ContainsData
- * @param format cast=(String^),flags=gcobject
+ * @param format cast=(String^),flags=object
  */
 public static final native boolean Clipboard_ContainsData(int format);
 /**
- * @method accessor=Clipboard::GetData,flags=gcobject
- * @param format cast=(String^),flags=gcobject
+ * @method accessor=Clipboard::GetData,flags=object
+ * @param format cast=(String^),flags=object
  */
 public static final native int Clipboard_GetData(int format);
-/** @method accessor=Clipboard::GetDataObject,flags=gcobject */
+/** @method accessor=Clipboard::GetDataObject,flags=object */
 public static final native int Clipboard_GetDataObject();
-/** @method accessor=Clipboard::GetText,flags=gcobject */
+/** @method accessor=Clipboard::GetText,flags=object */
 public static final native int Clipboard_GetText();
 /**
  * @method accessor=Clipboard::SetData
- * @param format cast=(String^),flags=gcobject
- * @param data cast=(Object^),flags=gcobject
+ * @param format cast=(String^),flags=object
+ * @param data cast=(Object^),flags=object
  */
 public static final native void Clipboard_SetData(int format, int data);
 /**
  * @method accessor=Clipboard::SetDataObject
- * @param data cast=(Object^),flags=gcobject
+ * @param data cast=(Object^),flags=object
  */
 public static final native void Clipboard_SetDataObject(int data, boolean copy);
-/** @method accessor=Color::FromArgb,flags=struct gcobject */
+/** @method accessor=Color::FromArgb,flags=struct object */
 public static final native int Color_FromArgb(byte a, byte r, byte g, byte b);
 /**
  * @method flags=getter
- * @param sender cast=(Color^),flags=gcobject
+ * @param sender cast=(Color^),flags=object
  */
 public static final native byte Color_A(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Color^),flags=gcobject
+ * @param sender cast=(Color^),flags=object
  */
 public static final native byte Color_B(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Color^),flags=gcobject
+ * @param sender cast=(Color^),flags=object
  */
 public static final native byte Color_G(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Color^),flags=gcobject
+ * @param sender cast=(Color^),flags=object
  */
 public static final native byte Color_R(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=object
  */
 public static final native void ColorDialog_AnyColor(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=gcobject
- * @param color cast=(System::Drawing::Color),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=object
+ * @param color cast=(System::Drawing::Color),flags=object
  */
 public static final native void ColorDialog_Color(int sender, int color);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=object
  */
 public static final native int ColorDialog_Color(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=gcobject
- * @param colors cast=(array<int>^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=object
+ * @param colors cast=(array<int>^),flags=object
  */
 public static final native void ColorDialog_CustomColors(int sender, int colors);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::ColorDialog^),flags=object
  */
 public static final native int ColorDialog_CustomColors(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Collections::Generic::List<Color>^),flags=gcobject
- * @param color cast=(Color),flags=gcobject
+ * @param sender cast=(System::Collections::Generic::List<Color>^),flags=object
+ * @param color cast=(Color),flags=object
  */
 public static final native void ColorList_Add(int sender, int color);
 /**
  * @method flags=getter
- * @param sender cast=(System::Collections::Generic::IList<Color>^),flags=gcobject
+ * @param sender cast=(System::Collections::Generic::IList<Color>^),flags=object
  */
 public static final native int ColorList_Count(int sender);
 /**
- * @method flags=getter gcobject
- * @param sender cast=(System::Collections::Generic::IEnumerator<Color>^),flags=gcobject
+ * @method flags=getter object
+ * @param sender cast=(System::Collections::Generic::IEnumerator<Color>^),flags=object
  */
 public static final native int ColorList_Current(int sender);
 /**
- * @method flags=gcobject cpp
- * @param sender cast=(System::Collections::Generic::IEnumerable<Color>^),flags=gcobject
+ * @method flags=object cpp
+ * @param sender cast=(System::Collections::Generic::IEnumerable<Color>^),flags=object
  */
 public static final native int ColorList_GetEnumerator(int sender);
-/** @method accessor=Colors::White,flags=const struct gcobject */
+/** @method accessor=Colors::White,flags=const struct object */
 public static final native int Colors_White();
-/** @method accessor=Colors::Black,flags=const struct gcobject */
+/** @method accessor=Colors::Black,flags=const struct object */
 public static final native int Colors_Black();
-/** @method accessor=Colors::Red,flags=const struct gcobject */
+/** @method accessor=Colors::Red,flags=const struct object */
 public static final native int Colors_Red();
-/** @method accessor=Colors::Maroon,flags=const struct gcobject */
+/** @method accessor=Colors::Maroon,flags=const struct object */
 public static final native int Colors_Maroon();
-/** @method accessor=Colors::Lime,flags=const struct gcobject */
+/** @method accessor=Colors::Lime,flags=const struct object */
 public static final native int Colors_Lime();
-/** @method accessor=Colors::Green,flags=const struct gcobject */
+/** @method accessor=Colors::Green,flags=const struct object */
 public static final native int Colors_Green();
-/** @method accessor=Colors::Olive,flags=const struct gcobject */
+/** @method accessor=Colors::Olive,flags=const struct object */
 public static final native int Colors_Olive();
-/** @method accessor=Colors::Blue,flags=const struct gcobject */
+/** @method accessor=Colors::Blue,flags=const struct object */
 public static final native int Colors_Blue();
-/** @method accessor=Colors::Navy,flags=const struct gcobject */
+/** @method accessor=Colors::Navy,flags=const struct object */
 public static final native int Colors_Navy();
-/** @method accessor=Colors::LightSkyBlue,flags=const struct gcobject */
+/** @method accessor=Colors::LightSkyBlue,flags=const struct object */
 public static final native int Colors_LightSkyBlue();
-/** @method accessor=Colors::Magenta,flags=const struct gcobject */
+/** @method accessor=Colors::Magenta,flags=const struct object */
 public static final native int Colors_Magenta();
-/** @method accessor=Colors::Purple,flags=const struct gcobject */
+/** @method accessor=Colors::Purple,flags=const struct object */
 public static final native int Colors_Purple();
-/** @method accessor=Colors::Cyan,flags=const struct gcobject */
+/** @method accessor=Colors::Cyan,flags=const struct object */
 public static final native int Colors_Cyan();
-/** @method accessor=Colors::Teal,flags=const struct gcobject */
+/** @method accessor=Colors::Teal,flags=const struct object */
 public static final native int Colors_Teal();
-/** @method accessor=Colors::Transparent,flags=const struct gcobject */
+/** @method accessor=Colors::Transparent,flags=const struct object */
 public static final native int Colors_Transparent();
-/** @method accessor=Colors::Silver,flags=const struct gcobject */
+/** @method accessor=Colors::Silver,flags=const struct object */
 public static final native int Colors_Silver();
-/** @method accessor=Colors::DarkGray,flags=const struct gcobject */
+/** @method accessor=Colors::DarkGray,flags=const struct object */
 public static final native int Colors_DarkGray();
-/** @method accessor=Colors::Yellow,flags=const struct gcobject */
+/** @method accessor=Colors::Yellow,flags=const struct object */
 public static final native int Colors_Yellow();
 /**
  * @method flags=setter
- * @param sender cast=(ColumnDefinition^),flags=gcobject
- * @param width cast=(GridLength),flags=gcobject
+ * @param sender cast=(ColumnDefinition^),flags=object
+ * @param width cast=(GridLength),flags=object
  */
 public static final native void ColumnDefinition_Width(int sender, int width);
 /**
  * @method flags=cpp
- * @param sender cast=(ColumnDefinitionCollection^),flags=gcobject
- * @param column cast=(ColumnDefinition^),flags=gcobject
+ * @param sender cast=(ColumnDefinitionCollection^),flags=object
+ * @param column cast=(ColumnDefinition^),flags=object
  */
 public static final native void ColumnDefinitionCollection_Add(int sender, int column);
 /**
  * @method flags=getter
- * @param sender cast=(ComboBox^),flags=gcobject
+ * @param sender cast=(ComboBox^),flags=object
  */
 public static final native boolean ComboBox_IsDropDownOpen(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ComboBox^),flags=gcobject
+ * @param sender cast=(ComboBox^),flags=object
  */
 public static final native void ComboBox_IsDropDownOpen(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(ComboBox^),flags=gcobject
+ * @param sender cast=(ComboBox^),flags=object
  */
 public static final native void ComboBox_IsEditable(int sender, boolean value);
 /**
- * @method flags=gcobject getter
- * @param handle cast=(ComboBox^),flags=gcobject
+ * @method flags=object getter
+ * @param handle cast=(ComboBox^),flags=object
  */
 public static final native int ComboBox_SelectionBoxItem(int handle);
 /**
  * @method accessor=CommandManager::AddPreviewExecutedHandler,flags=struct
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(ExecutedRoutedEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(ExecutedRoutedEventHandler^),flags=object
  */
 public static final native void CommandManager_AddPreviewExecutedHandler(int sender, int handler);
 /**
  * @method flags=cpp
- * @param sender cast=(CommonDialog^),flags=gcobject
- * @param parent cast=(Window^),flags=gcobject
+ * @param sender cast=(CommonDialog^),flags=object
+ * @param parent cast=(Window^),flags=object
  */
 public static final native boolean CommonDialog_ShowDialog(int sender, int parent);
 /**
  * @method flags=cpp
- * @param sender cast=(CompositeCollection^),flags=gcobject
- * @param object cast=(Object^),flags=gcobject
+ * @param sender cast=(CompositeCollection^),flags=object
+ * @param object cast=(Object^),flags=object
  */
 public static final native int CompositeCollection_IndexOf(int sender, int object);
 /**
  * @method flags=cpp
- * @param sender cast=(CompositeCollection^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(CompositeCollection^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void CompositeCollection_Insert(int sender, int index, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(CompositeCollection^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(CompositeCollection^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void CompositeCollection_Remove(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(CompositeCollection^),flags=gcobject
+ * @param sender cast=(CompositeCollection^),flags=object
  */
 public static final native void CompositeCollection_RemoveAt(int sender, int value);
 /** @method accessor=Console::Beep */
 public static final native void Console_Beep();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Control^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Control^),flags=object
  */
 public static final native int Control_Padding(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(Thickness),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(Thickness),flags=object
  */
 public static final native void Control_Padding(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ContainerVisual^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ContainerVisual^),flags=object
  */
 public static final native int ContainerVisual_Clip(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ContainerVisual^),flags=gcobject
- * @param clip cast=(Geometry^),flags=gcobject
+ * @param sender cast=(ContainerVisual^),flags=object
+ * @param clip cast=(Geometry^),flags=object
  */
 public static final native void ContainerVisual_Clip(int sender, int clip);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ContentControl^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ContentControl^),flags=object
  */
 public static final native int ContentControl_Content(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ContentControl^),flags=gcobject
- * @param content cast=(Object^),flags=gcobject
+ * @param sender cast=(ContentControl^),flags=object
+ * @param content cast=(Object^),flags=object
  */
 public static final native void ContentControl_Content(int sender, int content);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ContentPresenter^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ContentPresenter^),flags=object
  */
 public static final native int ContentPresenter_Content(int sender);
-/** @method accessor=ContentPresenter::typeid,flags=const gcobject */
+/** @method accessor=ContentPresenter::typeid,flags=const object */
 public static final native int ContentPresenter_typeid();
 /**
  * @method flags=setter
- * @param sender cast=(ContextMenu^),flags=gcobject
+ * @param sender cast=(ContextMenu^),flags=object
  */
 public static final native void ContextMenu_IsOpen(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(ContextMenu^),flags=gcobject
+ * @param sender cast=(ContextMenu^),flags=object
  * @param mode cast=(PlacementMode)
  */
 public static final native void ContextMenu_Placement(int sender, int mode);
 /**
  * @method flags=setter
- * @param sender cast=(ContextMenu^),flags=gcobject
+ * @param sender cast=(ContextMenu^),flags=object
  */
 public static final native void ContextMenu_HorizontalOffset(int sender, int offset);
 /**
  * @method flags=setter
- * @param sender cast=(ContextMenu^),flags=gcobject
+ * @param sender cast=(ContextMenu^),flags=object
  */
 public static final native void ContextMenu_VerticalOffset(int sender, int offset);
 /**
  * @method flags=adder
- * @param sender cast=(ContextMenu^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(ContextMenu^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void ContextMenu_Opened(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(ContextMenu^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(ContextMenu^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void ContextMenu_Closed(int sender, int handler);
 /**
  * @method flags=getter
- * @param sender cast=(ContextMenuEventArgs^),flags=gcobject
+ * @param sender cast=(ContextMenuEventArgs^),flags=object
  */
 public static final native double ContextMenuEventArgs_CursorLeft(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(ContextMenuEventArgs^),flags=gcobject
+ * @param sender cast=(ContextMenuEventArgs^),flags=object
  */
 public static final native double ContextMenuEventArgs_CursorTop(int sender);
-/** @method accessor=Control::BackgroundProperty,flags=const gcobject */
+/** @method accessor=Control::BackgroundProperty,flags=const object */
 public static final native int Control_BackgroundProperty();
-/** @method accessor=Control::BorderBrushProperty,flags=const gcobject */
+/** @method accessor=Control::BorderBrushProperty,flags=const object */
 public static final native int Control_BorderBrushProperty();
-/** @method accessor=Control::BorderThicknessProperty,flags=const gcobject */
+/** @method accessor=Control::BorderThicknessProperty,flags=const object */
 public static final native int Control_BorderThicknessProperty();
-/** @method accessor=Control::ForegroundProperty,flags=const gcobject */
+/** @method accessor=Control::ForegroundProperty,flags=const object */
 public static final native int Control_ForegroundProperty();
-/** @method accessor=Control::FontFamilyProperty,flags=const gcobject */
+/** @method accessor=Control::FontFamilyProperty,flags=const object */
 public static final native int Control_FontFamilyProperty();
-/** @method accessor=Control::FontStyleProperty,flags=const gcobject */
+/** @method accessor=Control::FontStyleProperty,flags=const object */
 public static final native int Control_FontStyleProperty();
-/** @method accessor=Control::FontWeightProperty,flags=const gcobject */
+/** @method accessor=Control::FontWeightProperty,flags=const object */
 public static final native int Control_FontWeightProperty();
-/** @method accessor=Control::FontStretchProperty,flags=const gcobject */
+/** @method accessor=Control::FontStretchProperty,flags=const object */
 public static final native int Control_FontStretchProperty();
-/** @method accessor=Control::FontSizeProperty,flags=const gcobject */
+/** @method accessor=Control::FontSizeProperty,flags=const object */
 public static final native int Control_FontSizeProperty();
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(Thickness),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(Thickness),flags=object
  */
 public static final native void Control_BorderThickness(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(Brush^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(Brush^),flags=object
  */
 public static final native void Control_Background(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(Brush^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(Brush^),flags=object
  */
 public static final native void Control_Foreground(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Control^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Control^),flags=object
  */
 public static final native int Control_FontFamily(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(FontFamily^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(FontFamily^),flags=object
  */
 public static final native void Control_FontFamily(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(FontStyle),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(FontStyle),flags=object
  */
 public static final native void Control_FontStyle(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(FontWeight),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(FontWeight),flags=object
  */
 public static final native void Control_FontWeight(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(FontStretch),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(FontStretch),flags=object
  */
 public static final native void Control_FontStretch(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(Control^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
  */
 public static final native double Control_FontSize(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
  */
 public static final native void Control_FontSize(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Control ^),flags=gcobject
+ * @param sender cast=(Control ^),flags=object
  */
 public static final native int Control_HorizontalContentAlignment(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Control ^),flags=gcobject
+ * @param sender cast=(Control ^),flags=object
  * @param value cast=(HorizontalAlignment)
  */
 public static final native void Control_HorizontalContentAlignment(int sender, int value);
 /**
  * @method flags=adder
- * @param sender cast=(Control^),flags=gcobject
- * @param handler cast=(MouseButtonEventHandler^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param handler cast=(MouseButtonEventHandler^),flags=object
  */
 public static final native void Control_MouseDoubleClick(int sender, int handler);
-/** @method accessor=Control::MouseDoubleClickEvent,flags=const gcobject */
+/** @method accessor=Control::MouseDoubleClickEvent,flags=const object */
 public static final native int Control_MouseDoubleClickEvent();
 /**
  * @method flags=adder
- * @param sender cast=(Control^),flags=gcobject
- * @param handler cast=(MouseButtonEventHandler^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param handler cast=(MouseButtonEventHandler^),flags=object
  */
 public static final native void Control_PreviewMouseDoubleClick(int sender, int handler);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Control^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Control^),flags=object
  */
 public static final native int Control_Template(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
- * @param value cast=(ControlTemplate^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
+ * @param value cast=(ControlTemplate^),flags=object
  */
 public static final native void Control_Template(int sender, int value);
-/** @method accessor=Control::TemplateProperty,flags=const gcobject */
+/** @method accessor=Control::TemplateProperty,flags=const object */
 public static final native int Control_TemplateProperty();
 /**
  * @method flags=setter
- * @param sender cast=(Control^),flags=gcobject
+ * @param sender cast=(Control^),flags=object
  * @param value cast=(VerticalAlignment)
  */
 public static final native void Control_VerticalContentAlignment(int sender, int value);
-/** @method accessor=CultureInfo::CurrentUICulture,flags=gcobject const */
+/** @method accessor=CultureInfo::CurrentUICulture,flags=object const */
 public static final native int CultureInfo_CurrentUICulture();
-/** @method accessor=Cursors::AppStarting,flags=const gcobject */
+/** @method accessor=Cursors::AppStarting,flags=const object */
 public static final native int Cursors_AppStarting();
-/** @method accessor=Cursors::Arrow,flags=const gcobject */
+/** @method accessor=Cursors::Arrow,flags=const object */
 public static final native int Cursors_Arrow();
-/** @method accessor=Cursors::Hand,flags=const gcobject */
+/** @method accessor=Cursors::Hand,flags=const object */
 public static final native int Cursors_Hand();
-/** @method accessor=Cursors::Wait,flags=const gcobject */
+/** @method accessor=Cursors::Wait,flags=const object */
 public static final native int Cursors_Wait();
-/** @method accessor=Cursors::Cross,flags=const gcobject */
+/** @method accessor=Cursors::Cross,flags=const object */
 public static final native int Cursors_Cross();
-/** @method accessor=Cursors::Help,flags=const gcobject */
+/** @method accessor=Cursors::Help,flags=const object */
 public static final native int Cursors_Help();
-/** @method accessor=Cursors::SizeAll,flags=const gcobject */
+/** @method accessor=Cursors::SizeAll,flags=const object */
 public static final native int Cursors_SizeAll();
-/** @method accessor=Cursors::SizeNS,flags=const gcobject */
+/** @method accessor=Cursors::SizeNS,flags=const object */
 public static final native int Cursors_SizeNS();
-/** @method accessor=Cursors::SizeNWSE,flags=const gcobject */
+/** @method accessor=Cursors::SizeNWSE,flags=const object */
 public static final native int Cursors_SizeNWSE();
-/** @method accessor=Cursors::SizeNESW,flags=const gcobject */
+/** @method accessor=Cursors::SizeNESW,flags=const object */
 public static final native int Cursors_SizeNESW();
-/** @method accessor=Cursors::SizeWE,flags=const gcobject */
+/** @method accessor=Cursors::SizeWE,flags=const object */
 public static final native int Cursors_SizeWE();
-/** @method accessor=Cursors::ScrollE,flags=const gcobject */
+/** @method accessor=Cursors::ScrollE,flags=const object */
 public static final native int Cursors_ScrollE();
-/** @method accessor=Cursors::ScrollN,flags=const gcobject */
+/** @method accessor=Cursors::ScrollN,flags=const object */
 public static final native int Cursors_ScrollN();
-/** @method accessor=Cursors::ScrollNE,flags=const gcobject */
+/** @method accessor=Cursors::ScrollNE,flags=const object */
 public static final native int Cursors_ScrollNE();
-/** @method accessor=Cursors::ScrollNW,flags=const gcobject */
+/** @method accessor=Cursors::ScrollNW,flags=const object */
 public static final native int Cursors_ScrollNW();
-/** @method accessor=Cursors::ScrollS,flags=const gcobject */
+/** @method accessor=Cursors::ScrollS,flags=const object */
 public static final native int Cursors_ScrollS();
-/** @method accessor=Cursors::ScrollSE,flags=const gcobject */
+/** @method accessor=Cursors::ScrollSE,flags=const object */
 public static final native int Cursors_ScrollSE();
-/** @method accessor=Cursors::ScrollSW,flags=const gcobject */
+/** @method accessor=Cursors::ScrollSW,flags=const object */
 public static final native int Cursors_ScrollSW();
-/** @method accessor=Cursors::ScrollW,flags=const gcobject */
+/** @method accessor=Cursors::ScrollW,flags=const object */
 public static final native int Cursors_ScrollW();
-/** @method accessor=Cursors::IBeam,flags=const gcobject */
+/** @method accessor=Cursors::IBeam,flags=const object */
 public static final native int Cursors_IBeam();
-/** @method accessor=Cursors::UpArrow,flags=const gcobject */
+/** @method accessor=Cursors::UpArrow,flags=const object */
 public static final native int Cursors_UpArrow();
-/** @method accessor=Cursors::No,flags=const gcobject */
+/** @method accessor=Cursors::No,flags=const object */
 public static final native int Cursors_No();
 /**
- * @method accessor=System::Windows::Interop::CursorInteropHelper::Create,flags=gcobject
- * @param safeHandle cast=(SafeHandle^),flags=gcobject
+ * @method accessor=System::Windows::Interop::CursorInteropHelper::Create,flags=object
+ * @param safeHandle cast=(SafeHandle^),flags=object
  */
 public static final native int CursorInteropHelper_Create(int safeHandle);
-/** @method accessor=DashStyles::Dash,flags=const gcobject */
+/** @method accessor=DashStyles::Dash,flags=const object */
 public static final native int DashStyles_Dash();
-/** @method accessor=DashStyles::DashDot,flags=const gcobject */
+/** @method accessor=DashStyles::DashDot,flags=const object */
 public static final native int DashStyles_DashDot();
-/** @method accessor=DashStyles::DashDotDot,flags=const gcobject */
+/** @method accessor=DashStyles::DashDotDot,flags=const object */
 public static final native int DashStyles_DashDotDot();
-/** @method accessor=DashStyles::Dot,flags=const gcobject */
+/** @method accessor=DashStyles::Dot,flags=const object */
 public static final native int DashStyles_Dot();
-/** @method accessor=DashStyles::Solid,flags=const gcobject */
+/** @method accessor=DashStyles::Solid,flags=const object */
 public static final native int DashStyles_Solid();
-/** @method accessor=DataFormats::Bitmap,flags=const gcobject */
+/** @method accessor=DataFormats::Bitmap,flags=const object */
 public static final native int DataFormats_Bitmap();
-/** @method accessor=DataFormats::FileDrop,flags=const gcobject */
+/** @method accessor=DataFormats::FileDrop,flags=const object */
 public static final native int DataFormats_FileDrop();
-/** @method accessor=DataFormats::Html,flags=const gcobject */
+/** @method accessor=DataFormats::Html,flags=const object */
 public static final native int DataFormats_Html();
-/** @method accessor=DataFormats::Rtf,flags=const gcobject */
+/** @method accessor=DataFormats::Rtf,flags=const object */
 public static final native int DataFormats_Rtf();
-/** @method accessor=DataFormats::UnicodeText,flags=const gcobject */
+/** @method accessor=DataFormats::UnicodeText,flags=const object */
 public static final native int DataFormats_UnicodeText();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(DataObject^),flags=gcobject
- * @param format cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(DataObject^),flags=object
+ * @param format cast=(String^),flags=object
  */
 public static final native int DataObject_GetData(int sender, int format, boolean autoConvert);
 /**
  * @method flags=cpp
- * @param sender cast=(DataObject^),flags=gcobject
- * @param format cast=(String^),flags=gcobject
+ * @param sender cast=(DataObject^),flags=object
+ * @param format cast=(String^),flags=object
  */
 public static final native boolean DataObject_GetDataPresent(int sender, int format, boolean autoConvert);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(DataObject^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(DataObject^),flags=object
  */
 public static final native int DataObject_GetFormats(int sender, boolean autoConvert);
 /**
  * @method flags=cpp
- * @param sender cast=(DataObject^),flags=gcobject
- * @param format cast=(String^),flags=gcobject
- * @param data cast=(Object^),flags=gcobject
+ * @param sender cast=(DataObject^),flags=object
+ * @param format cast=(String^),flags=object
+ * @param data cast=(Object^),flags=object
  */
 public static final native void DataObject_SetData(int sender, int format, int data, boolean autoConvert);
 /**
  * @method flags=cpp
- * @param sender cast=(DependencyObject^),flags=gcobject
- * @param property cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(DependencyObject^),flags=object
+ * @param property cast=(DependencyProperty^),flags=object
  */
 public static final native void DependencyObject_ClearValue(int sender, int property);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(DependencyObject^),flags=gcobject
- * @param property cast=(DependencyProperty^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(DependencyObject^),flags=object
+ * @param property cast=(DependencyProperty^),flags=object
  */
 public static final native int DependencyObject_GetValue(int sender, int property);
 /**
  * @method accessor=GetValue,flags=cpp
- * @param sender cast=(DependencyObject^),flags=gcobject
- * @param property cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(DependencyObject^),flags=object
+ * @param property cast=(DependencyProperty^),flags=object
  */
 public static final native double DependencyObject_GetValueDouble(int sender, int property);
 /**
  * @method accessor=GetValue,flags=cpp
- * @param sender cast=(DependencyObject^),flags=gcobject
- * @param property cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(DependencyObject^),flags=object
+ * @param property cast=(DependencyProperty^),flags=object
  */
 public static final native int DependencyObject_GetValueInt(int sender, int property);
 /**
  * @method flags=cpp
- * @param sender cast=(DependencyObject^),flags=gcobject
- * @param property cast=(DependencyProperty^),flags=gcobject
- * @param object cast=(Object^),flags=gcobject
+ * @param sender cast=(DependencyObject^),flags=object
+ * @param property cast=(DependencyProperty^),flags=object
+ * @param object cast=(Object^),flags=object
  */
 public static final native void DependencyObject_SetValue(int sender, int property, int object);
-/** @method accessor=DependencyProperty::UnsetValue,flags=const gcobject */
+/** @method accessor=DependencyProperty::UnsetValue,flags=const object */
 public static final native int DependencyProperty_UnsetValue();
 /**
  * @method flags=cpp
- * @param sender cast=(DependencyPropertyDescriptor^),flags=gcobject
- * @param object cast=(Object^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(DependencyPropertyDescriptor^),flags=object
+ * @param object cast=(Object^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void DependencyPropertyDescriptor_AddValueChanged(int sender, int object, int handler);
 /**
- * @method accessor=DependencyPropertyDescriptor::FromProperty,flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
- * @param type cast=(Type^),flags=gcobject
+ * @method accessor=DependencyPropertyDescriptor::FromProperty,flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
+ * @param type cast=(Type^),flags=object
  */
 public static final native int DependencyPropertyDescriptor_FromProperty(int dp, int type);
 /**
  * @method accessor=Dispatcher::PushFrame
- * @param frame cast=(DispatcherFrame ^),flags=gcobject
+ * @param frame cast=(DispatcherFrame ^),flags=object
  */
 public static final native void Dispatcher_PushFrame(int frame);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Dispatcher ^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Dispatcher ^),flags=object
  */
 public static final native int Dispatcher_Hooks(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(DispatcherHooks ^),flags=gcobject
- * @param handler cast=(EventHandler ^),flags=gcobject
+ * @param sender cast=(DispatcherHooks ^),flags=object
+ * @param handler cast=(EventHandler ^),flags=object
  */
 public static final native void DispatcherHooks_DispatcherInactive(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(DispatcherHooks ^),flags=gcobject
- * @param handler cast=(DispatcherHookEventHandler ^),flags=gcobject
+ * @param sender cast=(DispatcherHooks ^),flags=object
+ * @param handler cast=(DispatcherHookEventHandler ^),flags=object
  */
 public static final native void DispatcherHooks_OperationAborted(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(DispatcherHooks ^),flags=gcobject
- * @param handler cast=(DispatcherHookEventHandler ^),flags=gcobject
+ * @param sender cast=(DispatcherHooks ^),flags=object
+ * @param handler cast=(DispatcherHookEventHandler ^),flags=object
  */
 public static final native void DispatcherHooks_OperationCompleted(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(DispatcherHooks ^),flags=gcobject
- * @param handler cast=(DispatcherHookEventHandler ^),flags=gcobject
+ * @param sender cast=(DispatcherHooks ^),flags=object
+ * @param handler cast=(DispatcherHookEventHandler ^),flags=object
  */
 public static final native void DispatcherHooks_OperationPosted(int sender, int handler);
 /**
  * @method flags=getter
- * @param sender cast=(DispatcherFrame^),flags=gcobject
+ * @param sender cast=(DispatcherFrame^),flags=object
  */
 public static final native boolean DispatcherFrame_Continue(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DispatcherFrame^),flags=gcobject
+ * @param sender cast=(DispatcherFrame^),flags=object
  */
 public static final native void DispatcherFrame_Continue(int sender, boolean value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(DispatcherHookEventArgs ^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(DispatcherHookEventArgs ^),flags=object
  */
 public static final native int DispatcherHookEventArgs_Operation(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(DispatcherOperation^),flags=gcobject
+ * @param sender cast=(DispatcherOperation^),flags=object
  */
 public static final native boolean DispatcherOperation_Abort(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(DispatcherOperation ^),flags=gcobject
+ * @param sender cast=(DispatcherOperation ^),flags=object
  */
 public static final native int DispatcherOperation_Priority(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DispatcherOperation ^),flags=gcobject
+ * @param sender cast=(DispatcherOperation ^),flags=object
  * @param value cast=(DispatcherPriority)
  */
 public static final native void DispatcherOperation_Priority(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(DispatcherOperation^),flags=gcobject
+ * @param sender cast=(DispatcherOperation^),flags=object
  */
 public static final native int DispatcherOperation_Wait(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Dispatcher ^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Dispatcher ^),flags=object
  * @param priority cast=(DispatcherPriority)
- * @param method cast=(Delegate ^),flags=gcobject
+ * @param method cast=(Delegate ^),flags=object
  */
 public static final native int Dispatcher_BeginInvoke(int sender, int priority, int method);
 /**
  * @method flags=setter
- * @param sender cast=(DispatcherTimer^),flags=gcobject
- * @param value cast=(TimeSpan),flags=gcobject
+ * @param sender cast=(DispatcherTimer^),flags=object
+ * @param value cast=(TimeSpan),flags=object
  */
 public static final native void DispatcherTimer_Interval(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(DispatcherTimer^),flags=gcobject
+ * @param sender cast=(DispatcherTimer^),flags=object
  */
 public static final native void DispatcherTimer_Start(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(DispatcherTimer^),flags=gcobject
+ * @param sender cast=(DispatcherTimer^),flags=object
  */
 public static final native void DispatcherTimer_Stop(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DispatcherTimer^),flags=gcobject
+ * @param sender cast=(DispatcherTimer^),flags=object
  */
 public static final native void DispatcherTimer_Tag(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(DispatcherTimer^),flags=gcobject
+ * @param sender cast=(DispatcherTimer^),flags=object
  */
 public static final native int DispatcherTimer_Tag(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(DispatcherTimer^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(DispatcherTimer^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void DispatcherTimer_Tick(int sender, int handler);
-/** @method accessor=DockPanel::DockProperty,flags=const gcobject */
+/** @method accessor=DockPanel::DockProperty,flags=const object */
 public static final native int DockPanel_DockProperty();
-/** @method accessor=DockPanel::typeid,flags=const gcobject */
+/** @method accessor=DockPanel::typeid,flags=const object */
 public static final native int DockPanel_typeid();
 /**
  * @method flags=cpp
- * @param sender cast=(DoubleCollection^),flags=gcobject
+ * @param sender cast=(DoubleCollection^),flags=object
  */
 public static final native void DoubleCollection_Add(int sender, double value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(DoubleAnimationUsingKeyFrames^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(DoubleAnimationUsingKeyFrames^),flags=object
  */
 public static final native int DoubleAnimationUsingKeyFrames_KeyFrames(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(DoubleKeyFrameCollection^),flags=gcobject
- * @param keyFrame cast=(DoubleKeyFrame^),flags=gcobject
+ * @param sender cast=(DoubleKeyFrameCollection^),flags=object
+ * @param keyFrame cast=(DoubleKeyFrame^),flags=object
  */
 public static final native int DoubleKeyFrameCollection_Add(int sender, int keyFrame);
 /**
  * @method flags=getter
- * @param e cast=(DragDeltaEventArgs^),flags=gcobject
+ * @param e cast=(DragDeltaEventArgs^),flags=object
  */
 public static final native int DragDeltaEventArgs_VerticalChange(int e);
 /**
  * @method flags=getter
- * @param e cast=(DragDeltaEventArgs^),flags=gcobject
+ * @param e cast=(DragDeltaEventArgs^),flags=object
  */
 public static final native int DragDeltaEventArgs_HorizontalChange(int e);
 /**
  * @method accessor=DragDrop::DoDragDrop
- * @param dragSource cast=(DependencyObject^),flags=gcobject
- * @param data cast=(Object^),flags=gcobject
+ * @param dragSource cast=(DependencyObject^),flags=object
+ * @param data cast=(Object^),flags=object
  * @param allowedEffects cast=(DragDropEffects)
  */
 public static final native int DragDrop_DoDragDrop(int dragSource, int data, int allowedEffects);
 /**
  * @method flags=getter
- * @param sender cast=(DragEventArgs^),flags=gcobject
+ * @param sender cast=(DragEventArgs^),flags=object
  */
 public static final native int DragEventArgs_AllowedEffects (int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(DragEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(DragEventArgs^),flags=object
  */
 public static final native int DragEventArgs_Data (int sender);
 /**
  * @method flags=getter
- * @param sender cast=(DragEventArgs^),flags=gcobject
+ * @param sender cast=(DragEventArgs^),flags=object
  */
 public static final native int DragEventArgs_Effects (int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DragEventArgs^),flags=gcobject
+ * @param sender cast=(DragEventArgs^),flags=object
  * @param effects cast=(DragDropEffects)
  */
 public static final native void DragEventArgs_Effects (int sender, int effects);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(DragEventArgs^),flags=gcobject
- * @param relativeTo cast=(IInputElement^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(DragEventArgs^),flags=object
+ * @param relativeTo cast=(IInputElement^),flags=object
  */
 public static final native int DragEventArgs_GetPosition (int sender, int relativeTo);
 /**
  * @method flags=getter
- * @param sender cast=(DragEventArgs^),flags=gcobject
+ * @param sender cast=(DragEventArgs^),flags=object
  */
 public static final native int DragEventArgs_KeyStates (int sender);
-/** @method accessor=System::Drawing::Color::FromArgb,flags=gcobject */
+/** @method accessor=System::Drawing::Color::FromArgb,flags=object */
 public static final native int DrawingColor_FromArgb(int a, int r, int g, int b);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Drawing::Color^),flags=gcobject
+ * @param sender cast=(System::Drawing::Color^),flags=object
  */
 public static final native int DrawingColor_ToArgb(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
  */
 public static final native void DrawingContext_Close(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param Drawing cast=(System::Windows::Media::Drawing^),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param Drawing cast=(System::Windows::Media::Drawing^),flags=object
  */
 public static final native void DrawingContext_DrawDrawing(int sender, int Drawing);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
- * @param pen cast=(Pen^),flags=gcobject
- * @param center cast=(Point),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param brush cast=(Brush^),flags=object
+ * @param pen cast=(Pen^),flags=object
+ * @param center cast=(Point),flags=object
  */
 public static final native void DrawingContext_DrawEllipse(int sender, int brush, int pen, int center, double radiusX, double radiusY);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param imagesource cast=(ImageSource^),flags=gcobject
- * @param rect cast=(Rect),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param imagesource cast=(ImageSource^),flags=object
+ * @param rect cast=(Rect),flags=object
  */
 public static final native void DrawingContext_DrawImage(int sender, int imagesource, int rect);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param pen cast=(Pen^),flags=gcobject
- * @param point0 cast=(Point),flags=gcobject
- * @param point1 cast=(Point),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param pen cast=(Pen^),flags=object
+ * @param point0 cast=(Point),flags=object
+ * @param point1 cast=(Point),flags=object
  */
 public static final native void DrawingContext_DrawLine(int sender, int pen, int point0, int point1);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
- * @param pen cast=(Pen^),flags=gcobject
- * @param geometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param brush cast=(Brush^),flags=object
+ * @param pen cast=(Pen^),flags=object
+ * @param geometry cast=(Geometry^),flags=object
  */
 public static final native void DrawingContext_DrawGeometry(int sender, int brush, int pen, int geometry);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
- * @param pen cast=(Pen^),flags=gcobject
- * @param rect cast=(Rect),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param brush cast=(Brush^),flags=object
+ * @param pen cast=(Pen^),flags=object
+ * @param rect cast=(Rect),flags=object
  */
 public static final native void DrawingContext_DrawRectangle(int sender, int brush, int pen, int rect);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
- * @param pen cast=(Pen^),flags=gcobject
- * @param rect cast=(Rect),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param brush cast=(Brush^),flags=object
+ * @param pen cast=(Pen^),flags=object
+ * @param rect cast=(Rect),flags=object
  */
 public static final native void DrawingContext_DrawRoundedRectangle(int sender, int brush, int pen, int rect, double radiusX, double radiusY);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param formattedText cast=(FormattedText^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param formattedText cast=(FormattedText^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native void DrawingContext_DrawText(int sender, int formattedText, int point);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Drawing::FontFamily^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Drawing::FontFamily^),flags=object
  */
 public static final native int DrawingFontFamily_Name(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param transform cast=(Transform^),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param transform cast=(Transform^),flags=object
  */
 public static final native void DrawingContext_PushTransform(int sender, int transform);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
- * @param clipGeometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
+ * @param clipGeometry cast=(Geometry^),flags=object
  */
 public static final native void DrawingContext_PushClip(int sender, int clipGeometry);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
  */
 public static final native void DrawingContext_PushOpacity(int sender, double opacity);
 /**
  * @method flags=cpp
- * @param sender cast=(DrawingContext^),flags=gcobject
+ * @param sender cast=(DrawingContext^),flags=object
  */
 public static final native void DrawingContext_Pop(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(DrawingVisual^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(DrawingVisual^),flags=object
  */
 public static final native int DrawingVisual_Drawing(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(DrawingVisual^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(DrawingVisual^),flags=object
  */
 public static final native int DrawingVisual_RenderOpen(int sender);
-/** @method accessor=DrawingVisual::typeid,flags=const gcobject */
+/** @method accessor=DrawingVisual::typeid,flags=const object */
 public static final native int DrawingVisual_typeid();
-/** @method accessor=EditingCommands::Backspace,flags=const gcobject */
+/** @method accessor=EditingCommands::Backspace,flags=const object */
 public static final native int EditingCommands_Backspace();
-/** @method accessor=EditingCommands::Delete,flags=const gcobject */
+/** @method accessor=EditingCommands::Delete,flags=const object */
 public static final native int EditingCommands_Delete();
-/** @method accessor=EditingCommands::DeleteNextWord,flags=const gcobject */
+/** @method accessor=EditingCommands::DeleteNextWord,flags=const object */
 public static final native int EditingCommands_DeleteNextWord();
-/** @method accessor=EditingCommands::DeletePreviousWord,flags=const gcobject */
+/** @method accessor=EditingCommands::DeletePreviousWord,flags=const object */
 public static final native int EditingCommands_DeletePreviousWord();
 /**
- * @method accessor=Environment::ExpandEnvironmentVariables,flags=gcobject
- * @param string cast=(String^),flags=gcobject
+ * @method accessor=Environment::ExpandEnvironmentVariables,flags=object
+ * @param string cast=(String^),flags=object
  */
 public static final native int Environment_ExpandEnvironmentVariables(int string);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ExecutedRoutedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ExecutedRoutedEventArgs^),flags=object
  */
 public static final native int ExecutedRoutedEventArgs_Command(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ExecutedRoutedEventArgs^),flags=gcobject
+ * @param sender cast=(ExecutedRoutedEventArgs^),flags=object
  */
 public static final native void ExecutedRoutedEventArgs_Handled(int sender, boolean handled);
 /**
  * @method flags=adder
- * @param sender cast=(Expander^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(Expander^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void Expander_Collapsed(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(Expander^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(Expander^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void Expander_Expanded(int sender, int handler);
 /**
  * @method flags=getter
- * @param sender cast=(Expander^),flags=gcobject
+ * @param sender cast=(Expander^),flags=object
  */
 public static final native boolean Expander_IsExpanded(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Expander^),flags=gcobject
+ * @param sender cast=(Expander^),flags=object
  */
 public static final native void Expander_IsExpanded(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(FileDialog^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(FileDialog^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void FileDialog_FileName(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FileDialog^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FileDialog^),flags=object
  */
 public static final native int FileDialog_FileNames(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FileDialog^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(FileDialog^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void FileDialog_Filter(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(FileDialog^),flags=gcobject
+ * @param sender cast=(FileDialog^),flags=object
  */
 public static final native int FileDialog_FilterIndex(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FileDialog^),flags=gcobject
+ * @param sender cast=(FileDialog^),flags=object
  */
 public static final native void FileDialog_FilterIndex(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(FileDialog^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(FileDialog^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void FileDialog_InitialDirectory(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(FileDialog^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(FileDialog^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void FileDialog_Title(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::IO::FileInfo^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::IO::FileInfo^),flags=object
  */
 public static final native int FileInfo_DirectoryName(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::IO::FileInfo^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::IO::FileInfo^),flags=object
  */
 public static final native int FileInfo_Name(int sender);
 /**
  * @method accessor=System::IO::File::Exists
- * @param sender cast=(String^),flags=gcobject
+ * @param sender cast=(String^),flags=object
  */
 public static final native boolean File_Exists(int sender);
 /**
- * @method accessor=System::IO::File::ReadAllText,flags=gcobject
- * @param sender cast=(String^),flags=gcobject
+ * @method accessor=System::IO::File::ReadAllText,flags=object
+ * @param sender cast=(String^),flags=object
  */
 public static final native int File_ReadAllText(int sender);
 /**
- * @method accessor=FocusManager::GetFocusScope,flags=gcobject
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @method accessor=FocusManager::GetFocusScope,flags=object
+ * @param element cast=(DependencyObject^),flags=object
  */
 public static final native int FocusManager_GetFocusScope(int element);
 /**
- * @method accessor=FocusManager::GetFocusedElement,flags=gcobject
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @method accessor=FocusManager::GetFocusedElement,flags=object
+ * @param element cast=(DependencyObject^),flags=object
  */
 public static final native int FocusManager_GetFocusedElement(int element);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::FolderBrowserDialog^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::FolderBrowserDialog^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void FolderBrowserDialog_Description(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::FolderBrowserDialog^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::FolderBrowserDialog^),flags=object
  */
 public static final native int FolderBrowserDialog_SelectedPath(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::FolderBrowserDialog^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::FolderBrowserDialog^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void FolderBrowserDialog_SelectedPath(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Drawing::Font^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Drawing::Font^),flags=object
  */
 public static final native int Font_FontFamily(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Drawing::Font^),flags=gcobject
+ * @param sender cast=(System::Drawing::Font^),flags=object
  */
 public static final native int Font_Size(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Drawing::Font^),flags=gcobject
+ * @param sender cast=(System::Drawing::Font^),flags=object
  */
 public static final native int Font_Style(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::FontDialog^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::FontDialog^),flags=object
  */
 public static final native int FontDialog_Color(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::FontDialog^),flags=gcobject
- * @param value cast=(System::Drawing::Color),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::FontDialog^),flags=object
+ * @param value cast=(System::Drawing::Color),flags=object
  */
 public static final native void FontDialog_Color(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::FontDialog^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::FontDialog^),flags=object
  */
 public static final native int FontDialog_Font(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::FontDialog^),flags=gcobject
- * @param value cast=(System::Drawing::Font^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::FontDialog^),flags=object
+ * @param value cast=(System::Drawing::Font^),flags=object
  */
 public static final native void FontDialog_Font(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::FontDialog^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::FontDialog^),flags=object
  */
 public static final native void FontDialog_ShowColor (int sender, boolean value);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(FontFamily^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(FontFamily^),flags=object
  */
 public static final native int FontFamily_GetTypefaces(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(FontFamily^),flags=gcobject
+ * @param sender cast=(FontFamily^),flags=object
  */
 public static final native double FontFamily_LineSpacing(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FontFamily^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FontFamily^),flags=object
  */
 public static final native int FontFamily_Source(int sender);
-/** @method accessor=FontStyles::Italic,flags=const gcobject */
+/** @method accessor=FontStyles::Italic,flags=const object */
 public static final native int FontStyles_Italic();
-/** @method accessor=FontStyles::Normal,flags=const gcobject */
+/** @method accessor=FontStyles::Normal,flags=const object */
 public static final native int FontStyles_Normal();
-/** @method accessor=FontStyles::Oblique,flags=const gcobject */
+/** @method accessor=FontStyles::Oblique,flags=const object */
 public static final native int FontStyles_Oblique();
-/** @method accessor=FontWeight::FromOpenTypeWeight,flags=gcobject */
+/** @method accessor=FontWeight::FromOpenTypeWeight,flags=object */
 public static final native int FontWeight_FromOpenTypeWeight(int weight);
 /**
  * @method flags=cpp
- * @param sender cast=(FontWeight^),flags=gcobject
+ * @param sender cast=(FontWeight^),flags=object
  */
 public static final native int FontWeight_ToOpenTypeWeight(int sender);
-/** @method accessor=FontWeights::Bold,flags=const gcobject */
+/** @method accessor=FontWeights::Bold,flags=const object */
 public static final native int FontWeights_Bold();
-/** @method accessor=FontWeights::Normal,flags=const gcobject */
+/** @method accessor=FontWeights::Normal,flags=const object */
 public static final native int FontWeights_Normal();
-/** @method accessor=FontStretches::Normal,flags=const gcobject */
+/** @method accessor=FontStretches::Normal,flags=const object */
 public static final native int FontStretches_Normal();
-/** @method accessor=FontStretch::FromOpenTypeStretch,flags=gcobject */
+/** @method accessor=FontStretch::FromOpenTypeStretch,flags=object */
 public static final native int FontStretch_FromOpenTypeStretch(int stretch);
 /**
  * @method flags=cpp
- * @param sender cast=(FontStretch^),flags=gcobject
+ * @param sender cast=(FontStretch^),flags=object
  */
 public static final native int FontStretch_ToOpenTypeStretch(int sender);
 /**
- * @method accessor=Fonts::GetTypefaces,flags=gcobject
- * @param uri cast=(String^),flags=gcobject
+ * @method accessor=Fonts::GetTypefaces,flags=object
+ * @param uri cast=(String^),flags=object
  */
 public static final native int Fonts_GetTypefaces(int uri);
-/** @method accessor=Fonts::SystemTypefaces,flags=const gcobject */
+/** @method accessor=Fonts::SystemTypefaces,flags=const object */
 public static final native int Fonts_SystemTypefaces();
 /**
  * @method flags=getter
- * @param sender cast=(FormattedText^),flags=gcobject
+ * @param sender cast=(FormattedText^),flags=object
  */
 public static final native double FormattedText_Baseline(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(FormattedText^),flags=gcobject
- * @param origin cast=(Point),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(FormattedText^),flags=object
+ * @param origin cast=(Point),flags=object
  */
 public static final native int FormattedText_BuildGeometry(int sender, int origin);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(FormattedText^),flags=gcobject
- * @param origin cast=(Point),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(FormattedText^),flags=object
+ * @param origin cast=(Point),flags=object
  */
 public static final native int FormattedText_BuildHighlightGeometry(int sender, int origin);
 /**
  * @method flags=getter
- * @param sender cast=(FormattedText^),flags=gcobject
+ * @param sender cast=(FormattedText^),flags=object
  */
 public static final native double FormattedText_Height(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(FormattedText^),flags=gcobject
- * @param decorations cast=(TextDecorationCollection^),flags=gcobject
+ * @param sender cast=(FormattedText^),flags=object
+ * @param decorations cast=(TextDecorationCollection^),flags=object
  */
 public static final native void FormattedText_SetTextDecorations(int sender, int decorations, int startIndex, int count);
 /**
  * @method flags=getter
- * @param sender cast=(FormattedText^),flags=gcobject
+ * @param sender cast=(FormattedText^),flags=object
  */
 public static final native double FormattedText_WidthIncludingTrailingWhitespace(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Windows::Forms::CommonDialog^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::CommonDialog^),flags=object
  */
 public static final native int FormsCommonDialog_ShowDialog(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Windows::Forms::MouseEventArgs^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::MouseEventArgs^),flags=object
  */
 public static final native int FormsMouseEventArgs_Button(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Frame^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native boolean Frame_CanGoBack(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Frame^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native boolean Frame_CanGoForward(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Frame^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native int Frame_CurrentSource(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Frame^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native int Frame_Source(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Frame^),flags=gcobject
- * @param uri cast=(Uri^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
+ * @param uri cast=(Uri^),flags=object
  */
 public static final native void Frame_Source(int sender, int uri);
 /**
  * @method flags=cpp
- * @param sender cast=(Frame^),flags=gcobject
- * @param uri cast=(Uri^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
+ * @param uri cast=(Uri^),flags=object
  */
 public static final native boolean Frame_Navigate(int sender, int uri);
 /**
  * @method flags=setter
- * @param sender cast=(Frame^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
  * @param visiblity cast=(System::Windows::Navigation::NavigationUIVisibility)
  */
 public static final native void Frame_NavigationUIVisibility(int sender, int visiblity);
 /**
  * @method flags=cpp
- * @param sender cast=(Frame^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native void Frame_GoBack(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Frame^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native void Frame_GoForward(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Frame^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native void Frame_Refresh(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Frame^),flags=gcobject
+ * @param sender cast=(Frame^),flags=object
  */
 public static final native void Frame_StopLoading(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkContentElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkContentElement^),flags=object
  */
 public static final native int FrameworkContentElement_Parent(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkContentElement^),flags=gcobject
+ * @param sender cast=(FrameworkContentElement^),flags=object
  */
 public static final native int FrameworkContentElement_Tag(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkContentElement^),flags=gcobject
+ * @param sender cast=(FrameworkContentElement^),flags=object
  */
 public static final native void FrameworkContentElement_Tag(int sender, int value);
-/** @method accessor=FrameworkContentElement::typeid,flags=const gcobject */
+/** @method accessor=FrameworkContentElement::typeid,flags=const object */
 public static final native int FrameworkContentElement_typeid();
 /**
  * @method flags=cpp
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_BeginInit(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_BringIntoView(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param value cast=(ContextMenu^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param value cast=(ContextMenu^),flags=object
  */
 public static final native void FrameworkElement_ContextMenu(int sender, int value);
 /**
  * @method flags=adder
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param handler cast=(ContextMenuEventHandler^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param handler cast=(ContextMenuEventHandler^),flags=object
  */
 public static final native void FrameworkElement_ContextMenuClosing(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param handler cast=(ContextMenuEventHandler^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param handler cast=(ContextMenuEventHandler^),flags=object
  */
 public static final native void FrameworkElement_ContextMenuOpening(int sender, int handler);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param cursor cast=(Cursor^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param cursor cast=(Cursor^),flags=object
  */
 public static final native void FrameworkElement_Cursor(int sender, int cursor);
-/** @method accessor=FrameworkElement::CursorProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::CursorProperty,flags=const object */
 public static final native int FrameworkElement_CursorProperty();
-/** @method accessor=FrameworkElement::ActualHeightProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::ActualHeightProperty,flags=const object */
 public static final native int FrameworkElement_ActualHeightProperty();
-/** @method accessor=FrameworkElement::ActualWidthProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::ActualWidthProperty,flags=const object */
 public static final native int FrameworkElement_ActualWidthProperty();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param key cast=(Object^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param key cast=(Object^),flags=object
  */
 public static final native int FrameworkElement_FindResource(int sender, int key);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param style cast=(Style^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param style cast=(Style^),flags=object
  */
 public static final native void FrameworkElement_FocusVisualStyle(int sender, int style);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_FlowDirection(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  * @param value cast=(FlowDirection)
  */
 public static final native void FrameworkElement_FlowDirection(int sender, int value);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  */
 public static final native int FrameworkElement_GetBindingExpression(int sender, int dp);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  * @param value cast=(HorizontalAlignment)
  */
 public static final native void FrameworkElement_HorizontalAlignment(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native boolean FrameworkElement_IsLoaded(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param value cast=(Transform^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param value cast=(Transform^),flags=object
  */
 public static final native void FrameworkElement_LayoutTransform(int sender, int value);
 /**
  * @method flags=adder
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void FrameworkElement_Loaded(int sender, int handler);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_Margin(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param value cast=(Thickness),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param value cast=(Thickness),flags=object
  */
 public static final native void FrameworkElement_Margin(int sender, int value);
-/** @method accessor=FrameworkElement::MarginProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::MarginProperty,flags=const object */
 public static final native int FrameworkElement_MarginProperty();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_Name(int sender);
-/** @method accessor=FrameworkElement::NameProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::NameProperty,flags=const object */
 public static final native int FrameworkElement_NameProperty();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_Parent(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_RenderTransform(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param value cast=(Transform^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param value cast=(Transform^),flags=object
  */
 public static final native void FrameworkElement_RenderTransform(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_Style(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param value cast=(Style^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param value cast=(Style^),flags=object
  */
 public static final native void FrameworkElement_Style(int sender, int value);
-/** @method accessor=FrameworkElement::StyleProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::StyleProperty,flags=const object */
 public static final native int FrameworkElement_StyleProperty();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_Tag(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param tag cast=(Object^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param tag cast=(Object^),flags=object
  */
 public static final native void FrameworkElement_Tag(int sender, int tag);
-/** @method accessor=FrameworkElement::TagProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::TagProperty,flags=const object */
 public static final native int FrameworkElement_TagProperty();
-/** @method accessor=FrameworkElement::typeid,flags=const gcobject */
+/** @method accessor=FrameworkElement::typeid,flags=const object */
 public static final native int FrameworkElement_typeid();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_ToolTip(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void FrameworkElement_ToolTip(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_MaxHeight(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_MaxHeight(int sender, double height);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_MaxWidth(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_MaxWidth(int sender, double width);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_MinHeight(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_MinHeight(int sender, double height);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_MinWidth(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_MinWidth(int sender, double width);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_Height(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_Height(int sender, double height);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_Width(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native void FrameworkElement_Width(int sender, double width);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_ActualWidth(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native double FrameworkElement_ActualHeight(int sender);
-/** @method accessor=FrameworkElement::WidthProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::WidthProperty,flags=const object */
 public static final native int FrameworkElement_WidthProperty();
-/** @method accessor=FrameworkElement::HeightProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::HeightProperty,flags=const object */
 public static final native int FrameworkElement_HeightProperty();
 /**
  * @method flags=adder
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param handler cast=(SizeChangedEventHandler^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param handler cast=(SizeChangedEventHandler^),flags=object
  */
 public static final native void FrameworkElement_SizeChanged(int sender, int handler);
-/** @method accessor=FrameworkElement::SizeChangedEvent,flags=const gcobject */
+/** @method accessor=FrameworkElement::SizeChangedEvent,flags=const object */
 public static final native int FrameworkElement_SizeChangedEvent();
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
  * @param str cast=(VerticalAlignment)
  */
 public static final native void FrameworkElement_VerticalAlignment(int sender, int str);
-/** @method accessor=FrameworkElement::VerticalAlignmentProperty,flags=const gcobject */
+/** @method accessor=FrameworkElement::VerticalAlignmentProperty,flags=const object */
 public static final native int FrameworkElement_VerticalAlignmentProperty();
 /**
  * @method flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param value cast=(FrameworkElementFactory^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param value cast=(FrameworkElementFactory^),flags=object
  */
 public static final native void FrameworkElementFactory_AppendChild(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
- * @param binding cast=(BindingBase^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
+ * @param binding cast=(BindingBase^),flags=object
  */
 public static final native void FrameworkElementFactory_SetBinding(int sender, int dp, int binding);
 /**
  * @method flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  * @param value cast=(Boolean)
  */
 public static final native void FrameworkElementFactory_SetValue(int sender, int dp, boolean value);
 /**
  * @method flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void FrameworkElementFactory_SetValue(int sender, int dp, int value);
 /**
  * @method accessor=SetValue,flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  * @param value cast=(Dock)
  */
 public static final native void FrameworkElementFactory_SetValueDock(int sender, int dp, int value);
 /**
  * @method accessor=SetValue,flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  */
 public static final native void FrameworkElementFactory_SetValueInt(int sender, int dp, int value);
 /**
  * @method accessor=SetValue,flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  * @param value cast=(Stretch)
  */
 public static final native void FrameworkElementFactory_SetValueStretch(int sender, int dp, int value);
 /**
  * @method accessor=SetValue,flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  * @param value cast=(Orientation)
  */
 public static final native void FrameworkElementFactory_SetValueOrientation(int sender, int dp, int value);
 /**
  * @method accessor=SetValue,flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  * @param value cast=(VerticalAlignment)
  */
 public static final native void FrameworkElementFactory_SetValueVerticalAlignment(int sender, int dp, int value);
 /**
  * @method accessor=SetValue,flags=cpp
- * @param sender cast=(FrameworkElementFactory^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param sender cast=(FrameworkElementFactory^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
  * @param value cast=(Visibility)
  */
 public static final native void FrameworkElementFactory_SetValueVisibility(int sender, int dp, byte value);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(FrameworkTemplate^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
- * @param parent cast=(FrameworkElement^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(FrameworkTemplate^),flags=object
+ * @param name cast=(String^),flags=object
+ * @param parent cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkTemplate_FindName(int sender, int name, int parent);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkTemplate^),flags=gcobject
- * @param value cast=(FrameworkElementFactory^),flags=gcobject
+ * @param sender cast=(FrameworkTemplate^),flags=object
+ * @param value cast=(FrameworkElementFactory^),flags=object
  */
 public static final native void FrameworkTemplate_VisualTree(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(Freezable^),flags=gcobject
+ * @param sender cast=(Freezable^),flags=object
  */
 public static final native boolean Freezable_CanFreeze(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Freezable^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Freezable^),flags=object
  */
 public static final native int Freezable_Clone(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Freezable^),flags=gcobject
+ * @param sender cast=(Freezable^),flags=object
  */
 public static final native void Freezable_Freeze(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(GeometryCollection^),flags=gcobject
+ * @param sender cast=(GeometryCollection^),flags=object
  */
 public static final native void GeometryCollection_Clear(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(GeometryCollection^),flags=gcobject
+ * @param sender cast=(GeometryCollection^),flags=object
  */
 public static final native int GeometryCollection_Count(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(GeometryCollection^),flags=gcobject
- * @param geometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(GeometryCollection^),flags=object
+ * @param geometry cast=(Geometry^),flags=object
  */
 public static final native void GeometryCollection_Add(int sender, int geometry);
 /**
  * @method flags=cpp
- * @param sender cast=(GeometryCollection^),flags=gcobject
- * @param geometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(GeometryCollection^),flags=object
+ * @param geometry cast=(Geometry^),flags=object
  */
 public static final native void GeometryCollection_Remove(int sender, int geometry);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Geometry^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Geometry^),flags=object
  */
 public static final native int Geometry_Clone(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Geometry^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Geometry^),flags=object
  */
 public static final native int Geometry_Bounds(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Geometry^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Geometry^),flags=object
  */
 public static final native int Geometry_GetFlattenedPathGeometry(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Geometry^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Geometry^),flags=object
  * @param type cast=(ToleranceType)
  */
 public static final native int Geometry_GetFlattenedPathGeometry(int sender, double tolerance, int type);
 /**
  * @method flags=cpp
- * @param sender cast=(Geometry^),flags=gcobject
+ * @param sender cast=(Geometry^),flags=object
  */
 public static final native boolean Geometry_IsEmpty(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Geometry^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @param sender cast=(Geometry^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native boolean Geometry_FillContains(int sender, int point);
 /**
  * @method flags=cpp
- * @param sender cast=(Geometry^),flags=gcobject
- * @param geometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(Geometry^),flags=object
+ * @param geometry cast=(Geometry^),flags=object
  */
 public static final native int Geometry_FillContainsWithDetail(int sender, int geometry);
 /**
  * @method flags=cpp
- * @param sender cast=(Geometry^),flags=gcobject
- * @param pen cast=(Pen^),flags=gcobject
- * @param hitPoint cast=(Point),flags=gcobject
+ * @param sender cast=(Geometry^),flags=object
+ * @param pen cast=(Pen^),flags=object
+ * @param hitPoint cast=(Point),flags=object
  */
 public static final native boolean Geometry_StrokeContains(int sender, int pen, int hitPoint);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Geometry^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Geometry^),flags=object
  */
 public static final native int Geometry_Transform(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Geometry^),flags=gcobject
- * @param transform cast=(Transform^),flags=gcobject
+ * @param sender cast=(Geometry^),flags=object
+ * @param transform cast=(Transform^),flags=object
  */
 public static final native void Geometry_Transform(int sender, int transform);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GeometryGroup^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GeometryGroup^),flags=object
  */
 public static final native int GeometryGroup_Children(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GeometryGroup^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GeometryGroup^),flags=object
  */
 public static final native int GeometryGroup_Children(int sender, int index);
 /**
  * @method flags=getter
- * @param sender cast=(GiveFeedbackEventArgs^),flags=gcobject
+ * @param sender cast=(GiveFeedbackEventArgs^),flags=object
  */
 public static final native int GiveFeedbackEventArgs_Effects (int sender);
 /**
  * @method flags=getter
- * @param sender cast=(GlyphRun^),flags=gcobject
+ * @param sender cast=(GlyphRun^),flags=object
  */
 public static final native int GlyphRun_BidiLevel(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(GradientBrush^),flags=gcobject
+ * @param sender cast=(GradientBrush^),flags=object
  * @param mode cast=(BrushMappingMode)
  */
 public static final native void GradientBrush_MappingMode(int sender, int mode);
 /**
  * @method flags=setter
- * @param sender cast=(GradientBrush^),flags=gcobject
+ * @param sender cast=(GradientBrush^),flags=object
  * @param method cast=(GradientSpreadMethod)
  */
 public static final native void GradientBrush_SpreadMethod(int sender, int method);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Grid^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Grid^),flags=object
  */
 public static final native int Grid_ColumnDefinitions(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Grid^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Grid^),flags=object
  */
 public static final native int Grid_RowDefinitions(int sender);
 /**
  * @method accessor=Grid::SetColumn
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native void Grid_SetColumn(int element, int index);
 /**
  * @method accessor=Grid::SetColumnSpan
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native void Grid_SetColumnSpan(int element, int value);
 /**
  * @method accessor=Grid::SetRow
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native void Grid_SetRow(int element, int index);
 /**
  * @method accessor=Grid::SetRowSpan
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native void Grid_SetRowSpan(int element, int value);
 /**
  * @method flags=setter
- * @param sender cast=(GridView^),flags=gcobject
- * @param style cast=(Style^),flags=gcobject
+ * @param sender cast=(GridView^),flags=object
+ * @param style cast=(Style^),flags=object
  */
 public static final native void GridView_ColumnHeaderContainerStyle(int sender, int style);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GridView^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GridView^),flags=object
  */
 public static final native int GridView_Columns(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(GridView^),flags=gcobject
+ * @param sender cast=(GridView^),flags=object
  */
 public static final native void GridView_AllowsColumnReorder(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(GridViewColumn^),flags=gcobject
+ * @param sender cast=(GridViewColumn^),flags=object
  */
 public static final native double GridViewColumn_ActualWidth(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GridViewColumn^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GridViewColumn^),flags=object
  */
 public static final native int GridViewColumn_CellTemplate(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(GridViewColumn^),flags=gcobject
- * @param value cast=(DataTemplate^),flags=gcobject
+ * @param sender cast=(GridViewColumn^),flags=object
+ * @param value cast=(DataTemplate^),flags=object
  */
 public static final native void GridViewColumn_CellTemplate(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GridViewColumn^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GridViewColumn^),flags=object
  */
 public static final native int GridViewColumn_Header(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(GridViewColumn^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(GridViewColumn^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void GridViewColumn_Header(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GridViewColumn^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GridViewColumn^),flags=object
  */
 public static final native int GridViewColumn_HeaderTemplate(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(GridViewColumn^),flags=gcobject
- * @param value cast=(DataTemplate^),flags=gcobject
+ * @param sender cast=(GridViewColumn^),flags=object
+ * @param value cast=(DataTemplate^),flags=object
  */
 public static final native void GridViewColumn_HeaderTemplate(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(GridViewColumn^),flags=gcobject
+ * @param sender cast=(GridViewColumn^),flags=object
  */
 public static final native double GridViewColumn_Width(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(GridViewColumn^),flags=gcobject
+ * @param sender cast=(GridViewColumn^),flags=object
  */
 public static final native void GridViewColumn_Width(int sender, double value);
-/** @method accessor=GridViewColumn::WidthProperty,flags=const gcobject */
+/** @method accessor=GridViewColumn::WidthProperty,flags=const object */
 public static final native int GridViewColumn_WidthProperty();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GridViewColumnCollection^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GridViewColumnCollection^),flags=object
  */
 public static final native int GridViewColumnCollection_default(int sender, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(GridViewColumnCollection^),flags=gcobject
+ * @param sender cast=(GridViewColumnCollection^),flags=object
  */
 public static final native void GridViewColumnCollection_Clear(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(GridViewColumnCollection^),flags=gcobject
+ * @param sender cast=(GridViewColumnCollection^),flags=object
  */
 public static final native int GridViewColumnCollection_Count(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(GridViewColumnCollection ^),flags=gcobject
- * @param item cast=(GridViewColumn^),flags=gcobject
+ * @param sender cast=(GridViewColumnCollection ^),flags=object
+ * @param item cast=(GridViewColumn^),flags=object
  */
 public static final native int GridViewColumnCollection_IndexOf(int sender, int item);
 /**
  * @method flags=cpp
- * @param sender cast=(GridViewColumnCollection^),flags=gcobject
- * @param value cast=(GridViewColumn^),flags=gcobject
+ * @param sender cast=(GridViewColumnCollection^),flags=object
+ * @param value cast=(GridViewColumn^),flags=object
  */
 public static final native void GridViewColumnCollection_Insert(int sender, int index, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(GridViewColumnCollection^),flags=gcobject
- * @param value cast=(GridViewColumn^),flags=gcobject
+ * @param sender cast=(GridViewColumnCollection^),flags=object
+ * @param value cast=(GridViewColumn^),flags=object
  */
 public static final native boolean GridViewColumnCollection_Remove(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(GridViewColumnHeader^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(GridViewColumnHeader^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void GridViewColumnHeader_Content(int sender, int value);
-/** @method accessor=GridViewRowPresenterBase::ColumnsProperty,flags=const gcobject */
+/** @method accessor=GridViewRowPresenterBase::ColumnsProperty,flags=const object */
 public static final native int GridViewRowPresenterBase_ColumnsProperty();
-/** @method accessor=GridViewHeaderRowPresenter::typeid,flags=const gcobject */
+/** @method accessor=GridViewHeaderRowPresenter::typeid,flags=const object */
 public static final native int GridViewHeaderRowPresenter_typeid();
 /**
  * @method flags=setter
- * @param sender cast=(GridViewRowPresenter^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(GridViewRowPresenter^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void GridViewRowPresenter_Content(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(GridViewRowPresenter^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(GridViewRowPresenter^),flags=object
  */
 public static final native int GridViewRowPresenter_Content(int sender);
-/** @method accessor=GridViewRowPresenter::typeid,flags=const gcobject */
+/** @method accessor=GridViewRowPresenter::typeid,flags=const object */
 public static final native int GridViewRowPresenter_typeid();
 /**
  * @method flags=setter
- * @param sender cast=(GridViewRowPresenterBase^),flags=gcobject
- * @param value cast=(GridViewColumnCollection^),flags=gcobject
+ * @param sender cast=(GridViewRowPresenterBase^),flags=object
+ * @param value cast=(GridViewColumnCollection^),flags=object
  */
 public static final native void GridViewRowPresenterBase_Columns(int sender, int value);
 /** @method flags=no_gen */
@@ -2570,483 +2570,483 @@ public static final native void GCHandle_Dump();
 /** @method flags=no_gen */
 public static final native int GCHandle_ToHandle(int gchandle);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(HeaderedContentControl^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(HeaderedContentControl^),flags=object
  */
 public static final native int HeaderedContentControl_Header(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(HeaderedContentControl^),flags=gcobject
- * @param header cast=(Object^),flags=gcobject
+ * @param sender cast=(HeaderedContentControl^),flags=object
+ * @param header cast=(Object^),flags=object
  */
 public static final native void HeaderedContentControl_Header(int sender, int header);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(HeaderedItemsControl^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(HeaderedItemsControl^),flags=object
  */
 public static final native int HeaderedItemsControl_Header(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(HeaderedItemsControl^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(HeaderedItemsControl^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void HeaderedItemsControl_Header(int sender, int value);  
-/** @method accessor=HeaderedItemsControl::HeaderTemplateProperty,flags=const gcobject */
+/** @method accessor=HeaderedItemsControl::HeaderTemplateProperty,flags=const object */
 public static final native int HeaderedItemsControl_HeaderTemplateProperty();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(System::Windows::Forms::HtmlDocument^),flags=gcobject
- * @param string cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(System::Windows::Forms::HtmlDocument^),flags=object
+ * @param string cast=(String^),flags=object
  */
 public static final native int HtmlDocument_InvokeScript(int sender, int string);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(HwndSource^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(HwndSource^),flags=object
  */
 public static final native int HwndSource_Handle(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(Hyperlink^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(Hyperlink^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void Hyperlink_Click(int sender, int handler);
 /**
  * @method flags=getter
- * @param sender cast=(ICollection^),flags=gcobject
+ * @param sender cast=(ICollection^),flags=object
  */
 public static final native int ICollection_Count(int sender);
 /**
- * @method accessor=System::Drawing::Icon::FromHandle,flags=no_gen gcobject
- * @param hIcon cast=(IntPtr),flags=gcobject
+ * @method accessor=System::Drawing::Icon::FromHandle,flags=no_gen object
+ * @param hIcon cast=(IntPtr),flags=object
  */
 public static final native int Icon_FromHandle(int hIcon);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(IEnumerable ^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(IEnumerable ^),flags=object
  */
 public static final native int IEnumerable_GetEnumerator(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(IEnumerator^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(IEnumerator^),flags=object
  */
 public static final native int IEnumerator_Current(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(IEnumerator^),flags=gcobject
+ * @param sender cast=(IEnumerator^),flags=object
  */
 public static final native boolean IEnumerator_MoveNext(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(IList^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(IList^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void IList_Add(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(IList^),flags=gcobject
+ * @param sender cast=(IList^),flags=object
  */
 public static final native void IList_Clear(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(IList^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(IList^),flags=object
  */
 public static final native int IList_default(int sender, int index);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(IList^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(IList^),flags=object
  */
 public static final native int IList_GetEnumerator(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(IList^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(IList^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native int IList_IndexOf(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(IList^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(IList^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void IList_Insert(int sender, int index, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(IList^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(IList^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void IList_Remove(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(IndexedGlyphRun^),flags=gcobject
+ * @param sender cast=(IndexedGlyphRun^),flags=object
  */
 public static final native int IndexedGlyphRun_TextSourceCharacterIndex(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(IndexedGlyphRun^),flags=gcobject
+ * @param sender cast=(IndexedGlyphRun^),flags=object
  */
 public static final native int IndexedGlyphRun_TextSourceLength(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(IndexedGlyphRun^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(IndexedGlyphRun^),flags=object
  */
 public static final native int IndexedGlyphRun_GlyphRun(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(IEnumerable^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(IEnumerable^),flags=object
  */
 public static final native int IndexedGlyphRunCollection_GetEnumerator(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(IEnumerator^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(IEnumerator^),flags=object
  */
 public static final native int IndexedGlyphRunCollection_Current(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(InlineCollection^),flags=gcobject
- * @param value cast=(Inline^),flags=gcobject
+ * @param sender cast=(InlineCollection^),flags=object
+ * @param value cast=(Inline^),flags=object
  */
 public static final native void InlineCollection_Add(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(InlineCollection^),flags=gcobject
+ * @param sender cast=(InlineCollection^),flags=object
  */
 public static final native void InlineCollection_Clear(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(InputEventArgs^),flags=gcobject
+ * @param sender cast=(InputEventArgs^),flags=object
  */
 public static final native int InputEventArgs_Timestamp(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Image^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Image^),flags=object
  */
 public static final native int Image_Source(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Image^),flags=gcobject
- * @param imageSource cast=(ImageSource^),flags=gcobject
+ * @param sender cast=(Image^),flags=object
+ * @param imageSource cast=(ImageSource^),flags=object
  */
 public static final native void Image_Source(int sender, int imageSource);
-/** @method accessor=Image::SourceProperty,flags=const gcobject */
+/** @method accessor=Image::SourceProperty,flags=const object */
 public static final native int Image_SourceProperty();
-/** @method accessor=Image::StretchProperty,flags=const gcobject */
+/** @method accessor=Image::StretchProperty,flags=const object */
 public static final native int Image_StretchProperty();
 /**
  * @method flags=setter
- * @param sender cast=(Image^),flags=gcobject
+ * @param sender cast=(Image^),flags=object
  * @param stretch cast=(Stretch)
  */
 public static final native void Image_Stretch(int sender, int stretch);
-/** @method accessor=Image::typeid,flags=const gcobject */
+/** @method accessor=Image::typeid,flags=const object */
 public static final native int Image_typeid();
 /**
- * @method accessor=System::Windows::Interop::Imaging::CreateBitmapSourceFromHIcon,flags=gcobject
+ * @method accessor=System::Windows::Interop::Imaging::CreateBitmapSourceFromHIcon,flags=object
  * @param hIcon cast=(IntPtr)
- * @param sourceRect cast=(Int32Rect),flags=gcobject
- * @param sizeOptions cast=(BitmapSizeOptions^),flags=gcobject
+ * @param sourceRect cast=(Int32Rect),flags=object
+ * @param sizeOptions cast=(BitmapSizeOptions^),flags=object
  */
 public static final native int Imaging_CreateBitmapSourceFromHIcon(int hIcon, int sourceRect, int sizeOptions);
-/** @method accessor=ImageSource::typeid,flags=const gcobject */
+/** @method accessor=ImageSource::typeid,flags=const object */
 public static final native int ImageSource_typeid();
 /**
  * @method flags=cpp
- * @param value cast=(IntPtr^),flags=gcobject
+ * @param value cast=(IntPtr^),flags=object
  */
 public static final native int IntPtr_ToInt32 (int value);
 /**
  * @method flags=cpp
- * @param sender cast=(ItemCollection^),flags=gcobject
- * @param item cast=(Object^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
+ * @param item cast=(Object^),flags=object
  */
 public static final native void ItemCollection_Add(int sender, int item);
 /**
  * @method flags=cpp
- * @param sender cast=(ItemCollection^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
  */
 public static final native void ItemCollection_Clear(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(ItemCollection^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
  */
 public static final native int ItemCollection_Count(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ItemCollection^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ItemCollection^),flags=object
  */
 public static final native int ItemCollection_CurrentItem(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(ItemCollection^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
  */
 public static final native int ItemCollection_CurrentPosition(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(ItemCollection^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(ItemCollection^),flags=object
  */
 public static final native int ItemCollection_GetItemAt(int sender, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(ItemCollection^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native int ItemCollection_IndexOf(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(ItemCollection^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void ItemCollection_Insert(int sender, int index, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(ItemCollection^),flags=gcobject
- * @param item cast=(Object^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
+ * @param item cast=(Object^),flags=object
  */
 public static final native void ItemCollection_Remove(int sender, int item);
 /**
  * @method flags=cpp
- * @param sender cast=(ItemCollection^),flags=gcobject
+ * @param sender cast=(ItemCollection^),flags=object
  */
 public static final native void ItemCollection_RemoveAt(int sender, int index);
 /**
  * @method flags=getter
- * @param sender cast=(ItemsControl^),flags=gcobject
+ * @param sender cast=(ItemsControl^),flags=object
  */
 public static final native boolean ItemsControl_HasItems(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ItemsControl^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ItemsControl^),flags=object
  */
 public static final native int ItemsControl_Items(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ItemsControl^),flags=gcobject
- * @param value cast=(IEnumerable^),flags=gcobject
+ * @param sender cast=(ItemsControl^),flags=object
+ * @param value cast=(IEnumerable^),flags=object
  */
 public static final native void ItemsControl_ItemsSource(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ItemsControl^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ItemsControl^),flags=object
  */
 public static final native int ItemsControl_ItemTemplate(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ItemsControl^),flags=gcobject
- * @param value cast=(DataTemplate^),flags=gcobject
+ * @param sender cast=(ItemsControl^),flags=object
+ * @param value cast=(DataTemplate^),flags=object
  */
 public static final native void ItemsControl_ItemTemplate(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(ItemsControl^),flags=gcobject
+ * @param sender cast=(ItemsControl^),flags=object
  */
 public static final native void ItemsControl_IsTextSearchEnabled(int sender, boolean value);
-/** @method accessor=ItemsPresenter::typeid,flags=const gcobject */
+/** @method accessor=ItemsPresenter::typeid,flags=const object */
 public static final native int ItemsPresenter_typeid();
 /**
  * @method accessor=KeyInterop::VirtualKeyFromKey
  * @param key cast=(Key)
  */
 public static final native int KeyInterop_VirtualKeyFromKey(int key);
-/** @method accessor=Keyboard::FocusedElement,flags=const gcobject */
+/** @method accessor=Keyboard::FocusedElement,flags=const object */
 public static final native int Keyboard_FocusedElement();
 /**
- * @method accessor=Keyboard::Focus,flags=gcobject
- * @param element cast=(IInputElement^),flags=gcobject
+ * @method accessor=Keyboard::Focus,flags=object
+ * @param element cast=(IInputElement^),flags=object
  */
 public static final native int Keyboard_Focus(int element);
 /** @method accessor=Keyboard::Modifiers,flags=const */
 public static final native int Keyboard_Modifiers();
 /**
  * @method accessor=KeyboardNavigation::GetIsTabStop
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
  */
 public static final native boolean KeyboardNavigation_GetIsTabStop(int element);
 /**
  * @method accessor=KeyboardNavigation::SetIsTabStop
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
  */
 public static final native void KeyboardNavigation_SetIsTabStop(int element, boolean istabstop);
 /**
  * @method accessor=KeyboardNavigation::SetDirectionalNavigation
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
  * @param mode cast=(KeyboardNavigationMode)
  */
 public static final native void KeyboardNavigation_SetDirectionalNavigation(int element, int mode);
 /**
  * @method accessor=KeyboardNavigation::SetTabNavigation
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
  * @param mode cast=(KeyboardNavigationMode)
  */
 public static final native void KeyboardNavigation_SetTabNavigation(int element, int mode);
 /**
  * @method accessor=KeyboardNavigation::SetControlTabNavigation
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
  * @param mode cast=(KeyboardNavigationMode)
  */
 public static final native void KeyboardNavigation_SetControlTabNavigation(int element, int mode);
 /**
  * @method flags=getter
- * @param sender cast=(KeyboardDevice^),flags=gcobject
+ * @param sender cast=(KeyboardDevice^),flags=object
  */
 public static final native int KeyboardDevice_Modifiers(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(KeyboardEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(KeyboardEventArgs^),flags=object
  */
 public static final native int KeyboardEventArgs_KeyboardDevice(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(KeyEventArgs^),flags=gcobject
+ * @param sender cast=(KeyEventArgs^),flags=object
  */
 public static final native boolean KeyEventArgs_IsDown(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(KeyEventArgs^),flags=gcobject
+ * @param sender cast=(KeyEventArgs^),flags=object
  */
 public static final native boolean KeyEventArgs_IsRepeat(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(KeyEventArgs^),flags=gcobject
+ * @param sender cast=(KeyEventArgs^),flags=object
  */
 public static final native boolean KeyEventArgs_IsToggled(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(KeyEventArgs^),flags=gcobject
+ * @param sender cast=(KeyEventArgs^),flags=object
  */
 public static final native int KeyEventArgs_Key(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(KeyEventArgs^),flags=gcobject
+ * @param sender cast=(KeyEventArgs^),flags=object
  */
 public static final native int KeyEventArgs_SystemKey(int sender);
-/** @method accessor=KeyTime::Uniform,flags=const gcobject */
+/** @method accessor=KeyTime::Uniform,flags=const object */
 public static final native int KeyTime_Uniform();
 /**
  * @method flags=getter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native boolean Matrix_IsIdentity(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_Invert(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native double Matrix_M11(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native double Matrix_M12(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native double Matrix_M21(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native double Matrix_M22(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native double Matrix_OffsetX(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native double Matrix_OffsetY(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_M11(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_M12(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_M21(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_M22(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_OffsetX(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_OffsetY(int sender, double value);
 /**
- * @method accessor=Matrix::Multiply,flags=gcobject
- * @param m1 cast=(Matrix),flags=gcobject
- * @param m2 cast=(Matrix),flags=gcobject
+ * @method accessor=Matrix::Multiply,flags=object
+ * @param m1 cast=(Matrix),flags=object
+ * @param m2 cast=(Matrix),flags=object
  */
 public static final native int Matrix_Multiply(int m1, int m2);
 /**
  * @method flags=cpp
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_RotatePrepend(int sender, double angle);
 /**
  * @method flags=cpp
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_ScalePrepend(int sender, double scaleX, double scaleY);
 /**
  * @method flags=cpp
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_SetIdentity(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_SkewPrepend(int sender, double skewX, double skewY);
 /**
  * @method flags=cpp
- * @param sender cast=(Matrix^),flags=gcobject
+ * @param sender cast=(Matrix^),flags=object
  */
 public static final native void Matrix_TranslatePrepend(int sender, double tx, double ty);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Matrix^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Matrix^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native int Matrix_Transform(int sender, int point);
 /**
  * @method accessor=MessageBox::Show
- * @param messageBoxText cast=(String^),flags=gcobject
- * @param caption cast=(String^),flags=gcobject
+ * @param messageBoxText cast=(String^),flags=object
+ * @param caption cast=(String^),flags=object
  * @param button cast=(MessageBoxButton)
  * @param icon cast=(MessageBoxImage)
  * @param defaultResult cast=(MessageBoxResult)
  */
 public static final native int MessageBox_Show (int messageBoxText, int caption, int button, int icon,	int defaultResult);
-/** @method accessor=Mouse::Captured,flags=const gcobject */
+/** @method accessor=Mouse::Captured,flags=const object */
 public static final native int Mouse_Captured();
-/** @method accessor=Mouse::DirectlyOver,flags=const gcobject */
+/** @method accessor=Mouse::DirectlyOver,flags=const object */
 public static final native int Mouse_DirectlyOver();
 /**
- * @method accessor=Mouse::GetPosition,flags=gcobject
- * @param relativeTo cast=(IInputElement^),flags=gcobject
+ * @method accessor=Mouse::GetPosition,flags=object
+ * @param relativeTo cast=(IInputElement^),flags=object
  */
 public static final native int Mouse_GetPosition(int relativeTo);
 /**
  * @method accessor=Mouse::SetCursor
- * @param cursor cast=(Cursor^),flags=gcobject
+ * @param cursor cast=(Cursor^),flags=object
  */
 public static final native boolean Mouse_SetCursor(int cursor);
 /** @method accessor=Mouse::LeftButton,flags=const */
@@ -3061,1101 +3061,1101 @@ public static final native int Mouse_XButton1();
 public static final native int Mouse_XButton2();
 /**
  * @method flags=getter
- * @param sender cast=(MouseButtonEventArgs^),flags=gcobject
+ * @param sender cast=(MouseButtonEventArgs^),flags=object
  */
 public static final native int MouseButtonEventArgs_ButtonState(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(MouseButtonEventArgs^),flags=gcobject
+ * @param sender cast=(MouseButtonEventArgs^),flags=object
  */
 public static final native int MouseButtonEventArgs_ClickCount(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(MouseButtonEventArgs^),flags=gcobject
+ * @param sender cast=(MouseButtonEventArgs^),flags=object
  */
 public static final native int MouseButtonEventArgs_ChangedButton(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(MouseEventArgs^),flags=gcobject
- * @param relativeTo cast=(IInputElement^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(MouseEventArgs^),flags=object
+ * @param relativeTo cast=(IInputElement^),flags=object
  */
 public static final native int MouseEventArgs_GetPosition(int sender, int relativeTo);
 /**
  * @method flags=getter
- * @param sender cast=(MouseEventArgs^),flags=gcobject
+ * @param sender cast=(MouseEventArgs^),flags=object
  */
 public static final native int MouseEventArgs_LeftButton(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(MouseEventArgs^),flags=gcobject
+ * @param sender cast=(MouseEventArgs^),flags=object
  */
 public static final native int MouseEventArgs_MiddleButton(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(MouseEventArgs^),flags=gcobject
+ * @param sender cast=(MouseEventArgs^),flags=object
  */
 public static final native int MouseEventArgs_RightButton(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(MouseEventArgs^),flags=gcobject
+ * @param sender cast=(MouseEventArgs^),flags=object
  */
 public static final native int MouseEventArgs_XButton1(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(MouseEventArgs^),flags=gcobject
+ * @param sender cast=(MouseEventArgs^),flags=object
  */
 public static final native int MouseEventArgs_XButton2(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(MouseWheelEventArgs^),flags=gcobject
+ * @param sender cast=(MouseWheelEventArgs^),flags=object
  */
 public static final native int MouseWheelEventArgs_Delta(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(ListBoxItem^),flags=gcobject
+ * @param sender cast=(ListBoxItem^),flags=object
  */
 public static final native boolean ListBoxItem_IsSelected(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ListBoxItem^),flags=gcobject
+ * @param sender cast=(ListBoxItem^),flags=object
  */
 public static final native void ListBoxItem_IsSelected(int sender, boolean value);
 /**
  * @method flags=cpp
- * @param sender cast=(ListBox^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param sender cast=(ListBox^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native void ListBox_ScrollIntoView(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(ListBox^),flags=gcobject
+ * @param sender cast=(ListBox^),flags=object
  */
 public static final native void ListBox_SelectAll(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ListBox^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ListBox^),flags=object
  */
 public static final native int ListBox_SelectedItems(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ListBox^),flags=gcobject
+ * @param sender cast=(ListBox^),flags=object
  * @param value cast=(SelectionMode)
  */
 public static final native void ListBox_SelectionMode(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(ListBox^),flags=gcobject
+ * @param sender cast=(ListBox^),flags=object
  */
 public static final native void ListBox_UnselectAll(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ListView^),flags=gcobject
- * @param value cast=(ViewBase^),flags=gcobject
+ * @param sender cast=(ListView^),flags=object
+ * @param value cast=(ViewBase^),flags=object
  */
 public static final native void ListView_View(int sender, int value);
-/** @method accessor=ListViewItem::typeid,flags=const gcobject */
+/** @method accessor=ListViewItem::typeid,flags=const object */
 public static final native int ListViewItem_typeid();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(System::IO::MemoryStream^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(System::IO::MemoryStream^),flags=object
  */
 public static final native int MemoryStream_ToArray(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(System::IO::MemoryStream^),flags=gcobject
- * @param buffer cast=(array<Byte>^),flags=gcobject
+ * @param sender cast=(System::IO::MemoryStream^),flags=object
+ * @param buffer cast=(array<Byte>^),flags=object
  */
 public static final native void MemoryStream_Write(int sender, int buffer, int offset, int count);
 /**
  * @method flags=setter
- * @param sender cast=(Menu^),flags=gcobject
+ * @param sender cast=(Menu^),flags=object
  */
 public static final native void Menu_IsMainMenu(int sender, boolean value);
 /**
  * @method flags=adder
- * @param sender cast=(MenuItem^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void MenuItem_Click(int sender, int handler);
 /**
  * @method flags=setter
- * @param sender cast=(MenuItem^),flags=gcobject
- * @param value cast=(Image^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
+ * @param value cast=(Image^),flags=object
  */
 public static final native void MenuItem_Icon(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(MenuItem^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void MenuItem_InputGestureText(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(MenuItem^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
  */
 public static final native void MenuItem_IsCheckable(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(MenuItem^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
  */
 public static final native boolean MenuItem_IsChecked(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(MenuItem^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
  */
 public static final native void MenuItem_IsChecked(int sender, boolean value);
 /**
  * @method flags=adder
- * @param sender cast=(MenuItem^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void MenuItem_SubmenuClosed(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(MenuItem^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(MenuItem^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void MenuItem_SubmenuOpened(int sender, int handler);
-/** @method accessor=Int32Rect::Empty,flags=const gcobject */
+/** @method accessor=Int32Rect::Empty,flags=const object */
 public static final native int Int32Rect_Empty();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(MatrixTransform^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(MatrixTransform^),flags=object
  */
 public static final native int MatrixTransform_Matrix(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(MatrixTransform^),flags=gcobject
- * @param value cast=(Matrix),flags=gcobject
+ * @param sender cast=(MatrixTransform^),flags=object
+ * @param value cast=(Matrix),flags=object
  */
 public static final native void MatrixTransform_Matrix(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=gcobject
- * @param value cast=(System::Drawing::Icon^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=object
+ * @param value cast=(System::Drawing::Icon^),flags=object
  */
 public static final native void NotifyIcon_Icon(int sender, int value);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=gcobject
- * @param handler cast=(System::Windows::Forms::MouseEventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=object
+ * @param handler cast=(System::Windows::Forms::MouseEventHandler^),flags=object
  */
 public static final native void NotifyIcon_MouseDown(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=gcobject
- * @param handler cast=(System::Windows::Forms::MouseEventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=object
+ * @param handler cast=(System::Windows::Forms::MouseEventHandler^),flags=object
  */
 public static final native void NotifyIcon_MouseUp(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void NotifyIcon_DoubleClick(int sender, int handler);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void NotifyIcon_Text(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::NotifyIcon^),flags=object
  */
 public static final native void NotifyIcon_Visible(int sender, boolean value);
 /**
  * @method flags=cpp
- * @param sender cast=(Object ^),flags=gcobject
- * @param o cast=(Object ^),flags=gcobject
+ * @param sender cast=(Object ^),flags=object
+ * @param o cast=(Object ^),flags=object
  */
 public static final native boolean Object_Equals(int sender, int o);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Object ^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Object ^),flags=object
  */
 public static final native int Object_GetType(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Object ^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Object ^),flags=object
  */
 public static final native int Object_ToString(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(ObservableCollection<GridViewColumn^>^),flags=gcobject
+ * @param sender cast=(ObservableCollection<GridViewColumn^>^),flags=object
  */
 public static final native void ObservableCollectionGridViewColumn_Move(int sender, int oldIndex, int newIndex);
 /**
  * @method flags=setter
- * @param sender cast=(OpenFileDialog^),flags=gcobject
+ * @param sender cast=(OpenFileDialog^),flags=object
  */
 public static final native void OpenFileDialog_Multiselect (int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(RowDefinition^),flags=gcobject
- * @param height cast=(GridLength),flags=gcobject
+ * @param sender cast=(RowDefinition^),flags=object
+ * @param height cast=(GridLength),flags=object
  */
 public static final native void RowDefinition_Height(int sender, int height);
 /**
  * @method flags=cpp
- * @param sender cast=(RowDefinitionCollection^),flags=gcobject
- * @param row cast=(RowDefinition^),flags=gcobject
+ * @param sender cast=(RowDefinitionCollection^),flags=object
+ * @param row cast=(RowDefinition^),flags=object
  */
 public static final native void RowDefinitionCollection_Add(int sender, int row);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Panel^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Panel^),flags=object
  */
 public static final native int Panel_Background(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Panel^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param sender cast=(Panel^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native void Panel_Background(int sender, int brush);
-/** @method accessor=Panel::BackgroundProperty,flags=const gcobject */
+/** @method accessor=Panel::BackgroundProperty,flags=const object */
 public static final native int Panel_BackgroundProperty();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Panel^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Panel^),flags=object
  */
 public static final native int Panel_Children(int sender);
 /**
  * @method accessor=Panel::GetZIndex
- * @param element cast=(UIElement^),flags=gcobject
+ * @param element cast=(UIElement^),flags=object
  */
 public static final native int Panel_GetZIndex(int element);
 /**
  * @method accessor=Panel::SetZIndex
- * @param element cast=(UIElement ^),flags=gcobject
+ * @param element cast=(UIElement ^),flags=object
  */
 public static final native void Panel_SetZIndex(int element, int index);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(PasswordBox^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(PasswordBox^),flags=object
  */
 public static final native int PasswordBox_Password(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(PasswordBox^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(PasswordBox^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void PasswordBox_Password(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(PasswordBox^),flags=gcobject
+ * @param sender cast=(PasswordBox^),flags=object
  */
 public static final native char PasswordBox_PasswordChar(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(PasswordBox^),flags=gcobject
+ * @param sender cast=(PasswordBox^),flags=object
  */
 public static final native void PasswordBox_PasswordChar(int sender, char value);
 /**
  * @method flags=getter
- * @param sender cast=(PasswordBox^),flags=gcobject
+ * @param sender cast=(PasswordBox^),flags=object
  */
 public static final native int PasswordBox_MaxLength(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(PasswordBox^),flags=gcobject
+ * @param sender cast=(PasswordBox^),flags=object
  */
 public static final native void PasswordBox_MaxLength(int sender, int value);
 /**
  * @method flags=adder
- * @param sender cast=(PasswordBox^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(PasswordBox^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void PasswordBox_PasswordChanged(int sender, int handler);
 /**
  * @method flags=cpp
- * @param sender cast=(PasswordBox^),flags=gcobject
+ * @param sender cast=(PasswordBox^),flags=object
  */
 public static final native void PasswordBox_Paste(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Path^),flags=gcobject
- * @param geometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(Path^),flags=object
+ * @param geometry cast=(Geometry^),flags=object
  */
 public static final native void Path_Data(int sender, int geometry);
 /**
  * @method flags=setter
- * @param sender cast=(Path^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param sender cast=(Path^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native void Path_Fill(int sender, int brush);
 /**
  * @method flags=setter
- * @param sender cast=(Path^),flags=gcobject
+ * @param sender cast=(Path^),flags=object
  * @param value cast=(Stretch)
  */
 public static final native void Path_Stretch(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(PathFigureCollection^),flags=gcobject
- * @param element cast=(PathFigure^),flags=gcobject
+ * @param sender cast=(PathFigureCollection^),flags=object
+ * @param element cast=(PathFigure^),flags=object
  */
 public static final native void PathFigureCollection_Add(int sender, int element);
 /**
  * @method flags=getter
- * @param sender cast=(PathFigureCollection^),flags=gcobject
+ * @param sender cast=(PathFigureCollection^),flags=object
  */
 public static final native int PathFigureCollection_Count(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(PathFigure^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @param sender cast=(PathFigure^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native void PathFigure_StartPoint(int sender, int point);
 /**
  * @method flags=setter
- * @param sender cast=(PathFigure^),flags=gcobject
+ * @param sender cast=(PathFigure^),flags=object
  */
 public static final native void PathFigure_IsClosed(int sender, boolean closed);
 /**
  * @method flags=getter
- * @param sender cast=(PathFigure^),flags=gcobject
+ * @param sender cast=(PathFigure^),flags=object
  */
 public static final native boolean PathFigure_IsClosed(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(PathFigure^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(PathFigure^),flags=object
  */
 public static final native int PathFigure_Segments(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(PathFigure^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(PathFigure^),flags=object
  */
 public static final native int PathFigure_Segments(int sender, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(PathGeometry^),flags=gcobject
- * @param geometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(PathGeometry^),flags=object
+ * @param geometry cast=(Geometry^),flags=object
  */
 public static final native void PathGeometry_AddGeometry(int sender, int geometry);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(PathGeometry^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(PathGeometry^),flags=object
  */
 public static final native int PathGeometry_Bounds(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(PathGeometry^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(PathGeometry^),flags=object
  */
 public static final native int PathGeometry_Clone(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(PathGeometry^),flags=gcobject
+ * @param sender cast=(PathGeometry^),flags=object
  * @param value cast=(FillRule)
  */
 public static final native void PathGeometry_FillRule(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(PathGeometry^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(PathGeometry^),flags=object
  */
 public static final native int PathGeometry_Figures(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(PathGeometry^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(PathGeometry^),flags=object
  */
 public static final native int PathGeometry_Figures(int sender, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(PathSegmentCollection^),flags=gcobject
- * @param element cast=(PathSegment^),flags=gcobject
+ * @param sender cast=(PathSegmentCollection^),flags=object
+ * @param element cast=(PathSegment^),flags=object
  */
 public static final native void PathSegmentCollection_Add(int sender, int element);
 /**
  * @method flags=getter
- * @param sender cast=(PathSegmentCollection^),flags=gcobject
+ * @param sender cast=(PathSegmentCollection^),flags=object
  */
 public static final native int PathSegmentCollection_Count(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Pen^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Pen^),flags=object
  */
 public static final native int Pen_Brush(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
- * @param value cast=(Brush^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
+ * @param value cast=(Brush^),flags=object
  */
 public static final native void Pen_Brush(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
  * @param value cast=(PenLineCap)
  */
 public static final native void Pen_DashCap(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
- * @param value cast=(DashStyle^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
+ * @param value cast=(DashStyle^),flags=object
  */
 public static final native void Pen_DashStyle(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
  * @param value cast=(PenLineCap)
  */
 public static final native void Pen_EndLineCap(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
  * @param value cast=(PenLineCap)
  */
 public static final native void Pen_StartLineCap(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
  * @param value cast=(PenLineJoin)
  */
 public static final native void Pen_LineJoin(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
  */
 public static final native void Pen_MiterLimit(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(Pen^),flags=gcobject
+ * @param sender cast=(Pen^),flags=object
  */
 public static final native void Pen_Thickness(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(PixelFormat^),flags=gcobject
+ * @param sender cast=(PixelFormat^),flags=object
  */
 public static final native int PixelFormat_BitsPerPixel(int sender);
-/** @method accessor=PixelFormats::Bgr101010,flags=const gcobject */
+/** @method accessor=PixelFormats::Bgr101010,flags=const object */
 public static final native int PixelFormats_Bgr101010();
-/** @method accessor=PixelFormats::Bgr24,flags=const gcobject */
+/** @method accessor=PixelFormats::Bgr24,flags=const object */
 public static final native int PixelFormats_Bgr24();
-/** @method accessor=PixelFormats::Bgr32,flags=const gcobject */
+/** @method accessor=PixelFormats::Bgr32,flags=const object */
 public static final native int PixelFormats_Bgr32();
-/** @method accessor=PixelFormats::Bgr555,flags=const gcobject */
+/** @method accessor=PixelFormats::Bgr555,flags=const object */
 public static final native int PixelFormats_Bgr555();
-/** @method accessor=PixelFormats::Bgr565,flags=const gcobject */
+/** @method accessor=PixelFormats::Bgr565,flags=const object */
 public static final native int PixelFormats_Bgr565();
-/** @method accessor=PixelFormats::Bgra32,flags=const gcobject */
+/** @method accessor=PixelFormats::Bgra32,flags=const object */
 public static final native int PixelFormats_Bgra32();
-/** @method accessor=PixelFormats::BlackWhite,flags=const gcobject */
+/** @method accessor=PixelFormats::BlackWhite,flags=const object */
 public static final native int PixelFormats_BlackWhite();
-/** @method accessor=PixelFormats::Default,flags=const gcobject */
+/** @method accessor=PixelFormats::Default,flags=const object */
 public static final native int PixelFormats_Default();
-/** @method accessor=PixelFormats::Indexed1,flags=const gcobject */
+/** @method accessor=PixelFormats::Indexed1,flags=const object */
 public static final native int PixelFormats_Indexed1();
-/** @method accessor=PixelFormats::Indexed2,flags=const gcobject */
+/** @method accessor=PixelFormats::Indexed2,flags=const object */
 public static final native int PixelFormats_Indexed2();
-/** @method accessor=PixelFormats::Indexed4,flags=const gcobject */
+/** @method accessor=PixelFormats::Indexed4,flags=const object */
 public static final native int PixelFormats_Indexed4();
-/** @method accessor=PixelFormats::Indexed8,flags=const gcobject */
+/** @method accessor=PixelFormats::Indexed8,flags=const object */
 public static final native int PixelFormats_Indexed8();
-/** @method accessor=PixelFormats::Pbgra32,flags=const gcobject */
+/** @method accessor=PixelFormats::Pbgra32,flags=const object */
 public static final native int PixelFormats_Pbgra32();
-/** @method accessor=PixelFormats::Rgb24,flags=const gcobject */
+/** @method accessor=PixelFormats::Rgb24,flags=const object */
 public static final native int PixelFormats_Rgb24();
 /**
  * @method flags=cpp
- * @param sender cast=(PointCollection^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @param sender cast=(PointCollection^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native void PointCollection_Add(int sender, int point);
 /**
  * @method flags=getter
- * @param sender cast=(Point^),flags=gcobject
+ * @param sender cast=(Point^),flags=object
  */
 public static final native double Point_X(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Point^),flags=gcobject
+ * @param sender cast=(Point^),flags=object
  */
 public static final native double Point_Y(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Popup^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native void Popup_AllowsTransparency(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(Popup^),flags=gcobject
- * @param child cast=(UIElement^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
+ * @param child cast=(UIElement^),flags=object
  */
 public static final native void Popup_Child(int sender, int child);
 /**
- * @method flags=getter gcobject
- * @param sender cast=(Popup^),flags=gcobject
+ * @method flags=getter object
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native int Popup_Child(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Popup^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native void Popup_HorizontalOffset(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Popup^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native double Popup_HorizontalOffset(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Popup^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native void Popup_IsOpen(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(Popup^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native boolean Popup_IsOpen(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Popup^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native void Popup_VerticalOffset(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Popup^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
  */
 public static final native double Popup_VerticalOffset(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(Popup^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void Popup_Closed(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(Popup^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(Popup^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void Popup_Opened(int sender, int handler);
-/** @method accessor=PresentationSource::CurrentSources,flags=const gcobject */
+/** @method accessor=PresentationSource::CurrentSources,flags=const object */
 public static final native int PresentationSource_CurrentSources();
 /**
- * @method accessor=PresentationSource::FromVisual,flags=gcobject
- * @param visual cast=(Visual^),flags=gcobject
+ * @method accessor=PresentationSource::FromVisual,flags=object
+ * @param visual cast=(Visual^),flags=object
  */
 public static final native int PresentationSource_FromVisual(int visual);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(PresentationSource^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(PresentationSource^),flags=object
  */
 public static final native int PresentationSource_RootVisual(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ProgressBar ^),flags=gcobject
+ * @param sender cast=(ProgressBar ^),flags=object
  */
 public static final native void ProgressBar_IsIndeterminate(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(ProgressBar ^),flags=gcobject
+ * @param sender cast=(ProgressBar ^),flags=object
  */
 public static final native void ProgressBar_IsIndeterminate(int sender);
 /**
  * @method flags=setter
- * @param handle cast=(ProgressBar ^),flags=gcobject
+ * @param handle cast=(ProgressBar ^),flags=object
  * @param value cast=(Orientation)
  */
 public static final native void ProgressBar_Orientation(int handle, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(PropertyInfo^),flags=gcobject
- * @param obj cast=(Object^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
- * @param indexArray cast=(array<Object^>^),flags=gcobject
+ * @param sender cast=(PropertyInfo^),flags=object
+ * @param obj cast=(Object^),flags=object
+ * @param value cast=(Object^),flags=object
+ * @param indexArray cast=(array<Object^>^),flags=object
  */
 public static final native void PropertyInfo_SetValue(int sender, int obj, int value, int indexArray);
 /**
  * @method accessor=PropertyInfo::SetValue,flags=cpp
- * @param sender cast=(PropertyInfo^),flags=gcobject
- * @param obj cast=(Object^),flags=gcobject
+ * @param sender cast=(PropertyInfo^),flags=object
+ * @param obj cast=(Object^),flags=object
  * @param value cast=(bool)
- * @param indexArray cast=(array<Object^>^),flags=gcobject
+ * @param indexArray cast=(array<Object^>^),flags=object
  */
 public static final native void PropertyInfo_SetValueBoolean(int sender, int obj, boolean value, int indexArray);
 /**
  * @method flags=getter
- * @param sender cast=(QueryContinueDragEventArgs^),flags=gcobject
+ * @param sender cast=(QueryContinueDragEventArgs^),flags=object
  */
 public static final native boolean QueryContinueDragEventArgs_EscapePressed(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(QueryContinueDragEventArgs^),flags=gcobject
+ * @param sender cast=(QueryContinueDragEventArgs^),flags=object
  * @param dragAction cast=(DragAction)
  */
 public static final native void QueryContinueDragEventArgs_Action(int sender, int dragAction);
 /**
  * @method flags=getter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native double RangeBase_LargeChange(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native void RangeBase_LargeChange(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native double RangeBase_Maximum(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native void  RangeBase_Maximum(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native double RangeBase_Minimum(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native void  RangeBase_Minimum(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native double RangeBase_SmallChange(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native void RangeBase_SmallChange(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native double RangeBase_Value(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(RangeBase ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
  */
 public static final native void RangeBase_Value(int sender, double value);
 /**
  * @method flags=adder
- * @param sender cast=(RangeBase ^),flags=gcobject
- * @param handler cast=(RoutedPropertyChangedEventHandler<double> ^),flags=gcobject
+ * @param sender cast=(RangeBase ^),flags=object
+ * @param handler cast=(RoutedPropertyChangedEventHandler<double> ^),flags=object
  */
 public static final native void RangeBase_ValueChanged(int sender, int handler);
 /**
  * @method flags=cpp
- * @param sender cast=(Rect^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native boolean Rect_Contains(int sender, int point);
 /**
  * @method flags=cpp
- * @param sender cast=(Rect^),flags=gcobject
- * @param rect cast=(Rect),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
+ * @param rect cast=(Rect),flags=object
  */
 public static final native void Rect_Intersect(int sender, int rect);
 /**
  * @method flags=cpp
- * @param sender cast=(Rect^),flags=gcobject
- * @param rect cast=(Rect),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
+ * @param rect cast=(Rect),flags=object
  */
 public static final native void Rect_Union(int sender, int rect);
 /**
  * @method flags=getter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native double Rect_X(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native void Rect_X(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native double Rect_Y(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native void Rect_Y(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native double Rect_Width(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native void Rect_Width(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native double Rect_Height(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Rect^),flags=gcobject
+ * @param sender cast=(Rect^),flags=object
  */
 public static final native void Rect_Height(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(System::Drawing::Rectangle^),flags=gcobject
+ * @param sender cast=(System::Drawing::Rectangle^),flags=object
  */
 public static final native int Rectangle_X(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Drawing::Rectangle^),flags=gcobject
+ * @param sender cast=(System::Drawing::Rectangle^),flags=object
  */
 public static final native int Rectangle_Y(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Drawing::Rectangle^),flags=gcobject
+ * @param sender cast=(System::Drawing::Rectangle^),flags=object
  */
 public static final native int Rectangle_Width(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Drawing::Rectangle^),flags=gcobject
+ * @param sender cast=(System::Drawing::Rectangle^),flags=object
  */
 public static final native int Rectangle_Height(int sender);
-/** @method accessor=Registry::ClassesRoot,flags=const gcobject */
+/** @method accessor=Registry::ClassesRoot,flags=const object */
 public static final native int Registry_ClassesRoot();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(RegistryKey^),flags=gcobject
- * @param key cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(RegistryKey^),flags=object
+ * @param key cast=(String^),flags=object
  */
 public static final native int RegistryKey_OpenSubKey(int sender, int key);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(RegistryKey^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(RegistryKey^),flags=object
  */
 public static final native int RegistryKey_GetSubKeyNames(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(RegistryKey^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(RegistryKey^),flags=object
+ * @param name cast=(String^),flags=object
  */
 public static final native int RegistryKey_GetValue(int sender, int name);
-/** @method accessor=RepeatBehavior::Forever,flags=const gcobject */
+/** @method accessor=RepeatBehavior::Forever,flags=const object */
 public static final native int RepeatBehavior_Forever();
 /**
  * @method flags=setter
- * @param sender cast=(RelativeSource^),flags=gcobject
- * @param type cast=(Type^),flags=gcobject
+ * @param sender cast=(RelativeSource^),flags=object
+ * @param type cast=(Type^),flags=object
  */
 public static final native void RelativeSource_AncestorType(int sender, int type);
 /**
  * @method accessor=RenderOptions::GetBitmapScalingMode
- * @param target cast=(DependencyObject^),flags=gcobject
+ * @param target cast=(DependencyObject^),flags=object
  */
 public static final native int RenderOptions_GetBitmapScalingMode(int target);
 /**
  * @method accessor=RenderOptions::SetBitmapScalingMode
- * @param target cast=(DependencyObject^),flags=gcobject
+ * @param target cast=(DependencyObject^),flags=object
  * @param mode cast=(BitmapScalingMode)
  */
 public static final native void RenderOptions_SetBitmapScalingMode(int target, int mode);
 /**
  * @method accessor=RenderOptions::SetEdgeMode
- * @param target cast=(DependencyObject^),flags=gcobject
+ * @param target cast=(DependencyObject^),flags=object
  * @param edgeMode cast=(EdgeMode)
  */
 public static final native void RenderOptions_SetEdgeMode(int target, int edgeMode);
 /**
  * @method flags=cpp
- * @param sender cast=(RenderTargetBitmap^),flags=gcobject
- * @param visual cast=(Visual^),flags=gcobject
+ * @param sender cast=(RenderTargetBitmap^),flags=object
+ * @param visual cast=(Visual^),flags=object
  */
 public static final native void RenderTargetBitmap_Render(int sender, int visual);
 /**
  * @method flags=setter
- * @param sender cast=(RoutedEventArgs^),flags=gcobject
+ * @param sender cast=(RoutedEventArgs^),flags=object
  */
 public static final native void RoutedEventArgs_Handled(int sender, boolean handled);
-/** @method accessor=RoutedEventArgs::typeid,flags=const gcobject */
+/** @method accessor=RoutedEventArgs::typeid,flags=const object */
 public static final native int RoutedEventArgs_typeid();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(RoutedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(RoutedEventArgs^),flags=object
  */
 public static final native int RoutedEventArgs_OriginalSource(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(RoutedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(RoutedEventArgs^),flags=object
  */
 public static final native int RoutedEventArgs_Source(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(RoutedPropertyChangedEventArgs<Object^>^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(RoutedPropertyChangedEventArgs<Object^>^),flags=object
  */
 public static final native int RoutedPropertyChangedEventArgs_NewValue(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(RoutedPropertyChangedEventArgs<Object^>^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(RoutedPropertyChangedEventArgs<Object^>^),flags=object
  */
 public static final native int RoutedPropertyChangedEventArgs_OldValue(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Run^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(Run^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void Run_Text(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(SaveFileDialog^),flags=gcobject
+ * @param sender cast=(SaveFileDialog^),flags=object
  */
 public static final native void SaveFileDialog_OverwritePrompt(int sender, boolean value);
-/** @method accessor=System::Windows::Forms::Screen::AllScreens,flags=const gcobject */
+/** @method accessor=System::Windows::Forms::Screen::AllScreens,flags=const object */
 public static final native int Screen_AllScreens();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::Screen^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::Screen^),flags=object
  */
 public static final native int Screen_Bounds(int sender);
-/** @method accessor=System::Windows::Forms::Screen::PrimaryScreen,flags=const gcobject */
+/** @method accessor=System::Windows::Forms::Screen::PrimaryScreen,flags=const object */
 public static final native int Screen_PrimaryScreen();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::Screen^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::Screen^),flags=object
  */
 public static final native int Screen_WorkingArea(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(ScrollBar^),flags=gcobject
+ * @param sender cast=(ScrollBar^),flags=object
  */
 public static final native int ScrollBar_Orientation(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ScrollBar^),flags=gcobject
+ * @param sender cast=(ScrollBar^),flags=object
  * @param orientation cast=(Orientation)
  */
 public static final native void ScrollBar_Orientation(int sender, int orientation);
 /**
  * @method flags=adder
- * @param sender cast=(ScrollBar^),flags=gcobject
- * @param handler cast=(ScrollEventHandler^),flags=gcobject
+ * @param sender cast=(ScrollBar^),flags=object
+ * @param handler cast=(ScrollEventHandler^),flags=object
  */
 public static final native void ScrollBar_Scroll(int sender, int handler);
 /**
  * @method flags=getter
- * @param sender cast=(ScrollBar^),flags=gcobject
+ * @param sender cast=(ScrollBar^),flags=object
  */
 public static final native double ScrollBar_ViewportSize(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ScrollBar^),flags=gcobject
+ * @param sender cast=(ScrollBar^),flags=object
  */
 public static final native void ScrollBar_ViewportSize(int sender, double value);
-/** @method accessor=ScrollBar::typeid,flags=const gcobject */
+/** @method accessor=ScrollBar::typeid,flags=const object */
 public static final native int ScrollBar_typeid();
 /**
- * @method flags=getter gcobject
- * @param sender cast=(ScrollBar^),flags=gcobject
+ * @method flags=getter object
+ * @param sender cast=(ScrollBar^),flags=object
  */
 public static final native int ScrollBar_Track(int sender);
 /**
- * @method flags=getter gcobject
- * @param sender cast=(Track^),flags=gcobject
+ * @method flags=getter object
+ * @param sender cast=(Track^),flags=object
  */
 public static final native int Track_Thumb(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(ScrollEventArgs^),flags=gcobject
+ * @param sender cast=(ScrollEventArgs^),flags=object
  */
 public static final native int ScrollEventArgs_ScrollEventType(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(ScrollViewer^),flags=gcobject
+ * @param sender cast=(ScrollViewer^),flags=object
  */
 public static final native void ScrollViewer_ScrollToVerticalOffset(int sender, double offset);
 /**
  * @method accessor=ScrollViewer::SetVerticalScrollBarVisibility
- * @param sender cast=(DependencyObject^),flags=gcobject
+ * @param sender cast=(DependencyObject^),flags=object
  * @param visibility cast=(ScrollBarVisibility)
  */
 public static final native void ScrollViewer_SetVerticalScrollBarVisibility(int sender, int visibility);
 /**
  * @method accessor=ScrollViewer::SetHorizontalScrollBarVisibility
- * @param sender cast=(DependencyObject^),flags=gcobject
+ * @param sender cast=(DependencyObject^),flags=object
  * @param visibility cast=(ScrollBarVisibility)
  */
 public static final native void ScrollViewer_SetHorizontalScrollBarVisibility(int sender, int visibility);
-/** @method accessor=ScrollViewer::typeid,flags=const gcobject */
+/** @method accessor=ScrollViewer::typeid,flags=const object */
 public static final native int ScrollViewer_typeid();
 /**
  * @method flags=getter
- * @param sender cast=(ScrollViewer^),flags=gcobject
+ * @param sender cast=(ScrollViewer^),flags=object
  */
 public static final native double ScrollViewer_VerticalOffset(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Selector^),flags=gcobject
+ * @param sender cast=(Selector^),flags=object
  */
 public static final native void Selector_IsSynchronizedWithCurrentItem(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(Selector^),flags=gcobject
+ * @param sender cast=(Selector^),flags=object
  */
 public static final native int Selector_SelectedIndex(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Selector^),flags=gcobject
+ * @param sender cast=(Selector^),flags=object
  */
 public static final native void Selector_SelectedIndex(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Selector^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Selector^),flags=object
  */
 public static final native int Selector_SelectedItem(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Selector^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Selector^),flags=object
  */
 public static final native int Selector_SelectedValue(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(Selector^),flags=gcobject
- * @param handler cast=(SelectionChangedEventHandler^),flags=gcobject
+ * @param sender cast=(Selector^),flags=object
+ * @param handler cast=(SelectionChangedEventHandler^),flags=object
  */
 public static final native void Selector_SelectionChanged(int sender, int handler);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(SelectionChangedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(SelectionChangedEventArgs^),flags=object
  */
 public static final native int SelectionChangedEventArgs_AddedItems(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(SelectionChangedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(SelectionChangedEventArgs^),flags=object
  */
 public static final native int SelectionChangedEventArgs_RemovedItems(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(SetterBaseCollection^),flags=gcobject
- * @param setter cast=(SetterBase^),flags=gcobject
+ * @param sender cast=(SetterBaseCollection^),flags=object
+ * @param setter cast=(SetterBase^),flags=object
  */
 public static final native void SetterBaseCollection_Add(int sender, int setter);
 /**
  * @method flags=setter
- * @param sender cast=(Shape^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param sender cast=(Shape^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native void Shape_Fill(int sender, int brush);
 /**
  * @method flags=setter
- * @param sender cast=(Shape^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param sender cast=(Shape^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native void Shape_Stroke(int sender, int brush);
 /**
  * @method flags=setter
- * @param sender cast=(Shape^),flags=gcobject
+ * @param sender cast=(Shape^),flags=object
  */
 public static final native void Shape_StrokeThickness(int sender, double strokethickness);
 /**
  * @method flags=getter
- * @param sender cast=(Size ^),flags=gcobject
+ * @param sender cast=(Size ^),flags=object
  */
 public static final native double Size_Width(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Size ^),flags=gcobject
+ * @param sender cast=(Size ^),flags=object
  */
 public static final native double Size_Height(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Size ^),flags=gcobject
+ * @param sender cast=(Size ^),flags=object
  */
 public static final native void Size_Width(int sender, double width);
 /**
  * @method flags=setter
- * @param sender cast=(Size ^),flags=gcobject
+ * @param sender cast=(Size ^),flags=object
  */
 public static final native void Size_Height(int sender, double height);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(SizeChangedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(SizeChangedEventArgs^),flags=object
  */
 public static final native int SizeChangedEventArgs_NewSize(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(SizeChangedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(SizeChangedEventArgs^),flags=object
  */
 public static final native int SizeChangedEventArgs_PreviousSize(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Slider ^),flags=gcobject
+ * @param sender cast=(Slider ^),flags=object
  * @param value cast=(Orientation)
  */
 public static final native void Slider_Orientation(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Slider^),flags=gcobject
+ * @param sender cast=(Slider^),flags=object
  */
 public static final native void Slider_TickFrequency(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(Slider^),flags=gcobject
+ * @param sender cast=(Slider^),flags=object
  * @param value cast=(TickPlacement)
  */
 public static final native void Slider_TickPlacement(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(StackPanel^),flags=gcobject
+ * @param sender cast=(StackPanel^),flags=object
  * @param orientation cast=(Orientation)
  */
 public static final native void StackPanel_Orientation(int sender, int orientation);
-/** @method accessor=StackPanel::OrientationProperty,flags=const gcobject */
+/** @method accessor=StackPanel::OrientationProperty,flags=const object */
 public static final native int StackPanel_OrientationProperty();
-/** @method accessor=StackPanel::typeid,flags=const gcobject */
+/** @method accessor=StackPanel::typeid,flags=const object */
 public static final native int StackPanel_typeid();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(StreamGeometry^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(StreamGeometry^),flags=object
  */
 public static final native int StreamGeometry_Open(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(StreamGeometryContext^),flags=gcobject
- * @param startPoint cast=(Point),flags=gcobject
+ * @param sender cast=(StreamGeometryContext^),flags=object
+ * @param startPoint cast=(Point),flags=object
  */
 public static final native void StreamGeometryContext_BeginFigure(int sender, int startPoint, boolean isFilled, boolean isClosed);
 /**
  * @method flags=cpp
- * @param sender cast=(StreamGeometryContext^),flags=gcobject
+ * @param sender cast=(StreamGeometryContext^),flags=object
  */
 public static final native void StreamGeometryContext_Close(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(StreamGeometryContext^),flags=gcobject
- * @param startPoint cast=(Point),flags=gcobject
+ * @param sender cast=(StreamGeometryContext^),flags=object
+ * @param startPoint cast=(Point),flags=object
  */
 public static final native void StreamGeometryContext_LineTo(int sender, int startPoint, boolean isStroked, boolean isSmoothJoin);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(String^),flags=object
  */
 public static final native int String_ToCharArray(int sender);
-/** @method accessor=String::typeid,flags=const gcobject */
+/** @method accessor=String::typeid,flags=const object */
 public static final native int String_typeid();
 /**
  * @method flags=getter
- * @param sender cast=(String^),flags=gcobject
+ * @param sender cast=(String^),flags=object
  */
 public static final native int String_Length(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Style^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Style^),flags=object
  */
 public static final native int Style_Setters(int sender);
 /**
- * @method flags=getter no_gen gcobject
- * @param sender cast=(SWTCanvas^),flags=gcobject
+ * @method flags=getter no_gen object
+ * @param sender cast=(SWTCanvas^),flags=object
  */
 public static final native int SWTCanvas_Visual(int sender);
 /**
  * @method flags=no_gen setter
- * @param sender cast=(SWTCanvas^),flags=gcobject
- * @param visual cast=(DrawingVisual^),flags=gcobject
+ * @param sender cast=(SWTCanvas^),flags=object
+ * @param visual cast=(DrawingVisual^),flags=object
  */
 public static final native void SWTCanvas_Visual(int sender, int visual);
 /** @method flags=no_gen */
@@ -4164,59 +4164,59 @@ public static final native int SWTDockPanel_JNIRefProperty();
 public static final native int SWTDockPanel_typeid();
 /**
  * @method flags=no_gen setter
- * @param sender cast=(SWTTextRunProperties^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param sender cast=(SWTTextRunProperties^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native void SWTTextRunProperties_ForegroundBrush(int sender, int brush);
-/** @method accessor=SystemColors::ControlBrush,flags=const gcobject */
+/** @method accessor=SystemColors::ControlBrush,flags=const object */
 public static final native int SystemColors_ControlBrush();
-/** @method accessor=SystemColors::ControlColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ControlColor,flags=const struct object */
 public static final native int SystemColors_ControlColor();
-/** @method accessor=SystemColors::ControlTextBrush,flags=const gcobject */
+/** @method accessor=SystemColors::ControlTextBrush,flags=const object */
 public static final native int SystemColors_ControlTextBrush();
-/** @method accessor=SystemColors::ControlTextColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ControlTextColor,flags=const struct object */
 public static final native int SystemColors_ControlTextColor();
-/** @method accessor=SystemColors::ControlDarkColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ControlDarkColor,flags=const struct object */
 public static final native int SystemColors_ControlDarkColor();
-/** @method accessor=SystemColors::ControlLightColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ControlLightColor,flags=const struct object */
 public static final native int SystemColors_ControlLightColor();
-/** @method accessor=SystemColors::ControlLightLightColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ControlLightLightColor,flags=const struct object */
 public static final native int SystemColors_ControlLightLightColor();
-/** @method accessor=SystemColors::ControlDarkDarkColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ControlDarkDarkColor,flags=const struct object */
 public static final native int SystemColors_ControlDarkDarkColor();
-/** @method accessor=SystemColors::InfoColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::InfoColor,flags=const struct object */
 public static final native int SystemColors_InfoColor();
-/** @method accessor=SystemColors::InfoTextColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::InfoTextColor,flags=const struct object */
 public static final native int SystemColors_InfoTextColor();
-/** @method accessor=SystemColors::ActiveBorderColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ActiveBorderColor,flags=const struct object */
 public static final native int SystemColors_ActiveBorderColor();
-/** @method accessor=SystemColors::ActiveBorderBrush,flags=const gcobject */
+/** @method accessor=SystemColors::ActiveBorderBrush,flags=const object */
 public static final native int SystemColors_ActiveBorderBrush();
-/** @method accessor=SystemColors::ActiveCaptionColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ActiveCaptionColor,flags=const struct object */
 public static final native int SystemColors_ActiveCaptionColor();
-/** @method accessor=SystemColors::ActiveCaptionTextColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::ActiveCaptionTextColor,flags=const struct object */
 public static final native int SystemColors_ActiveCaptionTextColor();
-/** @method accessor=SystemColors::GradientActiveCaptionColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::GradientActiveCaptionColor,flags=const struct object */
 public static final native int SystemColors_GradientActiveCaptionColor();
-/** @method accessor=SystemColors::InactiveCaptionColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::InactiveCaptionColor,flags=const struct object */
 public static final native int SystemColors_InactiveCaptionColor();
-/** @method accessor=SystemColors::InactiveCaptionTextColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::InactiveCaptionTextColor,flags=const struct object */
 public static final native int SystemColors_InactiveCaptionTextColor();
-/** @method accessor=SystemColors::GradientInactiveCaptionColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::GradientInactiveCaptionColor,flags=const struct object */
 public static final native int SystemColors_GradientInactiveCaptionColor();
-/** @method accessor=SystemColors::WindowColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::WindowColor,flags=const struct object */
 public static final native int SystemColors_WindowColor();
-/** @method accessor=SystemColors::WindowTextColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::WindowTextColor,flags=const struct object */
 public static final native int SystemColors_WindowTextColor();
-/** @method accessor=SystemColors::HighlightBrush,flags=const gcobject */
+/** @method accessor=SystemColors::HighlightBrush,flags=const object */
 public static final native int SystemColors_HighlightBrush();
-/** @method accessor=SystemColors::HighlightColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::HighlightColor,flags=const struct object */
 public static final native int SystemColors_HighlightColor();
-/** @method accessor=SystemColors::HighlightTextColor,flags=const struct gcobject */
+/** @method accessor=SystemColors::HighlightTextColor,flags=const struct object */
 public static final native int SystemColors_HighlightTextColor();
-/** @method accessor=SystemFonts::MessageFontFamily,flags=const gcobject */
+/** @method accessor=SystemFonts::MessageFontFamily,flags=const object */
 public static final native int SystemFonts_MessageFontFamily();
-/** @method accessor=SystemFonts::MessageFontStyle,flags=const gcobject */
+/** @method accessor=SystemFonts::MessageFontStyle,flags=const object */
 public static final native int SystemFonts_MessageFontStyle();
 /** @method accessor=SystemParameters::MinimumHorizontalDragDistance,flags=const */
 public static final native double SystemParameters_MinimumHorizontalDragDistance();
@@ -4246,7 +4246,7 @@ public static final native double SystemParameters_HorizontalScrollBarHeight();
 public static final native double SystemParameters_HorizontalScrollBarButtonWidth();
 /** @method accessor=SystemParameters::WheelScrollLines,flags=const */
 public static final native int SystemParameters_WheelScrollLines();
-/** @method accessor=SystemParameters::WorkArea,flags=const gcobject */
+/** @method accessor=SystemParameters::WorkArea,flags=const object */
 public static final native int SystemParameters_WorkArea();
 /** @method accessor=SystemParameters::ThinHorizontalBorderHeight,flags=const */
 public static final native double SystemParameters_ThinHorizontalBorderHeight();
@@ -4254,1479 +4254,1479 @@ public static final native double SystemParameters_ThinHorizontalBorderHeight();
 public static final native double SystemParameters_ThinVerticalBorderWidth();
 /** @method accessor=SystemFonts::MessageFontSize,flags=const */
 public static final native double SystemFonts_MessageFontSize();
-/** @method accessor=SystemFonts::MessageFontWeight,flags=const gcobject */
+/** @method accessor=SystemFonts::MessageFontWeight,flags=const object */
 public static final native int SystemFonts_MessageFontWeight();
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native void TextBlock_Background(int sender, int brush);
-/** @method accessor=TextBlock::BackgroundProperty,flags=const gcobject */
+/** @method accessor=TextBlock::BackgroundProperty,flags=const object */
 public static final native int TextBlock_BackgroundProperty();
-/** @method accessor=TextBlock::FontFamilyProperty,flags=const gcobject */
+/** @method accessor=TextBlock::FontFamilyProperty,flags=const object */
 public static final native int TextBlock_FontFamilyProperty();
-/** @method accessor=TextBlock::FontStyleProperty,flags=const gcobject */
+/** @method accessor=TextBlock::FontStyleProperty,flags=const object */
 public static final native int TextBlock_FontStyleProperty();
-/** @method accessor=TextBlock::FontWeightProperty,flags=const gcobject */
+/** @method accessor=TextBlock::FontWeightProperty,flags=const object */
 public static final native int TextBlock_FontWeightProperty();
-/** @method accessor=TextBlock::FontStretchProperty,flags=const gcobject */
+/** @method accessor=TextBlock::FontStretchProperty,flags=const object */
 public static final native int TextBlock_FontStretchProperty();
-/** @method accessor=TextBlock::FontSizeProperty,flags=const gcobject */
+/** @method accessor=TextBlock::FontSizeProperty,flags=const object */
 public static final native int TextBlock_FontSizeProperty();
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
- * @param value cast=(FontFamily^),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
+ * @param value cast=(FontFamily^),flags=object
  */
 public static final native void TextBlock_FontFamily(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
- * @param value cast=(FontStyle),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
+ * @param value cast=(FontStyle),flags=object
  */
 public static final native void TextBlock_FontStyle(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
- * @param value cast=(FontWeight),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
+ * @param value cast=(FontWeight),flags=object
  */
 public static final native void TextBlock_FontWeight(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
- * @param value cast=(FontStretch),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
+ * @param value cast=(FontStretch),flags=object
  */
 public static final native void TextBlock_FontStretch(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
  */
 public static final native void TextBlock_FontSize(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native void TextBlock_Foreground(int sender, int brush);
-/** @method accessor=TextBlock::ForegroundProperty,flags=const gcobject */
+/** @method accessor=TextBlock::ForegroundProperty,flags=const object */
 public static final native int TextBlock_ForegroundProperty();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextBounds^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextBounds^),flags=object
  */
 public static final native int TextBounds_Rectangle(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(IEnumerable^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(IEnumerable^),flags=object
  */
 public static final native int TextBoundsCollection_GetEnumerator(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(IEnumerator^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(IEnumerator^),flags=object
  */
 public static final native int TextBoundsCollection_Current(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Collections::Generic::IList<TextTabProperties^>^),flags=gcobject
- * @param tab cast=(TextTabProperties^),flags=gcobject
+ * @param sender cast=(System::Collections::Generic::IList<TextTabProperties^>^),flags=object
+ * @param tab cast=(TextTabProperties^),flags=object
  */
 public static final native void TextTabPropertiesCollection_Add(int sender, int tab);
 /**
  * @method flags=setter
- * @param sender cast=(TabControl^),flags=gcobject
+ * @param sender cast=(TabControl^),flags=object
  * @param value cast=(Dock)
  */
 public static final native void TabControl_TabStripPlacement(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(TabItem^),flags=gcobject
+ * @param sender cast=(TabItem^),flags=object
  */
 public static final native boolean TabItem_IsSelected(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextBlock^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextBlock^),flags=object
  */
 public static final native int TextBlock_Inlines(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextBlock^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextBlock^),flags=object
  */
 public static final native int TextBlock_Text(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBlock^),flags=gcobject
- * @param str cast=(String^),flags=gcobject
+ * @param sender cast=(TextBlock^),flags=object
+ * @param str cast=(String^),flags=object
  */
 public static final native void TextBlock_Text(int sender, int str);
-/** @method accessor=TextBlock::TextProperty,flags=const gcobject */
+/** @method accessor=TextBlock::TextProperty,flags=const object */
 public static final native int TextBlock_TextProperty();
-/** @method accessor=TextBlock::typeid,flags=const gcobject */
+/** @method accessor=TextBlock::typeid,flags=const object */
 public static final native int TextBlock_typeid();
 /**
  * @method flags=getter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_CaretIndex(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native void TextBox_CaretIndex(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_GetFirstVisibleLineIndex(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_GetLineIndexFromCharacterIndex(int sender, int value);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextBox^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_GetRectFromCharacterIndex(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_LineCount(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_MaxLength(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native void TextBox_MaxLength(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native void TextBox_ScrollToLine(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native void TextBox_Select(int sender, int start, int length);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_SelectedText(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBox^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void TextBox_SelectedText(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_SelectionLength(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native void TextBox_SelectionLength(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_SelectionStart(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native void TextBox_SelectionStart(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextBox^),flags=object
  */
 public static final native int TextBox_Text(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBox^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void TextBox_Text(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBox^),flags=gcobject
+ * @param sender cast=(TextBox^),flags=object
  * @param value cast=(TextWrapping)
  */
 public static final native void TextBox_TextWrapping(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_AcceptsReturn(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_AcceptsTab(int sender, boolean value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBoxBase^),flags=gcobject
- * @param value cast=(String^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
+ * @param value cast=(String^),flags=object
  */
 public static final native void TextBoxBase_AppendText(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_Copy(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  * @param value cast=(ScrollBarVisibility)
  */
 public static final native void TextBoxBase_HorizontalScrollBarVisibility(int sender, int value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_Cut(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native boolean TextBoxBase_IsReadOnly(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_IsReadOnly(int sender, boolean value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_Paste(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_ScrollToEnd(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_ScrollToVerticalOffset(int sender, double value);
 /**
  * @method flags=cpp
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native void TextBoxBase_SelectAll(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(TextBoxBase^),flags=gcobject
- * @param handler cast=(TextChangedEventHandler^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
+ * @param handler cast=(TextChangedEventHandler^),flags=object
  */
 public static final native void TextBoxBase_TextChanged(int sender, int handler);
 /**
  * @method flags=getter
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  */
 public static final native double TextBoxBase_VerticalOffset(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextBoxBase^),flags=gcobject
+ * @param sender cast=(TextBoxBase^),flags=object
  * @param value cast=(ScrollBarVisibility)
  */
 public static final native void TextBoxBase_VerticalScrollBarVisibility(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextCompositionEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextCompositionEventArgs^),flags=object
  */
 public static final native int TextCompositionEventArgs_ControlText(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TextCompositionEventArgs^),flags=gcobject
+ * @param sender cast=(TextCompositionEventArgs^),flags=object
  */
 public static final native void TextCompositionEventArgs_Handled(int sender, boolean value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextCompositionEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextCompositionEventArgs^),flags=object
  */
 public static final native int TextCompositionEventArgs_SystemText(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TextCompositionEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TextCompositionEventArgs^),flags=object
  */
 public static final native int TextCompositionEventArgs_Text(int sender);
-/** @method accessor=TextDecorations::Underline,flags=const gcobject */
+/** @method accessor=TextDecorations::Underline,flags=const object */
 public static final native int TextDecorations_Underline();
-/** @method accessor=TextDecorations::Strikethrough,flags=const gcobject */
+/** @method accessor=TextDecorations::Strikethrough,flags=const object */
 public static final native int TextDecorations_Strikethrough();
 /**
  * @method flags=cpp
- * @param sender cast=(TextDecorationCollection^),flags=gcobject
- * @param decoration cast=(TextDecoration^),flags=gcobject
+ * @param sender cast=(TextDecorationCollection^),flags=object
+ * @param decoration cast=(TextDecoration^),flags=object
  */
 public static final native void TextDecorationCollection_Add(int sender, int decoration); 
-/** @method accessor=TextFormatter::Create,flags=gcobject */
+/** @method accessor=TextFormatter::Create,flags=object */
 public static final native int TextFormatter_Create();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextFormatter^),flags=gcobject
- * @param textSource cast=(TextSource^),flags=gcobject
- * @param paragraphProperties cast=(TextParagraphProperties^),flags=gcobject
- * @param previousLineBreak cast=(TextLineBreak^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextFormatter^),flags=object
+ * @param textSource cast=(TextSource^),flags=object
+ * @param paragraphProperties cast=(TextParagraphProperties^),flags=object
+ * @param previousLineBreak cast=(TextLineBreak^),flags=object
  */
 public static final native int TextFormatter_FormatLine(int sender, int textSource, int firstCharIndex, double paragraphWidth, int paragraphProperties, int previousLineBreak);
 /**
  * @method flags=getter
- * @param sender cast=(TextLine^),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native double TextLine_Baseline(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TextLine^),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native double TextLine_Height(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TextLine^),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native int TextLine_NewlineLength(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextLine^),flags=gcobject
- * @param characterHit cast=(CharacterHit),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextLine^),flags=object
+ * @param characterHit cast=(CharacterHit),flags=object
  */
 public static final native int TextLine_GetNextCaretCharacterHit(int sender, int characterHit);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextLine^),flags=gcobject
- * @param characterHit cast=(CharacterHit),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextLine^),flags=object
+ * @param characterHit cast=(CharacterHit),flags=object
  */
 public static final native int TextLine_GetPreviousCaretCharacterHit(int sender, int characterHit);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextLine^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native int TextLine_GetTextLineBreak(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextLine^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native int TextLine_GetTextBounds(int sender, int firstTextSourceCharacterIndex, int textLength);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextLine^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native int TextLine_GetCharacterHitFromDistance(int sender, double distance);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TextLine^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native int TextLine_GetIndexedGlyphRuns(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(TextLine^),flags=gcobject
- * @param characterHit cast=(CharacterHit),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
+ * @param characterHit cast=(CharacterHit),flags=object
  */
 public static final native double TextLine_GetDistanceFromCharacterHit(int sender, int characterHit);
 /**
  * @method flags=getter
- * @param sender cast=(TextLine^),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native int TextLine_Length(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TextLine^),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native double TextLine_Start(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TextLine^),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native double TextLine_Width(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TextLine^),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
  */
 public static final native double TextLine_WidthIncludingTrailingWhitespace(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(TextLine^),flags=gcobject
- * @param drawContext cast=(DrawingContext^),flags=gcobject
- * @param origin cast=(Point),flags=gcobject
+ * @param sender cast=(TextLine^),flags=object
+ * @param drawContext cast=(DrawingContext^),flags=object
+ * @param origin cast=(Point),flags=object
  * @param invertAxes cast=(InvertAxes)
  */
 public static final native void TextLine_Draw(int sender, int drawContext, int origin, int invertAxes);
 /**
  * @method flags=getter
- * @param sender cast=(Thickness^),flags=gcobject
+ * @param sender cast=(Thickness^),flags=object
  */
 public static final native double Thickness_Left(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Thickness^),flags=gcobject
+ * @param sender cast=(Thickness^),flags=object
  */
 public static final native double Thickness_Right(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Thickness^),flags=gcobject
+ * @param sender cast=(Thickness^),flags=object
  */
 public static final native double Thickness_Top(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Thickness^),flags=gcobject
+ * @param sender cast=(Thickness^),flags=object
  */
 public static final native double Thickness_Bottom(int sender);
-/** @method accessor=Thumb::DragDeltaEvent,flags=const gcobject */
+/** @method accessor=Thumb::DragDeltaEvent,flags=const object */
 public static final native int Thumb_DragDeltaEvent();
 /**
  * @method flags=setter
- * @param sender cast=(TileBrush^),flags=gcobject
+ * @param sender cast=(TileBrush^),flags=object
  * @param mode cast=(TileMode)
  */
 public static final native void TileBrush_TileMode(int sender, int mode);
 /**
  * @method flags=setter
- * @param sender cast=(TileBrush^),flags=gcobject
+ * @param sender cast=(TileBrush^),flags=object
  * @param stretch cast=(Stretch)
  */
 public static final native void TileBrush_Stretch(int sender, int stretch);
 /**
  * @method flags=setter
- * @param sender cast=(TileBrush^),flags=gcobject
- * @param viewport cast=(Rect),flags=gcobject
+ * @param sender cast=(TileBrush^),flags=object
+ * @param viewport cast=(Rect),flags=object
  */
 public static final native void TileBrush_Viewport(int sender, int viewport);
 /**
  * @method flags=setter
- * @param sender cast=(TileBrush^),flags=gcobject
+ * @param sender cast=(TileBrush^),flags=object
  * @param mode cast=(BrushMappingMode)
  */
 public static final native void TileBrush_ViewportUnits(int sender, int mode);
 /**
  * @method flags=setter
- * @param sender cast=(TileBrush^),flags=gcobject
+ * @param sender cast=(TileBrush^),flags=object
  * @param value cast=(AlignmentX)
  */
 public static final native void TileBrush_AlignmentX(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(TileBrush^),flags=gcobject
+ * @param sender cast=(TileBrush^),flags=object
  * @param value cast=(AlignmentY)
  */
 public static final native void TileBrush_AlignmentY(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Timeline^),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
  */
 public static final native void Timeline_AutoReverse(int sender, boolean autoReverse);
 /**
  * @method flags=setter
- * @param sender cast=(Timeline^),flags=gcobject
- * @param duration cast=(Duration),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
+ * @param duration cast=(Duration),flags=object
  */
 public static final native void Timeline_Duration(int sender, int duration);
 /**
  * @method flags=setter
- * @param sender cast=(Timeline^),flags=gcobject
- * @param behavior cast=(RepeatBehavior),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
+ * @param behavior cast=(RepeatBehavior),flags=object
  */
 public static final native void Timeline_RepeatBehavior(int sender, int behavior);
-/** @method accessor=TimeSpan::FromMilliseconds(arg0),flags=const gcobject */
+/** @method accessor=TimeSpan::FromMilliseconds(arg0),flags=const object */
 public static final native int TimeSpan_FromMilliseconds(double ms);
 /**
  * @method flags=adder
- * @param sender cast=(ToggleButton^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(ToggleButton^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void ToggleButton_Checked(int sender, int handler);
-/** @method accessor=ToggleButton::CheckedEvent,flags=const gcobject */
+/** @method accessor=ToggleButton::CheckedEvent,flags=const object */
 public static final native int ToggleButton_CheckedEvent();
-/** @method accessor=ToggleButton::IndeterminateEvent,flags=const gcobject */
+/** @method accessor=ToggleButton::IndeterminateEvent,flags=const object */
 public static final native int ToggleButton_IndeterminateEvent ();
 /**
  * @method flags=getter
- * @param sender cast=(ToggleButton ^),flags=gcobject
+ * @param sender cast=(ToggleButton ^),flags=object
  */
 public static final native boolean ToggleButton_IsChecked(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ToggleButton ^),flags=gcobject
+ * @param sender cast=(ToggleButton ^),flags=object
  */
 public static final native void ToggleButton_IsChecked(int sender, boolean value);
 /**
  * @method flags=no_gen setter
- * @param sender cast=(ToggleButton^),flags=gcobject
+ * @param sender cast=(ToggleButton^),flags=object
  */
 public static final native void ToggleButton_IsCheckedNullSetter(int sender);
-/** @method accessor=ToggleButton::IsCheckedProperty,flags=const gcobject */
+/** @method accessor=ToggleButton::IsCheckedProperty,flags=const object */
 public static final native int ToggleButton_IsCheckedProperty();
-/** @method accessor=ToggleButton::IsThreeStateProperty,flags=const gcobject */
+/** @method accessor=ToggleButton::IsThreeStateProperty,flags=const object */
 public static final native int ToggleButton_IsThreeStateProperty();
 /**
  * @method flags=adder
- * @param sender cast=(ToggleButton^),flags=gcobject
- * @param handler cast=(RoutedEventHandler^),flags=gcobject
+ * @param sender cast=(ToggleButton^),flags=object
+ * @param handler cast=(RoutedEventHandler^),flags=object
  */
 public static final native void ToggleButton_Unchecked(int sender, int handler);
-/** @method accessor=ToggleButton::UncheckedEvent,flags=const gcobject */
+/** @method accessor=ToggleButton::UncheckedEvent,flags=const object */
 public static final native int ToggleButton_UncheckedEvent();
 /**
  * @method flags=getter
- * @param sender cast=(ToolBar^),flags=gcobject
+ * @param sender cast=(ToolBar^),flags=object
  */
 public static final native int ToolBar_Band(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ToolBar^),flags=gcobject
+ * @param sender cast=(ToolBar^),flags=object
  */
 public static final native void ToolBar_Band(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(ToolBar^),flags=gcobject
+ * @param sender cast=(ToolBar^),flags=object
  */
 public static final native int ToolBar_BandIndex(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ToolBar^),flags=gcobject
+ * @param sender cast=(ToolBar^),flags=object
  */
 public static final native void ToolBar_BandIndex(int sender, int value);
-/** @method accessor=ToolBar::BandProperty,flags=const gcobject */
+/** @method accessor=ToolBar::BandProperty,flags=const object */
 public static final native int ToolBar_BandProperty();
-/** @method accessor=ToolBar::ButtonStyleKey,flags=const gcobject */
+/** @method accessor=ToolBar::ButtonStyleKey,flags=const object */
 public static final native int ToolBar_ButtonStyleKey();
-/** @method accessor=ToolBar::CheckBoxStyleKey,flags=const gcobject */
+/** @method accessor=ToolBar::CheckBoxStyleKey,flags=const object */
 public static final native int ToolBar_CheckBoxStyleKey();
-/** @method accessor=ToolBar::RadioButtonStyleKey,flags=const gcobject */
+/** @method accessor=ToolBar::RadioButtonStyleKey,flags=const object */
 public static final native int ToolBar_RadioButtonStyleKey();
-/** @method accessor=ToolBar::SeparatorStyleKey,flags=const gcobject */
+/** @method accessor=ToolBar::SeparatorStyleKey,flags=const object */
 public static final native int ToolBar_SeparatorStyleKey();
 /**
  * @method flags=getter
- * @param sender cast=(ToolBar^),flags=gcobject
+ * @param sender cast=(ToolBar^),flags=object
  */
 public static final native boolean ToolBar_HasOverflowItems(int sender);
 /**
  * @method accessor=ToolBar::SetOverflowMode
- * @param element cast=(DependencyObject^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
  * @param mode cast=(OverflowMode)
  */
 public static final native void ToolBar_SetOverflowMode(int element, int mode);
-/** @method accessor=ToolBar::typeid,flags=const gcobject */
+/** @method accessor=ToolBar::typeid,flags=const object */
 public static final native int ToolBar_typeid();
 /**
  * @method flags=setter
- * @param sender cast=(ToolBarTray^),flags=gcobject
- * @param value cast=(Brush^),flags=gcobject
+ * @param sender cast=(ToolBarTray^),flags=object
+ * @param value cast=(Brush^),flags=object
  */
 public static final native void ToolBarTray_Background(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(ToolBarTray^),flags=gcobject
+ * @param sender cast=(ToolBarTray^),flags=object
  */
 public static final native boolean ToolBarTray_IsLocked(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(ToolBarTray^),flags=gcobject
+ * @param sender cast=(ToolBarTray^),flags=object
  */
 public static final native void ToolBarTray_IsLocked(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(ToolBarTray^),flags=gcobject
+ * @param sender cast=(ToolBarTray^),flags=object
  * @param value cast=(Orientation)
  */
 public static final native void ToolBarTray_Orientation(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(ToolBarTray^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(ToolBarTray^),flags=object
  */
 public static final native int ToolBarTray_ToolBars(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(TransformCollection^),flags=gcobject
- * @param transform cast=(Transform^),flags=gcobject
+ * @param sender cast=(TransformCollection^),flags=object
+ * @param transform cast=(Transform^),flags=object
  */
 public static final native void TransformCollection_Add(int sender, int transform);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Transform^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Transform^),flags=object
  */
 public static final native int Transform_Clone(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TransformGroup^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TransformGroup^),flags=object
  */
 public static final native int TransformGroup_Children(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TreeView^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TreeView^),flags=object
  */
 public static final native int TreeView_SelectedItem(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(TreeView^),flags=gcobject
- * @param handler cast=(RoutedPropertyChangedEventHandler<Object^>^),flags=gcobject
+ * @param sender cast=(TreeView^),flags=object
+ * @param handler cast=(RoutedPropertyChangedEventHandler<Object^>^),flags=object
  */
 public static final native void TreeView_SelectedItemChanged(int sender, int handler);
-/** @method accessor=TreeView::typeid,flags=const gcobject */
+/** @method accessor=TreeView::typeid,flags=const object */
 public static final native int TreeView_typeid();
-/** @method accessor=TreeViewItem::CollapsedEvent,flags=const gcobject */
+/** @method accessor=TreeViewItem::CollapsedEvent,flags=const object */
 public static final native int TreeViewItem_CollapsedEvent();
-/** @method accessor=TreeViewItem::ExpandedEvent,flags=const gcobject */
+/** @method accessor=TreeViewItem::ExpandedEvent,flags=const object */
 public static final native int TreeViewItem_ExpandedEvent();
 /**
  * @method flags=getter
- * @param sender cast=(TreeViewItem^),flags=gcobject
+ * @param sender cast=(TreeViewItem^),flags=object
  */
 public static final native boolean TreeViewItem_IsExpanded(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TreeViewItem^),flags=gcobject
+ * @param sender cast=(TreeViewItem^),flags=object
  */
 public static final native void TreeViewItem_IsExpanded(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(TreeViewItem^),flags=gcobject
+ * @param sender cast=(TreeViewItem^),flags=object
  */
 public static final native boolean TreeViewItem_IsSelected(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TreeViewItem^),flags=gcobject
+ * @param sender cast=(TreeViewItem^),flags=object
  */
 public static final native void TreeViewItem_IsSelected(int sender, boolean value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TreeViewItem^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TreeViewItem^),flags=object
  */
 public static final native int TreeViewItem_HeaderTemplate(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(TreeViewItem^),flags=gcobject
- * @param value cast=(DataTemplate^),flags=gcobject
+ * @param sender cast=(TreeViewItem^),flags=object
+ * @param value cast=(DataTemplate^),flags=object
  */
 public static final native void TreeViewItem_HeaderTemplate(int sender, int value);
-/** @method accessor=TreeViewItem::HeaderTemplateProperty,flags=const gcobject */
+/** @method accessor=TreeViewItem::HeaderTemplateProperty,flags=const object */
 public static final native int TreeViewItem_HeaderTemplateProperty();
-/** @method accessor=TreeViewItem::typeid,flags=const gcobject */
+/** @method accessor=TreeViewItem::typeid,flags=const object */
 public static final native int TreeViewItem_typeid();
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Type^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Type^),flags=object
+ * @param name cast=(String^),flags=object
  * @param bindingFlags cast=(BindingFlags)
  */
 public static final native int Type_GetProperty(int sender, int name, int bindingFlags);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TypeConverter^),flags=gcobject
- * @param string cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TypeConverter^),flags=object
+ * @param string cast=(String^),flags=object
  */
 public static final native int TypeConverter_ConvertFromString(int sender, int string);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(TypeConverter^),flags=gcobject
- * @param object cast=(Object^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(TypeConverter^),flags=object
+ * @param object cast=(Object^),flags=object
  */
 public static final native int TypeConverter_ConvertToString(int sender, int object);
 /**
- * @method accessor=TypeDescriptor::GetConverter,flags=gcobject
- * @param object cast=(Object^),flags=gcobject
+ * @method accessor=TypeDescriptor::GetConverter,flags=object
+ * @param object cast=(Object^),flags=object
  */
 public static final native int TypeDescriptor_GetConverter(int object);
 /**
- * @method flags=struct gcobject getter
- * @param sender cast=(Typeface^),flags=gcobject
+ * @method flags=struct object getter
+ * @param sender cast=(Typeface^),flags=object
  */
 public static final native int Typeface_FontFamily(int sender);
 /**
- * @method flags=struct gcobject getter
- * @param sender cast=(Typeface^),flags=gcobject
+ * @method flags=struct object getter
+ * @param sender cast=(Typeface^),flags=object
  */
 public static final native int Typeface_Style(int sender);
 /**
- * @method flags=struct gcobject getter
- * @param sender cast=(Typeface^),flags=gcobject
+ * @method flags=struct object getter
+ * @param sender cast=(Typeface^),flags=object
  */
 public static final native int Typeface_Weight(int sender);
 /**
- * @method flags=struct gcobject getter
- * @param sender cast=(Typeface^),flags=gcobject
+ * @method flags=struct object getter
+ * @param sender cast=(Typeface^),flags=object
  */
 public static final native int Typeface_Stretch(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Collections::Generic::ICollection<Typeface^>^),flags=gcobject
+ * @param sender cast=(System::Collections::Generic::ICollection<Typeface^>^),flags=object
  */
 public static final native int TypefaceCollection_Count(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Collections::Generic::IEnumerator<Typeface^>^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Collections::Generic::IEnumerator<Typeface^>^),flags=object
  */
 public static final native int TypefaceCollection_Current(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(System::Collections::Generic::IEnumerable<Typeface^>^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(System::Collections::Generic::IEnumerable<Typeface^>^),flags=object
  */
 public static final native int TypefaceCollection_GetEnumerator(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Type^),flags=gcobject
- * @param object cast=(Object^),flags=gcobject
+ * @param sender cast=(Type^),flags=object
+ * @param object cast=(Object^),flags=object
  */
 public static final native boolean Type_IsInstanceOfType(int sender, int object);
 /**
- * @method flags=struct gcobject getter
- * @param sender cast=(Type^),flags=gcobject
+ * @method flags=struct object getter
+ * @param sender cast=(Type^),flags=object
  */
 public static final native int Type_FullName(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(UIElementCollection^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(UIElementCollection^),flags=object
  */
 public static final native int UIElementCollection_default(int sender, int index);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElementCollection^),flags=gcobject
- * @param child cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElementCollection^),flags=object
+ * @param child cast=(UIElement^),flags=object
  */
 public static final native void UIElementCollection_Add(int sender, int child);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElementCollection^),flags=gcobject
- * @param child cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElementCollection^),flags=object
+ * @param child cast=(UIElement^),flags=object
  */
 public static final native void UIElementCollection_Insert(int sender, int index, int child);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElementCollection^),flags=gcobject
- * @param child cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElementCollection^),flags=object
+ * @param child cast=(UIElement^),flags=object
  */
 public static final native int UIElementCollection_IndexOf(int sender, int child);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElementCollection^),flags=gcobject
- * @param child cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElementCollection^),flags=object
+ * @param child cast=(UIElement^),flags=object
  */
 public static final native boolean UIElementCollection_Contains(int sender, int child);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElementCollection^),flags=gcobject
+ * @param sender cast=(UIElementCollection^),flags=object
  */
 public static final native void UIElementCollection_Clear(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(UIElementCollection^),flags=gcobject
+ * @param sender cast=(UIElementCollection^),flags=object
  */
 public static final native int UIElementCollection_Count(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(IEnumerator^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(IEnumerator^),flags=object
  */
 public static final native int UIElementCollection_Current(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(IEnumerable^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(IEnumerable^),flags=object
  */
 public static final native int UIElementCollection_GetEnumerator(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElementCollection^),flags=gcobject
- * @param child cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElementCollection^),flags=object
+ * @param child cast=(UIElement^),flags=object
  */
 public static final native void UIElementCollection_Remove(int sender, int child);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
- * @param event cast=(RoutedEvent^),flags=gcobject
- * @param handler cast=(Delegate^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param event cast=(RoutedEvent^),flags=object
+ * @param handler cast=(Delegate^),flags=object
  */
 public static final native void UIElement_AddHandler(int sender, int event, int handler, boolean handledEventsToo);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_AllowDrop(int sender, boolean value);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_CaptureMouse(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
- * @param geometry cast=(Geometry^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param geometry cast=(Geometry^),flags=object
  */
 public static final native void UIElement_Clip(int sender, int geometry);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_ClipToBounds(int sender, boolean value);
-/** @method accessor=UIElement::ClipToBoundsProperty,flags=const gcobject */
+/** @method accessor=UIElement::ClipToBoundsProperty,flags=const object */
 public static final native int UIElement_ClipToBoundsProperty();
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(DragEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(DragEventHandler^),flags=object
  */
 public static final native void UIElement_DragEnter(int sender, int handler);
-/** @method accessor=UIElement::DragEnterEvent,flags=const gcobject */
+/** @method accessor=UIElement::DragEnterEvent,flags=const object */
 public static final native int UIElement_DragEnterEvent();
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(DragEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(DragEventHandler^),flags=object
  */
 public static final native void UIElement_DragLeave(int sender, int handler);
-/** @method accessor=UIElement::DragLeaveEvent,flags=const gcobject */
+/** @method accessor=UIElement::DragLeaveEvent,flags=const object */
 public static final native int UIElement_DragLeaveEvent();
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(DragEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(DragEventHandler^),flags=object
  */
 public static final native void UIElement_DragOver(int sender, int handler);
-/** @method accessor=UIElement::DragOverEvent,flags=const gcobject */
+/** @method accessor=UIElement::DragOverEvent,flags=const object */
 public static final native int UIElement_DragOverEvent();
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(DragEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(DragEventHandler^),flags=object
  */
 public static final native void UIElement_Drop(int sender, int handler);
-/** @method accessor=UIElement::DropEvent,flags=const gcobject */
+/** @method accessor=UIElement::DropEvent,flags=const object */
 public static final native int UIElement_DropEvent();
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_Focus(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_Focusable (int sender, boolean value);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
- * @param dp cast=(DependencyProperty^),flags=gcobject
- * @param animation cast=(AnimationTimeline^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param dp cast=(DependencyProperty^),flags=object
+ * @param animation cast=(AnimationTimeline^),flags=object
  */
 public static final native void UIElement_BeginAnimation(int sender, int dp, int animation);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(UIElement^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(UIElement^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native int UIElement_InputHitTest(int sender, int point);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_InvalidateVisual(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_IsEnabled(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_IsEnabled(int sender, boolean enable);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_IsFocused(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_IsHitTestVisible(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_IsKeyboardFocused(int sender); 
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_IsKeyboardFocusWithin(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_IsMeasureValid(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_IsMouseOver(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native boolean UIElement_IsVisible(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(KeyEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(KeyEventHandler^),flags=object
  */
 public static final native void UIElement_KeyUp(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(KeyEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(KeyEventHandler^),flags=object
  */
 public static final native void UIElement_KeyDown(int sender, int handler);
 /**
- * @method flags=struct gcobject getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @method flags=struct object getter
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native int UIElement_DesiredSize(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(GiveFeedbackEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(GiveFeedbackEventHandler^),flags=object
  */
 public static final native void UIElement_GiveFeedback(int sender, int handler);
-/** @method accessor=UIElement::GiveFeedbackEvent,flags=const gcobject */
+/** @method accessor=UIElement::GiveFeedbackEvent,flags=const object */
 public static final native int UIElement_GiveFeedbackEvent();
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void UIElement_LayoutUpdated(int sender, int handler);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement ^),flags=gcobject
- * @param availableSize cast=(Size),flags=gcobject
+ * @param sender cast=(UIElement ^),flags=object
+ * @param availableSize cast=(Size),flags=object
  */
 public static final native void UIElement_Measure(int sender, int availableSize);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(MouseButtonEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(MouseButtonEventHandler^),flags=object
  */
 public static final native void UIElement_MouseDown(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(MouseEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(MouseEventHandler^),flags=object
  */
 public static final native void UIElement_MouseEnter(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(MouseEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(MouseEventHandler^),flags=object
  */
 public static final native void UIElement_MouseLeave(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(MouseEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(MouseEventHandler^),flags=object
  */
 public static final native void UIElement_MouseMove(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(MouseWheelEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(MouseWheelEventHandler^),flags=object
  */
 public static final native void UIElement_MouseWheel(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(MouseButtonEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(MouseButtonEventHandler^),flags=object
  */
 public static final native void UIElement_MouseUp(int sender, int handler);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
- * @param request cast=(TraversalRequest^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param request cast=(TraversalRequest^),flags=object
  */
 public static final native void UIElement_MoveFocus(int sender, int request);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native double UIElement_Opacity(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_Opacity(int sender, double value);
-/** @method accessor=UIElement::OpacityProperty,flags=const gcobject */
+/** @method accessor=UIElement::OpacityProperty,flags=const object */
 public static final native int UIElement_OpacityProperty();
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(KeyEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(KeyEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewKeyDown(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(KeyEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(KeyEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewKeyUp(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement ^),flags=gcobject
- * @param handler cast=(MouseButtonEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement ^),flags=object
+ * @param handler cast=(MouseButtonEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewMouseDown(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement ^),flags=gcobject
- * @param handler cast=(MouseEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement ^),flags=object
+ * @param handler cast=(MouseEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewMouseMove(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement ^),flags=gcobject
- * @param handler cast=(MouseWheelEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement ^),flags=object
+ * @param handler cast=(MouseWheelEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewMouseWheel(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement ^),flags=gcobject
- * @param handler cast=(MouseButtonEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement ^),flags=object
+ * @param handler cast=(MouseButtonEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewMouseUp(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(KeyboardFocusChangedEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(KeyboardFocusChangedEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewGotKeyboardFocus(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(KeyboardFocusChangedEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(KeyboardFocusChangedEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewLostKeyboardFocus(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(KeyboardFocusChangedEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(KeyboardFocusChangedEventHandler^),flags=object
  */
 public static final native void UIElement_LostKeyboardFocus(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(TextCompositionEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(TextCompositionEventHandler^),flags=object
  */
 public static final native void UIElement_PreviewTextInput(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(QueryContinueDragEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(QueryContinueDragEventHandler^),flags=object
  */
 public static final native void UIElement_QueryContinueDrag(int sender, int handler);
-/** @method accessor=UIElement::QueryContinueDragEvent,flags=const gcobject */
+/** @method accessor=UIElement::QueryContinueDragEvent,flags=const object */
 public static final native int UIElement_QueryContinueDragEvent();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native int UIElement_RenderSize(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_ReleaseMouseCapture(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
- * @param routedEvent cast=(RoutedEvent^),flags=gcobject
- * @param handler cast=(Delegate^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param routedEvent cast=(RoutedEvent^),flags=object
+ * @param handler cast=(Delegate^),flags=object
  */
 public static final native void UIElement_RemoveHandler(int sender, int routedEvent, int handler);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_SnapsToDevicePixels(int sender, boolean value);
 /**
  * @method flags=adder
- * @param sender cast=(UIElement^),flags=gcobject
- * @param handler cast=(TextCompositionEventHandler^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param handler cast=(TextCompositionEventHandler^),flags=object
  */
 public static final native void UIElement_TextInput(int sender, int handler);
 /**
- * @method flags=struct cpp gcobject
- * @param sender cast=(UIElement^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
- * @param relativeTo cast=(UIElement^),flags=gcobject
+ * @method flags=struct cpp object
+ * @param sender cast=(UIElement^),flags=object
+ * @param point cast=(Point),flags=object
+ * @param relativeTo cast=(UIElement^),flags=object
  */
 public static final native int UIElement_TranslatePoint(int sender, int point, int relativeTo);
 /**
  * @method flags=cpp
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native void UIElement_UpdateLayout(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native byte UIElement_Visibility(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
  * @param visible cast=(Visibility)
  */
 public static final native void UIElement_Visibility(int sender, byte visible);
-/** @method accessor=UIElement::VisibilityProperty,flags=const gcobject */
+/** @method accessor=UIElement::VisibilityProperty,flags=const object */
 public static final native int UIElement_VisibilityProperty();
 /**
  * @method flags=getter
- * @param sender cast=(VirtualizingStackPanel^),flags=gcobject
+ * @param sender cast=(VirtualizingStackPanel^),flags=object
  */
 public static final native double VirtualizingStackPanel_VerticalOffset(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Visual^),flags=gcobject
- * @param descendant cast=(DependencyObject^),flags=gcobject
+ * @param sender cast=(Visual^),flags=object
+ * @param descendant cast=(DependencyObject^),flags=object
  */
 public static final native boolean Visual_IsAncestorOf(int sender, int descendant);
 /**
  * @method flags=cpp
- * @param sender cast=(Visual^),flags=gcobject
- * @param ancestor cast=(DependencyObject^),flags=gcobject
+ * @param sender cast=(Visual^),flags=object
+ * @param ancestor cast=(DependencyObject^),flags=object
  */
 public static final native boolean Visual_IsDescendantOf(int sender, int ancestor);
 /**
- * @method flags=struct cpp gcobject
- * @param sender cast=(Visual^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @method flags=struct cpp object
+ * @param sender cast=(Visual^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native int Visual_PointToScreen(int sender, int point);
 /**
- * @method flags=struct cpp gcobject
- * @param sender cast=(Visual^),flags=gcobject
- * @param point cast=(Point),flags=gcobject
+ * @method flags=struct cpp object
+ * @param sender cast=(Visual^),flags=object
+ * @param point cast=(Point),flags=object
  */
 public static final native int Visual_PointFromScreen(int sender, int point);
 /**
- * @method accessor=VisualTreeHelper::GetChild,flags=gcobject
- * @param sender cast=(DependencyObject^),flags=gcobject
+ * @method accessor=VisualTreeHelper::GetChild,flags=object
+ * @param sender cast=(DependencyObject^),flags=object
  */
 public static final native int VisualTreeHelper_GetChild(int sender, int value);
 /**
  * @method accessor=VisualTreeHelper::GetChildrenCount
- * @param sender cast=(DependencyObject^),flags=gcobject
+ * @param sender cast=(DependencyObject^),flags=object
  */
 public static final native int VisualTreeHelper_GetChildrenCount(int sender);
 /**
- * @method accessor=VisualTreeHelper::GetParent,flags=gcobject
- * @param sender cast=(DependencyObject^),flags=gcobject
+ * @method accessor=VisualTreeHelper::GetParent,flags=object
+ * @param sender cast=(DependencyObject^),flags=object
  */
 public static final native int VisualTreeHelper_GetParent(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native boolean WebBrowser_CanGoBack(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native boolean WebBrowser_CanGoForward(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native int WebBrowser_Document(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native int WebBrowser_DocumentText(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param string cast=(String^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param string cast=(String^),flags=object
  */
 public static final native void WebBrowser_DocumentText(int sender, int string);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native int WebBrowser_DocumentTitle(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param handler cast=(System::Windows::Forms::WebBrowserDocumentCompletedEventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param handler cast=(System::Windows::Forms::WebBrowserDocumentCompletedEventHandler^),flags=object
  */
 public static final native void WebBrowser_DocumentCompleted(int sender, int handler);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native boolean WebBrowser_GoBack(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native boolean WebBrowser_GoForward(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param handler cast=(System::Windows::Forms::WebBrowserNavigatingEventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param handler cast=(System::Windows::Forms::WebBrowserNavigatingEventHandler^),flags=object
  */
 public static final native void WebBrowser_Navigating(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param handler cast=(System::Windows::Forms::WebBrowserNavigatedEventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param handler cast=(System::Windows::Forms::WebBrowserNavigatedEventHandler^),flags=object
  */
 public static final native void WebBrowser_Navigated(int sender, int handler);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param urlString cast=(String^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param urlString cast=(String^),flags=object
  */
 public static final native void WebBrowser_Navigate(int sender, int urlString);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param handler cast=(System::Windows::Forms::WebBrowserProgressChangedEventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param handler cast=(System::Windows::Forms::WebBrowserProgressChangedEventHandler^),flags=object
  */
 public static final native void WebBrowser_ProgressChanged(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void WebBrowser_DocumentTitleChanged(int sender, int handler);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native int WebBrowser_StatusText(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void WebBrowser_StatusTextChanged(int sender, int handler);
 /**
  * @method flags=getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native int WebBrowser_ReadyState(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native void WebBrowser_Refresh(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native void WebBrowser_Stop(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native void WebBrowser_ScriptErrorsSuppressed(int sender, boolean value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowser^),flags=object
  */
 public static final native int WebBrowser_Url(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowserNavigatingEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowserNavigatingEventArgs^),flags=object
  */
 public static final native int WebBrowserNavigatingEventArgs_Url(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowserNavigatedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowserNavigatedEventArgs^),flags=object
  */
 public static final native int WebBrowserNavigatedEventArgs_Url(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(System::Windows::Forms::WebBrowserDocumentCompletedEventArgs^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(System::Windows::Forms::WebBrowserDocumentCompletedEventArgs^),flags=object
  */
 public static final native int WebBrowserDocumentCompletedEventArgs_Url(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Windows::Forms::WebBrowserProgressChangedEventArgs^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowserProgressChangedEventArgs^),flags=object
  */
 public static final native long WebBrowserProgressChangedEventArgs_CurrentProgress(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(System::Windows::Forms::WebBrowserProgressChangedEventArgs^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::WebBrowserProgressChangedEventArgs^),flags=object
  */
 public static final native long WebBrowserProgressChangedEventArgs_MaximumProgress(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(WindowCollection^),flags=gcobject
+ * @param sender cast=(WindowCollection^),flags=object
  */
 public static final native int WindowCollection_Count(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(IEnumerator^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(IEnumerator^),flags=object
  */
 public static final native int WindowCollection_Current(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(IEnumerable^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(IEnumerable^),flags=object
  */
 public static final native int WindowCollection_GetEnumerator(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native void Window_Activate(int sender);
 /**
  * @method flags=cpp
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native void Window_Close(int sender);
 /**
  * @method flags=adder
- * @param sender cast=(Window^),flags=gcobject
- * @param handler cast=(CancelEventHandler^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
+ * @param handler cast=(CancelEventHandler^),flags=object
  */
 public static final native void Window_Closing(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(Window^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void Window_Activated(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(Window^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void Window_Deactivated(int sender, int handler);
 /**
  * @method flags=adder
- * @param sender cast=(Window^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void Window_LocationChanged(int sender, int handler);
 /**
- * @method accessor=Window::GetWindow,flags=gcobject
- * @param dependencyObject cast=(DependencyObject^),flags=gcobject
+ * @method accessor=Window::GetWindow,flags=object
+ * @param dependencyObject cast=(DependencyObject^),flags=object
  */
 public static final native int Window_GetWindow(int dependencyObject);
 /**
  * @method flags=cpp
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native void Window_Hide(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
- * @param owner cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
+ * @param owner cast=(Window^),flags=object
  */
 public static final native void Window_Owner(int sender, int owner);
 /**
  * @method flags=cpp
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native void Window_Show(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native double Window_Left(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Window ^),flags=gcobject
+ * @param sender cast=(Window ^),flags=object
  */
 public static final native double Window_Top(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native void Window_Left(int sender, double left);
 /**
  * @method flags=setter
- * @param sender cast=(Window ^),flags=gcobject
+ * @param sender cast=(Window ^),flags=object
  */
 public static final native void Window_Top(int sender, double top);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
- * @param icon cast=(ImageSource^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
+ * @param icon cast=(ImageSource^),flags=object
  */
 public static final native void Window_Icon(int sender, int icon);
 /**
  * @method flags=getter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native boolean Window_IsActive(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native int Window_WindowState (int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  * @param windowState cast=(WindowState)
  */
 public static final native void Window_WindowState (int sender, int windowState);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native void Window_AllowsTransparency(int sender, boolean value);
 /**
  * @method flags=getter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native int Window_WindowStyle(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  * @param value cast=(WindowStyle)
  */
 public static final native void Window_WindowStyle(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  */
 public static final native void Window_ShowInTaskbar(int sender, boolean value);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
  * @param value cast=(ResizeMode)
  */
 public static final native void Window_ResizeMode(int sender, int value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Window^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Window^),flags=object
  */
 public static final native int Window_Title(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Window^),flags=gcobject
- * @param string cast=(String^),flags=gcobject
+ * @param sender cast=(Window^),flags=object
+ * @param string cast=(String^),flags=object
  */
 public static final native void Window_Title(int sender, int string);
 /**
  * @method flags=setter
- * @param sender cast=(System::Windows::Forms::Integration::WindowsFormsHost^),flags=gcobject
- * @param child cast=(System::Windows::Forms::Control^),flags=gcobject
+ * @param sender cast=(System::Windows::Forms::Integration::WindowsFormsHost^),flags=object
+ * @param child cast=(System::Windows::Forms::Control^),flags=object
  */
 public static final native void WindowsFormsHost_Child(int sender, int child);
 /**
  * @method flags=cpp
- * @param sender cast=(WriteableBitmap^),flags=gcobject
- * @param sourceRect cast=(Int32Rect),flags=gcobject
+ * @param sender cast=(WriteableBitmap^),flags=object
+ * @param sourceRect cast=(Int32Rect),flags=object
  * @param buffer cast=(IntPtr)
  */
 public static final native void WriteableBitmap_WritePixels(int sender, int sourceRect, byte[] buffer, int bufferSize, int stride);
@@ -5739,8 +5739,8 @@ public static final native int gcnew_Application();
 public static final native int gcnew_ArrayList(int count);
 /**
  * @method flags=gcnew
- * @param point cast=(Point),flags=gcobject
- * @param size cast=(Size),flags=gcobject
+ * @param point cast=(Point),flags=object
+ * @param size cast=(Size),flags=object
  * @param sweepDirection cast=(SweepDirection)
  */
 public static final native int gcnew_ArcSegment(int point, int size,  double rotationAngle, boolean isLargeArc, int sweepDirection, boolean isStroked);
@@ -5748,19 +5748,19 @@ public static final native int gcnew_ArcSegment(int point, int size,  double rot
 public static final native int gcnew_BitmapImage();
 /**
  * @method flags=gcnew
- * @param point1 cast=(Point),flags=gcobject
- * @param point2 cast=(Point),flags=gcobject
- * @param point3 cast=(Point),flags=gcobject
+ * @param point1 cast=(Point),flags=object
+ * @param point2 cast=(Point),flags=object
+ * @param point3 cast=(Point),flags=object
  */
 public static final native int gcnew_BezierSegment(int point1, int point2, int point3, boolean isScrolled);
 /**
  * @method flags=gcnew
- * @param propertyPath cast=(String^),flags=gcobject
+ * @param propertyPath cast=(String^),flags=object
  */
 public static final native int gcnew_Binding(int propertyPath);
 /**
  * @method flags=gcnew
- * @param colors cast=(System::Collections::Generic::IList<Color>^),flags=gcobject
+ * @param colors cast=(System::Collections::Generic::IList<Color>^),flags=object
  */
 public static final native int gcnew_BitmapPalette(int colors);
 /**
@@ -5787,8 +5787,8 @@ public static final native int gcnew_ComboBoxItem();
 public static final native int gcnew_ControlTemplate();
 /**
  * @method flags=gcnew
- * @param source cast=(BitmapSource^),flags=gcobject
- * @param sourceRect cast=(Int32Rect),flags=gcobject
+ * @param source cast=(BitmapSource^),flags=object
+ * @param sourceRect cast=(Int32Rect),flags=object
  */
 public static final native int gcnew_CroppedBitmap(int source, int sourceRect);
 /** @method flags=gcnew */
@@ -5796,8 +5796,8 @@ public static final native int gcnew_CharacterHit(int firstCharacterIndex, int t
 /**
  * @method flags=gcnew
  * @param geometryCombineMode cast=(GeometryCombineMode)
- * @param geometry1 cast=(Geometry^),flags=gcobject
- * @param geometry2 cast=(Geometry^),flags=gcobject
+ * @param geometry1 cast=(Geometry^),flags=object
+ * @param geometry2 cast=(Geometry^),flags=object
  */
 public static final native int gcnew_CombinedGeometry(int geometryCombineMode, int geometry1, int geometry2); 
 /** @method flags=gcnew */
@@ -5814,7 +5814,7 @@ public static final native int gcnew_DrawingVisual();
 public static final native int gcnew_DoubleAnimationUsingKeyFrames();
 /**
  * @method flags=gcnew
- * @param dashes cast=(DoubleCollection^),flags=gcobject
+ * @param dashes cast=(DoubleCollection^),flags=object
  */
 public static final native int gcnew_DashStyle(int dashes, double offset);
 /** @method flags=gcnew */
@@ -5827,33 +5827,33 @@ public static final native int gcnew_DispatcherFrame();
 public static final native int gcnew_DispatcherTimer();
 /**
  * @method flags=gcnew
- * @param keytime cast=(KeyTime),flags=gcobject
+ * @param keytime cast=(KeyTime),flags=object
  */
 public static final native int gcnew_DiscreteDoubleKeyFrame(double value, int keytime);
 /** @method flags=gcnew */
 public static final native int gcnew_DoubleCollection(int capacity);
 /**
  * @method flags=gcnew
- * @param timespan cast=(TimeSpan),flags=gcobject
+ * @param timespan cast=(TimeSpan),flags=object
  */
 public static final native int gcnew_Duration(int timespan);
 /** @method flags=gcnew */
 public static final native int gcnew_Expander();
 /**
  * @method flags=gcnew
- * @param rect cast=(Rect),flags=gcobject
+ * @param rect cast=(Rect),flags=object
  */
 public static final native int gcnew_EllipseGeometry(int rect);
 /**
  * @method accessor=System::IO::FileInfo,flags=gcnew
- * @param path cast=(String^),flags=gcobject
+ * @param path cast=(String^),flags=object
  */
 public static final native int gcnew_FileInfo(int path);
 /** @method accessor=System::Windows::Forms::FolderBrowserDialog,flags=gcnew */
 public static final native int gcnew_FolderBrowserDialog();
 /**
  * @method accessor=System::Drawing::Font,flags=gcnew
- * @param fontFamily cast=(String^),flags=gcobject
+ * @param fontFamily cast=(String^),flags=object
  * @param fontStyle cast=(System::Drawing::FontStyle)
  */
 public static final native int gcnew_Font(int fontFamily, float size, int fontStyle);
@@ -5861,36 +5861,36 @@ public static final native int gcnew_Font(int fontFamily, float size, int fontSt
 public static final native int gcnew_FontDialog();
 /**
  * @method flags=gcnew
- * @param str cast=(String^),flags=gcobject
+ * @param str cast=(String^),flags=object
  */
 public static final native int gcnew_FontFamily(int str);
 /**
  * @method flags=gcnew
- * @param source cast=(BitmapSource^),flags=gcobject
- * @param destinationFormat cast=(PixelFormat),flags=gcobject
- * @param destinationPalette cast=(BitmapPalette^),flags=gcobject
+ * @param source cast=(BitmapSource^),flags=object
+ * @param destinationFormat cast=(PixelFormat),flags=object
+ * @param destinationPalette cast=(BitmapPalette^),flags=object
  */
 public static final native int gcnew_FormatConvertedBitmap(int source, int destinationFormat, int destinationPalette, double alphaThreshold);
 /**
  * @method flags=gcnew
- * @param string cast=(String^),flags=gcobject
- * @param culture cast=(CultureInfo^),flags=gcobject
+ * @param string cast=(String^),flags=object
+ * @param culture cast=(CultureInfo^),flags=object
  * @param flowDirection cast=(FlowDirection)
- * @param typeface cast=(Typeface^),flags=gcobject
- * @param brush cast=(Brush^),flags=gcobject
+ * @param typeface cast=(Typeface^),flags=object
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native int gcnew_FormattedText(int string, int culture, int flowDirection, int typeface, double emSize, int brush);
 /** @method flags=gcnew */
 public static final native int gcnew_Frame();
 /**
  * @method flags=gcnew
- * @param type cast=(Type^),flags=gcobject
+ * @param type cast=(Type^),flags=object
  */
 public static final native int gcnew_FrameworkElementFactory(int type);
 /**
  * @method flags=gcnew
- * @param type cast=(Type^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
+ * @param type cast=(Type^),flags=object
+ * @param name cast=(String^),flags=object
  */
 public static final native int gcnew_FrameworkElementFactory(int type, int name);
 /** @method flags=gcnew */
@@ -5914,13 +5914,13 @@ public static final native int gcnew_GridViewColumnHeader();
 public static final native int gcnew_GroupBox();
 /**
  * @method flags=gcnew
- * @param inline cast=(Inline^),flags=gcobject
+ * @param inline cast=(Inline^),flags=object
  */
 public static final native int gcnew_Hyperlink(int inline);
 //public static final native int gcnew_Icon(int stream);
 /**
  * @method flags=gcnew
- * @param imageSource cast=(ImageSource^),flags=gcobject
+ * @param imageSource cast=(ImageSource^),flags=object
  */
 public static final native int gcnew_ImageBrush(int imageSource);
 /** @method flags=gcnew */
@@ -5935,21 +5935,21 @@ public static final native int gcnew_IntPtr(int value);
 public static final native int gcnew_Label();
 /**
  * @method flags=gcnew
- * @param startColor cast=(Color),flags=gcobject
- * @param endColor cast=(Color),flags=gcobject
+ * @param startColor cast=(Color),flags=object
+ * @param endColor cast=(Color),flags=object
  */
 public static final native int gcnew_LinearGradientBrush(int startColor, int endColor, double angle);
 /**
  * @method flags=gcnew
- * @param startColor cast=(Color),flags=gcobject
- * @param endColor cast=(Color),flags=gcobject
- * @param startPoint cast=(Point),flags=gcobject
- * @param endPonit cast=(Point),flags=gcobject
+ * @param startColor cast=(Color),flags=object
+ * @param endColor cast=(Color),flags=object
+ * @param startPoint cast=(Point),flags=object
+ * @param endPonit cast=(Point),flags=object
  */
 public static final native int gcnew_LinearGradientBrush(int startColor, int endColor, int startPoint, int endPonit);
 /**
  * @method flags=gcnew
- * @param point cast=(Point),flags=gcobject
+ * @param point cast=(Point),flags=object
  */
 public static final native int gcnew_LineSegment(int point, boolean isStroked);
 /** @method flags=gcnew */
@@ -5964,7 +5964,7 @@ public static final native int gcnew_ListViewItem();
 public static final native int gcnew_Matrix(double m11, double m12, double m21, double m22, double offsetX, double offsetY);
 /**
  * @method flags=gcnew
- * @param matrix cast=(Matrix),flags=gcobject
+ * @param matrix cast=(Matrix),flags=object
  */
 public static final native int gcnew_MatrixTransform(int matrix);
 /** @method accessor=System::IO::MemoryStream,flags=gcnew */
@@ -5989,12 +5989,12 @@ public static final native int gcnew_PathGeometry();
 public static final native int gcnew_Pen();
 /**
  * @method flags=gcnew
- * @param brush cast=(Brush^),flags=gcobject
+ * @param brush cast=(Brush^),flags=object
  */
 public static final native int gcnew_Pen(int brush, double thickness);
 /**
  * @method flags=gcnew
- * @param points cast=(PointCollection^),flags=gcobject
+ * @param points cast=(PointCollection^),flags=object
  */
 public static final native int gcnew_PolyLineSegment(int points, boolean isStroked);
 /** @method flags=gcnew */
@@ -6007,8 +6007,8 @@ public static final native int gcnew_Popup();
 public static final native int gcnew_ProgressBar();
 /**
  * @method flags=gcnew
- * @param point1 cast=(Point),flags=gcobject
- * @param point2 cast=(Point),flags=gcobject
+ * @param point1 cast=(Point),flags=object
+ * @param point2 cast=(Point),flags=object
  */
 public static final native int gcnew_QuadraticBezierSegment(int point1, int point2, boolean isScrolled);
 /** @method flags=gcnew */
@@ -6017,7 +6017,7 @@ public static final native int gcnew_RadioButton();
 public static final native int gcnew_Rect(double x, double y, double width, double height);
 /**
  * @method flags=gcnew
- * @param rect cast=(Rect),flags=gcobject
+ * @param rect cast=(Rect),flags=object
  */
 public static final native int gcnew_RectangleGeometry(int rect);
 /**
@@ -6027,7 +6027,7 @@ public static final native int gcnew_RectangleGeometry(int rect);
 public static final native int gcnew_RelativeSource(int relativeSourceMode);
 /**
  * @method flags=gcnew
- * @param pixelFormat cast=(PixelFormat),flags=gcobject
+ * @param pixelFormat cast=(PixelFormat),flags=object
  */
 public static final native int gcnew_RenderTargetBitmap(int pixelWidth, int pixelHeight, double dpiX, double dpiY, int pixelFormat);
 /** @method flags=gcnew */
@@ -6050,13 +6050,13 @@ public static final native int gcnew_ScrollViewer();
 public static final native int gcnew_Separator();
 /**
  * @method flags=gcnew
- * @param dp cast=(DependencyProperty^),flags=gcobject
- * @param value cast=(Object^),flags=gcobject
+ * @param dp cast=(DependencyProperty^),flags=object
+ * @param value cast=(Object^),flags=object
  */
 public static final native int gcnew_Setter(int dp, int value);
 /**
  * @method accessor=System::Windows::Setter,flags=gcnew
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param dp cast=(DependencyProperty^),flags=object
  * @param value cast=(Visibility)
  */
 public static final native int gcnew_SetterVisibility(int dp, int value);
@@ -6070,7 +6070,7 @@ public static final native int gcnew_Slider();
 public static final native int gcnew_ScaleTransform(double scaleX, double scaleY);
 /**
  * @method flags=gcnew
- * @param color cast=(Color),flags=gcobject
+ * @param color cast=(Color),flags=object
  */
 public static final native int gcnew_SolidColorBrush(int color);
 /** @method flags=gcnew */
@@ -6101,17 +6101,17 @@ public static final native int gcnew_SWTSafeHandle(int handle, boolean isIcon);
 public static final native int gcnew_SWTTextSource(int jniRef);
 /**
  * @method flags=no_gen gcnew
- * @param properties cast=(TextRunProperties^),flags=gcobject
+ * @param properties cast=(TextRunProperties^),flags=object
  */
 public static final native int gcnew_SWTTextEmbeddedObject(int properties, int lenght, double width, double height, double baseline);
 /**
  * @method flags=no_gen gcnew
- * @param typeface cast=(Typeface^),flags=gcobject
- * @param textDecorations cast=(TextDecorationCollection^),flags=gcobject
- * @param foregroundBrush cast=(Brush^),flags=gcobject
- * @param backgroundBrush cast=(Brush^),flags=gcobject
+ * @param typeface cast=(Typeface^),flags=object
+ * @param textDecorations cast=(TextDecorationCollection^),flags=object
+ * @param foregroundBrush cast=(Brush^),flags=object
+ * @param backgroundBrush cast=(Brush^),flags=object
  * @param baselineAlignment cast=(BaselineAlignment)
- * @param culture cast=(CultureInfo^),flags=gcobject
+ * @param culture cast=(CultureInfo^),flags=object
  */
 public static final native int gcnew_SWTTextRunProperties(int typeface, double size, double hittingSize, int textDecorations, int foregroundBrush, int backgroundBrush, int baselineAlignment, int culture);
 /** @method flags=no_gen */
@@ -6120,7 +6120,7 @@ public static final native int gcnew_SWTTextParagraphProperties(int flowDirectio
 public static final native int gcnew_SWTTreeView(int jniRef);
 /**
  * @method flags=no_gen gcnew
- * @param treeView cast=(TreeView^),flags=gcobject
+ * @param treeView cast=(TreeView^),flags=object
  */
 public static final native int gcnew_SWTTreeViewRowPresenter(int treeView);
 /** @method flags=gcnew */
@@ -6129,7 +6129,7 @@ public static final native int gcnew_TabControl();
 public static final native int gcnew_TabItem();
 /**
  * @method flags=gcnew
- * @param dp cast=(DependencyProperty^),flags=gcobject
+ * @param dp cast=(DependencyProperty^),flags=object
  */
 public static final native int gcnew_TemplateBindingExtension(int dp);
 /** @method flags=gcnew */
@@ -6137,7 +6137,7 @@ public static final native int gcnew_TextDecorationCollection(int capacity);
 /**
  * @method flags=gcnew
  * @param location cast=(TextDecorationLocation)
- * @param pen cast=(Pen^),flags=gcobject
+ * @param pen cast=(Pen^),flags=object
  * @param penOffsetUnit cast=(TextDecorationUnit)
  * @param penThicknessUnit cast=(TextDecorationUnit)
  */
@@ -6155,18 +6155,18 @@ public static final native int gcnew_TextBlock();
 public static final native int gcnew_TextBox();
 /**
  * @method flags=gcnew
- * @param string cast=(String^),flags=gcobject
- * @param textRunProperties cast=(TextRunProperties^),flags=gcobject
+ * @param string cast=(String^),flags=object
+ * @param textRunProperties cast=(TextRunProperties^),flags=object
  */
 public static final native int gcnew_TextCharacters(int string, int offsetToFirstChar, int length, int textRunProperties);
 /**
  * @method flags=gcnew
- * @param textRunProperties cast=(TextRunProperties^),flags=gcobject
+ * @param textRunProperties cast=(TextRunProperties^),flags=object
  */
 public static final native int gcnew_TextEndOfLine(int length, int textRunProperties);
 /**
  * @method flags=gcnew
- * @param textRunProperties cast=(TextRunProperties^),flags=gcobject
+ * @param textRunProperties cast=(TextRunProperties^),flags=object
  */
 public static final native int gcnew_TextEndOfParagraph(int length, int textRunProperties);
 /** @method flags=gcnew */
@@ -6196,17 +6196,17 @@ public static final native int gcnew_TreeView();
 public static final native int gcnew_TreeViewItem();
 /**
  * @method flags=gcnew
- * @param fontFamily cast=(FontFamily^),flags=gcobject
- * @param style cast=(FontStyle),flags=gcobject
- * @param weight cast=(FontWeight),flags=gcobject
- * @param stretch cast=(FontStretch),flags=gcobject
+ * @param fontFamily cast=(FontFamily^),flags=object
+ * @param style cast=(FontStyle),flags=object
+ * @param weight cast=(FontWeight),flags=object
+ * @param stretch cast=(FontStretch),flags=object
  */
 public static final native int gcnew_Typeface(int fontFamily, int style, int weight, int stretch);
 /** @method flags=gcnew */
 public static final native int gcnew_UserControl();
 /**
  * @method flags=gcnew
- * @param str cast=(String^),flags=gcobject
+ * @param str cast=(String^),flags=object
  * @param type cast=(UriKind)
  */
 public static final native int gcnew_Uri(int str, int type);
@@ -6218,13 +6218,13 @@ public static final native int gcnew_WindowsFormsHost();
 public static final native int gcnew_Window();
 /**
  * @method flags=gcnew
- * @param source cast=(BitmapSource^),flags=gcobject
+ * @param source cast=(BitmapSource^),flags=object
  */
 public static final native int gcnew_WriteableBitmap (int source);
 /**
  * @method flags=gcnew
- * @param pixelFormat cast=(PixelFormat),flags=gcobject
- * @param palette cast=(BitmapPalette^),flags=gcobject
+ * @param pixelFormat cast=(PixelFormat),flags=object
+ * @param palette cast=(BitmapPalette^),flags=object
  */
 public static final native int gcnew_WriteableBitmap (int pixelWidth, int pixelHeight, double dpiX, double dpiY, int pixelFormat, int palette);
 /** @method flags=no_gen */
@@ -6232,12 +6232,12 @@ public static final native void memcpy(char[] dest, int src, int size);
 /**
  * @method flags=no_gen
  * @param dest flags=no_in critical
- * @param src cast=(array<Byte>^),flags=gcobject
+ * @param src cast=(array<Byte>^),flags=object
  */
 public static final native void memcpy(byte[] dest, int src, int size);
 /**
  * @method flags=no_gen
- * @param src cast=(array<Byte>^),flags=gcobject
+ * @param src cast=(array<Byte>^),flags=object
  * @param dest flags=no_out critical
  */
 public static final native void memcpy(int src, byte[] dest, int size);
@@ -6245,37 +6245,37 @@ public static final native void memcpy(int src, byte[] dest, int size);
 
 //Demo
 /**
- * @method flags=gcobject getter
- * @param sender cast=(FrameworkElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(FrameworkElement^),flags=object
  */
 public static final native int FrameworkElement_Resources(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param value cast=(ResourceDictionary^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param value cast=(ResourceDictionary^),flags=object
  */
 public static final native void FrameworkElement_Resources(int sender, int value);
 /**
  * @method accessor=System::IO::StringReader,flags=gcnew
- * @param string cast=(String^),flags=gcobject
+ * @param string cast=(String^),flags=object
  */
 public static final native int gcnew_StringReader(int string);
 /**
- * @method accessor=XmlReader::Create,flags=gcobject
- * @param stream cast=(System::IO::TextReader^),flags=gcobject
+ * @method accessor=XmlReader::Create,flags=object
+ * @param stream cast=(System::IO::TextReader^),flags=object
  */
 public static final native int XmlReader_Create(int stream);
 /**
- * @method accessor=XamlReader::Load,flags=gcobject
- * @param stream cast=(XmlReader^),flags=gcobject
+ * @method accessor=XamlReader::Load,flags=object
+ * @param stream cast=(XmlReader^),flags=object
  */
 public static final native int XamlReader_Load(int stream);
 /** @method flags=gcnew */
 public static final native int gcnew_ResourceDictionary();
 /**
  * @method flags=setter
- * @param sender cast=(ResourceDictionary^),flags=gcobject
- * @param uri cast=(Uri^),flags=gcobject
+ * @param sender cast=(ResourceDictionary^),flags=object
+ * @param uri cast=(Uri^),flags=object
  */
 public static final native void ResourceDictionary_Source(int sender, int uri);
 
@@ -6287,7 +6287,7 @@ public static final native int gcnew_DiscreteDoubleKeyFrame();
 public static final native int gcnew_LinearDoubleKeyFrame();
 /**
  * @method flags=gcnew
- * @param parameter cast=(Object^),flags=gcobject
+ * @param parameter cast=(Object^),flags=object
  */
 public static final native int gcnew_PropertyPath(int parameter);
 /** @method flags=gcnew */
@@ -6298,117 +6298,117 @@ public static final native int gcnew_Storyboard();
 public static final native int gcnew_SWTAnimator(int jniRef);
 /**
  * @method flags=setter
- * @param sender cast=(DoubleKeyFrame^),flags=gcobject
+ * @param sender cast=(DoubleKeyFrame^),flags=object
  */
 public static final native void DoubleKeyFrame_Value(int sender, double value);
 /**
  * @method flags=setter
- * @param sender cast=(DoubleKeyFrame^),flags=gcobject
- * @param value cast=(KeyTime),flags=gcobject
+ * @param sender cast=(DoubleKeyFrame^),flags=object
+ * @param value cast=(KeyTime),flags=object
  */
 public static final native void DoubleKeyFrame_KeyTime(int sender, int value);
 /**
- * @method accessor=KeyTime::FromTimeSpan,flags=gcobject
- * @param timeSpan cast=(TimeSpan),flags=gcobject
+ * @method accessor=KeyTime::FromTimeSpan,flags=object
+ * @param timeSpan cast=(TimeSpan),flags=object
  */
 public static final native int KeyTime_FromTimeSpan(int timeSpan);
 /**
  * @method flags=cpp
- * @param sender cast=(Storyboard^),flags=gcobject
- * @param containingObject cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(Storyboard^),flags=object
+ * @param containingObject cast=(FrameworkElement^),flags=object
  */
 public static final native void Storyboard_Begin(int sender, int containingObject, boolean isControllable);
 /**
  * @method flags=cpp
- * @param sender cast=(Storyboard^),flags=gcobject
- * @param containingObject cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(Storyboard^),flags=object
+ * @param containingObject cast=(FrameworkElement^),flags=object
  */
 public static final native void Storyboard_Pause(int sender, int containingObject);
 /**
  * @method flags=cpp
- * @param sender cast=(Storyboard^),flags=gcobject
- * @param containingObject cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(Storyboard^),flags=object
+ * @param containingObject cast=(FrameworkElement^),flags=object
  */
 public static final native void Storyboard_Resume(int sender, int containingObject);
 /**
  * @method flags=cpp
- * @param sender cast=(Storyboard^),flags=gcobject
- * @param containingObject cast=(FrameworkElement^),flags=gcobject
+ * @param sender cast=(Storyboard^),flags=object
+ * @param containingObject cast=(FrameworkElement^),flags=object
  */
 public static final native void Storyboard_Stop(int sender, int containingObject);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(TimelineGroup^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(TimelineGroup^),flags=object
  */
 public static final native int TimelineGroup_Children(int sender);
-/** @method accessor=SWTAnimator::DoubleValueProperty,flags=no_gen gcobject const */
+/** @method accessor=SWTAnimator::DoubleValueProperty,flags=no_gen object const */
 public static final native int SWTAnimator_DoubleValueProperty();
-/** @method accessor=SWTAnimator::IntValueProperty,flags=no_gen gcobject const */
+/** @method accessor=SWTAnimator::IntValueProperty,flags=no_gen object const */
 public static final native int SWTAnimator_IntValueProperty();
 /**
  * @method flags=cpp
- * @param sender cast=(FrameworkElement^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
- * @param scopedElement cast=(Object^),flags=gcobject
+ * @param sender cast=(FrameworkElement^),flags=object
+ * @param name cast=(String^),flags=object
+ * @param scopedElement cast=(Object^),flags=object
  */
 public static final native void FrameworkElement_RegisterName(int sender, int name, int scopedElement);
 /**
  * @method accessor=NewValue,flags=getter
- * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=gcobject
+ * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=object
  */
 public static final native double DependencyPropertyChangedEventArgs_NewValueDouble(int sender);
 /**
  * @method accessor=OldValue,flags=getter
- * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=gcobject
+ * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=object
  */
 public static final native double DependencyPropertyChangedEventArgs_OldValueDouble(int sender);
 /**
  * @method accessor=NewValue,flags=getter
- * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=gcobject
+ * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=object
  */
 public static final native int DependencyPropertyChangedEventArgs_NewValueInt(int sender);
 /**
  * @method accessor=OldValue,flags=getter
- * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=gcobject
+ * @param sender cast=(DependencyPropertyChangedEventArgs^),flags=object
  */
 public static final native int DependencyPropertyChangedEventArgs_OldValueInt(int sender);
 /**
  * @method accessor=Storyboard::SetTargetName
- * @param element cast=(DependencyObject^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
+ * @param name cast=(String^),flags=object
  */
 public static final native void Storyboard_SetTargetName(int element, int name);
 /**
  * @method accessor=Storyboard::SetTargetProperty
- * @param element cast=(DependencyObject^),flags=gcobject
- * @param propertyPath cast=(PropertyPath^),flags=gcobject
+ * @param element cast=(DependencyObject^),flags=object
+ * @param propertyPath cast=(PropertyPath^),flags=object
  */
 public static final native void Storyboard_SetTargetProperty(int element, int propertyPath);
 /** @method flags=gcnew */
 public static final native int gcnew_NameScope();
 /**
- * @method accessor=NameScope::GetNameScope,flags=gcobject
- * @param dependencyObject cast=(DependencyObject^),flags=gcobject
+ * @method accessor=NameScope::GetNameScope,flags=object
+ * @param dependencyObject cast=(DependencyObject^),flags=object
  */
 public static final native int NameScope_GetNameScope(int dependencyObject);
 /**
  * @method accessor=NameScope::SetNameScope
- * @param dependencyObject cast=(DependencyObject^),flags=gcobject
- * @param nameScope cast=(INameScope^),flags=gcobject
+ * @param dependencyObject cast=(DependencyObject^),flags=object
+ * @param nameScope cast=(INameScope^),flags=object
  */
 public static final native void NameScope_SetNameScope(int dependencyObject, int nameScope);
 /** @method flags=gcnew */
 public static final native int gcnew_KeySpline(double x1, double y1, double x2, double y2);
 /**
  * @method flags=setter
- * @param sender cast=(SplineDoubleKeyFrame^),flags=gcobject
- * @param value cast=(KeySpline^),flags=gcobject
+ * @param sender cast=(SplineDoubleKeyFrame^),flags=object
+ * @param value cast=(KeySpline^),flags=object
  */
 public static final native void SplineDoubleKeyFrame_KeySpline(int sender, int value);
 /**
  * @method flags=adder
- * @param sender cast=(Timeline^),flags=gcobject
- * @param handler cast=(EventHandler^),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
+ * @param handler cast=(EventHandler^),flags=object
  */
 public static final native void Timeline_Completed(int sender, int handler);
 /** @method flags=gcnew */
@@ -6420,345 +6420,345 @@ public static final native int gcnew_LinearInt32KeyFrame();
 /** @method flags=gcnew */
 public static final native int gcnew_SplineInt32KeyFrame();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Int32AnimationUsingKeyFrames^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Int32AnimationUsingKeyFrames^),flags=object
  */
 public static final native int Int32AnimationUsingKeyFrames_KeyFrames(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Int32KeyFrame^),flags=gcobject
+ * @param sender cast=(Int32KeyFrame^),flags=object
  */
 public static final native void Int32KeyFrame_Value(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(SplineInt32KeyFrame^),flags=gcobject
- * @param value cast=(KeySpline^),flags=gcobject
+ * @param sender cast=(SplineInt32KeyFrame^),flags=object
+ * @param value cast=(KeySpline^),flags=object
  */
 public static final native void SplineInt32KeyFrame_KeySpline(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(Int32KeyFrame^),flags=gcobject
- * @param value cast=(KeyTime),flags=gcobject
+ * @param sender cast=(Int32KeyFrame^),flags=object
+ * @param value cast=(KeyTime),flags=object
  */
 public static final native void Int32KeyFrame_KeyTime(int sender, int value);
 
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Timeline^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Timeline^),flags=object
  */
 public static final native int Timeline_Duration(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Duration^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Duration^),flags=object
  */
 public static final native int Duration_TimeSpan(int sender);
 /**
  * @method flags=getter
- * @param sender cast=(TimeSpan^),flags=gcobject
+ * @param sender cast=(TimeSpan^),flags=object
  */
 public static final native double TimeSpan_TotalMilliseconds(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(Timeline^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(Timeline^),flags=object
  */
 public static final native int Timeline_BeginTime(int sender);
 
 /** @method flags=gcnew */
 public static final native int gcnew_OuterGlowBitmapEffect();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(OuterGlowBitmapEffect^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(OuterGlowBitmapEffect^),flags=object
  */
 public static final native int OuterGlowBitmapEffect_GlowColor(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(OuterGlowBitmapEffect^),flags=gcobject
- * @param value cast=(Color),flags=gcobject
+ * @param sender cast=(OuterGlowBitmapEffect^),flags=object
+ * @param value cast=(Color),flags=object
  */
 public static final native void OuterGlowBitmapEffect_GlowColor(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(OuterGlowBitmapEffect^),flags=gcobject
+ * @param sender cast=(OuterGlowBitmapEffect^),flags=object
  */
 public static final native double OuterGlowBitmapEffect_GlowSize(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(OuterGlowBitmapEffect^),flags=gcobject
+ * @param sender cast=(OuterGlowBitmapEffect^),flags=object
  */
 public static final native void OuterGlowBitmapEffect_GlowSize(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(OuterGlowBitmapEffect^),flags=gcobject
+ * @param sender cast=(OuterGlowBitmapEffect^),flags=object
  */
 public static final native double OuterGlowBitmapEffect_Opacity(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(OuterGlowBitmapEffect^),flags=gcobject
+ * @param sender cast=(OuterGlowBitmapEffect^),flags=object
  */
 public static final native void OuterGlowBitmapEffect_Opacity(int sender, double value);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(UIElement^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(UIElement^),flags=object
  */
 public static final native int UIElement_BitmapEffect(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(UIElement^),flags=gcobject
- * @param value cast=(BitmapEffect^),flags=gcobject
+ * @param sender cast=(UIElement^),flags=object
+ * @param value cast=(BitmapEffect^),flags=object
  */
 public static final native void UIElement_BitmapEffect(int sender, int value);
 /** @method flags=gcnew */
 public static final native int gcnew_DropShadowBitmapEffect();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native int DropShadowBitmapEffect_Color(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
- * @param value cast=(Color),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
+ * @param value cast=(Color),flags=object
  */
 public static final native void DropShadowBitmapEffect_Color(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native double DropShadowBitmapEffect_Direction(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native void DropShadowBitmapEffect_Direction(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native double DropShadowBitmapEffect_Opacity(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native void DropShadowBitmapEffect_Opacity(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native double DropShadowBitmapEffect_ShadowDepth(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native void DropShadowBitmapEffect_ShadowDepth(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native double DropShadowBitmapEffect_Softness(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DropShadowBitmapEffect^),flags=gcobject
+ * @param sender cast=(DropShadowBitmapEffect^),flags=object
  */
 public static final native void DropShadowBitmapEffect_Softness(int sender, double value);
 /** @method flags=gcnew */
 public static final native int gcnew_BlurBitmapEffect();
 /**
  * @method flags=setter
- * @param sender cast=(BlurBitmapEffect^),flags=gcobject
+ * @param sender cast=(BlurBitmapEffect^),flags=object
  */
 public static final native void BlurBitmapEffect_Radius(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(BlurBitmapEffect^),flags=gcobject
+ * @param sender cast=(BlurBitmapEffect^),flags=object
  */
 public static final native double BlurBitmapEffect_Radius(int sender);
 /** @method flags=gcnew */
 public static final native int gcnew_BevelBitmapEffect();
 /**
  * @method flags=getter
- * @param handle cast=(BevelBitmapEffect^),flags=gcobject
+ * @param handle cast=(BevelBitmapEffect^),flags=object
  */
 public static final native double BevelBitmapEffect_LightAngle(int handle);
 /**
  * @method flags=setter
- * @param handle cast=(BevelBitmapEffect^),flags=gcobject
+ * @param handle cast=(BevelBitmapEffect^),flags=object
  */
 public static final native void BevelBitmapEffect_LightAngle(int handle, double value);
 /**
  * @method flags=getter
- * @param handle cast=(BevelBitmapEffect^),flags=gcobject
+ * @param handle cast=(BevelBitmapEffect^),flags=object
  */
 public static final native double BevelBitmapEffect_BevelWidth(int handle);
 /**
  * @method flags=setter
- * @param handle cast=(BevelBitmapEffect^),flags=gcobject
+ * @param handle cast=(BevelBitmapEffect^),flags=object
  */
 public static final native void BevelBitmapEffect_BevelWidth(int handle, double value);
 /**
  * @method flags=getter
- * @param handle cast=(BevelBitmapEffect^),flags=gcobject
+ * @param handle cast=(BevelBitmapEffect^),flags=object
  */
 public static final native double BevelBitmapEffect_Smoothness(int handle);
 /**
  * @method flags=setter
- * @param handle cast=(BevelBitmapEffect^),flags=gcobject
+ * @param handle cast=(BevelBitmapEffect^),flags=object
  */
 public static final native void BevelBitmapEffect_Smoothness(int handle, double value);
 /** @method flags=gcnew */
 public static final native int gcnew_BitmapEffectGroup();
 /**
- * @method flags=gcobject getter
- * @param sender cast=(BitmapEffectGroup^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(BitmapEffectGroup^),flags=object
  */
 public static final native int BitmapEffectGroup_Children(int sender);
 
 /**
- * @method flags=gcobject getter
- * @param sender cast=(HwndSource^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(HwndSource^),flags=object
  */
 public static final native int HwndSource_CompositionTarget(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(HwndTarget^),flags=gcobject
- * @param value cast=(Color),flags=gcobject
+ * @param sender cast=(HwndTarget^),flags=object
+ * @param value cast=(Color),flags=object
  */
 public static final native void HwndTarget_BackgroundColor(int sender, int value);
 
 /**
- * @method accessor=TypeDescriptor::GetProperties,flags=gcobject
- * @param sender cast=(Object^),flags=gcobject
+ * @method accessor=TypeDescriptor::GetProperties,flags=object
+ * @param sender cast=(Object^),flags=object
  */
 public static final native int TypeDescriptor_GetProperties(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(MemberDescriptor^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(MemberDescriptor^),flags=object
  */
 public static final native int MemberDescriptor_Name(int sender);
 /**
- * @method flags=gcobject getter
- * @param sender cast=(DependencyPropertyDescriptor^),flags=gcobject
+ * @method flags=object getter
+ * @param sender cast=(DependencyPropertyDescriptor^),flags=object
  */
 public static final native int DependencyPropertyDescriptor_DependencyProperty(int sender);
-/** @method accessor=DependencyPropertyDescriptor::typeid,flags=const gcobject */
+/** @method accessor=DependencyPropertyDescriptor::typeid,flags=const object */
 public static final native int DependencyPropertyDescriptor_typeid();
 /**
- * @method accessor=DependencyPropertyDescriptor::FromProperty,flags=gcobject
- * @param propertyDescriptor cast=(PropertyDescriptor^),flags=gcobject
+ * @method accessor=DependencyPropertyDescriptor::FromProperty,flags=object
+ * @param propertyDescriptor cast=(PropertyDescriptor^),flags=object
  */
 public static final native int DependencyPropertyDescriptor_FromProperty(int propertyDescriptor);
 /**
- * @method accessor=Type::GetType,flags=gcobject
- * @param typeName cast=(String^),flags=gcobject
+ * @method accessor=Type::GetType,flags=object
+ * @param typeName cast=(String^),flags=object
  */
 public static final native int Type_GetType(int typeName, boolean throwOnError, boolean ignoreCase);
 /**
  * @method flags=cpp
- * @param sender cast=(NameScope^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
- * @param scopedElement cast=(Object^),flags=gcobject
+ * @param sender cast=(NameScope^),flags=object
+ * @param name cast=(String^),flags=object
+ * @param scopedElement cast=(Object^),flags=object
  */
 public static final native void NameScope_RegisterName(int sender, int name, int scopedElement);
 
-/** @method accessor=Panel::HeightProperty,flags=const gcobject */
+/** @method accessor=Panel::HeightProperty,flags=const object */
 public static final native int Panel_HeightProperty();
-/** @method accessor=Panel::WidthProperty,flags=const gcobject */
+/** @method accessor=Panel::WidthProperty,flags=const object */
 public static final native int Panel_WidthProperty();
-/** @method accessor=Canvas::TopProperty,flags=const gcobject */
+/** @method accessor=Canvas::TopProperty,flags=const object */
 public static final native int Canvas_TopProperty();
-/** @method accessor=Canvas::LeftProperty,flags=const gcobject */
+/** @method accessor=Canvas::LeftProperty,flags=const object */
 public static final native int Canvas_LeftProperty();
-/** @method accessor=OuterGlowBitmapEffect::GlowSizeProperty,flags=const gcobject */
+/** @method accessor=OuterGlowBitmapEffect::GlowSizeProperty,flags=const object */
 public static final native int OuterGlowBitmapEffect_GlowSizeProperty();
 /** @method flags=gcnew */
 public static final native int gcnew_Int32Animation();
 /** @method flags=gcnew */
 public static final native int gcnew_DoubleAnimation();
 /**
- * @method flags=no_gen setter gcobject
- * @param sender cast=(Timeline^),flags=gcobject
- * @param value cast=(TimeSpan^),flags=gcobject
+ * @method flags=no_gen setter object
+ * @param sender cast=(Timeline^),flags=object
+ * @param value cast=(TimeSpan^),flags=object
  */
 public static final native void Timeline_BeginTime(int sender, int value);
 /**
  * @method flags=setter
- * @param sender cast=(DoubleAnimation^),flags=gcobject
+ * @param sender cast=(DoubleAnimation^),flags=object
  */
 public static final native void DoubleAnimation_To(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(DoubleAnimation^),flags=gcobject
+ * @param sender cast=(DoubleAnimation^),flags=object
  */
 public static final native double DoubleAnimation_To(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Int32Animation^),flags=gcobject
+ * @param sender cast=(Int32Animation^),flags=object
  */
 public static final native void Int32Animation_To(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(Int32Animation^),flags=gcobject
+ * @param sender cast=(Int32Animation^),flags=object
  */
 public static final native int Int32Animation_To(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(DoubleAnimation^),flags=gcobject
+ * @param sender cast=(DoubleAnimation^),flags=object
  */
 public static final native void DoubleAnimation_From(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(DoubleAnimation^),flags=gcobject
+ * @param sender cast=(DoubleAnimation^),flags=object
  */
 public static final native double DoubleAnimation_From(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Int32Animation^),flags=gcobject
+ * @param sender cast=(Int32Animation^),flags=object
  */
 public static final native void Int32Animation_From(int sender, int value);
 /**
  * @method flags=getter
- * @param sender cast=(Int32Animation^),flags=gcobject
+ * @param sender cast=(Int32Animation^),flags=object
  */
 public static final native int Int32Animation_From(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Timeline^),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
  */
 public static final native void Timeline_DecelerationRatio(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Timeline^),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
  */
 public static final native double Timeline_DecelerationRatio(int sender);
 /**
  * @method flags=setter
- * @param sender cast=(Timeline^),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
  */
 public static final native void Timeline_AccelerationRatio(int sender, double value);
 /**
  * @method flags=getter
- * @param sender cast=(Timeline^),flags=gcobject
+ * @param sender cast=(Timeline^),flags=object
  */
 public static final native double Timeline_AccelerationRatio(int sender);
 
 /** @method flags=no_gen gcnew */
 public static final native int gcnew_SWTAnimation(int jniRef);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(Type^),flags=gcobject
- * @param name cast=(String^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(Type^),flags=object
+ * @param name cast=(String^),flags=object
  * @param bindingFlags cast=(BindingFlags)
  */
 public static final native int Type_GetMethod(int sender, int name, int bindingFlags);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(ArrayList^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(ArrayList^),flags=object
  */
 public static final native int ArrayList_ToArray(int sender);
 /**
- * @method flags=cpp gcobject
- * @param sender cast=(MethodInfo^),flags=gcobject
- * @param obj cast=(Object^),flags=gcobject
- * @param parameters cast=(array<Object^>^),flags=gcobject
+ * @method flags=cpp object
+ * @param sender cast=(MethodInfo^),flags=object
+ * @param obj cast=(Object^),flags=object
+ * @param parameters cast=(array<Object^>^),flags=object
  */
 public static final native int MethodInfo_Invoke(int sender, int obj, int parameters);
 }
