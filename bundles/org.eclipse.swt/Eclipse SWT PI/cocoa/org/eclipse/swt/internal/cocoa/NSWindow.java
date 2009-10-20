@@ -82,6 +82,11 @@ public NSButtonCell defaultButtonCell() {
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 
+public id delegate() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_delegate);
+	return result != 0 ? new id(result) : null;
+}
+
 public void deminiaturize(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_deminiaturize_, sender != null ? sender.id : 0);
 }

@@ -1973,6 +1973,7 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_setNeedsDisplay_, proc3, "@:B");
 		OS.class_addMethod(cls, OS.sel_shouldDelayWindowOrderingForEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_acceptsFirstMouse_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_changeColor_, proc3, "@:@");
 	}
 	if (proc2 != 0) {
 		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
@@ -4312,7 +4313,9 @@ void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 		case OS.NSOtherMouseUp:
 			checkEnterExit (findControl (true), nsEvent, true);
 			if (trackingControl.isDisposed()) return;
-			trackingControl.sendMouseEvent (nsEvent, SWT.MouseUp, true);
+			Control control = trackingControl;
+			this.trackingControl = null;
+			control.sendMouseEvent (nsEvent, SWT.MouseUp, false);
 			break;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
@@ -4681,6 +4684,16 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		if (sel == OS.sel_drawRect_) {
 			return 0;
 		}
+	}
+	if (sel == OS.sel_changeColor_) {
+		NSColorPanel panel = NSColorPanel.sharedColorPanel();
+		id delegate = panel.delegate();
+		if (delegate != null) {
+			if (OS.objc_msgSend_bool(delegate.id, OS.sel_isKindOfClass_, OS.objc_getClass("SWTPanelDelegate"))) {
+				OS.objc_msgSend(delegate.id, OS.sel_changeColor_, arg0);
+			}
+		}
+		return 0;
 	}
 	if (sel == OS.sel_timerProc_) {
 		//TODO optimize getting the display
