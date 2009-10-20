@@ -663,42 +663,61 @@ public void layout (boolean changed, boolean all) {
 public void layout (Control [] changed) {
 	checkWidget ();
 	if (changed == null) error (SWT.ERROR_INVALID_ARGUMENT);
-	for (int i=0; i<changed.length; i++) {
-		Control control = changed [i];
-		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		boolean ancestor = false;
-		Composite composite = control.parent;
-		while (composite != null) {
-			ancestor = composite == this;
-			if (ancestor) break;
-			composite = composite.parent;
+	layout (changed, SWT.NONE);
+}
+
+/*public*/ void layout (Control [] changed, int flags) {
+	checkWidget ();
+	if (changed != null) {
+		for (int i=0; i<changed.length; i++) {
+			Control control = changed [i];
+			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			boolean ancestor = false;
+			Composite composite = control.parent;
+			while (composite != null) {
+				ancestor = composite == this;
+				if (ancestor) break;
+				composite = composite.parent;
+			}
+			if (!ancestor) error (SWT.ERROR_INVALID_PARENT);
 		}
-		if (!ancestor) error (SWT.ERROR_INVALID_PARENT);
-	}
-	int updateCount = 0;
-	Composite [] update = new Composite [16];
-	for (int i=0; i<changed.length; i++) {
-		Control child = changed [i];
-		Composite composite = child.parent;
-		while (child != this) {
-			if (composite.layout != null) {
-				composite.state |= LAYOUT_NEEDED;
-				if (!composite.layout.flushCache (child)) {
-					composite.state |= LAYOUT_CHANGED;
+		int updateCount = 0;
+		Composite [] update = new Composite [16];
+		for (int i=0; i<changed.length; i++) {
+			Control child = changed [i];
+			Composite composite = child.parent;
+			while (child != this) {
+				if (composite.layout != null) {
+					composite.state |= LAYOUT_NEEDED;
+					if (!composite.layout.flushCache (child)) {
+						composite.state |= LAYOUT_CHANGED;
+					}
 				}
+				if (updateCount == update.length) {
+					Composite [] newUpdate = new Composite [update.length + 16];
+					System.arraycopy (update, 0, newUpdate, 0, update.length);
+					update = newUpdate;
+				}
+				child = update [updateCount++] = composite;
+				composite = child.parent;
 			}
-			if (updateCount == update.length) {
-				Composite [] newUpdate = new Composite [update.length + 16];
-				System.arraycopy (update, 0, newUpdate, 0, update.length);
-				update = newUpdate;
-			}
-			child = update [updateCount++] = composite;
-			composite = child.parent;
 		}
-	}
-	for (int i=updateCount-1; i>=0; i--) {
-		update [i].updateLayout (false);
+		if ((flags & SWT.DEFER) != 0) {
+			setLayoutDeferred (true);
+			display.addLayoutDeferred (this);
+		}
+		for (int i=updateCount-1; i>=0; i--) {
+			update [i].updateLayout (false);
+		}
+	} else {
+		if (layout == null && (flags & SWT.ALL) == 0) return;
+		markLayout ((flags & SWT.CHANGED) != 0, (flags & SWT.ALL) != 0);
+		if ((flags & SWT.DEFER) != 0) {
+			setLayoutDeferred (true);
+			display.addLayoutDeferred (this);
+		}
+		updateLayout ((flags & SWT.ALL) != 0);
 	}
 }
 
