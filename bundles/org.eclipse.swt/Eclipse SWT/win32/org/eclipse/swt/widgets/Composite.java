@@ -717,7 +717,7 @@ public void layout (Control [] changed) {
  *
  * @since 3.6
  */
-/*public*/ void layout (Control [] changed, int flags) {
+public void layout (Control [] changed, int flags) {
 	checkWidget ();
 	if (changed != null) {
 		for (int i=0; i<changed.length; i++) {

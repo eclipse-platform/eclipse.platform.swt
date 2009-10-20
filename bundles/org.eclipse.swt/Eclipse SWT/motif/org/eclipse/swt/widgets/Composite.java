@@ -749,7 +749,7 @@ public void layout (Control [] changed) {
 	layout (changed, SWT.NONE);
 }
 
-/*public*/ void layout (Control [] changed, int flags) {
+public void layout (Control [] changed, int flags) {
 	checkWidget ();
 	if (changed != null) {
 		for (int i=0; i<changed.length; i++) {
