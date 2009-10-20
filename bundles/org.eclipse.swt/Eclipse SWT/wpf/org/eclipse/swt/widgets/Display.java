@@ -125,6 +125,10 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* Deferred Layout list */
+	Composite[] layoutDeferred;
+	int layoutDeferredCount;
+
 	/* System Tray */
 	Tray tray;
 	
@@ -471,6 +475,16 @@ void addInvalidate (Control control) {
 		OS.GCHandle_Free (operation);
 		OS.GCHandle_Free (handler);
 	}
+}
+
+void addLayoutDeferred (Composite comp) {
+	if (layoutDeferred == null) layoutDeferred = new Composite [64];
+	if (layoutDeferredCount == layoutDeferred.length) {
+		Composite [] temp = new Composite [layoutDeferred.length + 64];
+		System.arraycopy (layoutDeferred, 0, temp, 0, layoutDeferred.length);
+		layoutDeferred = temp;
+	}
+	layoutDeferred[layoutDeferredCount++] = comp;
 }
 
 /**
@@ -2210,6 +2224,7 @@ void removeShell (Shell shell) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runDeferredLayouts ();
 	runPopups ();
 	idle = false;
 	int handler = OS.gcnew_NoArgsDelegate(jniRef, "setIdleHandler");
@@ -2484,6 +2499,21 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return run;
+}
+
+boolean runDeferredLayouts () {
+	if (layoutDeferredCount != 0) {
+		Composite[] temp = layoutDeferred;
+		int count = layoutDeferredCount;
+		layoutDeferred = null;
+		layoutDeferredCount = 0;
+		for (int i = 0; i < count; i++) {
+			Composite comp = temp[i];
+			if (!comp.isDisposed()) comp.setLayoutDeferred (false);
+		}
+		return true;
+	}	
+	return false;
 }
 
 boolean runPopups () {
