@@ -6838,7 +6838,9 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 								}
 							}
 							RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, true, true, hDC);
-							if (itemRect.right > cellRect.right) {
+							RECT clientRect = new RECT (); 
+							OS.GetClientRect (handle, clientRect);
+							if (itemRect.right > cellRect.right || itemRect.right > clientRect.right) {
 								//TEMPORARY CODE
 								String string = " ";
 //								String string = null;
