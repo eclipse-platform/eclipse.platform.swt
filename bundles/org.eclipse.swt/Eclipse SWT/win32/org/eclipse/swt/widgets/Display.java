@@ -205,6 +205,10 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* Deferred Layout list */
+	Composite[] layoutDeferred;
+	int layoutDeferredCount;
+
 	/* System Tray */
 	Tray tray;
 	int nextTrayId;
@@ -547,6 +551,16 @@ public void addFilter (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
 	filterTable.hook (eventType, listener);
+}
+
+void addLayoutDeferred (Composite comp) {
+	if (layoutDeferred == null) layoutDeferred = new Composite [64];
+	if (layoutDeferredCount == layoutDeferred.length) {
+		Composite [] temp = new Composite [layoutDeferred.length + 64];
+		System.arraycopy (layoutDeferred, 0, temp, 0, layoutDeferred.length);
+		layoutDeferred = temp;
+	}
+	layoutDeferred[layoutDeferredCount++] = comp;
 }
 
 /**
@@ -3486,6 +3500,7 @@ public boolean readAndDispatch () {
 	checkDevice ();
 	lpStartupInfo = null;
 	drawMenuBars ();
+	runDeferredLayouts ();
 	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
 		if (!filterMessage (msg)) {
@@ -3913,6 +3928,21 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return run;
+}
+
+boolean runDeferredLayouts () {
+	if (layoutDeferredCount != 0) {
+		Composite[] temp = layoutDeferred;
+		int count = layoutDeferredCount;
+		layoutDeferred = null;
+		layoutDeferredCount = 0;
+		for (int i = 0; i < count; i++) {
+			Composite comp = temp[i];
+			if (!comp.isDisposed()) comp.setLayoutDeferred (false);
+		}
+		return true;
+	}	
+	return false;
 }
 
 boolean runPopups () {

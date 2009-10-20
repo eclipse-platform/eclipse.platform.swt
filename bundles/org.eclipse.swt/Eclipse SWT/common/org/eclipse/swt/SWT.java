@@ -865,6 +865,48 @@ public class SWT {
 	 * (value is 1&lt;&lt;9).
 	 */
 	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
+	
+	/**
+	 * A constant indicating that a given operation should be performed on
+	 * all widgets (value is 1&lt;&lt;0).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Composite</code> layout</li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
+	 * 
+	 * @since 3.6
+	 */
+	public static final int ALL = 1 << 0;
+
+	/**
+	 * A constant indicating that widgets have changed.
+	 * (value is 1&lt;&lt;1).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Composite</code> layout</li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
+	 * 
+	 * @since 3.6
+	 */
+	public static final int CHANGED = 1 << 1;
+
+	/**
+	 * A constant indicating that a given operation should be deferred.
+	 * (value is 1&lt;&lt;2).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Composite</code> layout</li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
+	 * 
+	 * @since 3.6
+	 */
+	public static final int DEFER = 1 << 2;
 
 	/**
 	 * A constant known to be zero (0), typically used in operations
