@@ -1,0 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.internal.win32;
+
+public class DOCHOSTUIINFO {
+	public int cbSize;
+	public int dwFlags;
+	public int dwDoubleClick;
+	/** @field cast=(OLECHAR*),flags=no_wince*/
+	public int /*long*/ pchHostCss;
+	/** @field cast=(OLECHAR*),flags=no_wince */
+	public int /*long*/ pchHostNS;
+	public static final int sizeof = OS.DOCHOSTUIINFO_sizeof ();
+}

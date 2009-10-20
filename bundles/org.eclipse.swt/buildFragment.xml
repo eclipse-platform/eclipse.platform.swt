@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.eclipse.swt.fragment" default="" basedir=".">
+
+	<target name="init" depends="properties">
+		<property name="compilerArg" value="" />
+		<condition property="fragment" value="org.eclipse.swt.${swt.ws}.${swt.os}.${swt.arch}" else="org.eclipse.swt.${swt.ws}.${swt.os}">
+			<isset property="swt.arch"/>
+		</condition>
+		<property name="full.name" value="${fragment}_${version.suffix}" />
+		<property name="temp.folder" value="${basedir}/temp.folder" />
+		<property name="plugin.destination" value="${basedir}" />
+		<property name="build.result.folder" value="${basedir}" />
+		<property name="destination" value="${basedir}" />
+		<property name="plugindir" value="../org.eclipse.swt" />
+		<property name="javacVerbose" value="false" />
+		<property name="logExtension" value=".xml" />
+		<property name="javacSource" value="1.3" />
+		<property name="javacTarget" value="1.2" />
+		<path id="path_bootclasspath">
+			<fileset dir="${java.home}/lib">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+		<property name="bootclasspath" refid="path_bootclasspath" />
+		<condition property="bundleBootClasspath" value="${CDC-1.0/Foundation-1.0}">
+			<isset property="CDC-1.0/Foundation-1.0" />
+		</condition>
+		<condition property="bundleBootClasspath" value="${J2SE-1.3}">
+			<isset property="J2SE-1.3" />
+		</condition>
+		<property name="bundleJavacSource" value="${javacSource}" />
+		<property name="bundleJavacTarget" value="${javacTarget}" />
+		<property name="bundleBootClasspath" value="${bootclasspath}" />
+		<condition property="p2.publish.parts" value="true">
+			<istrue value="${p2.gathering}" />
+		</condition>
+	</target>
+
+	<target name="properties" if="eclipse.running">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+	</target>
+
+	<target name="build.update.jar" depends="init">
+		<delete dir="${temp.folder}" />
+		<mkdir dir="${temp.folder}" />
+		<antcall target="build.jars" />
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${temp.folder}/" />
+		</antcall>
+		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false" />
+		<delete dir="${temp.folder}" />
+	</target>
+
+	<target name="@dot" depends="init" unless="@dot" description="Create jar: @dot.">
+		<property name="destdir" value="${temp.folder}/@dot.bin" />
+		<property name="debug" value="true" />
+		<property name="jar.filename" value="swt.jar" />
+		<delete dir="${temp.folder}/@dot.bin" />
+		<mkdir dir="${temp.folder}/@dot.bin" />
+		<antcall target="copy.${swt.ws}.src"/>
+		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="no" classpath="${plugindir}/extra_jars/exceptions.jar" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}">
+			<src path="${temp.folder}/@dot.src/"/>
+			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
+			<compilerarg line="${compilerArg}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
+		</javac>
+		<copy todir="${temp.folder}/@dot.bin">
+			<fileset dir="${temp.folder}/@dot.src/" excludes="**/*.java,**/package.htm*,**/library/" />
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
+		</copy>
+		<mkdir dir="${build.result.folder}/@dot" />
+		<copy todir="${build.result.folder}/@dot" failonerror="true">
+			<fileset dir="${temp.folder}/@dot.bin" />
+		</copy>
+		<jar jarfile="${build.result.folder}/${jar.filename}" basedir="${temp.folder}/@dot.bin" />
+		<delete dir="${temp.folder}/@dot.bin" />
+		<delete dir="${temp.folder}/@dot.src" />
+	</target>
+
+	<target name="build.jars" depends="init">
+		<available property="@dot" file="${build.result.folder}/@dot" />
+		<antcall target="@dot" />
+	</target>
+
+	<target name="src.zip" depends="init" unless="src.zip">
+		<mkdir dir="${build.result.folder}/" />
+		<antcall target="copy.${swt.ws}.src"/>
+		<zip zipfile="${build.result.folder}/src.zip">
+			<fileset dir="${temp.folder}/@dot.src" includes="**/*.java"/>
+			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
+			<fileset    dir="${temp.folder}/@dot.src/library/" excludes="**/*.sh"/>
+			<zipfileset dir="${temp.folder}/@dot.src/library/" includes="**/*.sh" filemode="755"/>
+			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
+			<fileset dir="${basedir}" includes="about.html,about_files/"/>
+		</zip>
+		<delete dir="${temp.folder}/@dot.src"/>
+	</target>
+
+	<target name="copy.src" depends="init">
+		<antcall target="copy.${swt.ws}.src"/>
+		<copy todir="${destination.temp.folder}/" failonerror="true" overwrite="true">
+			<fileset dir="${temp.folder}/@dot.src" includes="**/*.java"/>
+			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
+			<fileset dir="${temp.folder}/@dot.src/library/"/>
+			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
+			<fileset dir="${basedir}" includes="about.html,about_files/"/>
+		</copy>
+		<delete dir="${temp.folder}/@dot.src"/>
+	</target>
+
+	<target name="copy.carbon.src">
+		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
+		<delete dir="${copy.src.dir}" quiet="true"/>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Theme/carbon/"/>
+		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+			
+	<target name="copy.cocoa.src">
+		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
+		<delete dir="${copy.src.dir}" quiet="true"/>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/cocoa/" excludes="**/*.extras"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+
+	<target name="copy.gtk.src">
+		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
+		<delete dir="${copy.src.dir}" quiet="true"/>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/cairo/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/glx/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/cairo/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/cde/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/gnome/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Theme/gtk/"/>
+		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+		
+	<target name="copy.motif.src">
+		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
+		<delete dir="${copy.src.dir}" quiet="true"/>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/cairo/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/datetime"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/tabfolder"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/tray"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/treetable"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime"/>
+			<fileset dir="${plugindir}/Eclipse SWT/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/glx/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/cairo/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/motif_gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/cde/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/gnome/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+										
+	<target name="copy.photon.src">
+		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
+		<delete dir="${copy.src.dir}" quiet="true"/>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/graphics/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/textlayout/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/tray/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/treetable/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/photon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/photon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/photon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/emulated/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/photon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/photon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/photon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+													
+	<target name="copy.win32.src">
+		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
+		<delete dir="${copy.src.dir}" quiet="true"/>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OLE Win32/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Theme/win32/"/>
+		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+
+	<target name="copy.wpf.src">
+		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
+		<delete dir="${copy.src.dir}" quiet="true"/>
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/wpf/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/datetime/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT AWT/emulated/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/forms/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/wpf/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/emulated/"/>
+			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/wpf/"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/wpf_win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Printing/wpf/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Program/wpf/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Effects/emulated/"/>
+		</copy>
+		<antcall target="copy.translationfiles"/>
+		<antcall target="replace64"/>
+	</target>
+
+	<target name="copy.translationfiles" if="includetranslationfiles">
+		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<mapper type="glob" from="*._properties" to="*.properties" />
+		</copy>
+	</target>
+
+	<target name="is64">
+		<condition property="is64" value="true">
+			<or>
+				<equals arg1="${swt.arch}" arg2="x86_64"/>
+				<equals arg1="${swt.arch}" arg2="ia64"/>
+				<equals arg1="${swt.arch}" arg2="ppc64"/>
+				<equals arg1="${swt.arch}" arg2="s390x"/>
+			</or>
+		</condition>
+		<echo>Is64=${is64}</echo>
+	</target>
+		
+    <target name="replace64" depends="is64" if="is64">
+    	<echo>Converting java files to 64 bit</echo>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
+    </target>
+
+	<target name="build.sources" depends="init">
+		<available property="src.zip" file="${build.result.folder}/src.zip" />
+		<antcall target="src.zip" />
+	</target>
+
+	<target name="build.zips" depends="init">
+	</target>
+
+	<target name="gather.sources" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/${full.name}" />
+		<copy file="${build.result.folder}/src.zip" todir="${destination.temp.folder}/${full.name}/" />
+		<copy todir="${destination.temp.folder}/${full.name}">
+			<fileset dir="${basedir}" includes="about.html,about_files/" />
+		</copy>
+	</target>
+
+	<target name="gather.individual.sources" depends="init">
+		<antcall target="copy.src" />
+		<copy todir="${destination.temp.folder}">
+			<fileset dir="${basedir}" includes="about.html,about_files/" />
+		</copy>
+	</target>
+
+	<target name="gather.logs" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/${full.name}" />
+		<copy file="${temp.folder}/@dot.bin${logExtension}" todir="${destination.temp.folder}/${full.name}/" />
+	</target>
+
+	<target name="publish.bin.parts" depends="init" if="p2.publish.parts">
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${build.result.folder}" />
+		</antcall>
+		<eclipse.gatherBundle metadataRepository="${p2.build.repo}" artifactRepository="${p2.build.repo}" buildResultFolder="${build.result.folder}" targetFolder="${build.result.folder}/${full.name}" />
+	</target>
+
+	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/${full.name}" />
+		<copy todir="${destination.temp.folder}/${full.name}" failonerror="true">
+			<fileset dir="${build.result.folder}/@dot" includes="**" />
+		</copy>
+		<copy todir="${destination.temp.folder}/${full.name}">
+			<fileset dir="${basedir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so,META-INF/" />
+		</copy>
+		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so" />
+		<eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}" />
+		<antcall target="apitools.generation">
+			<param name="target.folder" value="${destination.temp.folder}/${full.name}"/>
+			<param name="projectLocation" value="${basedir}"/>
+			<param name="binary.folders" value="${build.result.folder}/@dot"/>
+			<param name="projectName" value="${full.name}"/>
+			<param name="extraSourceLocations" value="${basedir}/${plugindir}"/>
+			<param name="extraManifests" value="${basedir}/${plugindir}/META-INF/MANIFEST.MF"/>
+		</antcall>
+	</target>
+
+	<target name="swtdownload" depends="init">
+		<delete dir="${temp.folder}" />
+		<delete dir="${build.result.folder}/@dot" />
+		<mkdir dir="${temp.folder}/swtdownload/" />
+		<property name="includetranslationfiles" value="true" />
+		<antcall target="build.jars">
+			<param name="debug" value="true" />
+			<param name="jar.filename" value="swt-debug.jar" />
+		</antcall>
+		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${basedir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
+		<copy file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
+		<delete dir="${build.result.folder}/@dot" />
+		<antcall target="build.jars">
+			<param name="debug" value="false" />
+			<param name="jar.filename" value="swt.jar" />
+		</antcall>
+		<jar jarfile="${build.result.folder}/swt.jar" basedir="${basedir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
+		<copy file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
+		<antcall target="build.sources" />
+		<copy file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
+		<copy file="${plugindir}/build/.project" todir="${temp.folder}/swtdownload" />
+		<copy file="${plugindir}/build/.classpath" todir="${temp.folder}/swtdownload" />
+		<copy todir="${temp.folder}/swtdownload">
+			<fileset dir="${basedir}" includes="about.html,about_files/" />
+		</copy>
+		<condition property="zipfilename" value="swt-${buildid}-${swt.ws}-${swt.os}-${swt.arch}.zip" else="swt-${buildid}-${swt.ws}-${swt.os}.zip">
+			<isset property="swt.arch"/>
+		</condition>
+		<zip zipfile="${destination}/${zipfilename}">
+			<zipfileset dir="${temp.folder}/swtdownload/" />
+		</zip>
+		<delete dir="${temp.folder}" />
+	</target>
+
+	<target name="clean" depends="init">
+		<delete dir="${build.result.folder}/@dot" />
+		<delete file="${build.result.folder}/src.zip" />
+		<delete file="${plugin.destination}/${full.name}.jar" />
+		<delete file="${plugin.destination}/${full.name}.zip" />
+		<delete dir="${temp.folder}" />
+	</target>
+
+	<target name="refresh" depends="init" if="eclipse.running">
+		<eclipse.refreshLocal resource="${fragment}" depth="infinite" />
+	</target>
+
+	<target name="zip.plugin" depends="init">
+		<delete dir="${temp.folder}" />
+		<mkdir dir="${temp.folder}" />
+		<antcall target="build.jars" />
+		<antcall target="build.sources" />
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${temp.folder}/" />
+		</antcall>
+		<antcall target="gather.sources">
+			<param name="destination.temp.folder" value="${temp.folder}/" />
+		</antcall>
+		<delete>
+			<fileset dir="${temp.folder}" includes="**/*.bin.xml" />
+		</delete>
+		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true" />
+		<delete dir="${temp.folder}" />
+	</target>
+
+	<target name="jar.plugin" depends="init">
+		<echo>here</echo>
+		<delete dir="${temp.folder}" />
+		<mkdir dir="${temp.folder}" />
+		<antcall target="build.jars" />
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${temp.folder}/" />
+		</antcall>
+		<jar jarfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="true" manifest="${basedir}/META-INF/MANIFEST.MF"/>
+		<delete dir="${temp.folder}" />
+	</target>
+
+	<target name="apitools.generation" if="generateAPIDescription">
+		<apitooling.apigeneration
+			projectName="${projectName}"
+			project="${projectLocation}"
+			binary="${binary.folders}"
+			target="${target.folder}"
+			extraManifests="${extraManifests}"
+			extraSourceLocations="${extraSourceLocations}"/>
+	</target>
+</project>

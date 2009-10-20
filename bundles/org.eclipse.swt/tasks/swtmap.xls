@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:param name="cvsRoot"/>
+<xsl:param name="cvsRsh"/>
+<xsl:param name="TAG"/>
+<xsl:param name="swt_new_tag"/>
+<xsl:template match="/">
+<project name="test" default="tag_files" basedir=".">
+<target name="tag_files">
+    	<cvs>
+	  	<xsl:attribute name="cvsRoot">
+	    	<xsl:value-of select="$cvsRoot" />
+		</xsl:attribute>
+	  	<xsl:attribute name="cvsRsh">
+	    	<xsl:value-of select="$cvsRsh" />
+		</xsl:attribute>
+	<commandline>
+		<argument value="rtag"/>
+			<argument>
+				<xsl:attribute name="value">
+					<xsl:value-of select="$TAG"/>
+				</xsl:attribute> 
+			</argument>
+			<argument>
+				<xsl:attribute name="value">
+					<xsl:value-of select="$swt_new_tag"/>
+				</xsl:attribute> 
+			</argument>
+	<xsl:for-each select="project/element">
+		<argument>
+			<xsl:attribute name="value"><xsl:value-of select="@project"/></xsl:attribute>
+		</argument>
+	</xsl:for-each>
+	</commandline>
+	</cvs>
+</target>
+</project>
+</xsl:template>
+</xsl:stylesheet>

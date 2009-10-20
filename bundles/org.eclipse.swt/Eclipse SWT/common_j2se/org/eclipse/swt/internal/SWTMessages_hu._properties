@@ -1,0 +1,25 @@
+# Copyright by many contributors; see http://babel.eclipse.org/
+SWT_Yes=Igen
+SWT_No=Nem
+SWT_OK=OK
+SWT_Cancel=M\u00e9gse
+SWT_Abort=Megszak\u00edt\u00e1s
+SWT_Ignore=Mell\u0151z\u00e9s
+SWT_Sample=Minta
+SWT_Selection=Kiv\u00e1laszt\u00e1s
+SWT_Font=Bet\u0171t\u00edpus
+SWT_Color=Sz\u00edn
+SWT_Size=M\u00e9ret
+SWT_Style=St\u00edlus
+SWT_Save=Ment\u00e9s
+SWT_FontDialog_Title=Bet\u0171t\u00edpusok
+SWT_Remove=Elt\u00e1vol\u00edt\u00e1s
+SWT_Up=Fel
+SWT_Down=Le
+SWT_Charset_ASCII=ASCII
+SWT_Password=Jelsz\u00f3:
+SWT_Open=Megnyit\u00e1s
+SWT_Close=Bez\u00e1r\u00e1s
+SWT_Minimize=Kis m\u00e9ret
+SWT_Maximize=Teljes m\u00e9ret
+SWT_Restore=Vissza\u00e1ll\u00edt\u00e1s
