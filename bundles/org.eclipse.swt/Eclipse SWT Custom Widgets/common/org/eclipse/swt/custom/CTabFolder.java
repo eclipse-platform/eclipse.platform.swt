@@ -585,7 +585,7 @@ void createItem (CTabItem item, int index) {
 	newItems[index] = item;
 	System.arraycopy(items, index, newItems, index + 1, items.length - index);
 	items = newItems;
-	if (selectedIndex >= index) selectedIndex ++;	
+	if ((selectedIndex >= index) || (index == 0)) selectedIndex ++;	
 	int[] newPriority = new int[priority.length + 1];
 	int next = 0,  priorityIndex = priority.length;
 	for (int i = 0; i < priority.length; i++) {
