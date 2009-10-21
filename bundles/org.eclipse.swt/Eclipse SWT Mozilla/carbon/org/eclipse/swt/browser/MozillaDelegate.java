@@ -116,10 +116,14 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 	*/
 	int application = Cocoa.objc_msgSend (Cocoa.C_NSApplication, Cocoa.S_sharedApplication);
 	int mainMenu = Cocoa.objc_msgSend (application, Cocoa.S_mainMenu);
-	Cocoa.objc_msgSend (mainMenu, Cocoa.S_retain);
+	if (mainMenu != 0) {
+		Cocoa.objc_msgSend (mainMenu, Cocoa.S_retain);
+	}
 	int rc = baseWindow.Create ();
-	Cocoa.objc_msgSend (application, Cocoa.S_setMainMenu, mainMenu);
-	Cocoa.objc_msgSend (mainMenu, Cocoa.S_release);
+	if (mainMenu != 0) {
+		Cocoa.objc_msgSend (application, Cocoa.S_setMainMenu, mainMenu);
+		Cocoa.objc_msgSend (mainMenu, Cocoa.S_release);
+	}
 	return rc;
 }
 

@@ -85,10 +85,14 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 	*/
 	NSApplication application = NSApplication.sharedApplication ();
 	NSMenu mainMenu = application.mainMenu ();
-	mainMenu.retain ();
+	if (mainMenu != null) {
+		mainMenu.retain ();
+	}
 	int rc = baseWindow.Create ();
-	application.setMainMenu (mainMenu);
-	mainMenu.release ();
+	if (mainMenu != null) {
+		application.setMainMenu (mainMenu);
+		mainMenu.release ();
+	}
 	return rc;
 }
 
