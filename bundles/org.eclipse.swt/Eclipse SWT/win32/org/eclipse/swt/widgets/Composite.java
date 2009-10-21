@@ -690,11 +690,11 @@ public void layout (Control [] changed) {
  * information for all controls that are laid out. 
  * </p>
  * <p>
- * The <code>SWT.DEFER</code> flag always causes the layout to be deferred. By
+ * The <code>SWT.DEFER</code> flag always causes the layout to be deferred by
  * calling <code>Composite.setLayoutDeferred(true)</code> and scheduling a call
- * to <code>Composite.setLayoutDeferred(false)</code>, which will happen before
- * the next event. When this flag is set, the application should not call
- * <code>Composite.setLayoutDeferred()</code>.
+ * to <code>Composite.setLayoutDeferred(false)</code>, which will happen when
+ * appropriate (usually before the next event is handled). When this flag is set,
+ * the application should not call <code>Composite.setLayoutDeferred()</code>.
  * </p>
  * <p>
  * Note: Layout is different from painting. If a child is
