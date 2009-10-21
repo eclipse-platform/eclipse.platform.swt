@@ -434,16 +434,21 @@ void draggedImage_endedAt_operation(int /*long*/ id, int /*long*/ sel, int /*lon
 		paths = null;
 		exist = null;
 	}
-	Event event = new DNDEvent();
-	event.widget = this;
-	event.time = (int)System.currentTimeMillis();	
-	event.doit = swtOperation != DND.DROP_NONE;
-	event.detail = swtOperation; 
-	notifyListeners(DND.DragEnd, event);
-	dragImageFromListener = null;
-
-	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
-		callSuper(id, sel, arg0, arg1, arg2);
+	OS.objc_msgSend(id, OS.sel_retain);
+	try {
+		Event event = new DNDEvent();
+		event.widget = this;
+		event.time = (int)System.currentTimeMillis();	
+		event.doit = swtOperation != DND.DROP_NONE;
+		event.detail = swtOperation; 
+		notifyListeners(DND.DragEnd, event);
+		dragImageFromListener = null;
+	
+		if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
+			callSuper(id, sel, arg0, arg1, arg2);
+		}
+	} finally { 
+		OS.objc_msgSend(id, OS.sel_release);
 	}
 }
 
