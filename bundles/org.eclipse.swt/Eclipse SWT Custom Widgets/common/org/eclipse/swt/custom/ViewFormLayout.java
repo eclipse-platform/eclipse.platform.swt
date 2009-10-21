@@ -156,7 +156,10 @@ protected void layout(Composite composite, boolean flushCache) {
 			top = true;
 			int trim = computeTrim(center);
 			int w = rect.width - 2*form.marginWidth - 2*form.highlight - trim;
-			centerSize = computeChildSize(center, w, SWT.DEFAULT, false);
+			Point size = computeChildSize(center, w, SWT.DEFAULT, false);
+			if (size.x < centerSize.x) {
+				centerSize = size;
+			}
 			center.setBounds(rect.x + rect.width - form.marginWidth - form.highlight - centerSize.x, y, centerSize.x, centerSize.y);
 			y += centerSize.y + form.verticalSpacing;
 		}		
