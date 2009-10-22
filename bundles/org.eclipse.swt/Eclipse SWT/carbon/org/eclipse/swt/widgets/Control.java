@@ -1520,9 +1520,19 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				helpContent.content1_tagCFString = display.helpString;
 				OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
 				contentProvided [0] = OS.kHMContentProvided;
+				OS.memmove (outContentProvided, contentProvided, 2);
+				break;
+			} else {
+				OS.HMHideTag();
+				OS.memmove (outContentProvided, contentProvided, 2);
+				/*
+				 * If a control doesn't have a tooltiptext, then helpProc gets
+				 * called on the controls in its parent hierarchy and their
+				 * tooltiptext is used. Return OS.eventNotHandledErr to prevent
+				 * the calls on the parent control.
+				 */
+				return OS.eventNotHandledErr;
 			}
-			OS.memmove (outContentProvided, contentProvided, 2);
-			break;
 		}
 		case OS.kHMDisposeContent: {
 			if (display.helpString != 0) OS.CFRelease (display.helpString);
