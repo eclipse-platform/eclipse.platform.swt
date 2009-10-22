@@ -237,6 +237,11 @@ class IE extends WebBrowser {
 			}
 			OS.RegCloseKey (phkResult [0]);
 		}
+
+		if (NativePendingCookies != null) {
+			SetPendingCookies (NativePendingCookies);
+		}
+		NativePendingCookies = null;
 	}
 
 public void create(Composite parent, int style) {

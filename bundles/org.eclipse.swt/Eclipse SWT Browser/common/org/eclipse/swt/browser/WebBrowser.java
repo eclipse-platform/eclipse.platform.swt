@@ -33,6 +33,9 @@ abstract class WebBrowser {
 
 	static final String ERROR_ID = "org.eclipse.swt.browser.error"; // $NON-NLS-1$
 	static final String EXECUTE_ID = "SWTExecuteTemporaryFunction"; // $NON-NLS-1$
+
+	static Vector NativePendingCookies = new Vector ();
+	static Vector MozillaPendingCookies = new Vector ();
 	static String CookieName, CookieValue, CookieUrl;
 	static boolean CookieResult;
 	static Runnable MozillaClearSessions, NativeClearSessions;
@@ -269,13 +272,33 @@ public static String GetCookie (String name, String url) {
 	return result;
 }
 
-public static boolean SetCookie (String value, String url) {
+public static boolean SetCookie (String value, String url, boolean addToPending) {
 	CookieValue = value; CookieUrl = url;
 	CookieResult = false;
-	if (NativeSetCookie != null) NativeSetCookie.run ();
-	if (MozillaSetCookie != null) MozillaSetCookie.run ();
+	if (NativeSetCookie != null) {
+		NativeSetCookie.run ();
+	} else {
+		if (addToPending && NativePendingCookies != null) {
+			NativePendingCookies.add (new String[] {value, url});
+		}
+	}
+	if (MozillaSetCookie != null) {
+		MozillaSetCookie.run ();
+	} else {
+		if (addToPending && MozillaPendingCookies != null) {
+			MozillaPendingCookies.add (new String[] {value, url});
+		}
+	}
 	CookieValue = CookieUrl = null;
 	return CookieResult;
+}
+
+static void SetPendingCookies (Vector pendingCookies) {
+	Enumeration elements = pendingCookies.elements ();
+	while (elements.hasMoreElements ()) {
+		String[] current = (String[])elements.nextElement ();
+		SetCookie (current[0], current[1], false);
+	}
 }
 
 public abstract void create (Composite parent, int style);

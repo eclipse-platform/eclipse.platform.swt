@@ -222,7 +222,7 @@ public static String getCookie (String name, String url) {
 public static boolean setCookie (String value, String url) {
 	if (value == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return WebBrowser.SetCookie (value, url);
+	return WebBrowser.SetCookie (value, url, true);
 }
 
 /**	 

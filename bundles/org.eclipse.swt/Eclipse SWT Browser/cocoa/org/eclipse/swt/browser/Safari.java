@@ -110,7 +110,12 @@ class Safari extends WebBrowser {
 				storage.setCookie (cookie);
 				CookieResult = true;
 			}
-		};	
+		};
+
+		if (NativePendingCookies != null) {
+			SetPendingCookies (NativePendingCookies);
+		}
+		NativePendingCookies = null;
 	}
 
 public void create (Composite parent, int style) {

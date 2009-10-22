@@ -1299,6 +1299,11 @@ public void create (Composite parent, int style) {
 				Initialized = false;
 			}
 		});
+
+		if (MozillaPendingCookies != null) {
+			SetPendingCookies (MozillaPendingCookies);
+		}
+		MozillaPendingCookies = null;
 	}
 
 	BrowserCount++;
