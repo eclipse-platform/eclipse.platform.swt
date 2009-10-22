@@ -1002,6 +1002,7 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowShown,
 		OS.kEventClassWindow, OS.kEventWindowUpdate,
 		OS.kEventClassWindow, OS.kEventWindowGetClickModality,
+		OS.kEventClassWindow, OS.kEventWindowZoom,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
@@ -1332,6 +1333,17 @@ int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
 	}
 	return result;
 }
+
+int kEventWindowZoom(int nextHandler, int theEvent, int userData) {
+	/*
+	 * Feature in Carbon: Clicking on zoom-button of the window doesn't activate it.
+	 * Hence, we activate it ourselves.
+	 */
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	OS.SelectWindow (shellHandle);
+	OS.SetUserFocusWindow (shellHandle);
+	return result;
+};
 
 void resizeBounds () {
 	Rect rect = new Rect ();

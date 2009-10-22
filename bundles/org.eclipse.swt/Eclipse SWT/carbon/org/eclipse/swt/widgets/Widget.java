@@ -1328,6 +1328,10 @@ int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventWindowZoom (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int keyboardProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
@@ -2130,6 +2134,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowShown:				return kEventWindowShown (nextHandler, theEvent, userData);
 		case OS.kEventWindowUpdate:				return kEventWindowUpdate (nextHandler, theEvent, userData);
 		case OS.kEventWindowGetClickModality:	return kEventWindowGetClickModality (nextHandler, theEvent, userData);
+		case OS.kEventWindowZoom:				return kEventWindowZoom (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

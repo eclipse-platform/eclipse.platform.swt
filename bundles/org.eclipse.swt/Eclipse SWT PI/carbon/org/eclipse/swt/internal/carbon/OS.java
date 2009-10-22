@@ -524,6 +524,7 @@ public class OS extends C {
 	public static final int kEventWindowShown = 24;
 	public static final int kEventWindowToolbarSwitchMode = 150;
 	public static final int kEventWindowUpdate = 1;
+	public static final int kEventWindowZoom = 75;
 	public static final int kFMIterationCompleted = -980;
 	public static final int kFloatingWindowClass = 5;
 	public static final int kFontFamilyName = 1;
