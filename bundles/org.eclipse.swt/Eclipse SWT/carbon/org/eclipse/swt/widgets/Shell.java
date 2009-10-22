@@ -1626,6 +1626,7 @@ public void setEnabled (boolean enabled) {
  */
 public void setFullScreen (boolean fullScreen) {
 	checkWidget ();
+	if (this.fullScreen == fullScreen) return;
 	this.fullScreen = fullScreen; 
 	if (fullScreen) {
 		normalBounds = getBounds ();
