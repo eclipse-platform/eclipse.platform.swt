@@ -1117,6 +1117,9 @@ public Rectangle getBounds () {
 	return getControlBounds (topHandle ());
 }
 
+boolean isActive () {
+	return getShell ().getModalShell () == null && display.getModalDialog () == null;
+}
 /**
  * Returns <code>true</code> if the receiver is detecting
  * drag gestures, and  <code>false</code> otherwise. 

@@ -361,7 +361,10 @@ public String open () {
 			spec.menuType = filterIndex;
 			OS.NavCustomControl (outDialog [0], OS.kNavCtlSelectCustomType, spec);
 		}
+		Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+		display.setModalDialog(this);
 		OS.NavDialogRun (outDialog [0]);
+		display.setModalDialog(null);
 		int action = OS.NavDialogGetUserAction (outDialog [0]);
 		switch (action) {
 			case OS.kNavUserActionOpen:

@@ -89,6 +89,8 @@ public abstract class Widget {
 	/* Safari fixes */
 	static final int SAFARI_EVENTS_FIX = 1<<19;
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+	
+	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -833,6 +835,7 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (key.equals(IS_ACTIVE)) return new Boolean(isActive());
 	if ((state & KEYED_DATA) != 0) {
 		Object [] table = (Object []) data;
 		for (int i=1; i<table.length; i+=2) {
@@ -962,6 +965,10 @@ void invalidateVisibleRegion (int control) {
 
 void invalWindowRgn (int window, int rgn) {
 	OS.InvalWindowRgn (window, rgn);
+}
+
+boolean isActive () {
+	return true;
 }
 
 /**

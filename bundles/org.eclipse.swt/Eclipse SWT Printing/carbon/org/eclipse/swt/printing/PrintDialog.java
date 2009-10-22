@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.carbon.OS;
  */
 public class PrintDialog extends Dialog {
 	PrinterData printerData = new PrinterData();
-
+	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.modalDialog"; //$NON-NLS-1$
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -159,6 +159,9 @@ public PrinterData open() {
 				OS.PMSetCollate(printSettings, printerData.collate);
 				OS.PMSetOrientation(pageFormat, printerData.orientation == PrinterData.LANDSCAPE ? OS.kPMLandscape : OS.kPMPortrait, false);
 				boolean[] accepted = new boolean [1];
+				Shell parent = getParent();
+				Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+				display.setData(SET_MODAL_DIALOG, this);
 				if (OS.VERSION >= 0x1050) {
 					int printDialogOptions = OS.kPMShowDefaultInlineItems | OS.kPMShowPageAttributesPDE;
 					OS.PMShowPrintDialogWithOptions(printSession, printSettings, pageFormat, printDialogOptions, accepted);
@@ -166,6 +169,7 @@ public PrinterData open() {
 					OS.PMSessionPageSetupDialog(printSession, pageFormat, accepted);	
 					if (accepted[0]) OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
 				}
+				display.setData(SET_MODAL_DIALOG, null);
 				if (accepted[0]) {
 					short[] destType = new short[1];
 					OS.PMSessionGetDestinationType(printSession, printSettings, destType);

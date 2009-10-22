@@ -99,7 +99,7 @@ public class DropTarget extends Widget {
 	
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
-	
+	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive";	 //$NON-NLS-1$
 	static Callback DragTrackingHandler;
 	static Callback DragReceiveHandler;
 	
@@ -449,7 +449,7 @@ int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDr
 	}
 	
 	DNDEvent event = new DNDEvent();
-	if (!setEventData(theDrag, event)) {
+	if (!setEventData(theDrag, event) || ((Boolean)control.getData(IS_ACTIVE)).booleanValue() == false)  {
 		keyOperation = -1;
 		OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
 		return OS.dragNotAcceptedErr;

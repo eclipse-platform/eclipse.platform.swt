@@ -233,8 +233,11 @@ public int open () {
 		if ((style & SWT.SYSTEM_MODAL) != 0) {
 			OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 		}
+		Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+		display.setModalDialog(this);
 		short [] outItemHit = new short [1];
 		OS.RunStandardAlert(dialogRef[0], 0, outItemHit);
+		display.setModalDialog(null);
 		if (outItemHit [0] != 0) {
 			switch (bits) {
 				case SWT.OK:

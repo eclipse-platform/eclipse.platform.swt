@@ -168,6 +168,8 @@ public abstract class Widget {
 	static final int ICON_RELEASE = 67;
 	static final int SELECTION_DONE = 68;
 	static final int LAST_SIGNAL = 69;
+	
+	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -505,6 +507,7 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (key.equals(IS_ACTIVE)) return new Boolean(isActive ());
 	if ((state & KEYED_DATA) != 0) {
 		Object [] table = (Object []) data;
 		for (int i=1; i<table.length; i+=2) {
@@ -916,6 +919,10 @@ char [] fixMnemonic (String string, boolean replace) {
 		}
 	}
 	return result;
+}
+
+boolean isActive () {
+	return true;
 }
 
 /**

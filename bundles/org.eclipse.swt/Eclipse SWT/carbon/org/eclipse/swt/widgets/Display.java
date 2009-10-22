@@ -151,6 +151,7 @@ public class Display extends Device {
 
 	/* Modality */
 	Shell [] modalShells;
+	Dialog modalDialog;
 
 	/* Menus */
 	Menu menuBar;
@@ -313,6 +314,7 @@ public class Display extends Device {
 				
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
+	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.modalDialog"; //$NON-NLS-1$
 			
 	/* Display Data */
 	Object data;
@@ -1718,6 +1720,9 @@ int getMessageCount () {
 	return synchronizer.getMessageCount ();
 }
 
+Dialog getModalDialog () {
+	return modalDialog;
+}
 /**
  * Returns an array of monitors attached to the device.
  * 
@@ -3271,6 +3276,7 @@ void releaseDisplay () {
 	helpString = 0;
 	widgetTable = menus = popups = null;
 	modalShells = null;
+	modalDialog = null;
 	menuBar = null;
 	eventTable = filterTable = null;
 	thread = null;
@@ -3779,6 +3785,13 @@ public void setData (String key, Object value) {
 		}
 	}
 	
+	if (key.equals(SET_MODAL_DIALOG)) {
+		if (value == null) {
+			this.modalDialog = null;
+		} else {
+			this.modalDialog = (Dialog) value;
+		}
+	}
 	/* Remove the key/value pair */
 	if (value == null) {
 		if (keys == null) return;
@@ -3849,6 +3862,10 @@ public void setData (String key, Object value) {
 public void setData (Object data) {
 	checkDevice ();
 	this.data = data;
+}
+
+void setModalDialog (Dialog modalDialog) {
+	this.modalDialog = modalDialog;
 }
 
 /**

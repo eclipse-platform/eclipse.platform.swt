@@ -162,7 +162,10 @@ public String open () {
 				OS.CFRelease (str);
 			}
 		}
+		Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+		display.setModalDialog(this);
 		OS.NavDialogRun (outDialog [0]);
+		display.setModalDialog(null);
 		if (OS.NavDialogGetUserAction (outDialog [0]) == OS.kNavUserActionChoose) {
 			NavReplyRecord record = new NavReplyRecord ();
 			OS.NavDialogGetReply (outDialog [0], record);

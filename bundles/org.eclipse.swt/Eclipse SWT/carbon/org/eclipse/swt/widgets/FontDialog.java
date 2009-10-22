@@ -261,6 +261,7 @@ public FontData open () {
 		count++;
 		window = OS.GetPreviousWindow (window);
 	}
+	display.setModalDialog(this);
 	OS.FPShowHideFontPanel ();
 	int fontsWindow = 0;
 	window = OS.GetPreviousWindow (0);
@@ -298,6 +299,7 @@ public FontData open () {
 	while (!parent.isDisposed() && open) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
+	display.setModalDialog(null);
 	OS.RemoveEventHandler (outRef [0]);
 	fontPanelCallback.dispose ();
 	if (fontID != 0 && fontSize != 0) {

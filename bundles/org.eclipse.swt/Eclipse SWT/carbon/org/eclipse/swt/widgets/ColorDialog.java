@@ -142,6 +142,8 @@ public RGB open() {
 			info.prompt [i+1] = (byte)title.charAt (i);
 		}
 	}
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+	display.setModalDialog(this);
 	rgb = null;
 	if (OS.PickColor (info) == OS.noErr && info.newColorChosen) {
 		int red = (info.red >> 8) & 0xFF;
@@ -149,6 +151,7 @@ public RGB open() {
 		int blue =	(info.blue >> 8) & 0xFF;
 		rgb = new RGB(red, green, blue);
 	}
+	display.setModalDialog(null);
 	return rgb;
 }
 
