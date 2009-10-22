@@ -544,6 +544,7 @@ public class OS extends C {
 	public static final int kHICommandQuit = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 	public static final int kHILayoutBindMin = 1;
 	public static final int kHILayoutBindMax= 2;
+	public static final int kHILayoutPositionCenter = 1;
 	public static final int kHIModalClickIsModal = 1 << 0;
 	public static final int kHIModalClickAllowEvent = 1 << 1;
 	public static final int kHIModalClickAnnounce = 1 << 2;	

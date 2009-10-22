@@ -11,7 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
+import org.eclipse.swt.internal.carbon.HILayoutInfo;
 import org.eclipse.swt.internal.carbon.OS;
 
 import org.eclipse.swt.*;
@@ -165,7 +167,42 @@ void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	if ((style & SWT.SEPARATOR) != 0) {
+		/*
+		 * Feature in Carbon: Separator control decides how to orient itself
+		 * based on the width and height. If height >= width it orients
+		 * vertically, else it orients horizontally. 
+		 * Fix is to have two native controls to implement the separator label.
+		 * The top control (userPaneControl) honors the bounds set by the
+		 * user and the inner one (separatorControl) creates the separator
+		 * with the correct orientation.
+		 */
+		int features = OS.kControlSupportsEmbedding;
+		OS.CreateUserPaneControl (window, null, features, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		outControl[0] = 0;
 		OS.CreateSeparatorControl (window, null, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		int separatorHandle = outControl [0];
+		OS.HIViewAddSubview (handle, separatorHandle);
+		CGRect r = new CGRect();
+		r.width = DEFAULT_WIDTH;
+		r.height = DEFAULT_HEIGHT;
+		OS.HIViewSetFrame (handle, r);
+		HILayoutInfo layout = new HILayoutInfo ();
+		layout.version = 0;
+		OS.HIViewGetLayoutInfo (separatorHandle, layout);
+		if ((style & SWT.HORIZONTAL) != 0) {
+			r.height = 3;
+			layout.scale.x.ratio = 1.0f;
+			layout.position.y.kind = OS.kHILayoutPositionCenter;
+		} else {
+			r.width = 3;
+			layout.position.x.kind = OS.kHILayoutPositionCenter;
+			layout.scale.y.ratio = 1.0f;
+		}
+		OS.HIViewSetFrame (separatorHandle, r);
+		OS.HIViewSetLayoutInfo (separatorHandle, layout);
 	} else {
 		int just = OS.teFlushLeft;
 		if ((style & SWT.CENTER) != 0) just = OS.teCenter;
@@ -174,11 +211,11 @@ void createHandle () {
 		fontStyle.flags |= OS.kControlUseJustMask;
 		fontStyle.just = (short) just;
 		OS.CreateStaticTextControl (window, null, 0, fontStyle, outControl);
-	}
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-	if ((style & SWT.WRAP) == 0) {
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlStaticTextIsMultilineTag, 1, new byte[] {0});
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		if ((style & SWT.WRAP) == 0) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlStaticTextIsMultilineTag, 1, new byte[] {0});
+		}
 	}
 }
 
