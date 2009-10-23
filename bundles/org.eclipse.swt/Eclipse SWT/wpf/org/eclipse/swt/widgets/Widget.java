@@ -1164,6 +1164,18 @@ boolean sendMouseEvent (int type, int e, boolean send) {
 	}
 	return event.doit;
 }
+void sendSelectionEvent (int eventType) {
+	sendSelectionEvent (eventType, null, false);
+}
+
+void sendSelectionEvent (int eventType, Event event, boolean send) {
+	if (eventTable == null && !display.filters (eventType)) {
+		return;
+	}
+	if (event == null) event = new Event ();
+//	setInputState (event, state);
+	sendEvent (eventType, event, send);
+}
 
 //TEMPORARY CODE
 void setClipping (int widget, boolean clip) {
