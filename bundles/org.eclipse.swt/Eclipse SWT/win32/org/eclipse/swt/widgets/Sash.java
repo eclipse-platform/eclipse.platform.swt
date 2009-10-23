@@ -247,7 +247,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			event.y = newY;
 			event.width = width;
 			event.height = height;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent  (SWT.Selection, event, true);
 			if (isDisposed ()) return LRESULT.ZERO;
 			if (event.doit) {
 				if ((style & SWT.SMOOTH) != 0) {
@@ -291,7 +291,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return LRESULT.ZERO;
 	
 	/* Draw the banding rectangle */
@@ -335,7 +335,7 @@ LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	event.width = width;
 	event.height = height;
 	drawBand (event.x, event.y, width, height);
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return result;
 	if (event.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
@@ -381,7 +381,7 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (event.doit) {
 		lastX = event.x;

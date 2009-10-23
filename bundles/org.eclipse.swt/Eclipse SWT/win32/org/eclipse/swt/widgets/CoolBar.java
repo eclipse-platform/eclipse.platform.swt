@@ -1164,7 +1164,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					event.x = lpnm.left;
 					event.y = lpnm.bottom;
 				}
-				item.postEvent (SWT.Selection, event);
+				item.sendSelectionEvent(SWT.Selection, event, false);
 			}
 			break;
 		}

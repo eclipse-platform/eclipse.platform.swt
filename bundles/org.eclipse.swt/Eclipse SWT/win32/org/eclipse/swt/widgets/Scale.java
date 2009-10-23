@@ -479,7 +479,7 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 		* are sent from a modal message loop in windows that
 		* is active when the user is scrolling.
 		*/
-		sendEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection, null, true);
 		// widget could be disposed at this point		
 	}
 	return new LRESULT (code);
@@ -552,7 +552,7 @@ LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 		* are sent from a modal message loop in windows that
 		* is active when the user is scrolling.
 		*/
-		sendEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, true);
 		// widget could be disposed at this point
 	}
 	return null;

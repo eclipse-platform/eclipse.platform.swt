@@ -1029,6 +1029,19 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
+void sendSelectionEvent (int type) {
+	sendSelectionEvent (type, null, false);
+}
+
+void sendSelectionEvent (int type, Event event, boolean send) {
+	if (eventTable == null && !display.filters (type)) {
+		return;
+	}
+	if (event == null) event = new Event ();
+	setInputState (event, type);
+	sendEvent (type, event, send);
+}
+
 boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	Event event = new Event ();
 	if (!setKeyState (event, type, wParam, lParam)) return true;

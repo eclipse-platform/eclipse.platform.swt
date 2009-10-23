@@ -2199,7 +2199,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.SINGLE) != 0) {
 		switch ((int)/*64*/wParam) {
 			case SWT.CR:
-				postEvent (SWT.DefaultSelection);
+				sendSelectionEvent (SWT.DefaultSelection);
 				// FALL THROUGH
 			case SWT.TAB:
 			case SWT.ESC: return LRESULT.ZERO;

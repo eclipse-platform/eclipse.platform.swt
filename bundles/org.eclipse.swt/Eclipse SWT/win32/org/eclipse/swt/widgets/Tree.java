@@ -5876,12 +5876,12 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 				TreeItem item = _getItem (hItem, (int)/*64*/tvItem.lParam);
 				Event event = new Event ();
 				event.item = item;
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 				if ((style & SWT.CHECK) != 0) {
 					event = new Event ();
 					event.item = item;
 					event.detail = SWT.CHECK;
-					postEvent (SWT.Selection, event);
+					sendSelectionEvent (SWT.Selection, event, false);
 				}
 			}
 			return LRESULT.ZERO;
@@ -5898,7 +5898,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 			Event event = new Event ();
 			int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			if (hItem != 0) event.item = _getItem (hItem);
-			postEvent (SWT.DefaultSelection, event);
+			sendSelectionEvent (SWT.DefaultSelection, event, false);
 			return LRESULT.ZERO;
 		}
 		case SWT.ESC:
@@ -6026,7 +6026,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					Event event = new Event ();
 					event.item = _getItem (hNewItem, (int)/*64*/tvItem.lParam);
-					postEvent (SWT.Selection, event);
+					sendSelectionEvent (SWT.Selection, event, false);
 					return new LRESULT (code);
 				}
 			}
@@ -6198,7 +6198,7 @@ LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 				Event event = new Event ();
 				event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 				event.detail = SWT.CHECK;
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 				return LRESULT.ZERO;
 			}
 		}
@@ -6220,7 +6220,7 @@ LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 		if ((lpht.flags & flags) != 0) {
 			Event event = new Event ();
 			event.item = _getItem (lpht.hItem);
-			postEvent (SWT.DefaultSelection, event);
+			sendSelectionEvent (SWT.DefaultSelection, event, false);
 		}
 	}
 	return result;
@@ -6316,7 +6316,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		if (deselected) {
 			Event event = new Event ();
 			event.item = _getItem (lpht.hItem);
-			postEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, false);
 		}
 		return new LRESULT (code);
 	}
@@ -6359,7 +6359,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			Event event = new Event ();
 			event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 			event.detail = SWT.CHECK;
-			postEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, false);
 			return LRESULT.ZERO;
 		}
 	}
@@ -6602,7 +6602,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		Event event = new Event ();
 		event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 	}
 	gestureCompleted = false;
 	
@@ -7295,7 +7295,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				hAnchor = tvItem.hItem;
 				Event event = new Event ();
 				event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 			}
 			updateScrollBar ();
 			break;
@@ -7647,7 +7647,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			TreeColumn column = columns [phdn.iItem];
 			if (column != null) {
-				column.postEvent (SWT.Selection);
+				column.sendSelectionEvent (SWT.Selection);
 			}
 			break;
 		}
@@ -7657,7 +7657,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			TreeColumn column = columns [phdn.iItem];
 			if (column != null) {
-				column.postEvent (SWT.DefaultSelection);
+				column.sendSelectionEvent (SWT.DefaultSelection);
 			}
 			break;
 		}

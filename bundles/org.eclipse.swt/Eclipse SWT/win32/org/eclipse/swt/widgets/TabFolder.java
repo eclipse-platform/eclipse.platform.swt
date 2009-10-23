@@ -247,7 +247,7 @@ void createItem (TabItem item, int index) {
 	if (count == 0) {
 		Event event = new Event ();
 		event.item = items [0];
-		sendEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, true);
 		// the widget could be destroyed at this point
 	}
 }
@@ -725,7 +725,7 @@ void setSelection (int index, boolean notify) {
 		if (notify) {
 			Event event = new Event ();
 			event.item = item;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 		}
 	}
 }
@@ -1001,7 +1001,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (code == OS.TCN_SELCHANGE) {
 				Event event = new Event ();
 				event.item = item;
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 			}
 	}
 	return super.wmNotifyChild (hdr, wParam, lParam);

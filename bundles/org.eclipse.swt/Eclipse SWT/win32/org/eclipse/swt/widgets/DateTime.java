@@ -958,14 +958,14 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (ignoreSelection) break;
 			SYSTEMTIME systime = new SYSTEMTIME ();
 			OS.SendMessage (handle, OS.MCM_GETCURSEL, 0, systime);
-			postEvent (SWT.Selection);
+			sendSelectionEvent (SWT.Selection);
 			break;
 		}
 		case OS.DTN_DATETIMECHANGE: {
 			SYSTEMTIME systime = new SYSTEMTIME ();
 			OS.SendMessage (handle, OS.DTM_GETSYSTEMTIME, 0, systime);
 			if (lastSystemTime == null || systime.wDay != lastSystemTime.wDay || systime.wMonth != lastSystemTime.wMonth || systime.wYear != lastSystemTime.wYear) {
-				postEvent (SWT.Selection);
+				sendSelectionEvent (SWT.Selection);
 				if ((style & SWT.TIME) == 0) lastSystemTime = systime;
 			}
 			break;
@@ -985,7 +985,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	switch ((int)/*64*/wParam) {
 		case SWT.CR:
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			// FALL THROUGH
 		case SWT.TAB:
 		case SWT.ESC: return LRESULT.ZERO;
@@ -1027,7 +1027,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {	
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
-	if (doubleClick) postEvent (SWT.DefaultSelection);
+	if (doubleClick) sendSelectionEvent (SWT.DefaultSelection);
 	doubleClick = false;
 	return result;
 }

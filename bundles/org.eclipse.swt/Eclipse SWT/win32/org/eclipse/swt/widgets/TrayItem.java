@@ -243,14 +243,14 @@ int /*long*/ messageProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /
 		case OS.WM_LBUTTONDOWN:
 			if (hooks (SWT.Selection)) {
 				OS.SetForegroundWindow (hwnd);
-				postEvent (SWT.Selection);
+				sendSelectionEvent (SWT.Selection);
 			}
 			break;
 		case OS.WM_LBUTTONDBLCLK:
 		case OS.WM_RBUTTONDBLCLK:
 			if (hooks (SWT.DefaultSelection)) {
 				OS.SetForegroundWindow (hwnd);
-				postEvent (SWT.DefaultSelection);
+				sendSelectionEvent (SWT.DefaultSelection);
 			}
 			break;
 		case OS.WM_RBUTTONUP: {
@@ -289,7 +289,7 @@ int /*long*/ messageProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /
 				if (lParam == OS.NIN_BALLOONUSERCLICK) {
 					if (toolTip.hooks (SWT.Selection)) {
 						OS.SetForegroundWindow (hwnd);
-						toolTip.postEvent (SWT.Selection);
+						toolTip.sendSelectionEvent (SWT.Selection);
 						// widget could be disposed at this point
 						if (isDisposed()) return 0;
 					}

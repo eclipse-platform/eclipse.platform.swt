@@ -913,7 +913,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }
@@ -1099,9 +1099,7 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 		}
 	}
-	Event event = new Event ();
-	setInputState (event, SWT.Selection);
-	postEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection);
 	return null;
 }
 

@@ -344,7 +344,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 			Event event = new Event ();
 			int index = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 			if (index != -1) event.item = _getItem (index);
-			postEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, false);
 		}
 		wasSelected = oldSelected;
 	}
@@ -5565,7 +5565,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 			if (index != -1) {
 				Event event = new Event ();
 				event.item = _getItem (index);
-				postEvent (SWT.DefaultSelection, event);
+				sendSelectionEvent (SWT.DefaultSelection, event, false);
 			}
 			return LRESULT.ZERO;
 	}
@@ -6494,7 +6494,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			OS.MoveMemory(pnmlv, lParam, NMLISTVIEW.sizeof);
 			TableColumn column = columns [pnmlv.iSubItem];
 			if (column != null) {
-				column.postEvent (SWT.Selection);
+				column.sendSelectionEvent (SWT.Selection);
 			}
 			break;
 		}
@@ -6505,7 +6505,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (pnmlv.iItem != -1) {
 				Event event = new Event ();
 				event.item = _getItem (pnmlv.iItem);
-				postEvent (SWT.DefaultSelection, event);
+				sendSelectionEvent (SWT.DefaultSelection, event, false);
 			}
 			break;
 		}
@@ -6759,7 +6759,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 			TableColumn column = columns [phdn.iItem];
 			if (column != null) {
-				column.postEvent (SWT.DefaultSelection);
+				column.sendSelectionEvent (SWT.DefaultSelection);
 			}
 			break;
 		}

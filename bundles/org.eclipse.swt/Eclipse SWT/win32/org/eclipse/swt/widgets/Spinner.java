@@ -1027,7 +1027,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 			OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hwndText, OS.OBJID_CLIENT, 0);
 		}
 	}
-	if (notify) postEvent (SWT.Selection);
+	if (notify) sendSelectionEvent (SWT.Selection);
 }
 
 /**
@@ -1263,7 +1263,7 @@ LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	switch ((int)/*64*/wParam) {
 		case SWT.CR:
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			// FALL THROUGH		
 		case SWT.TAB:
 		case SWT.ESC: return LRESULT.ZERO;
@@ -1451,7 +1451,7 @@ LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 	int code = OS.LOWORD (wParam);
 	switch (code) {
 		case OS.SB_THUMBPOSITION:
-			postEvent (SWT.Selection);
+			sendSelectionEvent (SWT.Selection);
 			break;
 	}
 	return super.wmScrollChild (wParam, lParam);

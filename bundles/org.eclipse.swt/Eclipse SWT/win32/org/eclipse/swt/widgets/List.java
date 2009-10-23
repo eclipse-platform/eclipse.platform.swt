@@ -1545,7 +1545,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 					if (code == OS.LB_ERR) break;
 					OS.SendMessage (handle, OS.LB_SETSEL, code != 0 ? 0 : 1, index);
 					OS.SendMessage (handle, OS.LB_SETANCHORINDEX, index, 0);
-					postEvent (SWT.Selection);
+					sendSelectionEvent (SWT.Selection);
 					return LRESULT.ZERO;
 				}
 			}
@@ -1703,10 +1703,10 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.LBN_SELCHANGE:
-			postEvent (SWT.Selection);
+			sendSelectionEvent (SWT.Selection);
 			break;
 		case OS.LBN_DBLCLK:
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);

@@ -1380,7 +1380,7 @@ public void setExpanded (boolean expanded) {
 			event.item = parent._getItem (hNewItem);
 			parent.hAnchor = hNewItem;
 		}
-		parent.sendEvent (SWT.Selection, event);
+		parent.sendSelectionEvent (SWT.Selection, event, true);
 	}
 }
 

@@ -1461,7 +1461,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
 				event.x = rect.left;
 				event.y = rect.bottom;
-				child.postEvent (SWT.Selection, event);
+				child.sendSelectionEvent (SWT.Selection, event, false);
 			}
 			break;
 		case OS.NM_CUSTOMDRAW:

@@ -431,7 +431,7 @@ LRESULT wmScrollWheel (boolean update, int /*long*/ wParam, int /*long*/ lParam)
 		if (position != vPosition) {
 			Event event = new Event ();
 			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			verticalBar.sendEvent (SWT.Selection, event);
+			verticalBar.sendSelectionEvent (SWT.Selection, event, true);
 		}
 	}
 	if (horizontalBar != null) {
@@ -439,7 +439,7 @@ LRESULT wmScrollWheel (boolean update, int /*long*/ wParam, int /*long*/ lParam)
 		if (position != hPosition) {
 			Event event = new Event ();
 			event.detail = position < hPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			horizontalBar.sendEvent (SWT.Selection, event);
+			horizontalBar.sendSelectionEvent (SWT.Selection, event, true);
 		}
 	}
 	return new LRESULT (code);

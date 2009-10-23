@@ -2123,7 +2123,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		if (oldSelection != newSelection) {
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
-			sendEvent (SWT.Selection);
+			sendSelectionEvent (SWT.Selection, null, true);
 			if (isDisposed ()) return LRESULT.ZERO;
 		}
 	}
@@ -2261,7 +2261,7 @@ LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	switch ((int)/*64*/wParam) {
 		case SWT.TAB: return LRESULT.ZERO;
 		case SWT.CR:
-			if (!ignoreDefaultSelection) postEvent (SWT.DefaultSelection);
+			if (!ignoreDefaultSelection) sendSelectionEvent (SWT.DefaultSelection);
 			ignoreDefaultSelection = false;
 			// FALL THROUGH
 		case SWT.ESC:
@@ -2390,7 +2390,7 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 			*/
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
-			postEvent (SWT.Selection);
+			sendSelectionEvent (SWT.Selection);
 			break;
 		case OS.CBN_SETFOCUS:
 			sendFocusEvent (SWT.FocusIn);
@@ -2500,7 +2500,7 @@ LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPara
 			if (oldSelection != newSelection) {
 				sendEvent (SWT.Modify);
 				if (isDisposed ()) return LRESULT.ZERO;
-				sendEvent (SWT.Selection);
+				sendSelectionEvent (SWT.Selection, null, true);
 				if (isDisposed ()) return LRESULT.ZERO;
 			}
 			return new LRESULT (code);

@@ -780,7 +780,7 @@ LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 	* and WM_VSCROLL are sent from the modal message loop
 	* so that they are delivered during inside the loop.
 	*/
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	// the widget could be destroyed at this point
 	return null;
 }

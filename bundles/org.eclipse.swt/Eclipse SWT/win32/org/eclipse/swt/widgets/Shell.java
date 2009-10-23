@@ -2006,7 +2006,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 				ToolTip tip = getCurrentToolTip (hwnd);
 				if (tip != null) {
 					tip.setVisible (false);
-					tip.postEvent (SWT.Selection);
+					tip.sendSelectionEvent (SWT.Selection);
 				}
 				break;
 			}

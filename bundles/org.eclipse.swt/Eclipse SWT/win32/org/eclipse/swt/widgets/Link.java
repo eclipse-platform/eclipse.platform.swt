@@ -749,7 +749,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 			case SWT.CR:
 				Event event = new Event ();
 				event.text = ids [focusIndex];
-				sendEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, true);
 				break;
 			case SWT.TAB:
 				boolean next = OS.GetKeyState (OS.VK_SHIFT) >= 0;
@@ -906,7 +906,7 @@ LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 			if (rect.contains (x, y)) {
 				Event event = new Event ();
 				event.text = ids [mouseDownIndex];
-				sendEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, true);
 				break;
 			}
 		}
@@ -1056,7 +1056,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				OS.MoveMemory (item, lParam, NMLINK.sizeof);
 				Event event = new Event ();
 				event.text = ids [item.iLink];
-				sendEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, true);
 				break;
 		}
 	}

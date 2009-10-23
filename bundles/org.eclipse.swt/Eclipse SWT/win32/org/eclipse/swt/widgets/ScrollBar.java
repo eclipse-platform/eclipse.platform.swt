@@ -1041,7 +1041,7 @@ LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 		case OS.SB_PAGEDOWN:		event.detail = SWT.PAGE_DOWN;  break;
 		case OS.SB_PAGEUP:			event.detail = SWT.PAGE_UP;  break;
 	}
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent  (SWT.Selection, event, true);
 	// the widget could be destroyed at this point
 	return null;
 }
