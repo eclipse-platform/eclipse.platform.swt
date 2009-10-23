@@ -193,6 +193,14 @@ NSFont defaultNSFont () {
 	return display.scrollerFont;
 }
 
+void enableWidget(boolean enabled) {
+	super.enableWidget(enabled);
+	if (enabled) {
+		int range = maximum - thumb - minimum;
+		if (range <= 0) ((NSScroller)view).setEnabled(false);
+	}
+};
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -463,6 +471,7 @@ void updateBar (int selection, int minimum, int maximum, int thumb) {
 	float fraction = range <= 0 ? 1 : (float)(selection - minimum) / range;
 	float knob = range <= 0 ? 1 : (float)thumb / (maximum - minimum);
 	widget.setFloatValue (fraction, knob);
+	widget.setEnabled (range > 0); 
 }
 
 /**
