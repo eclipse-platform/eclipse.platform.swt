@@ -1002,6 +1002,17 @@ boolean sendKeyEvent (int type, XKeyEvent xEvent) {
 	}
 	return event.doit;
 }
+void sendSelectionEvent (int eventType) {
+	sendSelectionEvent (eventType, null, false);
+}
+void sendSelectionEvent (int eventType, Event event, boolean send) {
+	if (eventTable == null && !display.filters (eventType)) {
+		return;
+	}
+	if (event == null) event = new Event ();
+//	setInputState (event, state);
+	sendEvent (eventType, event, send);
+}
 /**
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
