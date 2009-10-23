@@ -1122,7 +1122,7 @@ public int getTopPixel () {
 }
 
 int /*long*/ gtk_activate (int /*long*/ widget) {
-	postEvent (SWT.DefaultSelection);
+	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
@@ -1395,7 +1395,7 @@ int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /
 		e.detail = SWT.ICON_CANCEL;
 		OS.gtk_editable_delete_text (handle, 0, -1);
 	}
-	postEvent(SWT.DefaultSelection, e);
+	sendSelectionEvent (SWT.DefaultSelection, e, false);
 	return 0;
 }
 

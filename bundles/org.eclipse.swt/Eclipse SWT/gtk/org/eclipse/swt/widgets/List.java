@@ -715,7 +715,7 @@ public int getTopIndex () {
 }
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 	return 0;
 }
 
@@ -790,7 +790,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 		switch (key) {
 			case OS.GDK_Return:
 			case OS.GDK_KP_Enter: {
-				postEvent (SWT.DefaultSelection);
+				sendSelectionEvent (SWT.DefaultSelection);
 				break;
 			}
 		}
@@ -813,7 +813,7 @@ int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long*/ column) {
-	postEvent (SWT.DefaultSelection);
+	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 

@@ -1139,7 +1139,7 @@ public int getVisibleItemCount () {
 }
 
 int /*long*/ gtk_activate (int /*long*/ widget) {
-	postEvent (SWT.DefaultSelection);
+	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
@@ -1178,7 +1178,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 			* item and not matching the item as the user types.
 			*/
 			int index = OS.gtk_combo_box_get_active (handle);
-			if (index != -1) postEvent (SWT.Selection);
+			if (index != -1) sendSelectionEvent (SWT.Selection);
 			indexSelected = -1;
 			return 0;
 		}
@@ -1191,7 +1191,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 			String text = new String (Converter.mbcsToWcs (null, buffer));
 			for (int i = 0; i < items.length; i++) {
 				if (items [i].equals (text)) {
-					postEvent (SWT.Selection);
+					sendSelectionEvent (SWT.Selection);
 					break;
 				}
 			}
@@ -1465,7 +1465,7 @@ int /*long*/ gtk_selection_done(int /*long*/ menushell) {
 		indexSelected = index;
 	}
 	else if (index != -1 && indexSelected == index) {
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return 0;
 }

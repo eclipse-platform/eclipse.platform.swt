@@ -489,7 +489,7 @@ int /*long*/ gtk_day_selected (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_day_selected_double_click (int /*long*/ widget) {
-	postEvent(SWT.DefaultSelection);
+	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
@@ -580,7 +580,7 @@ void onKeyDown(Event event) {
 			setTextField(fieldName, calendar.getActualMaximum(fieldName), true, true);
 			break;
 		case SWT.CR:
-			postEvent(SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		default:
 			switch (event.character) {
@@ -745,7 +745,7 @@ void sendSelectionEvent () {
 		year = y[0];
 		month = m[0];
 		day = d[0];
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 }
 
@@ -809,7 +809,7 @@ void setField(int fieldName, int value) {
 		calendar.roll(Calendar.HOUR_OF_DAY, 12); // TODO: needs more work for setFormat and locale
 	}
 	calendar.set(fieldName, value);
-	postEvent(SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 }
 
 void setTextField(int fieldName, int value, boolean commit, boolean adjust) {

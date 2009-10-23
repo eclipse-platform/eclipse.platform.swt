@@ -391,7 +391,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 					event.x = OS.GTK_WIDGET_X (topHandle);
 					event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
 					if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - OS.GTK_WIDGET_WIDTH(topHandle) - event.x;
-					item.postEvent (SWT.Selection, event);
+					item.sendSelectionEvent  (SWT.Selection, event, false);
 					return result;
 				}
 			}

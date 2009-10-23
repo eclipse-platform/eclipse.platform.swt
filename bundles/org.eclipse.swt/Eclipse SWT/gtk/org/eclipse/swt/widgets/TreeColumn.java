@@ -364,7 +364,7 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 			}
 		}
 	}
-	if (postEvent) postEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
+	if (postEvent) sendSelectionEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
 	return 0;
 }
 

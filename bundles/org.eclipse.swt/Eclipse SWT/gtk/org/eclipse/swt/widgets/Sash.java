@@ -193,7 +193,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 		event.detail = SWT.DRAG;
 	}
 	if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - width  - event.x;
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		dragging = true;
@@ -229,7 +229,7 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPt
 	event.height = height;
 	drawBand (lastX, lastY, width, height);
 	if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - width  - event.x;
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return result;
 	if (event.doit) {
 		if ((style & SWT.SMOOTH) != 0) {
@@ -300,7 +300,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			event.width = width;
 			event.height = height;
 			if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - width  - event.x;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 			if (isDisposed ()) break;
 			
@@ -373,7 +373,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 		event.detail = SWT.DRAG;
 	}
 	if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth() - width  - event.x;
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		lastX = event.x;

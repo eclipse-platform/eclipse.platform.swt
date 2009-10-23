@@ -398,7 +398,8 @@ void onSelection (Event ev) {
 		event.x = bounds.x;
 		event.y = bounds.y + bounds.height;
 	}
-	postEvent (SWT.Selection, event);
+	event.stateMask = ev.stateMask;
+	sendSelectionEvent (SWT.Selection, event, false);
 }
 /**
  * Removes the listener from the collection of listeners that

@@ -255,7 +255,7 @@ public String getToolTipText () {
 }
 
 int /*long*/ gtk_activate (int /*long*/ widget) {
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 	/*
 	* Feature in GTK. GTK will generate a single-click event before sending 
 	* a double-click event. To know when to send a DefaultSelection, look for 
@@ -273,7 +273,7 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 		}
 		OS.gdk_event_free (nextEvent);
 		if (currEventType == OS.GDK_BUTTON_PRESS && nextEventType == OS.GDK_2BUTTON_PRESS) {
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 		}
 	}
 	return 0;
@@ -288,9 +288,9 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 		return 0;
 	}
 	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
-		postEvent (SWT.DefaultSelection);
+		sendSelectionEvent (SWT.DefaultSelection);
 	} else {
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return 0;
 }

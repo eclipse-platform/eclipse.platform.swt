@@ -337,7 +337,7 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 			if (rect.contains (x, y)) {
 				Event ev = new Event ();
 				ev.text = ids [focusIndex];
-				sendEvent (SWT.Selection, ev);
+				sendSelectionEvent (SWT.Selection, ev, true);
 				return result;
 			}
 		}
@@ -410,7 +410,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		case OS.GDK_space:
 			Event event = new Event ();
 			event.text = ids [focusIndex];
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 			break;
 		case OS.GDK_Tab:
 			if (focusIndex < offsets.length - 1) {

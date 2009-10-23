@@ -1929,7 +1929,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	if (item != null) {
 		Event event = new Event ();
 		event.item = item; 
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 	}
 	return 0;
 }
@@ -1951,7 +1951,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			case OS.GDK_KP_Enter: {
 				Event event = new Event ();
 				event.item = getFocusItem (); 
-				postEvent (SWT.DefaultSelection, event);
+				sendSelectionEvent (SWT.DefaultSelection, event, false);
 				break;
 			}
 		}
@@ -1989,7 +1989,7 @@ int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long
 	}
 	Event event = new Event ();
 	event.item = item;
-	postEvent (SWT.DefaultSelection, event);
+	sendSelectionEvent (SWT.DefaultSelection, event, false);
 	return 0;
 }
 
@@ -2019,7 +2019,7 @@ int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
 		Event event = new Event ();
 		event.detail = SWT.CHECK;
 		event.item = item;
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 	}
 	OS.gtk_tree_path_free (path);
 	return 0;

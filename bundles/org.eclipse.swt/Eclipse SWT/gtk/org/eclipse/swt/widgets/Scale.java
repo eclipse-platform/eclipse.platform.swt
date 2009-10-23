@@ -240,7 +240,7 @@ public int getSelection () {
 }
 
 int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
-	postEvent (SWT.Selection);
+	sendSelectionEvent  (SWT.Selection);
 	return 0;
 }
 

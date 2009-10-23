@@ -559,7 +559,7 @@ String getDecimalSeparator () {
 }
 
 int /*long*/ gtk_activate (int /*long*/ widget) {
-	postEvent (SWT.DefaultSelection);
+	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
@@ -733,7 +733,7 @@ int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
 }
 
 int /*long*/ gtk_value_changed (int /*long*/ widget) {
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 	return 0;
 }
 

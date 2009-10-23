@@ -554,7 +554,7 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 			selectRadio ();
 		}
 	}
-	postEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, false);
 	return 0;
 }
 
@@ -964,7 +964,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }

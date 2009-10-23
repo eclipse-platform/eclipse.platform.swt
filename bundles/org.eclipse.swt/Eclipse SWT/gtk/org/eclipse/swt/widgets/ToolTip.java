@@ -463,7 +463,7 @@ public boolean getVisible () {
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
-	notifyListeners (SWT.Selection, new Event ());
+	sendSelectionEvent (SWT.Selection, null, true);
 	setVisible (false);
 	return 0;
 }

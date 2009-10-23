@@ -248,7 +248,7 @@ void createItem (TabItem item, int index) {
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 		Event event = new Event();
 		event.item = items[0];
-		sendEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 		// the widget could be destroyed at this point
 	}
 }
@@ -277,7 +277,7 @@ void destroyItem (TabItem item) {
 			}
 			Event event = new Event ();
 			event.item = items [newIndex];
-			sendEvent (SWT.Selection, event);	
+			sendSelectionEvent (SWT.Selection, event, true);	
 			// the widget could be destroyed at this point
 		}
 	}
@@ -448,7 +448,7 @@ int /*long*/ gtk_switch_page (int /*long*/ widget, int /*long*/ page, int /*long
 	}
 	Event event = new Event();
 	event.item = item;
-	postEvent(SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, false);
 	return 0;
 }
 
@@ -666,7 +666,7 @@ void setSelection (int index, boolean notify) {
 		if (notify) {
 			Event event = new Event ();
 			event.item = item;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 		}
 	}
 }

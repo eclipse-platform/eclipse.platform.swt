@@ -210,7 +210,7 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 		case OS.GTK_SCROLL_STEP_BACKWARD:	event.detail = SWT.ARROW_UP; break;
 	}
 	if (!dragSent) detail = OS.GTK_SCROLL_NONE;
-	postEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, false);
 	return 0;
 }
 
@@ -225,9 +225,9 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 				if (!dragSent) {
 					Event event = new Event ();
 					event.detail = SWT.DRAG;
-					postEvent (SWT.Selection, event);
+					sendSelectionEvent (SWT.Selection, event, false);
 				}
-				postEvent (SWT.Selection);
+				sendSelectionEvent (SWT.Selection);
 			}
 			detail = OS.GTK_SCROLL_NONE;
 			dragSent = false;
