@@ -11,11 +11,10 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
- 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -125,7 +124,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point extent = new Point (result [1], result [2]);
 	if (wHint != SWT.DEFAULT) extent.x = wHint;
 	if (hHint != SWT.DEFAULT) extent.y = hHint;
-	return extent;
+	Rectangle trim = computeTrim (0, 0, extent.x, extent.y);
+	return new Point (trim.width, trim.height);
 }
 
 void createHandle () {
@@ -170,8 +170,12 @@ void destroyItem (ToolItem item) {
 	relayout ();
 }
 
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
+void drawBackground(int control, int context) {
+	if (hasBorder()) {
+		drawFocus(control, context, hasFocus() /* && drawFocusRing () */, true, true, inset());
+	} else {
+		fillBackground(control, context, null);
+	}
 }
 
 void enableWidget (boolean enabled) {
@@ -309,6 +313,20 @@ public int indexOf (ToolItem item) {
 		if (items [i] == item) return i;
 	}
 	return -1;
+}
+
+Rect inset() {
+	if (hasBorder()) {
+		Rect rect = new Rect();
+		int[] outMetric = new int[1];
+		OS.GetThemeMetric(OS.kThemeMetricEditTextFrameOutset, outMetric);
+		rect.left += outMetric[0];
+		rect.top += outMetric[0];
+		rect.right += outMetric[0];
+		rect.bottom += outMetric[0];
+		return rect;
+	}
+	return EMPTY_RECT;
 }
 
 void invalidateChildrenVisibleRegion (int control) {
