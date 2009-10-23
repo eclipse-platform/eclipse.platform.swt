@@ -111,6 +111,7 @@ public class DropTarget extends Widget {
 	int keyOperation = -1;
 	
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
+	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 	
 void addDragHandlers() {
 	// Our strategy here is to dynamically add methods to the control's class that are required 
@@ -247,7 +248,11 @@ int draggingEntered(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) {
 		setDropNotAllowed();
 	} else {
-		clearDropNotAllowed();
+		if(((Boolean)control.getData(IS_ACTIVE)).booleanValue() == false) {
+			setDropNotAllowed();
+		} else {
+			clearDropNotAllowed();
+		}
 	}
 
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
@@ -319,7 +324,11 @@ int draggingUpdated(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) {
 		setDropNotAllowed();
 	} else {
-		clearDropNotAllowed();
+		if(((Boolean)control.getData(IS_ACTIVE)).booleanValue() == false) {
+			setDropNotAllowed();
+		} else {
+			clearDropNotAllowed();
+		}
 	}
 
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
@@ -614,7 +623,7 @@ boolean drop(NSObject sender) {
 	notifyListeners(DND.DragLeave, event);
 	
 	event = new DNDEvent();
-	if (!setEventData(sender, event)) {
+	if (!setEventData(sender, event) || (((Boolean)control.getData(IS_ACTIVE)).booleanValue() == false)) {
 		return false;
 	}
 	

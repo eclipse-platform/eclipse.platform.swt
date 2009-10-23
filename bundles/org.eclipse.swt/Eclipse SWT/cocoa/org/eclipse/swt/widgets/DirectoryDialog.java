@@ -135,11 +135,14 @@ public String open () {
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.beginSheet(panel, parent.window, null, 0, 0);
 	}
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+	display.setModalDialog(this);
 	NSString dir = filterPath != null ? NSString.stringWith(filterPath) : null;
 	int /*long*/ response = panel.runModalForDirectory(dir, null);
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
 	}
+	display.setModalDialog(null);
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		directoryPath = filterPath = filename.getString();

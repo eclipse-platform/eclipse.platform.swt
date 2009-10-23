@@ -133,7 +133,10 @@ public RGB open() {
 	rgb = null;
 	selected = false;
 	panel.orderFront(null);
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+	display.setModalDialog(this);
 	NSApplication.sharedApplication().runModalForWindow(panel);
+	display.setModalDialog(null);
 	panel.setDelegate(null);
 	delegate.release();
 	OS.DeleteGlobalRef(jniRef);

@@ -131,6 +131,7 @@ public class Display extends Device {
 	NSFont boxFont, tabViewFont, progressIndicatorFont;
 
 	Shell [] modalShells;
+	Dialog modalDialog;
 	
 	Menu menuBar;
 	Menu[] menus, popups;
@@ -277,6 +278,8 @@ public class Display extends Device {
 	static final byte[] SWT_IMAGE = {'S', 'W', 'T', '_', 'I', 'M', 'A', 'G', 'E', '\0'};
 	static final byte[] SWT_ROW = {'S', 'W', 'T', '_', 'R', 'O', 'W', '\0'};
 	static final byte[] SWT_COLUMN = {'S', 'W', 'T', '_', 'C', 'O', 'L', 'U', 'M', 'N', '\0'};
+	
+	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.modalDialog"; //$NON-NLS-1$
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -1504,6 +1507,10 @@ Menu [] getMenus (Decorations shell) {
 
 int getMessageCount () {
 	return synchronizer.getMessageCount ();
+}
+
+Dialog getModalDialog () {
+	return modalDialog;
 }
 
 /**
@@ -3326,6 +3333,7 @@ void releaseDisplay () {
 	needsDisplay = needsDisplayInRect = isPainting = null;
 	
 	modalShells = null;
+	modalDialog = null;
 	menuBar = null;
 	menus = null;
 	
@@ -3828,6 +3836,14 @@ public void setData (String key, Object value) {
 		}
 	}
 	
+	if (key.equals(SET_MODAL_DIALOG)) {
+		if (value == null) {
+			this.modalDialog = null;
+		} else {
+			this.modalDialog = (Dialog) value;
+		}
+	}
+	
 	/* Remove the key/value pair */
 	if (value == null) {
 		if (keys == null) return;
@@ -3909,6 +3925,10 @@ void setMenuBar (Menu menu) {
 			nsItem.setEnabled(enabled);
 		}
 	}
+}
+
+void setModalDialog (Dialog modalDialog) {
+	this.modalDialog = modalDialog;
 }
 
 void setModalShell (Shell shell) {

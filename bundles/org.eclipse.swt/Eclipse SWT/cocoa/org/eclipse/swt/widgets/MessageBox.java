@@ -209,26 +209,29 @@ public int open () {
 	int response = 0;
 	int /*long*/ jniRef = 0;
 	SWTPanelDelegate delegate = null;
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	if ((style & SWT.SHEET) != 0) {
 		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
 		jniRef = OS.NewGlobalRef(this);
 		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 		alert.beginSheetModalForWindow(parent.window, delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
+		display.setModalDialog(this);
 		if ((style & SWT.APPLICATION_MODAL) != 0) {
 			response = (int)/*64*/alert.runModal();
 		} else {
 			this.returnCode = 0;
 			NSWindow window = alert.window();
-			Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 			while (window.isVisible()) {
 				if (!display.readAndDispatch()) display.sleep();
 			}
 			response = this.returnCode;
 		}
 	} else {
+		display.setModalDialog(this);
 		response = (int)/*64*/alert.runModal();
 	}
+	display.setModalDialog(null);
 	if (delegate != null) delegate.release();
 	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 	alert.release();

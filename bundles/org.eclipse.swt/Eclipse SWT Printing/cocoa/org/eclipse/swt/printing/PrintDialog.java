@@ -37,6 +37,7 @@ public class PrintDialog extends Dialog {
 	// the following Callbacks are never freed
 	static Callback dialogCallback5;
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
+	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.modalDialog"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -169,6 +170,8 @@ public PrinterData open() {
 		dict.setValue(NSNumber.numberWithInt(printerData.endPage), OS.NSPrintLastPage);
 	}
 	panel.setOptions(OS.NSPrintPanelShowsPageSetupAccessory | panel.options());
+	Shell parent = getParent();
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	int response;
 	if ((getStyle () & SWT.SHEET) != 0) {
 		initClasses();
@@ -177,9 +180,7 @@ public PrinterData open() {
 		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, SWT_OBJECT, jniRef);
 		returnCode = -1;
-		Shell parent = getParent();
 		panel.beginSheetWithPrintInfo(printInfo, parent.view.window(), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
-		Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 		while (returnCode == -1) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
@@ -187,8 +188,10 @@ public PrinterData open() {
 		if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 		response = returnCode;
 	} else {
+		display.setData(SET_MODAL_DIALOG, this);
 		response = (int)/*64*/panel.runModalWithPrintInfo(printInfo);
 	}
+	display.setData(SET_MODAL_DIALOG, null);
 	if (response != OS.NSCancelButton) {
 		NSPrinter printer = printInfo.printer();
 		NSString str = printer.name();

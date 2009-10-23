@@ -256,12 +256,15 @@ public String open () {
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.beginSheet(panel, parent.window, null, 0, 0);
 	}
+	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+	display.setModalDialog(this);
 	NSString dir = filterPath != null ? NSString.stringWith(filterPath) : null;
 	NSString file = fileName != null ? NSString.stringWith(fileName) : null;
 	int /*long*/ response = panel.runModalForDirectory(dir, file);
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
 	}
+	display.setModalDialog(null);
 	if (!overwrite) {
 		if (method != 0) OS.method_setImplementation(method, methodImpl);
 		if (callback != null) callback.dispose();

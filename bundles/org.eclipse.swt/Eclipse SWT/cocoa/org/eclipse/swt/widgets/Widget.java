@@ -84,6 +84,8 @@ public abstract class Widget {
 	static final int SAFARI_EVENTS_FIX = 1<<19;
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
+	
+	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -727,6 +729,7 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (key.equals(IS_ACTIVE)) return new Boolean(isActive());
 	if ((state & KEYED_DATA) != 0) {
 		Object [] table = (Object []) data;
 		for (int i=1; i<table.length; i+=2) {
@@ -860,6 +863,10 @@ NSRect imageRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) 
 
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	callSuper (id, sel, string);
+	return true;
+}
+
+boolean isActive () {
 	return true;
 }
 

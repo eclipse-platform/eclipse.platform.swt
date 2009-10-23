@@ -1867,7 +1867,7 @@ void invalidateVisibleRegion () {
 }
 
 boolean isActive () {
-	return getShell().getModalShell() == null;
+	return getShell().getModalShell () == null && display.getModalDialog () == null;
 }
 
 /*
