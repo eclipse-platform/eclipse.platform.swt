@@ -294,6 +294,10 @@
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleThick" swt_gen="true"></enum>
 	<enum name="NSViewHeightSizable" swt_gen="true"></enum>
+	<enum name="NSViewMaxXMargin" swt_gen="true"></enum>
+	<enum name="NSViewMaxYMargin" swt_gen="true"></enum>
+	<enum name="NSViewMinXMargin" swt_gen="true"></enum>
+	<enum name="NSViewMinYMargin" swt_gen="true"></enum>
 	<enum name="NSViewWidthSizable" swt_gen="true"></enum>
 	<enum name="NSWarningAlertStyle" swt_gen="true"></enum>
 	<enum name="NSWindowAbove" swt_gen="true"></enum>
