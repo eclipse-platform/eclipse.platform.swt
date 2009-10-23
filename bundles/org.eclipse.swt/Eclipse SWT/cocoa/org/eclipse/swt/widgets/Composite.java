@@ -819,7 +819,7 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 						bar.setSelection (selection);
 						Event event = new Event ();
 					    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-						bar.sendEvent (SWT.Selection, event);
+						bar.sendSelectionEvent (SWT.Selection, event, true);
 						handled = true;
 					}
 					if (!doit) handled = true;
@@ -838,7 +838,7 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 						bar.setSelection (selection);
 						Event event = new Event ();
 					    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-						bar.sendEvent (SWT.Selection, event);
+						bar.sendSelectionEvent (SWT.Selection, event, true);
 						handled = true;
 					}
 					if (!doit) handled = true;

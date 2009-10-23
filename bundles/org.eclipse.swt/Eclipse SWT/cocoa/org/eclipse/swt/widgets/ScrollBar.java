@@ -478,7 +478,7 @@ void sendSelection () {
 				setSelection(value);
 			}
 		}
-		sendEvent(SWT.Selection, event);
+		sendSelectionEvent(SWT.Selection, event, true);
 	} finally {
 		if (disableFlush) {
 			window.enableFlushWindow ();

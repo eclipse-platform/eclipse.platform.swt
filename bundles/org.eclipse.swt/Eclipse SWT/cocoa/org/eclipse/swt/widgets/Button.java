@@ -184,7 +184,7 @@ static int checkStyle (int style) {
 }
 
 void click () {
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -586,7 +586,7 @@ void sendSelection () {
 			((NSButton)view).setState(OS.NSOnState);
 		}
 	}
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 }
 
 
@@ -729,7 +729,7 @@ boolean setRadioSelection (boolean value){
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }

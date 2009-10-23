@@ -597,7 +597,7 @@ void setSelection (int index, boolean notify, boolean force) {
 			if (notify) {
 				Event event = new Event ();
 				event.item = item;
-				sendEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, true);
 			}
 		}
 	}
@@ -665,7 +665,7 @@ void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*
 			if (!ignoreSelect) {
 				Event event = new Event ();
 				event.item = item;
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 			}
 		}
 	}

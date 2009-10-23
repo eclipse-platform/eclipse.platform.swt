@@ -417,7 +417,7 @@ void onDispose (Event event) {
 }
 
 void onMouseDown (Event event) {
-	notifyListeners (SWT.Selection, new Event ());
+	sendSelectionEvent (SWT.Selection, null, true);
 	setVisible (false);
 }
 

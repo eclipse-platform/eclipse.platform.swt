@@ -1334,6 +1334,20 @@ void sendSearchSelection () {
 void sendSelection () {
 }
 
+void sendSelectionEvent (int eventType) {
+	sendSelectionEvent (eventType, null, false);
+}
+
+void sendSelectionEvent (int eventType, Event event, boolean send) {
+	if (eventTable == null && !display.filters (eventType)) {
+		return;
+	}
+	if (event == null) event = new Event ();
+	NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
+	if (nsEvent != null) setInputState (event, nsEvent, 0);
+	sendEvent(eventType, event, send);
+}
+
 void sendVerticalSelection () {
 }
 

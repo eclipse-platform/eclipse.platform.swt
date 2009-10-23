@@ -347,7 +347,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		switch (keyCode) {
 			case 76: /* KP Enter */
 			case 36: /* Return */
-				postEvent (SWT.DefaultSelection);
+				sendSelectionEvent (SWT.DefaultSelection);
 		}
 	}
 	return result;
@@ -357,12 +357,12 @@ void sendSelection () {
 	NSEvent event = NSApplication.sharedApplication().currentEvent();
 	if (event != null && (style & SWT.CALENDAR) != 0) {
 		if (event.clickCount() == 2) {
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 		} else if (event.type() == OS.NSLeftMouseUp) {
-			postEvent (SWT.Selection);
+			sendSelectionEvent (SWT.Selection);
 		}
 	} else { // SWT.DATE or SWT.TIME
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 }
 

@@ -1098,7 +1098,7 @@ public void selectAll () {
 
 void sendDoubleSelection() {
 	if (((NSTableView)view).clickedRow () != -1) {
-		postEvent (SWT.DefaultSelection);
+		sendSelectionEvent (SWT.DefaultSelection);
 	}
 }
 
@@ -1110,7 +1110,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	switch (keyCode) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		}
 	}
@@ -1429,7 +1429,7 @@ public void showSelection () {
 
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	if (ignoreSelect) return;
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 }
 
 boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {

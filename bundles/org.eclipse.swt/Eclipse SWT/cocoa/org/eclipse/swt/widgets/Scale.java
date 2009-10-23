@@ -262,7 +262,7 @@ void sendSelection () {
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
 	
 	if (currEvent.type() != OS.NSLeftMouseUp)
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 }
 
 /**

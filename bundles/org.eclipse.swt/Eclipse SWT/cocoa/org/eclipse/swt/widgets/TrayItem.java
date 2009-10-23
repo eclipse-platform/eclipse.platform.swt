@@ -511,7 +511,7 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (highlight) {
 		NSEvent nsEvent = new NSEvent(theEvent);
 		if (nsEvent.type() == OS.NSLeftMouseUp) {
-			postEvent(nsEvent.clickCount() == 2 ? SWT.DefaultSelection : SWT.Selection);
+			sendSelectionEvent(nsEvent.clickCount() == 2 ? SWT.DefaultSelection : SWT.Selection);
 		}
 	}
 	highlight = false;

@@ -114,7 +114,7 @@ boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*lo
 	NSString str = new NSString (link);
 	Event event = new Event ();
 	event.text = str.getString();
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	return true;
 }
 

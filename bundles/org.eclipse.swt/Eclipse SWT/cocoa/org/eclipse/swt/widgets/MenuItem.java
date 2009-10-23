@@ -522,10 +522,7 @@ void sendSelection () {
 			}
 		}
 	}
-	Event event = new Event ();
-	NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
-	if (nsEvent != null) setInputState (event, nsEvent, 0);
-	postEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection);
 }
 
 /**
@@ -685,7 +682,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }

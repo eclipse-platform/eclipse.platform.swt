@@ -354,7 +354,7 @@ void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	NSAttributedString attStr = new NSAttributedString (widget.itemObjectValueAtIndex(tableSelection));
 	NSString nsString = attStr.string();
 	if (nsString != null) setText(nsString.getString(), true);
-	if (!ignoreSelection) sendEvent(SWT.Selection, null, display.trackingControl != this);
+	if (!ignoreSelection) sendSelectionEvent (SWT.Selection, null, display.trackingControl != this);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -1213,7 +1213,7 @@ public void select (int index) {
 
 void sendSelection () {
 	sendEvent(SWT.Modify);
-	if (!ignoreSelection) postEvent(SWT.Selection);
+	if (!ignoreSelection) sendSelectionEvent(SWT.Selection);
 }
 
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
@@ -1248,7 +1248,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	switch (keyCode) {
 	case 76: /* KP Enter */
 	case 36: /* Return */
-		postEvent (SWT.DefaultSelection);
+		sendSelectionEvent (SWT.DefaultSelection);
 	}
 	return result;
 }

@@ -2935,7 +2935,7 @@ void sendDoubleSelection() {
 		}
 		Event event = new Event ();
 		event.item = _getItem (rowIndex);
-		postEvent (SWT.DefaultSelection, event);
+		sendSelectionEvent (SWT.DefaultSelection, event, false);
 	}
 }
 
@@ -2947,7 +2947,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	switch (keyCode) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		}
 	}
@@ -3049,20 +3049,20 @@ void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*
 	NSTableView widget = (NSTableView) view;
 	int row = (int)/*64*/widget.selectedRow ();
 	if(row == -1)
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	else {
 		TableItem item = _getItem (row);
 		Event event = new Event ();
 		event.item = item;
 		event.index = row;
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 	}
 }
 
 void tableView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {
 	TableColumn column = getColumn (new id (tableColumn));
 	if (column == null) return; /* either CHECK column or firstColumn in 0-column Table */
-	column.postEvent (SWT.Selection);
+	column.sendSelectionEvent (SWT.Selection);
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
@@ -3094,7 +3094,7 @@ void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ 
 		event.detail = SWT.CHECK;
 		event.item = item;
 		event.index = (int)/*64*/rowIndex;
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 		item.redraw (-1);
 	}
 }

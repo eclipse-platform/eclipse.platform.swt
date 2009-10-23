@@ -324,7 +324,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 				event.y = newY;
 				event.width = width;
 				event.height = height;
-				sendEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, true);
 				if (isDisposed ()) break;
 				if (event.doit) {
 					setBounds (event.x, event.y, width, height);
@@ -363,7 +363,7 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	event.y = (int)frame.y;
 	event.width = (int)frame.width;
 	event.height = (int)frame.height;
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return;
 	if (event.doit) {
 		lastX = event.x;
@@ -400,7 +400,7 @@ void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	event.y = newY;
 	event.width = (int)frame.width;
 	event.height = (int)frame.height;
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return;
 	if (event.doit) {
 		lastX = event.x;
@@ -421,7 +421,7 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	event.y = lastY;
 	event.width = (int)frame.width;
 	event.height = (int)frame.height;
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	if (isDisposed ()) return;
 	if (event.doit) {
 		setBounds (event.x, event.y, (int)frame.width, (int)frame.height);

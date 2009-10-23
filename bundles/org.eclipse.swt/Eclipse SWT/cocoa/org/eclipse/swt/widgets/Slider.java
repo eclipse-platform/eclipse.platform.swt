@@ -351,7 +351,7 @@ void sendSelection () {
 	if (event.detail != SWT.DRAG) {
 		setSelection(value);
 	}
-	sendEvent(SWT.Selection, event);
+	sendSelectionEvent(SWT.Selection, event, true);
 }
 
 /**

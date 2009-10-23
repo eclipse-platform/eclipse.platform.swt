@@ -1958,7 +1958,7 @@ int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*
 void outlineView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn) {
 	TreeColumn column = getColumn (new id (tableColumn));
 	if (column == null) return; /* either CHECK column or firstColumn in 0-column Tree */
-	column.postEvent (SWT.Selection);
+	column.sendSelectionEvent (SWT.Selection);
 }
 
 int /*long*/ outlineView_objectValueForTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn, int /*long*/ itemID) {
@@ -2117,14 +2117,14 @@ void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*lon
 	NSOutlineView widget = (NSOutlineView) view;
 	int row = (int)/*64*/widget.selectedRow ();
 	if (row == -1)
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	else {
 		id _id = widget.itemAtRow (row);
 		TreeItem item = (TreeItem) display.getWidget (_id.id);
 		Event event = new Event ();
 		event.item = item;
 		event.index = row;
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 	}
 }
 
@@ -2135,7 +2135,7 @@ void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*lo
 		Event event = new Event ();
 		event.detail = SWT.CHECK;
 		event.item = item;
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 		item.redraw (-1);
 	}
 }
@@ -2359,7 +2359,7 @@ void sendDoubleSelection() {
 		TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
 		Event event = new Event ();
 		event.item = item;
-		postEvent (SWT.DefaultSelection, event);
+		sendSelectionEvent (SWT.DefaultSelection, event, false);
 	}
 }
 
@@ -2371,7 +2371,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	switch (keyCode) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		}
 	}

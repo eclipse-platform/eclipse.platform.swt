@@ -1457,7 +1457,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		switch (keyCode) {
 			case 76: /* KP Enter */
 			case 36: /* Return */
-				postEvent (SWT.DefaultSelection);
+				sendSelectionEvent (SWT.DefaultSelection);
 		}
 	}
 	return result;
@@ -1469,7 +1469,7 @@ void sendSearchSelection () {
 	}
 	Event event = new Event ();
 	event.detail = SWT.ICON_SEARCH;
-	postEvent (SWT.DefaultSelection, event);
+	sendSelectionEvent (SWT.DefaultSelection, event, false);
 }
 
 void sendCancelSelection () {
@@ -1478,7 +1478,7 @@ void sendCancelSelection () {
 	}
 	Event event = new Event ();
 	event.detail = SWT.ICON_CANCEL;
-	postEvent (SWT.DefaultSelection, event);
+	sendSelectionEvent (SWT.DefaultSelection, event, false);
 }
 
 void setBackgroundColor(NSColor nsColor) {

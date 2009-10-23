@@ -675,7 +675,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	switch (keyCode) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			return true;
 		}
 
@@ -913,7 +913,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		if (fieldEditor != null) fieldEditor.setSelectedRange(selection);
 		sendEvent (SWT.Modify);
 	}
-	if (notify) postEvent (SWT.Selection);
+	if (notify) sendSelectionEvent (SWT.Selection);
 }
 
 void setSmallSize () {

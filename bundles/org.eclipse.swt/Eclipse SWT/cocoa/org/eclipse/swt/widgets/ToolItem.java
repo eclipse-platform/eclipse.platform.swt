@@ -561,7 +561,7 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		event.detail = SWT.ARROW;
 		event.x = (int)frame.x;
 		event.y = (int)(frame.y + frame.height);
-		postEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, false);
 	}
 }
 
@@ -678,7 +678,7 @@ void sendSelection () {
 		}
 	}
 	if ((style & SWT.CHECK) != 0) setSelection (!getSelection ());
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 }
 
 void setBounds (int x, int y, int width, int height) {
@@ -824,7 +824,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }
