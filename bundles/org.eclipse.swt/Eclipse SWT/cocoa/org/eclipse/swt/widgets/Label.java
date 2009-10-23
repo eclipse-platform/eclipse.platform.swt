@@ -54,6 +54,7 @@ public class Label extends Control {
 	boolean isImage;
 	NSTextField textView;
 	NSImageView imageView;
+	NSView separator;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -212,14 +213,53 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	NSBox widget = (NSBox)new SWTBox().alloc();
-	widget.init();
-	widget.setTitle(NSString.string());
 	if ((style & SWT.SEPARATOR) != 0) {
-		widget.setBoxType(OS.NSBoxSeparator);
+		/*
+		 * Feature in Cocoa: Separator control decides how to orient itself
+		 * based on the width and height. If height > width it orients
+		 * vertically, else it orients horizontally. 
+		 * Fix is to have two native controls to implement the separator label.
+		 * The top control (Custom NSBox) honors the bounds set by the
+		 * user and the inner one (Separator NSBox) creates the separator
+		 * with the correct orientation.
+		 */
+		NSRect rect = new NSRect();
+		rect.width = DEFAULT_WIDTH;
+		rect.height = DEFAULT_HEIGHT;
+		
+		widget.initWithFrame(rect);
+		widget.setTitle(NSString.string());
+		widget.setBorderType(OS.NSNoBorder);
+		widget.setBoxType (OS.NSBoxCustom);
+		widget.setContentViewMargins (new NSSize());
+
+		float /*double*/ lineWidth = widget.borderWidth ();
+		if ((style & SWT.HORIZONTAL) != 0) {
+			rect.height = (int)Math.ceil (lineWidth * 2);
+			rect.y = (DEFAULT_HEIGHT / 2) - (rect.height / 2);
+		} else {
+			rect.width = (int)Math.ceil (lineWidth * 2);
+			rect.x = (DEFAULT_WIDTH / 2) - (rect.width / 2);
+		}
+		
+		NSBox separator = (NSBox) new SWTBox().alloc();
+		separator.initWithFrame(rect);
+		separator.setBoxType(OS.NSBoxSeparator);
+		if ((style & SWT.HORIZONTAL) != 0) {
+			separator.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewMinYMargin | OS.NSViewMaxYMargin);
+		} else {
+			separator.setAutoresizingMask(OS.NSViewHeightSizable| OS.NSViewMinXMargin | OS.NSViewMaxXMargin);
+		}
+		
 		NSView child = (NSView) new NSView().alloc().init();
-		widget.setContentView(child);
+		separator.setContentView(child);
 		child.release();
-	} else {
+		
+		widget.addSubview(separator);
+		this.separator = separator;
+	} else {	
+		widget.init();
+		widget.setTitle(NSString.string());
 		widget.setBorderType(OS.NSNoBorder);
 		widget.setBorderWidth (0);
 		widget.setBoxType (OS.NSBoxCustom);
@@ -274,6 +314,7 @@ void deregister () {
 		display.removeWidget (imageView);
 		display.removeWidget (imageView.cell());
 	}
+	if (separator != null) display.removeWidget(separator);
 }
 
 void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
@@ -359,14 +400,17 @@ void register () {
 		display.addWidget (imageView, this);
 		display.addWidget (imageView.cell(), this);
 	}
+	if (separator != null) display.addWidget(separator, this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
 	if (textView != null) textView.release();
 	if (imageView != null) imageView.release();
+	if (separator != null) separator.release();
 	textView = null;
 	imageView = null;
+	separator = null;
 }
 
 /*
