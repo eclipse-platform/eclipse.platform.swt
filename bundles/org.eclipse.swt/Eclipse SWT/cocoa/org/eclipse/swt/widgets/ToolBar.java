@@ -196,15 +196,41 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point extent = new Point (result [1], result [2]);
 	if (wHint != SWT.DEFAULT) extent.x = wHint;
 	if (hHint != SWT.DEFAULT) extent.y = hHint;
-	return extent;
+	Rectangle trim = computeTrim (0, 0, extent.x, extent.y);
+	return new Point (trim.width, trim.height);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
+	if (scrollView != null) {
+		NSSize size = new NSSize();
+		size.width = width;
+		size.height = height;
+		size = NSScrollView.frameSizeForContentSize(size, false, false, OS.NSBezelBorder);
+		width = (int)size.width;
+		height = (int)size.height;
+		NSRect frame = scrollView.contentView().frame();
+		x -= frame.x;
+		y -= frame.y;
+	}
+	return new Rectangle (x, y, width, height);
 }
 
 void createHandle () {
 	state |= THEME_BACKGROUND;
+	if (hasBorder()) {
+		NSRect rect = new NSRect();
+		NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
+		scrollWidget.initWithFrame (rect);
+		scrollWidget.setDrawsBackground(false);
+		scrollWidget.setBorderType(OS.NSBezelBorder);
+		scrollView = scrollWidget;
+	}
 	NSView widget = (NSView)new SWTView().alloc();
 	widget.init();
 //	widget.setDrawsBackground(false);
 	view = widget;
+	if (scrollView != null) view.setAutoresizingMask(OS.NSViewHeightSizable | OS.NSViewWidthSizable);
 }
 
 void createItem (ToolItem item, int index) {
