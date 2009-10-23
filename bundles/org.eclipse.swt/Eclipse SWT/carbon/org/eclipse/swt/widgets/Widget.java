@@ -1680,6 +1680,19 @@ boolean sendKeyEvent (int type, Event event) {
 	return event.doit;
 }
 
+void sendSelectionEvent (int eventType) {
+	sendSelectionEvent (eventType, null, false);
+}
+
+void sendSelectionEvent (int eventType, Event event, boolean send) {
+	if (eventTable == null && !display.filters (eventType)) {
+		return;
+	}
+	if (event == null) event = new Event ();
+//	setInputState (event, state);
+	sendEvent (eventType, event, send);
+}
+
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	boolean sameOrigin = true, sameExtent = true;
 	CGRect oldBounds = new CGRect ();
