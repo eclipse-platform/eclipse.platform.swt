@@ -9,8 +9,8 @@
   <!-- sets the properties eclipse-home, and library-file -->
   <property name="eclipse-home" value="${basedir}/../.."/>
   <property name="plugin-name" value="org.eclipse.swt.tests"/>
-  <property name="plugin-path" value="${eclipse-home}/dropins/eclipse/plugins/${org.eclipse.swt.tests}"/>
-  <property name="library-file" value="${eclipse-home}/dropins/eclipse/plugins/org.eclipse.test/library.xml"/>
+  <property name="plugin-path" value="${eclipse-home}/plugins/${org.eclipse.swt.tests}"/>
+  <property name="library-file" value="${eclipse-home}/plugins/org.eclipse.test/library.xml"/>
 
   <!-- This target holds all initialization code that needs to be done for -->
   <!-- all tests that are to be run. Initialization for individual tests -->
