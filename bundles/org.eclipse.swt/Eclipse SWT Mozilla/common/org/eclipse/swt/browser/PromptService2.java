@@ -171,7 +171,8 @@ int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) 
 	*/
 	if (textLabel.indexOf ("ssl_error_bad_cert_domain") != -1 ||
 		textLabel.indexOf ("sec_error_unknown_issuer") != -1 ||
-		textLabel.indexOf ("sec_error_expired_certificate") != -1) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		textLabel.indexOf ("sec_error_untrusted_issuer") != -1 ||
+		textLabel.indexOf ("sec_error_expired_certificate") != -1) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			if (browser != null) {
 				Mozilla mozilla = (Mozilla)browser.webBrowser;
 				mozilla.isRetrievingBadCert = true;
