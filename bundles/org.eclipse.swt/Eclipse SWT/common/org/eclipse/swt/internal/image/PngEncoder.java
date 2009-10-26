@@ -246,11 +246,7 @@ void writeImageData() throws IOException {
 			
 			data.getPixels(0, y, width, lineData, 0);
 			
-			for (int x = 0; x < lineData.length; x++) {
-			
-				os.write(lineData[x]);
-			
-			}
+			os.write(lineData);
 		
 		}
 	
@@ -271,6 +267,8 @@ void writeImageData() throws IOException {
 		int blueShift = data.palette.blueShift;
 		int blueMask = data.palette.blueMask;
 		
+		byte[] lineBytes = new byte[width * (colorType == 6 ? 4 : 3)];
+		
 		for (int y = 0; y < height; y++) {
 		
 			int filter = 0;
@@ -282,27 +280,29 @@ void writeImageData() throws IOException {
 				data.getAlphas(0, y, width, alphaData, 0);
 			}
 			
+			int offset = 0;
 			for (int x = 0; x < lineData.length; x++) {
 			
 				int pixel = lineData[x];
 				
 				int r = pixel & redMask;
-				r = (redShift < 0) ? r >>> -redShift : r << redShift;
+				lineBytes[offset++] = (byte) ((redShift < 0) ? r >>> -redShift
+						: r << redShift);
 				int g = pixel & greenMask;
-				g = (greenShift < 0) ? g >>> -greenShift : g << greenShift;
+				lineBytes[offset++] = (byte) ((greenShift < 0) ? g >>> -greenShift
+						: g << greenShift);
 				int b = pixel & blueMask;
-				b = (blueShift < 0) ? b >>> -blueShift : b << blueShift;
-				
-				os.write(r);
-				os.write(g);
-				os.write(b);
+				lineBytes[offset++] = (byte) ((blueShift < 0) ? b >>> -blueShift
+						: b << blueShift);
 				
 				if (colorType == 6) {
-					os.write(alphaData[x]);
+					lineBytes[offset++] = alphaData[x];
 				}
 			
 			}
-		
+			
+			os.write(lineBytes);
+			
 		}
 	
 	}
