@@ -577,9 +577,9 @@ public class SWT {
 
 	/**
 	 * The mouse wheel event type (value is 37).
-	 * This is a synonym for MouseVerticalWheel (value is 37).  
-	 * Newer applications should use MouseVerticalWheel instead 
-	 * of MouseWheel to make code more understandable.
+	 * This is a synonym for {@link #MouseVerticalWheel} (value is 37).  
+	 * Newer applications should use {@link #MouseVerticalWheel} instead 
+	 * of {@link #MouseWheel} to make code more understandable.
 	 *  
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -1753,8 +1753,8 @@ public class SWT {
 	
 	/**
 	 * Style constant for align left behavior (value is 1&lt;&lt;14).
-	 * This is a synonym for LEAD (value is 1&lt;&lt;14).  Newer
-	 * applications should use LEAD instead of LEFT to make code more
+	 * This is a synonym for {@link #LEAD} (value is 1&lt;&lt;14).  Newer
+	 * applications should use {@link #LEAD} instead of {@link #LEFT} to make code more
 	 * understandable on right-to-left platforms.
 	 * <p>
 	 * This constant can also be used to representing the left keyboard 
@@ -1779,8 +1779,8 @@ public class SWT {
 		
 	/**
 	 * Style constant for align right behavior (value is 1&lt;&lt;17).
-	 * This is a synonym for TRAIL (value is 1&lt;&lt;17).  Newer
-	 * applications should use TRAIL instead of RIGHT to make code more
+	 * This is a synonym for {@link #TRAIL} (value is 1&lt;&lt;17).  Newer
+	 * applications should use {@link #TRAIL} instead of {@link #RIGHT} to make code more
 	 * understandable on right-to-left platforms.
 	 * <p>
 	 * This constant can also be used to representing the right keyboard 
