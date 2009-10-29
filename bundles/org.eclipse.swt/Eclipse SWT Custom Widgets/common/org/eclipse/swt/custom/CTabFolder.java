@@ -1942,7 +1942,10 @@ boolean onMnemonic (Event event, boolean doit) {
 			char mnemonic = _findMnemonic (items[i].getText ());
 			if (mnemonic != '\0') {
 				if (Character.toLowerCase (key) == mnemonic) {
-					if (doit) setSelection(i, true);
+					if (doit) {
+					    setSelection(i, true);
+					    forceFocus();
+					}
 					return true;
 				}
 			}
@@ -2042,7 +2045,12 @@ void onMouse(Event event) {
 				}
 				int index = indexOf(item);
 				if (item.showing){
-					setSelection(index, true);
+				    	int oldSelectedIndex = selectedIndex;
+				    	setSelection(index, true);
+				    	if (oldSelectedIndex == selectedIndex) {
+				    	    /* If the click is on the selected tabitem, then set focus to the tabfolder */
+				    	    forceFocus();
+				    	}
 				}
 				return;
 			}
