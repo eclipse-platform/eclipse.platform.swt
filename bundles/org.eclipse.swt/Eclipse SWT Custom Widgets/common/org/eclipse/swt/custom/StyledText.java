@@ -7294,6 +7294,7 @@ boolean scrollHorizontal(int pixels, boolean adjustScrollBar) {
 	if (pixels == 0) {
 		return false;
 	}
+	if (wordWrap) return false;
 	ScrollBar horizontalBar = getHorizontalBar();
 	if (horizontalBar != null && adjustScrollBar) {
 		horizontalBar.setSelection(horizontalScrollOffset + pixels);
