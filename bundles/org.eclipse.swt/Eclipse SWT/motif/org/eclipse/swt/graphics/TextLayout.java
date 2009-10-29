@@ -41,7 +41,7 @@ public final class TextLayout extends Resource {
 	int alignment;
 	int wrapWidth;
 	int orientation;
-	int indent;
+	int indent, wrapIndent;
 	boolean justify; 
 	int[] tabs;
 	int[] segments;
@@ -114,7 +114,7 @@ void computeRuns () {
 		StyleItem run = allRuns[i];
 		place(run);
 	}
-	int lineWidth = 0, lineStart = 0, lineCount = 1;
+	int lineWidth = indent, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		if (run.length == 1) {
@@ -219,7 +219,7 @@ void computeRuns () {
 		lineWidth += run.width;
 		if (run.lineBreak) {
 			lineStart = i + 1;
-			lineWidth = 0;
+			lineWidth = run.softBreak ? wrapIndent : indent;;
 			lineCount++;
 		}
 	}
@@ -866,7 +866,7 @@ public int getLineCount () {
 }
 
 int getLineIndent (int lineIndex) {
-	int lineIndent = 0;
+	int lineIndent = wrapIndent;
 	if (lineIndex == 0) {
 		lineIndent = indent;
 	} else {
@@ -1422,6 +1422,11 @@ public int getWidth () {
 	return wrapWidth;
 }
 
+public int getWrapIndent () {
+	checkLayout();
+	return wrapIndent;
+}
+
 /**
  * Returns <code>true</code> if the text layout has been disposed,
  * and <code>false</code> otherwise.
@@ -1920,6 +1925,14 @@ public void setWidth (int width) {
 	if (this.wrapWidth == width) return;
 	freeRuns();
 	this.wrapWidth = width;
+}
+
+public void setWrapIndent (int wrapIndent) {
+	checkLayout();
+	if (wrapIndent < 0) return;
+	if (this.wrapIndent == wrapIndent) return;
+	freeRuns();
+	this.wrapIndent = wrapIndent;
 }
 
 /**
