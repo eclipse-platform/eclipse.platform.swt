@@ -369,7 +369,7 @@ void checkSelection () {
 	sendEvent (SWT.Modify);
 	if (isDisposed ()) return;
 	int index = indexOf (newText);
-	if (index != -1) postEvent (SWT.Selection);
+	if (index != -1) sendSelectionEvent (SWT.Selection);
 	
 	/* Send value changed notification to accessible client. */
 	String string = OS.kAXFocusedWindowChangedNotification;
@@ -1132,7 +1132,7 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	*/
 	postEvent (SWT.Modify);
 	if (isDisposed ()) return OS.eventNotHandledErr;
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
 }
 
@@ -1209,7 +1209,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		}
 	}

@@ -794,7 +794,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		}
 		/*
@@ -844,13 +844,13 @@ int itemNotificationProc (int browser, int id, int message) {
 			if (selected) {
 				anchorFirst = first [0];
 				anchorLast = last [0];
-				postEvent (SWT.Selection);
+				sendSelectionEvent (SWT.Selection);
 			}
 			break;
 		}	
 		case OS.kDataBrowserItemDoubleClicked: {
 			if (display.clickCount == 2) {
-				postEvent (SWT.DefaultSelection);
+				sendSelectionEvent (SWT.DefaultSelection);
 			}
 			break;
 		}
@@ -1383,7 +1383,7 @@ void setSelection (int index, boolean notify) {
 		int [] ids = new int [] {index + 1};
 		select (ids, ids.length, true);
 		showIndex (index);
-		if (notify) postEvent (SWT.Selection);
+		if (notify) sendSelectionEvent (SWT.Selection);
 	}
 }
 

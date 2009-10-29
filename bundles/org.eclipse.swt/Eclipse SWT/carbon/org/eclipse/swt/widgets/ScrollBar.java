@@ -186,7 +186,7 @@ int actionProc (int theControl, int partCode) {
 		int value = OS.GetControl32BitValue (handle) + inc;	    
 		OS.SetControl32BitValue (handle, value);
 	}
-	sendEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, true);
 	return result;
 }
 
@@ -537,7 +537,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	status = OS.CallNextEventHandler (nextHandler, theEvent);
 	if (dragging) {
 		Event event = new Event ();
-		sendEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, true);
 	}
 	dragging = false;
 	return status;

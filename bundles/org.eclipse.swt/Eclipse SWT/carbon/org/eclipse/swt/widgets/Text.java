@@ -1554,7 +1554,7 @@ int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData)
 	setText ("");
 	Event event = new Event ();
 	event.detail = SWT.ICON_CANCEL;
-	postEvent (SWT.DefaultSelection, event);
+	sendSelectionEvent (SWT.DefaultSelection, event, false);
 	return result;
 }
 
@@ -1563,7 +1563,7 @@ int kEventSearchFieldSearchClicked (int nextHandler, int theEvent, int userData)
 	if (result == OS.noErr) return result;
 	Event event = new Event ();
 	event.detail = SWT.ICON_SEARCH;
-	postEvent (SWT.DefaultSelection, event);
+	sendSelectionEvent (SWT.DefaultSelection, event, false);
 	return result;
 }
 
@@ -1600,7 +1600,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 			*/
 			case 76: /* KP Enter */
 			case 36: { /* Return */
-				postEvent (SWT.DefaultSelection);
+				sendSelectionEvent (SWT.DefaultSelection);
 				return OS.noErr;
 			}
 			case 48: { /* Tab */

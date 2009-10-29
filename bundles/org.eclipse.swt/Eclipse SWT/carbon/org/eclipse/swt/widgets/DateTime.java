@@ -352,7 +352,7 @@ void handleSelection(Event event) {
 		return;
 	}
 	redraw();
-	postEvent(SWT.Selection);
+	sendSelectionEvent(SWT.Selection);
 }
 
 void handleTraverse(Event event) {
@@ -669,7 +669,7 @@ void sendSelectionEvent () {
 		rec.month != dateRec.month ||
 		rec.year != dateRec.year) {
 		dateRec = rec;
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 }
 
@@ -693,7 +693,7 @@ void setDay(int newDay, boolean notify) {
 	redraw(getCell(calendar.get(Calendar.DAY_OF_MONTH)), cellSize);
 	calendar.set(Calendar.DAY_OF_MONTH, newDay);
 	redraw(getCell(calendar.get(Calendar.DAY_OF_MONTH)), cellSize);
-	if (notify) postEvent(SWT.Selection);
+	if (notify) sendSelectionEvent(SWT.Selection);
 }
 
 /**

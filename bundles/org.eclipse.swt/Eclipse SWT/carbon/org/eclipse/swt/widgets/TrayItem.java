@@ -455,7 +455,7 @@ int trayItemProc (int target, int userData, int selector, int arg0) {
 				highlight = true;
 				Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
 				int clickCount = Cocoa.objc_msgSend (arg0, Cocoa.S_clickCount);
-				postEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+				sendSelectionEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 			}
 			break;
 		}

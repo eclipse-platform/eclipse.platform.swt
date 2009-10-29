@@ -368,7 +368,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		case 76: /* Enter */
 			Event event = new Event ();
 			event.text = ids [focusIndex];
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 			break;
 		case 48: /* Tab */
 			int [] modifiers = new int [1];
@@ -637,7 +637,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 					if (rectangle.contains (x, y)) {
 						Event event = new Event ();
 						event.text = ids [focusIndex];
-						notifyListeners (SWT.Selection, event);
+						sendSelectionEvent (SWT.Selection, event, true);
 						return result;
 					}
 				}

@@ -1689,7 +1689,9 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 		return;
 	}
 	if (event == null) event = new Event ();
-//	setInputState (event, state);
+	int chord = OS.GetCurrentEventButtonState ();
+	int modifiers = OS.GetCurrentEventKeyModifiers ();
+	setInputState (event, eventType, chord, modifiers);
 	sendEvent (eventType, event, send);
 }
 

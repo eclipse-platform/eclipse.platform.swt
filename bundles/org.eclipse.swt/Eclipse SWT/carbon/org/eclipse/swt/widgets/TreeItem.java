@@ -1076,7 +1076,7 @@ void setChecked (boolean checked, boolean notify) {
 		Event event = new Event ();
 		event.item = this;
 		event.detail = SWT.CHECK;
-		parent.postEvent (SWT.Selection, event);
+		parent.sendSelectionEvent (SWT.Selection, event, false);
 	}
 }
 

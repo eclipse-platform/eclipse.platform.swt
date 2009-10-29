@@ -373,7 +373,7 @@ public boolean isVisible () {
 }
 
 void onMouseDown (Event event) {
-	notifyListeners (SWT.Selection, new Event ());
+	sendSelectionEvent (SWT.Selection, null, true);
 	setVisible (false);
 }
 

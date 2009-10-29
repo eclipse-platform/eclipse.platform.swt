@@ -379,11 +379,7 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 			}
 		}
 	}
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	Event event = new Event ();
-	setInputState (event, (short) 0, OS.GetCurrentEventButtonState (), modifiers [0]);
-	postEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection);
 	return OS.noErr;
 }
 
@@ -767,7 +763,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }

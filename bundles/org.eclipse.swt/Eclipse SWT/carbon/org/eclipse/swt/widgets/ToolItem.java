@@ -878,7 +878,7 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	if ((style & SWT.CHECK) != 0) setSelection (!getSelection ());
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
 }
 
@@ -939,7 +939,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			event.detail = SWT.ARROW;
 			event.x = (int) rect.x;
 			event.y = (int) (rect.y + rect.height);
-			postEvent (SWT.Selection, event);				
+			sendSelectionEvent (SWT.Selection, event, false);				
 		}
 	}	
 	return result;
@@ -1210,7 +1210,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }

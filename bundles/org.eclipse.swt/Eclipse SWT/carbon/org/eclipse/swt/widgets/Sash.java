@@ -296,7 +296,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 			event.y = newY;
 			event.width = width;
 			event.height = height;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 			if (isDisposed ()) break;
 			if (event.doit) {
 				setBounds (event.x, event.y, width, height);
@@ -371,7 +371,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 			event.y = controlY;
 			event.width = width;
 			event.height = height;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 			if (isDisposed ()) return result;
 			if (event.doit) {
 				lastX = event.x;
@@ -388,7 +388,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 			event.y = lastY;
 			event.width = width;
 			event.height = height;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 			if (isDisposed ()) return result;
 			if (event.doit) {
 				setBounds (event.x, event.y, width, height);
@@ -408,7 +408,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 			event.y = newY;
 			event.width = width;
 			event.height = height;
-			sendEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, true);
 			if (isDisposed ()) return result;
 			if (event.doit) {
 				lastX = event.x;

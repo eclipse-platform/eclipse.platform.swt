@@ -698,7 +698,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
 		case 36: /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			return OS.noErr;
 		case 116: /* Page Up */ delta = pageIncrement; break;
 		case 121: /* Page Down */ delta = -pageIncrement; break;
@@ -1135,7 +1135,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		OS.SetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
 		sendEvent (SWT.Modify);
 	}
-	if (notify) postEvent (SWT.Selection);
+	if (notify) sendSelectionEvent (SWT.Selection);
 }
 
 char [] setText (String string, int start, int end, boolean notify) {

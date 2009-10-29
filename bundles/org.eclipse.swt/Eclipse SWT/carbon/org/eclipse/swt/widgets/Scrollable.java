@@ -299,7 +299,7 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 		if (position != vPosition) {
 			Event event = new Event ();
 			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			verticalBar.sendEvent (SWT.Selection, event);
+			verticalBar.sendSelectionEvent (SWT.Selection, event, true);
 			redraw = true;
 		}
 	}
@@ -308,7 +308,7 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 		if (position != hPosition) {
 			Event event = new Event ();
 			event.detail = position < hPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			horizontalBar.sendEvent (SWT.Selection, event);
+			horizontalBar.sendSelectionEvent (SWT.Selection, event, true);
 			redraw = true;
 		}
 	}
@@ -387,7 +387,7 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 			bar.setSelection (Math.max (0, bar.getSelection () - bar.getIncrement () * wheelDelta));
 			Event event = new Event ();
 		    event.detail = wheelDelta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-			bar.sendEvent (SWT.Selection, event);
+			bar.sendSelectionEvent (SWT.Selection, event, true);
 			return true;
 		}
 	}

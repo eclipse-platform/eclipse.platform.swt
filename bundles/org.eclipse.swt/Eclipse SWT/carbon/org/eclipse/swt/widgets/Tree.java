@@ -2232,7 +2232,7 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 				Event event = new Event ();
 				event.item = item;
 				event.detail = SWT.CHECK;
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 				/*
 				* Bug in the Macintosh. When the height of the row is smaller than the
 				* check box, the tail of the check mark draws outside of the item part
@@ -2298,7 +2298,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				for (int i = 0; i < columnCount; i++) {
 					TreeColumn column = columns [i];
 					if (property [0] == column.id) {
-						column.postEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+						column.sendSelectionEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 						break;
 					}
 				}
@@ -2355,7 +2355,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				anchorLast = last [0];
 				Event event = new Event ();
 				event.item = _getItem (id, true);
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 			}
 			break;
 		}	
@@ -2364,7 +2364,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			if (display.clickCount == 2) {
 				Event event = new Event ();
 				event.item = _getItem (id, true);
-				postEvent (SWT.DefaultSelection, event);
+				sendSelectionEvent (SWT.DefaultSelection, event, false);
 			}
 			break;
 		}
@@ -2418,7 +2418,7 @@ int itemNotificationProc (int browser, int id, int message) {
 					if (!ignoreSelect) {
 						Event event = new Event ();
 						event.item = _getItem (id, true);
-						sendEvent (SWT.Selection, event);
+						sendSelectionEvent (SWT.Selection, event, true);
 					}
 				}
 			}
@@ -2599,7 +2599,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		}
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		}
 		/*
@@ -2657,7 +2657,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			if (0 < lastHittest && lastHittest <= items.length) {
 				Event event = new Event ();
 				event.item = _getItem (lastHittest, true);
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 			}
 		}
 	}

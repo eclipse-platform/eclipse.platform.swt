@@ -80,7 +80,7 @@ public Scale (Composite parent, int style) {
 int actionProc (int theControl, int partCode) {
 	int result = super.actionProc (theControl, partCode);
 	if (result == OS.noErr) return result;
-	sendEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection, null, true);
 	return result;
 }
 

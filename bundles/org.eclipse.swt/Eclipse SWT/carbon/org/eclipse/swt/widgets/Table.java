@@ -2089,7 +2089,7 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 				Event event = new Event ();
 				event.item = item;
 				event.detail = SWT.CHECK;
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 				/*
 				* Bug in the Macintosh. When the height of the row is smaller than the
 				* check box, the tail of the check mark draws outside of the item part
@@ -2139,7 +2139,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				for (int i = 0; i < columnCount; i++) {
 					TableColumn column = columns [i];
 					if (property [0] == column.id) {
-						column.postEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+						column.sendSelectionEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 						break;
 					}
 				}
@@ -2199,7 +2199,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				anchorLast = last [0];
 				Event event = new Event ();
 				event.item = item;
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 			}
 			break;
 		}	
@@ -2208,7 +2208,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			if (display.clickCount == 2) {
 				Event event = new Event ();
 				event.item = _getItem (index);
-				postEvent (SWT.DefaultSelection, event);
+				sendSelectionEvent (SWT.DefaultSelection, event, false);
 			}
 			break;
 		}
@@ -2309,7 +2309,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			if (0 <= index && index < itemCount) {
 				Event event = new Event ();
 				event.item = _getItem (index);
-				postEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, false);
 			}
 		}
 	}
@@ -2354,7 +2354,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		}
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
+			sendSelectionEvent (SWT.DefaultSelection);
 			break;
 		}
 		/*
@@ -3153,7 +3153,7 @@ void setSelection (int index, boolean notify) {
 		if (notify) {
 			Event event = new Event ();
 			event.item = _getItem (index);
-			postEvent (SWT.Selection, event);
+			sendSelectionEvent (SWT.Selection, event, false);
 		}
 	}
 }

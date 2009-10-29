@@ -142,7 +142,7 @@ static int checkStyle (int style) {
 }
 
 void click () {
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 }
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
@@ -513,7 +513,7 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 			}
 		}
 	}
-	postEvent (SWT.Selection);
+	sendSelectionEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
 }
 
@@ -758,7 +758,7 @@ boolean setRadioSelection (boolean value){
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendSelectionEvent (SWT.Selection);
 	}
 	return true;
 }

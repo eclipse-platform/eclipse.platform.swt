@@ -230,7 +230,7 @@ void createItem (TabItem item, int index) {
 		lastSelected = 0;
 		Event event = new Event ();
 		event.item = items [0];
-		sendEvent (SWT.Selection, event);
+		sendSelectionEvent (SWT.Selection, event, true);
 		// the widget could be destroyed at this point
 	}
 }
@@ -503,7 +503,7 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	}
 	Event event = new Event ();
 	event.item = item;
-	postEvent (SWT.Selection, event);
+	sendSelectionEvent (SWT.Selection, event, false);
 	return OS.noErr;
 }
 
@@ -680,7 +680,7 @@ void setSelection (int index, boolean notify, boolean force) {
 			if (notify) {
 				Event event = new Event ();
 				event.item = item;
-				sendEvent (SWT.Selection, event);
+				sendSelectionEvent (SWT.Selection, event, true);
 			}
 		}
 	}
