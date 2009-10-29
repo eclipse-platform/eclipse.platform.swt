@@ -43,6 +43,7 @@ public final class TextLayout extends Resource {
 	int wrapWidth;
 	int orientation;
 	int indent;
+	int wrapIndent;
 	boolean justify;
 	int[] tabs;
 	int[] segments;
@@ -365,7 +366,7 @@ void computeRuns (GC gc) {
 		lineWidth += run.width;
 		if (run.lineBreak) {
 			lineStart = i + 1;
-			lineWidth = run.softBreak ?  0 : indent;
+			lineWidth = run.softBreak ?  wrapIndent : indent;
 			lineCount++;
 		}
 	}
@@ -399,15 +400,17 @@ void computeRuns (GC gc) {
 			System.arraycopy(lineRuns, 0, runs[line], 0, lineRunCount);
 			
 			if (justify && wrapWidth != -1 && run.softBreak && lineWidth > 0) {
+				int lineIndent = wrapIndent;
 				if (line == 0) {
-					lineWidth += indent;
+					lineIndent = indent;
 				} else {
 					StyleItem[] previousLine = runs[line - 1];
 					StyleItem previousRun = previousLine[previousLine.length - 1];
 					if (previousRun.lineBreak && !previousRun.softBreak) {
-						lineWidth += indent;
+						lineIndent = indent;
 					}
 				}
+				lineWidth += lineIndent;
 				int /*long*/ hHeap = OS.GetProcessHeap();
 				int newLineWidth = 0;
 				for (int j = 0; j < runs[line].length; j++) {
@@ -1794,7 +1797,7 @@ public int getLineCount () {
 }
 
 int getLineIndent (int lineIndex) {
-	int lineIndent = 0;
+	int lineIndent = wrapIndent;
 	if (lineIndex == 0) {
 		lineIndent = indent;
 	} else {
@@ -2430,6 +2433,22 @@ public int getWidth () {
 }
 
 /**
+* Returns the receiver's wrap indent.
+*
+* @return the receiver's wrap indent
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.2
+*/
+public int getWrapIndent () {
+	checkLayout();
+	return wrapIndent;
+}
+
+/**
  * Returns <code>true</code> if the text layout has been disposed,
  * and <code>false</code> otherwise.
  * <p>
@@ -2721,7 +2740,7 @@ public void setFont (Font font) {
 }
 
 /**
- * Sets the indent of the receiver. This indent it applied of the first line of 
+ * Sets the indent of the receiver. This indent it applied to the first line of 
  * each paragraph.  
  *
  * @param indent new indent
@@ -2729,6 +2748,8 @@ public void setFont (Font font) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see #setWrapIndent(int)
  * 
  * @since 3.2
  */
@@ -3007,6 +3028,28 @@ public void setWidth (int width) {
 	if (this.wrapWidth == width) return;
 	freeRuns();
 	this.wrapWidth = width;
+}
+
+/**
+ * Sets the wrap indent of the receiver. This indent it applied to the all line  
+ * in the paragraph but the first line.  
+ *
+ * @param wrapIndent new wrap indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setIndent(int)
+ * 
+ * @since 3.6
+ */
+public void setWrapIndent (int wrapIndent) {
+	checkLayout();
+	if (wrapIndent < 0) return;	
+	if (this.wrapIndent == wrapIndent) return;
+	freeRuns();
+	this.wrapIndent = wrapIndent;
 }
 
 boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs, SCRIPT_PROPERTIES sp) {
