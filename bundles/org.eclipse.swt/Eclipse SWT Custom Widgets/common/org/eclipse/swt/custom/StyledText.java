@@ -163,7 +163,7 @@ public class StyledText extends Canvas {
 	Cursor cursor;
 	int alignment;
 	boolean justify;
-	int indent;
+	int indent, wrapIndent;
 	int lineSpacing;
 	int alignmentMargin;
 	int newOrientation = SWT.NONE;
@@ -4249,6 +4249,32 @@ public int[] getLineTabStops(int index) {
 	System.arraycopy(tabs, 0, result, 0, tabs.length);
 	return result;
 }
+/**
+ * Returns the wrap indentation of the line at the given index.
+ * 
+ * @param index the index of the line
+ * 
+ * @return the wrap indentation
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
+ * </ul>
+ * 
+ * @see #getWrapIndent()
+ * 
+ * @since 3.6
+ */
+public int getLineWrapIndent(int index) {
+	checkWidget();
+	if (index < 0 || index > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	return isListening(LineGetStyle) ? 0 : renderer.getLineWrapIndent(index, wrapIndent);
+}
 /** 
  * Returns the left margin.
  *
@@ -5359,6 +5385,24 @@ int getWordPrevious(int offset, int movement) {
 public boolean getWordWrap() {
 	checkWidget();
 	return wordWrap;
+}
+/**
+ * Returns the wrap indentation of the widget.
+ * 
+ * @return the wrap indentation
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *  
+ * @see #getLineWrapIndent(int)
+ * 
+ * @since 3.6
+ */
+public int getWrapIndent() {
+	checkWidget();
+	return wrapIndent;
 }
 /** 
  * Returns the location of the given offset.
@@ -7542,6 +7586,7 @@ StyledTextEvent sendLineEvent(int eventType, int lineOffset, String line) {
 		event.text = line;
 		event.alignment = alignment;
 		event.indent = indent;
+		event.wrapIndent = wrapIndent;
 		event.justify = justify;
 		notifyListeners(eventType, event);
 	}
@@ -8646,6 +8691,56 @@ public void setLineTabStops(int startLine, int lineCount, int[] tabStops) {
 		setCaretLocation();
 	}
 }
+/**
+ * Sets the wrap indent of the specified lines.
+ * <p>
+ * Should not be called if a LineStyleListener has been set since the listener 
+ * maintains the line attributes.
+ * </p><p>
+ * All line attributes are maintained relative to the line text, not the 
+ * line index that is specified in this method call.
+ * During text changes, when entire lines are inserted or removed, the line 
+ * attributes that are associated with the lines after the change 
+ * will "move" with their respective text. An entire line is defined as 
+ * extending from the first character on a line to the last and including the 
+ * line delimiter. 
+ * </p><p>
+ * When two lines are joined by deleting a line delimiter, the top line 
+ * attributes take precedence and the attributes of the bottom line are deleted. 
+ * For all other text changes line attributes will remain unchanged.
+ * </p>
+ *
+ * @param startLine first line the wrap indent is applied to, 0 based
+ * @param lineCount number of lines the wrap indent applies to.
+ * @param wrapIndent line wrap indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the specified line range is invalid</li>
+ * </ul>
+ * @see #setWrapIndent(int)
+ * @since 3.6
+ */
+public void setLineWrapIndent(int startLine, int lineCount, int wrapIndent) {
+	checkWidget();
+	if (isListening(LineGetStyle)) return;
+	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int oldBottom = getLinePixel(startLine + lineCount);
+	renderer.setLineWrapIndent(startLine, lineCount, wrapIndent);
+	resetCache(startLine, lineCount);
+	int newBottom = getLinePixel(startLine + lineCount);
+	redrawLines(startLine, lineCount, oldBottom != newBottom);
+	int caretLine = getCaretLine();
+	if (startLine <= caretLine && caretLine < startLine + lineCount) {
+		setCaretLocation();
+	}
+}
+
 /** 
  * Sets the color of the margins.
  * 
@@ -9507,6 +9602,33 @@ public void setWordWrap(boolean wrap) {
 	setScrollBars(true);
 	setCaretLocation();
 	super.redraw();
+}
+/**
+ * Sets the wrap line indentation of the widget.
+ * <p>
+ * It is the amount of blank space, in pixels, at the beginning of each wrapped line.
+ * When a line wraps in several lines all the lines but the first one is indented
+ * by this amount. 
+ * </p>
+ * 
+ * @param wrapIndent the new wrap indent
+ *  
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setLineWrapIndent(int, int, int)
+ *  
+ * @since 3.6
+ */
+public void setWrapIndent(int wrapIndent) {
+	checkWidget();
+	if (this.wrapIndent == wrapIndent || wrapIndent < 0) return;
+	this.wrapIndent = wrapIndent;
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
+	super.redraw();	
 }
 boolean showLocation(Rectangle rect, boolean scrollPage) {
 	boolean scrolled = false;

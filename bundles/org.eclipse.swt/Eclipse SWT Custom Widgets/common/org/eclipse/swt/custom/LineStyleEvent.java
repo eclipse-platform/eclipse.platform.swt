@@ -61,6 +61,13 @@ public class LineStyleEvent extends TypedEvent {
 	 */
 	public int indent;
 
+	/**
+	 * line wrap indent (input, output)
+	 * 
+	 * @since 3.6
+	 */
+	public int wrapIndent;
+
 	/** 
 	 * line justification (input, output)
 	 * 
@@ -104,6 +111,7 @@ public LineStyleEvent(StyledTextEvent e) {
 	alignment = e.alignment;
 	justify = e.justify;
 	indent = e.indent;
+	wrapIndent = e.wrapIndent;
 	bullet = e.bullet;
 	bulletIndex = e.bulletIndex;
 	tabStops = e.tabStops;

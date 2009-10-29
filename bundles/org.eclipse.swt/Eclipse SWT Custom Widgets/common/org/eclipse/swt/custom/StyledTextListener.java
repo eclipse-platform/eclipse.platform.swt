@@ -49,6 +49,7 @@ public void handleEvent(Event e) {
 			((StyledTextEvent) e).styles = lineStyleEvent.styles;
 			((StyledTextEvent) e).alignment = lineStyleEvent.alignment;
 			((StyledTextEvent) e).indent = lineStyleEvent.indent;
+			((StyledTextEvent) e).wrapIndent = lineStyleEvent.wrapIndent;
 			((StyledTextEvent) e).justify = lineStyleEvent.justify;
 			((StyledTextEvent) e).bullet = lineStyleEvent.bullet;
 			((StyledTextEvent) e).bulletIndex = lineStyleEvent.bulletIndex;

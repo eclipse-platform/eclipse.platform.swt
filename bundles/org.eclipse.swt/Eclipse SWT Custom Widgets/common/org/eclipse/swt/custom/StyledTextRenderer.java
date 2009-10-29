@@ -68,12 +68,14 @@ class StyledTextRenderer {
 	final static int JUSTIFY = 1 << 3;
 	final static int SEGMENTS = 1 << 5;
 	final static int TABSTOPS = 1 << 6;
+	final static int WRAP_INDENT = 1 << 7;
 	
 	static class LineInfo {
 		int flags;
 		Color background;
 		int alignment;
 		int indent;
+		int wrapIndent;
 		boolean justify;
 		int[] segments;
 		int[] tabStops;
@@ -86,6 +88,7 @@ class StyledTextRenderer {
 				background = info.background;
 				alignment = info.alignment;
 				indent = info.indent;
+				wrapIndent = info.wrapIndent;
 				justify = info.justify;
 				segments = info.segments;
 				tabStops = info.tabStops;
@@ -270,7 +273,7 @@ void clearLineStyle(int startLine, int count) {
 	for (int i = startLine; i < startLine + count; i++) {
 		LineInfo info = lines[i];
 		if (info != null) {
-			info.flags &= ~(ALIGNMENT | INDENT | JUSTIFY | TABSTOPS);
+			info.flags &= ~(ALIGNMENT | INDENT | WRAP_INDENT | JUSTIFY | TABSTOPS);
 			if (info.flags == 0) lines[i] = null;
 		}
 	}
@@ -571,6 +574,14 @@ int getLineIndent(int index, int defaultIndent) {
 	}
 	return defaultIndent;
 }
+int getLineWrapIndent(int index, int defaultWrapIndent) {
+	if (lines == null) return defaultWrapIndent;
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & WRAP_INDENT) != 0) {
+		return info.wrapIndent;
+	}
+	return defaultWrapIndent;
+}
 boolean getLineJustify(int index, boolean defaultJustify) {
 	if (lines == null) return defaultJustify;
 	LineInfo info = lines[index];
@@ -768,6 +779,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	int[] segments = null;
 	int indent = 0;
+	int wrapIndent = 0;
 	int alignment = SWT.LEFT;
 	boolean justify = false;
 	int[] tabs = {tabWidth};
@@ -780,12 +792,14 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		event = styledText.getLineStyleData(lineOffset, line);
 		segments = styledText.getBidiSegments(lineOffset, line);
 		indent = styledText.indent;
+		wrapIndent = styledText.wrapIndent;
 		alignment = styledText.alignment;
 		justify = styledText.justify;
 		if (styledText.tabs != null) tabs = styledText.tabs;
 	}
 	if (event != null) {
 		indent = event.indent;
+		wrapIndent = event.wrapIndent;
 		alignment = event.alignment;
 		justify = event.justify;
 		bullet = event.bullet;
@@ -819,6 +833,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			LineInfo info = lines[lineIndex];
 			if (info != null) {
 				if ((info.flags & INDENT) != 0) indent = info.indent;
+				if ((info.flags & WRAP_INDENT) != 0) wrapIndent = info.wrapIndent;
 				if ((info.flags & ALIGNMENT) != 0) alignment = info.alignment;
 				if ((info.flags & JUSTIFY) != 0) justify = info.justify;
 				if ((info.flags & SEGMENTS) != 0) segments = info.segments;
@@ -861,6 +876,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setSpacing(lineSpacing);
 	layout.setTabs(tabs);
 	layout.setIndent(indent);
+	layout.setWrapIndent(wrapIndent);
 	layout.setAlignment(alignment);
 	layout.setJustify(justify);
 	
@@ -1148,6 +1164,16 @@ void setLineIndent(int startLine, int count, int indent) {
 		}
 		lines[i].flags |= INDENT;
 		lines[i].indent = indent;
+	}
+}
+void setLineWrapIndent(int startLine, int count, int wrapIndent) {
+	if (lines == null) lines = new LineInfo[lineCount];
+	for (int i = startLine; i < startLine + count; i++) {
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= WRAP_INDENT;
+		lines[i].wrapIndent = wrapIndent;
 	}
 }
 void setLineJustify(int startLine, int count, boolean justify) {
