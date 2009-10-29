@@ -44,6 +44,10 @@ public void setFirstLineHeadIndent(float /*double*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setFirstLineHeadIndent_, aFloat);
 }
 
+public void setHeadIndent(float /*double*/ aFloat) {
+	OS.objc_msgSend(this.id, OS.sel_setHeadIndent_, aFloat);
+}
+
 public void setLineBreakMode(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, mode);
 }

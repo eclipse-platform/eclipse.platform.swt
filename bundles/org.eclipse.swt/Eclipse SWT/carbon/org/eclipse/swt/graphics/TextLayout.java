@@ -270,7 +270,7 @@ public final class TextLayout extends Resource {
 	StyleItem[] styles;
 	int stylesCount;
 	int layout;
-	int spacing, ascent, descent, indent;
+	int spacing, ascent, descent, indent, wrapIndent;
 	int indentStyle;
 	int[] tabs;
 	int[] segments;
@@ -1702,6 +1702,11 @@ public int getWidth () {
 	return wrapWidth == 0 ? -1 : wrapWidth;
 }
 
+public int getWrapIndent () {
+	checkLayout();	
+	return wrapIndent;
+}
+
 /*
  * Returns true if the underline style is supported natively by ATSUI
  */
@@ -2172,6 +2177,14 @@ public void setWidth (int width) {
 	if (width == getWidth()) return;
 	freeRuns();
 	setLayoutControl(OS.kATSULineWidthTag, OS.Long2Fix(Math.max(0, width)), 4);
+}
+
+public void setWrapIndent (int wrapIndent) {
+	checkLayout ();
+	if (wrapIndent < 0) return;
+	if (this.wrapIndent == wrapIndent) return;
+	freeRuns();
+	this.wrapIndent = wrapIndent;
 }
 
 /**

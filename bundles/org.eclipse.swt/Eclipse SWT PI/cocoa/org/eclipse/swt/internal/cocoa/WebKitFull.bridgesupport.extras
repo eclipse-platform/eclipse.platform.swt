@@ -413,17 +413,17 @@
 			<arg name="sender" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
+	<informal_protocol name="WebDocumentRepresentation" swt_gen="true">
+		<method selector="documentSource" swt_gen="true"></method>
+	</informal_protocol>
 	<informal_protocol name="WebOpenPanelResultListener" swt_gen="true">
 		<method selector="chooseFilename:" swt_gen="true">
 			<arg name="theRange" swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
-	<informal_protocol name="WebDocumentRepresentation" swt_gen="true">
-		<method selector="documentSource" swt_gen="true"></method>
-	</informal_protocol>
 	<informal_protocol name="WebPolicyDecisionListener" swt_gen="true">
+		<method selector="ignore" swt_gen="true"></method>
 		<method selector="use" swt_gen="true"></method>
 		<method selector="download" swt_gen="true"></method>
-		<method selector="ignore" swt_gen="true"></method>
 	</informal_protocol>
 </signatures>

@@ -1535,6 +1535,7 @@ public static final int /*long*/ sel_setHTTPMethod_ = sel_registerName("setHTTPM
 public static final int /*long*/ sel_setHasHorizontalScroller_ = sel_registerName("setHasHorizontalScroller:");
 public static final int /*long*/ sel_setHasShadow_ = sel_registerName("setHasShadow:");
 public static final int /*long*/ sel_setHasVerticalScroller_ = sel_registerName("setHasVerticalScroller:");
+public static final int /*long*/ sel_setHeadIndent_ = sel_registerName("setHeadIndent:");
 public static final int /*long*/ sel_setHeaderCell_ = sel_registerName("setHeaderCell:");
 public static final int /*long*/ sel_setHeaderView_ = sel_registerName("setHeaderView:");
 public static final int /*long*/ sel_setHidden_ = sel_registerName("setHidden:");

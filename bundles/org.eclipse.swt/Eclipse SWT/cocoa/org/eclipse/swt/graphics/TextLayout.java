@@ -43,7 +43,7 @@ public final class TextLayout extends Resource {
 	String text;
 	StyleItem[] styles;
 	int stylesCount;
-	int spacing, ascent, descent, indent;
+	int spacing, ascent, descent, indent, wrapIndent;
 	boolean justify;
 	int alignment;
 	int[] tabs;
@@ -178,6 +178,7 @@ void computeRuns() {
 	paragraph.setAlignment(align);
 	paragraph.setLineSpacing(spacing);
 	paragraph.setFirstLineHeadIndent(indent);
+	paragraph.setHeadIndent(wrapIndent);
 	paragraph.setLineBreakMode(wrapWidth != -1 ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
 	paragraph.setTabStops(NSArray.array());
 	if (tabs != null && tabs.length > 0) {
@@ -1465,6 +1466,11 @@ public int getWidth () {
 	return wrapWidth;
 }
 
+public int getWrapIndent () {
+	checkLayout();	
+	return wrapIndent;
+}
+
 /**
  * Returns <code>true</code> if the text layout has been disposed,
  * and <code>false</code> otherwise.
@@ -1644,6 +1650,20 @@ public void setIndent (int indent) {
 	try {
 		freeRuns();
 		this.indent = indent;
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
+public void setWrapIndent (int wrapIndent) {
+	checkLayout ();
+	if (wrapIndent < 0) return;
+	if (this.wrapIndent == wrapIndent) return;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		freeRuns();
+		this.wrapIndent = wrapIndent;
 	} finally {
 		if (pool != null) pool.release();
 	}
