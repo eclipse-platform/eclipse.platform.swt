@@ -42,6 +42,7 @@ public final class TextLayout extends Resource {
 	int wrapWidth;
 	int orientation;
 	int indent;
+	int wrapIndent;
 	boolean justify;
 	int[] tabs;
 	int[] segments;
@@ -232,7 +233,7 @@ void computeRuns () {
 			}
 		}
 	}
-	int paragraphProperties = OS.gcnew_SWTTextParagraphProperties(flowDirection, textAlignment, false, defaultTextProperties, textWrapping, 0, 0, tabCollection); 
+	int paragraphProperties = OS.gcnew_SWTTextParagraphProperties(flowDirection, textAlignment, false, defaultTextProperties, textWrapping, 0, wrapIndent, tabCollection); 
 	int firstParagraphProperties = OS.gcnew_SWTTextParagraphProperties(flowDirection, textAlignment, true, defaultTextProperties, textWrapping, 0, indent, tabCollection);  
 	int offset = 0;
 	int index = 0;
@@ -828,6 +829,9 @@ public Rectangle getLineBounds(int lineIndex) {
 	if (firstLine) {
 		x += indent;
 		width -= indent;
+	} else {
+		x += wrapIndent;
+		width -= wrapIndent;
 	}
 	return new Rectangle ((int)x, (int)y, (int)width, (int)height);
 }
@@ -1419,6 +1423,11 @@ public int getWidth () {
 	return wrapWidth;
 }
 
+public int getWrapIndent () {
+	checkLayout();
+	return wrapIndent;
+}
+
 /**
  * Returns <code>true</code> if the text layout has been disposed,
  * and <code>false</code> otherwise.
@@ -1819,6 +1828,14 @@ public void setWidth (int width) {
 	if (this.wrapWidth == width) return;
 	freeRuns();
 	this.wrapWidth = width;
+}
+
+public void setWrapIndent (int wrapIndent) {
+	checkLayout();
+	if (wrapIndent < 0) return;	
+	if (this.wrapIndent == wrapIndent) return;
+	freeRuns();
+	this.wrapIndent = wrapIndent;
 }
 
 int validadeOffset(int offset, int step) {
