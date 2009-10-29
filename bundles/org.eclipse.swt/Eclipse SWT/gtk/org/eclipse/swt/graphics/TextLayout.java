@@ -48,6 +48,7 @@ public final class TextLayout extends Resource {
 	Font font;
 	String text;
 	int ascent, descent;
+	int indent, wrapIndent, wrapWidth;
 	int[] segments;
 	int[] tabs;
 	StyleItem[] styles;
@@ -87,7 +88,7 @@ public TextLayout (Device device) {
 		OS.pango_layout_set_auto_dir(layout, false);
 	}
 	text = "";
-	ascent = descent = -1;
+	wrapWidth = ascent = descent = -1;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
@@ -392,6 +393,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	gc.checkGC(GC.FOREGROUND);
 	int length = text.length();
+	x += Math.min (indent, wrapIndent);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	GCData data = gc.data;
 	int /*long*/ cairo = data.cairo;
@@ -977,6 +979,7 @@ public Rectangle getBounds(int start, int end) {
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
 		rect.x = width() - rect.x - rect.width;
 	}
+	rect.x += Math.min (indent, wrapIndent);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
@@ -1027,7 +1030,7 @@ public Font getFont () {
 */
 public int getIndent () {
 	checkLayout();
-	return OS.PANGO_PIXELS(OS.pango_layout_get_indent(layout));
+	return indent;
 }
 
 /**
@@ -1124,6 +1127,7 @@ public Rectangle getLineBounds(int lineIndex) {
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
 		x = width() - x - width;
 	}
+	x += Math.min (indent, wrapIndent);
 	return new Rectangle(x, y, width, height);
 }
 
@@ -1279,6 +1283,7 @@ public Point getLocation(int offset, boolean trailing) {
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
 		x = width() - x;
 	}
+	x += Math.min (indent, wrapIndent);
 	return new Point(x, OS.PANGO_PIXELS(y));
 }
 
@@ -1403,6 +1408,7 @@ public int getOffset(int x, int y, int[] trailing) {
 	checkLayout();
 	computeRuns();
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	x -= Math.min (indent, wrapIndent);
 	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
 		x = width() - x;
 	}
@@ -1662,8 +1668,12 @@ public String getText () {
  */
 public int getWidth () {
 	checkLayout ();
-	int width = OS.pango_layout_get_width(layout);
-	return width != -1 ? OS.PANGO_PIXELS(width) : -1;
+	return wrapWidth;
+}
+
+public int getWrapIndent () {
+	checkLayout ();
+	return wrapIndent;
 }
 
 /**
@@ -1813,7 +1823,10 @@ public void setFont (Font font) {
 public void setIndent (int indent) {
 	checkLayout();
 	if (indent < 0) return;
-	OS.pango_layout_set_indent(layout, indent * OS.PANGO_SCALE);
+	if (this.indent == indent) return;
+	this.indent = indent;
+	OS.pango_layout_set_indent(layout, (indent - wrapIndent) * OS.PANGO_SCALE);
+	if (wrapWidth != -1) setWidth();
 }
 
 /**
@@ -2114,14 +2127,30 @@ public void setText (String text) {
 public void setWidth (int width) {
 	checkLayout ();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (wrapWidth == width) return;
 	freeRuns();
-	if (width == -1) {
+	wrapWidth = width;
+	setWidth();
+}
+
+void setWidth () {
+	if (wrapWidth == -1) {
 		OS.pango_layout_set_width(layout, -1);
 		boolean rtl = OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL;
 		OS.pango_layout_set_alignment(layout, rtl ? OS.PANGO_ALIGN_RIGHT : OS.PANGO_ALIGN_LEFT);
 	} else {
-		OS.pango_layout_set_width(layout, width * OS.PANGO_SCALE);
+		int margin = Math.min (indent, wrapIndent);
+		OS.pango_layout_set_width(layout, (wrapWidth - margin) * OS.PANGO_SCALE);
 	}
+}
+
+public void setWrapIndent (int wrapIndent) {
+	checkLayout();
+	if (wrapIndent < 0) return;
+	if (this.wrapIndent == wrapIndent) return;
+	this.wrapIndent = wrapIndent;
+	OS.pango_layout_set_indent(layout, (indent - wrapIndent) * OS.PANGO_SCALE);
+	if (wrapWidth != -1) setWidth();
 }
 
 static final boolean isLam(int ch) {
@@ -2207,7 +2236,7 @@ int width () {
 	if (wrapWidth != -1) return OS.PANGO_PIXELS(wrapWidth); 
 	int[] w = new int[1], h = new int[1];
 	OS.pango_layout_get_size(layout, w, h);
-	return OS.PANGO_PIXELS(w[0] + OS.pango_layout_get_indent(layout));
+	return OS.PANGO_PIXELS(w[0]);
 }
 
 } 
