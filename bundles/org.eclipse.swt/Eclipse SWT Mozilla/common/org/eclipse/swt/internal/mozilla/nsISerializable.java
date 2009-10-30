@@ -22,18 +22,30 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2006 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2009 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-import org.eclipse.swt.internal.Platform;
+public class  nsISerializable extends nsISupports {
 
-public class XPCOMInit extends Platform {
-	public static final int PATH_MAX = 4096;
-	
-public static final native int GREVersionRange_sizeof ();
-public static final native int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen);
-public static final native int XPCOMGlueStartup (byte[] place);
-public static final native int XPCOMGlueShutdown ();
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
+
+	public static final String NS_ISERIALIZABLE_IID_STR =
+		"91cca981-c26d-44a8-bebe-d9ed4891503a";
+
+	public static final nsID NS_ISERIALIZABLE_IID =
+		new nsID(NS_ISERIALIZABLE_IID_STR);
+
+	public  nsISerializable(int /*long*/ address) {
+		super(address);
+	}
+
+	public int Read(int /*long*/ aInputStream) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aInputStream);
+	}
+
+	public int Write(int /*long*/ aOutputStream) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aOutputStream);
+	}
 }

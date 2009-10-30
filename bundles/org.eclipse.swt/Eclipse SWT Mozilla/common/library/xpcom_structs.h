@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,18 @@
  *******************************************************************************/
 
 #include "xpcom.h"
+
+#ifndef NO_nsDynamicFunctionLoad
+void cachensDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject);
+nsDynamicFunctionLoad *getnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct);
+void setnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct);
+#define nsDynamicFunctionLoad_sizeof() sizeof(nsDynamicFunctionLoad)
+#else
+#define cachensDynamicFunctionLoadFields(a,b)
+#define getnsDynamicFunctionLoadFields(a,b,c) NULL
+#define setnsDynamicFunctionLoadFields(a,b,c)
+#define nsDynamicFunctionLoad_sizeof() 0
+#endif
 
 #ifndef NO_nsID
 void cachensIDFields(JNIEnv *env, jobject lpObject);

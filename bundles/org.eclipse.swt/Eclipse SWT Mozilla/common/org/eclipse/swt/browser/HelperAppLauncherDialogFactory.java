@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,6 @@ class HelperAppLauncherDialogFactory {
 	XPCOMObject supports;
 	XPCOMObject factory;
 	int refCount = 0;
-	boolean isPre_1_9 = true;
 
 HelperAppLauncherDialogFactory () {
 	createCOMInterfaces ();
@@ -89,7 +88,7 @@ int Release () {
 /* nsIFactory */
 
 int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
-	if (isPre_1_9) {
+	if (Mozilla.IsPre_1_9) {
 		HelperAppLauncherDialog helperAppLauncherDialog = new HelperAppLauncherDialog ();
 		helperAppLauncherDialog.AddRef ();
 		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,40 @@
 
 #include "swt.h"
 #include "xpcom_structs.h"
+
+#ifndef NO_nsDynamicFunctionLoad
+typedef struct nsDynamicFunctionLoad_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID functionName, function;
+} nsDynamicFunctionLoad_FID_CACHE;
+
+nsDynamicFunctionLoad_FID_CACHE nsDynamicFunctionLoadFc;
+
+void cachensDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject)
+{
+	if (nsDynamicFunctionLoadFc.cached) return;
+	nsDynamicFunctionLoadFc.clazz = env->GetObjectClass(lpObject);
+	nsDynamicFunctionLoadFc.functionName = env->GetFieldID(nsDynamicFunctionLoadFc.clazz, "functionName", "I");
+	nsDynamicFunctionLoadFc.function = env->GetFieldID(nsDynamicFunctionLoadFc.clazz, "function", "I");
+	nsDynamicFunctionLoadFc.cached = 1;
+}
+
+nsDynamicFunctionLoad *getnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct)
+{
+	if (!nsDynamicFunctionLoadFc.cached) cachensDynamicFunctionLoadFields(env, lpObject);
+	lpStruct->functionName = (const char *)env->GetIntField(lpObject, nsDynamicFunctionLoadFc.functionName);
+	lpStruct->function = (NSFuncPtr  *)env->GetIntField(lpObject, nsDynamicFunctionLoadFc.function);
+	return lpStruct;
+}
+
+void setnsDynamicFunctionLoadFields(JNIEnv *env, jobject lpObject, nsDynamicFunctionLoad *lpStruct)
+{
+	if (!nsDynamicFunctionLoadFc.cached) cachensDynamicFunctionLoadFields(env, lpObject);
+	env->SetIntField(lpObject, nsDynamicFunctionLoadFc.functionName, (jint)lpStruct->functionName);
+	env->SetIntField(lpObject, nsDynamicFunctionLoadFc.function, (jint)lpStruct->function);
+}
+#endif
 
 #ifndef NO_nsID
 typedef struct nsID_FID_CACHE {

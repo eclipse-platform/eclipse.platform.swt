@@ -27,6 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+/** @jniclass flags=cpp */
 public class nsID {
 	
 	public int m0;
@@ -43,18 +44,18 @@ public nsID(String id) {
 }
 
 public boolean Equals(nsID other) {
-	int /*long*/ ptr = XPCOM.nsID_new();
-	XPCOM.memmove(ptr, this, nsID.sizeof);
-	int /*long*/ otherPtr = XPCOM.nsID_new();
-	XPCOM.memmove(otherPtr, other, nsID.sizeof);
-	boolean result = XPCOM.nsID_Equals(ptr, otherPtr) != 0;
-	XPCOM.nsID_delete(ptr);
-	XPCOM.nsID_delete(otherPtr);
+	int /*long*/ ptr = XPCOM.nsID_new ();
+	XPCOM.memmove (ptr, this, nsID.sizeof);
+	int /*long*/ otherPtr = XPCOM.nsID_new ();
+	XPCOM.memmove (otherPtr, other, nsID.sizeof);
+	boolean result = XPCOM.nsID_Equals (ptr, otherPtr) != 0;
+	XPCOM.nsID_delete (ptr);
+	XPCOM.nsID_delete (otherPtr);
 	return result;
 }
 
 public void Parse (String aIDStr) {
-	if(aIDStr == null) throw new Error ();
+	if (aIDStr == null) throw new Error ();
 	int i = 0;
 	for (; i < 8; i++) m0 = (m0 << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16);
 	if (aIDStr.charAt (i++) != '-') throw new Error ();

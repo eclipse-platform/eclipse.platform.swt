@@ -16,6 +16,12 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * This class implements the nsIDownload interface for mozilla
+ * versions 1.4 - 1.7.x.  For mozilla version 1.8.x this interface
+ * is implemented by class nsIDownload_1_8.  Later versions of
+ * mozilla do not need to call this interface. 
+ */
 class Download {
 	XPCOMObject supports;
 	XPCOMObject download;
@@ -182,7 +188,7 @@ int Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName,
 	nsISupports supports = new nsISupports (aTarget);
 	int /*long*/[] result = new int /*long*/[1];
 	rc = supports.QueryInterface (nsIURI.NS_IURI_IID, result);
-	if (rc == 0) {	/* >= 1.7 */
+	if (rc == XPCOM.NS_OK) {	/* >= 1.7 */
 		nsIURI target = new nsIURI (result[0]);
 		result[0] = 0;
 		int /*long*/ aPath = XPCOM.nsEmbedCString_new ();

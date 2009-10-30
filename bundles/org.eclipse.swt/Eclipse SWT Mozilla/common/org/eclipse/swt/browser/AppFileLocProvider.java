@@ -20,7 +20,7 @@ class AppFileLocProvider {
 	XPCOMObject directoryServiceProvider;
 	XPCOMObject directoryServiceProvider2;	
 	int refCount = 0;
-	String mozillaPath, profilePath;
+	String mozillaPath, profilePath, componentsPath;
 	String[] pluginDirs;
 	boolean isXULRunner;
 	
@@ -33,6 +33,13 @@ class AppFileLocProvider {
 	static final String PLUGINS_DIR = "plugins"; //$NON-NLS-1$
 	static final String USER_PLUGINS_DIR = ".mozilla" + SEPARATOR_OS + "plugins"; //$NON-NLS-1$ //$NON-NLS-2$
 	static final String PREFERENCES_FILE = "prefs.js"; //$NON-NLS-1$
+
+	static boolean IsSparc;
+	static {
+		String osName = System.getProperty ("os.name").toLowerCase (); //$NON-NLS-1$
+		String osArch = System.getProperty ("os.arch").toLowerCase (); //$NON-NLS-1$
+		IsSparc = (osName.startsWith ("sunos") || osName.startsWith ("solaris")) && osArch.startsWith("sparc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
 	
 AppFileLocProvider (String path) {
 	mozillaPath = path + SEPARATOR_OS;
@@ -118,6 +125,10 @@ int Release () {
 	return refCount;
 }
 
+void setComponentsPath (String path) {
+	componentsPath = path;
+}
+
 void setProfilePath (String path) {
 	profilePath = path;
 	if (!Compatibility.fileExists (path, "")) { //$NON-NLS-1$
@@ -170,18 +181,28 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 						if (segment.length () > 0) segments.addElement (segment);
 					} while (end != -1);
 					int segmentsSize = segments.size ();
-					pluginDirs = new String [segmentsSize + 2];
+					pluginDirs = new String [segmentsSize + (IsSparc ? 1 : 2)];
 					for (index = 0; index < segmentsSize; index++) {
 						pluginDirs[index] = (String)segments.elementAt (index);
 					}
 				}
 			}
 			if (pluginDirs == null) {
-				pluginDirs = new String[2];
+				pluginDirs = new String[IsSparc ? 1 : 2];
 			}
 
 			/* set the next value to the GRE path + "plugins" */
-			pluginDirs[index++] = mozillaPath + PLUGINS_DIR;
+
+			/*
+			* Bug on Solaris SPARC.  Attempting to start the java plug-in fails with an
+			* error indicating that PR_NewMonitor could not be found.  This is a well-
+			* known problem that many other apps have also encountered, with no
+			* resolution other than to remove this plug-in.  The Browser workaround is
+			* to not add the directory containing this plug-in to the plug-in search path. 
+			*/
+			if (!IsSparc) {
+				pluginDirs[index++] = mozillaPath + PLUGINS_DIR;
+			}
 
 			/* set the next value to the home directory + "/.mozilla/plugins" */
 			pluginDirs[index++] = System.getProperty("user.home") + SEPARATOR_OS + USER_PLUGINS_DIR;
@@ -264,7 +285,7 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 	} else if (propertyName.equals (XPCOM.NS_GRE_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_GRE_COMPONENT_DIR)) {
-		propertyValue = mozillaPath + COMPONENTS_DIR;
+		propertyValue = componentsPath != null ? componentsPath : mozillaPath + COMPONENTS_DIR;
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_INIT_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_OS_CURRENT_PROCESS_DIR)) {

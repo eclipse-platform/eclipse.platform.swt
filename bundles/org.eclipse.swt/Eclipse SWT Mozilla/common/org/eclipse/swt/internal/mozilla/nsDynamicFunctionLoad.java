@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.mozilla;
 
-public class GREVersionRange {
-    public int /*long*/ lower;
-    public boolean lowerInclusive;
-    public int /*long*/ upper;
-    public boolean upperInclusive;
-    public static final int sizeof = XPCOMInit.GREVersionRange_sizeof();
+public class nsDynamicFunctionLoad {
+    /** @field cast=(const char *) */
+	public int /*long*/ functionName;
+	/** @field cast=(NSFuncPtr  *) */
+	public int /*long*/ function;
 }

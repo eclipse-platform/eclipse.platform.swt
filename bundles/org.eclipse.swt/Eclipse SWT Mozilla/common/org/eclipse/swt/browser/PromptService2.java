@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -123,49 +123,8 @@ int Release () {
 
 Browser getBrowser (int /*long*/ aDOMWindow) {
 	if (aDOMWindow == 0) return null;
-
-	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-	
-	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-	result[0] = 0;
-	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
-	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	serviceManager.Release ();
-	
-	nsIWindowWatcher windowWatcher = new nsIWindowWatcher (result[0]);
-	result[0] = 0;
-	/* the chrome will only be answered for the top-level nsIDOMWindow */
 	nsIDOMWindow window = new nsIDOMWindow (aDOMWindow);
-	rc = window.GetTop (result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-	aDOMWindow = result[0];
-	result[0] = 0;
-	rc = windowWatcher.GetChromeForWindow (aDOMWindow, result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	windowWatcher.Release ();	
-	
-	nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (result[0]);
-	result[0] = 0;
-	rc = webBrowserChrome.QueryInterface (nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	webBrowserChrome.Release ();
-	
-	nsIEmbeddingSiteWindow embeddingSiteWindow = new nsIEmbeddingSiteWindow (result[0]);
-	result[0] = 0;
-	rc = embeddingSiteWindow.GetSiteWindow (result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	embeddingSiteWindow.Release ();
-	
-	return Mozilla.findBrowser (result[0]); 
+	return Mozilla.findBrowser (window);
 }
 
 String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
@@ -190,7 +149,7 @@ String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 /* nsIPromptService */
 
 int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) {
-	Browser browser = getBrowser (aParent);
+	final Browser browser = getBrowser (aParent);
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
@@ -201,6 +160,26 @@ int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) 
 	dest = new char[length];
 	XPCOM.memmove (dest, aText, length * 2);
 	String textLabel = new String (dest);
+
+	/*
+	* If mozilla is showing its errors with dialogs (as opposed to pages) then the only
+	* opportunity to detect that a page has an invalid certificate, without receiving
+	* all notification callbacks on the channel, is to detect the displaying of an alert
+	* whose message contains an internal cert error code.  If a such a message is
+	* detected then instead of showing it, re-navigate to the page with the invalid
+	* certificate so that the browser's nsIBadCertListener2 will be invoked.
+	*/
+	if (textLabel.indexOf ("ssl_error_bad_cert_domain") != -1 ||
+		textLabel.indexOf ("sec_error_unknown_issuer") != -1 ||
+		textLabel.indexOf ("sec_error_untrusted_issuer") != -1 ||
+		textLabel.indexOf ("sec_error_expired_certificate") != -1) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			if (browser != null) {
+				Mozilla mozilla = (Mozilla)browser.webBrowser;
+				mozilla.isRetrievingBadCert = true;
+				browser.setUrl (mozilla.lastNavigateURL);
+				return XPCOM.NS_OK;
+			}
+	}
 
 	Shell shell = browser == null ? new Shell () : browser.getShell (); 
 	MessageBox messageBox = new MessageBox (shell, SWT.OK | SWT.ICON_WARNING);
@@ -358,37 +337,35 @@ int Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText,
 		* User selected OK. User name and password are returned as PRUnichar values. Any default
 		* value that we override must be freed using the nsIMemory service.
 		*/
-		int cnt, size;
-		int /*long*/ ptr;
-		char[] buffer;
-		int /*long*/[] result2 = new int /*long*/[1];
 		if (valueLabel[0] != null) {
-			cnt = valueLabel[0].length ();
-			buffer = new char[cnt + 1];
+			int /*long*/[] result2 = new int /*long*/[1];
+			int rc = XPCOM.NS_GetServiceManager (result2);
+			if (rc != XPCOM.NS_OK) SWT.error (rc);
+			if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);
+
+			nsIServiceManager serviceManager = new nsIServiceManager (result2[0]);
+			result2[0] = 0;
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result2);
+			if (rc != XPCOM.NS_OK) SWT.error (rc);
+			if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);		
+			serviceManager.Release ();
+
+			nsIMemory memory = new nsIMemory (result2[0]);
+			result2[0] = 0;
+
+			int cnt = valueLabel[0].length ();
+			char[] buffer = new char[cnt + 1];
 			valueLabel[0].getChars (0, cnt, buffer, 0);
-			size = buffer.length * 2;
-			ptr = C.malloc (size);
+			int size = buffer.length * 2;
+			int /*long*/ ptr = memory.Alloc (size);
 			XPCOM.memmove (ptr, buffer, size);
 			XPCOM.memmove (aValue, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
 
 			if (valueAddr[0] != 0) {
-				int rc = XPCOM.NS_GetServiceManager (result2);
-				if (rc != XPCOM.NS_OK) SWT.error (rc);
-				if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);
-			
-				nsIServiceManager serviceManager = new nsIServiceManager (result2[0]);
-				result2[0] = 0;
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MEMORY_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, nsIMemory.NS_IMEMORY_IID, result2);
-				if (rc != XPCOM.NS_OK) SWT.error (rc);
-				if (result2[0] == 0) SWT.error (XPCOM.NS_NOINTERFACE);		
-				serviceManager.Release ();
-				
-				nsIMemory memory = new nsIMemory (result2[0]);
-				result2[0] = 0;
 				memory.Free (valueAddr[0]);
-				memory.Release ();
 			}
+			memory.Release ();
 		}
 	}
 	if (aCheckState != 0) XPCOM.memmove (aCheckState, check, 4);
