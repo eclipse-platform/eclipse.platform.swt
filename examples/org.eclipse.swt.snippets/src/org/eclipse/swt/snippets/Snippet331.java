@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * SWT StyledText snippet: different types of indent and combining wrap indent and bulleted lists .
+ * SWT StyledText snippet: different types of indent and combining wrap indent and bulleted lists.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
