@@ -1875,6 +1875,12 @@ public void setText (String string) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		setEditText (string);
+		NSText fieldEditor = ((NSControl)view).currentEditor();
+		if (fieldEditor != null) {
+			NSRange range = new NSRange();
+			fieldEditor.setSelectedRange (range);
+			fieldEditor.scrollRangeToVisible (range);
+		}
 	} else {
 		NSTextView widget = (NSTextView)view;
 		char[] buffer = new char [Math.min(string.length (), textLimit)];
