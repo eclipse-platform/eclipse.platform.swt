@@ -2260,9 +2260,4 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1
 	}
 }
 
-/**
- * @method flags=no_gen
- */
-public static final native int GetAddress(int ptr, int index);
-
 }
