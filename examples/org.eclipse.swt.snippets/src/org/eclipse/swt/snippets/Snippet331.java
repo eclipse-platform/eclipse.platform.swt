@@ -51,7 +51,7 @@ public class Snippet331 {
 		styledText.setLineBullet(8, 1, bullet);
 		styledText.setLineWrapIndent(8, 1, 50);
 
-		shell.setSize(300, 500);
+		shell.setSize(350, 550);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
