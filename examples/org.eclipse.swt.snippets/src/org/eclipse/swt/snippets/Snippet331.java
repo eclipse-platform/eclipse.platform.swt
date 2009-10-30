@@ -28,10 +28,10 @@ public class Snippet331 {
 
 	static String text = 
 		"The first paragraph has an indentation of fifty pixels and zero indentation for wrapped lines. If this paragraph wraps to several lines you will see the indentation only on the first line.\n\n" +
-		"The second paragraph has an indentation of fifty pixels for all lines in the paragraph. Visually this paragraph has a fifty pixels left margin.\n\n" +
+		"The second paragraph has an indentation of fifty pixels for all lines in the paragraph. Visually this paragraph has a fifty pixel left margin.\n\n" +
 		"The third paragraph has wrap indentation of fifty pixels and zero indentation for the first line. If this paragraph wraps to several lines you should see the indentation for all the lines but the first.\n\n" +
-		"This paragraph start with a bullet and does not have any kind of indentation. If this paragraph wraps to several lines, the wrapped lines will start a lead edge of the editor.\n\n" +
-		"This paragraph start with a bullet and has wrap indentation with the same width of the bullet. If this paragraph wraps to several lines, all the wrapped lines will line up with the first one.";
+		"This paragraph starts with a bullet and does not have any kind of indentation. If this paragraph wraps to several lines, the wrapped lines will start on the lead edge of the editor.\n\n" +
+		"This paragraph starts with a bullet and has wrap indentation with the same width as the bullet. If this paragraph wraps to several lines, all the wrapped lines will line up with the first one.";
 	
 	public static void main(String [] args) {
 		Display display = new Display();
