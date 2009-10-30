@@ -494,9 +494,7 @@ public boolean isLayoutDeferred () {
 boolean isOpaque (int /*long*/ id, int /*long*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if (id == view.id) {
-			if (region == null && background != null && background[3] == 1) {
-				return true;
-			}
+			return region == null && background != null && background[3] == 1 && !isObscured ();
 		}
 	}
 	return super.isOpaque (id, sel);
