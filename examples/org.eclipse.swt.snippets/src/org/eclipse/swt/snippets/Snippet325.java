@@ -39,7 +39,7 @@ public class Snippet325 {
 		ruler.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 		
 		StyledText styledText = new StyledText (shell, SWT.FULL_SELECTION | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		styledText.setText("0\t1\t2\t3\t4\nDrag\tthe\ttab\tmarks\ton\ttop\tto\tchange\tthe\tpositoin\tof\tthe\ttab\tstops");
+		styledText.setText("0\t1\t2\t3\t4\nDrag\tthe\ttab\tmarks\ton\ttop\tto\tchange\tthe\tposition\tof\tthe\ttab\tstops");
 		styledText.setTabStops(new int[] {30, 70, 90, 140});
 		styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
 		ruler.setEditor(styledText);
