@@ -237,7 +237,6 @@ int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
 						}
 					}
 				}
-				return 0;
 			}
 		}
 	}
@@ -295,31 +294,33 @@ public String open () {
 	int extensions = 0;
 	Callback filterCallback = null, eventCallback = null;
 	int [] outDialog = new int [1];
-	if ((style & SWT.SAVE) != 0) {
-		if (!overwrite) options.optionFlags |= OS.kNavDontConfirmReplacement;
-		OS.NavCreatePutFileDialog (options, 0, 0, 0, 0, outDialog);		
-	} else {
-		if ((style & SWT.MULTI) != 0) options.optionFlags |= OS.kNavAllowMultipleFiles;
-		int filterProc = 0, eventProc = 0;
-		if (filterExtensions != null && filterExtensions.length != 0) {
-			extensions = options.popupExtension = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, filterExtensions.length, 0);
-			for (int i = 0; i < filterExtensions.length; i++) {
-				String str = filterExtensions [i];
-				if (filterNames != null && filterNames.length > i) {
-					str = filterNames [i];
-				}
-				char [] chars = new char [str.length ()];
-				str.getChars (0, chars.length, chars, 0);
-				int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-				if (ptr != 0) OS.CFArrayAppendValue (extensions, ptr);
-			}			
+	int filterProc = 0, eventProc = 0;
+	if (filterExtensions != null && filterExtensions.length != 0) {
+		extensions = options.popupExtension = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, filterExtensions.length, 0);
+		for (int i = 0; i < filterExtensions.length; i++) {
+			String str = filterExtensions [i];
+			if (filterNames != null && filterNames.length > i) {
+				str = filterNames [i];
+			}
+			char [] chars = new char [str.length ()];
+			str.getChars (0, chars.length, chars, 0);
+			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+			if (ptr != 0) OS.CFArrayAppendValue (extensions, ptr);
+		}
+		if ((style & SWT.SAVE) == 0) {
 			filterCallback = new Callback (this, "filterProc", 4);
 			filterProc = filterCallback.getAddress();
 			if (filterProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			eventCallback = new Callback (this, "eventProc", 3);
-			eventProc = eventCallback.getAddress();
-			if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		}
+		eventCallback = new Callback (this, "eventProc", 3);
+		eventProc = eventCallback.getAddress();
+		if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+	if ((style & SWT.SAVE) != 0) {
+		if (!overwrite) options.optionFlags |= OS.kNavDontConfirmReplacement;
+		OS.NavCreatePutFileDialog (options, 0, 0, eventProc, 0, outDialog);	
+	} else {
+		if ((style & SWT.MULTI) != 0) options.optionFlags |= OS.kNavAllowMultipleFiles;
 		OS.NavCreateGetFileDialog(options, 0, eventProc, 0, filterProc, 0, outDialog);
 	}
 	if (outDialog [0] != 0) {
