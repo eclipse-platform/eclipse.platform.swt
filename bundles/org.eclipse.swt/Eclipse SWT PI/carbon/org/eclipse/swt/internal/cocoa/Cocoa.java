@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,7 @@ public static final int C_NSStatusBar = Cocoa.objc_getClass("NSStatusBar"); //$N
 public static final int C_NSImage = Cocoa.objc_getClass("NSImage"); //$NON-NLS-1$
 public static final int C_NSGraphicsContext = Cocoa.objc_getClass("NSGraphicsContext"); //$NON-NLS-1$
 public static final int C_NSStatusItemImageView = Cocoa.objc_getClass("NSStatusItemImageView"); //$NON-NLS-1$
+public static final int C_NSApplication = Cocoa.objc_getClass("NSApplication"); //$NON-NLS-1$
 public static final int C_NSCursor = Cocoa.objc_getClass("NSCursor"); //$NON-NLS-1$
 public static final int C_NSWindow = Cocoa.objc_getClass("NSWindow"); //$NON-NLS-1$
 public static final int C_NSBitmapImageRep = Cocoa.objc_getClass("NSBitmapImageRep"); //$NON-NLS-1$
@@ -70,6 +71,7 @@ public static final int S_isSessionOnly = Cocoa.sel_registerName("isSessionOnly"
 public static final int S_loadHTMLStringbaseURL = Cocoa.sel_registerName("loadHTMLString:baseURL:"); //$NON-NLS-1$
 public static final int S_loadRequest = Cocoa.sel_registerName("loadRequest:"); //$NON-NLS-1$
 public static final int S_mainFrame = Cocoa.sel_registerName("mainFrame"); //$NON-NLS-1$
+public static final int S_mainMenu = Cocoa.sel_registerName("mainMenu"); //$NON-NLS-1$
 public static final int S_name = Cocoa.sel_registerName("name"); //$NON-NLS-1$
 public static final int S_numberWithInt = Cocoa.sel_registerName("numberWithInt:"); //$NON-NLS-1$
 public static final int S_objectAtIndex = Cocoa.sel_registerName("objectAtIndex:"); //$NON-NLS-1$
@@ -91,10 +93,12 @@ public static final int S_setDownloadDelegate = Cocoa.sel_registerName("setDownl
 public static final int S_setFrameLoadDelegate = Cocoa.sel_registerName("setFrameLoadDelegate:"); //$NON-NLS-1$
 public static final int S_setGroupName = Cocoa.sel_registerName("setGroupName:"); //$NON-NLS-1$
 public static final int S_setJavaEnabled = Cocoa.sel_registerName("setJavaEnabled:"); //$NON-NLS-1$
+public static final int S_setMainMenu = Cocoa.sel_registerName("setMainMenu:"); //$NON-NLS-1$
 public static final int S_setPolicyDelegate = Cocoa.sel_registerName("setPolicyDelegate:"); //$NON-NLS-1$
 public static final int S_setResourceLoadDelegate = Cocoa.sel_registerName("setResourceLoadDelegate:"); //$NON-NLS-1$
 public static final int S_setStatusText = Cocoa.sel_registerName("setStatusText:"); //$NON-NLS-1$
 public static final int S_setUIDelegate = Cocoa.sel_registerName("setUIDelegate:"); //$NON-NLS-1$
+public static final int S_sharedApplication = Cocoa.sel_registerName("sharedApplication"); //$NON-NLS-1$
 public static final int S_sharedHTTPCookieStorage = Cocoa.sel_registerName("sharedHTTPCookieStorage"); //$NON-NLS-1$
 public static final int S_standardPreferences = Cocoa.sel_registerName("standardPreferences"); //$NON-NLS-1$
 public static final int S_stopLoading = Cocoa.sel_registerName("stopLoading:"); //$NON-NLS-1$

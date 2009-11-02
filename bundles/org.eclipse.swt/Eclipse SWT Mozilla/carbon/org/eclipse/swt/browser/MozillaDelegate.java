@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
@@ -104,6 +105,24 @@ static int eventProc3 (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+void addWindowSubclass () {
+}
+
+int createBaseWindow (nsIBaseWindow baseWindow) {
+	/*
+	* Feature of Mozilla on OSX.  Mozilla replaces the OSX application menu whenever
+	* a browser's base window is created.  The workaround is to restore the previous
+	* menu after creating the base window. 
+	*/
+	int application = Cocoa.objc_msgSend (Cocoa.C_NSApplication, Cocoa.S_sharedApplication);
+	int mainMenu = Cocoa.objc_msgSend (application, Cocoa.S_mainMenu);
+	Cocoa.objc_msgSend (mainMenu, Cocoa.S_retain);
+	int rc = baseWindow.Create ();
+	Cocoa.objc_msgSend (application, Cocoa.S_setMainMenu, mainMenu);
+	Cocoa.objc_msgSend (mainMenu, Cocoa.S_release);
+	return rc;
+}
+
 int getHandle () {
     int embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
 	if (embedHandle == 0) {
@@ -175,6 +194,10 @@ int getHandle () {
 	return embedHandle;
 }
 
+String getJSLibraryName () {
+	return "libmozjs.dylib"; //$NON-NLS-1$
+}
+
 String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
@@ -225,6 +248,9 @@ void onDispose (int embedHandle) {
 		listener = null;
 	}
 	browser = null;
+}
+
+void removeWindowSubclass () {
 }
 
 void setSize (int embedHandle, int width, int height) {
