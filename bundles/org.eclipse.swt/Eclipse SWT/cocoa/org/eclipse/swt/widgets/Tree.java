@@ -1176,7 +1176,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 		event.index = columnIndex;
 		if (drawForeground) event.detail |= SWT.FOREGROUND;
 		if (drawBackground) event.detail |= SWT.BACKGROUND;
-		if (drawSelection) event.detail |= SWT.SELECTED;
+		if (isSelected) event.detail |= SWT.SELECTED;
 		event.x = itemX;
 		event.y = itemY;
 		event.width = contentWidth;
