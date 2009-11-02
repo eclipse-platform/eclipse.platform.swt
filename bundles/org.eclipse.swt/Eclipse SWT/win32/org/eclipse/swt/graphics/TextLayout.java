@@ -2441,7 +2441,7 @@ public int getWidth () {
 *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
 * </ul>
 * 
-* @since 3.2
+* @since 3.6
 */
 public int getWrapIndent () {
 	checkLayout();
