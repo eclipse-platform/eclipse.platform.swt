@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2003, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.GTK;
+import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
@@ -84,6 +85,13 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return Converter.wcsToMbcs (codePage, string, terminate);
 }
 
+void addWindowSubclass () {
+}
+
+int createBaseWindow (nsIBaseWindow baseWindow) {
+	return baseWindow.Create ();
+}
+
 int getHandle() {
 	if (Mozilla.BrowserCount == 1) {
 		GTK.gtk_init_check (new int[1], null);
@@ -102,6 +110,10 @@ int getHandle() {
 	int result = GTK.gtk_plug_new (browser.embeddedHandle);
 	GTK.gtk_widget_show (result);
 	return result;
+}
+
+String getJSLibraryName () {
+	return "libmozjs.so"; //$NON-NLS-1$
 }
 
 String getLibraryName () {
@@ -166,6 +178,9 @@ void onDispose (int embedHandle) {
 	}
 
 	browser = null;
+}
+
+void removeWindowSubclass () {
 }
 
 void setSize(int embedHandle, int width, int height) {
