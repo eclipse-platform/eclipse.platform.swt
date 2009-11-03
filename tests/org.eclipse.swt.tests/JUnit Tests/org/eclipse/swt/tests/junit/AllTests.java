@@ -76,6 +76,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_graphics_Point.suite());
 	addTest(Test_org_eclipse_swt_graphics_PaletteData.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
+	addTest(Test_org_eclipse_swt_graphics_TextLayout.suite());
 
 	addTest(Test_org_eclipse_swt_widgets_ExpandItem.suite());
 	addTest(Test_org_eclipse_swt_widgets_MenuItem.suite());

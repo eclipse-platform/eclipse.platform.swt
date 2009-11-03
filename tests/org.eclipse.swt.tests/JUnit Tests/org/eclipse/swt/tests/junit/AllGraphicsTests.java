@@ -39,7 +39,7 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_graphics_Rectangle.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_Region.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_RGB.suite());
-	
+	suite.addTest(Test_org_eclipse_swt_graphics_TextLayout.suite());
 	
 	suite.addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
 	suite.addTest(Test_org_eclipse_swt_graphics_ImageLoaderEvent.suite());
