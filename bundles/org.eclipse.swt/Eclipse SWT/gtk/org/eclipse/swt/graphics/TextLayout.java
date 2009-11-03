@@ -1342,6 +1342,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 		}
 		if ((movement & SWT.MOVEMENT_WORD_START) != 0) {
 			if (logAttr.is_word_start) break;
+			if (logAttr.is_sentence_end) break;
 		}
 		if ((movement & SWT.MOVEMENT_WORD_END) != 0) {
 			if (logAttr.is_word_end) break;
