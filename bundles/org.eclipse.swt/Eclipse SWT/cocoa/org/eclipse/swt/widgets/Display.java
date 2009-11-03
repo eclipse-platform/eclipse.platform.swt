@@ -2084,6 +2084,7 @@ void initClasses () {
 	int /*long*/ drawLabelInRectProc = OS.CALLBACK_drawLabel_inRect_ (proc4);
 	int /*long*/ drawViewBackgroundInRectProc = OS.CALLBACK_drawViewBackgroundInRect_(proc3);
 	int /*long*/ drawBackgroundInClipRectProc = OS.CALLBACK_drawBackgroundInClipRect_(proc3);
+	int /*long*/ scrollClipView_ToPointProc = OS.CALLBACK_scrollClipView_toPoint_(proc4);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -2307,6 +2308,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_pageDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_pageUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_reflectScrolledClipView_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_scrollClipView_toPoint_, scrollClipView_ToPointProc, "@:@{NSPoint}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -4965,6 +4967,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg1, NSRect.sizeof);
 		widget.drawLabelInRect(id, sel, arg0==1, rect);
+	} else if (sel == OS.sel_scrollClipView_toPoint_) {
+		NSPoint point = new NSPoint();
+		OS.memmove(point, arg1, NSPoint.sizeof);
+		widget.scrollClipViewToPoint (id, sel, arg0, point);
 	}
 	return 0;
 }

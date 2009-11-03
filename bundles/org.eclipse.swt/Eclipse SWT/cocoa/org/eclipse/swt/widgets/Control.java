@@ -1720,18 +1720,18 @@ boolean hasFocus () {
 	return display.getFocusControl() == this;
 }
 
+boolean hasRegion () {
+	return region != null || parent.hasRegion ();
+}
+
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	if ((state & DISABLED) != 0) return 0;
 	if (!isActive ()) return 0;
 	if (regionPath != null) {
-		NSView superview = new NSView(id).superview();
-		if (superview != null) {
-			NSPoint pt = superview.convertPoint_toView_(point, view);
-			if (!view.isFlipped ()) {
-				pt.y = view.bounds().height - pt.y;
-			}
-			if (!regionPath.containsPoint(pt)) return 0;
-		}
+		NSView rgnView = topView ();
+		if (!rgnView.isFlipped()) rgnView = eventView ();
+		NSPoint pt = rgnView.convertPoint_fromView_ (point, new NSView (id).superview());
+		if (!regionPath.containsPoint(pt)) return 0;
 	}
 	return super.hitTest(id, sel, point);
 }
@@ -3130,17 +3130,19 @@ public void setCapture (boolean capture) {
 	checkWidget();
 }
 
-void setClipRegion (float /*double*/ x, float /*double*/ y) {
+void setClipRegion (NSView view) {
 	if (regionPath != null) {
+		NSView rgnView = topView ();
+		if (!rgnView.isFlipped ()) rgnView = eventView ();
+		NSPoint pt = view.convertPoint_toView_(new NSPoint(), rgnView);
 		NSAffineTransform transform = NSAffineTransform.transform();
-		transform.translateXBy(-x, -y);
+		transform.translateXBy(-pt.x, -pt.y);
 		regionPath.transformUsingAffineTransform(transform);
 		regionPath.addClip();
-		transform.translateXBy(2*x, 2*y);
+		transform.translateXBy(2*pt.x, 2*pt.y);
 		regionPath.transformUsingAffineTransform(transform);
 	}
-	NSRect frame = topView().frame();
-	parent.setClipRegion(frame.x + x, frame.y + y);
+	parent.setClipRegion(view);
 }
 
 /**

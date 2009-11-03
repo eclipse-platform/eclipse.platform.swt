@@ -1047,6 +1047,10 @@ boolean hasBorder () {
 	return false;
 }
 
+boolean hasRegion () {
+	return region != null;
+}
+
 void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	Control control = display.getFocusControl();
 	while (control != null) {
@@ -1393,13 +1397,16 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	}
 }
 
-void setClipRegion (float /*double*/ x, float /*double*/ y) {
+void setClipRegion (NSView view) {
 	if (regionPath != null) {
+		NSView rgnView = topView ();
+		if (!rgnView.isFlipped()) rgnView = eventView ();
+		NSPoint pt = view.convertPoint_toView_(new NSPoint(), rgnView);
 		NSAffineTransform transform = NSAffineTransform.transform();
-		transform.translateXBy(-x, -y);
+		transform.translateXBy(-pt.x, -pt.y);
 		regionPath.transformUsingAffineTransform(transform);
 		regionPath.addClip();
-		transform.translateXBy(2*x, 2*y);
+		transform.translateXBy(2*pt.x, 2*pt.y);
 		regionPath.transformUsingAffineTransform(transform);
 	}
 }

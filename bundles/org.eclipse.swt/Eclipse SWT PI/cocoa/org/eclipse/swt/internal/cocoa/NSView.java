@@ -219,6 +219,10 @@ public void resetCursorRects() {
 	OS.objc_msgSend(this.id, OS.sel_resetCursorRects);
 }
 
+public void scrollClipView(NSClipView aClipView, NSPoint aPoint) {
+	OS.objc_msgSend(this.id, OS.sel_scrollClipView_toPoint_, aClipView != null ? aClipView.id : 0, aPoint);
+}
+
 public void scrollPoint(NSPoint aPoint) {
 	OS.objc_msgSend(this.id, OS.sel_scrollPoint_, aPoint);
 }

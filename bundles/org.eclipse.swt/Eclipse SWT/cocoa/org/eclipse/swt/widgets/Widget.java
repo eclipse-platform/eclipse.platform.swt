@@ -184,7 +184,7 @@ String getClipboardText () {
 	return string != null ? string.getString () : null;
 }
 
-void setClipRegion (float /*double*/ x, float /*double*/ y) {
+void setClipRegion (NSView view) {
 }
 
 int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
@@ -594,7 +594,7 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	display.isPainting.addObject(view);
 	NSGraphicsContext context = NSGraphicsContext.currentContext();
 	context.saveGraphicsState();
-	setClipRegion(0, 0);
+	setClipRegion(view);
 	drawBackground (id, context, rect);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -1250,6 +1250,13 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
+}
+
+void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, clipView, point);
 }
 
 void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

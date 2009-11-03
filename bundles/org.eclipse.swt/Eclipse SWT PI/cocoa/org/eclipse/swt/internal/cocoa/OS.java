@@ -424,6 +424,8 @@ public static final native int /*long*/ CALLBACK_hitTestForEvent_inRect_ofView_(
 public static final native int /*long*/ CALLBACK_imageRectForBounds_(int /*long*/ func);
 /** @method callback_types=NSRange;id;SEL;,callback_flags=struct;none;none; */
 public static final native int /*long*/ CALLBACK_markedRange(int /*long*/ func);
+/** @method callback_types=void;id;SEL;NSClipView*;NSPoint;,callback_flags=none;none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_scrollClipView_toPoint_(int /*long*/ func);
 /** @method callback_types=NSRange;id;SEL;,callback_flags=struct;none;none; */
 public static final native int /*long*/ CALLBACK_selectedRange(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
@@ -1398,6 +1400,7 @@ public static final int /*long*/ sel_scaleXBy_yBy_ = sel_registerName("scaleXBy:
 public static final int /*long*/ sel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_ = sel_registerName("scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:");
 public static final int /*long*/ sel_screen = sel_registerName("screen");
 public static final int /*long*/ sel_screens = sel_registerName("screens");
+public static final int /*long*/ sel_scrollClipView_toPoint_ = sel_registerName("scrollClipView:toPoint:");
 public static final int /*long*/ sel_scrollColumnToVisible_ = sel_registerName("scrollColumnToVisible:");
 public static final int /*long*/ sel_scrollPoint_ = sel_registerName("scrollPoint:");
 public static final int /*long*/ sel_scrollRangeToVisible_ = sel_registerName("scrollRangeToVisible:");
@@ -3090,6 +3093,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, boolean arg0, NSRect arg1);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1);
 /**
  * @method flags=cast
  * @param arg1 flags=struct

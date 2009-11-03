@@ -506,9 +506,8 @@ public void setIncrement (int value) {
 	increment = value;
 }
 
-void setClipRegion (float /*double*/ x, float /*double*/ y) {
-	NSRect frame = view.frame();
-	parent.setClipRegion(frame.x + x, frame.y + y);
+void setClipRegion (NSView view) {
+	parent.setClipRegion(view);
 }
 
 /**

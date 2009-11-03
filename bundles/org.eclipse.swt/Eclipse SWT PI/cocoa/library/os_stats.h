@@ -49,6 +49,7 @@ typedef enum {
 	CALLBACK_1hitTest_1_FUNC,
 	CALLBACK_1imageRectForBounds_1_FUNC,
 	CALLBACK_1markedRange_FUNC,
+	CALLBACK_1scrollClipView_1toPoint_1_FUNC,
 	CALLBACK_1selectedRange_FUNC,
 	CALLBACK_1setFrameOrigin_1_FUNC,
 	CALLBACK_1setFrameSize_1_FUNC,
@@ -878,6 +879,11 @@ typedef enum {
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ_FUNC,
 #else
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJJZ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC,

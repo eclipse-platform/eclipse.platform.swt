@@ -290,19 +290,28 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
+	if ((state & CANVAS) == 0 && scrollView != null) {
+		NSClipView clip = new NSClipView (clipView);
+		boolean oldCopies = clip.copiesOnScroll (), copies = oldCopies;
+		if (visibleRgn == 0) copies = !isObscured ();
+		if (copies) copies = !hasRegion ();
+		clip.setCopiesOnScroll (copies);
+		if (oldCopies && !copies) {
+			redrawWidget (clip, true);
+			return;
+		}
+	}
+	super.scrollClipViewToPoint (id, sel, clipView, point);
+}
+
 void sendHorizontalSelection () {
 	if (horizontalBar.view.isHiddenOrHasHiddenAncestor()) return;
-	if ((state & CANVAS) == 0 && scrollView != null && visibleRgn == 0) {
-		scrollView.contentView().setCopiesOnScroll(!isObscured());
-	}
 	horizontalBar.sendSelection ();
 }
 
 void sendVerticalSelection () {
 	if (verticalBar.view.isHiddenOrHasHiddenAncestor()) return;
-	if ((state & CANVAS) == 0 && scrollView != null && visibleRgn == 0) {
-		scrollView.contentView().setCopiesOnScroll(!isObscured());
-	}
 	verticalBar.sendSelection ();
 }
 
