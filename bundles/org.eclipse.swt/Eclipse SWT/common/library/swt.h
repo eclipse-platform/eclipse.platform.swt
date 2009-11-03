@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,6 +59,38 @@ extern int IS_JNI_1_2;
 #define SWT_PTR jlong
 #define SWT_PTR_SIGNATURE "J"
 
+#endif
+
+#ifdef __APPLE__
+#define CALLING_CONVENTION
+#define LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static void *var = NULL; \
+		if (!initialized) { \
+			CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR(name##_LIB)); \
+			if (bundle) var = CFBundleGetFunctionPointerForName(bundle, CFSTR(#name)); \
+			initialized = 1; \
+		} 
+#elif defined (_WIN32) || defined (_WIN32_WCE)
+#define CALLING_CONVENTION CALLBACK
+#define LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static FARPROC var = NULL; \
+		if (!initialized) { \
+			HMODULE hm = LoadLibrary(name##_LIB); \
+			if (hm) var = GetProcAddress(hm, #name); \
+			initialized = 1; \
+		}
+#else
+#define CALLING_CONVENTION
+#define LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static void *var = NULL; \
+		if (!initialized) { \
+			void* handle = dlopen(name##_LIB, RTLD_LAZY); \
+			if (handle) var = dlsym(handle, #name); \
+			initialized = 1; \
+		}
 #endif
 
 void throwOutOfMemory(JNIEnv *env);
