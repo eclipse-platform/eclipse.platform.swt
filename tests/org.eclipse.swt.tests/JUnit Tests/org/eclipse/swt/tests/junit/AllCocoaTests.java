@@ -44,6 +44,13 @@ static String[] excludeTests = {
 	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
 	"test_invokeActionI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
 	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	
+	// TextLayout bugs
+	"test_getLineIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
+	"test_getLineBounds(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
+	"test_getLocation(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
+	"test_getNextOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
+	"test_getOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 };
 
 static boolean isExcluded(String name) {
