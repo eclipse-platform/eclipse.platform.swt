@@ -178,6 +178,9 @@ public String getText () {
 	checkWidget ();
 	return text;
 }
+boolean isTransparent() {
+	return true;
+}
 
 float getThemeAlpha () {
 	return (background != null ? 1 : 0.25f) * parent.getThemeAlpha ();

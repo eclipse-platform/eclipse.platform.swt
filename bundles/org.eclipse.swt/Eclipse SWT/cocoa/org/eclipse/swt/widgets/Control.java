@@ -1139,6 +1139,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 	float /*double*/ [] background = control.background;
 	float /*double*/ alpha;
 	if (background == null) {
+		if (isTransparent()) return;
 		background = control.defaultBackground ().handle;
 		alpha = getThemeAlpha ();
 	} else {
@@ -2001,6 +2002,11 @@ boolean isTabItem () {
 	}
 	int code = traversalCode (0, null);
 	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
+}
+
+boolean isTransparent() {
+	if (background != null) return false;
+	return parent.isTransparent();
 }
 
 boolean isTrim (NSView view) {

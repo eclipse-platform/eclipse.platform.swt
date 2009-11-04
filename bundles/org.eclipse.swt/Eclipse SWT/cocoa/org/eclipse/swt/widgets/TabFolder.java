@@ -414,6 +414,10 @@ public int indexOf (TabItem item) {
 	return -1;
 }
 
+boolean isTransparent() {
+	return true;
+}
+
 Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	Control [] children = _getChildren ();
 	int width = 0, height = 0;

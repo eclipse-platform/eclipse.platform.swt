@@ -1080,6 +1080,10 @@ boolean isEnabledCursor () {
 	return true;
 }
 
+boolean isTransparent() {
+	return false;
+}
+
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
