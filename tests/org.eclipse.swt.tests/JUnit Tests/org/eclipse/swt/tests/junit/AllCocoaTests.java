@@ -50,6 +50,7 @@ static String[] excludeTests = {
 	"test_getLineBounds(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getLocation(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getNextOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
+	"test_getNextOffset2(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 };
 

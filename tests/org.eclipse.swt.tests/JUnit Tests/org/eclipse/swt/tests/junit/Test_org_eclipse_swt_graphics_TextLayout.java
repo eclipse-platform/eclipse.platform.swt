@@ -392,7 +392,6 @@ public void test_getNextOffset() {
 	TextLayout layout = new TextLayout(display);
 	String text = "AB \u05E9\u05E0 CD\nHello";
 	layout.setText(text);
-	//NOTE SWT.MOVEMENT_WORD is platform specific
 	int offset = 0;
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
 	assertEquals(3, offset);
@@ -433,7 +432,15 @@ public void test_getNextOffset() {
 	for (int i = text.length(); i > 0; i--) {			
 		assertEquals(i-1, layout.getPreviousOffset(i, SWT.MOVEMENT_CLUSTER));
 	}
-	text = "oi\u0E19\u0E49\u0E33oi";
+	layout.dispose();
+}
+
+public void test_getNextOffset2() {
+	//Text thai cluster separate so it can be excluded 
+	//for gtk, testing machine (rhel4) is too old to 
+	//support thai.
+	TextLayout layout = new TextLayout(display);
+	String text = "oi\u0E19\u0E49\u0E33oi";
 	layout.setText(text);
 	assertEquals(5, layout.getNextOffset(2, SWT.MOVEMENT_CLUSTER));
 	assertEquals(2, layout.getPreviousOffset(5, SWT.MOVEMENT_CLUSTER));
@@ -574,6 +581,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getLineSpacing");
 	methodNames.addElement("test_getLocation");
 	methodNames.addElement("test_getNextOffset");
+	methodNames.addElement("test_getNextOffset2");
 	methodNames.addElement("test_getOffset");
 	methodNames.addElement("test_getTabs");
 	methodNames.addElement("test_getSegments");
@@ -592,6 +600,7 @@ protected void runTest() throws Throwable {
 	else if (name.equals("test_getLineSpacing")) test_getLineSpacing();
 	else if (name.equals("test_getLocation")) test_getLocation();
 	else if (name.equals("test_getNextOffset")) test_getNextOffset();
+	else if (name.equals("test_getNextOffset2")) test_getNextOffset2();
 	else if (name.equals("test_getOffset")) test_getOffset();	
 	else if (name.equals("test_getTabs")) test_getTabs();	
 	else if (name.equals("test_getSegments")) test_getSegments();

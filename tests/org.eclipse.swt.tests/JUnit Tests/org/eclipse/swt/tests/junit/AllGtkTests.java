@@ -44,6 +44,9 @@ static String[] excludeTests = {
 	"test_getSelectionIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_getRowCount(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ToolBar)",
 	"test_getHeaderHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Table)",
+	
+	//text layout
+	"test_getNextOffset2(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 };
 
 static boolean isExcluded(String name) {
