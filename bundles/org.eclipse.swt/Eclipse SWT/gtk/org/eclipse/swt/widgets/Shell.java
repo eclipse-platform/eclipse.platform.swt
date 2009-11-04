@@ -1101,7 +1101,7 @@ int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 		case OS.GTK_DIR_TAB_BACKWARD:
 			Control control = display.getFocusControl ();
 			if (control != null) {
-				if ((control.state & CANVAS) != 0 && (control.style & SWT.EMBEDDED) != 0) {
+				if ((control.state & CANVAS) != 0 && (control.style & SWT.EMBEDDED) != 0 && control.getShell () == this) {
 					int traversal = directionType == OS.GTK_DIR_TAB_FORWARD ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 					control.traverse (traversal);
 					return 1;
