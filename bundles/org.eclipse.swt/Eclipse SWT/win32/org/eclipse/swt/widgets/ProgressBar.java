@@ -418,7 +418,7 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	* NOTE:  This only happens on Window XP.
 	*/
 	if ((style & SWT.INDETERMINATE) != 0) {
-		if (OS.COMCTL32_MAJOR >= 6) {
+		if (OS.WIN32_VERSION == OS.VERSION (5,1) || (OS.COMCTL32_MAJOR >= 6 && !OS.IsAppThemed())) {
 			forceResize ();
 			RECT rect = new RECT ();
 			OS.GetClientRect (handle, rect);
