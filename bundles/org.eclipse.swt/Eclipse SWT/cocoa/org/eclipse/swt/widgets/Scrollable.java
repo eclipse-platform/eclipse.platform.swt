@@ -297,10 +297,6 @@ void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clip
 		if (visibleRgn == 0) copies = !isObscured ();
 		if (copies) copies = !hasRegion ();
 		clip.setCopiesOnScroll (copies);
-		if (oldCopies && !copies) {
-			redrawWidget (clip, true);
-			return;
-		}
 	}
 	super.scrollClipViewToPoint (id, sel, clipView, point);
 }
