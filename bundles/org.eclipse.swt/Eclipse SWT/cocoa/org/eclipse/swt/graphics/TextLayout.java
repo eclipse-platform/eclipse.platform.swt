@@ -125,35 +125,26 @@ float[] computePolyline(int left, int top, int right, int bottom) {
 
 
 void computeRuns() {
-	if (textStorage != null) return;
+	if (lineBounds != null) return;
 	String segmentsText = getSegmentsText();
 	char[] chars = new char[segmentsText.length()];
 	segmentsText.getChars(0, chars.length, chars, 0);
 	NSString str = (NSString) new NSString().alloc();
 	str = str.initWithCharacters(chars, chars.length);
-	textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
-	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
-	layoutManager.setBackgroundLayoutEnabled(NSThread.isMainThread());
-	textContainer = (NSTextContainer)new NSTextContainer().alloc();
-	NSSize size = new NSSize();
-	size.width = wrapWidth != -1 ? wrapWidth : Float.MAX_VALUE;
-	size.height = Float.MAX_VALUE;
-	textContainer.initWithContainerSize(size);
-	textStorage.addLayoutManager(layoutManager);
-	layoutManager.addTextContainer(textContainer);
 
 	/*
 	* Bug in Cocoa. Adding attributes directly to a NSTextStorage causes
 	* output to the console and eventually a segmentation fault when printing 
 	* on a thread other than the main thread. The fix is to add attributes to
-	* a separate NSMutableAttributedString and add it to text storage when done.
+	* a separate NSMutableAttributedString and set it to text storage when done.
 	*/
 	NSMutableAttributedString attrStr = (NSMutableAttributedString)new NSMutableAttributedString().alloc();
 	attrStr.id = attrStr.initWithString(str).id;
+	str.release();
 	attrStr.beginEditing();
 	Font defaultFont = font != null ? font : device.systemFont;
 	NSRange range = new NSRange();
-	range.length = str.length();
+	range.length = attrStr.length();
 	attrStr.addAttribute(OS.NSFontAttributeName, defaultFont.handle, range);
 	defaultFont.addTraits(attrStr, range);
 	//TODO ascend descent wrap
@@ -206,7 +197,7 @@ void computeRuns() {
 	}
 	attrStr.addAttribute(OS.NSParagraphStyleAttributeName, paragraph, range);
 	paragraph.release();
-	int /*long*/ textLength = str.length();
+	int /*long*/ textLength = attrStr.length();
 	for (int i = 0; i < stylesCount - 1; i++) {
 		StyleItem run = styles[i];
 		if (run.style == null) continue;
@@ -274,14 +265,29 @@ void computeRuns() {
 		}
 	}
 	attrStr.endEditing();
+
+	NSSize size = new NSSize();
+	size.width = wrapWidth != -1 ? wrapWidth : Float.MAX_VALUE;
+	size.height = Float.MAX_VALUE;
+	if (textStorage == null) {
+		textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
+		layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
+		layoutManager.setBackgroundLayoutEnabled(NSThread.isMainThread());
+		textContainer = (NSTextContainer)new NSTextContainer().alloc();
+		textContainer = textContainer.initWithContainerSize(size);
+		textContainer.setLineFragmentPadding(0);
+		textStorage.addLayoutManager(layoutManager);
+		layoutManager.addTextContainer(textContainer);
+		layoutManager.release();
+		textContainer.release();
+	} else {
+		textContainer.setContainerSize(size);
+	}
 	textStorage.setAttributedString(attrStr);
 	attrStr.release();
-	str.release();
-
-	textContainer.setLineFragmentPadding(0);
-	layoutManager.glyphRangeForTextContainer(textContainer);
 	
 	int numberOfLines;
+	layoutManager.glyphRangeForTextContainer(textContainer);
 	int /*long*/ numberOfGlyphs = layoutManager.numberOfGlyphs(), index;
 	int /*long*/ rangePtr = OS.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
@@ -314,6 +320,10 @@ void computeRuns() {
 
 void destroy() {
 	freeRuns();
+	if (textStorage != null) textStorage.release();
+	textStorage = null;
+	layoutManager = null;
+	textContainer = null;
 	font = null;
 	text = null;
 	styles = null;
@@ -627,19 +637,8 @@ void fixRect(NSRect rect) {
 }
 
 void freeRuns() {
-	if (textStorage == null) return;
-	if (textStorage != null) {
-		textStorage.release();
-	}
-	if (layoutManager != null) {
-		layoutManager.release();
-	}
-	if (textContainer != null) {
-		textContainer.release();
-	}
-	textStorage = null;
-	layoutManager = null;
-	textContainer = null;
+	lineBounds = null;
+	lineOffsets = null;
 }
 
 /** 
