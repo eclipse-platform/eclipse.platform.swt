@@ -192,6 +192,13 @@ class ToolTipTab extends Tab {
 	}
 
 	/**
+	 * Gets the short text for the tab folder item.
+	 */
+	String getShortTabText() {
+		return "TT";
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {

@@ -106,6 +106,13 @@ class DateTimeTab extends Tab {
 	}
 	
 	/**
+	 * Gets the short text for the tab folder item.
+	 */
+	String getShortTabText() {
+		return "DT";
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {

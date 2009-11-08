@@ -60,6 +60,19 @@ public class ControlExample {
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
 		    item.setData (tabs [i]);
 		}
+		
+		/* Workaround: if the tab folder is wider than the screen,
+		 * Mac platforms clip instead of somehow scrolling the tab items.
+		 * We try to recover some width by using shorter tab names. */
+		Point size = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Rectangle monitorArea = parent.getMonitor().getClientArea();
+		boolean isMac = SWT.getPlatform().equals("carbon") || SWT.getPlatform().equals("cocoa");
+		if (size.x > monitorArea.width && isMac) {
+			TabItem [] tabItems = tabFolder.getItems();
+			for (int i=0; i<tabItems.length; i++) {
+				tabItems[i].setText (tabs [i].getShortTabText ());
+			}
+		}
 		startup = false;
 	}
 
@@ -228,17 +241,6 @@ public class ControlExample {
 	static void setShellSize(ControlExample instance, Shell shell) {
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		Rectangle monitorArea = shell.getMonitor().getClientArea();
-		/* Workaround: if the tab folder is wider than the screen,
-		 * carbon clips instead of somehow scrolling the tab items.
-		 * We try to recover some width by using shorter tab names. */
-		boolean isMac = SWT.getPlatform().equals("carbon") || SWT.getPlatform().equals("cocoa");
-		if (size.x > monitorArea.width && isMac) {
-			TabItem [] tabItems = instance.tabFolder.getItems();
-			for (int i=0; i<tabItems.length; i++) {
-				tabItems[i].setText (instance.tabs [i].getShortTabText ());
-			}
-			size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		}
 		shell.setSize(Math.min(size.x, monitorArea.width), Math.min(size.y, monitorArea.height));
 	}
 }
