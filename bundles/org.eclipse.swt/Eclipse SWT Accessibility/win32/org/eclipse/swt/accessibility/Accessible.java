@@ -961,7 +961,7 @@ public class Accessible {
 		int code = iaccessible.get_accRole(varChild, pvarRole);
 		if (code == COM.S_OK) {
 			VARIANT v2 = getVARIANT(pvarRole);
-			if (v2.vt == COM.VT_I4) osRole = osToChildID(v2.lVal);
+			if (v2.vt == COM.VT_I4) osRole = v2.lVal;
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
