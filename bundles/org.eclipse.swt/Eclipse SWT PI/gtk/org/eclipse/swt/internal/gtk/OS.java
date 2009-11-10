@@ -4842,6 +4842,16 @@ public static final void gdk_window_move(int /*long*/ window, int x, int y) {
 		lock.unlock();
 	}
 }
+/** @param window cast=(GdkWindow *) */
+public static final native void _gdk_window_move_resize(int /*long*/ window, int x, int y, int width, int height);
+public static final void gdk_window_move_resize(int /*long*/ window, int x, int y, int width, int height) {
+	lock.lock();
+	try {
+		_gdk_window_move_resize(window, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param parent cast=(GdkWindow *)
  * @param attributes flags=no_out

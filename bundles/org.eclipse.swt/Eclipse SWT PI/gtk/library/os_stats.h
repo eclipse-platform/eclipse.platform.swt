@@ -511,6 +511,7 @@ typedef enum {
 	_1gdk_1window_1lookup_FUNC,
 	_1gdk_1window_1lower_FUNC,
 	_1gdk_1window_1move_FUNC,
+	_1gdk_1window_1move_1resize_FUNC,
 	_1gdk_1window_1new_FUNC,
 	_1gdk_1window_1process_1all_1updates_FUNC,
 	_1gdk_1window_1process_1updates_FUNC,
