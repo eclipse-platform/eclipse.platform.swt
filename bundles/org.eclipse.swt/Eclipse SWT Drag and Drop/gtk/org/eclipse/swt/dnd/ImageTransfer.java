@@ -141,7 +141,6 @@ public Object nativeToJava(TransferData transferData) {
 		OS.gdk_pixbuf_loader_close(loader, null);
 		int /*long*/ pixbuf = OS.gdk_pixbuf_loader_get_pixbuf(loader);
 		if (pixbuf != 0) {
-			OS.g_object_ref(pixbuf);
 			int /*long*/ [] pixmap_return = new int /*long*/ [1];
 			OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
 			int /*long*/ handle = pixmap_return[0];

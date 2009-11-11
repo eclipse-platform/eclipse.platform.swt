@@ -117,7 +117,7 @@ ifndef NO_STRIP
 	LIBS := $(LIBS) -s
 endif
 
-all: make_swt make_atk make_gnome make_glx
+all: make_swt make_atk make_glx
 
 #
 # SWT libs

@@ -389,6 +389,9 @@ public class OS extends C {
 	public static final int G_LOG_FLAG_FATAL = 0x2;
 	public static final int G_LOG_FLAG_RECURSION = 0x1;
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
+	public static final int G_APP_INFO_CREATE_NONE = 0;
+	public static final int G_APP_INFO_CREATE_NEEDS_TERMINAL = (1 << 0);
+	public static final int G_APP_INFO_CREATE_SUPPORTS_URIS  = (1 << 1); 
 	public static final int None = 0;
 	public static final int PANGO_ALIGN_LEFT = 0;
 	public static final int PANGO_ALIGN_CENTER = 1;
@@ -1764,6 +1767,264 @@ public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
 	lock.lock();
 	try {
 		return _dlsym(handle, symbol);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_app_info_create_from_commandline(byte[] commandline, byte[] applName, int /*long*/ flags, int /*long*/ error);
+public static final int /*long*/ g_app_info_create_from_commandline(byte[] commandline, byte[] applName, int /*long*/ flags, int /*long*/ error) {
+	lock.lock();
+	try {
+		return _g_app_info_create_from_commandline(commandline, applName, flags, error);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_app_info_get_all();
+public static final int /*long*/ g_app_info_get_all() {
+	lock.lock();
+	try {
+		return _g_app_info_get_all();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_app_info_get_executable(int /*long*/ appInfo);
+public static final int /*long*/ g_app_info_get_executable(int /*long*/ appInfo) {
+	lock.lock();
+	try {
+		return _g_app_info_get_executable(appInfo);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_app_info_get_icon(int /*long*/ appInfo);
+public static final int /*long*/ g_app_info_get_icon(int /*long*/ appInfo) {
+	lock.lock();
+	try {
+		return _g_app_info_get_icon(appInfo);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_app_info_get_id(int /*long*/ appInfo);
+public static final int /*long*/ g_app_info_get_id(int /*long*/ appInfo) {
+	lock.lock();
+	try {
+		return _g_app_info_get_id(appInfo);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_app_info_get_name(int /*long*/ appInfo);
+public static final int /*long*/ g_app_info_get_name(int /*long*/ appInfo) {
+	lock.lock();
+	try {
+		return _g_app_info_get_name(appInfo);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _g_app_info_launch(int /*long*/ appInfo, int /*long*/ list, int /*long*/ launchContext, int /*long*/ error);
+public static final boolean g_app_info_launch(int /*long*/ appInfo, int /*long*/ list, int /*long*/ launchContext, int /*long*/ error) {
+	lock.lock();
+	try {
+		return _g_app_info_launch(appInfo, list, launchContext, error);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_app_info_get_default_for_type(byte[] mimeType, boolean mustSupportURIs);
+public static final int /*long*/ g_app_info_get_default_for_type(byte[] mimeType, boolean mustSupportURIs) {
+	lock.lock();
+	try {
+		return _g_app_info_get_default_for_type(mimeType, mustSupportURIs);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _g_app_info_launch_default_for_uri(int /*long*/ uri, int /*long*/ launchContext, int /*long*/ error);
+public static final boolean g_app_info_launch_default_for_uri(int /*long*/ appInfo, int /*long*/ launchContext, int /*long*/ error) {
+	lock.lock();
+	try {
+		return _g_app_info_launch_default_for_uri(appInfo, launchContext, error);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _g_app_info_should_show(int /*long*/ appInfo);
+public static final boolean g_app_info_should_show(int /*long*/ appInfo) {
+	lock.lock();
+	try {
+		return _g_app_info_should_show(appInfo);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _g_app_info_supports_uris(int /*long*/ appInfo);
+public static final boolean g_app_info_supports_uris(int /*long*/ appInfo) {
+	lock.lock();
+	try {
+		return _g_app_info_supports_uris(appInfo);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_data_input_stream_new(int /*long*/ input_stream);
+public static final int /*long*/ g_data_input_stream_new(int /*long*/ input_stream) {
+	lock.lock();
+	try {
+		return _g_data_input_stream_new(input_stream);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_data_input_stream_read_line(int /*long*/ stream, int[] count, int /*long*/ cancellable, int /*long*/ error);
+public static final int /*long*/ g_data_input_stream_read_line(int /*long*/ stream, int[] count, int /*long*/ cancellable, int /*long*/ error) {
+	lock.lock();
+	try {
+		return _g_data_input_stream_read_line(stream, count, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+//gboolean            g_content_type_is_unknown           (const char *type);
+///** @method flags=dynamic */
+//public static final native int /*long*/ _g_content_type_get_mime_type(int /*long*/ type);
+//public static final int /*long*/ g_content_type_get_mime_type(int /*long*/ type) {
+//	
+//}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_content_type_get_mime_type(byte[] mime_type);
+public static final int /*long*/ g_content_type_get_mime_type(byte[] mime_type) {
+	lock.lock();
+	try {
+		return _g_content_type_get_mime_type(mime_type);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_content_types_get_registered();
+public static final int /*long*/ g_content_types_get_registered() {
+	lock.lock();
+	try {
+		return _g_content_types_get_registered();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_desktop_app_info_new_from_filename(byte[] fileName);
+public static final int /*long*/ g_desktop_app_info_new_from_filename(byte[] fileName) {
+	lock.lock();
+	try {
+		return _g_desktop_app_info_new_from_filename(fileName);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_get_path(int /*long*/ file);
+public static final int /*long*/ g_file_get_path (int /*long*/ file) {
+	lock.lock();
+	try {
+		return _g_file_get_path(file);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_get_uri(int /*long*/ file);
+public static final int /*long*/ g_file_get_uri (int /*long*/ file) {
+	lock.lock();
+	try {
+		return _g_file_get_uri(file);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _g_file_info_get_modification_time(int /*long*/ info, int /*long*/[] result);
+public static final void g_file_info_get_modification_time(int /*long*/ info, int /*long*/[] result) {
+	lock.lock();
+	try {
+		_g_file_info_get_modification_time(info, result);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_icon_get_file(int /*long*/ icon);
+public static final int /*long*/ g_file_icon_get_file(int /*long*/ icon) {
+	lock.lock();
+	try {
+		return _g_file_icon_get_file(icon);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_new_for_path(byte[] fileName);
+public static final int /*long*/ g_file_new_for_path(byte[] fileName) {
+	lock.lock();
+	try {
+		return _g_file_new_for_path(fileName);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_query_info  (int /*long*/ file, byte[] attributes, int /*long*/ flags, int /*long*/ cancellable, int /*long*/ error);
+public static final int /*long*/ g_file_query_info  (int /*long*/ file,byte[] attributes, int /*long*/ flags, int /*long*/ cancellable, int /*long*/ error) {
+	lock.lock();
+	try {
+		return _g_file_query_info (file, attributes, flags, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_read(int /*long*/ file, int /*long*/ cancellable, int /*long*/ error);
+public static final int /*long*/ g_file_read(int /*long*/ file, int /*long*/ cancellable, int /*long*/ error) {
+	lock.lock();
+	try {
+		return _g_file_read(file, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_icon_to_string(int /*long*/ icon);
+public static final int /*long*/ g_icon_to_string (int /*long*/ icon) {
+	lock.lock();
+	try {
+		return _g_icon_to_string(icon);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_icon_new_for_string(byte[] str, int /*long*/ error[]);
+public static final int /*long*/ g_icon_new_for_string (byte[] str, int /*long*/ error[]) {
+	lock.lock();
+	try {
+		return _g_icon_new_for_string(str, error);
 	} finally {
 		lock.unlock();
 	}
@@ -7037,6 +7298,42 @@ public static final int /*long*/ gtk_icon_set_render_icon(int /*long*/ icon_set,
 	lock.lock();
 	try {
 		return _gtk_icon_set_render_icon(icon_set, style, direction, state, size, widget, detail);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native int /*long*/ _gtk_icon_theme_get_default();
+public static final int /*long*/ gtk_icon_theme_get_default() {
+	lock.lock();
+	try {
+		return _gtk_icon_theme_get_default ();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native int /*long*/ _gtk_icon_theme_lookup_by_gicon(int /*long*/ icon_theme, int /*long*/ icon, int size, int flags);
+public static final int /*long*/ gtk_icon_theme_lookup_by_gicon(int /*long*/ icon_theme, int /*long*/ icon, int size, int flags) {
+	lock.lock();
+	try {
+		return _gtk_icon_theme_lookup_by_gicon (icon_theme, icon, size, flags);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native int /*long*/ _gtk_icon_info_load_icon(int /*long*/ icon_info, int /*long*/ error[]);
+public static final int /*long*/ gtk_icon_info_load_icon(int /*long*/ icon_info, int /*long*/ error[]) {
+	lock.lock();
+	try {
+		return _gtk_icon_info_load_icon(icon_info, error);
 	} finally {
 		lock.unlock();
 	}

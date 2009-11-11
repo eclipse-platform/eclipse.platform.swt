@@ -55,6 +55,9 @@ esac
 if [ "${MODEL}" = "" ]; then
 	if uname -i > /dev/null 2>&1; then
 		MODEL=`uname -i`
+		if [ ${MODEL} = 'unknown' ]; then
+		  MODEL=`uname -m`
+		fi
 	else
 		MODEL=`uname -m`
 	fi
