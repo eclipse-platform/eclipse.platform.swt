@@ -783,7 +783,7 @@ void hookEvents () {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 	if ((style & SWT.ON_TOP) != 0 && (style & SWT.RESIZE) != 0) {
-		int mask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_POINTER_MOTION_HINT_MASK | OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_BUTTON_PRESS_MASK |  OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
+		int mask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_BUTTON_PRESS_MASK |  OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
 		OS.gtk_widget_add_events (shellHandle, mask);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures[EXPOSE_EVENT], false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
@@ -909,20 +909,20 @@ int getResizeMode (double x, double y) {
 	int mode = 0;
 	if (x <= border) {
 		mode = OS.GDK_LEFT_SIDE;
-		if (y <= border * 3) mode = OS.GDK_TOP_LEFT_CORNER;
-		else if (y >= height - border * 3) mode = OS.GDK_BOTTOM_LEFT_CORNER;
+		if (y <= border + 16) mode = OS.GDK_TOP_LEFT_CORNER;
+		else if (y >= height - border - 16) mode = OS.GDK_BOTTOM_LEFT_CORNER;
 	} else if (x >= width - border) {
 		mode = OS.GDK_RIGHT_SIDE;
-		if (y <= border * 3) mode = OS.GDK_TOP_RIGHT_CORNER;
-		else if (y >= height - border * 3) mode = OS.GDK_BOTTOM_RIGHT_CORNER;
+		if (y <= border + 16) mode = OS.GDK_TOP_RIGHT_CORNER;
+		else if (y >= height - border - 16) mode = OS.GDK_BOTTOM_RIGHT_CORNER;
 	} else if (y <= border) {
 		mode = OS.GDK_TOP_SIDE;
-		if (x <= border * 3) mode = OS.GDK_TOP_LEFT_CORNER;
-		else if (x >= width - border * 3) mode = OS.GDK_TOP_RIGHT_CORNER;
+		if (x <= border + 16) mode = OS.GDK_TOP_LEFT_CORNER;
+		else if (x >= width - border - 16) mode = OS.GDK_TOP_RIGHT_CORNER;
 	} else if (y >= height - border) {
 		mode = OS.GDK_BOTTOM_SIDE ;
-		if (x <= border * 3) mode = OS.GDK_BOTTOM_LEFT_CORNER;
-		else if (x >= width - border * 3) mode = OS.GDK_BOTTOM_RIGHT_CORNER;
+		if (x <= border + 16) mode = OS.GDK_BOTTOM_LEFT_CORNER;
+		else if (x >= width - border - 16) mode = OS.GDK_BOTTOM_RIGHT_CORNER;
 	}
 	return mode;
 }
