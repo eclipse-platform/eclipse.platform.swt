@@ -463,6 +463,7 @@ public class OS extends C {
 	public static final int CLR_INVALID = 0xffffffff;
 	public static final int CLR_NONE = 0xffffffff;
 	public static final int CLSCTX_INPROC_SERVER = 1;
+	public static final int CSIDL_APPDATA = 0x1a;
 	public static final int COLORONCOLOR = 0x3;
 	public static final int COLOR_3DDKSHADOW = 0x15 | SYS_COLOR_INDEX_FLAG;
 	public static final int COLOR_3DFACE = 0xf | SYS_COLOR_INDEX_FLAG;
@@ -1452,6 +1453,7 @@ public class OS extends C {
 	public static final int SHCMBF_HIDDEN = 0x2;
 	public static final int SHCMBM_OVERRIDEKEY = 0x400 + 403;
 	public static final int SHCMBM_SETSUBMENU = 0x590;
+	public static final int SHGFP_TYPE_CURRENT = 0;
 	public static final int SHCMBM_GETSUBMENU = 0x591;
 	public static final int SHGFI_ICON = 0x000000100;
 	public static final int SHGFI_SMALLICON= 0x1;
@@ -3319,6 +3321,15 @@ public static int /*long*/ SHGetFileInfo (TCHAR pszPath, int dwFileAttributes, S
 public static final boolean Shell_NotifyIcon (int dwMessage, NOTIFYICONDATA lpData) {
 	if (IsUnicode) return Shell_NotifyIconW (dwMessage, (NOTIFYICONDATAW)lpData);
 	return Shell_NotifyIconA (dwMessage, (NOTIFYICONDATAA)lpData);
+}
+
+public static final int SHGetFolderPath (int /*long*/ hwndOwner, int nFolder, int /*long*/ hToken, int dwFlags, TCHAR pszPath) {
+	if (IsUnicode) {
+		char [] pszPath1 = pszPath == null ? null : pszPath.chars;
+		return SHGetFolderPathW (hwndOwner, nFolder, hToken, dwFlags, pszPath1);
+	}
+	byte [] pszPath1 = pszPath == null ? null : pszPath.bytes;
+	return SHGetFolderPathA (hwndOwner, nFolder, hToken, dwFlags, pszPath1);
 }
 
 public static final boolean SHGetPathFromIDList (int /*long*/ pidl, TCHAR pszPath) {
@@ -6409,6 +6420,18 @@ public static final native int /*long*/ SHGetFileInfoW (char [] pszPath, int dwF
  * @param psfi cast=(SHFILEINFOA *)
  */
 public static final native int /*long*/ SHGetFileInfoA (byte [] pszPath, int dwFileAttributes, SHFILEINFOA psfi, int cbFileInfo, int uFlags);
+/**
+ * @param hwndOwner cast=(HWND)
+ * @param hToken cast=(HANDLE)
+ * @param pszPath cast=(LPWSTR)
+ */
+public static final native int SHGetFolderPathW (int /*long*/ hwndOwner, int nFolder, int /*long*/ hToken, int dwFlags, char[] pszPath);
+/**
+ * @param hwndOwner cast=(HWND)
+ * @param hToken cast=(HANDLE)
+ * @param pszPath cast=(LPSTR)
+ */
+public static final native int SHGetFolderPathA (int /*long*/ hwndOwner, int nFolder, int /*long*/ hToken, int dwFlags, byte[] pszPath);
 /** @param hwnd cast=(HWND) */
 public static final native boolean SHHandleWMSettingChange (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam, SHACTIVATEINFO psai);
 public static final native int SHRecognizeGesture (SHRGINFO shrg);

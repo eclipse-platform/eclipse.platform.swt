@@ -523,12 +523,12 @@ public void create (Composite parent, int style) {
 		}
 
 		if (!Initialized) {
-			LocationProvider = new AppFileLocProvider (mozillaPath);
+			String profilePath = delegate.getProfilePath ();
+			LocationProvider = new AppFileLocProvider (mozillaPath, profilePath, IsXULRunner);
 			LocationProvider.AddRef ();
 
-			/* extract external.xpt to temp */
-			String tempPath = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
-			File componentsDir = new File (tempPath, "eclipse/mozillaComponents"); //$NON-NLS-1$
+			/* extract external.xpt to the profile's components directory */
+			File componentsDir = new File (profilePath, AppFileLocProvider.COMPONENTS_DIR);
 			java.io.InputStream is = Library.class.getResourceAsStream ("/external.xpt"); //$NON-NLS-1$
 			if (is != null) {
 				if (!componentsDir.exists ()) {
@@ -547,9 +547,6 @@ public void create (Composite parent, int style) {
 				} catch (FileNotFoundException e) {
 				} catch (IOException e) {
 				}
-			}
-			if (componentsDir.exists () && componentsDir.isDirectory ()) {
-				LocationProvider.setComponentsPath (componentsDir.getAbsolutePath ());
 			}
 
 			int /*long*/[] retVal = new int /*long*/[1];
@@ -707,124 +704,66 @@ public void create (Composite parent, int style) {
 		}
 		windowWatcher.Release ();
 
-		/* compute the profile directory and set it on the AppFileLocProvider */
-		if (LocationProvider != null) {
-			byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
-			rc = serviceManager.GetServiceByContractID (buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			if (result[0] == 0) {
-				browser.dispose ();
-				error (XPCOM.NS_NOINTERFACE);
-			}
+		/* notify observers of a new profile directory being used */
 
-			nsIDirectoryService directoryService = new nsIDirectoryService (result[0]);
-			result[0] = 0;
-			rc = directoryService.QueryInterface (nsIProperties.NS_IPROPERTIES_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			if (result[0] == 0) {
-				browser.dispose ();
-				error (XPCOM.NS_NOINTERFACE);
-			}
-			directoryService.Release ();
-
-			nsIProperties properties = new nsIProperties (result[0]);
-			result[0] = 0;
-			buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_APP_APPLICATION_REGISTRY_DIR, true);
-			rc = properties.Get (buffer, nsIFile.NS_IFILE_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			if (result[0] == 0) {
-				browser.dispose ();
-				error (XPCOM.NS_NOINTERFACE);
-			}
-			properties.Release ();
-
-			nsIFile profileDir = new nsIFile (result[0]);
-			result[0] = 0;
-			int /*long*/ path = XPCOM.nsEmbedCString_new ();
-			rc = profileDir.GetNativePath (path);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			int length = XPCOM.nsEmbedCString_Length (path);
-			int /*long*/ ptr = XPCOM.nsEmbedCString_get (path);
-			buffer = new byte [length];
-			XPCOM.memmove (buffer, ptr, length);
-			String profilePath = new String (MozillaDelegate.mbcsToWcs (null, buffer)) + PROFILE_DIR;
-			LocationProvider.setProfilePath (profilePath);
-			LocationProvider.isXULRunner = IsXULRunner;
-			XPCOM.nsEmbedCString_delete (path);
-			profileDir.Release ();
-
-			/* notify observers of a new profile directory being used */
-			buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
-			rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			if (result[0] == 0) {
-				browser.dispose ();
-				error (XPCOM.NS_NOINTERFACE);
-			}
-
-			nsIObserverService observerService = new nsIObserverService (result[0]);
-			result[0] = 0;
-			buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_DO_CHANGE, true);
-			length = STARTUP.length ();
-			char[] chars = new char [length + 1];
-			STARTUP.getChars (0, length, chars, 0);
-			rc = observerService.NotifyObservers (0, buffer, chars);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_AFTER_CHANGE, true);
-			rc = observerService.NotifyObservers (0, buffer, chars);
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			observerService.Release ();
-
-	        if (IsXULRunner) {
-				int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
-				/* alloc memory for two structs, the second is empty to signify the end of the list */
-				ptr = C.malloc (size * 2);
-				C.memset (ptr, 0, size * 2);
-				nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
-				byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_NotifyProfile", true); //$NON-NLS-1$
-				functionLoad.functionName = C.malloc (bytes.length);
-				C.memmove (functionLoad.functionName, bytes, bytes.length);
-				functionLoad.function = C.malloc (C.PTR_SIZEOF);
-				C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
-				XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
-				XPCOM.XPCOMGlueLoadXULFunctions (ptr);
-				C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
-				int /*long*/ functionPtr = result[0];
-				result[0] = 0;
-				C.free (functionLoad.function);
-				C.free (functionLoad.functionName);
-				C.free (ptr);
-				/* functionPtr == 0 for xulrunner < 1.9 */
-				if (functionPtr != 0) {
-					rc = XPCOM.Call (functionPtr);
-	            	if (rc != XPCOM.NS_OK) {
-	            		browser.dispose ();
-	            		error (rc);
-	            	}
-				}
-	        }
+		byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
+		rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
 		}
+		if (result[0] == 0) {
+			browser.dispose ();
+			error (XPCOM.NS_NOINTERFACE);
+		}
+
+		nsIObserverService observerService = new nsIObserverService (result[0]);
+		result[0] = 0;
+		buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_DO_CHANGE, true);
+		int length = STARTUP.length ();
+		char[] chars = new char [length + 1];
+		STARTUP.getChars (0, length, chars, 0);
+		rc = observerService.NotifyObservers (0, buffer, chars);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_AFTER_CHANGE, true);
+		rc = observerService.NotifyObservers (0, buffer, chars);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		observerService.Release ();
+
+        if (IsXULRunner) {
+			int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
+			/* alloc memory for two structs, the second is empty to signify the end of the list */
+			int /*long*/ ptr = C.malloc (size * 2);
+			C.memset (ptr, 0, size * 2);
+			nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
+			byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_NotifyProfile", true); //$NON-NLS-1$
+			functionLoad.functionName = C.malloc (bytes.length);
+			C.memmove (functionLoad.functionName, bytes, bytes.length);
+			functionLoad.function = C.malloc (C.PTR_SIZEOF);
+			C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
+			XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
+			XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+			C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
+			int /*long*/ functionPtr = result[0];
+			result[0] = 0;
+			C.free (functionLoad.function);
+			C.free (functionLoad.functionName);
+			C.free (ptr);
+			/* functionPtr == 0 for xulrunner < 1.9 */
+			if (functionPtr != 0) {
+				rc = XPCOM.Call (functionPtr);
+            	if (rc != XPCOM.NS_OK) {
+            		browser.dispose ();
+            		error (rc);
+            	}
+			}
+        }
 
 		/*
 		 * As a result of using a common profile the user cannot change their locale
@@ -844,7 +783,7 @@ public void create (Composite parent, int style) {
 
 		nsIPrefService prefService = new nsIPrefService (result[0]);
 		result[0] = 0;
-		byte[] buffer = new byte[1];
+		buffer = new byte[1];
 		rc = prefService.GetBranch (buffer, result);	/* empty buffer denotes root preference level */
 		prefService.Release ();
 		if (rc != XPCOM.NS_OK) {
@@ -888,7 +827,7 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				error (XPCOM.NS_NOINTERFACE);
 			}
-			int length = XPCOM.strlen_PRUnichar (result[0]);
+			length = XPCOM.strlen_PRUnichar (result[0]);
 			char[] dest = new char[length];
 			XPCOM.memmove (dest, result[0], length * 2);
 			prefLocales = new String (dest) + TOKENIZER_LOCALE;
@@ -932,7 +871,7 @@ public void create (Composite parent, int style) {
 		if (!newLocales.equals (prefLocales)) {
 			/* write the new locale value */
 			newLocales = newLocales.substring (0, newLocales.length () - TOKENIZER_LOCALE.length ()); /* remove trailing tokenizer */
-			int length = newLocales.length ();
+			length = newLocales.length ();
 			char[] charBuffer = new char[length + 1];
 			newLocales.getChars (0, length, charBuffer, 0);
 			if (localizedString == null) {
@@ -985,7 +924,7 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				error (XPCOM.NS_NOINTERFACE);
 			}
-			int length = XPCOM.strlen_PRUnichar (result[0]);
+			length = XPCOM.strlen_PRUnichar (result[0]);
 			char[] dest = new char[length];
 			XPCOM.memmove (dest, result[0], length * 2);
 			prefCharset = new String (dest);
@@ -995,7 +934,7 @@ public void create (Composite parent, int style) {
 		String newCharset = System.getProperty ("file.encoding");	// $NON-NLS-1$
 		if (!newCharset.equals (prefCharset)) {
 			/* write the new charset value */
-			int length = newCharset.length ();
+			length = newCharset.length ();
 			char[] charBuffer = new char[length + 1];
 			newCharset.getChars (0, length, charBuffer, 0);
 			if (localizedString == null) {
@@ -1042,7 +981,7 @@ public void create (Composite parent, int style) {
 
 			localizedString = new nsIPrefLocalizedString (result[0]);
 			result[0] = 0;
-			int length = proxyHost.length ();
+			length = proxyHost.length ();
 			char[] charBuffer = new char[length + 1];
 			proxyHost.getChars (0, length, charBuffer, 0);
 			rc = localizedString.SetDataWithLength (length, charBuffer);

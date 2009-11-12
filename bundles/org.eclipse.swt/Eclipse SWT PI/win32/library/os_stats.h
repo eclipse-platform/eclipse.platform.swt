@@ -1255,6 +1255,8 @@ typedef enum {
 	SHFILEINFOW_1sizeof_FUNC,
 	SHGetFileInfoA_FUNC,
 	SHGetFileInfoW_FUNC,
+	SHGetFolderPathA_FUNC,
+	SHGetFolderPathW_FUNC,
 	SHGetMalloc_FUNC,
 	SHGetPathFromIDListA_FUNC,
 	SHGetPathFromIDListW_FUNC,

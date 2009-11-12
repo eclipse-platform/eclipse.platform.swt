@@ -20,10 +20,10 @@ class AppFileLocProvider {
 	XPCOMObject directoryServiceProvider;
 	XPCOMObject directoryServiceProvider2;	
 	int refCount = 0;
-	String mozillaPath, profilePath, componentsPath;
+	String mozillaPath, profilePath;
 	String[] pluginDirs;
 	boolean isXULRunner;
-	
+
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String CHROME_DIR = "chrome"; //$NON-NLS-1$
 	static final String COMPONENTS_DIR = "components"; //$NON-NLS-1$
@@ -41,8 +41,23 @@ class AppFileLocProvider {
 		IsSparc = (osName.startsWith ("sunos") || osName.startsWith ("solaris")) && osArch.startsWith("sparc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
-AppFileLocProvider (String path) {
-	mozillaPath = path + SEPARATOR_OS;
+AppFileLocProvider (String mozillaPath, String profilePath, boolean isXULRunner) {
+	this.mozillaPath = mozillaPath + SEPARATOR_OS;
+	this.profilePath = profilePath + SEPARATOR_OS;
+	this.isXULRunner = isXULRunner;
+	if (!Compatibility.fileExists (profilePath, "")) { //$NON-NLS-1$
+		int /*long*/[] result = new int /*long*/[1];
+		nsEmbedString pathString = new nsEmbedString (profilePath);
+		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
+		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+		pathString.dispose ();
+
+		nsILocalFile file = new nsILocalFile (result [0]);
+		rc = file.Create (nsILocalFile.DIRECTORY_TYPE, 0700);
+		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		file.Release ();
+	}
 	createCOMInterfaces ();
 }
 
@@ -123,27 +138,6 @@ int Release () {
 	refCount--;
 	if (refCount == 0) disposeCOMInterfaces ();
 	return refCount;
-}
-
-void setComponentsPath (String path) {
-	componentsPath = path;
-}
-
-void setProfilePath (String path) {
-	profilePath = path;
-	if (!Compatibility.fileExists (path, "")) { //$NON-NLS-1$
-		int /*long*/[] result = new int /*long*/[1];
-		nsEmbedString pathString = new nsEmbedString (path);
-		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
-		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
-		pathString.dispose ();
-
-		nsILocalFile file = new nsILocalFile (result [0]);
-		rc = file.Create (nsILocalFile.DIRECTORY_TYPE, 0700);
-		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-		file.Release ();
-	}
 }
 
 /* nsIDirectoryServiceProvider2 */
@@ -285,7 +279,7 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 	} else if (propertyName.equals (XPCOM.NS_GRE_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_GRE_COMPONENT_DIR)) {
-		propertyValue = componentsPath != null ? componentsPath : mozillaPath + COMPONENTS_DIR;
+		propertyValue = profilePath + COMPONENTS_DIR;
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_INIT_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_OS_CURRENT_PROCESS_DIR)) {

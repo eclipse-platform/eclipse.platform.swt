@@ -104,6 +104,11 @@ String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
+String getProfilePath () {
+	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
+	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
+}
+
 String getSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }

@@ -94,6 +94,18 @@ String getLibraryName () {
 	return "xpcom.dll"; //$NON-NLS-1$
 }
 
+String getProfilePath () {
+	String baseDir;
+	/* Use the character encoding for the default locale */
+	TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
+	if (OS.SHGetFolderPath (0, OS.CSIDL_APPDATA, 0, OS.SHGFP_TYPE_CURRENT, buffer) == OS.S_OK) {
+		baseDir = buffer.toString (0, buffer.strlen ());
+	} else {
+		baseDir = System.getProperty("user.home"); //$NON-NLS-1$
+	}
+	return baseDir + Mozilla.SEPARATOR_OS + "Mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
+}
+
 String getSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }

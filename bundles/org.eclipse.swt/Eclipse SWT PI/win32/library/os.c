@@ -12768,6 +12768,38 @@ fail:
 }
 #endif
 
+#ifndef NO_SHGetFolderPathA
+JNIEXPORT jint JNICALL OS_NATIVE(SHGetFolderPathA)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3, jbyteArray arg4)
+{
+	jbyte *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SHGetFolderPathA_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)SHGetFolderPathA((HWND)arg0, arg1, (HANDLE)arg2, arg3, (LPSTR)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, SHGetFolderPathA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SHGetFolderPathW
+JNIEXPORT jint JNICALL OS_NATIVE(SHGetFolderPathW)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3, jcharArray arg4)
+{
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SHGetFolderPathW_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)SHGetFolderPathW((HWND)arg0, arg1, (HANDLE)arg2, arg3, (LPWSTR)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, SHGetFolderPathW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SHGetMalloc
 JNIEXPORT jint JNICALL OS_NATIVE(SHGetMalloc)
 	(JNIEnv *env, jclass that, jintLongArray arg0)

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 977;
-int OS_nativeFunctionCallCount[977];
+int OS_nativeFunctionCount = 979;
+int OS_nativeFunctionCallCount[979];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1247,6 +1247,8 @@ char * OS_nativeFunctionNames[] = {
 	"SHFILEINFOW_1sizeof",
 	"SHGetFileInfoA",
 	"SHGetFileInfoW",
+	"SHGetFolderPathA",
+	"SHGetFolderPathW",
 	"SHGetMalloc",
 	"SHGetPathFromIDListA",
 	"SHGetPathFromIDListW",
