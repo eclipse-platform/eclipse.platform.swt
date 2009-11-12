@@ -613,7 +613,7 @@ static String[] getExtensions(Display display) {
 	int desktop = getDesktop(display);
 	Hashtable mimeInfo = null;
 	switch (desktop) {
-		case DESKTOP_GIO: mimeInfo = gio_getMimeInfo(); break;
+		case DESKTOP_GIO: return gio_getExtensions();
 		case DESKTOP_GNOME_24: break;
 		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
@@ -624,15 +624,20 @@ static String[] getExtensions(Display display) {
 	Vector extensions = new Vector();
 	Enumeration keys = mimeInfo.keys();
 	while (keys.hasMoreElements()) {
-		String extension = (String)keys.nextElement();
-		extensions.add(extension);
+		String mimeType = (String)keys.nextElement();
+		Vector mimeExts = (Vector)mimeInfo.get(mimeType);
+		for (int index = 0; index < mimeExts.size(); index++){
+			if (!extensions.contains(mimeExts.elementAt(index))) {
+				extensions.addElement(mimeExts.elementAt(index));
+			}
+		}
 	}
 			
 	/* Return the list of extensions. */
-	String [] extStrings = new String[extensions.size()];
+	String[] extStrings = new String[extensions.size()];
 	for (int index = 0; index < extensions.size(); index++) {
 		extStrings[index] = (String)extensions.elementAt(index);
-	}	
+	}			
 	return extStrings;
 }
 
@@ -891,6 +896,24 @@ boolean gio_execute(String fileName) {
 	OS.g_object_unref (file);
 	OS.g_object_unref (application);
 	return result;
+}
+
+static String[] gio_getExtensions() {
+	Hashtable mimeInfo = gio_getMimeInfo();
+	if (mimeInfo == null) return new String[0];
+	/* Create a unique set of the file extensions. */
+	Vector extensions = new Vector();
+	Enumeration keys = mimeInfo.keys();
+	while (keys.hasMoreElements()) {
+		String extension = (String)keys.nextElement();
+		extensions.add(extension);
+	}
+	/* Return the list of extensions. */
+	String [] extStrings = new String[extensions.size()];
+	for (int index = 0; index < extensions.size(); index++) {
+		extStrings[index] = (String)extensions.elementAt(index);
+	}	
+	return extStrings;
 }
 
 /**
