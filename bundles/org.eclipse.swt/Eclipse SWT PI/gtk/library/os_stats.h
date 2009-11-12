@@ -511,6 +511,7 @@ typedef enum {
 	_1gdk_1window_1raise_FUNC,
 	_1gdk_1window_1remove_1filter_FUNC,
 	_1gdk_1window_1resize_FUNC,
+	_1gdk_1window_1restack_FUNC,
 	_1gdk_1window_1scroll_FUNC,
 	_1gdk_1window_1set_1accept_1focus_FUNC,
 	_1gdk_1window_1set_1back_1pixmap_FUNC,

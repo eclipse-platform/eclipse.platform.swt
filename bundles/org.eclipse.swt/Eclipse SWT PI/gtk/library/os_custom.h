@@ -112,6 +112,7 @@
 #define gtk_status_icon_set_tooltip_LIB "libgtk-x11-2.0.so.0"
 #define gtk_window_get_group_LIB "libgtk-x11-2.0.so.0"
 #define gtk_window_get_opacity_LIB "libgtk-x11-2.0.so.0"
+#define gdk_window_restack_LIB "libgdk-x11-2.0.so.0"
 #define gdk_window_set_keep_above_LIB "libgdk-x11-2.0.so.0"
 #define gdk_window_set_accept_focus_LIB "libgdk-x11-2.0.so.0"
 #define gtk_window_set_opacity_LIB "libgtk-x11-2.0.so.0"

@@ -3332,6 +3332,30 @@ void releaseWidget () {
 	region = null;
 }
 
+void restackWindow (int /*long*/ window, int /*long*/ sibling, boolean above) {
+	    if (OS.GTK_VERSION >= OS.VERSION (2, 17, 11)) {
+	    	OS.gdk_window_restack (window, sibling, above);
+	    } else {
+	    	/*
+			* Feature in X. If the receiver is a top level, XConfigureWindow ()
+			* will fail (with a BadMatch error) for top level shells because top
+			* level shells are reparented by the window manager and do not share
+			* the same X window parent.  This is the correct behavior but it is
+			* unexpected.  The fix is to use XReconfigureWMWindow () instead.
+			* When the receiver is not a top level shell, XReconfigureWMWindow ()
+			* behaves the same as XConfigureWindow ().
+			*/
+			int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+			int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
+			int xScreen = OS.XDefaultScreen (xDisplay);
+			int flags = OS.CWStackMode | OS.CWSibling;			
+			XWindowChanges changes = new XWindowChanges ();
+			changes.sibling = OS.gdk_x11_drawable_get_xid (sibling);
+			changes.stack_mode = above ? OS.Above : OS.Below;
+			OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
+	    }
+	}
+
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
 	Event event = new Event ();
 	event.button = button;
@@ -3682,15 +3706,7 @@ public void setEnabled (boolean enabled) {
 			if (!OS.GDK_WINDOWING_X11 ()) {
 				OS.gdk_window_raise (enableWindow);
 			} else {
-				int /*long*/ topWindow = OS.GTK_WIDGET_WINDOW (topHandle);			
-				int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (topWindow);
-				int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (enableWindow);
-				int xScreen = OS.XDefaultScreen (xDisplay);
-				int flags = OS.CWStackMode | OS.CWSibling;			
-				XWindowChanges changes = new XWindowChanges ();
-				changes.sibling = OS.gdk_x11_drawable_get_xid (topWindow);
-				changes.stack_mode = OS.Above;
-				OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
+				restackWindow (enableWindow, OS.GTK_WIDGET_WINDOW (topHandle), true);
 			}
 			if (OS.GTK_WIDGET_VISIBLE (topHandle)) OS.gdk_window_show_unraised (enableWindow);
 		}
@@ -4170,29 +4186,12 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 				OS.gdk_window_lower (window);
 			}
 		} else {
-			XWindowChanges changes = new XWindowChanges ();
-			changes.sibling = OS.gdk_x11_drawable_get_xid (siblingWindow != 0 ? siblingWindow : redrawWindow);
-			changes.stack_mode = above ? OS.Above : OS.Below;
-			if (redrawWindow != 0 && siblingWindow == 0) changes.stack_mode = OS.Below;
-			int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-			int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
-			int xScreen = OS.XDefaultScreen (xDisplay);
-			int flags = OS.CWStackMode | OS.CWSibling;
-			/*
-			* Feature in X. If the receiver is a top level, XConfigureWindow ()
-			* will fail (with a BadMatch error) for top level shells because top
-			* level shells are reparented by the window manager and do not share
-			* the same X window parent.  This is the correct behavior but it is
-			* unexpected.  The fix is to use XReconfigureWMWindow () instead.
-			* When the receiver is not a top level shell, XReconfigureWMWindow ()
-			* behaves the same as XConfigureWindow ().
-			*/
-			OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);			
+			int /*long*/ siblingW = siblingWindow != 0 ? siblingWindow : redrawWindow;
+			boolean stack_mode = above;
+			if (redrawWindow != 0 && siblingWindow == 0) stack_mode = false;
+			restackWindow (window, siblingW, stack_mode);
 			if (enableWindow != 0) {
-				changes.sibling = OS.gdk_x11_drawable_get_xid (window);
-				changes.stack_mode = OS.Above;
-				xWindow = OS.gdk_x11_drawable_get_xid (enableWindow);
-				OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
+				 restackWindow (enableWindow, window, true);
 			}
 		}
 	}
