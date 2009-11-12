@@ -270,6 +270,11 @@ public class Display extends Device {
 	int SCROLLBAR_VERTICAL_BASIC_FLAGS;
 	int SCROLLBAR_HORIZONTAL_BASIC_FLAGS;
 
+	/* Skinning support */
+	static final int GROW_SIZE = 1024;
+	Widget [] skinList = new Widget [GROW_SIZE];
+	int skinCount;
+	
 	/* Package name */
 	static final String PACKAGE_NAME;
 	static {
@@ -424,6 +429,15 @@ public void addListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, listener);
+}
+
+void addSkinnableWidget (Widget widget) {
+	if (skinCount >= skinList.length) {
+		Widget[] newSkinWidgets = new Widget [skinList.length + GROW_SIZE];
+		System.arraycopy (skinList, 0, newSkinWidgets, 0, skinList.length);
+		skinList = newSkinWidgets;
+	}
+	skinList [skinCount++] = widget;
 }
 
 /**
@@ -2051,6 +2065,7 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runSkin ();
 	runDeferredLayouts ();
 	idle = false;
 	OS.PtRelease ();
@@ -2309,6 +2324,29 @@ boolean runDeferredLayouts () {
 	return false;
 }
 
+boolean runSkin () {
+	if (skinCount > 0) {
+		Widget [] oldSkinWidgets = skinList;	
+		int count = skinCount;	
+		skinList = new Widget[GROW_SIZE];
+		skinCount = 0;
+		if (eventTable != null && eventTable.hooks(SWT.Skin)) {
+			for (int i = 0; i < count; i++) {
+				Widget widget = oldSkinWidgets[i];
+				if (widget != null && !widget.isDisposed()) {
+					widget.state &= ~Widget.SKIN_NEEDED;
+					oldSkinWidgets[i] = null;
+					Event event = new Event ();
+					event.widget = widget;
+					sendEvent (SWT.Skin, event);
+				}
+			}
+		}
+		return true;
+	}	
+	return false;
+}
+	
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null && filterTable == null) {
 		return;

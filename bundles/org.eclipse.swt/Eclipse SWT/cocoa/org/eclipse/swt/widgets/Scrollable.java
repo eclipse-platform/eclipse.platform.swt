@@ -290,6 +290,12 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void reskinChildren (int flags) {
+	if (horizontalBar != null) horizontalBar.reskin (flags);
+	if (verticalBar != null) verticalBar.reskin (flags);
+	super.reskinChildren (flags);
+}
+
 void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
 	if ((state & CANVAS) == 0 && scrollView != null) {
 		NSClipView clip = new NSClipView (clipView);

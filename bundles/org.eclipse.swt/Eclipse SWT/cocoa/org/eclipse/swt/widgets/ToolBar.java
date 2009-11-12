@@ -546,6 +546,16 @@ void resized () {
 	relayout ();
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			ToolItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 void setFont(NSFont font) {
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];

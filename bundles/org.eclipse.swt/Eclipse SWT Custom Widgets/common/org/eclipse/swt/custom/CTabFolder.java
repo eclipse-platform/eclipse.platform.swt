@@ -2486,6 +2486,14 @@ public void removeSelectionListener(SelectionListener listener) {
 	removeListener(SWT.Selection, listener);
 	removeListener(SWT.DefaultSelection, listener);	
 }
+
+public void reskin(int flags) {
+	super.reskin(flags);
+	for (int i = 0; i < items.length; i++) {
+		items[i].reskin(flags);
+	}
+}
+
 public void setBackground (Color color) {
 	super.setBackground(color);
 	redraw();

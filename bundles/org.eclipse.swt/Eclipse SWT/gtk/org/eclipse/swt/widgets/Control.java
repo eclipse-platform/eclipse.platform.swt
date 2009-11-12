@@ -3913,6 +3913,7 @@ public boolean setParent (Composite parent) {
 	OS.gtk_fixed_move (newParent, topHandle, x, y);
 	this.parent = parent;
 	setZOrder (null, false, true);
+	reskin (SWT.ALL);
 	return true;
 }
 

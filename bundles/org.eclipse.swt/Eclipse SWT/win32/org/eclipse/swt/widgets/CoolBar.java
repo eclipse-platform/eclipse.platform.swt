@@ -727,6 +727,16 @@ void removeControl (Control control) {
 	}
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			CoolItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.RB_SETBKCOLOR, 0, pixel);

@@ -276,6 +276,12 @@ int hScrollBarWidth() {
 	return requisition.height + spacing;
 }
 
+void reskinChildren (int flags) {
+	if (horizontalBar != null) horizontalBar.reskin (flags);
+	if (verticalBar != null) verticalBar.reskin (flags);
+	super.reskinChildren (flags);
+}
+
 boolean sendLeaveNotify () {
 	return scrolledHandle != 0;
 }

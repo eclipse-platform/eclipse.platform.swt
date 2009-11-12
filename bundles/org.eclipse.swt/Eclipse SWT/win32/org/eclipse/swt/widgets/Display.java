@@ -393,6 +393,10 @@ public class Display extends Device {
 	/* Workaround for Adobe Reader 7.0 */
 	int hitCount;
 	
+	/* Skinning support */
+	Widget [] skinList = new Widget [GROW_SIZE];
+	int skinCount;
+	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/*
@@ -508,6 +512,15 @@ void addControl (int /*long*/ handle, Control control) {
 	freeSlot = indexTable [oldSlot];
 	indexTable [oldSlot] = -2;
 	controlTable [oldSlot] = control;
+}
+
+void addSkinnableWidget (Widget widget) {
+	if (skinCount >= skinList.length) {
+		Widget[] newSkinWidgets = new Widget [skinList.length + GROW_SIZE];
+		System.arraycopy (skinList, 0, newSkinWidgets, 0, skinList.length);
+		skinList = newSkinWidgets;
+	}
+	skinList [skinCount++] = widget;
 }
 
 /**
@@ -3500,6 +3513,7 @@ public boolean readAndDispatch () {
 	checkDevice ();
 	lpStartupInfo = null;
 	drawMenuBars ();
+	runSkin ();
 	runDeferredLayouts ();
 	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
@@ -3983,6 +3997,29 @@ void runSettings () {
 	}
 }
 
+boolean runSkin () {
+	if (skinCount > 0) {
+		Widget [] oldSkinWidgets = skinList;	
+		int count = skinCount;	
+		skinList = new Widget[GROW_SIZE];
+		skinCount = 0;
+		if (eventTable != null && eventTable.hooks(SWT.Skin)) {
+			for (int i = 0; i < count; i++) {
+				Widget widget = oldSkinWidgets[i];
+				if (widget != null && !widget.isDisposed()) {
+					widget.state &= ~Widget.SKIN_NEEDED;
+					oldSkinWidgets[i] = null;
+					Event event = new Event ();
+					event.widget = widget;
+					sendEvent (SWT.Skin, event);
+				}
+			}
+		}
+		return true;
+	}	
+	return false;
+}
+	
 boolean runTimer (int /*long*/ id) {
 	if (timerList != null && timerIds != null) {
 		int index = 0;

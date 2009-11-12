@@ -380,6 +380,12 @@ void resizeClientArea () {
 	}
 }
 
+void reskinChildren (int flags) {
+	if (horizontalBar != null) horizontalBar.reskin (flags);
+	if (verticalBar != null) verticalBar.reskin (flags);
+	super.reskinChildren (flags);
+}
+
 boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 	if ((state & CANVAS) != 0) {
 		ScrollBar bar = wheelAxis == OS.kEventMouseWheelAxisX ? horizontalBar : verticalBar;

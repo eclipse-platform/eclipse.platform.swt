@@ -306,6 +306,12 @@ void releaseHandle () {
 	scrolledHandle = 0;
 }
 
+void reskinChildren (int flags) {
+	if (horizontalBar != null) horizontalBar.reskin (flags);
+	if (verticalBar != null) verticalBar.reskin (flags);
+	super.reskinChildren (flags);
+}
+
 int topHandle () {
 	return scrolledHandle != 0 ? scrolledHandle : super.topHandle ();
 }

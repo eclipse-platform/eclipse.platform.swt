@@ -3482,6 +3482,7 @@ public boolean setParent (Composite parent) {
 	parent.contentView().addSubview(topView, OS.NSWindowBelow, null);
 	topView.release();
 	this.parent = parent;
+	reskin (SWT.ALL);
 	return true;
 }
 

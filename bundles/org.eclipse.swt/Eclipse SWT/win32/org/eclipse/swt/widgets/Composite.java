@@ -224,6 +224,7 @@ Widget [] computeTabList () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	display.runSkin ();
 	Point size;
 	if (layout != null) {
 		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
@@ -858,6 +859,15 @@ void removeControl (Control control) {
 	resizeChildren ();
 }
 
+void reskinChildren (int flags) {
+	super.reskinChildren (flags);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child != null) child.reskin (flags);
+	}
+}
+
 void resizeChildren () {
 	if (lpwp == null) return;
 	do {
@@ -1222,6 +1232,7 @@ void updateLayout (boolean resize, boolean all) {
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);
+		display.runSkin();
 		if (resize) setResizeChildren (false);
 		layout.layout (this, changed);
 		if (resize) setResizeChildren (true);

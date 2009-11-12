@@ -3387,6 +3387,21 @@ public void removeTreeListener (TreeListener listener) {
 	removeListener (SWT.Expand, listener);
 	removeListener (SWT.Collapse, listener);
 }
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) item.reskinChildren (flags);
+		}
+	}
+	if (columns != null) {
+		for (int i=0; i<columns.length; i++) {
+			TreeColumn column = columns [i];
+			if (column != null) column.reskinChildren (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
 /**
  * Selects an item in the receiver.  If the item was already
  * selected, it remains selected.

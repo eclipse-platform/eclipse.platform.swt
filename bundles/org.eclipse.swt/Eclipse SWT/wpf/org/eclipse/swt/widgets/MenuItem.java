@@ -534,6 +534,13 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void reskinChildren (int flags) {
+	if (menu != null) {
+		menu.reskin (flags);
+	}
+	super.reskinChildren (flags);
+}
+
 /**
  * Sets the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:

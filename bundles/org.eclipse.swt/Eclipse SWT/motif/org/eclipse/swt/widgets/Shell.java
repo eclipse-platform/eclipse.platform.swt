@@ -275,6 +275,7 @@ Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 			state |= FOREIGN_HANDLE;
 		}
 	}
+	reskinWidget();
 	createWidget (0);
 }
 /**
@@ -1340,6 +1341,15 @@ public void removeShellListener(ShellListener listener) {
 	eventTable.unhook(SWT.Deactivate, listener);
 	eventTable.unhook(SWT.Iconify,listener);
 	eventTable.unhook(SWT.Deiconify,listener);
+}
+
+void reskinChildren (int flags) {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (shell != null) shell.reskin (flags);
+	}
+	super.reskinChildren (flags);
 }
 
 /**

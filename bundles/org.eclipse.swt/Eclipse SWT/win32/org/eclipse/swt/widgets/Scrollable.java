@@ -226,6 +226,12 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void reskinChildren (int flags) {
+	if (horizontalBar != null) horizontalBar.reskin (flags);
+	if (verticalBar != null) verticalBar.reskin (flags);
+	super.reskinChildren (flags);
+}
+
 int /*long*/ scrolledHandle () {
 	return handle;
 }

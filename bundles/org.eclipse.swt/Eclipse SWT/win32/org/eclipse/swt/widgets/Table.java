@@ -3157,6 +3157,24 @@ public void select (int [] indices) {
 	}
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		for (int i=0; i<itemCount; i++) {
+			TableItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	if (columns != null) {
+		for (int i=0; i<columnCount; i++) {
+			TableColumn column = columns [i];
+			if (!column.isDisposed ()) column.reskin (flags);
+		}
+		columns = null;
+	}
+	super.reskinChildren (flags);
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains

@@ -394,6 +394,17 @@ void remove (Menu menu) {
 	}
 }
 
+void reskinChildren (int flags) {
+	if (menuBar != null) menuBar.reskin (flags);
+	if (menus != null) {
+		for (int i=0; i<menus.length; i++) {
+			Menu menu = menus [i];
+			if (menu != null) menu.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 void resizeBounds (int width, int height) {
 	int menuHeight = 0;
 	if (menuBar != null) {

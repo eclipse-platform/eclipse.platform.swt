@@ -1821,6 +1821,24 @@ public void removeTreeListener(TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
+void reskinChildren (int flags) {
+	if (itemCount > 0) {
+		int items = OS.ItemsControl_Items (handle);
+		for (int i = 0; i < itemCount; i++) {
+			TreeItem item  = getItem (items, i, true);
+			if (item != null) item.reskinChildren (flags);
+		}
+		OS.GCHandle_Free (items);
+	}
+	if (columns != null) {
+		for (int i=0; i<columns.length; i++) {
+			TreeColumn column = columns [i];
+			if (column != null) column.reskinChildren (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 int setBounds (int x, int y, int width, int height, int flags) {
 	int result = super.setBounds (x, y, width, height, flags);
 	if ((result & RESIZED) != 0) {

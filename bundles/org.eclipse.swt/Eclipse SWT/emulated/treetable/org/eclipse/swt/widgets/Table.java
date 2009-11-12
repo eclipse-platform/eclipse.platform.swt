@@ -3135,6 +3135,22 @@ public void removeSelectionListener (SelectionListener listener) {
 	removeListener (SWT.Selection, listener);
 	removeListener (SWT.DefaultSelection, listener);	
 }
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<itemsCount; i++) {
+			TableItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	if (columns != null) {
+		for (int i=0; i<columns.length; i++) {
+			TableColumn column = columns [i];
+			if (!column.isDisposed ()) column.reskin (flags);
+		}
+		columns = null;
+	}
+	super.reskinChildren (flags);
+}
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains

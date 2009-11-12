@@ -498,6 +498,17 @@ void removeControl (Control control) {
 	}
 }
 
+void reskinChildren (int flags) {
+	ToolItem[] items = _getItems();
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			ToolItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) relayout ();

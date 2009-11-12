@@ -212,6 +212,7 @@ public void changed (Control[] changed) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
+	display.runSkin ();
 	Point size;
 	if (layout != null) {
 		if ((wHint == SWT.DEFAULT) || (hHint == SWT.DEFAULT)) {
@@ -785,6 +786,15 @@ void removeControl (Control control) {
 	fixTabList (control);
 }
 
+void reskinChildren (int flags) {
+	super.reskinChildren (flags);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child != null) child.reskin (flags);
+	}
+}
+
 void resized () {
 	super.resized ();
 	if (layout != null) {
@@ -1046,6 +1056,7 @@ void updateLayout (boolean all) {
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);
+		display.runSkin ();
 		layout.layout (this, changed);
 	}
 	if (all) {

@@ -489,6 +489,17 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<itemCount; i++) {
+			TabItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+		items = null;
+	}
+	super.reskinChildren (flags);
+}
+
 void setFont (NSFont font) {
 	((NSTabView)view).setFont(font);
 	for (int i = 0; i < itemCount; i++) {

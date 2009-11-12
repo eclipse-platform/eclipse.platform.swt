@@ -379,6 +379,16 @@ public void removeExpandListener (ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);	
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			ExpandItem item = items [i];
+			if (item != null ) item.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 public void setFont(Font font) {
 	super.setFont (font);
 	this.font = font;

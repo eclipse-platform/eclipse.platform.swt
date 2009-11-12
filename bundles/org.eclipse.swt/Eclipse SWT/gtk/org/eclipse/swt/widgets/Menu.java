@@ -834,6 +834,15 @@ public void removeHelpListener (HelpListener listener) {
 	eventTable.unhook (SWT.Help, listener);
 }
 
+void reskinChildren (int flags) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		item.reskin (flags);
+	}
+	super.reskinChildren (flags);
+}
+
 boolean sendHelpEvent (int /*long*/ helpType) {
 	if (selectedItem != null && !selectedItem.isDisposed()) {
 		if (selectedItem.hooks (SWT.Help)) {

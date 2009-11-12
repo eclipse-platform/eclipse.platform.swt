@@ -614,6 +614,19 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+
+void reskinChildren (int flags) {
+	if (items != null) {
+		int count = (int)/*64*/OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+		for (int i=0; i<count; i++) {
+			TabItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+		items = null;
+	}
+	super.reskinChildren (flags);
+}
+
 /**
  * Sets the receiver's selection to the given item.
  * The current selected is first cleared, then the new item is

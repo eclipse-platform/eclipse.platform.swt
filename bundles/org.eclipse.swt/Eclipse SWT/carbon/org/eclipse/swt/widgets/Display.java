@@ -312,6 +312,10 @@ public class Display extends Device {
 	static Display Default;
 	static Display [] Displays = new Display [4];
 				
+	/* Skinning support */
+	Widget [] skinList = new Widget [GROW_SIZE];
+	int skinCount;
+	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.modalDialog"; //$NON-NLS-1$
@@ -533,6 +537,15 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
+}
+
+void addSkinnableWidget (Widget widget) {
+	if (skinCount >= skinList.length) {
+		Widget[] newSkinWidgets = new Widget [skinList.length + GROW_SIZE];
+		System.arraycopy (skinList, 0, newSkinWidgets, 0, skinList.length);
+		skinList = newSkinWidgets;
+	}
+	skinList [skinCount++] = widget;
 }
 
 void addToDisposeWindow (int control) {
@@ -3087,6 +3100,7 @@ int readImageRef(int path) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runSkin ();
 	runDeferredLayouts ();
 	boolean events = false;
 	events |= runSettings ();
@@ -3614,6 +3628,29 @@ boolean runSettings () {
 	return true;
 }
 
+boolean runSkin () {
+	if (skinCount > 0) {
+		Widget [] oldSkinWidgets = skinList;	
+		int count = skinCount;	
+		skinList = new Widget[GROW_SIZE];
+		skinCount = 0;
+		if (eventTable != null && eventTable.hooks(SWT.Skin)) {
+			for (int i = 0; i < count; i++) {
+				Widget widget = oldSkinWidgets[i];
+				if (widget != null && !widget.isDisposed()) {
+					widget.state &= ~Widget.SKIN_NEEDED;
+					oldSkinWidgets[i] = null;
+					Event event = new Event ();
+					event.widget = widget;
+					sendEvent (SWT.Skin, event);
+				}
+			}
+		}
+		return true;
+	}	
+	return false;
+}
+	
 boolean runTimers () {
 	if (timerList == null) return false;
 	boolean result = false;

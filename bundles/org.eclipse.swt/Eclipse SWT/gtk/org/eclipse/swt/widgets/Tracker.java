@@ -132,6 +132,7 @@ public Tracker (Display display, int style) {
 	}
 	this.style = checkStyle (style);
 	this.display = display;
+	reskinWidget ();
 }
 
 /**

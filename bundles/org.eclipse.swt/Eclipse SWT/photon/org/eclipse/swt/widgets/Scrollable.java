@@ -220,6 +220,12 @@ void resizeClientArea () {
 	/* Do nothing */
 }
 
+void reskinChildren (int flags) {
+	if (horizontalBar != null) horizontalBar.reskin (flags);
+	if (verticalBar != null) verticalBar.reskin (flags);
+	super.reskinChildren (flags);
+}
+
 void releaseChildren (boolean destroy) {
 	if (horizontalBar != null) {
 		horizontalBar.release (false);

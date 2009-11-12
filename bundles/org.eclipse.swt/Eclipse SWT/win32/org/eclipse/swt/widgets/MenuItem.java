@@ -600,6 +600,14 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+
+void reskinChildren (int flags) {
+	if (menu != null) {
+		menu.reskin (flags);
+	}
+	super.reskinChildren (flags);
+}
+
 void selectRadio () {
 	int index = 0;
 	MenuItem [] items = parent.getItems ();

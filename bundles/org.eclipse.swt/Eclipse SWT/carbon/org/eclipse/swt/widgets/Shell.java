@@ -284,6 +284,7 @@ Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 			state |= FOREIGN_HANDLE;
 		}
 	}
+	reskinWidget ();
 	createWidget ();
 }
 
@@ -1351,6 +1352,21 @@ void resizeBounds () {
 	int control = scrolledHandle != 0 ? scrolledHandle : handle;
 	setBounds (control, 0, 0, rect.right - rect.left, rect.bottom - rect.top, false, true, false);
 	resizeClientArea ();
+}
+
+void reskinChildren (int flags) {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (shell != null) shell.reskin (flags);
+	}
+	if (toolTips != null) {
+		for (int i=0; i<toolTips.length; i++) {
+			ToolTip toolTip = toolTips [i];
+			if (toolTip != null) toolTip.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
 }
 
 /**

@@ -260,6 +260,11 @@ void releaseHandle () {
 	super.releaseHandle ();
 	scrolledHandle = formHandle = 0;
 }
+void reskinChildren (int flags) {
+	if (horizontalBar != null) horizontalBar.reskin (flags);
+	if (verticalBar != null) verticalBar.reskin (flags);
+	super.reskinChildren (flags);
+}
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	/*

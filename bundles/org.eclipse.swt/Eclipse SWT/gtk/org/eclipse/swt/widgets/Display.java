@@ -400,6 +400,10 @@ public class Display extends Device {
 	static Display Default;
 	static Display [] Displays = new Display [4];
 
+	/* Skinning support */
+	Widget [] skinList = new Widget [GROW_SIZE];
+	int skinCount;
+	
 	/* Package name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/* This code is intentionally commented.
@@ -640,6 +644,15 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
+}
+
+void addSkinnableWidget (Widget widget) {
+	if (skinCount >= skinList.length) {
+		Widget[] newSkinWidgets = new Widget [skinList.length + GROW_SIZE];
+		System.arraycopy (skinList, 0, newSkinWidgets, 0, skinList.length);
+		skinList = newSkinWidgets;
+	}
+	skinList [skinCount++] = widget;
 }
 
 void addWidget (int /*long*/ handle, Widget widget) {
@@ -3103,6 +3116,7 @@ void putGdkEvents () {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runSkin ();
 	runDeferredLayouts ();
 	boolean events = false;
 	events |= runSettings ();
@@ -3556,6 +3570,29 @@ boolean runSettings () {
 	return true;
 }
 
+boolean runSkin () {
+	if (skinCount > 0) {
+		Widget [] oldSkinWidgets = skinList;	
+		int count = skinCount;	
+		skinList = new Widget[GROW_SIZE];
+		skinCount = 0;
+		if (eventTable != null && eventTable.hooks(SWT.Skin)) {
+			for (int i = 0; i < count; i++) {
+				Widget widget = oldSkinWidgets[i];
+				if (widget != null && !widget.isDisposed()) {
+					widget.state &= ~Widget.SKIN_NEEDED;
+					oldSkinWidgets[i] = null;
+					Event event = new Event ();
+					event.widget = widget;
+					sendEvent (SWT.Skin, event);
+				}
+			}
+		}
+		return true;
+	}	
+	return false;
+}
+	
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used

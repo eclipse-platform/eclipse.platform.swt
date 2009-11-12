@@ -87,6 +87,9 @@ public abstract class Widget {
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
+	/* Notify of the opportunity to skin this widget */
+	static final int SKIN_NEEDED = 1<<21;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -129,6 +132,7 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	display = parent.display;
+	reskinWidget ();
 }
 
 int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
@@ -300,6 +304,27 @@ boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 
 void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	callSuper(id, sel);
+}
+
+/**
+ * 
+ * @param flags
+ * @since 3.6
+ */
+public void reskin (int flags) {
+	checkWidget ();
+	reskinWidget ();
+	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
+}
+
+void reskinChildren (int flags) {	
+}
+
+void reskinWidget() {
+	if ((state & SKIN_NEEDED) != SKIN_NEEDED) {
+		this.state |= SKIN_NEEDED;
+		display.addSkinnableWidget(this);
+	}
 }
 
 boolean resignFirstResponder (int /*long*/ id, int /*long*/ sel) {
@@ -1464,6 +1489,7 @@ public void setData (String key, Object value) {
 			}
 		}
 	}
+	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
 }
 
 void setOpenGLContext(Object value) {

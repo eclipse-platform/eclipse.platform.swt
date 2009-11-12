@@ -1224,6 +1224,15 @@ public void removeMenuListener (MenuListener listener) {
 	eventTable.unhook (SWT.Show, listener);
 }
 
+void reskinChildren (int flags) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		item.reskin (flags);
+	}
+	super.reskinChildren (flags);
+}
+
 /**
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the control

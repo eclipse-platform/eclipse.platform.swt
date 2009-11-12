@@ -45,6 +45,7 @@ Tray (Display display, int style) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	this.display = display;
+	reskinWidget ();
 }
 	
 void createItem (TrayItem item, int index) {
@@ -144,6 +145,16 @@ void releaseChildren (boolean destroy) {
 void releaseParent () {
 	super.releaseParent ();
 	if (display.tray == this) display.tray = null;
+}
+
+void reskinChildren (int flags) {	
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TrayItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
 }
 
 }

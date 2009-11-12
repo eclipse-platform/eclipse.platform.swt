@@ -210,6 +210,7 @@ int /*long*/ childStyle () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	display.runSkin();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point size;
@@ -1224,6 +1225,15 @@ void removeControl (Control control) {
 	fixTabList (control);
 }
 
+void reskinChildren (int flags) {
+	super.reskinChildren (flags);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child != null) child.reskin (flags);
+	}
+}
+
 void resizeHandle (int width, int height) {
 	super.resizeHandle (width, height);
 	if (socketHandle != 0) OS.gtk_widget_set_size_request (socketHandle, width, height);
@@ -1444,6 +1454,7 @@ void updateLayout (boolean all) {
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);
+		display.runSkin();
 		layout.layout (this, changed);
 	}
 	if (all) {

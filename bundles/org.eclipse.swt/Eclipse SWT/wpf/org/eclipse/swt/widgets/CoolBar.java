@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -523,6 +524,16 @@ void removeControl (Control control) {
 			break;
 		}
 	}
+}
+
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			CoolItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
 }
 
 int setBounds (int x, int y, int width, int height, int flags) {

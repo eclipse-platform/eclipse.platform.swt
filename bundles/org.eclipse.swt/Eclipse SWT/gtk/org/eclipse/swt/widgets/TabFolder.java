@@ -587,6 +587,22 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		int /*long*/ list = OS.gtk_container_get_children (handle);
+		if (list != 0){
+			int count = OS.g_list_length (list);
+			OS.g_list_free (list);
+			for (int i=0; i<count; i++) {
+				TabItem item = items [i];
+				if (item != null) item.reskin (flags);
+			}
+			items = null;
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) {

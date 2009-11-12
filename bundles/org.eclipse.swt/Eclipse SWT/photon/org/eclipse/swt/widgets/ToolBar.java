@@ -414,6 +414,16 @@ void removeControl (Control control) {
 	}
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			ToolItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	for (int i = 0; i < itemCount; i++) {

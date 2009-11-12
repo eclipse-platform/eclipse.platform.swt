@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class provide an area for dynamically
@@ -1099,6 +1100,19 @@ public void setWrapIndices (int[] indices) {
 	}
 	relayout();
 }
+
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int row = 0; row < items.length; row++) {
+			for (int i = 0; i < items[row].length; i++) {
+				CoolItem item = items[row][i];
+				if (item != null) item.reskin (flags);
+			}
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 public void setCursor (Cursor cursor) {
 	checkWidget ();
 	super.setCursor (this.cursor = cursor);

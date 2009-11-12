@@ -2261,6 +2261,22 @@ public void removeTreeListener (TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) item.reskinChildren (flags);
+		}
+	}
+	if (columns != null) {
+		for (int i=0; i<columns.length; i++) {
+			TreeColumn column = columns [i];
+			if (column != null) column.reskinChildren (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 void setImage (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	OS.object_setInstanceVariable(id, Display.SWT_IMAGE, arg0);
 }

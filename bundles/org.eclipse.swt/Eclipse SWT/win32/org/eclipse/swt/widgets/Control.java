@@ -3935,6 +3935,7 @@ public boolean setParent (Composite parent) {
 	this.parent = parent;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
+	reskin (SWT.ALL);
 	return true;
 }
 

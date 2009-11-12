@@ -2776,6 +2776,7 @@ public void setMenu (Menu menu) {
 public boolean setParent (Composite parent) {
 	checkWidget();
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	reskin (SWT.ALL);
 	return false;
 }
 

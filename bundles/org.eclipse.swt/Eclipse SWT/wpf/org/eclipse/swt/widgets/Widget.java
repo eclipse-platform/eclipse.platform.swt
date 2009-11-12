@@ -94,6 +94,9 @@ public abstract class Widget {
 	/* DragDetect */
 	static final int DRAG_DETECT	= 1<<15;
 	
+	/* Notify of the opportunity to skin this widget */
+	static final int SKIN_NEEDED = 1<<21;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -141,6 +144,7 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	display = parent.display;
+	reskinWidget ();
 }
 
 void _addListener (int eventType, Listener listener) {
@@ -1000,6 +1004,27 @@ protected void removeListener (int eventType, SWTEventListener listener) {
 }
 
 /**
+ * 
+ * @param flags
+ * @since 3.6
+ */
+public void reskin (int flags) {
+	checkWidget ();
+	reskinWidget ();
+	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
+}
+
+void reskinChildren (int flags) {	
+}
+
+void reskinWidget() {
+	if ((state & SKIN_NEEDED) != SKIN_NEEDED) {
+		this.state |= SKIN_NEEDED;
+		display.addSkinnableWidget(this);
+	}
+}
+
+/**
  * Removes the listener from the collection of listeners who will
  * be notified when the widget is disposed.
  *
@@ -1321,6 +1346,7 @@ public void setData (String key, Object value) {
 		OS.GCHandle_Free(uri);
 		OS.GCHandle_Free(ptr);
 	}
+	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
 }
 
 boolean sendFocusEvent (int type) {

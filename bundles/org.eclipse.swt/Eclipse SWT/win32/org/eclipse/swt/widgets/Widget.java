@@ -90,6 +90,9 @@ public abstract class Widget {
 	/* Ignore WM_CHANGEUISTATE */
 	static final int IGNORE_WM_CHANGEUISTATE = 1<<20;
 	
+	/* Notify of the opportunity to skin this widget */
+	static final int SKIN_NEEDED = 1<<21;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -146,6 +149,7 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	display = parent.display;
+	reskinWidget ();
 }
 
 void _addListener (int eventType, Listener listener) {
@@ -974,6 +978,50 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
+/**
+ * Marks the widget to be skinned. 
+ * <p>
+ * The skin event is sent to the receiver's display when appropriate (usually before the next event
+ * is handled). Widgets are automatically marked for skinning upon creation as well as when its skin
+ * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code> 
+ * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it 
+ * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor 
+ * while specifying the <code>SWT.ALL</code> flag.  
+ * </p>
+ * <p>
+ * The parameter <code>flags</code> may be either:
+ * <dl>
+ * <dt><b>SWT.ALL</b></dt>
+ * <dd>all children in the receiver's widget tree should be skinned</dd>
+ * <dt><b>SWT.NONE</b></dt>
+ * <dd>only the receiver should be skinned</dd>
+ * </dl>
+ * </p>
+ * @param flags the flags specifying how to reskin
+ * 
+ * @exception SWTException 
+ * <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.6
+ */
+public void reskin (int flags) {
+	checkWidget ();
+	reskinWidget ();
+	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
+}
+
+void reskinChildren (int flags) {	
+}
+
+void reskinWidget() {
+	if ((state & SKIN_NEEDED) != SKIN_NEEDED) {
+		this.state |= SKIN_NEEDED;
+		display.addSkinnableWidget(this);
+	}
+}
+
 boolean sendDragEvent (int button, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
@@ -1207,6 +1255,7 @@ public void setData (String key, Object value) {
 			}
 		}
 	}
+	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
 }
 
 boolean sendFocusEvent (int type) {

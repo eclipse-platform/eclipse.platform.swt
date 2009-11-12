@@ -574,7 +574,7 @@ public class SWT {
 	 * @since 3.6
 	 */
 	public static final int MouseHorizontalWheel = 38;
-
+	
 	/**
 	 * The mouse wheel event type (value is 37).
 	 * This is a synonym for {@link #MouseVerticalWheel} (value is 37).  
@@ -683,6 +683,23 @@ public class SWT {
 	 */
 	public static final int OrientationChange = 44;
 
+	/**
+	 * The skin event type (value is 45).
+	 * 
+	 * <p>
+	 * The skin event is sent by the display when a widget needs to
+	 * be skinned. 
+	 * </p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * @see org.eclipse.swt.widgets.Widget#reskin(int)
+	 * 
+	 * @since 3.6
+	 */
+	public static final int Skin = 45;
+	
 	/* Event Details */
 	
 	/**
@@ -866,20 +883,6 @@ public class SWT {
 	 */
 	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
 	
-	/**
-	 * A constant indicating that a given operation should be performed on
-	 * all widgets (value is 1&lt;&lt;0).
-	 * 
-	 * <p><b>Used By:</b><ul>
-	 * <li><code>Composite</code> layout</li>
-	 * </ul></p>
-	 * 
-	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
-	 * 
-	 * @since 3.6
-	 */
-	public static final int ALL = 1 << 0;
-
 	/**
 	 * A constant indicating that widgets have changed.
 	 * (value is 1&lt;&lt;1).
@@ -3816,6 +3819,40 @@ public class SWT {
 	 * @since 3.3
 	 */	
 	public static final int MOVEMENT_WORD_START = 1 << 4;
+
+	/**
+	 * A constant indicating that a given operation should be performed on
+	 * all widgets (value is 1&lt;&lt;0).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Composite</code> layout</li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Composite#layout(org.eclipse.swt.widgets.Control[], int)
+	 * 
+	 * @since 3.6
+	 */
+	public static final int ALL = 1 << 0;
+	
+	/**
+	 * Key value for setting and getting the skin class of a widget. 
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#getData(String)
+	 * @see org.eclipse.swt.widgets.Widget#setData(String, Object)
+	 * 
+	 * @since 3.6
+	 */
+	public static final String SKIN_CLASS = "org.eclipse.swt.skin.class";
+
+	/**
+	 * Key value for setting and getting the skin id of a widget.
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#getData(String)
+	 * @see org.eclipse.swt.widgets.Widget#setData(String, Object)
+	 * 
+	 * @since 3.6
+	 */
+	public static final String SKIN_ID = "org.eclipse.swt.skin.id";
 
 	
 /**

@@ -83,6 +83,9 @@ public abstract class Widget {
 	static final int RELEASED		= 1<<11;
 	static final int DISPOSE_SENT	= 1<<12;
 	
+	/* Notify of the opportunity to skin this widget */
+	static final int SKIN_NEEDED = 1<<21;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -125,6 +128,7 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	display = parent.display;
+	reskinWidget ();
 }
 
 static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
@@ -908,6 +912,27 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 }
 
 /**
+ * 
+ * @param flags
+ * @since 3.6
+ */
+public void reskin (int flags) {
+	checkWidget ();
+	reskinWidget ();
+	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
+}
+
+void reskinChildren (int flags) {	
+}
+
+void reskinWidget() {
+	if ((state & SKIN_NEEDED) != SKIN_NEEDED) {
+		this.state |= SKIN_NEEDED;
+		display.addSkinnableWidget(this);
+	}
+}
+
+/**
  * Removes the listener from the collection of listeners who will
  * be notified when the widget is disposed.
  *
@@ -1107,6 +1132,7 @@ public void setData (String key, Object value) {
 			}
 		}
 	}
+	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
 }
 
 boolean setInputState (Event event, int type, int key_mods, int button_state) {

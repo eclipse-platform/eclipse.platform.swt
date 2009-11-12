@@ -563,6 +563,18 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void reskinChildren (int flags) {
+	if (items != null) {
+		int count = OS.GetControl32BitMaximum (handle);
+		for (int i=0; i<count; i++) {
+			TabItem item = items [i];
+			if (item != null) item.reskin (flags);
+		}
+		items = null;
+	}
+	super.reskinChildren (flags);
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int result = super.setBounds(x, y, width, height, move, resize, events);
 	if ((result & RESIZED) != 0) {

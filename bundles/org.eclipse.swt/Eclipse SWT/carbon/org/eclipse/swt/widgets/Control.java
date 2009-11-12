@@ -3672,6 +3672,7 @@ public boolean setParent (Composite parent) {
 	OS.HIViewSetVisible (topHandle, (state & HIDDEN) == 0);
 	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
 	this.parent = parent;
+	reskin (SWT.ALL);
 	return true;
 }
 

@@ -762,6 +762,14 @@ public void removeMenuListener(MenuListener listener) {
 	eventTable.unhook(SWT.Hide, listener);
 	eventTable.unhook(SWT.Show, listener);
 }
+void reskinChildren (int flags) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		item.reskin (flags);
+	}
+	super.reskinChildren (flags);
+}
 void sendHelpEvent (int callData) {
 	if (hooks (SWT.Help)) {
 		postEvent (SWT.Help);

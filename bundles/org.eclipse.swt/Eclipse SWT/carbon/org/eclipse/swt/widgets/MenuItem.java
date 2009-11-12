@@ -543,6 +543,13 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void reskinChildren (int flags) {
+	if (menu != null) {
+		menu.reskin (flags);
+	}
+	super.reskinChildren (flags);
+}
+
 /*public*/ void select () {
 	checkWidget ();
 	Menu menu = parent, menuParent;

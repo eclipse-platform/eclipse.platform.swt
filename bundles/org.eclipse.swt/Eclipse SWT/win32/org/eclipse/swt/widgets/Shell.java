@@ -292,6 +292,7 @@ Shell (Display display, Shell parent, int style, int /*long*/ handle, boolean em
 	if (handle != 0 && !embedded) {
 		state |= FOREIGN_HANDLE;
 	}
+	reskinWidget();
 	createWidget ();
 }
 
@@ -1320,6 +1321,21 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deiconify,listener);
 	eventTable.unhook (SWT.Activate, listener);
 	eventTable.unhook (SWT.Deactivate, listener);
+}
+
+void reskinChildren (int flags) {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (shell != null) shell.reskin (flags);
+	}
+	if (toolTips != null) {
+		for (int i=0; i<toolTips.length; i++) {
+			ToolTip toolTip = toolTips [i];
+			if (toolTip != null) toolTip.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
 }
 
 LRESULT selectPalette (int /*long*/ hPalette) {

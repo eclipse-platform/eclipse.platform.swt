@@ -3612,6 +3612,7 @@ public boolean setParent (Composite parent) {
 	checkWidget ();
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	reskin (SWT.ALL);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
 	return false;

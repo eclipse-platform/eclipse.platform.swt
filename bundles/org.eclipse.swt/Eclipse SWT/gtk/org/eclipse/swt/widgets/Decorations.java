@@ -489,6 +489,17 @@ void releaseWidget () {
 	defaultButton = saveDefault = null;
 }
 
+void reskinChildren (int flags) {
+	if (menuBar != null) menuBar.reskin (flags);
+	if (menus != null) {
+		for (int i=0; i<menus.length; i++) {
+			Menu menu = menus [i];
+			if (menu != null) menu.reskin (flags);
+		}
+	}
+	super.reskinChildren (flags);
+}
+
 boolean restoreFocus () {
 	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
 	boolean restored = savedFocus != null && savedFocus.setFocus ();

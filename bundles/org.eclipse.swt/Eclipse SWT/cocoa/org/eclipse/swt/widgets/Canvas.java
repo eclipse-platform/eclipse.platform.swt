@@ -291,6 +291,12 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void reskinChildren (int flags) {
+	if (caret != null) caret.reskin (flags);
+	if (ime != null)  ime.reskin (flags);
+	super.reskinChildren (flags);
+}
+
 /**
  * Scrolls a rectangular area of the receiver by first copying 
  * the source area to the destination and then causing the area

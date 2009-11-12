@@ -314,6 +314,11 @@ public class Display extends Device {
 	Shell [] modalShells;
 //	Shell modalDialogShell;
 
+	/* Skinning support */
+	static final int GROW_SIZE = 1024;
+	Widget [] skinList = new Widget [GROW_SIZE];
+	int skinCount;
+	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/*
@@ -554,6 +559,15 @@ void addShell (Shell shell) {
 		shells = temp;
 	}
 	shells [index] = shell;
+}
+
+void addSkinnableWidget (Widget widget) {
+	if (skinCount >= skinList.length) {
+		Widget[] newSkinWidgets = new Widget [skinList.length + GROW_SIZE];
+		System.arraycopy (skinList, 0, newSkinWidgets, 0, skinList.length);
+		skinList = newSkinWidgets;
+	}
+	skinList [skinCount++] = widget;
 }
 
 /**
@@ -2224,6 +2238,7 @@ void removeShell (Shell shell) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runSkin ();
 	runDeferredLayouts ();
 	runPopups ();
 	idle = false;
@@ -2554,6 +2569,29 @@ void runSettings () {
 	}
 }
 
+boolean runSkin () {
+	if (skinCount > 0) {
+		Widget [] oldSkinWidgets = skinList;	
+		int count = skinCount;	
+		skinList = new Widget[GROW_SIZE];
+		skinCount = 0;
+		if (eventTable != null && eventTable.hooks(SWT.Skin)) {
+			for (int i = 0; i < count; i++) {
+				Widget widget = oldSkinWidgets[i];
+				if (widget != null && !widget.isDisposed()) {
+					widget.state &= ~Widget.SKIN_NEEDED;
+					oldSkinWidgets[i] = null;
+					Event event = new Event ();
+					event.widget = widget;
+					sendEvent (SWT.Skin, event);
+				}
+			}
+		}
+		return true;
+	}	
+	return false;
+}
+	
 void saveResources () {
 //	int resourceCount = 0;
 //	if (resources == null) {
