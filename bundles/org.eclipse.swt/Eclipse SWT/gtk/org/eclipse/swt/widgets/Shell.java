@@ -783,7 +783,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
-	if ((style & SWT.ON_TOP) != 0 && (style & SWT.RESIZE) != 0) {
+	if (isCustomResize ()) {
 		int mask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_BUTTON_PRESS_MASK |  OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
 		OS.gtk_widget_add_events (shellHandle, mask);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures[EXPOSE_EVENT], false);
