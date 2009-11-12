@@ -14,10 +14,9 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 226;
-int XPCOM_nativeFunctionCallCount[226];
+int XPCOM_nativeFunctionCount = 225;
+int XPCOM_nativeFunctionCallCount[225];
 char * XPCOM_nativeFunctionNames[] = {
-	"GetAddress",
 #ifndef JNI64
 	"_1Call__I",
 #else

@@ -25,7 +25,6 @@ extern char* XPCOM_nativeFunctionNames[];
 #endif
 
 typedef enum {
-	GetAddress_FUNC,
 #ifndef JNI64
 	_1Call__I_FUNC,
 #else
