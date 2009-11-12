@@ -42,7 +42,7 @@ public final class Program {
 	 */
 	boolean gnomeExpectUri;
 	
-	static int modTime;
+	static int /*long*/ modTime;
 	static Hashtable mimeTable;
 	
 	static int /*long*/ cdeShell;
