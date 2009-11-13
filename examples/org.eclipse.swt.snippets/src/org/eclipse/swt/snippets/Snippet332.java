@@ -20,7 +20,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet51 {
+public class Snippet332 {
 
 public static void main(String [] args) {
 	Display display = new Display();
