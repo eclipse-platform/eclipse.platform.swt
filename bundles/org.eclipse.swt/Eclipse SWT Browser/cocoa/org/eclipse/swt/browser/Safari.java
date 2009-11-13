@@ -443,6 +443,7 @@ public boolean close () {
 	execute (buffer.toString ());
 
 	Boolean result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
+	if (result == null) return false;
 	return result.booleanValue ();
 }
 
