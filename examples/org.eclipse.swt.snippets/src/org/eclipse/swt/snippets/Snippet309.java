@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser example snippet: Display different styles of the Search Text control
+ * Text example snippet: Display different styles of the Search Text control
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
