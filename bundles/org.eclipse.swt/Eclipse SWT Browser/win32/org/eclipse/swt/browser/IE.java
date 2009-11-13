@@ -381,7 +381,7 @@ public void create(Composite parent, int style) {
 						}
 
 						/*
-						* Bug in IE.  For navigations on the local machine, BeforeNavigate2's url
+						* Feature in IE.  For navigations on the local machine, BeforeNavigate2's url
 						* field contains a string representing the file path in a non-URL format.
 						* In order to be consistent with the other Browser implementations, this
 						* case is detected and the string is changed to be a proper url string.
@@ -389,6 +389,17 @@ public void create(Composite parent, int style) {
 						if (url.indexOf(":/") == -1 && url.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
 							url = PROTOCOL_FILE + url.replace('\\', '/');
 						}
+
+						/* Disallow local file system accesses if the browser content is untrusted */
+						if (url.startsWith(PROTOCOL_FILE) && getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
+							Variant cancel = event.arguments[6];
+							if (cancel != null) {
+								int /*long*/ pCancel = cancel.getByRef();
+								COM.MoveMemory(pCancel, new short[] {COM.VARIANT_TRUE}, 2);
+							}
+							break;
+						}
+
 						LocationEvent newEvent = new LocationEvent(browser);
 						newEvent.display = browser.getDisplay();
 						newEvent.widget = browser;
