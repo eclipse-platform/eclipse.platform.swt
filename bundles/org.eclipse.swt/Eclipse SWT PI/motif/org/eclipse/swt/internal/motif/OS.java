@@ -490,6 +490,8 @@ public class OS extends C {
 	public static final int XmNlistMarginWidth = malloc ("listMarginWidth", 2);
 	public static final int XmNlistSizePolicy = malloc ("listSizePolicy", 1);
 	public static final int XmNlistSpacing = malloc ("listSpacing", 2);
+	public static final int XmNmainWindowMarginWidth  = malloc ("mainWindowMarginWidth", 2);
+	public static final int XmNmainWindowMarginHeight  = malloc ("mainWindowMarginHeight", 2);
 	public static final int XmNmapCallback = malloc ("mapCallback", 4);
 	public static final int XmNmappedWhenManaged = malloc ("mappedWhenManaged", 4);
 	public static final int XmNmarginBottom = malloc ("marginBottom", 2);
