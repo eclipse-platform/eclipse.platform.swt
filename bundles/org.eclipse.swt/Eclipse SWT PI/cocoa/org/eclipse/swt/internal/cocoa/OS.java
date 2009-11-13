@@ -2673,6 +2673,13 @@ public static final native int /*long*/ CFURLCreateStringByAddingPercentEscapes(
  */
 public static final native int /*long*/ CFURLCreateStringByReplacingPercentEscapesUsingEncoding(int /*long*/ allocator, int /*long*/ origString, int /*long*/ charsToLeaveEscaped, int encoding);
 /**
+ * @param allocator cast=(CFAllocatorRef)
+ * @param origString cast=(CFStringRef)
+ * @param charsToLeaveEscaped cast=(CFStringRef)
+ * @param encoding cast=(CFStringEncoding)
+ */
+public static final native int /*long*/ CFURLCreateStringByReplacingPercentEscapesUsingEncoding(int /*long*/ allocator, int /*long*/ origString, int /*long*/ charsToLeaveEscaped, int encoding);
+/**
  * @param data cast=(void*)
  * @param width cast=(size_t)
  * @param height cast=(size_t)
