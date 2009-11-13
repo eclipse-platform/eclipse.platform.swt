@@ -144,6 +144,7 @@ public static final int S_sharedHandler = Cocoa.sel_registerName("sharedHandler"
 public static final int S_standardPreferences = Cocoa.sel_registerName("standardPreferences"); //$NON-NLS-1$
 public static final int S_startAuthentication = sel_registerName("startAuthentication:window:"); //$NON-NLS-1$
 public static final int S_stopLoading = Cocoa.sel_registerName("stopLoading:"); //$NON-NLS-1$
+public static final int S_string = Cocoa.sel_registerName("string"); //$NON-NLS-1$
 public static final int S_stringByEvaluatingJavaScriptFromString = Cocoa.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$
 public static final int S_takeStringURLFrom = Cocoa.sel_registerName("takeStringURLFrom:"); //$NON-NLS-1$
 public static final int S_undefined = Cocoa.sel_registerName("undefined"); //$NON-NLS-1$

@@ -245,7 +245,7 @@ public void refresh() {
 	OS.WebBrowser_Refresh(webBrowser);
 }
 
-public boolean setText(String html) {
+public boolean setText(String html, boolean trusted) {
 	int state = OS.WebBrowser_ReadyState(webBrowser);
 	if (!(state == OS.WebBrowserReadyState_Uninitialized || state == OS.WebBrowserReadyState_Complete)) {
 		OS.WebBrowser_Stop(webBrowser);

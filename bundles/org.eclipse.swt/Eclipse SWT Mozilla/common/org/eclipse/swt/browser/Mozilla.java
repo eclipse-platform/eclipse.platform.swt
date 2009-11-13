@@ -47,7 +47,7 @@ class Mozilla extends WebBrowser {
 	int refCount, lastKeyCode, lastCharCode, authCount;
 	int /*long*/ request;
 	Point location, size;
-	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage, ignoreAllMessages;
+	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage, ignoreAllMessages, untrustedText;
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
@@ -98,7 +98,7 @@ class Mozilla extends WebBrowser {
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
 	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
-	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
 	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
@@ -1999,11 +1999,11 @@ public String getUrl () {
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (location.equals (URI_FROMMEMORY)) {
+	if (location.equals (URI_FILEROOT)) {
 		location = ABOUT_BLANK;
 	} else {
-		int length = URI_FROMMEMORY.length ();
-		if (location.startsWith (URI_FROMMEMORY) && location.charAt (length) == '#') {
+		int length = URI_FILEROOT.length ();
+		if (location.startsWith (URI_FILEROOT) && location.charAt (length) == '#') {
 			location = ABOUT_BLANK + location.substring (length);
 		}
 	}
@@ -2202,7 +2202,7 @@ void registerFunction (BrowserFunction function) {
 	AllFunctions.put (new Integer (function.index), function);
 }
 
-public boolean setText (String html) {
+public boolean setText (String html, boolean trusted) {
 	/*
 	*  Feature in Mozilla.  The focus memory of Mozilla must be 
 	*  properly managed through the nsIWebBrowserFocus interface.
@@ -2255,6 +2255,7 @@ public boolean setText (String html) {
 		*/
 		boolean blankLoading = htmlBytes != null;
 		htmlBytes = data;
+		untrustedText = !trusted;
 		if (blankLoading) return true;
 
 		/* navigate to about:blank */
@@ -2287,12 +2288,12 @@ public boolean setText (String html) {
 
 		nsIIOService ioService = new nsIIOService (result[0]);
 		result[0] = 0;
-		/*
-		* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
-		* when the URI protocol for the nsInputStreamChannel
-		* is about:blank.  The fix is to specify the file protocol.
-		*/
-		byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
+		byte[] aString;
+		if (trusted) {
+			aString = MozillaDelegate.wcsToMbcs (null, URI_FILEROOT, false);
+		} else {
+			aString = MozillaDelegate.wcsToMbcs (null, ABOUT_BLANK, false);
+		}
 		int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
 		rc = ioService.NewURI (aSpec, null, 0, result);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -2815,12 +2816,12 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 
 				nsIIOService ioService = new nsIIOService (result[0]);
 				result[0] = 0;
-				/*
-				* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
-				* when the URI protocol for the nsInputStreamChannel
-				* is about:blank.  The fix is to specify the file protocol.
-				*/
-				byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
+				byte[] aString;
+				if (untrustedText) {
+					aString = MozillaDelegate.wcsToMbcs (null, ABOUT_BLANK, false);
+				} else {
+					aString = MozillaDelegate.wcsToMbcs (null, URI_FILEROOT, false);
+				}
 				int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
 				rc = ioService.NewURI (aSpec, null, 0, result);
 				if (rc != XPCOM.NS_OK) error (rc);
@@ -3053,11 +3054,11 @@ int OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*lo
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (event.location.equals (URI_FROMMEMORY)) {
+	if (event.location.equals (URI_FILEROOT)) {
 		event.location = ABOUT_BLANK;
 	} else {
-		length = URI_FROMMEMORY.length ();
-		if (event.location.startsWith (URI_FROMMEMORY) && event.location.charAt (length) == '#') {
+		length = URI_FILEROOT.length ();
+		if (event.location.startsWith (URI_FILEROOT) && event.location.charAt (length) == '#') {
 			event.location = ABOUT_BLANK + event.location.substring (length);
 		}
 	}
@@ -3453,11 +3454,11 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 				 * If the URI indicates that the page is being rendered from memory
 				 * (via setText()) then set it to about:blank to be consistent with IE.
 				 */
-				if (event.location.equals (URI_FROMMEMORY)) {
+				if (event.location.equals (URI_FILEROOT)) {
 					event.location = ABOUT_BLANK;
 				} else {
-					length = URI_FROMMEMORY.length ();
-					if (event.location.startsWith (URI_FROMMEMORY) && event.location.charAt (length) == '#') {
+					length = URI_FILEROOT.length ();
+					if (event.location.startsWith (URI_FILEROOT) && event.location.charAt (length) == '#') {
 						event.location = ABOUT_BLANK + event.location.substring (length);
 					}
 				}

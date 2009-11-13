@@ -496,7 +496,7 @@ int MapUrlToZone(int /*long*/ pwszUrl, int /*long*/ pdwZone, int dwFlags) {
 	* For some reason IE8 invokes this function after the Browser has
 	* been disposed.  To detect this case check for ie.auto != null. 
 	*/
-	if (ie.auto != null && ie.getUrl().startsWith(IE.ABOUT_BLANK)) {
+	if (ie.auto != null && ie.getUrl().startsWith(IE.ABOUT_BLANK) && !ie.untrustedText) {
 		COM.MoveMemory(pdwZone, new int[] {IE.URLZONE_INTRANET}, 4);
 		return COM.S_OK;
 	}

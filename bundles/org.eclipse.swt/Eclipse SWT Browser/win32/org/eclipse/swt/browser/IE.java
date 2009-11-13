@@ -28,7 +28,8 @@ class IE extends WebBrowser {
 	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, navigate, delaySetText, ignoreDispose, installFunctionsOnDocumentComplete;
+	boolean back, forward, navigate, delaySetText, ignoreDispose;
+	boolean installFunctionsOnDocumentComplete, untrustedText;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -1162,7 +1163,7 @@ void setHTML (String string) {
 	}
 }
 
-public boolean setText(final String html) {
+public boolean setText(final String html, boolean trusted) {
 	/*
 	* If the html field is non-null then the about:blank page is already being
 	* loaded, so no Stop or Navigate is required.  Just set the html that is to
@@ -1170,6 +1171,7 @@ public boolean setText(final String html) {
 	*/
 	boolean blankLoading = this.html != null;
 	this.html = html;
+	untrustedText = !trusted;
 	if (blankLoading) return true;
 	
 	/*

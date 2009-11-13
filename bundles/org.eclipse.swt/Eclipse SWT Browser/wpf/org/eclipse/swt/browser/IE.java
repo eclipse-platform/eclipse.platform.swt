@@ -142,7 +142,7 @@ public void refresh() {
 	OS.Frame_Refresh(frame);
 }
 
-public boolean setText(String html) {
+public boolean setText(String html, boolean trusted) {
 	return true;
 //	/*
 //	* If the html field is non-null then the about:blank page is already being

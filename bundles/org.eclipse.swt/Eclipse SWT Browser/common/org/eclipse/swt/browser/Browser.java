@@ -948,8 +948,10 @@ public void setJavascriptEnabled (boolean enabled) {
 
 /**
  * Renders a string containing HTML.  The rendering of the content occurs asynchronously.
+ * The rendered page will be given trusted permissions; to render the page with untrusted
+ * permissions use <code>setText(String html, boolean trusted)</code> instead.   
  * <p>
- * The html parameter is Unicode encoded since it is a java <code>String</code>.
+ * The html parameter is Unicode-encoded since it is a java <code>String</code>.
  * As a result, the HTML meta tag charset should not be set. The charset is implied
  * by the <code>String</code> itself.
  * 
@@ -966,14 +968,56 @@ public void setJavascriptEnabled (boolean enabled) {
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
  *  
+ * @see #setText(String,boolean)
  * @see #setUrl
  * 
  * @since 3.0
  */
 public boolean setText (String html) {
 	checkWidget();
+	return setText (html, true);
+}
+
+/**
+ * Renders a string containing HTML.  The rendering of the content occurs asynchronously.
+ * The rendered page can be given either trusted or untrusted permissions. 
+ * <p>
+ * The html parameter is Unicode-encoded since it is a java <code>String</code>.
+ * As a result, the HTML meta tag charset should not be set. The charset is implied
+ * by the <code>String</code> itself.
+ * <p>
+ * The trusted parameter affects the permissions that will be granted to the rendered
+ * page.  Specifying <code>true</code> for trusted gives the page permissions equivalent
+ * to a page on the local file system, while specifying <code>false</code> for trusted
+ * gives the page permissions equivalent to a page from the internet.  Page content should
+ * be specified as trusted if the invoker created it or trusts its source, since this would
+ * allow (for instance) style sheets on the local file system to be referenced.  Page 
+ * content should be specified as untrusted if its source is not trusted or is not known.
+ * 
+ * @param html the HTML content to be rendered
+ * @param trusted <code>false</code> if the rendered page should be granted restricted
+ * permissions and <code>true</code> otherwise
+ *
+ * @return true if the operation was successful and false otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
+ * </ul>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @see #setText(String)
+ * @see #setUrl
+ * 
+ * @since 3.6
+ */
+public boolean setText (String html, boolean trusted) {
+	checkWidget();
 	if (html == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return webBrowser.setText (html);
+	return webBrowser.setText (html, trusted);
 }
 
 /**

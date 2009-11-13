@@ -443,7 +443,7 @@ public void refresh() {
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_RELOAD, 1, 0);
 }
 
-public boolean setText(String html) {
+public boolean setText(String html, boolean trusted) {
 	text = html;
 	textOffset = 0;
 	byte[] buffer = Converter.wcsToMbcs(null, "client:", true); //$NON-NLS-1$

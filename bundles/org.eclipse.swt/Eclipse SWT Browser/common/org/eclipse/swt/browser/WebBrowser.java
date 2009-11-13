@@ -610,7 +610,7 @@ public void setBrowser (Browser browser) {
 	this.browser = browser;
 }
 
-public abstract boolean setText (String html);
+public abstract boolean setText (String html, boolean trusted);
 
 public abstract boolean setUrl (String url, String postData, String[] headers);
 

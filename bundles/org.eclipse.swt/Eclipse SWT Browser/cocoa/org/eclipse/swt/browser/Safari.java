@@ -23,7 +23,7 @@ class Safari extends WebBrowser {
 	WebView webView;
 	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
-	boolean changingLocation;
+	boolean changingLocation, untrustedText;
 	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int /*long*/ identifier;
@@ -45,7 +45,7 @@ class Safari extends WebBrowser {
 	static final int MAX_PROGRESS = 100;
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String AGENT_STRING = "Safari/522.0"; /* Safari version on OSX 10.5 initial release */ //$NON-NLS-1$
-	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
 	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
 	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
@@ -486,23 +486,29 @@ public void refresh() {
 	webView.reload(null);
 }
 
-public boolean setText(String html) {
+public boolean setText(String html, boolean trusted) {
 	/*
 	* Bug in Safari.  The web view segment faults in some circumstances
 	* when the text changes during the location changing callback.  The
 	* fix is to defer the work until the callback is done. 
 	*/
 	if (changingLocation) {
+		untrustedText = !trusted;
 		this.html = html;
 	} else {
-		_setText(html);
+		_setText(html, !trusted);
 	}
 	return true;
 }
 	
-void _setText(String html) {	
+void _setText(String html, boolean untrusted) {
 	NSString string = NSString.stringWith(html);
-	NSString URLString = NSString.stringWith(URI_FROMMEMORY);
+	NSString URLString;
+	if (untrusted) {
+		URLString = NSString.stringWith(ABOUT_BLANK);
+	} else {
+		URLString = NSString.stringWith(URI_FILEROOT);
+	}
 	NSURL URL = NSURL.URLWithString(URLString);
 	WebFrame mainFrame = webView.mainFrame();
 	mainFrame.loadHTMLString(string, URL);
@@ -575,16 +581,18 @@ void webView_didChangeLocationWithinPageForFrame(int /*long*/ sender, int /*long
 	NSString s = url.absoluteString();
 	int length = (int)/*64*/s.length();
 	if (length == 0) return;
-	String url2 = s.getString();
+	int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, s.id, NSString.string().id, OS.kCFStringEncodingUTF8);
+	String url2 = new NSString(ptr).getString();
+	OS.CFRelease(ptr);
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) {
+	if (url2.equals (URI_FILEROOT)) {
 		url2 = ABOUT_BLANK;
 	} else {
-		length = URI_FROMMEMORY.length ();
-		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+		length = URI_FILEROOT.length ();
+		if (url2.startsWith (URI_FILEROOT) && url2.charAt (length) == '#') {
 			url2 = ABOUT_BLANK + url2.substring (length);
 		}
 	}
@@ -774,16 +782,18 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	NSString s = url.absoluteString();
 	int length = (int)/*64*/s.length();
 	if (length == 0) return;
-	String url2 = s.getString();
+	int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, s.id, NSString.string().id, OS.kCFStringEncodingUTF8);
+	String url2 = new NSString(ptr).getString();
+	OS.CFRelease(ptr);
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) {
+	if (url2.equals (URI_FILEROOT)) {
 		url2 = ABOUT_BLANK;
 	} else {
-		length = URI_FROMMEMORY.length ();
-		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+		length = URI_FILEROOT.length ();
+		if (url2.startsWith (URI_FILEROOT) && url2.charAt (length) == '#') {
 			url2 = ABOUT_BLANK + url2.substring (length);
 		}
 	}
@@ -1274,7 +1284,9 @@ void webView_mouseDidMoveOverElement_modifierFlags (int /*long*/ sender, int /*l
 	if (length == 0) {
 		urlString = "";	//$NON-NLS-1$
 	} else {
-		urlString = url.getString();
+		int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, url.id, NSString.string().id, OS.kCFStringEncodingUTF8);
+		urlString = new NSString(ptr).getString();
+		OS.CFRelease(ptr);
 	}
 	if (urlString.equals(lastHoveredLinkURL)) return;
 
@@ -1321,16 +1333,18 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 		return;
 	}
 	NSString s = url.absoluteString();
-	String url2 = s.getString();
+	int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, s.id, NSString.string().id, OS.kCFStringEncodingUTF8);
+	String url2 = new NSString(ptr).getString();
+	OS.CFRelease(ptr);
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) {
+	if (url2.equals (URI_FILEROOT)) {
 		url2 = ABOUT_BLANK;
 	} else {
-		int length = URI_FROMMEMORY.length ();
-		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+		int length = URI_FILEROOT.length ();
+		if (url2.startsWith (URI_FILEROOT) && url2.charAt (length) == '#') {
 			url2 = ABOUT_BLANK + url2.substring (length);
 		}
 	}
@@ -1364,7 +1378,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 	if (html != null && !browser.isDisposed()) {
 		String html = this.html;
 		this.html = null;
-		_setText(html);
+		_setText(html, untrustedText);
 	}
 }
 

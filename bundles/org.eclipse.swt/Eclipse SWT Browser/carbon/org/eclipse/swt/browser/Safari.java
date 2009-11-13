@@ -31,7 +31,7 @@ class Safari extends WebBrowser {
 	int windowBoundsHandler;
 	int preferences;
 	
-	boolean changingLocation, hasNewFocusElement;
+	boolean changingLocation, hasNewFocusElement, untrustedText;
 	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int identifier;
@@ -51,7 +51,7 @@ class Safari extends WebBrowser {
 	static final int MAX_PROGRESS = 100;
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String AGENT_STRING = "Safari/412.0"; /* Safari version on OSX 10.4 initial release */ //$NON-NLS-1$
-	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
 	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
 	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String URI_APPLEWEBDATA = "applewebdata://"; //$NON-NLS-1$
@@ -754,7 +754,7 @@ public void refresh() {
 	Cocoa.objc_msgSend(webView, Cocoa.S_reload, 0);
 }
 
-public boolean setText(String html) {
+public boolean setText(String html, boolean trusted) {
 	/*
 	* Bug in Safari.  The web view segment faults in some circumstances
 	* when the text changes during the location changing callback.  The
@@ -762,16 +762,22 @@ public boolean setText(String html) {
 	*/
 	if (changingLocation) {
 		this.html = html;
+		untrustedText = !trusted;
 	} else {
-		_setText(html);
+		_setText(html, !trusted);
 	}
 	return true;
 }
 	
-void _setText(String html) {
+void _setText(String html, boolean untrusted) {
 	int string = createNSString(html);
-	int URLString = createNSString(URI_FROMMEMORY);
-	
+	int URLString;
+	if (untrusted) {
+		URLString = createNSString(ABOUT_BLANK);
+	} else {
+		URLString = createNSString(URI_FILEROOT);
+	}
+
 	/*
 	* Note.  URLWithString uses autorelease.  The resulting URL
 	* does not need to be released.
@@ -871,9 +877,13 @@ void didChangeLocationWithinPageForFrame(int frame) {
 	int dataSource = Cocoa.objc_msgSend(frame, Cocoa.S_dataSource);
 	int request = Cocoa.objc_msgSend(dataSource, Cocoa.S_request);
 	int url = Cocoa.objc_msgSend(request, Cocoa.S_URL);
-	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);	
+	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);
 	int length = OS.CFStringGetLength(s);
 	if (length == 0) return;
+	int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
+	s = OS.CFURLCreateStringByReplacingPercentEscapes (0, s, emptyString);
+	OS.CFRelease(emptyString);
+	length = OS.CFStringGetLength(s);
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
 	range.length = length;
@@ -883,11 +893,11 @@ void didChangeLocationWithinPageForFrame(int frame) {
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) {
+	if (url2.equals (URI_FILEROOT)) {
 		url2 = ABOUT_BLANK;
 	} else {
-		length = URI_FROMMEMORY.length ();
-		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+		length = URI_FILEROOT.length ();
+		if (url2.startsWith (URI_FILEROOT) && url2.charAt (length) == '#') {
 			url2 = ABOUT_BLANK + url2.substring (length);
 		}
 	}
@@ -1102,6 +1112,10 @@ void didCommitLoadForFrame(int frame) {
 	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);	
 	int length = OS.CFStringGetLength(s);
 	if (length == 0) return;
+	int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
+	s = OS.CFURLCreateStringByReplacingPercentEscapes (0, s, emptyString);
+	OS.CFRelease(emptyString);
+	length = OS.CFStringGetLength(s);
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
 	range.length = length;
@@ -1111,11 +1125,11 @@ void didCommitLoadForFrame(int frame) {
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) {
+	if (url2.equals (URI_FILEROOT)) {
 		url2 = ABOUT_BLANK;
 	} else {
-		length = URI_FROMMEMORY.length ();
-		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+		length = URI_FILEROOT.length ();
+		if (url2.startsWith (URI_FILEROOT) && url2.charAt (length) == '#') {
 			url2 = ABOUT_BLANK + url2.substring (length);
 		}
 	}
@@ -1646,6 +1660,10 @@ void mouseDidMoveOverElement (int elementInformation, int modifierFlags) {
 	if (length == 0) {
 		urlString = "";	//$NON-NLS-1$
 	} else {
+		int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
+		stringPtr = OS.CFURLCreateStringByReplacingPercentEscapes (0, stringPtr, emptyString);
+		OS.CFRelease(emptyString);
+		length = OS.CFStringGetLength(stringPtr);
 		char[] chars = new char[length];
 		CFRange range = new CFRange();
 		range.length = length;
@@ -1679,6 +1697,9 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 		return;
 	}
 	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);
+	int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
+	s = OS.CFURLCreateStringByReplacingPercentEscapes (0, s, emptyString);
+	OS.CFRelease(emptyString);
 	int length = OS.CFStringGetLength(s);
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
@@ -1689,11 +1710,11 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.equals (URI_FROMMEMORY)) {
+	if (url2.equals (URI_FILEROOT)) {
 		url2 = ABOUT_BLANK;
 	} else {
-		length = URI_FROMMEMORY.length ();
-		if (url2.startsWith (URI_FROMMEMORY) && url2.charAt (length) == '#') {
+		length = URI_FILEROOT.length ();
+		if (url2.startsWith (URI_FILEROOT) && url2.charAt (length) == '#') {
 			url2 = ABOUT_BLANK + url2.substring (length);
 		}
 	}
@@ -1732,7 +1753,7 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	if (html != null && !browser.isDisposed()) {
 		String html = this.html;
 		this.html = null;
-		_setText(html);
+		_setText(html, untrustedText);
 	}
 }
 
