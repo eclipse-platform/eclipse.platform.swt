@@ -76,6 +76,7 @@ typedef enum {
 	CFStringCreateWithCharacters_FUNC,
 	CFURLCreateFromFSRef_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
+	CFURLCreateStringByReplacingPercentEscapesUsingEncoding_FUNC,
 	CGAffineTransform_1sizeof_FUNC,
 	CGBitmapContextCreate_FUNC,
 	CGBitmapContextCreateImage_FUNC,

@@ -764,18 +764,18 @@ public boolean setText(String html, boolean trusted) {
 		this.html = html;
 		untrustedText = !trusted;
 	} else {
-		_setText(html, !trusted);
+		_setText(html, trusted);
 	}
 	return true;
 }
 	
-void _setText(String html, boolean untrusted) {
+void _setText(String html, boolean trusted) {
 	int string = createNSString(html);
 	int URLString;
-	if (untrusted) {
-		URLString = createNSString(ABOUT_BLANK);
-	} else {
+	if (trusted) {
 		URLString = createNSString(URI_FILEROOT);
+	} else {
+		URLString = createNSString(ABOUT_BLANK);
 	}
 
 	/*
@@ -1753,7 +1753,7 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	if (html != null && !browser.isDisposed()) {
 		String html = this.html;
 		this.html = null;
-		_setText(html, untrustedText);
+		_setText(html, !untrustedText);
 	}
 }
 

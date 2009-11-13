@@ -1002,6 +1002,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 }
 #endif
 
+#ifndef NO_CFURLCreateStringByReplacingPercentEscapesUsingEncoding
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByReplacingPercentEscapesUsingEncoding)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateStringByReplacingPercentEscapesUsingEncoding_FUNC);
+	rc = (jintLong)CFURLCreateStringByReplacingPercentEscapesUsingEncoding((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (CFStringEncoding)arg3);
+	OS_NATIVE_EXIT(env, that, CFURLCreateStringByReplacingPercentEscapesUsingEncoding_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGAffineTransform_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CGAffineTransform_1sizeof)
 	(JNIEnv *env, jclass that)

@@ -496,18 +496,18 @@ public boolean setText(String html, boolean trusted) {
 		untrustedText = !trusted;
 		this.html = html;
 	} else {
-		_setText(html, !trusted);
+		_setText(html, trusted);
 	}
 	return true;
 }
 	
-void _setText(String html, boolean untrusted) {
+void _setText(String html, boolean trusted) {
 	NSString string = NSString.stringWith(html);
 	NSString URLString;
-	if (untrusted) {
-		URLString = NSString.stringWith(ABOUT_BLANK);
-	} else {
+	if (trusted) {
 		URLString = NSString.stringWith(URI_FILEROOT);
+	} else {
+		URLString = NSString.stringWith(ABOUT_BLANK);
 	}
 	NSURL URL = NSURL.URLWithString(URLString);
 	WebFrame mainFrame = webView.mainFrame();
@@ -1378,7 +1378,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 	if (html != null && !browser.isDisposed()) {
 		String html = this.html;
 		this.html = null;
-		_setText(html, untrustedText);
+		_setText(html, !untrustedText);
 	}
 }
 
