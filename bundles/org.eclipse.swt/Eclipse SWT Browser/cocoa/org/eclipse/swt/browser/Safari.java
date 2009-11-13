@@ -487,13 +487,13 @@ public void refresh() {
 }
 
 public boolean setText(String html, boolean trusted) {
+	untrustedText = !trusted;
 	/*
 	* Bug in Safari.  The web view segment faults in some circumstances
 	* when the text changes during the location changing callback.  The
 	* fix is to defer the work until the callback is done. 
 	*/
 	if (changingLocation) {
-		untrustedText = !trusted;
 		this.html = html;
 	} else {
 		_setText(html, trusted);
@@ -1329,6 +1329,11 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 	WebPolicyDecisionListener listener = new WebPolicyDecisionListener(listenerID);
 	if (url == null) {
 		/* indicates that a URL with an invalid format was specified */
+		listener.ignore();
+		return;
+	}
+	if (url.isFileURL() && getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
+		/* indicates an attempt to access the local file system from untrusted content */
 		listener.ignore();
 		return;
 	}

@@ -755,6 +755,7 @@ public void refresh() {
 }
 
 public boolean setText(String html, boolean trusted) {
+	untrustedText = !trusted;
 	/*
 	* Bug in Safari.  The web view segment faults in some circumstances
 	* when the text changes during the location changing callback.  The
@@ -762,7 +763,6 @@ public boolean setText(String html, boolean trusted) {
 	*/
 	if (changingLocation) {
 		this.html = html;
-		untrustedText = !trusted;
 	} else {
 		_setText(html, trusted);
 	}
@@ -1693,6 +1693,12 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	int url = Cocoa.objc_msgSend(request, Cocoa.S_URL);
 	if (url == 0) {
 		/* indicates that a URL with an invalid format was specified */
+		Cocoa.objc_msgSend(listener, Cocoa.S_ignore);
+		return;
+	}
+	boolean isFileURL = Cocoa.objc_msgSend(url, Cocoa.S_isFileURL) != 0;
+	if (isFileURL && getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
+		/* indicates an attempt to access the local file system from untrusted content */
 		Cocoa.objc_msgSend(listener, Cocoa.S_ignore);
 		return;
 	}
