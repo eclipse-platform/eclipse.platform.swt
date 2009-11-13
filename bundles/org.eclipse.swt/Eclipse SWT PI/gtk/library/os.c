@@ -7360,6 +7360,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1clipboard_1set_1with_1data)
 }
 #endif
 
+#ifndef NO__1gtk_1clipboard_1set_1with_1owner
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1clipboard_1set_1with_1owner)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLong arg3, jintLong arg4, jintLong arg5)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1clipboard_1set_1with_1owner_FUNC);
+	rc = (jboolean)gtk_clipboard_set_with_owner((GtkClipboard *)arg0, (const GtkTargetEntry *)arg1, (guint)arg2, (GtkClipboardGetFunc)arg3, (GtkClipboardClearFunc)arg4, (GObject *)arg5);
+	OS_NATIVE_EXIT(env, that, _1gtk_1clipboard_1set_1with_1owner_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1clipboard_1wait_1for_1contents
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1clipboard_1wait_1for_1contents)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

@@ -605,6 +605,7 @@ typedef enum {
 	_1gtk_1clipboard_1clear_FUNC,
 	_1gtk_1clipboard_1get_FUNC,
 	_1gtk_1clipboard_1set_1with_1data_FUNC,
+	_1gtk_1clipboard_1set_1with_1owner_FUNC,
 	_1gtk_1clipboard_1wait_1for_1contents_FUNC,
 	_1gtk_1color_1selection_1dialog_1new_FUNC,
 	_1gtk_1color_1selection_1get_1current_1color_FUNC,
