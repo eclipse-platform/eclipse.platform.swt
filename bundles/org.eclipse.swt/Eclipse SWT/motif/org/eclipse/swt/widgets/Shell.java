@@ -128,6 +128,7 @@ public class Shell extends Decorations {
 	static final  byte [] _NET_WM_STATE_MAXIMIZED_VERT = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_VERT\0");
 	static final  byte [] _NET_WM_STATE_MAXIMIZED_HORZ = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_HORZ\0");
 	static final  byte [] _NET_WM_STATE_FULLSCREEN = Converter.wcsToMbcs(null, "_NET_WM_STATE_FULLSCREEN\0");
+	static final int BORDER = 2;
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -358,7 +359,7 @@ public Shell (Shell parent, int style) {
 static int checkStyle (Shell parent, int style) {
 	style = Decorations.checkStyle (style);
 	style &= ~SWT.TRANSPARENT;
-	if ((style & SWT.ON_TOP) != 0) style &= ~SWT.SHELL_TRIM;
+	if ((style & SWT.ON_TOP) != 0) style &= ~(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.MAX);
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	if ((style & SWT.SHEET) != 0) {
 		style &= ~SWT.SHEET;
@@ -632,6 +633,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		border = argList [1];
 	}
+	if (isCustomResize ()) {
+		int [] argList = {OS.XmNmainWindowMarginHeight, 0};
+		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+		border = argList [1];
+	}
 	trim.x -= trimLeft () + border;
 	trim.y -= trimTop () + border;
 	trim.width += trimWidth () + (border * 2);
@@ -773,6 +779,10 @@ void createHandle (int index) {
 		int [] argList2 = {OS.XmNborderWidth, 1};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
+	if (isCustomResize ()) {
+		int [] argList2 = {OS.XmNmainWindowMarginWidth, BORDER, OS.XmNmainWindowMarginHeight, BORDER};
+		OS.XtSetValues (scrolledHandle, argList2, argList2.length / 2);
+	} 
 	
 	/*
 	* Feature in Motif. There is no Motif API to negotiate for the
@@ -1123,6 +1133,32 @@ public Region getRegion () {
 	checkWidget ();
 	return region;
 }
+int getResizeMode (int x, int y) {
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNmainWindowMarginWidth, 0};
+	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+	int width = argList [1];
+	int height = argList [3];
+	int border = argList [5];
+	int mode = 0;
+	if (y >= height - border) {
+		mode = OS.XC_bottom_side ;
+		if (x >= width - border - 16) mode = OS.XC_bottom_right_corner;
+		else if (x <= border + 16) mode = OS.XC_bottom_left_corner;
+	} else if (x >= width - border) {
+		mode = OS.XC_right_side;
+		if (y >= height - border - 16) mode = OS.XC_bottom_right_corner;
+		else if (y <= border + 16) mode = OS.XC_top_right_corner;
+	} else if (y <= border) {
+		mode = OS.XC_top_side;
+		if (x <= border + 16) mode = OS.XC_top_left_corner;
+		else if (x >= width - border - 16) mode = OS.XC_top_right_corner;
+	} else if (x <= border) {
+		mode = OS.XC_left_side;
+		if (y <= border + 16) mode = OS.XC_top_left_corner;
+		else if (y >= height - border - 16) mode = OS.XC_bottom_left_corner;
+	}
+	return mode;
+}
 public Shell getShell () {
 	checkWidget();
 	return this;
@@ -1198,6 +1234,12 @@ void hookEvents () {
 		int atom = OS.XmInternAtom (xDisplay, WM_DELETE_WINDOW, false);	
 		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, DELETE_WINDOW);
 	}
+	if (isCustomResize ()) {
+		OS.XtAddEventHandler (scrolledHandle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+		OS.XtAddEventHandler (scrolledHandle, OS.PointerMotionMask | OS.PointerMotionHintMask, false, windowProc, POINTER_MOTION);
+		OS.XtAddEventHandler (scrolledHandle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
+		OS.XtInsertEventHandler (scrolledHandle, OS.ExposureMask, false, windowProc, EXPOSURE, OS.XtListTail);
+	}
 }
 int imeHeight () {
 	if (!OS.IsDBLocale) return 0;
@@ -1216,6 +1258,9 @@ boolean isModal () {
 	int [] argList = {OS.XmNmwmInputMode, 0};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
+}
+boolean isCustomResize () {
+	return (style & SWT.NO_TRIM) == 0 && (style & (SWT.RESIZE | SWT.ON_TOP)) == (SWT.RESIZE | SWT.ON_TOP);
 }
 boolean isUndecorated () {
 	return
@@ -1993,6 +2038,76 @@ int WM_DELETE_WINDOW (int w, int client_data, int call_data) {
 	closeWidget ();
 	return 0;
 }
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if (w == scrolledHandle) {
+		if (isCustomResize ()) {
+			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
+				forceActive ();
+			}
+			XButtonEvent xEvent = new XButtonEvent ();
+			OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+			if (xEvent.button == 1) {
+				display.resizeLocationX = xEvent.x_root;
+				display.resizeLocationY = xEvent.y_root;
+				Point loc = new Point (0, 0);
+				getBounds(loc, null, null);
+				display.resizeBoundsX  = loc.x;
+				display.resizeBoundsY  = loc.y;
+				int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+				OS.XtGetValues (shellHandle, argList, argList.length / 2);
+				display.resizeBoundsWidth = argList [1];
+				display.resizeBoundsHeight = argList [3];
+			}
+		}
+		return 0;
+	}
+	return super.XButtonPress(w, client_data, call_data, continue_to_dispatch);
+}
+int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if (w == scrolledHandle) {
+		if (isCustomResize ()) {
+			int xDisplay = OS.XtDisplay (scrolledHandle);
+			if (xDisplay == 0) return 0;
+			int xWindow = OS.XtWindow (scrolledHandle);
+			if (xWindow == 0) return 0;
+			int xGC = OS.XCreateGC (xDisplay, xWindow, 0, null);
+			if (xGC == 0) return 0;;
+			OS.XSetGraphicsExposures (xDisplay, xGC, false);
+			XExposeEvent xEvent = new XExposeEvent ();
+			OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
+			int damageRgn = OS.XCreateRegion ();
+			OS.XtAddExposureToRegion (call_data, damageRgn);
+			OS.XSetRegion (xDisplay, xGC, damageRgn);
+			int [] argList = {
+					OS.XmNwidth, 0,
+					OS.XmNheight, 0, 
+					OS.XmNmainWindowMarginWidth, 0,
+					OS.XmNmainWindowMarginHeight, 0,
+					OS.XmNtopShadowColor, 0,
+					OS.XmNbottomShadowColor, 0};
+			OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+			int width = argList [1];
+			int height = argList [3];
+			int marginWidth = argList [5];
+			int marginHeight = argList [7];
+			int topShadowColor  = argList [9];
+			int bottomShadowColor  = argList [11];
+			OS.XSetForeground (xDisplay, xGC, bottomShadowColor);
+			OS.XFillRectangle (xDisplay, xWindow, xGC, width - marginWidth, 0, marginWidth, height);
+			OS.XFillRectangle (xDisplay, xWindow, xGC, 0, height - marginHeight, width, marginHeight);
+			OS.XSetForeground (xDisplay, xGC, topShadowColor);
+			int half = marginWidth / 2;
+			OS.XDrawLine (xDisplay, xWindow, xGC, 0, 0, 0, height - 1);
+			OS.XDrawLine (xDisplay, xWindow, xGC, half, 0, half, height - half - 1);
+			OS.XDrawLine (xDisplay, xWindow, xGC, 0, 0, width - 1, 0);
+			OS.XDrawLine (xDisplay, xWindow, xGC, 0, half, width - half - 1, half);
+			OS.XFreeGC (xDisplay, xGC);
+			OS.XDestroyRegion (damageRgn);
+		}
+		return 0;
+	}
+	return super.XExposure (w, client_data, call_data, continue_to_dispatch);
+}
 int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
 	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
 	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
@@ -2036,6 +2151,118 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 		}
 	}
 	return 0;
+}
+int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if (w == scrolledHandle) {
+		if (isCustomResize ()) {
+			XCrossingEvent xEvent = new XCrossingEvent ();
+			OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
+			if ((xEvent.state & OS.Button1Mask) == 0) {
+				int xDisplay = OS.XtDisplay (scrolledHandle);
+				if (xDisplay != 0) {
+					int xWindow = OS.XtWindow (scrolledHandle);
+					if (xWindow != 0) {
+						OS.XUndefineCursor (xDisplay, xWindow);
+					}
+				}
+				display.resizeMode = 0;
+			}
+		}
+		return 0;
+	}
+	return super.XLeaveWindow (w, client_data, call_data, continue_to_dispatch);
+}
+int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if (w == scrolledHandle) {
+		if (isCustomResize ()) {
+			XMotionEvent xEvent = new XMotionEvent ();
+			OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
+			int xDisplay = xEvent.display;
+			if (xDisplay == 0) return 0;
+			int xWindow = xEvent.window;
+			if (xWindow == 0) return 0;
+			if (xEvent.is_hint != 0) {
+				int [] rootX = new int [1], rootY = new int [1], windowX = new int [1], windowY = new int [1], unused = new int [1], mask = new int [1];
+				if (OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, windowX, windowY, mask) == 0) {
+					return 0;
+				}
+				xEvent.x = windowX [0];
+				xEvent.y = windowY [0];
+				xEvent.x_root = rootX [0];
+				xEvent.y_root = rootY [0];
+				xEvent.state = mask [0];
+			}
+			if ((xEvent.state & OS.Button1Mask) != 0) {
+				int [] argList = {OS.XmNmainWindowMarginWidth, 0};
+				OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+				int [] argList2 = {OS.XmNminWidth, 0, OS.XmNminHeight, 0, };
+				OS.XtGetValues (shellHandle, argList2, argList2.length / 2);
+				int minWidth = argList2 [1];
+				int minHeight = argList2 [3];
+				int border = argList [1];
+				int dx = (int)(xEvent.x_root - display.resizeLocationX);
+				int dy = (int)(xEvent.y_root - display.resizeLocationY);
+				int x = display.resizeBoundsX;
+				int y = display.resizeBoundsY;
+				int width = display.resizeBoundsWidth;
+				int height = display.resizeBoundsHeight;
+				int newWidth = Math.max(width - dx, Math.max(minWidth, border + border));
+				int newHeight = Math.max(height - dy, Math.max(minHeight, border + border));
+				switch (display.resizeMode) {
+					case OS.XC_left_side:
+						x += width - newWidth;
+						width = newWidth;
+						break;
+					case OS.XC_top_left_corner:
+						x += width - newWidth;
+						width = newWidth;
+						y += height - newHeight;
+						height = newHeight;
+						break;
+					case OS.XC_top_side:
+						y += height - newHeight;
+						height = newHeight;
+						break;
+					case OS.XC_top_right_corner:
+						width = Math.max(width + dx, Math.max(minWidth, border + border));
+						y += height - newHeight;
+						height = newHeight;
+						break;
+					case OS.XC_right_side:
+						width = Math.max(width + dx, Math.max(minWidth, border + border));
+						break;
+					case OS.XC_bottom_right_corner:
+						width = Math.max(width + dx, Math.max(minWidth, border + border));
+						height = Math.max(height + dy, Math.max(minHeight, border + border));
+						break;
+					case OS.XC_bottom_side:
+						height = Math.max(height + dy, Math.max(minHeight, border + border));
+						break;
+					case OS.XC_bottom_left_corner:
+						x += width - newWidth;
+						width = newWidth;
+						height = Math.max(height + dy, Math.max(minHeight, border + border));
+						break;
+				}
+				OS.XtConfigureWidget (shellHandle, x, y, width, height, 0);
+			} else {
+				int mode = getResizeMode (xEvent.x, xEvent.y);
+				if (mode != display.resizeMode) {
+					if (mode != 0) {
+						int cursor = OS.XCreateFontCursor (xDisplay, mode);
+						OS.XDefineCursor (xDisplay, xWindow, cursor);
+						OS.XFreeCursor(xDisplay, cursor);
+					} else {
+						OS.XUndefineCursor (xDisplay, xWindow);
+					}
+					OS.XFlush (xDisplay);
+					display.resizeMode = mode;
+				}
+			}
+		}
+		return 0;
+	}
+	return super.XPointerMotion (w, client_data, call_data, continue_to_dispatch);
 }
 int XStructureNotify (int w, int client_data, int call_data, int continue_to_dispatch) {
 	XConfigureEvent xEvent = new XConfigureEvent ();

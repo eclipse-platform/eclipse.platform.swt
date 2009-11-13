@@ -187,6 +187,11 @@ public class Display extends Device {
 	Callback windowTimerCallback;
 	int windowTimerProc;
 	
+	/* Custom Resize */
+	int resizeLocationX, resizeLocationY;
+	int resizeBoundsX, resizeBoundsY, resizeBoundsWidth, resizeBoundsHeight;
+	int resizeMode;
+	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 		
