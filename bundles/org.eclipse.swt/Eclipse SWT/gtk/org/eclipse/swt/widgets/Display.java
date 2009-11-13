@@ -287,6 +287,11 @@ public class Display extends Device {
 	int /*long*/ pangoLayoutNewProc, pangoLayoutNewDefaultProc;
 	Callback pangoLayoutNewCallback;
 	
+	/* Custom Resize */
+	double resizeLocationX, resizeLocationY;
+	int resizeBoundsX, resizeBoundsY, resizeBoundsWidth, resizeBoundsHeight;
+	int resizeMode;
+	
 	/* Fixed Subclass */
 	static int /*long*/ fixed_type;
 	static int /*long*/ fixed_info_ptr;

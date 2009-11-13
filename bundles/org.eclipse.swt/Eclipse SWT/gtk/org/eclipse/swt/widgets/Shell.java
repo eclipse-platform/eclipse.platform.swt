@@ -121,7 +121,6 @@ public class Shell extends Decorations {
 	boolean mapped, moved, resized, opened, fullScreen, showWithParent, modified, center;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
-	int resizeMode;
 	Control lastActive;
 	ToolTip [] toolTips;
 
@@ -914,8 +913,8 @@ int getResizeMode (double x, double y) {
 		else if (x <= border + 16) mode = OS.GDK_BOTTOM_LEFT_CORNER;
 	} else if (x >= width - border) {
 		mode = OS.GDK_RIGHT_SIDE;
-		if (y <= border + 16) mode = OS.GDK_TOP_RIGHT_CORNER;
-		else if (y >= height - border - 16) mode = OS.GDK_BOTTOM_RIGHT_CORNER;
+		if (y >= height - border - 16) mode = OS.GDK_BOTTOM_RIGHT_CORNER;
+		else if (y <= border + 16) mode = OS.GDK_TOP_RIGHT_CORNER;
 	} else if (y <= border) {
 		mode = OS.GDK_TOP_SIDE;
 		if (x <= border + 16) mode = OS.GDK_TOP_LEFT_CORNER;
@@ -1128,10 +1127,22 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
 				forceActive ();
 			}
+			GdkEventButton gdkEvent = new GdkEventButton ();
+			OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+			if (gdkEvent.button == 1) {
+				display.resizeLocationX = gdkEvent.x_root;
+				display.resizeLocationY = gdkEvent.y_root;
+				int [] x = new int [1], y = new int [1];
+				OS.gtk_window_get_position (shellHandle, x, y);
+				display.resizeBoundsX = x [0];
+				display.resizeBoundsY = y [0];
+				display.resizeBoundsWidth = OS.GTK_WIDGET_WIDTH (shellHandle);
+				display.resizeBoundsHeight = OS.GTK_WIDGET_HEIGHT (shellHandle);
+			}
 		}
 		return 0;
 	}
-	return gtk_button_press_event (widget, event, true);
+	return super.gtk_button_press_event (widget, event);
 }
 
 int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
@@ -1153,24 +1164,10 @@ int /*long*/ gtk_delete_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
-	if (widget == shellHandle) {
-		if (isCustomResize ()) {
-			GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-			OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
-			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) == 0) {
-				int mode = getResizeMode (gdkEvent.x, gdkEvent.y);
-				if (mode != 0) {
-					int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
-					int /*long*/ cursor = OS.gdk_cursor_new (mode);
-					OS.gdk_window_set_cursor (window, cursor);
-					OS.gdk_cursor_destroy (cursor);
-					resizeMode = mode;
-				}
-			}
-		}
-		return 0;
+	if (widget != shellHandle) {
+		return super.gtk_enter_notify_event (widget, event);
 	}
-	return super.gtk_enter_notify_event (widget, event);
+	return 0;
 }
 
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
@@ -1228,7 +1225,7 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) == 0) {
 				int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 				OS.gdk_window_set_cursor (window, 0);
-				resizeMode = 0;
+				display.resizeMode = 0;
 			}
 		}
 		return 0;
@@ -1252,80 +1249,64 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 			GdkEventMotion gdkEvent = new GdkEventMotion ();
 			OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
-				int width = OS.GTK_WIDGET_WIDTH (shellHandle);
-				int height = OS.GTK_WIDGET_HEIGHT (shellHandle);
 				int border = OS.gtk_container_get_border_width (shellHandle);
-				int trim = border + border;
-				int [] x_pos = new int [1], y_pos = new int [1];
-				OS.gtk_window_get_position (shellHandle, x_pos, y_pos);
-				int x = x_pos [0], y = y_pos [0];
-				switch (resizeMode) {
+				int dx = (int)(gdkEvent.x_root - display.resizeLocationX);
+				int dy = (int)(gdkEvent.y_root - display.resizeLocationY);
+				int x = display.resizeBoundsX;
+				int y = display.resizeBoundsY;
+				int width = display.resizeBoundsWidth;
+				int height = display.resizeBoundsHeight;
+				int newWidth = Math.max(width - dx, Math.max(minWidth, border + border));
+				int newHeight = Math.max(height - dy, Math.max(minHeight, border + border));
+				switch (display.resizeMode) {
 					case OS.GDK_LEFT_SIDE:
-						x = (int)gdkEvent.x_root;
-						width -= (int)gdkEvent.x;
-						x = Math.min (x, x + width - trim);
-						width = Math.max (trim, Math.max (minWidth, width));
+						x += width - newWidth;
+						width = newWidth;
 						break;
 					case OS.GDK_TOP_LEFT_CORNER:
-						x = (int)gdkEvent.x_root;
-						width -= (int)gdkEvent.x;
-						y = (int)gdkEvent.y_root;
-						height -= (int)gdkEvent.y;
-						x = Math.min (x, x + width - trim);
-						width = Math.max (trim, Math.max (minWidth, width));
-						y = Math.min (y, y + height - trim);
-						height = Math.max (trim, Math.max (minHeight, height));
+						x += width - newWidth;
+						width = newWidth;
+						y += height - newHeight;
+						height = newHeight;
 						break;
 					case OS.GDK_TOP_SIDE:
-						y = (int)gdkEvent.y_root;
-						height -= (int)gdkEvent.y;
-						y = Math.min (y, y + height - trim);
-						height = Math.max (trim, Math.max (minHeight, height));
+						y += height - newHeight;
+						height = newHeight;
 						break;
 					case OS.GDK_TOP_RIGHT_CORNER:
-						y = (int)gdkEvent.y_root;
-						height -= (int)gdkEvent.y;
-						width = (int)gdkEvent.x;
-						y = Math.min (y, y + height - trim);
-						height = Math.max (trim, Math.max (minHeight, height));
-						width = Math.max (trim, Math.max (minWidth, width));
+						width = Math.max(width + dx, Math.max(minWidth, border + border));
+						y += height - newHeight;
+						height = newHeight;
 						break;
 					case OS.GDK_RIGHT_SIDE:
-						width = (int)gdkEvent.x;
-						width = Math.max (trim, Math.max (minWidth, width));
+						width = Math.max(width + dx, Math.max(minWidth, border + border));
 						break;
 					case OS.GDK_BOTTOM_RIGHT_CORNER:
-						width = (int)gdkEvent.x;
-						height = (int)gdkEvent.y;
-						width = Math.max (trim, Math.max (minWidth, width));
-						height = Math.max (trim, Math.max (minHeight, height));
+						width = Math.max(width + dx, Math.max(minWidth, border + border));
+						height = Math.max(height + dy, Math.max(minHeight, border + border));
 						break;
 					case OS.GDK_BOTTOM_SIDE:
-						height = (int)gdkEvent.y;
-						height = Math.max (trim, Math.max (minHeight, height));
+						height = Math.max(height + dy, Math.max(minHeight, border + border));
 						break;
 					case OS.GDK_BOTTOM_LEFT_CORNER:
-						x = (int)gdkEvent.x_root;
-						width -= (int)gdkEvent.x;
-						height = (int)gdkEvent.y;
-						x = Math.min (x, x + width - trim);
-						width = Math.max (trim, Math.max (minWidth, width));
-						height = Math.max (trim, Math.max (minHeight, height));
+						x += width - newWidth;
+						width = newWidth;
+						height = Math.max(height + dy, Math.max(minHeight, border + border));
 						break;
 				}
-				if (x != x_pos [0] || y != y_pos [0]) {
+				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
 					OS.gdk_window_move_resize (OS.GTK_WIDGET_WINDOW (shellHandle), x, y, width, height);
 				} else {
 					OS.gtk_window_resize (shellHandle, width, height);
 				}
 			} else {
 				int mode = getResizeMode (gdkEvent.x, gdkEvent.y);
-				if (mode != resizeMode) {
+				if (mode != display.resizeMode) {
 					int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 					int /*long*/ cursor = OS.gdk_cursor_new (mode);
 					OS.gdk_window_set_cursor (window, cursor);
 					OS.gdk_cursor_destroy (cursor);
-					resizeMode = mode;
+					display.resizeMode = mode;
 				}
 			}
 		}
