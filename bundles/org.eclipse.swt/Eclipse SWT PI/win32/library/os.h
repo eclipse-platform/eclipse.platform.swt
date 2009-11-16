@@ -435,6 +435,8 @@
 #define NO_SHBrowseForFolderA
 #define NO_SHBrowseForFolderW
 #define NO_SHGetFileInfoA
+#define NO_SHGetFolderPathA
+#define NO_SHGetFolderPathW
 #define NO_SHGetPathFromIDListA
 #define NO_SHGetPathFromIDListW
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
