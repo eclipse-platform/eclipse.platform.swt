@@ -58,7 +58,7 @@ public final class TextLayout extends Resource {
 	static final int UNDERLINE_THICK = 1 << 16;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	int[] invalidOffsets;
-	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B';
+	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 	
 	static class StyleItem {
 		TextStyle style;
