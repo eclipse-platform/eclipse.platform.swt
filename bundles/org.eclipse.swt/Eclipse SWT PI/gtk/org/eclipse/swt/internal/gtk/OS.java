@@ -5833,23 +5833,6 @@ public static final boolean gtk_clipboard_set_with_data(int /*long*/ clipboard, 
 }
 /**
  * @param clipboard cast=(GtkClipboard *)
- * @param target cast=(const GtkTargetEntry *)
- * @param n_targets cast=(guint)
- * @param get_func cast=(GtkClipboardGetFunc)
- * @param clear_func cast=(GtkClipboardClearFunc)
- * @param user_data cast=(GObject *)
- */
-public static final native boolean _gtk_clipboard_set_with_owner(int /*long*/ clipboard, int /*long*/ target, int n_targets, int /*long*/ get_func, int /*long*/ clear_func, int /*long*/ user_data);
-public static final boolean gtk_clipboard_set_with_owner(int /*long*/ clipboard, int /*long*/ target, int n_targets, int /*long*/ get_func, int /*long*/ clear_func, int /*long*/ user_data) {
-	lock.lock();
-	try {
-		return _gtk_clipboard_set_with_owner(clipboard, target, n_targets, get_func, clear_func, user_data);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param clipboard cast=(GtkClipboard *)
  * @param target cast=(GdkAtom)
  */
 public static final native int /*long*/ _gtk_clipboard_wait_for_contents(int /*long*/ clipboard, int /*long*/ target);
