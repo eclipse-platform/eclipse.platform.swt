@@ -419,27 +419,16 @@ public void pack () {
 	int width = 0;
 
 	/* compute header width */
-	if (displayText != null) {
-		NSTableHeaderCell headerCell = nsColumn.headerCell ();
-		Font font = Font.cocoa_new(display, headerCell.font ());
-		NSAttributedString attrString = parent.createString(displayText, font, null, 0, false, true, false);
-		NSSize stringSize = attrString.size ();
-		attrString.release ();
-		width += Math.ceil (stringSize.width);
-		if (image != null) width += MARGIN; /* space between image and text */
-	}
+	NSTableHeaderCell headerCell = nsColumn.headerCell ();
+	NSSize size = headerCell.cellSize();
+	width += Math.ceil (size.width);
 	if (image != null) {
 		NSSize imageSize = image.handle.size ();
-		width += Math.ceil (imageSize.width);
+		width += Math.ceil (imageSize.width) + MARGIN;
 	}
 	if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
-		NSTableHeaderCell headerCell = nsColumn.headerCell ();
-		NSRect rect = new NSRect ();
-		rect.width = rect.height = Float.MAX_VALUE;
-		NSSize cellSize = headerCell.cellSizeForBounds (rect);
-		rect.height = cellSize.height;
-		NSRect sortRect = headerCell.sortIndicatorRectForBounds (rect);
-		width += Math.ceil (sortRect.width);
+		NSRect sortRect = headerCell.sortIndicatorRectForBounds (new NSRect ());
+		width += Math.ceil (sortRect.width + 2 * MARGIN);
 	}
 
 	/* compute item widths down column */
