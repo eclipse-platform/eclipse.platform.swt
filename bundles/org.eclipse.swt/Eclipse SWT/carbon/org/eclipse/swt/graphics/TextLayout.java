@@ -1404,7 +1404,6 @@ int _getNativeOffset(int offset, int movement, boolean forward) {
  */
 public int getOffset(Point point, int[] trailing) {
 	checkLayout();
-	computeRuns();
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return getOffset(point.x, point.y, trailing);
 }

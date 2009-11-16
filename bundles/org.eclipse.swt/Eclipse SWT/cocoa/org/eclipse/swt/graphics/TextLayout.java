@@ -1171,15 +1171,8 @@ int _getOffset (int offset, int movement, boolean forward) {
  */
 public int getOffset(Point point, int[] trailing) {
 	checkLayout();
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		computeRuns();
-		if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		return getOffset(point.x, point.y, trailing);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return getOffset(point.x, point.y, trailing);
 }
 
 /**
