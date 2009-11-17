@@ -92,6 +92,26 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
+	<class name="NSAssertionHandler" swt_gen="true">
+		<method class_method="true" selector="currentHandler" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="handleFailureInFunction:file:lineNumber:description:" swt_gen="true">
+			<arg name="functionName" swt_gen="true"></arg>
+			<arg name="fileName" swt_gen="true"></arg>
+			<arg name="line" swt_gen="true"></arg>
+			<arg name="description" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="handleFailureInMethod:object:file:lineNumber:description:" swt_gen="true">
+			<arg name="selector" swt_gen="true"></arg>
+			<arg name="object" swt_gen="true"></arg>
+			<arg name="fileName" swt_gen="true"></arg>
+			<arg name="line" swt_gen="true"></arg>
+			<arg name="description" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSAttributedString" swt_gen="mixed">
 		<method selector="attributedSubstringFromRange:" swt_gen="true">
 			<arg name="range" swt_gen="true"></arg>
