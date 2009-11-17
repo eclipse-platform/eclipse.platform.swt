@@ -47,6 +47,7 @@ public final class TextLayout extends Resource {
 	boolean justify;
 	int[] tabs;
 	int[] segments;
+	char[] segmentsChars;
 	StyleItem[] styles;
 	int stylesCount;
 
@@ -465,6 +466,8 @@ void destroy () {
 	lineOffset = null;
 	lineY = null;
 	lineWidth = null;
+	segments = null;
+	segmentsChars = null;
 	if (mLangFontLink2 != 0) {
 		/* Release() */
 		OS.VtblCall(2, mLangFontLink2);
@@ -2292,32 +2295,53 @@ public int[] getSegments () {
 	return segments;
 }
 
+/**
+ * Returns the segments characters of the receiver.
+ *
+ * @return the segments characters
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public char[] getSegmentsChars () {
+	checkLayout();
+	return segmentsChars;
+}
+
 String getSegmentsText() {
-	if (segments == null) return text;
-	int nSegments = segments.length;
-	if (nSegments <= 1) return text;
 	int length = text.length();
 	if (length == 0) return text;
-	if (nSegments == 2) {
-		if (segments[0] == 0 && segments[1] == length) return text;
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments == 0) return text;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return text;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return text;
+		}
 	}
 	char[] oldChars = new char[length];
 	text.getChars(0, length, oldChars, 0);
 	char[] newChars = new char[length + nSegments];
 	int charCount = 0, segmentCount = 0;
-	char separator = orientation == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	char defaultSeparator = orientation == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
 	while (charCount < length) {
 		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
+			char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
 			newChars[charCount + segmentCount++] = separator;
 		} else {
 			newChars[charCount + segmentCount] = oldChars[charCount++];
 		}
 	}
-	if (segmentCount < nSegments) {
+	while (segmentCount < nSegments) {
 		segments[segmentCount] = charCount;
+		char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
 		newChars[charCount + segmentCount++] = separator;
 	}
-	return new String(newChars, 0, Math.min(charCount + segmentCount, newChars.length));
+	return new String(newChars, 0, newChars.length);
 }
 
 /**
@@ -2812,12 +2836,18 @@ public void setOrientation (int orientation) {
  * always be zero and the last one should always be equals to length of
  * the text.
  * </p>
+ * <p>
+ * When segments characters are set, the segments are the offsets where
+ * the characters are inserted in the text.
+ * <p> 
  * 
  * @param segments the text segments offset
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see #setSegmentsChars(char[])
  */
 public void setSegments(int[] segments) {
 	checkLayout();
@@ -2833,6 +2863,39 @@ public void setSegments(int[] segments) {
 	}
 	freeRuns();
 	this.segments = segments;
+}
+
+/**
+ * Sets the characters to be used in the segments boundaries. The segments 
+ * are set by calling <code>setSegments(int[])</code>. The application can
+ * use this API to insert Unicode Control Characters in the text to control
+ * the display of the text and bidi reordering. The characters are not 
+ * accessible by any other API in </code>TextLayout<code>.
+ * 
+ * @param segmentsChars the segments characters 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setSegments(int[])
+ * 
+ * @since 3.6
+ */
+public void setSegmentsChars(char[] segmentsChars) {
+	checkLayout();
+	if (this.segmentsChars == null && segmentsChars == null) return;
+	if (this.segmentsChars != null && segmentsChars != null) {
+		if (this.segmentsChars.length == segmentsChars.length) {
+			int i;
+			for (i = 0; i <segmentsChars.length; i++) {
+				if (this.segmentsChars[i] != segmentsChars[i]) break;
+			}
+			if (i == segmentsChars.length) return;
+		}
+	}
+	freeRuns();
+	this.segmentsChars = segmentsChars;
 }
 
 /**
@@ -3322,16 +3385,8 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 }
 
 int validadeOffset(int offset, int step) {
-	offset += step;
-	if (segments != null && segments.length > 2) {
-		for (int i = 0; i < segments.length; i++) {
-			if (translateOffset(segments[i]) - 1 == offset) {
-				offset += step;
-				break;
-			}
-		}
-	}	
-	return offset;
+	offset = untranslateOffset(offset);
+	return translateOffset(offset + step);
 }
 
 /**
@@ -3346,13 +3401,16 @@ public String toString () {
 }
 
 int translateOffset(int offset) {
-	if (segments == null) return offset;
-	int nSegments = segments.length;
-	if (nSegments <= 1) return offset;
 	int length = text.length();
 	if (length == 0) return offset;
-	if (nSegments == 2) {
-		if (segments[0] == 0 && segments[1] == length) return offset;
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments == 0) return offset;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return offset;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return offset;
+		}
 	}
 	for (int i = 0; i < nSegments && offset - i >= segments[i]; i++) {
 		offset++;
@@ -3361,13 +3419,16 @@ int translateOffset(int offset) {
 }
 
 int untranslateOffset(int offset) {
-	if (segments == null) return offset;
-	int nSegments = segments.length;
-	if (nSegments <= 1) return offset;
 	int length = text.length();
 	if (length == 0) return offset;
-	if (nSegments == 2) {
-		if (segments[0] == 0 && segments[1] == length) return offset;
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments == 0) return offset;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return offset;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return offset;
+		}
 	}
 	for (int i = 0; i < nSegments && offset > segments[i]; i++) {
 		offset--;
