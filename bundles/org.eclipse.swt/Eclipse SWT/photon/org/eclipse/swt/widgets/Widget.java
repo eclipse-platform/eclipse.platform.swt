@@ -84,7 +84,7 @@ public abstract class Widget {
 	static final int DISPOSE_SENT	= 1<<12;
 	
 	/* Notify of the opportunity to skin this widget */
-	static final int SKIN_NEEDED = 1<<21;
+	static final int SKIN_NEEDED = 1<<13;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;

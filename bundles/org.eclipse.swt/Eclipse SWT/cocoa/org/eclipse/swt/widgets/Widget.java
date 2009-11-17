@@ -88,7 +88,7 @@ public abstract class Widget {
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
 	/* Notify of the opportunity to skin this widget */
-	static final int SKIN_NEEDED = 1<<21;
+	static final int SKIN_NEEDED = 1<<20;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;

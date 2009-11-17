@@ -95,7 +95,7 @@ public abstract class Widget {
 	static final int DRAG_DETECT	= 1<<15;
 	
 	/* Notify of the opportunity to skin this widget */
-	static final int SKIN_NEEDED = 1<<21;
+	static final int SKIN_NEEDED = 1<<16;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
