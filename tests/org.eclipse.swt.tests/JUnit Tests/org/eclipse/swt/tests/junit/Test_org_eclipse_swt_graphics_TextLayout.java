@@ -560,7 +560,19 @@ public void test_getNextOffset() {
 	assertEquals(4, offset);
 	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_END);
 	assertEquals(0, offset);
+	assertEquals(4, layout.getNextOffset(2, SWT.MOVEMENT_WORD_END));
+	assertEquals(4, layout.getNextOffset(3, SWT.MOVEMENT_WORD_END));
+	assertEquals(9, layout.getNextOffset(8, SWT.MOVEMENT_WORD_END));
+	assertEquals(14, layout.getNextOffset(10, SWT.MOVEMENT_WORD_END));
+	assertEquals(14, layout.getNextOffset(13, SWT.MOVEMENT_WORD_END));
+	assertEquals(14, layout.getNextOffset(14, SWT.MOVEMENT_WORD_END));
+	assertEquals(0, layout.getPreviousOffset(0, SWT.MOVEMENT_WORD_END));
+	assertEquals(0, layout.getPreviousOffset(4, SWT.MOVEMENT_WORD_END));
+	assertEquals(4, layout.getPreviousOffset(5, SWT.MOVEMENT_WORD_END));
+	assertEquals(9, layout.getPreviousOffset(10, SWT.MOVEMENT_WORD_END));
+	assertEquals(9, layout.getPreviousOffset(11, SWT.MOVEMENT_WORD_END));
 
+	offset = 0;
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
 	assertEquals(5, offset);
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
@@ -573,6 +585,17 @@ public void test_getNextOffset() {
 	assertEquals(5, offset);
 	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_START);
 	assertEquals(0, offset);
+	assertEquals(5, layout.getNextOffset(2, SWT.MOVEMENT_WORD_START));
+	assertEquals(5, layout.getNextOffset(4, SWT.MOVEMENT_WORD_START));
+	assertEquals(10, layout.getNextOffset(9, SWT.MOVEMENT_WORD_START));
+	assertEquals(14, layout.getNextOffset(10, SWT.MOVEMENT_WORD_START));
+	assertEquals(14, layout.getNextOffset(13, SWT.MOVEMENT_WORD_START));
+	assertEquals(14, layout.getNextOffset(14, SWT.MOVEMENT_WORD_START));
+	assertEquals(0, layout.getPreviousOffset(0, SWT.MOVEMENT_WORD_START));
+	assertEquals(0, layout.getPreviousOffset(3, SWT.MOVEMENT_WORD_START));
+	assertEquals(0, layout.getPreviousOffset(4, SWT.MOVEMENT_WORD_START));
+	assertEquals(0, layout.getPreviousOffset(5, SWT.MOVEMENT_WORD_START));
+	assertEquals(5, layout.getPreviousOffset(6, SWT.MOVEMENT_WORD_START));
 
 	
 	
