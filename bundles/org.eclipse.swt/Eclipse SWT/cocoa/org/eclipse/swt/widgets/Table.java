@@ -76,7 +76,7 @@ public class Table extends Composite {
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
-	boolean ignoreSelect, fixScrollWidth, drawExpansion;
+	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect;
 	Rectangle imageBounds;
 
 	static int NEXT_ID;
@@ -1907,6 +1907,25 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.mouseDown(id, sel, theEvent);
 }
 
+void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSTableView widget = (NSTableView)view;
+	NSEvent nsEvent = new NSEvent(theEvent);
+	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
+	int row = (int)/*64*/widget.rowAtPoint(pt);
+	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0) {
+		if (widget.isRowSelected(row)) {
+			if (0 <= row && row < itemCount) {
+				Event event = new Event ();
+				event.item = _getItem ((int)/*64*/row);
+				sendSelectionEvent (SWT.Selection, event, false);
+			}
+		}
+	}
+	didSelect = false;
+	super.mouseDownSuper(id, sel, theEvent);
+	didSelect = false;
+}
+
 /*
  * Feature in Cocoa.  If a checkbox is in multi-state mode, nextState cycles
  * from off to mixed to on and back to off again.  This will cause the on state
@@ -3061,7 +3080,7 @@ void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	}
 }
 
-void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void sendSelection () {
 	if (ignoreSelect) return;
 	NSTableView widget = (NSTableView) view;
 	int row = (int)/*64*/widget.selectedRow ();
@@ -3074,6 +3093,16 @@ void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*
 		event.index = row;
 		sendSelectionEvent (SWT.Selection, event, false);
 	}
+}
+
+void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	if (didSelect) return;
+	sendSelection();
+}
+
+void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	didSelect = true;
+	sendSelection();
 }
 
 void tableView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {

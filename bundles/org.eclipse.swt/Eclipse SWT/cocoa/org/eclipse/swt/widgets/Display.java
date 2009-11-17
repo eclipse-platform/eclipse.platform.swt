@@ -2252,6 +2252,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_highlightSelectionInClipRect_, highlightSelectionInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineViewSelectionIsChanging_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_child_ofItem_, proc5, "@:@i@");
 	OS.class_addMethod(cls, OS.sel_outlineView_isItemExpandable_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
@@ -2419,6 +2420,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@:@:@");
+	OS.class_addMethod(cls, OS.sel_tableViewSelectionIsChanging_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_willDisplayCell_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_setObjectValue_forTableColumn_row_, proc6, "@:@@@i");
@@ -4836,6 +4838,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.numberOfRowsInTableView(id, sel, arg0);
 	} else if (sel == OS.sel_tableViewSelectionDidChange_) {
 		widget.tableViewSelectionDidChange(id, sel, arg0);
+	} else if (sel == OS.sel_tableViewSelectionIsChanging_) {
+		widget.tableViewSelectionIsChanging(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidResignKey_) {
 		widget.windowDidResignKey(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidBecomeKey_) {
@@ -4852,6 +4856,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.menuNeedsUpdate(id, sel, arg0);
 	} else if (sel == OS.sel_outlineViewSelectionDidChange_) {
 		widget.outlineViewSelectionDidChange(id, sel, arg0);
+	} else if (sel == OS.sel_outlineViewSelectionIsChanging_) {
+		widget.outlineViewSelectionIsChanging(id, sel, arg0);
 	} else if (sel == OS.sel_sendEvent_) {
 		widget.windowSendEvent(id, sel, arg0);
 	} else if (sel == OS.sel_helpRequested_) {

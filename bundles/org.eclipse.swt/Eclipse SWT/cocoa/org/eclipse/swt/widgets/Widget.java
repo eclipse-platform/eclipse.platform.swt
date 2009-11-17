@@ -967,6 +967,10 @@ void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	mouseDownSuper(id, sel, theEvent);
+}
+
+void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
@@ -1093,6 +1097,9 @@ void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/
 }
 
 void outlineViewSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
+
+void outlineViewSelectionIsChanging(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ item) {
@@ -1767,6 +1774,9 @@ void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ a
 }
 
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+}
+
+void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 }
 
 void tableView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {

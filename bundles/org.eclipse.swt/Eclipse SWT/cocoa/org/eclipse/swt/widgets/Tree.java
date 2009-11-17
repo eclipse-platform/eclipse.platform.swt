@@ -84,7 +84,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion;
+	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion, didSelect;
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
@@ -1933,6 +1933,30 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.mouseDown(id, sel, theEvent);
 }
 
+void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSOutlineView widget = (NSOutlineView)view;
+	NSEvent nsEvent = new NSEvent(theEvent);
+	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
+	int row = (int)/*64*/widget.rowAtPoint(pt);
+	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0) {
+		if (widget.isRowSelected(row)) {
+			NSRect rect = widget.frameOfOutlineCellAtRow(row);
+			if (!OS.NSPointInRect(pt, rect)) {
+				id itemID = widget.itemAtRow(row);
+				Widget item = itemID != null ? display.getWidget (itemID.id) : null;
+				if (item != null && item instanceof TreeItem) {
+					Event event = new Event ();
+					event.item = item;
+					sendSelectionEvent (SWT.Selection, event, false);
+				}
+			}
+		}
+	}
+	didSelect = false;
+	super.mouseDownSuper(id, sel, theEvent);
+	didSelect = false;
+}
+
 /*
  * Feature in Cocoa.  If a checkbox is in multi-state mode, nextState cycles
  * from off to mixed to on and back to off again.  This will cause the on state
@@ -2112,7 +2136,7 @@ void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/
 	}
 }
 
-void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void sendSelection () {
 	if (ignoreSelect) return;
 	NSOutlineView widget = (NSOutlineView) view;
 	int row = (int)/*64*/widget.selectedRow ();
@@ -2126,6 +2150,16 @@ void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*lon
 		event.index = row;
 		sendSelectionEvent (SWT.Selection, event, false);
 	}
+}
+
+void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	if (didSelect) return;
+	sendSelection ();
+}
+
+void outlineViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	didSelect = true;
+	sendSelection ();
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ itemID) {
