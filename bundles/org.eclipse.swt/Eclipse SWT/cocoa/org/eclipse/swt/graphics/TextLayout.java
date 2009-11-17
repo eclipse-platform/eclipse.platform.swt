@@ -1124,16 +1124,37 @@ int _getOffset (int offset, int movement, boolean forward) {
 		}
 		case SWT.MOVEMENT_WORD_END: {
 			offset = translateOffset(offset);
-			length = translateOffset(length);
-			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
-			offset = (int)/*64*/ (range.location +  range.length);
+			if (forward) {
+				offset = (int)/*64*/textStorage.nextWordFromIndex(offset, true);
+			} else {
+				length = translateOffset(length);
+				int result = 0;
+				while (result < length) {
+					int wordEnd = (int)/*64*/textStorage.nextWordFromIndex(result, true);
+					if (wordEnd >= offset) {
+						offset = result;
+						break;
+					}
+					result = wordEnd;
+				}
+			}
 			return untranslateOffset(offset);
 		}
 		case SWT.MOVEMENT_WORD_START: {
 			offset = translateOffset(offset);
-			length = translateOffset(length);
-			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
-			offset = (int)/*64*/ range.location;
+			if (forward) {
+				int result = translateOffset(length);
+				while (result > 0) {
+					int wordStart = (int)/*64*/textStorage.nextWordFromIndex(result, false);
+					if (wordStart <= offset) {
+						offset = result;
+						break;
+					}
+					result = wordStart;
+				}
+			} else {
+				offset = (int)/*64*/textStorage.nextWordFromIndex(offset, false);
+			}
 			return untranslateOffset(offset);
 		}
 	}
