@@ -125,23 +125,43 @@ public void test_getSegments() {
 	}
 
     /* wrong: internal testing */
-//  text = "AB";
-//  int textLength = text.length();
-//  layout.setText(text);
-//  String[] messages = {"no segments", "segments", "segments (duplicate at 0)", "segments (duplicate at 1)", "segments (duplicate at 2)"};
-//  int[][] segments = {null, {0, 1, 2}, {0, 0, 1, 2}, {0, 1, 1, 2}, {0, 1, 2, 2}};
-//  int[][] translatedOffsets = {{0, 1, 2}, {1, 3, 5}, {2, 4, 6}, {1, 4, 6}, {1, 3, 6}};
-//  int[][] untranslatedOffsets = {{0, 1, 2}, {0, 0, 1, 1, 2, 2}, {0, 0, 0, 1, 1, 2, 2}, {0, 0, 1, 1, 1, 2, 2}, {0, 0, 1, 1, 2, 2, 2}};
-//  for (int i = 0; i < segments.length; i++) {
-//      layout.setSegments(segments[i]);
-//      layout.getBounds();
-//      for (int j = 0; j <= textLength; j++) { 
-//          assertEquals(messages[i] + " j = " + j, translatedOffsets[i][j], layout.translateOffset(j));
-//      }
-//      for (int j = 0, n = layout.getSegments() == null ? 0 : textLength + layout.getSegments().length; j < n; j++) { 
-//          assertEquals(messages[i] + " j = " + j, untranslatedOffsets[i][j], layout.untranslateOffset(j));
-//      }
-//  }
+//	String text = "AB";
+//	int textLength = text.length();
+//	layout.setText(text);
+//	messages = new String [] { 
+//			"no segments", 
+//			"segments",
+//			"segments (duplicate at 0)", 
+//			"segments (duplicate at 1)",
+//			"segments (duplicate at 2)" };
+//	segments = new int [][] { 
+//			null, 
+//			{ 0, 1, 2 }, 
+//			{ 0, 0, 1, 2 }, 
+//			{ 0, 1, 1, 2 },
+//			{ 0, 1, 2, 2 } };
+//	int[][] translatedOffsets = { 
+//			{ 0, 1, 2 }, 
+//			{ 1, 3, 5 }, 
+//			{ 2, 4, 6 },
+//			{ 1, 4, 6 }, 
+//			{ 1, 3, 6 } };
+//	int[][] untranslatedOffsets = { 
+//			{ 0, 1, 2 }, 
+//			{ 0, 0, 1, 1, 2, 2 },
+//			{ 0, 0, 0, 1, 1, 2, 2 }, 
+//			{ 0, 0, 1, 1, 1, 2, 2 },
+//			{ 0, 0, 1, 1, 2, 2, 2 } };
+//	for (int i = 0; i < segments.length; i++) {
+//		layout.setSegments(segments[i]);
+//		layout.getBounds();
+//		for (int j = 0; j <= textLength; j++) {
+//			assertEquals(messages[i] + " j = " + j,	translatedOffsets[i][j], layout.translateOffset(j));
+//		}
+//		for (int j = 0, n = layout.getSegments() == null ? 0 : textLength + layout.getSegments().length; j < n; j++) {
+//			assertEquals(messages[i] + " j = " + j,	untranslatedOffsets[i][j], layout.untranslateOffset(j));
+//		}
+//	}
 	layout.dispose();
 }
 
@@ -151,20 +171,40 @@ public void test_getSegmentsChars() {
 	int textLength = text.length();
 	layout.setText(text);
 
-	int[][] segments = {null, {0, 0, 4, 4, 5, 5, 8, 8}, {0, 0, 4, 4, 5, 5, 8, 8},
-			{0, textLength}, {0, textLength}, {0, 4, 8}, {1}};
-	char[][] chars = {null, {'\u202a', '\u202b', '\u202c', '\u200e', '\u200e', '\u202b', '\u202c', '\u202c'},
+	String[] messages = {
+			"no segments", 
+			"Embedding RTL dir test", 
+			"Embedding LTR dir test",
+			"LRO test", 
+			"RLO test", 
+			"Traditional segments", 
+			"Traditional segments invalid"};
+	int[][] segments = {
+			null, 
+			{0, 0, 4, 4, 5, 5, 8, 8}, 
+			{0, 0, 4, 4, 5, 5, 8, 8},
+			{0, textLength}, 
+			{0, textLength}, 
+			{0, 4, 8}, 
+			{1}};
+	char[][] chars = {
+			null, 
+			{'\u202a', '\u202b', '\u202c', '\u200e', '\u200e', '\u202b', '\u202c', '\u202c'},
 			{'\u202b', '\u202a', '\u202c', '\u200f', '\u200f', '\u202a', '\u202c', '\u202c'},
-			{0x202d, 0x202c}, {0x202e, 0x202c}, null, null};
-	int[][] levels = {{0, 0, 1, 1, 1, 1, 0, 0}, {4, 4, 3, 3, 2, 3, 4, 4}, {2, 2, 3, 3, 1, 3, 2, 2},
-			{2, 2, 2, 2, 2, 2, 2, 2}, {1, 1, 1, 1, 1, 1, 1, 1}, {0, 0, 1, 1, 0, 1, 0, 0},
+			{0x202d, 0x202c}, 
+			{0x202e, 0x202c},
+			null, 
+			null};
+	int[][] levels = {
+			{0, 0, 1, 1, 1, 1, 0, 0}, 
+			{4, 4, 3, 3, 2, 3, 4, 4}, 
+			{2, 2, 3, 3, 1, 3, 2, 2},
+			{2, 2, 2, 2, 2, 2, 2, 2}, //Fails on cocoa, where it returns {0, 0, 0, 0, 0, 0, 0, 0}
+			{1, 1, 1, 1, 1, 1, 1, 1}, 
+			{0, 0, 1, 1, 0, 1, 0, 0},
 			{0, 0, 1, 1, 1, 1, 0, 0}};
 	int[] offsets = {0, textLength};
-
-	String[] messages = {"no segments", "Embedding RTL dir test", "Embedding LTR dir test",
-			"LRO test", "RLO test", "Traditional segments", "Traditional segments invalid"};
-
-	for (int i = segments.length - 1; i >= 0; i--) {
+	for (int i = 0; i < segments.length; i++) {
 		layout.setSegments(segments[i]);
 		layout.setSegmentsChars(chars[i]);
 		assertEquals("Test line offsets" + ": group: " + i, offsets, layout.getLineOffsets());
@@ -502,9 +542,22 @@ public void test_getLocation() {
 }
 public void test_getNextOffset() {
 	TextLayout layout = new TextLayout(display);
-	String text = "AB \u05E9\u05E0 CD\nHello";
+	String text;
+	int offset;
+	
+	text = "word word word";
 	layout.setText(text);
-	int offset = 0;
+	offset = 0;
+	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_END);
+	assertEquals(3, offset);
+	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_END);
+	assertEquals(8, offset);
+	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_END);
+	assertEquals(13, offset);
+	
+	text = "AB \u05E9\u05E0 CD\nHello";
+	layout.setText(text);
+	offset = 0;
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
 	assertEquals(3, offset);
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
