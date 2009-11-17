@@ -81,9 +81,31 @@ public void test_getSegments() {
 	assertEquals(10, offset);
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
 	assertEquals(14, offset);
-	layout.setWidth(-1);
+	layout.dispose();
+	layout = new TextLayout(display);
 
 
+	//Bug 241482 comment 64
+	layout.setText("\nAB");
+	layout.setSegments(new int[] {0, 1, 3});
+	int[] expected = new int[] {0, 1, 3};
+	int[] offsets = layout.getLineOffsets();
+	for (int i = 0; i < offsets.length; i++) {
+		assertEquals(" i = " + i, expected[i], offsets[i]);    
+	}
+	layout.dispose();
+	layout = new TextLayout(display);
+	
+	//Bug 241482 comment  80
+	layout.setText("MNMNMN");
+	layout.setSegments(new int[] {0,1,6});
+	layout.getBounds();
+	assertEquals(layout.getText().length() - 1, layout.getOffset(layout.getBounds().width, 0, null));
+	layout.setAscent(9);
+	assertEquals(layout.getText().length() - 1, layout.getOffset(layout.getBounds().width, 0, null));
+	layout.dispose();
+	layout = new TextLayout(display);
+	
 	//Lina's bug (bug 241482, comment 37)
 	boolean doit = false; //known to be broken
 	if (doit) {
@@ -101,7 +123,25 @@ public void test_getSegments() {
 		assertEquals("hit test to the right", length - 1, layout.getOffset(width, 0, trailing));
 		assertEquals("hit test to the right (trailing)", 1, trailing[0]);
 	}
-	
+
+    /* wrong: internal testing */
+//  text = "AB";
+//  int textLength = text.length();
+//  layout.setText(text);
+//  String[] messages = {"no segments", "segments", "segments (duplicate at 0)", "segments (duplicate at 1)", "segments (duplicate at 2)"};
+//  int[][] segments = {null, {0, 1, 2}, {0, 0, 1, 2}, {0, 1, 1, 2}, {0, 1, 2, 2}};
+//  int[][] translatedOffsets = {{0, 1, 2}, {1, 3, 5}, {2, 4, 6}, {1, 4, 6}, {1, 3, 6}};
+//  int[][] untranslatedOffsets = {{0, 1, 2}, {0, 0, 1, 1, 2, 2}, {0, 0, 0, 1, 1, 2, 2}, {0, 0, 1, 1, 1, 2, 2}, {0, 0, 1, 1, 2, 2, 2}};
+//  for (int i = 0; i < segments.length; i++) {
+//      layout.setSegments(segments[i]);
+//      layout.getBounds();
+//      for (int j = 0; j <= textLength; j++) { 
+//          assertEquals(messages[i] + " j = " + j, translatedOffsets[i][j], layout.translateOffset(j));
+//      }
+//      for (int j = 0, n = layout.getSegments() == null ? 0 : textLength + layout.getSegments().length; j < n; j++) { 
+//          assertEquals(messages[i] + " j = " + j, untranslatedOffsets[i][j], layout.untranslateOffset(j));
+//      }
+//  }
 	layout.dispose();
 }
 
@@ -170,34 +210,6 @@ public void test_getLineOffsets() {
 	for (int i = 0; i < offsets.length; i++) {
 		assertEquals(expected[i], offsets[i]);	
 	}
-	
-	//Bug 241482 comment 64
-	layout.setText("\nAB");
-    layout.setSegments(new int[] {0, 1, 3});
-    expected = new int[] {0, 1, 3};
-    offsets = layout.getLineOffsets();
-    for (int i = 0; i < offsets.length; i++) {
-        assertEquals(" i = " + i, expected[i], offsets[i]);    
-    }
-    
-    /* wrong: internal testing */
-//    text = "AB";
-//    int textLength = text.length();
-//    layout.setText(text);
-//    String[] messages = {"no segments", "segments", "segments (duplicate at 0)", "segments (duplicate at 1)", "segments (duplicate at 2)"};
-//    int[][] segments = {null, {0, 1, 2}, {0, 0, 1, 2}, {0, 1, 1, 2}, {0, 1, 2, 2}};
-//    int[][] translatedOffsets = {{0, 1, 2}, {1, 3, 5}, {2, 4, 6}, {1, 4, 6}, {1, 3, 6}};
-//    int[][] untranslatedOffsets = {{0, 1, 2}, {0, 0, 1, 1, 2, 2}, {0, 0, 0, 1, 1, 2, 2}, {0, 0, 1, 1, 1, 2, 2}, {0, 0, 1, 1, 2, 2, 2}};
-//    for (int i = 0; i < segments.length; i++) {
-//        layout.setSegments(segments[i]);
-//        layout.getBounds();
-//        for (int j = 0; j <= textLength; j++) { 
-//            assertEquals(messages[i] + " j = " + j, translatedOffsets[i][j], layout.translateOffset(j));
-//        }
-//        for (int j = 0, n = layout.getSegments() == null ? 0 : textLength + layout.getSegments().length; j < n; j++) { 
-//            assertEquals(messages[i] + " j = " + j, untranslatedOffsets[i][j], layout.untranslateOffset(j));
-//        }
-//    }
     
 	layout.dispose();
 }
