@@ -549,11 +549,32 @@ public void test_getNextOffset() {
 	layout.setText(text);
 	offset = 0;
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_END);
-	assertEquals(3, offset);
+	assertEquals(4, offset);
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_END);
-	assertEquals(8, offset);
+	assertEquals(9, offset);
 	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_END);
-	assertEquals(13, offset);
+	assertEquals(14, offset);
+	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_END);
+	assertEquals(9, offset);
+	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_END);
+	assertEquals(4, offset);
+	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_END);
+	assertEquals(0, offset);
+
+	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
+	assertEquals(5, offset);
+	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
+	assertEquals(10, offset);
+	offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD_START);
+	assertEquals(14, offset);
+	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_START);
+	assertEquals(10, offset);
+	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_START);
+	assertEquals(5, offset);
+	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD_START);
+	assertEquals(0, offset);
+
+	
 	
 	text = "AB \u05E9\u05E0 CD\nHello";
 	layout.setText(text);
