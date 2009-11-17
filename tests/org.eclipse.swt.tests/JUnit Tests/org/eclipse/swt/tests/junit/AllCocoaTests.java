@@ -52,6 +52,7 @@ static String[] excludeTests = {
 	"test_getNextOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getNextOffset2(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
+	"test_getSegments(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 };
 
 static boolean isExcluded(String name) {
