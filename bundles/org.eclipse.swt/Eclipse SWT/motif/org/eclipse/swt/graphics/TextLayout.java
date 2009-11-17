@@ -45,6 +45,7 @@ public final class TextLayout extends Resource {
 	boolean justify; 
 	int[] tabs;
 	int[] segments;
+	char[] segmentsChars;
 	StyleItem[] styles;
 	
 	StyleItem[][] runs;
@@ -279,6 +280,8 @@ void destroy() {
 	lineOffset = null;
 	lineY = null;
 	lineWidth = null;
+	segments = null;
+	segmentsChars = null;
 }
 
 /**
@@ -1309,6 +1312,11 @@ public int[] getSegments() {
 	return segments;
 }
 
+public char[] getSegmentsChars () {
+	checkLayout();
+	return segmentsChars;
+}
+
 /**
  * Returns the line spacing of the receiver.
  *
@@ -1761,6 +1769,22 @@ public void setSegments(int[] segments) {
 	}
 	freeRuns();
 	this.segments = segments;
+}
+
+public void setSegmentsChars(char[] segmentsChars) {
+	checkLayout();
+	if (this.segmentsChars == null && segmentsChars == null) return;
+	if (this.segmentsChars != null && segmentsChars != null) {
+		if (this.segmentsChars.length == segmentsChars.length) {
+			int i;
+			for (i = 0; i <segmentsChars.length; i++) {
+				if (this.segmentsChars[i] != segmentsChars[i]) break;
+			}
+			if (i == segmentsChars.length) return;
+		}
+	}
+	freeRuns();
+	this.segmentsChars = segmentsChars;
 }
 
 /**
