@@ -48,6 +48,7 @@ public final class TextLayout extends Resource {
 	int alignment;
 	int[] tabs;
 	int[] segments;
+	char[] segmentsChars;
 	int wrapWidth;
 	int orientation;
 	
@@ -327,6 +328,8 @@ void destroy() {
 	font = null;
 	text = null;
 	styles = null;
+	segments = null;
+	segmentsChars = null;
 }
 
 /**
@@ -1104,46 +1107,37 @@ int _getOffset (int offset, int movement, boolean forward) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return 0;
-	offset = translateOffset(offset);
-	length = translateOffset(length);
 	switch (movement) {
 		case SWT.MOVEMENT_CLUSTER://TODO cluster
 		case SWT.MOVEMENT_CHAR: {
-			boolean invalid = false;
-			do {
-				int newOffset = offset;
 				if (forward) {
-					if (newOffset < length) newOffset++;
+					if (offset < length) offset++;
 				} else {
-					if (newOffset > 0) newOffset--;
+					if (offset > 0) offset--;
 				}
-				if (newOffset == offset) break;
-				offset = newOffset;
-				invalid = false;
-				if (invalidOffsets != null) {
-					for (int i = 0; i < invalidOffsets.length; i++) {
-						if (offset == invalidOffsets[i]) {
-							invalid = true;
-							break;
-						}
-					}
-				}
-			} while (invalid);
-			return untranslateOffset(offset);
+				return offset;
 		}
 		case SWT.MOVEMENT_WORD: {
-			return untranslateOffset((int)/*64*/textStorage.nextWordFromIndex(offset, forward));
+			offset = translateOffset(offset);
+			offset = (int)/*64*/textStorage.nextWordFromIndex(offset, forward);
+			return untranslateOffset(offset);
 		}
 		case SWT.MOVEMENT_WORD_END: {
+			offset = translateOffset(offset);
+			length = translateOffset(length);
 			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
-			return untranslateOffset((int)/*64*/(range.location + range.length));
+			offset = (int)/*64*/ (range.location +  range.length);
+			return untranslateOffset(offset);
 		}
 		case SWT.MOVEMENT_WORD_START: {
+			offset = translateOffset(offset);
+			length = translateOffset(length);
 			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
-			return untranslateOffset((int)/*64*/range.location);
+			offset = (int)/*64*/ range.location;
+			return untranslateOffset(offset);
 		}
 	}
-	return untranslateOffset(offset);
+	return offset;
 }
 
 /**
@@ -1309,40 +1303,42 @@ public int[] getSegments() {
 	return segments;
 }
 
+public char[] getSegmentsChars () {
+	checkLayout();
+	return segmentsChars;
+}
+
 String getSegmentsText() {
-	if (segments == null) return text;
-	int nSegments = segments.length;
-	if (nSegments <= 1) return text;
 	int length = text.length();
 	if (length == 0) return text;
-	if (nSegments == 2) {
-		if (segments[0] == 0 && segments[1] == length) return text;
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments == 0) return text;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return text;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return text;
+		}
 	}
-	invalidOffsets = new int[nSegments];
 	char[] oldChars = new char[length];
 	text.getChars(0, length, oldChars, 0);
 	char[] newChars = new char[length + nSegments];
 	int charCount = 0, segmentCount = 0;
-	char separator = getOrientation() == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	char defaultSeparator = orientation == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
 	while (charCount < length) {
 		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
-			invalidOffsets[segmentCount] = charCount + segmentCount;
+			char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
 			newChars[charCount + segmentCount++] = separator;
 		} else {
 			newChars[charCount + segmentCount] = oldChars[charCount++];
 		}
 	}
-	if (segmentCount < nSegments) {
-		invalidOffsets[segmentCount] = charCount + segmentCount;
+	while (segmentCount < nSegments) {
 		segments[segmentCount] = charCount;
+		char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
 		newChars[charCount + segmentCount++] = separator;
 	}
-	if (segmentCount != nSegments) {
-		int[] tmp = new int [segmentCount];
-		System.arraycopy(invalidOffsets, 0, tmp, 0, segmentCount);
-		invalidOffsets = tmp;
-	}
-	return new String(newChars, 0, Math.min(charCount + segmentCount, newChars.length));
+	return new String(newChars, 0, newChars.length);
 }
 
 /**
@@ -1753,6 +1749,28 @@ public void setSegments(int[] segments) {
 	}
 }
 
+public void setSegmentsChars(char[] segmentsChars) {
+	checkLayout();
+	if (this.segmentsChars == null && segmentsChars == null) return;
+	if (this.segmentsChars != null && segmentsChars != null) {
+		if (this.segmentsChars.length == segmentsChars.length) {
+			int i;
+			for (i = 0; i <segmentsChars.length; i++) {
+				if (this.segmentsChars[i] != segmentsChars[i]) break;
+			}
+			if (i == segmentsChars.length) return;
+		}
+	}
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		freeRuns();
+		this.segmentsChars = segmentsChars;
+	} finally {
+		if (pool != null) pool.release();
+	}
+}
+
 /**
  * Sets the line spacing of the receiver.  The line spacing
  * is the space left between lines.
@@ -1995,11 +2013,18 @@ public String toString () {
 int translateOffset (int offset) {
 	int length = text.length();
 	if (length == 0) return offset;
-	if (invalidOffsets == null) return offset;
-	for (int i = 0; i < invalidOffsets.length; i++) {
-		if (offset < invalidOffsets[i]) break; 
-		offset++;
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments == 0) return offset;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return offset;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return offset;
+		}
 	}
+	for (int i = 0; i < nSegments && offset - i >= segments[i]; i++) {
+		offset++;
+	}	
 	return offset;
 }
 
@@ -2009,17 +2034,19 @@ int translateOffset (int offset) {
 int untranslateOffset (int offset) {
 	int length = text.length();
 	if (length == 0) return offset;
-	if (invalidOffsets == null) return offset;
-	for (int i = 0; i < invalidOffsets.length; i++) {
-		if (offset == invalidOffsets[i]) {
-			offset++;
-			continue;
-		}
-		if (offset < invalidOffsets[i]) {
-			return offset - i;
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments == 0) return offset;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return offset;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return offset;
 		}
 	}
-	return offset - invalidOffsets.length;
+	for (int i = 0; i < nSegments && offset > segments[i]; i++) {
+		offset--;
+	}
+	return offset;
 }
 
 }
