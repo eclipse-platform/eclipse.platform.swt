@@ -4701,6 +4701,9 @@
 		<method selector="outlineViewSelectionDidChange:" swt_gen="true">
 			<arg name="notification" swt_gen="true"></arg>
 		</method>
+		<method selector="outlineViewSelectionIsChanging:" swt_gen="true">
+			<arg name="notification" swt_gen="true"></arg>
+		</method>
 	</informal_protocol>
 	<informal_protocol name="NSPasteboardOwner" swt_gen="mixed">
 		<method selector="pasteboard:provideDataForType:" swt_gen="true">

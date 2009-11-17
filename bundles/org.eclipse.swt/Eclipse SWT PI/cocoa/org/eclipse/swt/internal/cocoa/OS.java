@@ -1286,6 +1286,7 @@ public static final int /*long*/ sel_outlineViewColumnDidMove_ = sel_registerNam
 public static final int /*long*/ sel_outlineViewColumnDidResize_ = sel_registerName("outlineViewColumnDidResize:");
 public static final int /*long*/ sel_outlineViewItemDidExpand_ = sel_registerName("outlineViewItemDidExpand:");
 public static final int /*long*/ sel_outlineViewSelectionDidChange_ = sel_registerName("outlineViewSelectionDidChange:");
+public static final int /*long*/ sel_outlineViewSelectionIsChanging_ = sel_registerName("outlineViewSelectionIsChanging:");
 public static final int /*long*/ sel_owner = sel_registerName("owner");
 public static final int /*long*/ sel_pageDown_ = sel_registerName("pageDown:");
 public static final int /*long*/ sel_pageTitle = sel_registerName("pageTitle");
