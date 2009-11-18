@@ -1063,7 +1063,6 @@ void reskinChildren (int flags) {
 			TabItem item = items [i];
 			if (item != null) item.reskin (flags);
 		}
-		items = null;
 	}
 	super.reskinChildren (flags);
 }

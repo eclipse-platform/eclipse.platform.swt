@@ -1777,7 +1777,6 @@ void reskinChildren (int flags) {
 			TableColumn column = columns [i];
 			if (!column.isDisposed ()) column.reskin (flags);
 		}
-		columns = null;
 	}
 	super.reskinChildren (flags);
 }
