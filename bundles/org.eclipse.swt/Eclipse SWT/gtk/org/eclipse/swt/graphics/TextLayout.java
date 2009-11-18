@@ -112,7 +112,8 @@ void computeRuns () {
 	PangoAttribute attribute = new PangoAttribute();
 	char[] chars = null;
 	int segementsLength = segmentsText.length();
-	int offsetCount = segementsLength - text.length(); 
+	int nSegments = segementsLength - text.length();
+	int offsetCount = nSegments; 
 	if ((ascent != -1  || descent != -1) && segementsLength > 0) {
 		PangoRectangle rect = new PangoRectangle();
 		if (ascent != -1) rect.y =  -(ascent  * OS.PANGO_SCALE);
@@ -159,7 +160,6 @@ void computeRuns () {
 	if (offsetCount > 0) {
 		offsetCount = 0;
 		int segmentCount = 0;
-		int nSegments = segments == null ? 0 : segments.length;
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			if (c == ZWNBS || c == ZWS) {
