@@ -60,6 +60,15 @@ public void test_getSegments() {
 		assertEquals(m, 0, layout.getPreviousOffset(0, SWT.MOVEMENT_CLUSTER));
 	}
 	
+	// Bug 295513
+	layout.setText("Line");
+	layout.setAscent(20);
+	layout.setDescent(6);
+	layout.setSegments(new int[] {0, layout.getText().length()});
+	layout.getBounds();
+	layout.dispose();
+	layout = new TextLayout(display);
+	
 	// Bug 241482 comment 74
 	layout.setText("word word word");
 	layout.setSegments(new int[] {0, 5, 10});
