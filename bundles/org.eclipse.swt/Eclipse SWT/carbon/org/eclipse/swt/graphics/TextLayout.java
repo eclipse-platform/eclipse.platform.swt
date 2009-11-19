@@ -1126,7 +1126,14 @@ public int[] getLineOffsets() {
 	computeRuns();
 	int[] offsets = new int[breaks.length + 1];
 	for (int i = 1; i < offsets.length; i++) {
-		offsets[i] = untranslateOffset(breaks[i - 1]);	
+		int offset = breaks[i - 1];
+		for (int j = 0; j < hardBreaks.length - 1; j++) {
+			if (offset == hardBreaks[j]) {
+				offset++;
+				break;
+			}
+		}
+		offsets[i] = untranslateOffset(offset);	
 	}
 	return offsets;
 }
@@ -1151,6 +1158,12 @@ public int getLineIndex(int offset) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	offset = translateOffset(offset);
+	for (int i = 0; i < hardBreaks.length - 1; i++) {
+		if (offset == hardBreaks[i]) {
+			if (offset > 0) offset--;
+			break;
+		}
+	}
 	for (int i=0; i<breaks.length-1; i++) {
 		int lineBreak = breaks[i];
 		if (lineBreak > offset) return i;
