@@ -50,7 +50,7 @@ public static void main(String [] args) {
 	headersButton.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			browser.setUrl(
-				"http://www.httpviewer.net",
+				"http://www.ericgiguere.com/tools/http-header-viewer.html",
 				null,
 				new String[] {"User-agent: SWT Browser","Custom-header: this is just a demo"});
 		}
