@@ -59,7 +59,6 @@ static String[] excludeTests = {
 	// TextLayout bugs
 	"test_getLevel(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getLineOffsets(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
-	"test_getLineIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getLineBounds(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getLocation(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getNextOffset(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
