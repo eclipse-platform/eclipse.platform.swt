@@ -43,7 +43,7 @@ import org.eclipse.swt.events.*;
  */
 public class Spinner extends Composite {
 	int /*long*/ hwndText, hwndUpDown;
-	boolean ignoreModify;
+	boolean ignoreModify, ignoreCharacter;
 	int pageIncrement, digits;
 	static final int /*long*/ EditProc;
 	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
@@ -1251,7 +1251,42 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT wmIMEChar(int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	
+	/* Process a DBCS character */
+	Display display = this.display;
+	display.lastKey = 0;
+	display.lastAscii = wParam;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
+		return LRESULT.ZERO;
+	}
+	
+	/*
+	* Feature in Windows.  The Windows text widget uses
+	* two 2 WM_CHAR's to process a DBCS key instead of
+	* using WM_IME_CHAR.  The fix is to allow the text
+	* widget to get the WM_CHAR's but ignore sending
+	* them to the application.
+	*/
+	ignoreCharacter = true;
+	int /*long*/ result = callWindowProc (hwnd, OS.WM_IME_CHAR, wParam, lParam);
+	MSG msg = new MSG ();
+	int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+	while (OS.PeekMessage (msg, hwnd, OS.WM_CHAR, OS.WM_CHAR, flags)) {
+		OS.TranslateMessage (msg);
+		OS.DispatchMessage (msg);
+	}
+	ignoreCharacter = false;
+
+	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
+	// widget could be disposed at this point
+	display.lastKey = display.lastAscii = 0;
+	return new LRESULT (result);
+}
+
 LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	if (ignoreCharacter) return null;
 	LRESULT result = super.wmChar (hwnd, wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1361,6 +1396,7 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	if (ignoreCharacter) return null;
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	
