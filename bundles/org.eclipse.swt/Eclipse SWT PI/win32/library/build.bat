@@ -24,7 +24,7 @@ IF x.%1==x.ia64 GOTO IA64
 call "%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 8\Common7\Tools\vsvars32.bat"
 call %MSSDK%\setenv /XP32 /RETAIL
 IF x.%OUTPUT_DIR%==x. set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
-IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-jdk1.4.1
+IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-java2-sdk-50-win-i386
 IF x.%XULRUNNER_SDK%==x. set XULRUNNER_SDK=%SWT_BUILDDIR%\gecko-sdk
 set XULRUNNER_MAKE=make_xulrunner
 IF x.%1==x.x86 shift
