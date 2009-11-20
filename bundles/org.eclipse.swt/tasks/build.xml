@@ -135,7 +135,7 @@
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/x86/ibm-java2-i386-50"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
 			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"/>
@@ -157,7 +157,7 @@
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/jdk1.5.0"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/x86_64/jdk1.5.0"/>
 			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk/"/>
@@ -180,7 +180,7 @@
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-ppc-142"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/PPC/ibm-java2-ppc-50"/>
 			<env key="MOZILLA_SDK" value=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc/mozilla/dist/sdk/"/>
 			<env key="MODEL" value="ppc"/>
@@ -204,7 +204,7 @@
 			<arg value="build.sh"/>
 			<env key="CC" value="cc"/>
 			<env key="CXX" value="CC"/>
-			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/x86/ibm-java2-i386-50"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/bog/mozilla/solaris_x86/1.7/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/solaris-x86/mozilla/dist/sdk"/>
 			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
@@ -253,7 +253,7 @@
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit make_cairo install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/IBMJava2-141"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/x86/ibm-java2-i386-50"/>
 			<env key="MOTIF_HOME" value="/bluebird/teamswt/swt-builddir/motif21"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
