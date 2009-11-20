@@ -15380,6 +15380,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1parent)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1parent_1window
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1parent_1window)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1parent_1window_FUNC);
+	rc = (jintLong)gtk_widget_get_parent_window((GtkWidget *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1parent_1window_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1size_1request
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1get_1size_1request)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)

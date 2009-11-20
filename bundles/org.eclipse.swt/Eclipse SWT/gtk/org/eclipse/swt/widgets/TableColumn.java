@@ -696,6 +696,35 @@ public void setWidth (int width) {
 	if (width != 0) OS.gtk_widget_realize (parent.handle);
 	OS.gtk_tree_view_column_set_visible (handle, width != 0);
 	lastWidth = width;
+	/*
+	 * Bug in GTK. When the column is made visible the event window of column
+	 * header is raised above the gripper window of the previous column. In 
+	 * some cases, this can cause the previous column to be not resizable by
+	 * the mouse. The fix is to find the event window and lower it to bottom to
+	 * the z-order stack. 
+	 */
+	if (width != 0) {
+		if (buttonHandle != 0) {
+			int /*long*/ window = OS.gtk_widget_get_parent_window (buttonHandle);
+			if (window != 0) {
+				int /*long*/ windowList = OS.gdk_window_get_children (window);
+				if (windowList != 0) {
+					int /*long*/ windows = windowList;
+					int /*long*/ [] userData = new int /*long*/ [1];
+					while (windows != 0) {
+						int /*long*/ child = OS.g_list_data (windows);
+						OS.gdk_window_get_user_data (child, userData);
+						if (userData[0] == buttonHandle) {
+							OS.gdk_window_lower (child);
+							break;
+						}
+						windows = OS.g_list_next (windows);
+					}
+					OS.g_list_free (windowList);
+				}
+			}
+		}
+	}
 	sendEvent (SWT.Resize);
 }
 

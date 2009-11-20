@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1327;
-int OS_nativeFunctionCallCount[1327];
+int OS_nativeFunctionCount = 1328;
+int OS_nativeFunctionCallCount[1328];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1235,6 +1235,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1modifier_1style",
 	"_1gtk_1widget_1get_1pango_1context",
 	"_1gtk_1widget_1get_1parent",
+	"_1gtk_1widget_1get_1parent_1window",
 	"_1gtk_1widget_1get_1size_1request",
 	"_1gtk_1widget_1get_1style",
 	"_1gtk_1widget_1get_1toplevel",

@@ -12390,6 +12390,16 @@ public static final int /*long*/ gtk_widget_get_parent(int /*long*/ widget) {
 	}
 }
 /** @param widget cast=(GtkWidget *) */
+public static final native int /*long*/ _gtk_widget_get_parent_window(int /*long*/ widget);
+public static final int /*long*/ gtk_widget_get_parent_window(int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_parent_window(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param widget cast=(GtkWidget *) */
 public static final native int /*long*/ _gtk_widget_get_style(int /*long*/ widget);
 public static final int /*long*/ gtk_widget_get_style(int /*long*/ widget) {
 	lock.lock();
