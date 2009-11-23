@@ -319,150 +319,151 @@ public PrinterData open() {
 		}
 	}
 
+	PrinterData data = null;
 	PRINTDLG pd = new PRINTDLG();
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.hwndOwner = hwndOwner;
 	
 	/* Initialize PRINTDLG fields, including DEVMODE. */
 	pd.Flags = OS.PD_RETURNDEFAULT;
-	OS.PrintDlg(pd);
-
-	/*
-	 * If user setup info from a previous print dialog was specified,
-	 * then restore the previous DEVMODE struct.
-	 */
-	int /*long*/ lpInitData = 0;
-	int /*long*/ hHeap = OS.GetProcessHeap();
-	byte devmodeData [] = printerData.otherData;
-	if (devmodeData != null && devmodeData.length != 0) {
-		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
-		OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
-		if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
-		pd.hDevMode = lpInitData;
-	}
+	if (OS.PrintDlg(pd)) {
 	
-	/* Initialize the DEVMODE struct's fields from the printerData. */
-	int /*long*/ hMem = pd.hDevMode;
-	int /*long*/ ptr = OS.GlobalLock(hMem);
-	DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
-	OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
-	devmode.dmFields |= OS.DM_ORIENTATION;
-	devmode.dmOrientation = printerData.orientation == PrinterData.PORTRAIT ? OS.DMORIENT_PORTRAIT : OS.DMORIENT_LANDSCAPE;
-	if (printerData.copyCount != 1) {
-		devmode.dmFields |= OS.DM_COPIES;
-		devmode.dmCopies = (short)printerData.copyCount;
-	}
-	if (printerData.collate != false) {
-		devmode.dmFields |= OS.DM_COLLATE;
-		devmode.dmCollate = OS.DMCOLLATE_TRUE;
-	}
-	OS.MoveMemory(ptr, devmode, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
-	OS.GlobalUnlock(hMem);
-
-	pd.Flags = OS.PD_USEDEVMODECOPIESANDCOLLATE;
-	if (printerData.printToFile) pd.Flags |= OS.PD_PRINTTOFILE;
-	switch (printerData.scope) {
-		case PrinterData.PAGE_RANGE: pd.Flags |= OS.PD_PAGENUMS; break;
-		case PrinterData.SELECTION: pd.Flags |= OS.PD_SELECTION; break;
-		default: pd.Flags |= OS.PD_ALLPAGES;
-	}
-	pd.nMinPage = 1;
-	pd.nMaxPage = -1;
-	pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, printerData.startPage));
-	pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, printerData.endPage));
-
-	Display display = parent.getDisplay();
-	Shell [] shells = display.getShells();
-	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		for (int i=0; i<shells.length; i++) {
-			if (shells[i].isEnabled() && shells[i] != parent) {
-				shells[i].setEnabled(false);
-			} else {
-				shells[i] = null;
-			}
+		/*
+		 * If user setup info from a previous print dialog was specified,
+		 * then restore the previous DEVMODE struct.
+		 */
+		int /*long*/ lpInitData = 0;
+		int /*long*/ hHeap = OS.GetProcessHeap();
+		byte devmodeData [] = printerData.otherData;
+		if (devmodeData != null && devmodeData.length != 0) {
+			lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
+			OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
+			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
+			pd.hDevMode = lpInitData;
 		}
-	}
-	PrinterData data = null;
-	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
-	Object oldValue = display.getData(key);
-	display.setData(key, new Boolean(true));
-	boolean success = OS.PrintDlg(pd);
-	display.setData(key, oldValue);
-	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		for (int i=0; i<shells.length; i++) {
-			if (shells[i] != null && !shells[i].isDisposed ()) {
-				shells[i].setEnabled(true);
-			}
-		}
-	}
-	
-	if (success) {
-		/* Get driver and device from the DEVNAMES struct */
-		hMem = pd.hDevNames;
-		/* Ensure size is a multiple of 2 bytes on UNICODE platforms */
-		int size = OS.GlobalSize(hMem) / TCHAR.sizeof * TCHAR.sizeof;
-		ptr = OS.GlobalLock(hMem);
-		short[] offsets = new short[4];
-		OS.MoveMemory(offsets, ptr, 2 * offsets.length);
-		TCHAR buffer = new TCHAR(0, size);
-		OS.MoveMemory(buffer, ptr, size);	
-		OS.GlobalUnlock(hMem);
-		if (pd.hDevNames != 0) OS.GlobalFree(pd.hDevNames);
-
-		int driverOffset = offsets[0];
-		int i = 0;
-		while (driverOffset + i < size) {
-			if (buffer.tcharAt(driverOffset + i) == 0) break;
-			i++;
-		}
-		String driver = buffer.toString(driverOffset, i);
-
-		int deviceOffset = offsets[1];
-		i = 0;
-		while (deviceOffset + i < size) {
-			if (buffer.tcharAt(deviceOffset + i) == 0) break;
-			i++;
-		}
-		String device = buffer.toString(deviceOffset, i);	
-
-		int outputOffset = offsets[2];
-		i = 0;
-		while (outputOffset + i < size) {
-			if (buffer.tcharAt(outputOffset + i) == 0) break;
-			i++;
-		}
-		String output = buffer.toString(outputOffset, i);
 		
-		/* Create PrinterData object and set fields from PRINTDLG */
-		data = new PrinterData(driver, device);
-		if ((pd.Flags & OS.PD_PAGENUMS) != 0) {
-			data.scope = PrinterData.PAGE_RANGE;
-			data.startPage = pd.nFromPage & 0xFFFF;
-			data.endPage = pd.nToPage & 0xFFFF;
-		} else if ((pd.Flags & OS.PD_SELECTION) != 0) {
-			data.scope = PrinterData.SELECTION;
-		}
-		data.printToFile = (pd.Flags & OS.PD_PRINTTOFILE) != 0;
-		if (data.printToFile) data.fileName = output;
-		data.copyCount = pd.nCopies;
-		data.collate = (pd.Flags & OS.PD_COLLATE) != 0;
-
-		/* Bulk-save the printer-specific settings in the DEVMODE struct */
-		hMem = pd.hDevMode;
-		size = OS.GlobalSize(hMem);
-		ptr = OS.GlobalLock(hMem);
-		data.otherData = new byte[size];
-		OS.MoveMemory(data.otherData, ptr, size);
-		devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
+		/* Initialize the DEVMODE struct's fields from the printerData. */
+		int /*long*/ hMem = pd.hDevMode;
+		int /*long*/ ptr = OS.GlobalLock(hMem);
+		DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
 		OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
-		if ((devmode.dmFields & OS.DM_ORIENTATION) != 0) {
-			int dmOrientation = devmode.dmOrientation;
-			data.orientation = dmOrientation == OS.DMORIENT_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
+		devmode.dmFields |= OS.DM_ORIENTATION;
+		devmode.dmOrientation = printerData.orientation == PrinterData.PORTRAIT ? OS.DMORIENT_PORTRAIT : OS.DMORIENT_LANDSCAPE;
+		if (printerData.copyCount != 1) {
+			devmode.dmFields |= OS.DM_COPIES;
+			devmode.dmCopies = (short)printerData.copyCount;
 		}
+		if (printerData.collate != false) {
+			devmode.dmFields |= OS.DM_COLLATE;
+			devmode.dmCollate = OS.DMCOLLATE_TRUE;
+		}
+		OS.MoveMemory(ptr, devmode, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 		OS.GlobalUnlock(hMem);
-		if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
-		if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
-		printerData = data;
+	
+		pd.Flags = OS.PD_USEDEVMODECOPIESANDCOLLATE;
+		if (printerData.printToFile) pd.Flags |= OS.PD_PRINTTOFILE;
+		switch (printerData.scope) {
+			case PrinterData.PAGE_RANGE: pd.Flags |= OS.PD_PAGENUMS; break;
+			case PrinterData.SELECTION: pd.Flags |= OS.PD_SELECTION; break;
+			default: pd.Flags |= OS.PD_ALLPAGES;
+		}
+		pd.nMinPage = 1;
+		pd.nMaxPage = -1;
+		pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, printerData.startPage));
+		pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, printerData.endPage));
+	
+		Display display = parent.getDisplay();
+		Shell [] shells = display.getShells();
+		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+			for (int i=0; i<shells.length; i++) {
+				if (shells[i].isEnabled() && shells[i] != parent) {
+					shells[i].setEnabled(false);
+				} else {
+					shells[i] = null;
+				}
+			}
+		}
+		String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
+		Object oldValue = display.getData(key);
+		display.setData(key, new Boolean(true));
+		boolean success = OS.PrintDlg(pd);
+		display.setData(key, oldValue);
+		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+			for (int i=0; i<shells.length; i++) {
+				if (shells[i] != null && !shells[i].isDisposed ()) {
+					shells[i].setEnabled(true);
+				}
+			}
+		}
+		
+		if (success) {
+			/* Get driver and device from the DEVNAMES struct */
+			hMem = pd.hDevNames;
+			/* Ensure size is a multiple of 2 bytes on UNICODE platforms */
+			int size = OS.GlobalSize(hMem) / TCHAR.sizeof * TCHAR.sizeof;
+			ptr = OS.GlobalLock(hMem);
+			short[] offsets = new short[4];
+			OS.MoveMemory(offsets, ptr, 2 * offsets.length);
+			TCHAR buffer = new TCHAR(0, size);
+			OS.MoveMemory(buffer, ptr, size);	
+			OS.GlobalUnlock(hMem);
+			if (pd.hDevNames != 0) OS.GlobalFree(pd.hDevNames);
+	
+			int driverOffset = offsets[0];
+			int i = 0;
+			while (driverOffset + i < size) {
+				if (buffer.tcharAt(driverOffset + i) == 0) break;
+				i++;
+			}
+			String driver = buffer.toString(driverOffset, i);
+	
+			int deviceOffset = offsets[1];
+			i = 0;
+			while (deviceOffset + i < size) {
+				if (buffer.tcharAt(deviceOffset + i) == 0) break;
+				i++;
+			}
+			String device = buffer.toString(deviceOffset, i);	
+	
+			int outputOffset = offsets[2];
+			i = 0;
+			while (outputOffset + i < size) {
+				if (buffer.tcharAt(outputOffset + i) == 0) break;
+				i++;
+			}
+			String output = buffer.toString(outputOffset, i);
+			
+			/* Create PrinterData object and set fields from PRINTDLG */
+			data = new PrinterData(driver, device);
+			if ((pd.Flags & OS.PD_PAGENUMS) != 0) {
+				data.scope = PrinterData.PAGE_RANGE;
+				data.startPage = pd.nFromPage & 0xFFFF;
+				data.endPage = pd.nToPage & 0xFFFF;
+			} else if ((pd.Flags & OS.PD_SELECTION) != 0) {
+				data.scope = PrinterData.SELECTION;
+			}
+			data.printToFile = (pd.Flags & OS.PD_PRINTTOFILE) != 0;
+			if (data.printToFile) data.fileName = output;
+			data.copyCount = pd.nCopies;
+			data.collate = (pd.Flags & OS.PD_COLLATE) != 0;
+	
+			/* Bulk-save the printer-specific settings in the DEVMODE struct */
+			hMem = pd.hDevMode;
+			size = OS.GlobalSize(hMem);
+			ptr = OS.GlobalLock(hMem);
+			data.otherData = new byte[size];
+			OS.MoveMemory(data.otherData, ptr, size);
+			devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
+			OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
+			if ((devmode.dmFields & OS.DM_ORIENTATION) != 0) {
+				int dmOrientation = devmode.dmOrientation;
+				data.orientation = dmOrientation == OS.DMORIENT_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
+			}
+			OS.GlobalUnlock(hMem);
+			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
+			if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
+			printerData = data;
+		}
 	}
 	/* Destroy the BIDI orientation window */
 	if (hwndParent != hwndOwner) {
