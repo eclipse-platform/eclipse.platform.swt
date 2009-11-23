@@ -55,12 +55,12 @@
 	<property name="cp_photon" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/photon/library'"/>
 
 	<!-- Low level build tasks -->
-	<target name="init_build" if="eclipse.pdebuild.home">
+	<target name="init_build" if="eclipse.running">
 		<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite"/>
 		<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr"/>
 	</target>
 
-	<target name="refresh_fragment" if="eclipse.pdebuild.home">
+	<target name="refresh_fragment" if="eclipse.running">
 		<echo>refreshing ${fragment}</echo>
 		<eclipse.refreshLocal resource="${fragment}" depth="infinite"/>
 	</target>
@@ -358,6 +358,58 @@
 
 	<target name="build_photon" depends="init_build">
 		<echo>Photon is not being built</echo>
+	</target>
+	
+	<target name="check_64_compilation">
+		<property name="cvsRsh" value="ssh"/>
+		<property name="tmpdir" value="${tmphome}/workspace"/>
+		<property name="project" value="org.eclipse.swt"/>
+		<property name="projectDir" value="${tmpdir}/org.eclipse.swt"/>
+		<property name="buildDir" value="${tmpdir}/build"/>
+		
+		<!-- check out swt project -->
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${TAG}"/>
+				<argument value="${project}"/>
+			</commandline>
+		</cvs>
+		
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="update"/>
+				<argument line="${TAG}"/>
+				<argument value="${project}"/>
+			</commandline>
+		</cvs>
+
+		<antcall target="build_64">
+			<param name="cp" value=".classpath_win32"/>
+		</antcall>
+		<antcall target="build_64">
+			<param name="cp" value=".classpath_gtk"/>
+		</antcall>
+		<antcall target="build_64">
+			<param name="cp" value=".classpath_cocoa"/>
+		</antcall>
+	</target>
+	
+	<target name="build_64">
+		<delete file="${tmpdir}/copy.xml"/>
+		<delete dir="${buildDir}"/>
+				
+		<xslt style="${projectDir}/tasks/classpath.xls" in="${projectDir}/${cp}" out="${tmpdir}/copy.xml">
+			<param name="srcDir" expression="${projectDir}"/>
+			<param name="outputDir" expression="${buildDir}"/>
+		</xslt>
+		<ant antfile="${tmpdir}/copy.xml" target="copy_files"/>
+		
+		<antcall target="replace.32.to.64">
+			<param name="replace_dir" value="${buildDir}"/>
+		</antcall>
+				
+		<javac srcdir="${buildDir}"></javac>
 	</target>
 
 	<!-- common build tasks -->
@@ -804,21 +856,23 @@
 
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
 	<target name="replace.32.to.64" depends="init_build">
-		<echo>Converting java files to 64 bit in org.eclipse.swt project</echo>
-		<replace dir="." includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
-		<replace dir="." includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
-		<replace dir="." includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
-		<replace dir="." includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
+		<property name="replace_dir" value="."/>
+		<echo>Converting java files to 64 bit in ${replace_dir} project</echo>
+		<replace dir="${replace_dir}" includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
 		<antcall target="init_build"/>
 	</target>
 
 	<!-- Convert SWT 64 bit java and C source to 32 bit  -->
 	<target name="replace.64.to.32" depends="init_build">
-		<echo>Converting java files to 32 bit in org.eclipse.swt project</echo>
-		<replace dir="." includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
-		<replace dir="." includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
-		<replace dir="." includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
-		<replace dir="." includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
+		<property name="replace_dir" value="."/>
+		<echo>Converting java files to 32 bit in ${replace_dir} project</echo>
+		<replace dir="${replace_dir}" includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
 		<antcall target="init_build"/>
 	</target>
 

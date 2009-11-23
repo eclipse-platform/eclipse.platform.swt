@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:param name="srcDir"/>
+<xsl:param name="outputDir"/>
+<xsl:template match="/">
+<project name="test" default="copy_files" basedir=".">
+<target name="copy_files">
+	<copy>
+	<xsl:attribute name="todir">
+	    <xsl:value-of select="$outputDir" />
+	</xsl:attribute>
+	<xsl:for-each select="classpath/classpathentry">
+	<xsl:if test="@kind = 'src'">
+		<fileset>
+		<xsl:attribute name="dir"><xsl:value-of select="$srcDir"/>/<xsl:value-of select="@path"/></xsl:attribute>
+		      <include name="**/*.java"/>
+		</fileset>
+	</xsl:if>
+	</xsl:for-each>
+	</copy>
+</target>
+</project>
+</xsl:template>
+</xsl:stylesheet>
