@@ -315,28 +315,19 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	/*
-	* Feature in Vista.  When the progress bar is not in
-	* a normal state, PBM_SETPOS does not set the position
-	* of the bar when the selection is equal to the minimum.
-	* This is undocumented.  The fix is to temporarily
-	* set the state to PBST_NORMAL, set the position, then
-	* reset the state.
-	*/
-	int /*long*/ state = 0;
-	boolean fixSelection = false;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		int minumum = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
-		int selection = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
-		if (selection == minumum) {
-			fixSelection = true;
-			state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
-			OS.SendMessage (handle, OS.PBM_SETSTATE, OS.PBST_NORMAL, 0);
-		}
-	}
 	OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
+	
+	/*
+	* Bug in Vista.  For some reason, when the progress bar is not in
+	* a normal state, it shows the selection of previous call to 
+	* PBM_SETPOS. This is undocumented. The fix is to call PBM_SETPOS  
+	* a second time.
+	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		if (fixSelection) OS.SendMessage (handle, OS.PBM_SETSTATE, state, 0);
+		int /*long*/ state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+		if (state != OS.PBST_NORMAL) {
+			OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
+		}
 	}
 }
 
