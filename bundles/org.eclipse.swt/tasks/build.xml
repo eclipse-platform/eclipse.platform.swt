@@ -375,14 +375,6 @@
 				<argument value="${project}"/>
 			</commandline>
 		</cvs>
-		
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
-			<commandline>
-				<argument value="update"/>
-				<argument line="${TAG}"/>
-				<argument value="${project}"/>
-			</commandline>
-		</cvs>
 
 		<antcall target="build_64">
 			<param name="cp" value=".classpath_win32"/>
