@@ -368,7 +368,7 @@
 		<property name="buildDir" value="${tmpdir}/build"/>
 		
 		<!-- check out swt project -->
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRootAnon}" quiet="true" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
