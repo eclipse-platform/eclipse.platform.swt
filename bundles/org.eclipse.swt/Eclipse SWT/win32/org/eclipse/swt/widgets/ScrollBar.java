@@ -381,8 +381,7 @@ public Point getSize () {
 }
 
 /**
- * Returns the size of the receiver's thumb relative to the
- * difference between its maximum and minimum values.
+ * Returns the receiver's thumb value.
  *
  * @return the thumb value
  *
