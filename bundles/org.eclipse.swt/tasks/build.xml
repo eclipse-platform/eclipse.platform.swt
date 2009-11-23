@@ -362,7 +362,7 @@
 	
 	<target name="check_64_compilation">
 		<property name="cvsRsh" value="ssh"/>
-		<property name="tmpdir" value="${tmphome}/workspace"/>
+		<property name="tmpdir" value="${tmphome}/workspace64"/>
 		<property name="project" value="org.eclipse.swt"/>
 		<property name="projectDir" value="${tmpdir}/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
