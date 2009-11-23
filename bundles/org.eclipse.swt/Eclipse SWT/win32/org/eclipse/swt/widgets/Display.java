@@ -228,8 +228,7 @@ public class Display extends Device {
 	int clickCount, lastTime, lastButton;
 	int /*long*/ lastClickHwnd;
 	int scrollRemainder, scrollHRemainder;
-	int lastKey, lastMouse;
-	int /*long*/ lastAscii;
+	int lastKey, lastMouse, lastAscii;
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
