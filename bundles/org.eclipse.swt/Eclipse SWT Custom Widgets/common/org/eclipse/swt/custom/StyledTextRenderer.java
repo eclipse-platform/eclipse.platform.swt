@@ -69,6 +69,7 @@ class StyledTextRenderer {
 	final static int SEGMENTS = 1 << 5;
 	final static int TABSTOPS = 1 << 6;
 	final static int WRAP_INDENT = 1 << 7;
+	final static int SEGMENT_CHARS = 1 << 8;
 	
 	static class LineInfo {
 		int flags;
@@ -78,6 +79,7 @@ class StyledTextRenderer {
 		int wrapIndent;
 		boolean justify;
 		int[] segments;
+		char[] segmentsChars;
 		int[] tabStops;
 
 		public LineInfo() {
@@ -91,6 +93,7 @@ class StyledTextRenderer {
 				wrapIndent = info.wrapIndent;
 				justify = info.justify;
 				segments = info.segments;
+				segmentsChars = info.segmentsChars;
 				tabStops = info.tabStops;
 			}
 		}
@@ -590,14 +593,6 @@ boolean getLineJustify(int index, boolean defaultJustify) {
 	}
 	return defaultJustify;
 }
-int[] getLineSegments(int index, int[] defaultSegments) {
-	if (lines == null) return defaultSegments;
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & SEGMENTS) != 0) {
-		return info.segments;
-	}
-	return defaultSegments;
-}
 int[] getLineTabStops(int index, int[] defaultTabStops) {
 	if (lines == null) return defaultTabStops;
 	LineInfo info = lines[index];
@@ -778,6 +773,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	int[] segments = null;
+	char[] segmentChars = null;
 	int indent = 0;
 	int wrapIndent = 0;
 	int alignment = SWT.LEFT;
@@ -789,8 +785,12 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	int rangeStart = 0, styleCount = 0;
 	StyledTextEvent event = null;
 	if (styledText != null) {
+		event = styledText.getBidiSegments(lineOffset, line);
+		if (event != null) {
+			segments = event.segments;
+			segmentChars = event.segmentsChars;
+		}
 		event = styledText.getLineStyleData(lineOffset, line);
-		segments = styledText.getBidiSegments(lineOffset, line);
 		indent = styledText.indent;
 		wrapIndent = styledText.wrapIndent;
 		alignment = styledText.alignment;
@@ -837,6 +837,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				if ((info.flags & ALIGNMENT) != 0) alignment = info.alignment;
 				if ((info.flags & JUSTIFY) != 0) justify = info.justify;
 				if ((info.flags & SEGMENTS) != 0) segments = info.segments;
+				if ((info.flags & SEGMENT_CHARS) != 0) segmentChars = info.segmentsChars;
 				if ((info.flags & TABSTOPS) != 0) tabs = info.tabStops;
 			}
 		}
@@ -872,6 +873,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setText(line);
 	layout.setOrientation(orientation);
 	layout.setSegments(segments);
+	layout.setSegmentsChars(segmentChars);
 	layout.setWidth(width);
 	layout.setSpacing(lineSpacing);
 	layout.setTabs(tabs);
@@ -1194,6 +1196,16 @@ void setLineSegments(int startLine, int count, int[] segments) {
 		}
 		lines[i].flags |= SEGMENTS;
 		lines[i].segments = segments;
+	}
+}
+void setLineSegmentChars(int startLine, int count, char[] segmentChars) {
+	if (lines == null) lines = new LineInfo[lineCount];
+	for (int i = startLine; i < startLine + count; i++) {
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= SEGMENT_CHARS;
+		lines[i].segmentsChars = segmentChars;
 	}
 }
 void setLineTabStops(int startLine, int count, int[] tabStops) {

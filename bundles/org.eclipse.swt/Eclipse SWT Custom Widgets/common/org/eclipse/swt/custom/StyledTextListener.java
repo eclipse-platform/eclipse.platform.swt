@@ -41,6 +41,7 @@ public void handleEvent(Event e) {
 			BidiSegmentEvent segmentEvent = new BidiSegmentEvent((StyledTextEvent) e);
 			((BidiSegmentListener) eventListener).lineGetSegments(segmentEvent);
 			((StyledTextEvent) e).segments = segmentEvent.segments;
+			((StyledTextEvent) e).segmentsChars = segmentEvent.segmentsChars;
 			break;		
 		case StyledText.LineGetStyle:
 			LineStyleEvent lineStyleEvent = new LineStyleEvent((StyledTextEvent) e);

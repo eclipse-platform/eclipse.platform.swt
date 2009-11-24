@@ -267,9 +267,12 @@ public class StyledText extends Canvas {
 					printerRenderer.setLineBackground(i, 1, event.lineBackground);
 				}
 				if (styledText.isBidi()) {
-					int[] segments = styledText.getBidiSegments(lineOffset, line);
-					printerRenderer.setLineSegments(i, 1, segments);
-				}			
+					event = styledText.getBidiSegments(lineOffset, line);
+					if (event != null) {
+						printerRenderer.setLineSegments(i, 1, event.segments);
+						printerRenderer.setLineSegmentChars(i, 1, event.segmentsChars);
+					}
+				}
 				event = styledText.getLineStyleData(lineOffset, line);
 				if (event != null) {
 					printerRenderer.setLineIndent(i, 1, event.indent);
@@ -4761,55 +4764,43 @@ public int getStyle() {
 	return style;
 }
 
-/**
- * Returns the text segments that should be treated as if they 
- * had a different direction than the surrounding text.
- *
- * @param lineOffset offset of the first character in the line. 
- * 	0 based from the beginning of the document.
- * @param line text of the line to specify bidi segments for
- * @return text segments that should be treated as if they had a
- * 	different direction than the surrounding text. Only the start 
- * 	index of a segment is specified, relative to the start of the 
- * 	line. Always starts with 0 and ends with the line length. 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the segment indices returned 
- * 		by the listener do not start with 0, are not in ascending order,
- * 		exceed the line length or have duplicates</li>
- * </ul>
- */
-int [] getBidiSegments(int lineOffset, String line) {
+StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	if (!isBidi()) return null;
 	if (!isListening(LineGetSegments)) {
-		return getBidiSegmentsCompatibility(line, lineOffset);
+		StyledTextEvent event = new StyledTextEvent(content);
+		event.segments = getBidiSegmentsCompatibility(line, lineOffset);
+		return event;
 	}
 	StyledTextEvent event = sendLineEvent(LineGetSegments, lineOffset, line);
+	if (event == null || event.segments == null || event.segments.length == 0) return null;
 	int lineLength = line.length();
-	int[] segments;
-	if (event == null || event.segments == null || event.segments.length == 0) {
-		segments = new int[] {0, lineLength};
-	} else {
-		int segmentCount = event.segments.length;
-		
+	int[] segments = event.segments;
+	int segmentCount = segments.length;
+	if (event.segmentsChars == null) {
 		// test segment index consistency
-		if (event.segments[0] != 0) {
+		if (segments[0] != 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		} 	
+		}
 		for (int i = 1; i < segmentCount; i++) {
-			if (event.segments[i] <= event.segments[i - 1] || event.segments[i] > lineLength) {
+			if (segments[i] <= segments[i - 1] || segments[i] > lineLength) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			} 	
+			}
 		}
 		// ensure that last segment index is line end offset
-		if (event.segments[segmentCount - 1] != lineLength) {
+		if (segments[segmentCount - 1] != lineLength) {
 			segments = new int[segmentCount + 1];
 			System.arraycopy(event.segments, 0, segments, 0, segmentCount);
 			segments[segmentCount] = lineLength;
-		} else {
-			segments = event.segments;
+		}
+		event.segments = segments;
+	} else {
+		for (int i = 1; i < segmentCount; i++) {
+			if (event.segments[i] < event.segments[i - 1] || event.segments[i] > lineLength) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
 		}
 	}
-	return segments;
+	return event;
 }
 /**
  * @see #getBidiSegments
