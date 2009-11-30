@@ -531,7 +531,11 @@ void presetChooserDialog () {
 			*/
 			int /*long*/ ptr = OS.realpath (buffer, null);
 			if (ptr != 0) {
-				OS.gtk_file_chooser_set_filename (handle, ptr);
+				if (fileName.length() > 0) {
+					OS.gtk_file_chooser_set_filename (handle, ptr);
+				} else { 
+					OS.gtk_file_chooser_set_current_folder (handle, ptr);	
+				}
 				OS.g_free (ptr);
 			}
 		}
