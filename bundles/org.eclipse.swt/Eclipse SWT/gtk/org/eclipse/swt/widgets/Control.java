@@ -524,7 +524,7 @@ void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
 	checkBackground ();
-	if ((state & PARENT_BACKGROUND) != 0) setBackground ();
+	if ((state & PARENT_BACKGROUND) != 0) setParentBackground ();
 	checkBuffered ();
 	showWidget ();
 	setInitialBounds ();
@@ -3429,12 +3429,14 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 }
 
 void setBackground () {
-	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
-		setParentBackground ();
-	} else {
-		setWidgetBackground ();
+	if ((state & BACKGROUND) == 0 && backgroundImage == null) {
+		if ((state & PARENT_BACKGROUND) != 0) {
+			setParentBackground ();
+		} else {
+			setWidgetBackground ();
+		}
+		redrawWidget (0, 0, 0, 0, true, false, false);
 	}
-	redrawWidget (0, 0, 0, 0, true, false, false);
 }
 
 /**
@@ -3487,14 +3489,27 @@ void setBackgroundColor (int /*long*/ handle, GdkColor color) {
 	int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
 	int /*long*/ ptr = OS.gtk_rc_style_get_bg_pixmap_name (style, index);
 	if (ptr != 0) OS.g_free (ptr);
-	String name = color == null ? "<parent>" : "<none>";
-	byte[] buffer = Converter.wcsToMbcs (null, name, true);
-	ptr = OS.g_malloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
+	ptr = 0;
+	
+	String pixmapName = null;
+	int flags = OS.gtk_rc_style_get_color_flags (style, index);
+	if (color != null) {
+		flags |= OS.GTK_RC_BG;
+		pixmapName = "<none>";
+	} else {
+		flags &= ~OS.GTK_RC_BG;
+		if (backgroundImage == null && (state & PARENT_BACKGROUND) != 0) {
+			pixmapName = "<parent>";
+		}
+	}
+	if (pixmapName != null) {
+		byte[] buffer = Converter.wcsToMbcs (null, pixmapName, true);
+		ptr = OS.g_malloc (buffer.length);
+		OS.memmove (ptr, buffer, buffer.length);
+	}
+	
 	OS.gtk_rc_style_set_bg_pixmap_name (style, index, ptr);
 	OS.gtk_rc_style_set_bg (style, index, color);
-	int flags = OS.gtk_rc_style_get_color_flags (style, index);
-	flags = (color == null) ? flags & ~OS.GTK_RC_BG : flags | OS.GTK_RC_BG;
 	OS.gtk_rc_style_set_color_flags (style, index, flags);
 	modifyStyle (handle, style);
 }
@@ -4221,12 +4236,9 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 }
 
 void setWidgetBackground  () {
-	if (fixedHandle != 0) {
-		int /*long*/ style = OS.gtk_widget_get_modifier_style (fixedHandle);
-		modifyStyle (fixedHandle, style);
-	}
-	int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
-	modifyStyle (handle, style);
+	GdkColor color = (state & BACKGROUND) != 0 ? getBackgroundColor () : null;
+	if (fixedHandle != 0) setBackgroundColor (fixedHandle, color);
+	setBackgroundColor (handle, color);
 }
 
 boolean showMenu (int x, int y) {
