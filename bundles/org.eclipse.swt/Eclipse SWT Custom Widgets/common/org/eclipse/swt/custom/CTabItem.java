@@ -352,17 +352,9 @@ void drawSelected(GC gc ) {
 		for (int i = 0; i < shape.length/2; i++) {
 			if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
 		}
-		RGB inside = parent.selectionBackground.getRGB();
-		if (parent.selectionBgImage != null || 
-		    (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1)) {
-		    inside = null;
-		}
-		RGB outside = parent.getBackground().getRGB();		
-		if (parent.gradientColors != null && parent.gradientColors.length > 1) {
-		    outside = null;
-		}
 		Color borderColor = getDisplay().getSystemColor(CTabFolder.BORDER1_COLOR);
-		parent.antialias(shape, borderColor.getRGB(), inside, outside, gc);
+		if (! borderColor.equals(parent.lastBorderColor)) parent.createAntialiasColors();
+		parent.antialias(shape, parent.selectedInnerColor, parent.selectedOuterColor, gc);
 		gc.setForeground(borderColor);
 		gc.drawPolyline(shape);
 		

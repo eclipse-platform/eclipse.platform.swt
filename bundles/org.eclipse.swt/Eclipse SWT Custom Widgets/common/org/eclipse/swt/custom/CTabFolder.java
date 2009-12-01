@@ -147,6 +147,11 @@ public class CTabFolder extends Composite {
 	//but we don't leak colours.
 	Color[] selectionHighlightGradientColorsCache = null;  //null is a legal value, check on access
 	
+	/* Colors for anti-aliasing */
+	Color selectedOuterColor = null;
+	Color selectedInnerColor = null;
+	Color tabAreaColor = null;
+	
 	/* Unselected item appearance */
 	Color[] gradientColors;
 	int[] gradientPercents;
@@ -200,6 +205,11 @@ public class CTabFolder extends Composite {
 	// on Resize
 	Point oldSize;
 	Font oldFont;
+	/* 
+	 * Border color that was used in computing the cached anti-alias Colors.
+	 * We have to recompute the colors if the border color changes
+	 */
+	Color lastBorderColor = null;
 	
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
@@ -495,7 +505,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.Selection, typedListener);
 	addListener(SWT.DefaultSelection, typedListener);
 }
-void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
+void antialias (int[] shape, Color innerColor, Color outerColor, GC gc){
 	// Don't perform anti-aliasing on Mac and WPF because the platform
 	// already does it.  The simple style also does not require anti-aliasing.
 	if (simple) return;
@@ -505,7 +515,7 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 	if ("wpf".equals(platform)) return; //$NON-NLS-1$
 	// Don't perform anti-aliasing on low resolution displays
 	if (getDisplay().getDepth() < 15) return;
-	if (outerRGB != null) {
+	if (outerColor != null) {
 		int index = 0;
 		boolean left = true;
 		int oldY = onBottom ? 0 : getSize().y;
@@ -518,17 +528,10 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 			outer[index] = shape[index++] + (left ? -1 : +1);
 			outer[index] = shape[index++];
 		}
-		RGB from = lineRGB;
-		RGB to = outerRGB;
-		int red = from.red + 2*(to.red - from.red)/3;
-		int green = from.green + 2*(to.green - from.green)/3;
-		int blue = from.blue + 2*(to.blue - from.blue)/3;
-		Color color = new Color(getDisplay(), red, green, blue);
-		gc.setForeground(color);
+		gc.setForeground(outerColor);
 		gc.drawPolyline(outer);
-		color.dispose();
 	}
-	if (innerRGB != null) {
+	if (innerColor != null) {
 		int[] inner = new int[shape.length];
 		int index = 0;
 		boolean left = true;
@@ -541,15 +544,8 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 			inner[index] = shape[index++] + (left ? +1 : -1);
 			inner[index] = shape[index++];
 		}
-		RGB from = lineRGB;
-		RGB to = innerRGB;
-		int red = from.red + 2*(to.red - from.red)/3;
-		int green = from.green + 2*(to.green - from.green)/3;
-		int blue = from.blue + 2*(to.blue - from.blue)/3;
-		Color color = new Color(getDisplay(), red, green, blue);
-		gc.setForeground(color);
+		gc.setForeground(innerColor);
 		gc.drawPolyline(inner);
-		color.dispose();
 	}
 }
 /*
@@ -1161,8 +1157,8 @@ void drawTabArea(Event event) {
 	
 	// Draw border line
 	if (borderLeft > 0) {
-		RGB outside = getParent().getBackground().getRGB();
-		antialias(shape, borderColor.getRGB(), null, outside, gc);
+    	if (! borderColor.equals(lastBorderColor)) createAntialiasColors();
+    	antialias(shape, null, tabAreaColor, gc);
 		gc.setForeground(borderColor);
 		gc.drawPolyline(shape);
 	}	
@@ -1907,7 +1903,9 @@ void onDispose(Event event) {
 
 	selectionBackground = null;
 	selectionForeground = null;
-	disposeSelectionHighlightGradientColors();	
+	
+	disposeSelectionHighlightGradientColors();
+	disposeAntialiasColors();
 }
 void onDragDetect(Event event) {
 	boolean consume = false;
@@ -2496,6 +2494,7 @@ public void reskin(int flags) {
 
 public void setBackground (Color color) {
 	super.setBackground(color);
+	createAntialiasColors();
 	redraw();
 }
 /**
@@ -2619,6 +2618,11 @@ void setBackground(Color[] colors, int[] percents, boolean vertical) {
 
 	// Refresh with the new settings
 	redraw();
+}
+public void setBackgroundImage(Image image) {
+    	super.setBackgroundImage(image);
+    	createAntialiasColors();
+    	redraw();
 }
 /**
  * Toggle the visibility of the border
@@ -3295,6 +3299,7 @@ public void setSelectionBackground (Color color) {
 	if (selectionBackground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
 	selectionBackground = color;
+	createAntialiasColors();
 	if (selectedIndex > -1) redraw();
 }
 /**
@@ -3520,6 +3525,7 @@ public void setSelectionBackground(Image image) {
 		disposeSelectionHighlightGradientColors();
 	}
 	selectionBgImage = image;
+	createAntialiasColors();
 	if (selectedIndex > -1) redraw();
 }
 /**
@@ -4043,5 +4049,53 @@ String _getToolTip(int x, int y) {
 		return SWT.getMessage("SWT_Close"); //$NON-NLS-1$
 	}
 	return item.getToolTipText();
+}
+void createAntialiasColors() {
+    disposeAntialiasColors();
+    lastBorderColor = getDisplay().getSystemColor(BORDER1_COLOR);
+    RGB lineRGB = lastBorderColor.getRGB();
+    /* compute the selected color */
+    RGB innerRGB = selectionBackground.getRGB();
+    if (selectionBgImage != null || 
+	    (selectionGradientColors != null && selectionGradientColors.length > 1)) {
+	    innerRGB = null;
+    }
+    RGB outerRGB = getBackground().getRGB();		
+    if (gradientColors != null && gradientColors.length > 1) {
+	    outerRGB = null;
+    }
+    if (outerRGB != null) {
+	RGB from = lineRGB;
+	RGB to = outerRGB;
+	int red = from.red + 2*(to.red - from.red)/3;
+	int green = from.green + 2*(to.green - from.green)/3;
+	int blue = from.blue + 2*(to.blue - from.blue)/3;
+	selectedOuterColor = new Color(getDisplay(), red, green, blue);
+    }
+    if (innerRGB != null) {
+	RGB from = lineRGB;
+	RGB to = innerRGB;
+	int red = from.red + 2*(to.red - from.red)/3;
+	int green = from.green + 2*(to.green - from.green)/3;
+	int blue = from.blue + 2*(to.blue - from.blue)/3;
+	selectedInnerColor = new Color(getDisplay(), red, green, blue);
+    }
+    /* compute the tabArea color */
+    outerRGB = getParent().getBackground().getRGB();
+    if (outerRGB != null) {
+	RGB from = lineRGB;
+	RGB to = outerRGB;
+	int red = from.red + 2*(to.red - from.red)/3;
+	int green = from.green + 2*(to.green - from.green)/3;
+	int blue = from.blue + 2*(to.blue - from.blue)/3;
+	tabAreaColor = new Color(getDisplay(), red, green, blue);
+    }
+}
+
+void disposeAntialiasColors() {
+    if (tabAreaColor != null) tabAreaColor.dispose();
+    if (selectedInnerColor != null) selectedInnerColor.dispose();
+    if (selectedOuterColor != null) selectedOuterColor.dispose();
+    tabAreaColor = selectedInnerColor = selectedOuterColor = null;
 }
 }
