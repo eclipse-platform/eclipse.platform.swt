@@ -2901,8 +2901,7 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 		OS.gtk_im_context_set_client_window (imHandle, window);
 	}
 	if (backgroundImage != null) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
-		if (window != 0) OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
+		setBackgroundPixmap (backgroundImage.pixmap);
 	}
 	return 0;
 }
