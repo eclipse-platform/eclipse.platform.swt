@@ -214,6 +214,7 @@
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
 			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc/lib/pkgconfig/"/>
 			-->
+			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig/"/>
 			<env key="MODEL" value="ppc64"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
