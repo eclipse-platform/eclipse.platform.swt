@@ -196,6 +196,32 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 		</antcall>
 	</target>
+	
+	<target name="build_gtk_linux_ppc64" depends="init_build">
+		<property name="clean" value="clean"/>
+		<!--
+		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
+		-->
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/PPC64/ibm-java2-ppc64-50"/>
+			<!--
+			<env key="MOZILLA_SDK" value=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc/mozilla/dist/sdk/"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
+			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc/lib/pkgconfig/"/>
+			-->
+			<env key="MODEL" value="ppc64"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
+		</antcall>
+	</target>
 
 	<target name="build_gtk_solaris_x86" depends="init_build">
 		<property name="clean" value="clean"/>
@@ -935,6 +961,16 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 			<param name="build_target" value="build_gtk_linux_ppc"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=${ant_home}/bin:$PATH; "/>
+		</antcall>
+	</target>
+	
+	<target name="gtk_linux_ppc64">
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_linux_ppc64}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
+			<param name="build_target" value="build_gtk_linux_ppc64"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/PPC/ibm-java-ppc-60/; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
