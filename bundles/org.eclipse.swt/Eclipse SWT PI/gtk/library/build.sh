@@ -85,8 +85,7 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 		export XLIB64
 	fi
 	if [ ${MODEL} = 'ppc64' ]; then
-		echo "HI in ppc64"
-		SWT_PTR_CFLAGS+=" -m64"	
+		SWT_PTR_CFLAGS=${SWT_PTR_CFLAGS} -m64	
 		SWT_LFLAGS=-m64
 		export SWT_LFLAGS
 	fi
