@@ -408,6 +408,7 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 }
 
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if ((state & OBSCURED) != 0) return 0;
 	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
 		GdkEventExpose gdkEvent = new GdkEventExpose ();
 		OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);

@@ -469,6 +469,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if ((state & OBSCURED) != 0) return 0;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 	int /*long*/ gdkGC = OS.gdk_gc_new (window);
 	OS.gdk_draw_polygon (window, gdkGC, 0, borderPolygon, borderPolygon.length / 2);
