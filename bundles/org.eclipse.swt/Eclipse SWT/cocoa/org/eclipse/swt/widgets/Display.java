@@ -4189,22 +4189,25 @@ public void timerExec (int milliseconds, Runnable runnable) {
 
 int /*long*/ timerProc (int /*long*/ id, int /*long*/ sel, int /*long*/ timerID) {
 	NSTimer timer = new NSTimer (timerID);
-	NSNumber number = new NSNumber(timer.userInfo());
-	int index = number.intValue();
-	if (timerList == null) return 0;
-	if (0 <= index && index < timerList.length) {
-		if (allowTimers) {
-			Runnable runnable = timerList [index];
-			timerList [index] = null;
-			nsTimers [index] = null;
-			if (runnable != null) runnable.run ();
-		} else {
-			nsTimers [index] = null;
-			wakeThread ();
+	try {
+		NSNumber number = new NSNumber(timer.userInfo());
+		int index = number.intValue();
+		if (timerList == null) return 0;
+		if (0 <= index && index < timerList.length) {
+			if (allowTimers) {
+				Runnable runnable = timerList [index];
+				timerList [index] = null;
+				nsTimers [index] = null;
+				if (runnable != null) runnable.run ();
+			} else {
+				nsTimers [index] = null;
+				wakeThread ();
+			}
 		}
+	} finally {
+		timer.invalidate();
+		timer.release();
 	}
-	timer.invalidate();
-	timer.release();
 	return 0;
 }
 
