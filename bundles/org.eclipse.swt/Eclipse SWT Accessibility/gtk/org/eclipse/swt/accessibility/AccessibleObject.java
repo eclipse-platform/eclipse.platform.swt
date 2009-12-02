@@ -1176,7 +1176,12 @@ class AccessibleObject {
 	}
 
 	static AccessibleObject getAccessibleObject (int /*long*/ atkObject) {
-		return (AccessibleObject)AccessibleObjects.get (new LONG (atkObject));
+		AccessibleObject object = (AccessibleObject)AccessibleObjects.get (new LONG (atkObject));
+		if (object == null) return null;
+		if (object.accessible == null) return null;
+		Control control = object.accessible.control;
+		if (control == null || control.isDisposed()) return null;
+		return object;
 	}
 	
 	AccessibleObject getChildByHandle (int /*long*/ handle) {
@@ -1252,7 +1257,7 @@ class AccessibleObject {
 		GObjectClass objectClassStruct = new GObjectClass ();
 		ATK.memmove (objectClassStruct, gObjectClass);
 		ATK.call (objectClassStruct.finalize, atkObject);
-		AccessibleObject object = getAccessibleObject (atkObject);
+		AccessibleObject object = (AccessibleObject)AccessibleObjects.get (new LONG (atkObject));
 		if (object != null) {
 			AccessibleObjects.remove (new LONG (atkObject));
 			object.release ();
