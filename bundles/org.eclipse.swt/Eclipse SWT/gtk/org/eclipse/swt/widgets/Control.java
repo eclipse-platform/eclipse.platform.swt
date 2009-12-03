@@ -107,6 +107,23 @@ void deregister () {
 	if (imHandle != 0) display.removeWidget (imHandle);
 }
 
+void drawBackground (Control control, int /*long*/ window, int /*long*/ region, int x, int y, int width, int height) {
+	int /*long*/ gdkGC = OS.gdk_gc_new (window);
+	if (region != 0) OS.gdk_gc_set_clip_region (gdkGC, region);
+	if (control.backgroundImage != null) {
+		Point pt = display.map (this, control, 0, 0);
+		OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
+		OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
+		OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
+		OS.gdk_draw_rectangle (window, gdkGC, 1, x, y, width, height);
+	} else {
+		GdkColor color = control.getBackgroundColor ();
+		OS.gdk_gc_set_foreground (gdkGC, color);
+		OS.gdk_draw_rectangle (window, gdkGC, 1, x, y, width, height);
+	}
+	OS.g_object_unref (gdkGC);
+}
+
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	int /*long*/ paintHandle = paintHandle ();
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle);

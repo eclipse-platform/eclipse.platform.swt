@@ -1934,6 +1934,37 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if ((state & OBSCURED) != 0) return 0;
+	if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
+		Control control = findBackgroundControl ();
+		if (control != null) {
+			GdkEventExpose gdkEvent = new GdkEventExpose ();
+			OS.memmove (gdkEvent, eventPtr, GdkEventExpose.sizeof);
+			int /*long*/ window = OS.gtk_tree_view_get_bin_window (handle);
+			if (window == gdkEvent.window) {
+				int [] width = new int [1], height = new int [1];
+				OS.gdk_drawable_get_size (window, width, height);
+				int bottom = 0;
+				if (itemCount != 0) {
+					int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+					OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, itemCount - 1);
+					int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+					GdkRectangle rect = new GdkRectangle ();
+					OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+					bottom = rect.y + rect.height;
+					OS.gtk_tree_path_free (path);
+					OS.g_free (iter);
+				}
+				if (height [0] > bottom) {
+					drawBackground (control, window, gdkEvent.region, 0, bottom, width [0], height [0] - bottom);
+				}
+			}
+		}
+	}
+	return super.gtk_expose_event (widget, eventPtr);
+}
+
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -2584,9 +2615,11 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 			OS.gtk_tree_path_free (path);
 			
 			if ((drawState & SWT.SELECTED) == 0) {
-				Control control = findBackgroundControl ();
-				if (control != null && control.backgroundImage != null) {
-					OS.gdk_window_clear_area (window, rect.x, rect.y, rect.width, rect.height);
+				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
+					Control control = findBackgroundControl ();
+					if (control != null) {
+						drawBackground (control, window, 0, rect.x, rect.y, rect.width, rect.height);
+					}
 				}
 			}
 
@@ -2596,10 +2629,11 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 			
 
 			if (hooks (SWT.EraseItem)) {
-				boolean wasSelected = false; 
-				if ((drawState & SWT.SELECTED) != 0) {
-					wasSelected = true;
-					OS.gdk_window_clear_area (window, rect.x, rect.y, rect.width, rect.height);
+				boolean wasSelected = (drawState & SWT.SELECTED) != 0;
+				if (wasSelected) {
+					Control control = findBackgroundControl ();
+					if (control == null) control = this;
+					drawBackground (control, window, 0, rect.x, rect.y, rect.width, rect.height);
 				}
 				GC gc = new GC (this);
 				if ((drawState & SWT.SELECTED) != 0) {
@@ -2911,9 +2945,8 @@ void setBackgroundColor (GdkColor color) {
 }
 
 void setBackgroundPixmap (int /*long*/ pixmap) {
-	super.setBackgroundPixmap (pixmap);
-	int /*long*/ window = paintWindow ();
-	if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, true);	
+	ownerDraw = true;
+	recreateRenderers ();
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -3085,9 +3118,8 @@ public void setLinesVisible (boolean show) {
 }
 
 void setParentBackground () {
-	super.setParentBackground ();
-	int /*long*/ window = paintWindow ();
-	if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, true);
+	ownerDraw = true;
+	recreateRenderers ();
 }
 
 void setParentWindow (int /*long*/ widget) {
@@ -3559,6 +3591,33 @@ void updateScrollBarValue (ScrollBar bar) {
 		temp = OS.g_list_next (temp);
 	}
 	OS.g_list_free (list);
+}
+
+int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+	switch ((int)/*64*/user_data) {
+		case EXPOSE_EVENT_INVERSE: {
+			/*
+			 * Feature in GTK. When the GtkTreeView has no items it does not propagate
+			 * expose events. The fix is to fill the background in the inverse expose
+			 * event.
+			 */
+			if (itemCount == 0 && (state & OBSCURED) == 0) {
+				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
+					Control control = findBackgroundControl ();
+					if (control != null) {
+						GdkEventExpose gdkEvent = new GdkEventExpose ();
+						OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+						int /*long*/ window = OS.gtk_tree_view_get_bin_window (handle);
+						if (window == gdkEvent.window) {
+							drawBackground (control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+						}
+					}
+				}
+			}
+			break;
+		}
+	}
+	return super.windowProc (handle, arg0, user_data);
 }
 
 }
