@@ -708,6 +708,13 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 
 	int /*long*/ ptr = dispParams.rgvarg + Variant.sizeof;
 	Variant variant = Variant.win32_new (ptr);
+	if (variant.getType () != COM.VT_I4) {
+		variant.dispose ();
+		if (pVarResult != 0) {
+			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
+		}
+		return COM.S_OK;
+	}
 	int index = variant.getInt ();
 	variant.dispose ();
 	if (index <= 0) {
