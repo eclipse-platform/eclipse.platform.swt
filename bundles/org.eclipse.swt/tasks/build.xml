@@ -306,7 +306,7 @@
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
 			<env key="AWT_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5/jre/bin"/>
 			<env key="MOTIF_HOME" value="/bluebird/teamswt/swt-builddir/motif21"/>
-			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo1.6.0/lib/pkgconfig/"/>
+			<!--env key="PKG_CONFIG_PATH" value="/usr/local/cairo1.6.0/lib/pkgconfig/"/-->
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
