@@ -4459,6 +4459,10 @@ int getOffsetAtPoint(int x, int y, int[] trailing, boolean inTextOnly) {
  */
 public int getOrientation () {
 	checkWidget();
+	if (IS_MAC) {
+		int style = super.getStyle();
+		return style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT);
+	}
 	return isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
 }
 /** 
@@ -4756,11 +4760,8 @@ public String getSelectionText() {
 public int getStyle() {
 	int style = super.getStyle();
 	style &= ~(SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.MIRRORED);
-	if (isMirrored()) {
-		style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
-	} else {
-		style |= SWT.LEFT_TO_RIGHT;
-	}
+	style |= getOrientation();
+	if (isMirrored()) style |= SWT.MIRRORED;
 	return style;
 }
 
