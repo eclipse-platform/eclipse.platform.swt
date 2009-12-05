@@ -873,7 +873,7 @@
 
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
 	<target name="replace.32.to.64" depends="init_build">
-		<property name="replace_dir" value="."/>
+		<property name="replace_dir" value="org.eclipse.swt"/>
 		<echo>Converting java files to 64 bit in ${replace_dir} project</echo>
 		<replace dir="${replace_dir}" includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
 		<replace dir="${replace_dir}" includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
@@ -884,7 +884,7 @@
 
 	<!-- Convert SWT 64 bit java and C source to 32 bit  -->
 	<target name="replace.64.to.32" depends="init_build">
-		<property name="replace_dir" value="."/>
+		<property name="replace_dir" value="org.eclipse.swt"/>
 		<echo>Converting java files to 32 bit in ${replace_dir} project</echo>
 		<replace dir="${replace_dir}" includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
 		<replace dir="${replace_dir}" includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
