@@ -298,7 +298,8 @@
 
 	<target name="build_motif_aix" depends="init_build">
 		<property name="clean" value="clean"/>
-		<property name="targets" value="make_cairo install"/>
+		<!--property name="targets" value="make_cairo install"/-->
+		<property name="targets" value="install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
