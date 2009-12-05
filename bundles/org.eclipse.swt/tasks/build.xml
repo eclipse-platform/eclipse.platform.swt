@@ -199,9 +199,7 @@
 	
 	<target name="build_gtk_linux_ppc64" depends="init_build">
 		<property name="clean" value="clean"/>
-		<!--
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
-		-->
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/PPC64/ibm-java2-ppc64-50"/>
