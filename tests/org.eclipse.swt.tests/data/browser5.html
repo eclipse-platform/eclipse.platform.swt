@@ -2,7 +2,7 @@
 <script type="text/javascript">
 	var win;
 	function testOpen() {
-		win = window.open('javascript:"<h1>Simple New Window</h2>"', "", "left=10,top=200,height=100,width=300");
+		win = window.open('javascript:"<h1>Simple New Window</h2>"', "", "left=100,top=200,height=100,width=300");
 	}
 	function testResizeTo() {
 		win.resizeTo(600,800);
@@ -23,8 +23,8 @@
 		win.close();
 	}
 
-	win1 = window.open('javascript:"<h1>Simple New Window 1</h2><p>bounds: left=10,top=200,height=100,width=300<p>"', "", "left=10,top=200,height=100,width=300");
-	win2 = window.open('javascript:"<h1>Simple New Window 2</h2><p>bounds: left=10,top=200<p>"', "", "left=10,top=200");
+	win1 = window.open('javascript:"<h1>Simple New Window 1</h2><p>bounds: left=100,top=200,height=100,width=300<p>"', "", "left=100,top=200,height=100,width=300");
+	win2 = window.open('javascript:"<h1>Simple New Window 2</h2><p>bounds: left=100,top=200<p>"', "", "left=100,top=200");
 	win3 = window.open('javascript:"<h1>Simple New Window 3</h2><p>bounds: height=100,width=300<p>"', "", "height=100,width=300");
 	win4 = window.open('javascript:"<h1>Simple New Window 4</h2><p>bounds: not specified<p>"', "", "");
 	
