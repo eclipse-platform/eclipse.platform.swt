@@ -136,7 +136,7 @@ fi
 
 # Find AWT if available
 if [ -z "${AWT_LIB_PATH}" ]; then
-	if [ -d ${JAVA_HOME}/jre/lib/${AWT_ARCH} ]; then
+	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/libjawt.so ]; then
 		AWT_LIB_PATH=${JAVA_HOME}/jre/lib/${AWT_ARCH}
 		export AWT_LIB_PATH
 	else
@@ -146,6 +146,7 @@ if [ -z "${AWT_LIB_PATH}" ]; then
 fi
 
 if [ -f ${AWT_LIB_PATH}/libjawt.so ]; then
+	echo "libjawt.so found, the SWT/AWT integration library will be compiled."
 	MAKE_AWT=make_awt
 else
 	echo "libjawt.so not found, the SWT/AWT integration library will not be compiled."
