@@ -205,7 +205,7 @@
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/PPC64/ibm-java2-ppc64-50"/>
 			<env key="MOZILLA_SDK" value=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc64/mozilla/dist/sdk"/>
-			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="MOZILLA_LIBS" value="-m64 -L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc64/mozilla/dist/sdk/"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
