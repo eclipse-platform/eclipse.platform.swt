@@ -1126,8 +1126,10 @@ protected void releaseObjectInterfaces() {
 		objIUnknown.Release();
 	}
 	objIUnknown = null;
-	
-	COM.CoFreeUnusedLibraries();
+
+	if (COM.FreeUnusedLibraries) {
+		COM.CoFreeUnusedLibraries();
+	}
 }
 /**
  * Saves the document to the specified file and includes OLE specific information if specified.  

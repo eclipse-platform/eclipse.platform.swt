@@ -38,6 +38,7 @@ class IE extends WebBrowser {
 
 	static int IEVersion;
 	static String ProgId = "Shell.Explorer";	//$NON-NLS-1$
+	static int PDFCount;
 
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
@@ -97,6 +98,9 @@ class IE extends WebBrowser {
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
+	static final String EXTENSION_PDF = ".pdf";	//$NON-NLS-1$
+	static final int MAX_PDF = 20;
+
 	static final String EVENT_DOUBLECLICK = "dblclick"; //$NON-NLS-1$
 	static final String EVENT_DRAGEND = "dragend";	//$NON-NLS-1$
 	static final String EVENT_DRAGSTART = "dragstart";	//$NON-NLS-1$
@@ -522,7 +526,30 @@ public void create(Composite parent, int style) {
 						Variant varResult = event.arguments[0];
 						IDispatch dispatch = varResult.getDispatch();
 						if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
-	
+
+						/*
+						* Bug in Acrobat Reader on Windows 2000 and XP (works on Vista and
+						* Windows 7).  Opening > MAX_PDF PDF files causes Acrobat to not
+						* clean up its shells properly when the container Browser is disposed.
+						* This results in Eclipse crashing at shutdown time because the leftover
+						* shells have invalid references to unloaded Acrobat libraries.  The
+						* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
+						* files have been opened.
+						*/
+						String url = event.arguments[1].getString();
+						if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+							int extensionIndex = url.lastIndexOf('.');
+							if (extensionIndex != -1) {
+								String extension = url.substring(extensionIndex);
+								if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
+									PDFCount++;
+									if (PDFCount > MAX_PDF) {
+										COM.FreeUnusedLibraries = false;
+									}
+								}
+							}
+						}
+
 						OleAutomation webBrowser = varResult.getAutomation();
 						varResult = event.arguments[1];
 						Variant variant = new Variant(auto);
@@ -891,6 +918,29 @@ public boolean isFocusControl () {
 }
 
 public void refresh() {
+	/*
+	* Bug in Acrobat Reader on Windows 2000 and XP (works on Vista and
+	* Windows 7).  Opening > MAX_PDF PDF files causes Acrobat to not
+	* clean up its shells properly when the container Browser is disposed.
+	* This results in Eclipse crashing at shutdown time because the leftover
+	* shells have invalid references to unloaded Acrobat libraries.  The
+	* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
+	* files have been opened.
+	*/
+	if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+		String url = getUrl();
+		int extensionIndex = url.lastIndexOf('.');
+		if (extensionIndex != -1) {
+			String extension = url.substring(extensionIndex);
+			if (extension.equalsIgnoreCase (EXTENSION_PDF)) {
+				PDFCount++;
+				if (PDFCount > MAX_PDF) {
+					COM.FreeUnusedLibraries = false;
+				}
+			}
+		}
+	}
+
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Refresh" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
 }

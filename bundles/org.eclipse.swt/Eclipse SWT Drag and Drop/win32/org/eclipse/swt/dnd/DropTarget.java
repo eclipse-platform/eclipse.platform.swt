@@ -571,7 +571,9 @@ void onDispose () {
 	}
 	iDataObject = null;
 	
-	COM.CoFreeUnusedLibraries();
+	if (COM.FreeUnusedLibraries) {
+		COM.CoFreeUnusedLibraries();
+	}
 }
 
 int opToOs(int operation) {
@@ -627,7 +629,9 @@ int Release() {
 	
 	if (refCount == 0) {
 		disposeCOMInterfaces();
-		COM.CoFreeUnusedLibraries();
+		if (COM.FreeUnusedLibraries) {
+			COM.CoFreeUnusedLibraries();
+		}
 	}
 	
 	return refCount;
