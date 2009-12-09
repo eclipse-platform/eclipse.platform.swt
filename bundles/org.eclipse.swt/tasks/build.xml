@@ -199,7 +199,6 @@
 	
 	<target name="build_gtk_linux_ppc64" depends="init_build">
 		<property name="clean" value="clean"/>
-		<!--property name="targets" value="make_mozilla install"/-->
 		<property name="targets" value="make_xulrunner make_xpcominit make_mozilla install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
