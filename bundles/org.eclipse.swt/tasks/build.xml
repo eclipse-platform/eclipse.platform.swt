@@ -161,7 +161,6 @@
 			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk/"/>
-			<!-- setenv GCC_VERSION -gcc3 -->
 			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
 			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
@@ -183,12 +182,12 @@
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/PPC/ibm-java2-ppc-50"/>
 			<env key="MOZILLA_SDK" value=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc/mozilla/dist/sdk/"/>
-			<env key="MODEL" value="ppc"/>
 			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
 			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
 			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc/lib/pkgconfig/"/>
+			<env key="MODEL" value="ppc"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
@@ -284,7 +283,6 @@
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
 			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
-			<!--Need to add? setenv GCC_VERSION -gcc3 -->
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
@@ -295,14 +293,12 @@
 
 	<target name="build_motif_aix" depends="init_build">
 		<property name="clean" value="clean"/>
-		<!--property name="targets" value="make_cairo install"/-->
 		<property name="targets" value="install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
 			<env key="AWT_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5/jre/bin"/>
 			<env key="MOTIF_HOME" value="/bluebird/teamswt/swt-builddir/motif21"/>
-			<!--env key="PKG_CONFIG_PATH" value="/usr/local/cairo1.6.0/lib/pkgconfig/"/-->
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
