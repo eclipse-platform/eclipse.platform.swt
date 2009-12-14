@@ -21,8 +21,8 @@ public class Browser5 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
 	static Point[][] regressionBounds = {
-				{new Point(10,200), new Point(300,100)},
-				{new Point(10,200), null},
+				{new Point(100,200), new Point(300,100)},
+				{new Point(100,200), null},
 				{null, new Point(300,100)},
 				{null, null}};
 	static int index = 0;
