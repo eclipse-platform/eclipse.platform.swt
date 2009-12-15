@@ -407,6 +407,8 @@ public class COM extends OS {
 	public static final short VARIANT_TRUE = -1;
 	public static final short VARIANT_FALSE = 0;
 
+	public static boolean FreeUnusedLibraries = true;
+
 private static GUID IIDFromString(String lpsz) {
 	int length = lpsz.length();
 	char[] buffer = new char[length + 1];

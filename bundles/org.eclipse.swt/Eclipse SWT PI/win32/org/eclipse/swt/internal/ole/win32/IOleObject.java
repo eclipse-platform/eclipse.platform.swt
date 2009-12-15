@@ -57,6 +57,9 @@ public int SetHostNames(String szContainerApp, String szContainerObj) {
 	}
 	return COM.VtblCall(5, address, buffer1, buffer2);
 }
+public int Unadvise(int token) {
+	return COM.VtblCall(20, address, token);
+}
 public int Update() {
 	return COM.VtblCall(13, address);
 }

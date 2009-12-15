@@ -655,7 +655,9 @@ private int Release() {
 	refCount--;
 	if (refCount == 0) {
 		disposeCOMInterfaces();
-		COM.CoFreeUnusedLibraries();
+		if (COM.FreeUnusedLibraries) {
+			COM.CoFreeUnusedLibraries();
+		}
 	}
 	return refCount;
 }

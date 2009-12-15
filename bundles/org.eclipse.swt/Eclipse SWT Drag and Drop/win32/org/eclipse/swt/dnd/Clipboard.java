@@ -649,7 +649,9 @@ private int Release() {
 		this.data = new Object[0];
 		this.transferAgents = new Transfer[0];
 		disposeCOMInterfaces();
-		COM.CoFreeUnusedLibraries();
+		if (COM.FreeUnusedLibraries) {
+			COM.CoFreeUnusedLibraries();
+		}
 	}
 	return refCount;
 }

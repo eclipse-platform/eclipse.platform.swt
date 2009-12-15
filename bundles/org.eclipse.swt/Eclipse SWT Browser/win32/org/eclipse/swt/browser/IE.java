@@ -38,7 +38,7 @@ class IE extends WebBrowser {
 	int style, lastKeyCode, lastCharCode;
 	int lastMouseMoveX, lastMouseMoveY;
 
-	static int IEVersion;
+	static int IEVersion, PDFCount;
 	static String ProgId = "Shell.Explorer";	//$NON-NLS-1$
 
 	static final int BeforeNavigate2 = 0xfa;
@@ -101,6 +101,9 @@ class IE extends WebBrowser {
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
+	static final String EXTENSION_PDF = ".pdf";	//$NON-NLS-1$
+	static final int MAX_PDF = 20;
+
 	static final String EVENT_DOUBLECLICK = "dblclick"; //$NON-NLS-1$
 	static final String EVENT_DRAGEND = "dragend";	//$NON-NLS-1$
 	static final String EVENT_DRAGSTART = "dragstart";	//$NON-NLS-1$
@@ -127,6 +130,7 @@ class IE extends WebBrowser {
 	static final String PROPERTY_TOELEMENT = "toElement"; //$NON-NLS-1$
 	static final String PROPERTY_TYPE = "type"; //$NON-NLS-1$
 	static final String PROPERTY_WHEELDELTA = "wheelDelta"; //$NON-NLS-1$
+
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -429,7 +433,7 @@ public void create(Composite parent, int style) {
 								}
 								documents = new OleAutomation[0];
 							}
-						}
+							}
 						break;
 					}
 					case CommandStateChange: {
@@ -533,6 +537,29 @@ public void create(Composite parent, int style) {
 					case NavigateComplete2: {
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
+
+						/*
+						* Bug in Acrobat Reader on Windows 2000 and XP (works on Vista and
+						* Windows 7).  Opening > MAX_PDF PDF files causes Acrobat to not
+						* clean up its shells properly when the container Browser is disposed.
+						* This results in Eclipse crashing at shutdown time because the leftover
+						* shells have invalid references to unloaded Acrobat libraries.  The
+						* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
+						* files have been opened.
+						*/
+						if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+							int extensionIndex = url.lastIndexOf('.');
+							if (extensionIndex != -1) {
+								String extension = url.substring(extensionIndex);
+								if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
+									PDFCount++;
+									if (PDFCount > MAX_PDF) {
+										COM.FreeUnusedLibraries = false;
+									}
+								}
+							}
+						}
+
 						if (uncRedirect != null) {
 							if (uncRedirect.equals(url)) {
 								/* full UNC path has been successfully navigated */
@@ -1119,6 +1146,30 @@ boolean navigate(String url, String postData, String headers[], boolean silent) 
 
 public void refresh() {
 	uncRedirect = null;
+
+	/*
+	* Bug in Acrobat Reader on Windows 2000 and XP (works on Vista and
+	* Windows 7).  Opening > MAX_PDF PDF files causes Acrobat to not
+	* clean up its shells properly when the container Browser is disposed.
+	* This results in Eclipse crashing at shutdown time because the leftover
+	* shells have invalid references to unloaded Acrobat libraries.  The
+	* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
+	* files have been opened.
+	*/
+	if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+		String url = getUrl();
+		int extensionIndex = url.lastIndexOf('.');
+		if (extensionIndex != -1) {
+			String extension = url.substring(extensionIndex);
+			if (extension.equalsIgnoreCase (EXTENSION_PDF)) {
+				PDFCount++;
+				if (PDFCount > MAX_PDF) {
+					COM.FreeUnusedLibraries = false;
+				}
+			}
+		}
+	}
+
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Refresh" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
 }
