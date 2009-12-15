@@ -2734,6 +2734,7 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 public void setLinesVisible (boolean show) {
 	checkWidget ();
 	((NSOutlineView) view).setUsesAlternatingRowBackgroundColors (show);
+	((NSOutlineView) view).setGridStyleMask(show ? OS.NSTableViewSolidVerticalGridLineMask : OS.NSTableViewGridNone);
 }
 
 public void setRedraw (boolean redraw) {

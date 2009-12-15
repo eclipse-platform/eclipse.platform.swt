@@ -210,6 +210,10 @@ public void setDropRow(int /*long*/ row, int /*long*/ op) {
 	OS.objc_msgSend(this.id, OS.sel_setDropRow_dropOperation_, row, op);
 }
 
+public void setGridStyleMask(int /*long*/ gridType) {
+	OS.objc_msgSend(this.id, OS.sel_setGridStyleMask_, gridType);
+}
+
 public void setHeaderView(NSTableHeaderView headerView) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderView_, headerView != null ? headerView.id : 0);
 }

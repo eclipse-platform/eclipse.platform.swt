@@ -286,7 +286,9 @@
 	<enum name="NSTableColumnUserResizingMask" swt_gen="true"></enum>
 	<enum name="NSTableViewDropAbove" swt_gen="true"></enum>
 	<enum name="NSTableViewDropOn" swt_gen="true"></enum>
+	<enum name="NSTableViewGridNone" swt_gen="true"></enum>
 	<enum name="NSTableViewNoColumnAutoresizing" swt_gen="true"></enum>
+	<enum name="NSTableViewSolidVerticalGridLineMask" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
@@ -3478,6 +3480,10 @@
 		<method selector="setDropRow:dropOperation:" swt_gen="true">
 			<arg name="row" swt_gen="true"></arg>
 			<arg name="op" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setGridStyleMask:" swt_gen="true">
+			<arg name="gridType" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setHeaderView:" swt_gen="true">

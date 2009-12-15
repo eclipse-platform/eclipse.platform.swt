@@ -2567,6 +2567,7 @@ public void setRedraw (boolean redraw) {
 public void setLinesVisible (boolean show) {
 	checkWidget ();
 	((NSTableView)view).setUsesAlternatingRowBackgroundColors(show);
+	((NSTableView)view).setGridStyleMask(show ? OS.NSTableViewSolidVerticalGridLineMask : OS.NSTableViewGridNone);
 }
 
 boolean setScrollWidth () {
