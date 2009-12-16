@@ -138,7 +138,7 @@ class PromptDialog extends Dialog {
 
 		Button viewCertButton = new Button(buttonsComposite, SWT.PUSH);
 		viewCertButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		viewCertButton.setText(Compatibility.getMessage("View Certificate")); //$NON-NLS-1$
+		viewCertButton.setText(Compatibility.getMessage("SWT_ViewCertificate")); //$NON-NLS-1$
 		viewCertButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				int /*long*/[] result = new int /*long*/[1];
