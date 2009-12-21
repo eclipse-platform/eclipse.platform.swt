@@ -503,7 +503,10 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 	if (value instanceof Object[]) {
 		Object[] arrayValue = (Object[])value;
 		int length = arrayValue.length;
-		if (length > 0) {
+		if (length == 0) {
+			rc = variant.SetAsEmptyArray ();
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		} else {
 			int /*long*/ arrayPtr = C.malloc (C.PTR_SIZEOF * length);
 			for (int i = 0; i < length; i++) {
 				Object currentObject = arrayValue[i];
@@ -529,8 +532,8 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 			C.free (idPtr);
 			C.free (arrayPtr);
 			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-			return variant;
 		}
+		return variant;
 	}
 
 	variant.Release ();

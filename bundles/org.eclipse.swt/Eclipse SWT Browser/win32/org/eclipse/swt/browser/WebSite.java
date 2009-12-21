@@ -839,86 +839,84 @@ Variant convertToJS (Object value) {
 		return new Variant (((Number)value).doubleValue ());
 	}
 	if (value instanceof Object[]) {
+		/* get IHTMLDocument2 */
+		IE browser = (IE)((Browser)getParent ().getParent ()).webBrowser;
+		OleAutomation auto = browser.auto;
+		int[] rgdispid = auto.getIDsOfNames (new String[] {"Document"}); //$NON-NLS-1$
+		if (rgdispid == null) return new Variant ();
+		Variant pVarResult = auto.getProperty (rgdispid[0]);
+		if (pVarResult == null) return new Variant ();
+		if (pVarResult.getType () == COM.VT_EMPTY) {
+			pVarResult.dispose ();
+			return new Variant ();
+		}
+		OleAutomation document = pVarResult.getAutomation ();
+		pVarResult.dispose ();
+
+		/* get IHTMLWindow2 */
+		rgdispid = document.getIDsOfNames (new String[] {"parentWindow"}); //$NON-NLS-1$
+		if (rgdispid == null) {
+			document.dispose ();
+			return new Variant ();
+		}
+		pVarResult = document.getProperty (rgdispid[0]);
+		if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
+			if (pVarResult != null) pVarResult.dispose ();
+			document.dispose ();
+			return new Variant ();	
+		}
+		OleAutomation ihtmlWindow2 = pVarResult.getAutomation ();
+		pVarResult.dispose ();
+		document.dispose ();
+
+		/* create a new JS array to be returned */
+		rgdispid = ihtmlWindow2.getIDsOfNames (new String[] {"Array"}); //$NON-NLS-1$
+		if (rgdispid == null) {
+			ihtmlWindow2.dispose ();
+			return new Variant ();
+		}
+		Variant arrayType = ihtmlWindow2.getProperty (rgdispid[0]);
+		ihtmlWindow2.dispose ();
+		IDispatch arrayTypeDispatch = arrayType.getDispatch ();
+		arrayType.dispose ();
+
+		int /*long*/[] result = new int /*long*/[1];
+		int rc = arrayTypeDispatch.QueryInterface (COM.IIDIDispatchEx, result);
+		if (rc != COM.S_OK) return new Variant ();
+		IDispatchEx arrayTypeDispatchEx = new IDispatchEx (result[0]);
+		result[0] = 0;
+		int /*long*/ resultPtr = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+		DISPPARAMS params = new DISPPARAMS ();
+		rc = arrayTypeDispatchEx.InvokeEx (COM.DISPID_VALUE, COM.LOCALE_USER_DEFAULT, COM.DISPATCH_CONSTRUCT, params, resultPtr, null, 0);
+		if (rc != COM.S_OK) {
+			OS.GlobalFree (resultPtr);
+			return new Variant ();	
+		}
+		Variant array = Variant.win32_new (resultPtr);
+		OS.GlobalFree (resultPtr);
+
+		/* populate the array */
 		Object[] arrayValue = (Object[])value;
 		int length = arrayValue.length;
-		if (length > 0) {
-			/* get IHTMLDocument2 */
-			IE browser = (IE)((Browser)getParent ().getParent ()).webBrowser;
-			OleAutomation auto = browser.auto;
-			int[] rgdispid = auto.getIDsOfNames (new String[] {"Document"}); //$NON-NLS-1$
-			if (rgdispid == null) return new Variant ();
-			Variant pVarResult = auto.getProperty (rgdispid[0]);
-			if (pVarResult == null) return new Variant ();
-			if (pVarResult.getType () == COM.VT_EMPTY) {
-				pVarResult.dispose ();
-				return new Variant ();
-			}
-			OleAutomation document = pVarResult.getAutomation ();
-			pVarResult.dispose ();
-
-			/* get IHTMLWindow2 */
-			rgdispid = document.getIDsOfNames (new String[] {"parentWindow"}); //$NON-NLS-1$
-			if (rgdispid == null) {
-				document.dispose ();
-				return new Variant ();
-			}
-			pVarResult = document.getProperty (rgdispid[0]);
-			if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
-				if (pVarResult != null) pVarResult.dispose ();
-				document.dispose ();
-				return new Variant ();	
-			}
-			OleAutomation ihtmlWindow2 = pVarResult.getAutomation ();
-			pVarResult.dispose ();
-			document.dispose ();
-
-			/* create a new JS array to be returned */
-			rgdispid = ihtmlWindow2.getIDsOfNames (new String[] {"Array"}); //$NON-NLS-1$
-			if (rgdispid == null) {
-				ihtmlWindow2.dispose ();
-				return new Variant ();
-			}
-			Variant arrayType = ihtmlWindow2.getProperty (rgdispid[0]);
-			ihtmlWindow2.dispose ();
-			IDispatch arrayTypeDispatch = arrayType.getDispatch ();
-			arrayType.dispose ();
-
-			int /*long*/[] result = new int /*long*/[1];
-			int rc = arrayTypeDispatch.QueryInterface (COM.IIDIDispatchEx, result);
-			if (rc != COM.S_OK) return new Variant ();
-			IDispatchEx arrayTypeDispatchEx = new IDispatchEx (result[0]);
-			result[0] = 0;
-			int /*long*/ resultPtr = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
-			DISPPARAMS params = new DISPPARAMS ();
-			rc = arrayTypeDispatchEx.InvokeEx (COM.DISPID_VALUE, COM.LOCALE_USER_DEFAULT, COM.DISPATCH_CONSTRUCT, params, resultPtr, null, 0);
-			if (rc != COM.S_OK) {
-				OS.GlobalFree (resultPtr);
-				return new Variant ();	
-			}
-			Variant array = Variant.win32_new (resultPtr);
-			OS.GlobalFree (resultPtr);
-
-			/* populate the array */
-			auto = array.getAutomation ();
-			int[] rgdispids = auto.getIDsOfNames (new String[] {"push"}); //$NON-NLS-1$
-			if (rgdispids != null) {
-				for (int i = 0; i < length; i++) {
-					Object currentObject = arrayValue[i];
-					try {
-						Variant variant = convertToJS (currentObject);
-						auto.invoke (rgdispids[0], new Variant[] {variant});
-						variant.dispose ();
-					} catch (SWTException e) {
-						/* invalid return value type */
-						auto.dispose ();
-						array.dispose ();
-						throw e;
-					}
+		auto = array.getAutomation ();
+		int[] rgdispids = auto.getIDsOfNames (new String[] {"push"}); //$NON-NLS-1$
+		if (rgdispids != null) {
+			for (int i = 0; i < length; i++) {
+				Object currentObject = arrayValue[i];
+				try {
+					Variant variant = convertToJS (currentObject);
+					auto.invoke (rgdispids[0], new Variant[] {variant});
+					variant.dispose ();
+				} catch (SWTException e) {
+					/* invalid return value type */
+					auto.dispose ();
+					array.dispose ();
+					throw e;
 				}
 			}
-			auto.dispose ();
-			return array;
 		}
+		auto.dispose ();
+		return array;
 	}
 	SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
 	return null;
