@@ -2024,15 +2024,13 @@ int convertToJS (Object value) {
 	if (value instanceof Object[]) {
 		Object[] arrayValue = (Object[])value;
 		int length = arrayValue.length;
-		if (length > 0) {
-			int array = Cocoa.objc_msgSend (Cocoa.C_NSMutableArray, Cocoa.S_arrayWithCapacity, length);
-			for (int i = 0; i < length; i++) {
-				Object currentObject = arrayValue[i];
-				int jsObject = convertToJS (currentObject);
-				Cocoa.objc_msgSend (array, Cocoa.S_addObject, jsObject);
-			}
-			return array;
+		int array = Cocoa.objc_msgSend (Cocoa.C_NSMutableArray, Cocoa.S_arrayWithCapacity, length);
+		for (int i = 0; i < length; i++) {
+			Object currentObject = arrayValue[i];
+			int jsObject = convertToJS (currentObject);
+			Cocoa.objc_msgSend (array, Cocoa.S_addObject, jsObject);
 		}
+		return array;
 	}
 	SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
 	return 0;

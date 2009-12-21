@@ -1595,14 +1595,12 @@ NSObject convertToJS (Object value) {
 	if (value instanceof Object[]) {
 		Object[] arrayValue = (Object[]) value;
 		int length = arrayValue.length;
-		if (length > 0) {
-			NSMutableArray array = NSMutableArray.arrayWithCapacity (length);
-			for (int i = 0; i < length; i++) {
-				Object currentObject = arrayValue[i];
-				array.addObject (convertToJS (currentObject));
-			}
-			return array;
+		NSMutableArray array = NSMutableArray.arrayWithCapacity (length);
+		for (int i = 0; i < length; i++) {
+			Object currentObject = arrayValue[i];
+			array.addObject (convertToJS (currentObject));
 		}
+		return array;
 	}
 	SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
 	return null;
