@@ -31,7 +31,7 @@ class Safari extends WebBrowser {
 	String url = ""; //$NON-NLS-1$
 	Point location;
 	Point size;
-	boolean statusBar = true, toolBar = true, ignoreDispose, acceptAllBeforeUnloadConfirms;
+	boolean statusBar = true, toolBar = true, ignoreDispose;
 	int lastMouseMoveX, lastMouseMoveY;
 	//TEMPORARY CODE
 //	boolean doit;
@@ -228,9 +228,7 @@ public void create (Composite parent, int style) {
 					if (!browser.isDisposed()) {
 						/* invoke onbeforeunload handlers */
 						if (!browser.isClosing) {
-							acceptAllBeforeUnloadConfirms = true;
-							close ();
-							acceptAllBeforeUnloadConfirms = false;
+							close (false);
 						}
 
 						e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
@@ -428,14 +426,23 @@ static int /*long*/ webScriptNameForSelector (int /*long*/ aSelector) {
 }
 
 public boolean close () {
+	return close (true);
+}
+
+boolean close (boolean showPrompters) {
 	if (!jsEnabled) return true;
 
 	String functionName = EXECUTE_ID + "CLOSE"; // $NON-NLS-1$
 	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(win) {\n"); // $NON-NLS-1$
-	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {try {var str = fn(); if (str != null) { "); // $NON-NLS-1$
-	buffer.append ("var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str); if (!result) return false;}} catch (e) {}} "); // $NON-NLS-1$
+	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {try {var str = fn(); "); // $NON-NLS-1$
+	if (showPrompters) {
+		buffer.append ("if (str != null) { "); // $NON-NLS-1$
+		buffer.append ("var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str);"); // $NON-NLS-1$
+		buffer.append ("if (!result) return false;}"); // $NON-NLS-1$
+	}	
+	buffer.append ("} catch (e) {}}"); // $NON-NLS-1$
 	buffer.append ("try {for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(win.frames[i]); if (!result) return false;}} catch (e) {} return true;"); // $NON-NLS-1$
@@ -1142,10 +1149,7 @@ void webViewUnfocus(int /*long*/ sender) {
 }
 
 NSNumber callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int /*long*/ arg) {
-	boolean result = true;
-	if (!acceptAllBeforeUnloadConfirms) {
-		result = webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame (0, messageID, 0);
-	}
+	boolean result = webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame (0, messageID, 0);
 	return NSNumber.numberWithBool (result);
 }
 

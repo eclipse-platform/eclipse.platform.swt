@@ -40,7 +40,7 @@ class Safari extends WebBrowser {
 	String url = ""; //$NON-NLS-1$
 	Point location;
 	Point size;
-	boolean statusBar = true, toolBar = true, ignoreDispose, acceptAllBeforeUnloadConfirms;
+	boolean statusBar = true, toolBar = true, ignoreDispose;
 	//TEMPORARY CODE
 //	boolean doit;
 
@@ -287,9 +287,7 @@ public void create (Composite parent, int style) {
 
 					/* invoke onbeforeunload handlers */
 					if (!browser.isClosing && !browser.isDisposed()) {
-						acceptAllBeforeUnloadConfirms = true;
-						close ();
-						acceptAllBeforeUnloadConfirms = false;
+						close (false);
 					}
 
 					OS.RemoveEventHandler(windowBoundsHandler);
@@ -440,14 +438,23 @@ public boolean back() {
 }
 
 public boolean close () {
+	return close (true);
+}
+
+boolean close (boolean showPrompters) {
 	if (!jsEnabled) return true;
 
 	String functionName = EXECUTE_ID + "CLOSE"; // $NON-NLS-1$
 	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(win) {\n"); // $NON-NLS-1$
-	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {try {var str = fn(); if (str != null) { "); // $NON-NLS-1$
-	buffer.append ("var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str); if (!result) return false;}} catch (e) {}} "); // $NON-NLS-1$
+	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {try {var str = fn(); "); // $NON-NLS-1$
+	if (showPrompters) {
+		buffer.append ("if (str != null) { "); // $NON-NLS-1$
+		buffer.append ("var result = window.external.callRunBeforeUnloadConfirmPanelWithMessage(str);"); // $NON-NLS-1$
+		buffer.append ("if (!result) return false;}"); // $NON-NLS-1$
+	}	
+	buffer.append ("} catch (e) {}}"); // $NON-NLS-1$
 	buffer.append ("try {for (var i = 0; i < win.frames.length; i++) {var result = "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(win.frames[i]); if (!result) return false;}} catch (e) {} return true;"); // $NON-NLS-1$
@@ -1499,10 +1506,7 @@ void webViewUnfocus() {
 }
 
 int callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int /*long*/ arg) {
-	int result = 1;
-	if (!acceptAllBeforeUnloadConfirms) {
-		result = runBeforeUnloadConfirmPanelWithMessage (messageID, 0);
-	}
+	int result = runBeforeUnloadConfirmPanelWithMessage (messageID, 0);
 	return Cocoa.objc_msgSend (Cocoa.C_NSNumber, Cocoa.S_numberWithBool, result);
 }
 
