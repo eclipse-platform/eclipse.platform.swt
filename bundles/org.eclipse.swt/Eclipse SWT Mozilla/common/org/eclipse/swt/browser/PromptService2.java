@@ -22,14 +22,14 @@ class PromptService2 {
 	int refCount = 0;
 	
 	static final String[] certErrorCodes = new String[] {
-		"sec_error_expired_issuer_certificate",
-		"sec_error_untrusted_cert",
-		"sec_error_inadequate_key_usage",
 		"ssl_error_bad_cert_domain",
 		"sec_error_ca_cert_invalid",
+		"sec_error_expired_certificate",
+		"sec_error_expired_issuer_certificate",
+		"sec_error_inadequate_key_usage",
 		"sec_error_unknown_issuer",
+		"sec_error_untrusted_cert",
 		"sec_error_untrusted_issuer",
-		"sec_error_expired_certificate" 
 	};	//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 
 PromptService2 () {
