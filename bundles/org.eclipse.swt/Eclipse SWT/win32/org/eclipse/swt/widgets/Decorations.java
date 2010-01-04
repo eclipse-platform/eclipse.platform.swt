@@ -912,7 +912,10 @@ void setDefaultButton (Button button, boolean save) {
 		}
 	} else {
 		if ((button.style & SWT.PUSH) == 0) return;
-		if (button == defaultButton) return;
+		if (button == defaultButton) {
+			if (save) saveDefault = defaultButton;
+			return;
+		}
 	}
 	if (defaultButton != null) {
 		if (!defaultButton.isDisposed ()) defaultButton.setDefault (false);
