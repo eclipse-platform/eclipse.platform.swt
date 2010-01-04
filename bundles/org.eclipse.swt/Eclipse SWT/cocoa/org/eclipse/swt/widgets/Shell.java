@@ -550,7 +550,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.height = trim.height;
 	if (window != null) {
 		if (!fixResize()) {
+			float /*double*/ h = rect.height;
 			rect = window.frameRectForContentRect(rect);
+			rect.y += h-rect.height;
 		}
 	}
 	return new Rectangle ((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
