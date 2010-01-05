@@ -16,6 +16,7 @@ public class Cocoa extends Platform {
 		
 static {
 	Library.loadLibrary("swt-cocoa"); //$NON-NLS-1$
+	WebInitForCarbon();
 }
 	
 /* Objective-C class ids */
