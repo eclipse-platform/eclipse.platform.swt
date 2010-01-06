@@ -60,7 +60,7 @@ public static void main(String[] args) {
 }
 
 static String createPage(int index) {
-	return "<html><body>This is page " + index + "<p><a href=\"#" + PREAMBLE + ++index + "\">Go to page " + index + "</a></body></html>";
+	return "<html><body>This is page " + index + "<p><a href=\"" + PREAMBLE + ++index + "\">Go to page " + index + "</a></body></html>";
 }
 
 }
