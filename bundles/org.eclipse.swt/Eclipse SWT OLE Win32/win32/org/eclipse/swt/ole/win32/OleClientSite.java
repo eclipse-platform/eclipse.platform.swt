@@ -79,7 +79,6 @@ public class OleClientSite extends Composite {
 	private int     type;      // Indicates the type of client that can be supported inside this container
 	private boolean isStatic;  // Indicates item's display is static, i.e., a bitmap, metafile, etc.
 	boolean isActivated;
-	private int token;
 
 	private RECT borderWidths = new RECT();
 	private RECT indent = new RECT();
@@ -440,7 +439,6 @@ protected void addObjectReferences() {
 	}
 	int[] pdwConnection = new int[1];
 	objIOleObject.Advise(iAdviseSink.getAddress(), pdwConnection);
-	token = pdwConnection[0];
 	objIOleObject.SetHostNames("main", "main");  //$NON-NLS-1$ //$NON-NLS-2$
 
 	// Notify the control object that it is embedded in an OLE container
@@ -904,17 +902,6 @@ private void onDispose(Event e) {
 	
 	frame.Release();
 	frame = null;
-
-	if (objIOleObject != null) {
-		objIOleObject.Unadvise(token);
-		objIOleObject.SetClientSite(0);
-		objIOleObject.Close(COM.OLECLOSE_NOSAVE);
-		objIOleObject.Release();
-	}
-	objIOleObject = null;
-	if (COM.FreeUnusedLibraries) {
-		COM.CoFreeUnusedLibraries();
-	}
 }
 void onFocusIn(Event e) {
 	if (inDispose) return;
@@ -1113,7 +1100,13 @@ protected void releaseObjectInterfaces() {
 	if (objIOleInPlaceObject!= null)
 		objIOleInPlaceObject.Release();
 	objIOleInPlaceObject = null;
-
+	
+	if (objIOleObject != null) {	
+		objIOleObject.Close(COM.OLECLOSE_NOSAVE);
+		objIOleObject.Release();
+	}
+	objIOleObject = null;
+	
 	if (objDocumentView != null){
 		objDocumentView.Release();
 	}
@@ -1133,6 +1126,10 @@ protected void releaseObjectInterfaces() {
 		objIUnknown.Release();
 	}
 	objIUnknown = null;
+	
+	if (COM.FreeUnusedLibraries) {
+		COM.CoFreeUnusedLibraries();
+	}
 }
 /**
  * Saves the document to the specified file and includes OLE specific information if specified.  
