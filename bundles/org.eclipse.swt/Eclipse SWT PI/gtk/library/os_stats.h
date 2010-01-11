@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -605,6 +605,7 @@ typedef enum {
 	_1gtk_1clipboard_1clear_FUNC,
 	_1gtk_1clipboard_1get_FUNC,
 	_1gtk_1clipboard_1set_1with_1data_FUNC,
+	_1gtk_1clipboard_1set_1with_1owner_FUNC,
 	_1gtk_1clipboard_1wait_1for_1contents_FUNC,
 	_1gtk_1color_1selection_1dialog_1new_FUNC,
 	_1gtk_1color_1selection_1get_1current_1color_FUNC,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -7356,6 +7356,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1clipboard_1set_1with_1data)
 	OS_NATIVE_ENTER(env, that, _1gtk_1clipboard_1set_1with_1data_FUNC);
 	rc = (jboolean)gtk_clipboard_set_with_data((GtkClipboard *)arg0, (const GtkTargetEntry *)arg1, (guint)arg2, (GtkClipboardGetFunc)arg3, (GtkClipboardClearFunc)arg4, (GObject *)arg5);
 	OS_NATIVE_EXIT(env, that, _1gtk_1clipboard_1set_1with_1data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1clipboard_1set_1with_1owner
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1clipboard_1set_1with_1owner)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLong arg3, jintLong arg4, jintLong arg5)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1clipboard_1set_1with_1owner_FUNC);
+	rc = (jboolean)gtk_clipboard_set_with_owner((GtkClipboard *)arg0, (const GtkTargetEntry *)arg1, (guint)arg2, (GtkClipboardGetFunc)arg3, (GtkClipboardClearFunc)arg4, (GObject *)arg5);
+	OS_NATIVE_EXIT(env, that, _1gtk_1clipboard_1set_1with_1owner_FUNC);
 	return rc;
 }
 #endif

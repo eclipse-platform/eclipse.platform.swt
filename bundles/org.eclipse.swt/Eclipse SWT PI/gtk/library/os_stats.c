@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1328;
-int OS_nativeFunctionCallCount[1328];
+int OS_nativeFunctionCount = 1329;
+int OS_nativeFunctionCallCount[1329];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -597,6 +597,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1clipboard_1clear",
 	"_1gtk_1clipboard_1get",
 	"_1gtk_1clipboard_1set_1with_1data",
+	"_1gtk_1clipboard_1set_1with_1owner",
 	"_1gtk_1clipboard_1wait_1for_1contents",
 	"_1gtk_1color_1selection_1dialog_1new",
 	"_1gtk_1color_1selection_1get_1current_1color",
