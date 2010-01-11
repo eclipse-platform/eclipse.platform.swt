@@ -37,6 +37,7 @@ class ClipboardProxy {
 	Callback clearFunc;
 	
 	static String ID = "CLIPBOARD PROXY OBJECT"; //$NON-NLS-1$
+	static int /*long*/ clipboardOwner = OS.gtk_window_new(0);
 
 static ClipboardProxy _getInstance(final Display display) {
 	ClipboardProxy proxy = (ClipboardProxy) display.getData(ID);
@@ -98,6 +99,7 @@ void dispose () {
 	clipboardDataTypes = null;
 	primaryClipboardData = null;
 	primaryClipboardDataTypes = null;
+	clipboardOwner = 0;
 }
 
 /**
@@ -158,23 +160,31 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			offset += GtkTargetEntry.sizeof;
 		}
 		if ((clipboards & DND.CLIPBOARD) != 0) {
-			if (activeClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
 			clipboardData = data;
 			clipboardDataTypes = dataTypes;
 			int /*long*/ getFuncProc = getFunc.getAddress();
 			int /*long*/ clearFuncProc = clearFunc.getAddress();
-			if (!OS.gtk_clipboard_set_with_data(Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, 0)) {
+			/*
+			* Feature in GTK. When the contents are set again, clipboard_set_with_data() 
+			* invokes clearFunc and then, getFunc is not sequentially called. 
+			* If we clear the content before calling set_with_data(), then there is a fair 
+			* chance for other apps like Klipper to claim the ownership of the clipboard.
+			* The fix is to make sure that the content is not cleared before the data is
+			* set again. GTK does not invoke clearFunc for clipboard_set_with_owner()
+			* though we set the data again. So, this API has to be used whenever we
+			* are setting the contents.
+			*/
+			if (!OS.gtk_clipboard_set_with_owner (Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}
 			activeClipboard = owner;
 		}
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-			if (activePrimaryClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
 			primaryClipboardData = data;
 			primaryClipboardDataTypes = dataTypes;
 			int /*long*/ getFuncProc = getFunc.getAddress();
 			int /*long*/ clearFuncProc = clearFunc.getAddress();
-			if (!OS.gtk_clipboard_set_with_data(Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, 0)) {
+			if (!OS.gtk_clipboard_set_with_owner (Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}
 			activePrimaryClipboard = owner;
