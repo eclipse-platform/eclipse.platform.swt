@@ -788,7 +788,7 @@
 		<property name="cvsRsh" value="ssh"/>
 		
 		<!-- check out classpath, fragments, and natives -->
-		<cvs cvsRoot="${cvsRoot}" failonerror="true">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -804,7 +804,7 @@
 		<condition property="diff_tag" value="-r${swt_tag}" else="-D'${last_build.time}'">
 			<length string="${TAG}" trim="true" when="greater" length="0"/>
 		</condition>
-		<cvs cvsRoot="${cvsRoot}" output="diff.txt">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" output="diff.txt">
 			<commandline>
 				<argument value="diff"/>
 				<argument line="${diff_tag}"/>
