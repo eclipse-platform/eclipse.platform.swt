@@ -1754,8 +1754,13 @@ public boolean execute (String script) {
 
 			nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 			result[0] = 0;
-			nsID scriptGlobalObjectNSID = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-			rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID, result);
+			nsID scriptGlobalObjectNSID_1_9 = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+			rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9, result);
+			if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
+				result[0] = 0;
+				nsID scriptGlobalObjectNSID_1_9_2 = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+				rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9_2, result);
+			}
 			interfaceRequestor.Release ();
 
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
@@ -1769,8 +1774,14 @@ public boolean execute (String script) {
 
 				if (scriptContext != 0 && globalJSObject != 0) {
 					/* ensure that the received nsIScriptContext implements the expected interface */
-					nsID scriptContextNSID = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
-					rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID, result);
+					nsID scriptContextNSID_1_9 = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
+					rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID_1_9, result);
+					if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
+						result[0] = 0;
+						nsID scriptContextNSID_1_9_2 = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); /* nsIScriptContext */ //$NON-NLS-1$					
+						rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID_1_9_2, result);
+					}
+
 					if (rc == XPCOM.NS_OK && result[0] != 0) {
 						new nsISupports (result[0]).Release ();
 						result[0] = 0;
@@ -2880,15 +2891,21 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				if (rc != XPCOM.NS_OK) error (rc);
 
 				/*
-				* When content is being streamed to Mozilla this is the only place
-				* where registered functions can be re-installed such that they will
-				* be invokable at load time by JS contained in the stream.
+				* For Mozilla < 1.9.2, when content is being set via nsIWebBrowserStream, this
+				* is the only place where registered functions can be re-installed such that
+				* they will be invokable at load time by JS contained in the text.
 				*/
 				Enumeration elements = functions.elements ();
 				while (elements.hasMoreElements ()) {
 					BrowserFunction function = (BrowserFunction)elements.nextElement ();
 					execute (function.functionString);
 				}
+				/* 
+				* For Mozilla >= 1.9.2, when content is being set via nsIWebBrowserStream,
+				* registered functions must be re-installed in the subsequent Start Request
+				* in order to be invokable at load time by JS contained in the text.
+				*/
+				registerFunctionsOnState = nsIWebProgressListener.STATE_IS_REQUEST | nsIWebProgressListener.STATE_START;
 
 				int /*long*/ ptr = C.malloc (htmlBytes.length);
 				XPCOM.memmove (ptr, htmlBytes, htmlBytes.length);
@@ -2932,6 +2949,8 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				result[0] = 0;
 				hookDOMListeners (target, isTop);
 				target.Release ();
+			} else {
+				registerFunctionsOnState = 0;
 			}
 		}
 		domWindow.Release ();
@@ -2973,8 +2992,6 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				display.syncExec (runnable);
 			}
 		}
-
-		registerFunctionsOnState = 0;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
 		if (updateLastNavigateUrl) {
 			updateLastNavigateUrl = false;
