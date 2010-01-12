@@ -47,6 +47,7 @@ class Mozilla extends WebBrowser {
 	int /*long*/ request;
 	Point location, size;
 	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage;
+	boolean updateLastNavigateUrl;
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
@@ -2640,6 +2641,38 @@ int GetWeakReference (int /*long*/ ppvObject) {
 /* nsIWebProgressListener */
 
 int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateFlags, int aStatus) {
+	/*
+	* Feature of Mozilla.  When a redirect occurs to a site with an invalid
+	* certificate, no STATE_IS_DOCUMENT state transitions are received for the
+	* new location, and an immediate attempt is made to show the invalid
+	* certificate error.  However our invalid certificate handler must know
+	* the site with the invalid certificate, not the site that redirected to
+	* it.  The only opportunity to get this site before our invalid certificate
+	* handler is invoked is in the subsequent STATE_START | STATE_IS_REQUEST
+	* transition.  When this comes, if the request's name appears to be a
+	* url then take this to be the new site, in case our invalid certificate
+	* handler is about to be invoked.
+	*
+	* Note that updateLastNavigateUrl is not reset to false here so that in
+	* typical contexts where a redirect occurs without an accompanying invalid
+	* certificate, the updated site will be retrieved from the channel (this
+	* is more proper) on the next STATE_TRANSFERRING | STATE_IS_DOCUMENT transition.
+	*/
+	if (updateLastNavigateUrl && aStateFlags == (nsIWebProgressListener.STATE_IS_REQUEST | nsIWebProgressListener.STATE_START)) {
+		nsIRequest request = new nsIRequest (aRequest);
+		int /*long*/ name = XPCOM.nsEmbedCString_new ();
+		int rc = request.GetName (name);
+		if (rc == XPCOM.NS_OK) {
+			int length = XPCOM.nsEmbedCString_Length (name);
+			int /*long*/ buffer = XPCOM.nsEmbedCString_get (name);
+			byte[] bytes = new byte[length];
+			XPCOM.memmove (bytes, buffer, length);
+			String value = new String (bytes);
+			if (value.indexOf (":/") != -1) lastNavigateURL = value;	//$NON-NLS-1$
+		}
+		XPCOM.nsEmbedCString_delete (name);
+	}
+
 	if ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) == 0) return XPCOM.NS_OK;
 	if ((aStateFlags & nsIWebProgressListener.STATE_START) != 0) {
 		int /*long*/[] result = new int /*long*/[1];
@@ -2677,6 +2710,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		unhookedDOMWindows.addElement (new LONG (result[0]));
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_REDIRECTING) != 0) {
 		if (request == aRequest) request = 0;
+		updateLastNavigateUrl = true;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		/*
 		* If this page's nsIDOMWindow handle is still in unhookedDOMWindows then
@@ -2877,6 +2911,35 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			}
 		}
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
+		if (updateLastNavigateUrl) {
+			updateLastNavigateUrl = false;
+			int /*long*/[] result = new int /*long*/[1];
+			nsIRequest request = new nsIRequest (aRequest);
+
+			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			nsIChannel channel = new nsIChannel (result[0]);
+			result[0] = 0;
+			rc = channel.GetURI (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+			channel.Release ();
+
+			nsIURI uri = new nsIURI (result[0]);
+			result[0] = 0;
+			int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
+			rc = uri.GetSpec (aSpec);
+			if (rc != XPCOM.NS_OK) error (rc);
+			int length = XPCOM.nsEmbedCString_Length (aSpec);
+			int /*long*/ buffer = XPCOM.nsEmbedCString_get (aSpec);
+			byte[] bytes = new byte[length];
+			XPCOM.memmove (bytes, buffer, length);
+			lastNavigateURL = new String (bytes);
+			XPCOM.nsEmbedCString_delete (aSpec);
+			uri.Release ();
+		}
+
 		/*
 		* Hook DOM listeners to the page's nsIDOMWindow here because this is
 		* the earliest opportunity to do so.    
