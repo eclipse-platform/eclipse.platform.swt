@@ -528,8 +528,7 @@ public void create(Composite parent, int style) {
 						if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
 
 						/*
-						* Bug in Acrobat Reader on Windows 2000 and XP (works on Vista and
-						* Windows 7).  Opening > MAX_PDF PDF files causes Acrobat to not
+						* Bug in Acrobat Reader.  Opening > MAX_PDF PDF files causes Acrobat to not
 						* clean up its shells properly when the container Browser is disposed.
 						* This results in Eclipse crashing at shutdown time because the leftover
 						* shells have invalid references to unloaded Acrobat libraries.  The
@@ -537,15 +536,13 @@ public void create(Composite parent, int style) {
 						* files have been opened.
 						*/
 						String url = event.arguments[1].getString();
-						if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-							int extensionIndex = url.lastIndexOf('.');
-							if (extensionIndex != -1) {
-								String extension = url.substring(extensionIndex);
-								if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
-									PDFCount++;
-									if (PDFCount > MAX_PDF) {
-										COM.FreeUnusedLibraries = false;
-									}
+						int extensionIndex = url.lastIndexOf('.');
+						if (extensionIndex != -1) {
+							String extension = url.substring(extensionIndex);
+							if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
+								PDFCount++;
+								if (PDFCount > MAX_PDF) {
+									COM.FreeUnusedLibraries = false;
 								}
 							}
 						}
@@ -919,24 +916,21 @@ public boolean isFocusControl () {
 
 public void refresh() {
 	/*
-	* Bug in Acrobat Reader on Windows 2000 and XP (works on Vista and
-	* Windows 7).  Opening > MAX_PDF PDF files causes Acrobat to not
+	* Bug in Acrobat Reader.  Opening > MAX_PDF PDF files causes Acrobat to not
 	* clean up its shells properly when the container Browser is disposed.
 	* This results in Eclipse crashing at shutdown time because the leftover
 	* shells have invalid references to unloaded Acrobat libraries.  The
 	* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
 	* files have been opened.
 	*/
-	if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-		String url = getUrl();
-		int extensionIndex = url.lastIndexOf('.');
-		if (extensionIndex != -1) {
-			String extension = url.substring(extensionIndex);
-			if (extension.equalsIgnoreCase (EXTENSION_PDF)) {
-				PDFCount++;
-				if (PDFCount > MAX_PDF) {
-					COM.FreeUnusedLibraries = false;
-				}
+	String url = getUrl();
+	int extensionIndex = url.lastIndexOf('.');
+	if (extensionIndex != -1) {
+		String extension = url.substring(extensionIndex);
+		if (extension.equalsIgnoreCase (EXTENSION_PDF)) {
+			PDFCount++;
+			if (PDFCount > MAX_PDF) {
+				COM.FreeUnusedLibraries = false;
 			}
 		}
 	}
