@@ -503,7 +503,7 @@
 	<target name="get_tag" unless="swt_tag">
 		<property name="tmpdir" value="."/>
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
