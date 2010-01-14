@@ -152,7 +152,11 @@ int CreateChromeWindow2 (int /*long*/ parent, int chromeFlags, int contextFlags,
 		* dialog that is not available to it (eg.- a print dialog on Linux).  For this
 		* reason modal requests are handled here so that the user is not exposed to them.
 		*/
-		int style = SWT.DIALOG_TRIM;
+		int style = SWT.NONE;
+		if ((chromeFlags & nsIWebBrowserChrome.CHROME_WINDOW_POPUP) == 0) {
+			/* add dialog trim for all windows except pop-ups */
+			style |= SWT.DIALOG_TRIM;
+		}
 		if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) style |= SWT.APPLICATION_MODAL; 
 		final Shell shell = src == null ?
 			new Shell (style) :
