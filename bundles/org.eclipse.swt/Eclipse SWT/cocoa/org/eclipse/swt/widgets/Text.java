@@ -1948,8 +1948,13 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
 	boolean result = callSuperBoolean(id, sel, range, replacementString);
-	if (!hooks(SWT.Verify) && echoCharacter =='\0') return result;
 	String text = new NSString(replacementString).getString();
+	if (!hooks(SWT.Verify) && echoCharacter =='\0') {
+		if (!result || (getCharCount() - range.length + text.length() > textLimit)) {
+			return false;
+		}
+		return true;
+	}
 	String newText = text;
 	if (hooks (SWT.Verify)) {
 		NSEvent currentEvent = display.application.currentEvent();
