@@ -51,7 +51,7 @@ public interface DropTargetListener extends SWTEventListener {
  * <li>(in,out)feedback
  * </ul></p>
  *
- * <p>The <code>operation</code> value is determined by the modifier keys pressed by the user.  
+ * <p>The <code>operations</code> value is determined by the modifier keys pressed by the user.  
  * If no keys are pressed the <code>event.detail</code> field is set to DND.DROP_DEFAULT.  
  * If the application does not set the <code>event.detail</code> to something other 
  * than <code>DND.DROP_DEFAULT</code> the operation will be set to the platform defined standard 
@@ -116,7 +116,7 @@ public void dragLeave(DropTargetEvent event);
  * <li>(in,out)feedback
  * </ul></p>
  *
- * <p>The <code>operation</code> value is determined by the modifier keys pressed by the user.  
+ * <p>The <code>operations</code> value is determined by the modifier keys pressed by the user.  
  * If no keys are pressed the <code>event.detail</code> field is set to DND.DROP_DEFAULT.  
  * If the application does not set the <code>event.detail</code> to something other than 
  * <code>DND.DROP_DEFAULT</code> the operation will be set to the platform defined standard default.</p>
@@ -154,7 +154,7 @@ public void dragOperationChanged(DropTargetEvent event);
  * <li>(in,out)feedback
  * </ul></p>
  *
- * <p>The <code>operation</code> value is determined by the value assigned to 
+ * <p>The <code>operations</code> value is determined by the value assigned to 
  * <code>currentDataType</code> in previous dragEnter and dragOver calls.</p>
  * 
  * <p>The <code>currentDataType</code> value is determined by the value assigned to 
