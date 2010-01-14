@@ -1797,4 +1797,16 @@ void textEvent (Event event) {
 		}
 	}
 }
+public boolean traverse(int event){
+    /*
+     * When the traverse event is sent to the CCombo, it will create a list of
+     * controls to tab to next. Since the CCombo is a composite, the next control is
+     * the Text field which is a child of the CCombo. It will set focus to the text
+     * field which really is itself. So, call the traverse next events directly on the text.
+     */
+    if (event == SWT.TRAVERSE_ARROW_NEXT || event == SWT.TRAVERSE_TAB_NEXT) {
+    	return text.traverse(event);
+    }
+    return super.traverse(event);
+}
 }
