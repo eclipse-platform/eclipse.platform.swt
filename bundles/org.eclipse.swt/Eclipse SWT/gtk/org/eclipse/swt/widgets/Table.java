@@ -579,8 +579,7 @@ void createColumn (TableColumn column, int index) {
 		column.handle = columnHandle;
 		column.modelIndex = modelIndex;
 	}
-	/* Disable searching when using VIRTUAL */
-	if ((style & SWT.VIRTUAL) != 0) {
+	if (!searchEnabled ()) {
 		/*
 		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
 		* would prevent the user from being able to type in text to search the tree.
@@ -632,12 +631,13 @@ void createHandle (int index) {
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
-	/* Disable searching when using VIRTUAL */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* The fixed_height_mode property only exists in GTK 2.3.2 and greater */
 		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
 			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 		}
+	}
+	if (!searchEnabled ()) {
 		/*
 		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
 		* would prevent the user from being able to type in text to search the tree.
@@ -1045,8 +1045,7 @@ void destroyItem (TableColumn column) {
 			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.style);
 		}
 	}
-	/* Disable searching when using VIRTUAL */
-	if ((style & SWT.VIRTUAL) != 0) {
+	if (!searchEnabled ()) {
 		/*
 		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
 		* would prevent the user from being able to type in text to search the tree.
@@ -2037,7 +2036,13 @@ int gtk_row_inserted (int model, int path, int iter) {
 	}
 	return 0;
 }
-
+int /*long*/ gtk_start_interactive_search(int /*long*/ widget) {
+	if (!searchEnabled()) {
+		OS.g_signal_stop_emission_by_name(widget, OS.start_interactive_search); 
+		return 1;
+	}
+	return 0;
+}
 int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
 	int /*long*/ path = OS.gtk_tree_path_new_from_string (pathStr);
 	if (path == 0) return 0;
@@ -2102,6 +2107,7 @@ void hookEvents () {
 	if (checkRenderer != 0) {
 		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.closures [TOGGLED], false);
 	}
+	OS.g_signal_connect_closure (handle, OS.start_interactive_search, display.closures[START_INTERACTIVE_SEARCH], false);
 	if (fixAccessibility ()) {
 		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.closures [ROW_INSERTED], true);
 		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.closures [ROW_DELETED], true);
@@ -2467,8 +2473,7 @@ public void removeAll () {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
 	resetCustomDraw ();
-	/* Disable searching when using VIRTUAL */
-	if ((style & SWT.VIRTUAL) != 0) {
+	if (!searchEnabled ()) {
 		/*
 		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
 		* would prevent the user from being able to type in text to search the tree.
@@ -2769,6 +2774,19 @@ void reskinChildren (int flags) {
 		}
 	}
 	super.reskinChildren (flags);
+}
+
+boolean searchEnabled () {
+	/* Disable searching when using VIRTUAL */
+	if ((style & SWT.VIRTUAL) != 0) return false;
+	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
+		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		Shell shell = getShell();
+		if ((shell.style & mask) != 0) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /**

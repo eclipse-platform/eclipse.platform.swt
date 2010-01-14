@@ -170,7 +170,8 @@ public abstract class Widget {
 	static final int DAY_SELECTED_DOUBLE_CLICK = 66;
 	static final int ICON_RELEASE = 67;
 	static final int SELECTION_DONE = 68;
-	static final int LAST_SIGNAL = 69;
+	static final int START_INTERACTIVE_SEARCH = 69;
+	static final int LAST_SIGNAL = 70;
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 
@@ -814,6 +815,10 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 }
 
 int /*long*/ gtk_status_icon_popup_menu (int /*long*/ handle, int /*long*/ button, int /*long*/ activate_time) {
+	return 0;
+}
+
+int /*long*/ gtk_start_interactive_search (int /*long*/ widget) {
 	return 0;
 }
 
@@ -1650,6 +1655,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case POPUP_MENU: return gtk_popup_menu (handle);
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
 		case REALIZE: return gtk_realize (handle);
+		case START_INTERACTIVE_SEARCH: return gtk_start_interactive_search (handle);
 		case SELECT: return gtk_select (handle);
 		case SELECTION_DONE: return gtk_selection_done (handle);
 		case SHOW: return gtk_show (handle);

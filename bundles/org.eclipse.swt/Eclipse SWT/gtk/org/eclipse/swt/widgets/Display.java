@@ -2417,6 +2417,7 @@ void initializeCallbacks () {
 	closures [Widget.SELECT] = OS.g_cclosure_new (windowProc2, Widget.SELECT, 0);
 	closures [Widget.SELECTION_DONE] = OS.g_cclosure_new (windowProc2, Widget.SELECTION_DONE, 0);
 	closures [Widget.SHOW] = OS.g_cclosure_new (windowProc2, Widget.SHOW, 0);
+	closures [Widget.START_INTERACTIVE_SEARCH] = OS.g_cclosure_new (windowProc2, Widget.START_INTERACTIVE_SEARCH, 0);
 	closures [Widget.VALUE_CHANGED] = OS.g_cclosure_new (windowProc2, Widget.VALUE_CHANGED, 0);
 	closures [Widget.UNMAP] = OS.g_cclosure_new (windowProc2, Widget.UNMAP, 0);
 	closures [Widget.UNREALIZE] = OS.g_cclosure_new (windowProc2, Widget.UNREALIZE, 0);
