@@ -782,6 +782,7 @@ void updateText () {
 		NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(2);
 		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 		paragraphStyle.setBaseWritingDirection(direction);
+		paragraphStyle.setLineBreakMode(OS.NSLineBreakByTruncatingMiddle);
 		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 		paragraphStyle.release ();
 		dict.setObject (NSFont.menuBarFontOfSize(0), OS.NSFontAttributeName);
