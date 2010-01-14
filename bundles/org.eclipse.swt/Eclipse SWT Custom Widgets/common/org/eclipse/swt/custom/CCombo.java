@@ -1792,6 +1792,7 @@ void textEvent (Event event) {
 			e.keyLocation = event.keyLocation;
 			e.stateMask = event.stateMask;
 			notifyListeners (SWT.Verify, e);
+			event.text = e.text;
 			event.doit = e.doit;
 			break;
 		}
