@@ -23,7 +23,7 @@ class Safari extends WebBrowser {
 	WebView webView;
 	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
-	boolean changingLocation, untrustedText;
+	boolean loadingText, untrustedText;
 	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int /*long*/ identifier;
@@ -491,35 +491,25 @@ public boolean isForwardEnabled() {
 }
 
 public void refresh() {
+	html = null;
 	webView.reload(null);
 }
 
 public boolean setText(String html, boolean trusted) {
-	untrustedText = !trusted;
 	/*
-	* Bug in Safari.  The web view segment faults in some circumstances
-	* when the text changes during the location changing callback.  The
-	* fix is to defer the work until the callback is done. 
+	* If this.html is not null then the about:blank page is already being loaded,
+	* so no navigate is required.  Just set the html that is to be shown.
 	*/
-	if (changingLocation) {
-		this.html = html;
-	} else {
-		_setText(html, trusted);
-	}
-	return true;
-}
-	
-void _setText(String html, boolean trusted) {
-	NSString string = NSString.stringWith(html);
-	NSString URLString;
-	if (trusted) {
-		URLString = NSString.stringWith(URI_FILEROOT);
-	} else {
-		URLString = NSString.stringWith(ABOUT_BLANK);
-	}
-	NSURL URL = NSURL.URLWithString(URLString);
+	boolean blankLoading = this.html != null;
+	this.html = html;
+	untrustedText = !trusted;
+	if (blankLoading) return true;
+
+	NSURL inURL = NSURL.URLWithString(NSString.stringWith (ABOUT_BLANK));
+	NSURLRequest request = NSURLRequest.requestWithURL(inURL);
 	WebFrame mainFrame = webView.mainFrame();
-	mainFrame.loadHTMLString(string, URL);
+	mainFrame.loadRequest(request);
+	return true;
 }
 
 public boolean setUrl(String url, String postData, String[] headers) {
@@ -698,14 +688,43 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 				if (browser.isDisposed()) return;
 			}
 		}
-		ProgressEvent progress = new ProgressEvent(browser);
-		progress.display = display;
-		progress.widget = browser;
-		progress.current = MAX_PROGRESS;
-		progress.total = MAX_PROGRESS;
-		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].completed(progress);
+
+		/*
+		 * If html is not null then there is html from a previous setText() call
+		 * waiting to be set into the about:blank page once it has completed loading. 
+		 */
+		if (html != null) {
+			if (url.startsWith(ABOUT_BLANK)) {
+				loadingText = true;
+				NSString string = NSString.stringWith(html);
+				NSString URLString;
+				if (untrustedText) {
+					URLString = NSString.stringWith(ABOUT_BLANK);
+				} else {
+					URLString = NSString.stringWith(URI_FILEROOT);
+				}
+				NSURL URL = NSURL.URLWithString(URLString);
+				WebFrame mainFrame = webView.mainFrame();
+				mainFrame.loadHTMLString(string, URL);
+				html = null;
+			}
 		}
+		/*
+		* The loadHTMLString() invocation above will trigger a second webView_didFinishLoadForFrame
+		* callback when it is completed.  Wait for this second callback to come before sending the
+		* completed event.
+		*/
+		if (!loadingText) {
+			ProgressEvent progress = new ProgressEvent(browser);
+			progress.display = display;
+			progress.widget = browser;
+			progress.current = MAX_PROGRESS;
+			progress.total = MAX_PROGRESS;
+			for (int i = 0; i < progressListeners.length; i++) {
+				progressListeners[i].completed(progress);
+			}
+		}
+		loadingText = false;
 		if (browser.isDisposed()) return;
 
 		/*
@@ -1332,6 +1351,16 @@ void webView_decidePolicyForMIMEType_request_frame_decisionListener(int /*long*/
 void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int /*long*/ sender, int /*long*/ actionInformation, int /*long*/ request, int /*long*/ frame, int /*long*/ listenerID) {
 	NSURL url = new NSURLRequest(request).URL();
 	WebPolicyDecisionListener listener = new WebPolicyDecisionListener(listenerID);
+
+	if (loadingText) {
+		/* 
+		 * Safari is auto-navigating to about:blank in response to a loadHTMLString()
+		 * invocation.  This navigate should always proceed without sending an event
+		 * since it is preceded by an explicit navigate to about:blank in setText().
+		 */
+		listener.use();
+		return;
+	}
 	if (url == null) {
 		/* indicates that a URL with an invalid format was specified */
 		listener.ignore();
@@ -1365,11 +1394,9 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 	newEvent.location = url2;
 	newEvent.doit = true;
 	if (locationListeners != null) {
-		changingLocation = true;
 		for (int i = 0; i < locationListeners.length; i++) {
 			locationListeners[i].changing(newEvent);
 		}
-		changingLocation = false;
 	}
 	if (newEvent.doit) {
 		if (jsEnabledChanged) {
@@ -1384,11 +1411,6 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 		lastNavigateURL = url2;
 	} else {
 		listener.ignore();
-	}
-	if (html != null && !browser.isDisposed()) {
-		String html = this.html;
-		this.html = null;
-		_setText(html, !untrustedText);
 	}
 }
 

@@ -31,7 +31,7 @@ class Safari extends WebBrowser {
 	int windowBoundsHandler;
 	int preferences;
 	
-	boolean changingLocation, hasNewFocusElement, untrustedText;
+	boolean loadingText, hasNewFocusElement, untrustedText;
 	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int identifier;
@@ -759,47 +759,27 @@ public boolean isForwardEnabled() {
 }
 
 public void refresh() {
+	html = null;
 	Cocoa.objc_msgSend(webView, Cocoa.S_reload, 0);
 }
 
 public boolean setText(String html, boolean trusted) {
-	untrustedText = !trusted;
 	/*
-	* Bug in Safari.  The web view segment faults in some circumstances
-	* when the text changes during the location changing callback.  The
-	* fix is to defer the work until the callback is done. 
+	* If this.html is not null then the about:blank page is already being loaded,
+	* so no navigate is required.  Just set the html that is to be shown.
 	*/
-	if (changingLocation) {
-		this.html = html;
-	} else {
-		_setText(html, trusted);
-	}
-	return true;
-}
-	
-void _setText(String html, boolean trusted) {
-	int string = createNSString(html);
-	int URLString;
-	if (trusted) {
-		URLString = createNSString(URI_FILEROOT);
-	} else {
-		URLString = createNSString(ABOUT_BLANK);
-	}
+	boolean blankLoading = this.html != null;
+	this.html = html;
+	untrustedText = !trusted;
+	if (blankLoading) return true;
 
-	/*
-	* Note.  URLWithString uses autorelease.  The resulting URL
-	* does not need to be released.
-	* URL = [NSURL URLWithString:(NSString *)URLString]
-	*/	
-	int URL = Cocoa.objc_msgSend(Cocoa.C_NSURL, Cocoa.S_URLWithString, URLString);
-	OS.CFRelease(URLString);
-	
-	//mainFrame = [webView mainFrame];
+	int str = createNSString(ABOUT_BLANK);
+	int inURL = Cocoa.objc_msgSend(Cocoa.C_NSURL, Cocoa.S_URLWithString, str); /* autoreleased */
+	OS.CFRelease (str);
+	int request = Cocoa.objc_msgSend(Cocoa.C_NSURLRequest, Cocoa.S_requestWithURL, inURL);
 	int mainFrame = Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
-	
-	//[mainFrame loadHTMLString:(NSString *) string baseURL:(NSURL *)URL];
-	Cocoa.objc_msgSend(mainFrame, Cocoa.S_loadHTMLStringbaseURL, string, URL);
-	OS.CFRelease(string);
+	Cocoa.objc_msgSend(mainFrame, Cocoa.S_loadRequest, request);
+	return true;
 }
 
 public boolean setUrl(String url, String postData, String[] headers) {
@@ -979,21 +959,44 @@ void didFinishLoadForFrame(int frame) {
 			}
 		}
 
-		/* re-install registered functions */
-		Enumeration elements = functions.elements ();
-		while (elements.hasMoreElements ()) {
-			BrowserFunction function = (BrowserFunction)elements.nextElement ();
-			execute (function.functionString);
+		/*
+		 * If html is not null then there is html from a previous setText() call
+		 * waiting to be set into the about:blank page once it has completed loading. 
+		 */
+		if (html != null) {
+			if (url.startsWith(ABOUT_BLANK)) {
+				loadingText = true;
+				int htmlString = createNSString(html);
+				int urlString;
+				if (untrustedText) {
+					urlString = createNSString(ABOUT_BLANK);
+				} else {
+					urlString = createNSString(URI_FILEROOT);
+				}
+				int url = Cocoa.objc_msgSend(Cocoa.C_NSURL, Cocoa.S_URLWithString, urlString); /* autoreleased */
+				int mainFrame = Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
+				Cocoa.objc_msgSend(mainFrame, Cocoa.S_loadHTMLStringBaseURL, htmlString, url);
+				OS.CFRelease(urlString);
+				OS.CFRelease(htmlString);
+				html = null;
+			}
 		}
-
-		ProgressEvent progress = new ProgressEvent(browser);
-		progress.display = display;
-		progress.widget = browser;
-		progress.current = MAX_PROGRESS;
-		progress.total = MAX_PROGRESS;
-		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].completed(progress);
+		/*
+		* The loadHTMLString() invocation above will trigger a second didFinishLoadForFrame
+		* callback when it is completed.  Wait for this second callback to come before sending
+		* the completed event.
+		*/
+		if (!loadingText) {
+			ProgressEvent progress = new ProgressEvent(browser);
+			progress.display = display;
+			progress.widget = browser;
+			progress.current = MAX_PROGRESS;
+			progress.total = MAX_PROGRESS;
+			for (int i = 0; i < progressListeners.length; i++) {
+				progressListeners[i].completed(progress);
+			}
 		}
+		loadingText = false;
 		if (browser.isDisposed()) return;
 
 		/*
@@ -1148,7 +1151,13 @@ void didCommitLoadForFrame(int frame) {
 		/* reset resource status variables */
 		resourceCount = 0;		
 		this.url = url2;
-		
+
+		Enumeration elements = functions.elements ();
+		while (elements.hasMoreElements ()) {
+			BrowserFunction function = (BrowserFunction)elements.nextElement ();
+			execute (function.functionString);
+		}
+
 		final ProgressEvent progress = new ProgressEvent(browser);
 		progress.display = display;
 		progress.widget = browser;
@@ -1696,6 +1705,15 @@ void decidePolicyForMIMEType(int type, int request, int frame, int listener) {
 
 void decidePolicyForNavigationAction(int actionInformation, int request, int frame, int listener) {
 	int url = Cocoa.objc_msgSend(request, Cocoa.S_URL);
+	if (loadingText) {
+		/* 
+		 * Safari is auto-navigating to about:blank in response to a loadHTMLString()
+		 * invocation.  This navigate should always proceed without sending an event
+		 * since it is preceded by an explicit navigate to about:blank in setText().
+		 */
+		Cocoa.objc_msgSend(listener, Cocoa.S_use);
+		return;
+	}
 	if (url == 0) {
 		/* indicates that a URL with an invalid format was specified */
 		Cocoa.objc_msgSend(listener, Cocoa.S_ignore);
@@ -1740,11 +1758,9 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 		newEvent.location = url2;
 		newEvent.doit = true;
 		if (locationListeners != null) {
-			changingLocation = true;
 			for (int i = 0; i < locationListeners.length; i++) {
 				locationListeners[i].changing(newEvent);
 			}
-			changingLocation = false;
 		}
 		if (newEvent.doit) {
 			if (jsEnabledChanged) {
@@ -1759,12 +1775,6 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 			lastNavigateURL = url2;
 		}
 		Cocoa.objc_msgSend(listener, newEvent.doit ? Cocoa.S_use : Cocoa.S_ignore);
-	}
-
-	if (html != null && !browser.isDisposed()) {
-		String html = this.html;
-		this.html = null;
-		_setText(html, !untrustedText);
 	}
 }
 
