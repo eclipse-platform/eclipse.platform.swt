@@ -146,10 +146,13 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
+	int [] textEvents = {SWT.DefaultSelection, SWT.DragDetect, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify,
+		SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
+		SWT.MouseMove, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
-	int [] arrowEvents = {SWT.MouseDown, SWT.MouseUp, SWT.Selection, SWT.FocusIn};
+	int [] arrowEvents = {SWT.DragDetect, SWT.MouseDown, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
+		SWT.MouseMove, SWT.MouseUp, SWT.MouseWheel, SWT.Selection, SWT.FocusIn};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
 	createPopup(null, -1);
@@ -296,26 +299,42 @@ void arrowEvent (Event event) {
 			handleFocus (SWT.FocusIn);
 			break;
 		}
-		case SWT.MouseDown: {
-			Event mouseEvent = new Event ();
-			mouseEvent.button = event.button;
-			mouseEvent.count = event.count;
-			mouseEvent.stateMask = event.stateMask;
-			mouseEvent.time = event.time;
-			mouseEvent.x = event.x; mouseEvent.y = event.y;
-			notifyListeners (SWT.MouseDown, mouseEvent);
-			event.doit = mouseEvent.doit;
+		case SWT.DragDetect:
+		case SWT.MouseDown:
+		case SWT.MouseUp:
+		case SWT.MouseMove:
+		case SWT.MouseEnter:
+		case SWT.MouseExit:
+		case SWT.MouseHover: {
+			Point pt = getDisplay ().map (arrow, this, event.x, event.y);
+			event.x = pt.x; event.y = pt.y;
+			notifyListeners (event.type, event);
+			event.type = SWT.None;
 			break;
 		}
-		case SWT.MouseUp: {
-			Event mouseEvent = new Event ();
-			mouseEvent.button = event.button;
-			mouseEvent.count = event.count;
-			mouseEvent.stateMask = event.stateMask;
-			mouseEvent.time = event.time;
-			mouseEvent.x = event.x; mouseEvent.y = event.y;
-			notifyListeners (SWT.MouseUp, mouseEvent);
-			event.doit = mouseEvent.doit;
+		case SWT.MouseWheel: {
+			Point pt = getDisplay ().map (arrow, this, event.x, event.y);
+			event.x = pt.x; event.y = pt.y;
+			notifyListeners (SWT.MouseWheel, event);
+			event.type = SWT.None;
+			if (isDisposed ()) break;
+			if (!event.doit) break;
+			if (event.count != 0) {
+				event.doit = false;
+				int oldIndex = getSelectionIndex ();
+				if (event.count > 0) {
+					select (Math.max (oldIndex - 1, 0));
+				} else {
+					select (Math.min (oldIndex + 1, getItemCount () - 1));
+				}
+				if (oldIndex != getSelectionIndex ()) {
+					Event e = new Event();
+					e.time = event.time;
+					e.stateMask = event.stateMask;
+					notifyListeners (SWT.Selection, e);
+				}
+				if (isDisposed ()) break;
+			}
 			break;
 		}
 		case SWT.Selection: {
@@ -1620,6 +1639,18 @@ void textEvent (Event event) {
 			notifyListeners (SWT.DefaultSelection, e);
 			break;
 		}
+		case SWT.DragDetect:
+		case SWT.MouseDoubleClick:
+		case SWT.MouseMove:
+		case SWT.MouseEnter:
+		case SWT.MouseExit:
+		case SWT.MouseHover: {
+			Point pt = getDisplay ().map (text, this, event.x, event.y);
+			event.x = pt.x; event.y = pt.y;
+			notifyListeners (event.type, event);
+			event.type = SWT.None;
+			break;
+		}
 		case SWT.KeyDown: {
 			Event keyEvent = new Event ();
 			keyEvent.time = event.time;
@@ -1685,12 +1716,13 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.MouseDown: {
+			Point pt = getDisplay ().map (text, this, event.x, event.y);
 			Event mouseEvent = new Event ();
 			mouseEvent.button = event.button;
 			mouseEvent.count = event.count;
 			mouseEvent.stateMask = event.stateMask;
 			mouseEvent.time = event.time;
-			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			mouseEvent.x = pt.x; mouseEvent.y = pt.y;
 			notifyListeners (SWT.MouseDown, mouseEvent);
 			if (isDisposed ()) break;
 			event.doit = mouseEvent.doit;
@@ -1704,12 +1736,13 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.MouseUp: {
+			Point pt = getDisplay ().map (text, this, event.x, event.y);
 			Event mouseEvent = new Event ();
 			mouseEvent.button = event.button;
 			mouseEvent.count = event.count;
 			mouseEvent.stateMask = event.stateMask;
 			mouseEvent.time = event.time;
-			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			mouseEvent.x = pt.x; mouseEvent.y = pt.y;
 			notifyListeners (SWT.MouseUp, mouseEvent);
 			if (isDisposed ()) break;
 			event.doit = mouseEvent.doit;
@@ -1719,24 +1752,10 @@ void textEvent (Event event) {
 			text.selectAll ();
 			break;
 		}
-		case SWT.MouseDoubleClick: {
-			Event mouseEvent = new Event ();
-			mouseEvent.button = event.button;
-			mouseEvent.count = event.count;
-			mouseEvent.stateMask = event.stateMask;
-			mouseEvent.time = event.time;
-			mouseEvent.x = event.x; mouseEvent.y = event.y;
-			notifyListeners (SWT.MouseDoubleClick, mouseEvent);
-			break;
-		}
 		case SWT.MouseWheel: {
-			Event keyEvent = new Event ();
-			keyEvent.time = event.time;
-			keyEvent.keyCode = event.count > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;
-			keyEvent.stateMask = event.stateMask;
-			notifyListeners (SWT.KeyDown, keyEvent);
+			notifyListeners (SWT.MouseWheel, event);
+			event.type = SWT.None;
 			if (isDisposed ()) break;
-			event.doit = keyEvent.doit;
 			if (!event.doit) break;
 			if (event.count != 0) {
 				event.doit = false;
