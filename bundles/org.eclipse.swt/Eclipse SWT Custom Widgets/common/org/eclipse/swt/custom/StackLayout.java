@@ -117,10 +117,9 @@ protected void layout(Composite composite, boolean flushCache) {
 	rect.width -= 2 * marginWidth;
 	rect.height -= 2 * marginHeight;
 	for (int i = 0; i < children.length; i++) {
-		if (children[i] == topControl) children[i].setBounds(rect);
 		children[i].setVisible(children[i] == topControl);
-			
 	}
+	if (topControl != null) topControl.setBounds(rect);
 }
 
 String getName () {
