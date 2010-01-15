@@ -936,29 +936,6 @@ void didFinishLoadForFrame(int frame) {
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
 		hookDOMKeyListeners(frame);
 
-		final Display display = browser.getDisplay();
-		/*
-		* To be consistent with other platforms a title event should be fired when a
-		* page has completed loading.  A page with a <title> tag will do this
-		* automatically when the didReceiveTitle callback is received.  However a page
-		* without a <title> tag will not do this by default, so fire the event
-		* here with the page's url as the title.
-		*/
-		int dataSource = Cocoa.objc_msgSend(frame, Cocoa.S_dataSource);
-		if (dataSource != 0) {
-			int title = Cocoa.objc_msgSend(dataSource, Cocoa.S_pageTitle);
-			if (title == 0) {	/* page has no title */
-				final TitleEvent newEvent = new TitleEvent(browser);
-				newEvent.display = display;
-				newEvent.widget = browser;
-				newEvent.title = url;
-				for (int i = 0; i < titleListeners.length; i++) {
-					titleListeners[i].changed(newEvent);
-				}
-				if (browser.isDisposed()) return;
-			}
-		}
-
 		/*
 		 * If html is not null then there is html from a previous setText() call
 		 * waiting to be set into the about:blank page once it has completed loading. 
@@ -981,12 +958,36 @@ void didFinishLoadForFrame(int frame) {
 				html = null;
 			}
 		}
+
 		/*
-		* The loadHTMLString() invocation above will trigger a second didFinishLoadForFrame
-		* callback when it is completed.  Wait for this second callback to come before sending
-		* the completed event.
+		* The loadHTMLStringBaseURL invocation above will trigger a second didFinishLoadForFrame
+		* callback when it is completed.  If text was just set into the browser then wait
+		* for this second callback to come before sending the title or completed events.
 		*/
 		if (!loadingText) {
+			/*
+			* To be consistent with other platforms a title event should be fired when a
+			* page has completed loading.  A page with a <title> tag will do this
+			* automatically when the didReceiveTitle callback is received.  However a page
+			* without a <title> tag will not do this by default, so fire the event
+			* here with the page's url as the title.
+			*/
+			final Display display = browser.getDisplay();
+			int dataSource = Cocoa.objc_msgSend(frame, Cocoa.S_dataSource);
+			if (dataSource != 0) {
+				int title = Cocoa.objc_msgSend(dataSource, Cocoa.S_pageTitle);
+				if (title == 0) {	/* page has no title */
+					final TitleEvent newEvent = new TitleEvent(browser);
+					newEvent.display = display;
+					newEvent.widget = browser;
+					newEvent.title = url;
+					for (int i = 0; i < titleListeners.length; i++) {
+						titleListeners[i].changed(newEvent);
+					}
+					if (browser.isDisposed()) return;
+				}
+			}
+
 			ProgressEvent progress = new ProgressEvent(browser);
 			progress.display = display;
 			progress.widget = browser;
@@ -1152,6 +1153,15 @@ void didCommitLoadForFrame(int frame) {
 		resourceCount = 0;		
 		this.url = url2;
 
+		/*
+		* Each invocation of setText() causes didCommitLoadForFrame to be invoked twice,
+		* once for the initial navigate to about:blank, and once for the auto-navigate
+		* to about:blank that Safari does when loadHTMLStringBaseURL is invoked.  If
+		* this is the first didCommitLoadForFrame callback received for a setText()
+		* invocation then do not send any events or re-install registered BrowserFunctions. 
+		*/
+		if (url2.startsWith(ABOUT_BLANK) && html != null) return;
+
 		Enumeration elements = functions.elements ();
 		while (elements.hasMoreElements ()) {
 			BrowserFunction function = (BrowserFunction)elements.nextElement ();
@@ -1177,6 +1187,7 @@ void didCommitLoadForFrame(int frame) {
 		}
 		if (browser.isDisposed()) return;
 	}
+
 	LocationEvent location = new LocationEvent(browser);
 	location.display = display;
 	location.widget = browser;
