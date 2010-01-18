@@ -522,7 +522,6 @@
 	</target>
 
 	<target name="jar.plugin" depends="init">
-		<echo>here</echo>
 		<delete dir="${temp.folder}" />
 		<mkdir dir="${temp.folder}" />
 		<antcall target="build.jars" />
