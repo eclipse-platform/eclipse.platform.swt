@@ -292,7 +292,9 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
  */
 public Button getDefaultButton () {
 	checkWidget();
-	return defaultButton != null ? defaultButton : saveDefault;
+	Button button = defaultButton != null ? defaultButton : saveDefault;
+	if (button != null && button.isDisposed ()) return null;
+	return button;
 }
 
 /**

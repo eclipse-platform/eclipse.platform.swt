@@ -270,6 +270,7 @@ int dialogHandle () {
  */
 public Button getDefaultButton () {
 	checkWidget();
+	if (defaultButton != null && defaultButton.isDisposed()) return null;
 	return defaultButton;
 }
 /**
