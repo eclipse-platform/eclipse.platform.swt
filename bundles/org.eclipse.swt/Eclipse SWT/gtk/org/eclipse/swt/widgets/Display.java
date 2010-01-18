@@ -4143,7 +4143,7 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 }
 
 int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ user_data) {
-	switch(user_data) {
+	switch((int)/*64*/user_data) {
 		case STYLE_SET:
 			settingsChanged = true;
 			break;
