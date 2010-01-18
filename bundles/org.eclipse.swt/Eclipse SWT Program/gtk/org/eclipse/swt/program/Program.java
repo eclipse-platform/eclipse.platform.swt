@@ -687,48 +687,51 @@ static Program[] getPrograms(Display display) {
 ImageData gio_getImageData() {
 	if (iconPath == null) return null;
 	ImageData data = null;
-	try {
-		int /*long*/ icon_theme =OS.gtk_icon_theme_get_default();
-		byte[] icon = Converter.wcsToMbcs (null, iconPath, true);
-		int /*long*/ gicon = OS.g_icon_new_for_string(icon, null);
+	int /*long*/ icon_theme =OS.gtk_icon_theme_get_default();
+	byte[] icon = Converter.wcsToMbcs (null, iconPath, true);
+	int /*long*/ gicon = OS.g_icon_new_for_string(icon, null);
+	if (gicon != 0) {
 		int /*long*/ gicon_info = OS.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
-		int /*long*/ pixbuf = OS.gtk_icon_info_load_icon(gicon_info, null);		
-		if (pixbuf != 0) {
-			int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-			int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-			int height = OS.gdk_pixbuf_get_height(pixbuf);
-			int width = OS.gdk_pixbuf_get_width(pixbuf);
-			boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
-			byte[] srcData = new byte[stride * height];
-			OS.memmove(srcData, pixels, srcData.length);
-			OS.g_object_unref(pixbuf);
-			
-			if (hasAlpha) {
-				PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
-				data = new ImageData(width, height, 32, palette, 4, srcData);
-				data.bytesPerLine = stride;
-				int s = 3, a = 0;
-				byte[] alphaData = new byte[width*height];
-				for (int y=0; y<height; y++) {
-					for (int x=0; x<width; x++) {
-						alphaData[a++] = srcData[s];
-						srcData[s] = 0;
-						s+=4;
+		if (gicon_info != 0) {
+			int /*long*/ pixbuf = OS.gtk_icon_info_load_icon(gicon_info, null);		
+			if (pixbuf != 0) {
+				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+				int height = OS.gdk_pixbuf_get_height(pixbuf);
+				int width = OS.gdk_pixbuf_get_width(pixbuf);
+				boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
+				byte[] srcData = new byte[stride * height];
+				OS.memmove(srcData, pixels, srcData.length);
+				OS.g_object_unref(pixbuf);
+				if (hasAlpha) {
+					PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
+					data = new ImageData(width, height, 32, palette, 4, srcData);
+					data.bytesPerLine = stride;
+					int s = 3, a = 0;
+					byte[] alphaData = new byte[width*height];
+					for (int y=0; y<height; y++) {
+						for (int x=0; x<width; x++) {
+							alphaData[a++] = srcData[s];
+							srcData[s] = 0;
+							s+=4;
+						}
 					}
+					data.alphaData = alphaData;
+				} else {
+					PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+					data = new ImageData(width, height, 24, palette, 4, srcData);
+					data.bytesPerLine = stride;
 				}
-				data.alphaData = alphaData;
-			} else {
-				PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-				data = new ImageData(width, height, 24, palette, 4, srcData);
-				data.bytesPerLine = stride;
 			}
+			OS.gtk_icon_info_free(gicon_info);
 		}
-	} catch (Exception e) {}
+		OS.g_object_unref(gicon);
+	}
 	return data;
 }
 
 static Hashtable gio_getMimeInfo() {
-	int /*long*/ mimeDatabase;
+	int /*long*/ mimeDatabase = 0, fileInfo = 0;
 	/*
 	* The file 'globs' contain the file extensions  
 	* associated to the mime-types. Each line that has 
@@ -739,53 +742,60 @@ static Hashtable gio_getMimeInfo() {
 	byte[] buffer = Converter.wcsToMbcs (null, "/usr/share/mime/globs", true);
 	mimeDatabase = OS.g_file_new_for_path (buffer);
 	int /*long*/ fileInputStream = OS.g_file_read (mimeDatabase, 0, 0);
-	if (fileInputStream == 0) {
-		OS.g_object_unref (mimeDatabase);
-		return null;
-	}
-	int /*long*/ [] modTimestamp = new int /*long*/ [2];
-	buffer = Converter.wcsToMbcs (null, "*", true);
-	int /*long*/ fileInfo = OS.g_file_query_info(mimeDatabase, buffer, 0, 0, 0);
-	OS.g_file_info_get_modification_time(fileInfo, modTimestamp);
-	if (modTime != 0 && modTimestamp[0] == modTime) {
-		return mimeTable;
-	} else {
-		mimeTable = new Hashtable();
-		modTime = modTimestamp[0];
-		int /*long*/ reader = OS.g_data_input_stream_new (fileInputStream);
-		int[] length = new int[1];
-		
-		if (reader != 0) {
-			int /*long*/ linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
-			while (linePtr != 0) {
-				byte[] lineBytes = new byte[length[0]];
-				OS.memmove(lineBytes, linePtr, length[0]);
-				String line = new String (Converter.mbcsToWcs (null, lineBytes));
-	
-				int separatorIndex = line.indexOf (':');
-				if (separatorIndex > 0) {
-					Vector mimeTypes = new Vector ();
-				    String mimeType = line.substring (0, separatorIndex);
-					String extensionFormat = line.substring (separatorIndex+1);
-					int extensionIndex = extensionFormat.indexOf (".");
-					if (extensionIndex > 0) {
-						String extension = extensionFormat.substring (extensionIndex);
-						mimeTypes.add (mimeType);
-						if (mimeTable.containsKey (extension)) {
-							/*
-							 * If mimeType already exists, it is required to update
-							 * the existing key (mime-type) with the new extension. 
-							 */
-							Vector value = (Vector) mimeTable.get (extension);
-							mimeTypes.addAll (value);
+	try {
+		if (fileInputStream != 0) {
+			int /*long*/ [] modTimestamp = new int /*long*/ [2];
+			buffer = Converter.wcsToMbcs (null, "*", true);
+			fileInfo = OS.g_file_query_info(mimeDatabase, buffer, 0, 0, 0);
+			OS.g_file_info_get_modification_time(fileInfo, modTimestamp);
+			if (modTime != 0 && modTimestamp[0] == modTime) {
+				return mimeTable;
+			} else {
+				mimeTable = new Hashtable();
+				modTime = modTimestamp[0];
+				int /*long*/ reader = OS.g_data_input_stream_new (fileInputStream);
+				int[] length = new int[1];
+				
+				if (reader != 0) {
+					int /*long*/ linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
+					while (linePtr != 0) {
+						byte[] lineBytes = new byte[length[0]];
+						OS.memmove(lineBytes, linePtr, length[0]);
+						String line = new String (Converter.mbcsToWcs (null, lineBytes));
+			
+						int separatorIndex = line.indexOf (':');
+						if (separatorIndex > 0) {
+							Vector mimeTypes = new Vector ();
+						    String mimeType = line.substring (0, separatorIndex);
+							String extensionFormat = line.substring (separatorIndex+1);
+							int extensionIndex = extensionFormat.indexOf (".");
+							if (extensionIndex > 0) {
+								String extension = extensionFormat.substring (extensionIndex);
+								mimeTypes.add (mimeType);
+								if (mimeTable.containsKey (extension)) {
+									/*
+									 * If mimeType already exists, it is required to update
+									 * the existing key (mime-type) with the new extension. 
+									 */
+									Vector value = (Vector) mimeTable.get (extension);
+									mimeTypes.addAll (value);
+								}
+								mimeTable.put (extension, mimeTypes);
+							}
 						}
-						mimeTable.put (extension, mimeTypes);
+						OS.g_free(linePtr);
+						linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
 					}
 				}
-				linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
+				if (reader != 0) OS.g_object_unref (reader);
+				return mimeTable;
 			}
-		}
-		return mimeTable;
+		} 
+		return null;
+	} finally {
+		if (fileInfo != 0) OS.g_object_unref(fileInfo);
+		if (fileInputStream != 0) OS.g_object_unref(fileInputStream);
+		if (mimeDatabase != 0) 	OS.g_object_unref (mimeDatabase);
 	}
 }
 
@@ -804,9 +814,7 @@ static Program gio_getProgram(Display display, String mimeType) {
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs (null, mimeType, true);
 	int /*long*/ application = OS.g_app_info_get_default_for_type (mimeTypeBuffer, false);
 	if (application != 0) {
-		if (OS.g_app_info_should_show(application)) {
-			program = gio_getProgram(display, application);
-		}
+		program = gio_getProgram(display, application);
 	}
 	return program;
 }
@@ -841,24 +849,28 @@ static Program gio_getProgram (Display display, int /*long*/ application) {
 			}
 			OS.g_free(icon_name);
 		}
+		OS.g_object_unref(icon);
 	}
 	return program;
 }
 
 static Program[] gio_getPrograms(Display display) {
 	int /*long*/ applicationList = OS.g_app_info_get_all ();
+	int /*long*/ list = applicationList;
 	Program program;
 	Vector programs = new Vector();
-	while (applicationList != 0) {
-		int /*long*/ application = OS.g_list_data(applicationList);
+	while (list != 0) {
+		int /*long*/ application = OS.g_list_data(list);
 		if (application != 0) {
-			if (OS.g_app_info_should_show(application)) {
+			//TODO: Should the list be filtered or not?
+//			if (OS.g_app_info_should_show(application)) {
 				program = gio_getProgram(display, application);
 				if (program != null) programs.addElement(program);
-			}
+//			}
 		}
-		applicationList = OS.g_list_next(applicationList);
+		list = OS.g_list_next(list);
 	}
+	if (applicationList != 0) OS.g_list_free(applicationList);
 	Program[] programList = new Program[programs.size()];
 	for (int index = 0; index < programList.length; index++) {
 		programList[index] = (Program)programs.elementAt(index);
@@ -870,13 +882,17 @@ static Program[] gio_getPrograms(Display display) {
  * GNOME 2.4 - Launch the default program for the given file. 
  */
 static boolean gio_launch(String fileName) {
+	boolean result = false;
 	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
 	int /*long*/ file = OS.g_file_new_for_path (fileNameBuffer);
-	int /*long*/ uri = OS.g_file_get_uri (file);
-	boolean result = OS.g_app_info_launch_default_for_uri (uri, 0, 0);
-	
-	OS.g_object_unref (file);
-	OS.g_free (uri);
+	if (file != 0) {
+		int /*long*/ uri = OS.g_file_get_uri (file);
+		if (uri != 0) {
+			result = OS.g_app_info_launch_default_for_uri (uri, 0, 0);
+			OS.g_free(uri);
+		}
+		OS.g_object_unref (file);
+	}
 	return result;
 }
 
@@ -884,17 +900,21 @@ static boolean gio_launch(String fileName) {
  * GIO - Execute the program for the given file. 
  */
 boolean gio_execute(String fileName) {
+	boolean result = false;
 	byte[] commandBuffer = Converter.wcsToMbcs (null, command, true);
 	byte[] nameBuffer = Converter.wcsToMbcs (null, name, true);
 	int /*long*/ application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gnomeExpectUri ? OS.G_APP_INFO_CREATE_SUPPORTS_URIS : OS.G_APP_INFO_CREATE_NONE, 0);
-	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
-	int /*long*/ file = OS.g_file_new_for_path (fileNameBuffer);
-	int /*long*/ list = 0;
-	list = OS.g_list_append (list, file);
-	boolean result = OS.g_app_info_launch (application, list, 0, 0);
-
-	OS.g_object_unref (file);
-	OS.g_object_unref (application);
+	if (application != 0) {
+		byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
+		int /*long*/ file = OS.g_file_new_for_path (fileNameBuffer);
+		if (file != 0) {
+			int /*long*/ list = OS.g_list_append (0, file);
+			result = OS.g_app_info_launch (application, list, 0, 0);
+			OS.g_list_free(list);
+			OS.g_object_unref (file);
+		}
+		OS.g_object_unref (application);
+	}	
 	return result;
 }
 

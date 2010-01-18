@@ -734,6 +734,7 @@ typedef enum {
 	_1gtk_1hscrollbar_1new_FUNC,
 	_1gtk_1hseparator_1new_FUNC,
 	_1gtk_1icon_1factory_1lookup_1default_FUNC,
+	_1gtk_1icon_1info_1free_FUNC,
 	_1gtk_1icon_1info_1load_1icon_FUNC,
 	_1gtk_1icon_1set_1render_1icon_FUNC,
 	_1gtk_1icon_1source_1free_FUNC,

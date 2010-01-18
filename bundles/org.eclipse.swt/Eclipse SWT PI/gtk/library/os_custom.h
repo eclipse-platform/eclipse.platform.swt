@@ -86,6 +86,7 @@
 #define gtk_expander_set_label_widget_LIB "libgtk-x11-2.0.so.0"
 #define gtk_label_set_line_wrap_mode_LIB "libgtk-x11-2.0.so.0"
 #define gtk_icon_info_load_icon_LIB "libgtk-x11-2.0.so.0"
+#define gtk_icon_info_free_LIB "libgtk-x11-2.0.so.0"
 #define gtk_icon_theme_lookup_by_gicon_LIB "libgtk-x11-2.0.so.0"
 #define gtk_icon_theme_get_default_LIB "libgtk-x11-2.0.so.0"
 #define gtk_menu_shell_set_take_focus_LIB "libgtk-x11-2.0.so.0"

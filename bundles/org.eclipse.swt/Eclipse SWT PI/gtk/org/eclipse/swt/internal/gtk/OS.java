@@ -7260,6 +7260,18 @@ public static final int /*long*/ gtk_hseparator_new() {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_icon_info_free(int /*long*/ icon_info);
+public static final void gtk_icon_info_free(int /*long*/ icon_info) {
+	lock.lock();
+	try {
+		_gtk_icon_info_free(icon_info);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param stock_id cast=(const gchar *) */
 public static final native int /*long*/ _gtk_icon_factory_lookup_default(byte[] stock_id);
 public static final int /*long*/ gtk_icon_factory_lookup_default(byte[] stock_id) {
