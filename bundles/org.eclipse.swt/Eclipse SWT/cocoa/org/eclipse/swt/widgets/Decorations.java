@@ -224,6 +224,7 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
  */
 public Button getDefaultButton () {
 	checkWidget();
+	if (defaultButton != null && defaultButton.isDisposed ()) return null;
 	return defaultButton;
 }
 
