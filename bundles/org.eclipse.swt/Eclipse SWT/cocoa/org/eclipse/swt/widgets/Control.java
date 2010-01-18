@@ -2363,14 +2363,14 @@ public boolean print (GC gc) {
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	
-	gc.handle.saveGraphicsState();
+	NSGraphicsContext.static_saveGraphicsState();
 	NSGraphicsContext.setCurrentContext(gc.handle);
 	NSAffineTransform transform = NSAffineTransform.transform ();
 	transform.translateXBy (0, view.bounds().height);
 	transform.scaleXBy (1, -1);
 	transform.concat ();
 	view.displayRectIgnoringOpacity(view.bounds(), gc.handle);
-	gc.handle.restoreGraphicsState();
+	NSGraphicsContext.static_restoreGraphicsState();
 	return true;
 }
 
