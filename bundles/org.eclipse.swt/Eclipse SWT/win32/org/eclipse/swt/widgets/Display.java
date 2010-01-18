@@ -3203,10 +3203,12 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			}
 			if ((int)/*64*/msg == SWT_OPENDOC) {
 				String filename = getSharedData((int)/*64*/wParam, (int)/*64*/lParam);
-				Event event = new Event();
-				event.type = SWT.OpenDoc;
-				event.text = filename;
-				postEvent(event);
+				if (filename != null) {
+					Event event = new Event();
+					event.type = SWT.OpenDoc;
+					event.text = filename;
+					postEvent(event);
+				}
 			}
 		}
 	}
@@ -3214,6 +3216,7 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 }
 
 String getSharedData(int pid, int  handle) {
+	if (OS.IsWinCE) return null;
 	String id = Integer.toHexString(pid)+"_"+Integer.toHexString(handle);
 	int /*long*/ [] mapHandle = new int /*long*/ [1];
 	if (pid == OS.GetCurrentProcessId()) {

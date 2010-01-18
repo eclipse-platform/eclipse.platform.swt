@@ -218,6 +218,7 @@
 #define NO_DrawThemeIcon
 #define NO_DrawThemeParentBackground
 #define NO_DrawThemeText
+#define NO_DuplicateHandle
 #define NO_DwmEnableBlurBehindWindow
 #define NO_DwmExtendFrameIntoClientArea
 #define NO_EnableScrollBar
