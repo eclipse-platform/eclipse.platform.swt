@@ -35,7 +35,6 @@ public final class Program {
 
 	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
-	static final String PREFIX_FILE = "file://"; //$NON-NLS-1$
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -223,6 +222,37 @@ public static Program [] getPrograms () {
 	return programs;
 }
 
+static int getURL(String fileName) {
+	char[] chars = new char[fileName.length()];
+	fileName.getChars(0, chars.length, chars, 0);
+	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+	if (str == 0) return 0;
+	int file = str;
+	int fileManager = Cocoa.objc_msgSend(Cocoa.C_NSFileManager, Cocoa.S_defaultManager);
+	if (fileManager != 0 && Cocoa.objc_msgSend(fileManager, Cocoa.S_fileExistsAtPath, str) != 0) {
+		int url = Cocoa.objc_msgSend(Cocoa.C_NSURL, Cocoa.S_fileURLWithPath, str);
+		if (url != 0) {
+			int urlstr = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);
+			if (urlstr != 0) file = urlstr;
+		}
+	}
+	char[] unescapedChars = new char[] {'%'};
+	String lowercaseName = fileName.toLowerCase ();
+	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+		unescapedChars = new char[] {'%', '#'};
+	}
+	int unescapedStr = OS.CFStringCreateWithCharacters(0, unescapedChars, unescapedChars.length);
+	int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, file, unescapedStr, 0, OS.kCFStringEncodingUTF8);
+	int url = 0;
+	if (escapedStr != 0) {
+		url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
+		OS.CFRelease(escapedStr);
+	}
+	if (unescapedStr != 0) OS.CFRelease(unescapedStr);
+	OS.CFRelease(str);
+	return url;
+}
+
 /**
  * Launches the operating system executable associated with the file or
  * URL (http:// or https://).  If the file is an executable then the
@@ -239,31 +269,10 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int rc = -1;
-	char[] unescapedChars = new char[] {'%'};
-	String lowercaseName = fileName.toLowerCase ();
-	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-		unescapedChars = new char[] {'%', '#'};
-	} else {
-		if (!lowercaseName.startsWith (PREFIX_FILE)) {
-			fileName = PREFIX_FILE + fileName;
-		}
-	}
-	char[] chars = new char[fileName.length()];
-	fileName.getChars(0, chars.length, chars, 0);
-	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-	if (str != 0) {
-		int unescapedStr = OS.CFStringCreateWithCharacters(0, unescapedChars, unescapedChars.length);
-		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unescapedStr, 0, OS.kCFStringEncodingUTF8);
-		if (escapedStr != 0) {
-			int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
-			if (url != 0) {
-				rc = OS.LSOpenCFURLRef(url, null);
-				OS.CFRelease(url);
-			}
-			OS.CFRelease(escapedStr);
-		}
-		if (unescapedStr != 0) OS.CFRelease(unescapedStr);
-		OS.CFRelease(str);
+	int url = getURL(fileName);
+	if (url != 0) {
+		rc = OS.LSOpenCFURLRef(url, null);
+		OS.CFRelease(url);
 	}
 	return rc == OS.noErr;
 }
@@ -295,36 +304,15 @@ public boolean execute (String fileName) {
 		if (fileName.length() == 0) {
 			rc = OS.LSOpenApplication(params, null);
 		} else {
-			char[] unescapedChars = new char[] {'%'};
-			String lowercaseName = fileName.toLowerCase ();
-			if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-				unescapedChars = new char[] {'%', '#'};
-			} else {
-				if (!lowercaseName.startsWith (PREFIX_FILE)) {
-					fileName = PREFIX_FILE + fileName;
+			int url = getURL(fileName);
+			if (url != 0) {
+				int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, OS.kCFTypeArrayCallBacks ());
+				if (urls != 0) {
+					OS.CFArrayAppendValue(urls, url);
+					rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
+					OS.CFRelease(urls);
 				}
-			}
-			char[] chars = new char[fileName.length()];
-			fileName.getChars(0, chars.length, chars, 0);
-			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-			if (str != 0) {
-				int unescapedStr = OS.CFStringCreateWithCharacters(0, unescapedChars, unescapedChars.length);
-				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unescapedStr, 0, OS.kCFStringEncodingUTF8);
-				if (escapedStr != 0) {
-					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, OS.kCFTypeArrayCallBacks ());
-					if (urls != 0) {
-						int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
-						if (url != 0) {
-							OS.CFArrayAppendValue(urls, url);
-							OS.CFRelease(url);
-							rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
-						}
-						OS.CFRelease(urls);
-					}
-					OS.CFRelease(escapedStr);
-				}
-				if (unescapedStr != 0) OS.CFRelease(unescapedStr);
-				OS.CFRelease(str);
+				OS.CFRelease(url);
 			}
 		}
 		OS.DisposePtr(fsRefPtr);
