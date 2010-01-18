@@ -3982,12 +3982,13 @@ public void setRedraw (boolean redraw) {
 				* redraw in versions of GTK greater than 2.18. The fix
 				* is to hide and show it (without changing the z order).
 			    */
-				if (OS.GTK_VERSION >= OS.VERSION (2, 17, 0)) OS.gdk_window_hide(window);
+				boolean fixRedraw = OS.GTK_VERSION >= OS.VERSION (2, 17, 0) && OS.gdk_window_is_visible(window);
+				if (fixRedraw) OS.gdk_window_hide(window);
 				/* Explicitly hiding the window avoids flicker on GTK+ >= 2.6 */
 				OS.gdk_window_hide (redrawWindow);
 				OS.gdk_window_destroy (redrawWindow);
 				OS.gdk_window_set_events (window, OS.gtk_widget_get_events (paintHandle ()));
-				if (OS.GTK_VERSION >= OS.VERSION (2, 17, 0)) OS.gdk_window_show_unraised(window);
+				if (fixRedraw) OS.gdk_window_show_unraised(window);
 				redrawWindow = 0;
 			}
 		}
