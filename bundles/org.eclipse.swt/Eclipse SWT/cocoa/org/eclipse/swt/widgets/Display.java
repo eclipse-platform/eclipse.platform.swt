@@ -165,7 +165,7 @@ public class Display extends Device {
 	// the following Callbacks are never freed
 	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	static Callback dialogCallback3, dialogCallback4, dialogCallback5;
-	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
+	static Callback applicationCallback2, applicationCallback3, applicationCallback4, applicationCallback6;
 	
 	/* Display Shutdown */
 	Runnable [] disposeList;
@@ -840,6 +840,9 @@ void createDisplay (DeviceData data) {
 		applicationCallback3 = new Callback(clazz, "applicationProc", 3);
 		int /*long*/ proc3 = applicationCallback3.getAddress();
 		if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		applicationCallback4 = new Callback(clazz, "applicationProc", 4);
+		int /*long*/ proc4 = applicationCallback4.getAddress();
+		if (proc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		applicationCallback6 = new Callback(clazz, "applicationProc", 6);
 		int /*long*/ proc6 = applicationCallback6.getAddress();
 		if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -857,6 +860,9 @@ void createDisplay (DeviceData data) {
 		int /*long*/ appProc3 = applicationCallback3.getAddress();
 		if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+		int /*long*/ appProc4 = applicationCallback4.getAddress();
+		if (appProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_quitRequested_, appProc3, "@:@");
@@ -866,6 +872,9 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_application_openFile_, appProc4, "@:@B");
+		OS.class_addMethod(cls, OS.sel_application_openFiles_, appProc4, "@:@@");
+		OS.class_addMethod(cls, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, appProc4, "@:@B");
 		OS.objc_registerClassPair(cls);
 	}
 	if (!isEmbedded) {
@@ -4557,6 +4566,35 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 		display.applicationDidBecomeActive(id, sel, arg0);
 	} else if (sel == OS.sel_applicationDidResignActive_) {
 		display.applicationDidResignActive(id, sel, arg0);
+	}
+	return 0;
+}
+
+static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	Display display = getCurrent();
+	if (display != null) {
+		if (sel == OS.sel_application_openFile_) {
+			String file = new NSString(arg1).getString();
+			Event event = new Event();
+			event.type = SWT.OpenDoc;
+			event.text = file;
+			display.postEvent(event);
+			return 1;
+		} else if (sel == OS.sel_application_openFiles_) {
+			NSArray files = new NSArray(arg1);
+			int /*long*/ count = files.count();
+			for (int i=0; i<count; i++) {
+				String file = new NSString(files.objectAtIndex(i)).getString();
+				Event event = new Event();
+				event.type = SWT.OpenDoc;
+				event.text = file;
+				display.postEvent(event);
+			}
+			new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
+		} 
+		else if (sel == OS.sel_applicationShouldHandleReopen_hasVisibleWindows_) {
+			return 1;
+		}
 	}
 	return 0;
 }

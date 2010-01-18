@@ -83,6 +83,7 @@ typedef enum {
 	GdkEventFocus_1sizeof_FUNC,
 	GdkEventKey_1sizeof_FUNC,
 	GdkEventMotion_1sizeof_FUNC,
+	GdkEventProperty_1sizeof_FUNC,
 	GdkEventScroll_1sizeof_FUNC,
 	GdkEventVisibility_1sizeof_FUNC,
 	GdkEventWindowState_1sizeof_FUNC,
@@ -185,6 +186,7 @@ typedef enum {
 	_1XFlush_FUNC,
 	_1XFree_FUNC,
 	_1XGetSelectionOwner_FUNC,
+	_1XGetWindowProperty_FUNC,
 	_1XInternAtom_FUNC,
 	_1XKeysymToKeycode_FUNC,
 	_1XListProperties_FUNC,
@@ -204,6 +206,7 @@ typedef enum {
 	_1XSetErrorHandler_FUNC,
 	_1XSetIOErrorHandler_FUNC,
 	_1XSetInputFocus_FUNC,
+	_1XSetSelectionOwner_FUNC,
 	_1XSetTransientForHint_FUNC,
 	_1XSynchronize_FUNC,
 	_1XTestFakeButtonEvent_FUNC,
@@ -1573,6 +1576,11 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II_FUNC,

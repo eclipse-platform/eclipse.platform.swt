@@ -151,6 +151,7 @@
 	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlternateKeyMask" swt_gen="true"></enum>
 	<enum name="NSApplicationDefined" swt_gen="true"></enum>
+	<enum name="NSApplicationDelegateReplySuccess" swt_gen="true"></enum>
 	<enum name="NSAtTop" swt_gen="true"></enum>
 	<enum name="NSBackingStoreBuffered" swt_gen="true"></enum>
 	<enum name="NSBackspaceCharacter" swt_gen="true"></enum>
@@ -220,6 +221,7 @@
 	<enum name="NSLeftTabStopType" swt_gen="true"></enum>
 	<enum name="NSLeftTextAlignment" swt_gen="true"></enum>
 	<enum name="NSLineBreakByClipping" swt_gen="true"></enum>
+	<enum name="NSLineBreakByTruncatingMiddle" swt_gen="true"></enum>
 	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
@@ -521,6 +523,10 @@
 		<method selector="postEvent:atStart:" swt_gen="true">
 			<arg name="event" swt_gen="true"></arg>
 			<arg name="flag" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="replyToOpenOrPrint:" swt_gen="true">
+			<arg name="reply" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="run" swt_gen="true">
@@ -2254,6 +2260,11 @@
 		<method selector="accessibilitySetOverrideValue:forAttribute:" swt_gen="true">
 			<arg name="value" swt_gen="true"></arg>
 			<arg name="attribute" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="applicationShouldHandleReopen:hasVisibleWindows:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="draggedImage:endedAt:operation:" swt_gen="true" swt_gen_super_msgSend="true">
@@ -4544,6 +4555,14 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSApplicationDelegate" swt_gen="mixed">
+		<method selector="application:openFile:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<arg name="filename" swt_gen="true"></arg>
+		</method>
+		<method selector="application:openFiles:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<arg name="filenames" swt_gen="true"></arg>
+		</method>
 		<method selector="applicationShouldTerminate:" swt_gen="true">
 			<arg name="sender" swt_gen="true"></arg>
 		</method>

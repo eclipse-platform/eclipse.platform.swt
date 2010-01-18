@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1330;
-int OS_nativeFunctionCallCount[1330];
+int OS_nativeFunctionCount = 1334;
+int OS_nativeFunctionCallCount[1334];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -75,6 +75,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdkEventFocus_1sizeof",
 	"GdkEventKey_1sizeof",
 	"GdkEventMotion_1sizeof",
+	"GdkEventProperty_1sizeof",
 	"GdkEventScroll_1sizeof",
 	"GdkEventVisibility_1sizeof",
 	"GdkEventWindowState_1sizeof",
@@ -177,6 +178,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XFlush",
 	"_1XFree",
 	"_1XGetSelectionOwner",
+	"_1XGetWindowProperty",
 	"_1XInternAtom",
 	"_1XKeysymToKeycode",
 	"_1XListProperties",
@@ -196,6 +198,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XSetErrorHandler",
 	"_1XSetIOErrorHandler",
 	"_1XSetInputFocus",
+	"_1XSetSelectionOwner",
 	"_1XSetTransientForHint",
 	"_1XSynchronize",
 	"_1XTestFakeButtonEvent",
@@ -1565,6 +1568,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ",
+#endif
+#ifndef JNI64
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2J",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II",

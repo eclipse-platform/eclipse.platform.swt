@@ -31,6 +31,7 @@ typedef enum {
 	AEDisposeDesc_FUNC,
 	AEGetDescData_FUNC,
 	AEGetNthPtr_FUNC,
+	AEGetParamDesc_FUNC,
 	AEInstallEventHandler_FUNC,
 	AEProcessAppleEvent_FUNC,
 	ATSFontActivateFromFileSpecification_FUNC,

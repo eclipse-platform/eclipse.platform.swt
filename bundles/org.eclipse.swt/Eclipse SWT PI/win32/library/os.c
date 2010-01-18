@@ -2418,6 +2418,22 @@ fail:
 }
 #endif
 
+#ifndef NO_DuplicateHandle
+JNIEXPORT jboolean JNICALL OS_NATIVE(DuplicateHandle)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLongArray arg3, jint arg4, jboolean arg5, jint arg6)
+{
+	jintLong *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, DuplicateHandle_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)DuplicateHandle((HANDLE)arg0, (HANDLE)arg1, (HANDLE)arg2, (LPHANDLE)lparg3, (DWORD)arg4, arg5, (DWORD)arg6);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, DuplicateHandle_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DwmEnableBlurBehindWindow
 JNIEXPORT jint JNICALL OS_NATIVE(DwmEnableBlurBehindWindow)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -3706,6 +3722,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GetCurrentObject)
 	OS_NATIVE_ENTER(env, that, GetCurrentObject_FUNC);
 	rc = (jintLong)GetCurrentObject((HDC)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, GetCurrentObject_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetCurrentProcess
+JNIEXPORT jintLong JNICALL OS_NATIVE(GetCurrentProcess)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, GetCurrentProcess_FUNC);
+	rc = (jintLong)GetCurrentProcess();
+	OS_NATIVE_EXIT(env, that, GetCurrentProcess_FUNC);
 	return rc;
 }
 #endif
@@ -8191,6 +8219,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(MSG_1sizeof)
 }
 #endif
 
+#ifndef NO_MapViewOfFile
+JNIEXPORT jintLong JNICALL OS_NATIVE(MapViewOfFile)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, MapViewOfFile_FUNC);
+	rc = (jintLong)MapViewOfFile((HANDLE)arg0, (DWORD)arg1, (DWORD)arg2, (DWORD)arg3, arg4);
+	OS_NATIVE_EXIT(env, that, MapViewOfFile_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_MapVirtualKeyA
 JNIEXPORT jint JNICALL OS_NATIVE(MapVirtualKeyA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -11506,6 +11546,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(OpenClipboard)
 	OS_NATIVE_ENTER(env, that, OpenClipboard_FUNC);
 	rc = (jboolean)OpenClipboard((HWND)arg0);
 	OS_NATIVE_EXIT(env, that, OpenClipboard_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OpenProcess
+JNIEXPORT jintLong JNICALL OS_NATIVE(OpenProcess)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jint arg2)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, OpenProcess_FUNC);
+	rc = (jintLong)OpenProcess((DWORD)arg0, arg1, (DWORD)arg2);
+	OS_NATIVE_EXIT(env, that, OpenProcess_FUNC);
 	return rc;
 }
 #endif
@@ -16786,6 +16838,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UnhookWindowsHookEx)
 	OS_NATIVE_ENTER(env, that, UnhookWindowsHookEx_FUNC);
 	rc = (jboolean)UnhookWindowsHookEx((HHOOK)arg0);
 	OS_NATIVE_EXIT(env, that, UnhookWindowsHookEx_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UnmapViewOfFile
+JNIEXPORT jboolean JNICALL OS_NATIVE(UnmapViewOfFile)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UnmapViewOfFile_FUNC);
+	rc = (jboolean)UnmapViewOfFile((LPCVOID)arg0);
+	OS_NATIVE_EXIT(env, that, UnmapViewOfFile_FUNC);
 	return rc;
 }
 #endif

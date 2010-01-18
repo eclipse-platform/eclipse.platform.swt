@@ -38,6 +38,7 @@ public class OS extends C {
 	}
 
 	/** Constants */
+	public static final int /*long*/ AnyPropertyType = 0;
 	public static final int ATK_RELATION_LABELLED_BY = 4;
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
 	public static final int G_SIGNAL_MATCH_ID = 1 << 0;
@@ -200,6 +201,7 @@ public class OS extends C {
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 0x8;
 	public static final int GDK_POINTER_MOTION_MASK = 0x4;
 	public static final int GDK_PROPERTY_NOTIFY = 16;
+	public static final int GDK_PROPERTY_CHANGE_MASK = 1 << 16;
 	public static final int GDK_Page_Down = 0xff56;
 	public static final int GDK_Page_Up = 0xff55;
 	public static final int GDK_Pause = 0xff13;
@@ -471,6 +473,7 @@ public class OS extends C {
 	public static final byte[] popup_menu = ascii("popup-menu");
 	public static final byte[] populate_popup = ascii("populate-popup");
 	public static final byte[] preedit_changed = ascii("preedit-changed");
+	public static final byte[] property_notify_event = ascii("property-notify-event");
 	public static final byte[] realize = ascii("realize");
 	public static final byte[] row_activated = ascii("row-activated");
 	public static final byte[] row_changed = ascii("row-changed");
@@ -561,6 +564,7 @@ public static final native int GdkEventExpose_sizeof();
 public static final native int GdkEventFocus_sizeof();
 public static final native int GdkEventKey_sizeof();
 public static final native int GdkEventMotion_sizeof();
+public static final native int GdkEventProperty_sizeof();
 public static final native int GdkEventScroll_sizeof();
 public static final native int GdkEventVisibility_sizeof();
 public static final native int GdkEventWindowState_sizeof();
@@ -839,6 +843,21 @@ public static final void XFree(int /*long*/ address) {
 /**
  * @param display cast=(Display *)
  * @param selection cast=(Atom)
+ * @param owner cast=(Window)
+ * @param time cast=(Time)
+ */
+public static final native int /*long*/ _XSetSelectionOwner(int /*long*/ display, int /*long*/ selection, int /*long*/ window, int time);
+public static final int /*long*/ XSetSelectionOwner(int /*long*/ display, int /*long*/ selection, int /*long*/ window, int time) {
+	lock.lock();
+	try {
+		return _XSetSelectionOwner(display, selection, window, time);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param display cast=(Display *)
+ * @param selection cast=(Atom)
  */
 public static final native int /*long*/ _XGetSelectionOwner(int /*long*/ display, int /*long*/ selection);
 public static final int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*long*/ selection) {
@@ -849,6 +868,31 @@ public static final int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*
 		lock.unlock();
 	}
 }
+
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param property cast=(Atom)
+ * @param req_type cast=(Atom)
+ * @param actual_type_return cast=(Atom*)
+ * @param actual_format_return cast=(Atom*)
+ * @param actual_format_return cast=(int *)
+ * @param nitems_return cast=(unsigned long *)
+ * @param bytes_after_return cast=(unsigned long *)
+ * @param prop_return cast=(unsigned char **)
+ */
+public static final native int /*long*/ _XGetWindowProperty(int /*long*/ display, int /*long*/ window, int /*long*/ property, long offset, long length, boolean delete, int /*long*/ req_type, int /*long*/ [] actual_type_return, int /*long*/ [] actual_format_return , long[] nitems_return, long[] bytes_after_return, int /*long*/ [] prop_return);
+public static final int /*long*/ XGetWindowProperty(
+		int /*long*/ display, int /*long*/ window, int /*long*/ property, long offset, long length, boolean delete, int /*long*/ req_type, int /*long*/ [] actual_type_return, int /*long*/ [] actual_format_return, long[] nitems_return, long[] bytes_after_return, int /*long*/ [] prop_return) {
+	lock.lock();
+	try {
+		return _XGetWindowProperty(display, window, property, offset, length, delete, req_type, actual_type_return, actual_format_return , nitems_return, bytes_after_return, prop_return);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
 /**
  * @param display cast=(Display *)
  * @param name cast=(char *)
@@ -13449,6 +13493,11 @@ public static final native void memmove(GtkColorSelectionDialog dest, int /*long
  * @param src cast=(const void *)
  */
 public static final native void memmove(GtkFileSelection dest, int /*long*/ src);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ */
+public static final native void memmove(GdkEventProperty dest, int /*long*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

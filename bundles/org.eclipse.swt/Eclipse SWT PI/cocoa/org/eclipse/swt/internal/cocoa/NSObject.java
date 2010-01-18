@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,10 @@ public id accessibilityAttributeValue(NSString attribute, id parameter) {
 
 public boolean accessibilitySetOverrideValue(id value, NSString attribute) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_accessibilitySetOverrideValue_forAttribute_, value != null ? value.id : 0, attribute != null ? attribute.id : 0);
+}
+
+public boolean applicationShouldHandleReopen(NSApplication sender, boolean flag) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, sender != null ? sender.id : 0, flag);
 }
 
 public void draggedImage(NSImage image, NSPoint screenPoint, int /*long*/ operation) {

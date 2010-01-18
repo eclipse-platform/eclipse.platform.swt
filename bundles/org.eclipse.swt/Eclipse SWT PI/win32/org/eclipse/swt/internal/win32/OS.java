@@ -17,7 +17,7 @@ public class OS extends C {
 	static {
 		Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}
-
+	
 	/*
 	* SWT Windows flags
 	*/
@@ -670,7 +670,8 @@ public class OS extends C {
 	public static final int FCONTROL = 0x8;
 	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
 	public static final int FEATURE_DISABLE_NAVIGATION_SOUNDS = 21;
-	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080; 
+	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080;
+	public static final int FILE_MAP_READ = 4;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FNERR_BUFFERTOOSMALL = 0x3003;
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
@@ -6612,4 +6613,37 @@ public static final native int /*long*/ WindowFromDC (int /*long*/ hDC);
 public static final native int /*long*/ WindowFromPoint (POINT lpPoint);
 /** @param string cast=(const wchar_t *) */
 public static final native int wcslen (int /*long*/ string);
+
+/** @param hFileMappingObject cast=(HANDLE) 
+ *  @param dwDesiredAccess cast=(DWORD)
+ *  @param dwFileOffsetHigh cast=(DWORD)
+ *  @param dwFileOffsetLow cast=(DWORD)
+ */
+public static final native int /*long*/ MapViewOfFile(int /*long*/ hFileMappingObject, int dwDesiredAccess, int dwFileOffsetHigh, int dwFileOffsetLow, int dwNumberOfBytesToMap);
+/** @param lpBaseAddress cast=(LPCVOID) */
+public static final native boolean UnmapViewOfFile(int /*long*/ lpBaseAddress);
+
+public static final int PROCESS_DUP_HANDLE = 0x0040;
+public static final int PROCESS_VM_READ = 0x0010;
+public static final int DUPLICATE_SAME_ACCESS = 2;
+
+/**
+ * @param dwDesiredAccess cast=(DWORD)
+ * @param dwProcessId cast=(DWORD)
+ */
+public static final native int /*long*/ OpenProcess(int dwDesiredAccess, boolean bInheritHandle, int dwProcessId);
+
+public static final native int /*long*/ GetCurrentProcess();
+
+/**
+ * @param hSourceProcessHandle cast=(HANDLE) 
+ * @param hSourceHandle cast=(HANDLE) 
+ * @param hTargetProcessHandle cast=(HANDLE) 
+ * @param lpTargetHandle cast=(LPHANDLE)
+ * @param dwDesiredAccess cast=(DWORD) 
+ * @param dwOptions cast=(DWORD) 
+ */
+public static final native boolean DuplicateHandle(int /*long*/ hSourceProcessHandle, int /*long*/ hSourceHandle, int /*long*/ hTargetProcessHandle,
+		int /*long*/ [] lpTargetHandle, int dwDesiredAccess, boolean b, int dwOptions);
+
 }

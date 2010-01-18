@@ -183,6 +183,18 @@ void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpSt
 #define GdkEventMotion_sizeof() 0
 #endif
 
+#ifndef NO_GdkEventProperty
+void cacheGdkEventPropertyFields(JNIEnv *env, jobject lpObject);
+GdkEventProperty *getGdkEventPropertyFields(JNIEnv *env, jobject lpObject, GdkEventProperty *lpStruct);
+void setGdkEventPropertyFields(JNIEnv *env, jobject lpObject, GdkEventProperty *lpStruct);
+#define GdkEventProperty_sizeof() sizeof(GdkEventProperty)
+#else
+#define cacheGdkEventPropertyFields(a,b)
+#define getGdkEventPropertyFields(a,b,c) NULL
+#define setGdkEventPropertyFields(a,b,c)
+#define GdkEventProperty_sizeof() 0
+#endif
+
 #ifndef NO_GdkEventScroll
 void cacheGdkEventScrollFields(JNIEnv *env, jobject lpObject);
 GdkEventScroll *getGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpStruct);

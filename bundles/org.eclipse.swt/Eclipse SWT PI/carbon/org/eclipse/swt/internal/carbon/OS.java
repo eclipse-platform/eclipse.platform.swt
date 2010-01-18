@@ -62,6 +62,9 @@ public class OS extends C {
 	public static final int kAESmallSystemFontChanged = ('s'<<24) + ('s'<<16) + ('f'<<8) + 'n';
 	public static final int kAEViewsFontChanged = ('v'<<24) + ('f'<<16) + ('n'<<8) + 't';
 	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
+	public static final int kAEOpenDocuments = ('o' << 24) + ('d' << 16) + ('o' << 8) + 'c';
+	public static final int keyDirectObject = ('-' << 24) + ('-' << 16) + ('-' << 8) + '-';
+	public static final int typeAEList = ('l' << 24) + ('i' << 16) + ('s' << 8) + 't';
 	public static final int kCoreEventClass = ('a'<<24) + ('e'<<16) + ('v'<<8) + 't';
 	public static final int kAlertCautionAlert = 2;
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
@@ -1130,6 +1133,13 @@ public static final native int AEGetDescData(AEDesc theAEDesc, byte[] dataPtr, i
  * @param actualSize cast=(Size *)
  */
 public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
+/**
+ * @param theAppleEvent cast=(const AppleEvent *)
+ * @param theAEKeyword cast=(AEKeyword)
+ * @param desiredType cast=(DescType)
+ * @param result cast=(AEDesc *)
+ */
+public static final native int AEGetParamDesc (int theAppleEvent, int theAEKeyword, int desiredType, AEDesc result);
 /**
  * @param theAEEventClass cast=(AEEventClass)
  * @param theAEEventID cast=(AEEventID)

@@ -109,13 +109,15 @@ public class Display extends Device {
 	 */
 	public MSG msg = new MSG ();
 	
+	static String APP_NAME;
+	
 	/* Windows and Events */
 	Event [] eventQueue;
 	Callback windowCallback;
 	int /*long*/ windowProc;
 	int threadId;
 	TCHAR windowClass, windowShadowClass, windowOwnDCClass;
-	static int WindowClassCount;
+	static int WindowClassCount = 1000;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
 	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
 	static final String WindowOwnDCName = "SWT_WindowOwnDC"; //$NON-NLS-1$
@@ -389,6 +391,7 @@ public class Display extends Device {
 	static int SWT_TASKBARCREATED;
 	static int SWT_RESTORECARET;
 	static int DI_GETDRAGIMAGE;
+	static int SWT_OPENDOC;
 	
 	/* Workaround for Adobe Reader 7.0 */
 	int hitCount;
@@ -2569,7 +2572,7 @@ protected void init () {
 	windowShadowClass = new TCHAR (0, WindowShadowName + WindowClassCount, true);
 	windowOwnDCClass = new TCHAR (0, WindowOwnDCName + WindowClassCount, true);
 	WindowClassCount++;
-
+	
 	/* Register the SWT window class */
 	int /*long*/ hHeap = OS.GetProcessHeap ();
 	int /*long*/ hInstance = OS.GetModuleHandle (null);
@@ -2632,6 +2635,8 @@ protected void init () {
 		0,
 		hInstance,
 		null);
+	String title = "SWT_Window_"+APP_NAME;
+	OS.SetWindowText(hwndMessage, new TCHAR(0, title, true));
 	messageCallback = new Callback (this, "messageProc", 4); //$NON-NLS-1$
 	messageProc = messageCallback.getAddress ();
 	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2657,6 +2662,7 @@ protected void init () {
 	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true)); //$NON-NLS-1$
 	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true)); //$NON-NLS-1$
 	DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR (0, "ShellGetDragImage", true)); //$NON-NLS-1$
+	SWT_OPENDOC = OS.RegisterWindowMessage(new TCHAR (0, "SWT_OPENDOC", true)); //$NON-NLS-1$
 
 	/* Initialize OLE */
 	if (!OS.IsWinCE) OS.OleInitialize (0);
@@ -3195,9 +3201,42 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 					}
 				}
 			}
+			if ((int)/*64*/msg == SWT_OPENDOC) {
+				String filename = getSharedData((int)/*64*/wParam, (int)/*64*/lParam);
+				Event event = new Event();
+				event.type = SWT.OpenDoc;
+				event.text = filename;
+				postEvent(event);
+			}
 		}
 	}
 	return OS.DefWindowProc (hwnd, (int)/*64*/msg, wParam, lParam);
+}
+
+String getSharedData(int pid, int  handle) {
+	String id = Integer.toHexString(pid)+"_"+Integer.toHexString(handle);
+	int /*long*/ [] mapHandle = new int /*long*/ [1];
+	if (pid == OS.GetCurrentProcessId()) {
+		mapHandle[0] = handle;
+	} else {
+		int /*long*/ processHandle = OS.OpenProcess(OS.PROCESS_VM_READ|OS.PROCESS_DUP_HANDLE, false, pid);
+		if (processHandle == 0) return null;
+		OS.DuplicateHandle(processHandle, handle, OS.GetCurrentProcess(), mapHandle, OS.DUPLICATE_SAME_ACCESS, false, OS.DUPLICATE_SAME_ACCESS);
+		OS.CloseHandle(processHandle);
+	}
+	
+	int /*long*/ sharedData = OS.MapViewOfFile(mapHandle[0], OS.FILE_MAP_READ, 0, 0, 0);
+	if (sharedData == 0) return null;
+	int length = OS.IsUnicode ? OS.wcslen (sharedData) : OS.strlen (sharedData);
+	TCHAR buffer = new TCHAR (0, length);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	OS.MoveMemory (buffer, sharedData, byteCount);
+	String result = buffer.toString (0, length);
+	OS.UnmapViewOfFile(sharedData);
+	if (handle != mapHandle[0]) {
+		OS.CloseHandle(mapHandle[0]);
+	}
+	return result;
 }
 
 int /*long*/ monitorEnumProc (int /*long*/ hmonitor, int /*long*/ hdc, int /*long*/ lprcMonitor, int /*long*/ dwData) {
@@ -4272,7 +4311,7 @@ public void setData (Object data) {
  * @param name the new app name or <code>null</code>
  */
 public static void setAppName (String name) {
-	/* Do nothing */
+	APP_NAME = name;
 }
 
 void setModalDialog (Dialog modalDailog) {

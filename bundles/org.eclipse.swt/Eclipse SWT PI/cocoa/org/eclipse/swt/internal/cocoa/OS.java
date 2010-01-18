@@ -704,9 +704,12 @@ public static final int /*long*/ sel_appendBezierPathWithOvalInRect_ = sel_regis
 public static final int /*long*/ sel_appendBezierPathWithRect_ = sel_registerName("appendBezierPathWithRect:");
 public static final int /*long*/ sel_appendBezierPathWithRoundedRect_xRadius_yRadius_ = sel_registerName("appendBezierPathWithRoundedRect:xRadius:yRadius:");
 public static final int /*long*/ sel_appendString_ = sel_registerName("appendString:");
+public static final int /*long*/ sel_application_openFile_ = sel_registerName("application:openFile:");
+public static final int /*long*/ sel_application_openFiles_ = sel_registerName("application:openFiles:");
 public static final int /*long*/ sel_applicationDidBecomeActive_ = sel_registerName("applicationDidBecomeActive:");
 public static final int /*long*/ sel_applicationDidFinishLaunching_ = sel_registerName("applicationDidFinishLaunching:");
 public static final int /*long*/ sel_applicationDidResignActive_ = sel_registerName("applicationDidResignActive:");
+public static final int /*long*/ sel_applicationShouldHandleReopen_hasVisibleWindows_ = sel_registerName("applicationShouldHandleReopen:hasVisibleWindows:");
 public static final int /*long*/ sel_applicationShouldTerminate_ = sel_registerName("applicationShouldTerminate:");
 public static final int /*long*/ sel_applicationWillFinishLaunching_ = sel_registerName("applicationWillFinishLaunching:");
 public static final int /*long*/ sel_applicationWillTerminate_ = sel_registerName("applicationWillTerminate:");
@@ -1365,6 +1368,7 @@ public static final int /*long*/ sel_removeTableColumn_ = sel_registerName("remo
 public static final int /*long*/ sel_removeTemporaryAttribute_forCharacterRange_ = sel_registerName("removeTemporaryAttribute:forCharacterRange:");
 public static final int /*long*/ sel_removeTrackingArea_ = sel_registerName("removeTrackingArea:");
 public static final int /*long*/ sel_replaceCharactersInRange_withString_ = sel_registerName("replaceCharactersInRange:withString:");
+public static final int /*long*/ sel_replyToOpenOrPrint_ = sel_registerName("replyToOpenOrPrint:");
 public static final int /*long*/ sel_representation = sel_registerName("representation");
 public static final int /*long*/ sel_representations = sel_registerName("representations");
 public static final int /*long*/ sel_request = sel_registerName("request");
@@ -1895,6 +1899,7 @@ public static final int NSAlphaFirstBitmapFormat = 1;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 2;
 public static final int NSAlternateKeyMask = 524288;
 public static final int NSApplicationDefined = 15;
+public static final int NSApplicationDelegateReplySuccess = 0;
 public static final int NSAtTop = 2;
 public static final int NSBackingStoreBuffered = 2;
 public static final int NSBackspaceCharacter = 8;
@@ -3179,6 +3184,8 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
  * @param arg1 flags=struct
  */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSSize arg1, boolean arg2);
+/** @method flags=cast */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, boolean arg1);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */

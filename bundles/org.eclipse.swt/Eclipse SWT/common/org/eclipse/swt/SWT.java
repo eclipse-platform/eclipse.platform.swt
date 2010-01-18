@@ -700,6 +700,16 @@ public class SWT {
 	 */
 	public static final int Skin = 45;
 	
+	/**
+	 * The open document event type (value is 46).
+	 * 
+	 * <p>
+	 * This event is sent when SWT receives notification that a document 
+	 * should be opened.
+	 * </p>
+	 */
+	public static final int OpenDoc = 46;
+	
 	/* Event Details */
 	
 	/**

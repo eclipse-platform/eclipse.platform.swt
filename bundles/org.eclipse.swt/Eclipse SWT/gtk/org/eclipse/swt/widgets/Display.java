@@ -235,10 +235,12 @@ public class Display extends Device {
 	Callback allChildrenCallback;
 
 	/* Settings callbacks */
-	int /*long*/ styleSetProc;
-	Callback styleSetCallback;
+	int /*long*/ signalProc;
+	Callback signalCallback;
 	int /*long*/ shellHandle;
 	boolean settingsChanged, runSettings;
+	static final int STYLE_SET = 1;
+	static final int PROPERTY_NOTIFY = 2;
 	
 	/* Entry focus behaviour */
 	boolean entrySelectOnFocus;
@@ -997,6 +999,20 @@ void createDisplay (DeviceData data) {
 	filterProc = filterCallback.getAddress ();
 	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_window_add_filter  (0, filterProc, 0);
+
+	if (OS.GDK_WINDOWING_X11 ()) {
+		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
+		byte[] atomName = Converter.wcsToMbcs (null, "SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
+		int /*long*/ atom = OS.XInternAtom (OS.GDK_DISPLAY (), atomName, false);
+		OS.XSetSelectionOwner (OS.GDK_DISPLAY (), atom, xWindow, OS.CurrentTime);
+		OS.XGetSelectionOwner (OS.GDK_DISPLAY (), atom);
+	}
+
+	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
+	signalProc = signalCallback.getAddress ();
+	if (signalProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	OS.gtk_widget_add_events (shellHandle, OS.GDK_PROPERTY_CHANGE_MASK);
+	OS.g_signal_connect (shellHandle, OS.property_notify_event, signalProc, PROPERTY_NOTIFY);
 }
 
 Image createImage (String name) {
@@ -2567,10 +2583,7 @@ void initializeSubclasses () {
 }
 
 void initializeSystemSettings () {
-	styleSetCallback = new Callback (this, "styleSetProc", 3); //$NON-NLS-1$
-	styleSetProc = styleSetCallback.getAddress ();
-	if (styleSetProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	OS.g_signal_connect (shellHandle, OS.style_set, styleSetProc, 0);
+	OS.g_signal_connect (shellHandle, OS.style_set, signalProc, STYLE_SET);
 	
 	/*
 	* Feature in GTK.  Despite the fact that the
@@ -3333,8 +3346,8 @@ void releaseDisplay () {
 	shellHandle = 0;
 	
 	/* Dispose the settings callback */
-	styleSetCallback.dispose(); styleSetCallback = null;
-	styleSetProc = 0;
+	signalCallback.dispose(); signalCallback = null;
+	signalProc = 0;
 
 	/* Dispose subclass */
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
@@ -4129,8 +4142,50 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 	return widget.shellMapProc (handle, arg0, user_data);
 }
 
-int /*long*/ styleSetProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ user_data) {
-	settingsChanged = true;
+int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ user_data) {
+	switch(user_data) {
+		case STYLE_SET:
+			settingsChanged = true;
+			break;
+		case PROPERTY_NOTIFY:
+			GdkEventProperty gdkEvent = new GdkEventProperty ();
+			OS.memmove (gdkEvent, arg1);
+			if (gdkEvent.type == OS.GDK_PROPERTY_NOTIFY) {
+				byte[] name = Converter.wcsToMbcs (null, "org.eclipse.swt.filePath.message", true); //$NON-NLS-1$
+				int /*long*/ atom = OS.gdk_x11_atom_to_xatom (OS.gdk_atom_intern (name, true));
+				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
+					int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW( shellHandle));
+					int /*long*/ [] type = new int /*long*/ [1];
+					int /*long*/ [] format = new int /*long*/ [1];
+					long [] nitems = new long [1];
+					long [] bytes_after = new long [1];
+					int /*long*/ [] data = new int /*long*/ [1];
+					OS.XGetWindowProperty (OS.GDK_DISPLAY (), xWindow, atom, 0l, -1l, true, OS.AnyPropertyType,
+							type, format, nitems, bytes_after, data);
+					
+					if (nitems [0] > 0) {
+						byte [] buffer = new byte [(int)/*64*/nitems [0]];
+						OS.memmove(buffer, data [0], buffer.length);
+						OS.XFree (data [0]);
+						char[] chars = Converter.mbcsToWcs(null, buffer);
+						String string = new String (chars);
+						
+						int lastIndex = 0;
+						int index = string.indexOf (':');
+						while (index != -1) {
+							String file = string.substring (lastIndex, index);
+							Event event = new Event ();
+							event.type = SWT.OpenDoc;
+							event.text = file;
+							postEvent (event);
+							lastIndex = index+1;
+							index = string.indexOf(':', lastIndex);
+						}
+					}
+				}
+			}
+			break;
+	}
 	return 0;
 }
 

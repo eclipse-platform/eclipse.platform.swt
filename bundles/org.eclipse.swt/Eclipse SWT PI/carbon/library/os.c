@@ -129,6 +129,22 @@ fail:
 }
 #endif
 
+#ifndef NO_AEGetParamDesc
+JNIEXPORT jint JNICALL OS_NATIVE(AEGetParamDesc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	AEDesc _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AEGetParamDesc_FUNC);
+	if (arg3) if ((lparg3 = getAEDescFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)AEGetParamDesc((const AppleEvent *)arg0, (AEKeyword)arg1, (DescType)arg2, (AEDesc *)lparg3);
+fail:
+	if (arg3 && lparg3) setAEDescFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, AEGetParamDesc_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AEInstallEventHandler
 JNIEXPORT jint JNICALL OS_NATIVE(AEInstallEventHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4)

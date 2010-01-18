@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 999;
-int OS_nativeFunctionCallCount[999];
+int OS_nativeFunctionCount = 1000;
+int OS_nativeFunctionCallCount[1000];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -23,6 +23,7 @@ char * OS_nativeFunctionNames[] = {
 	"AEDisposeDesc",
 	"AEGetDescData",
 	"AEGetNthPtr",
+	"AEGetParamDesc",
 	"AEInstallEventHandler",
 	"AEProcessAppleEvent",
 	"ATSFontActivateFromFileSpecification",

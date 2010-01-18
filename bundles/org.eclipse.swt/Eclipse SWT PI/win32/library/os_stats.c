@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 979;
-int OS_nativeFunctionCallCount[979];
+int OS_nativeFunctionCount = 984;
+int OS_nativeFunctionCallCount[984];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -181,6 +181,7 @@ char * OS_nativeFunctionNames[] = {
 	"DrawThemeIcon",
 	"DrawThemeParentBackground",
 	"DrawThemeText",
+	"DuplicateHandle",
 	"DwmEnableBlurBehindWindow",
 	"DwmExtendFrameIntoClientArea",
 	"EMREXTCREATEFONTINDIRECTW_1sizeof",
@@ -257,6 +258,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetClipboardFormatNameW",
 	"GetComboBoxInfo",
 	"GetCurrentObject",
+	"GetCurrentProcess",
 	"GetCurrentProcessId",
 	"GetCurrentThreadId",
 	"GetCursor",
@@ -630,6 +632,7 @@ char * OS_nativeFunctionNames[] = {
 	"MONITORINFO_1sizeof",
 	"MOUSEINPUT_1sizeof",
 	"MSG_1sizeof",
+	"MapViewOfFile",
 	"MapVirtualKeyA",
 	"MapVirtualKeyW",
 #ifndef JNI64
@@ -1154,6 +1157,7 @@ char * OS_nativeFunctionNames[] = {
 	"OleInitialize",
 	"OleUninitialize",
 	"OpenClipboard",
+	"OpenProcess",
 	"OpenThemeData",
 	"PAINTSTRUCT_1sizeof",
 	"PANOSE_1sizeof",
@@ -1734,6 +1738,7 @@ char * OS_nativeFunctionNames[] = {
 	"TreeView_1GetItemRect",
 	"UDACCEL_1sizeof",
 	"UnhookWindowsHookEx",
+	"UnmapViewOfFile",
 	"UnregisterClassA",
 	"UnregisterClassW",
 	"UpdateLayeredWindow",

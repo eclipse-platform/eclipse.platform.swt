@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.HICommand;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.RGBColor;
+import org.eclipse.swt.internal.carbon.AEDesc;
 import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
@@ -112,10 +113,11 @@ public class Display extends Device {
 	Callback actionCallback, appleEventCallback, clockCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, searchCallback, trayItemCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, observerCallback, sourceCallback;
-	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback, coreEventCallback, pollingCallback;
+	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback, coreEventCallback;
+	Callback pollingCallback, launcherCallback;
 	int actionProc, appleEventProc, clockProc, commandProc, controlProc, appearanceProc, accessibilityProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, searchProc, trayItemProc;
-	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, observerProc, sourceProc;
+	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, observerProc, sourceProc, launcherProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc, coreEventProc, pollingProc;
 	EventTable eventTable, filterTable;
 	int queue, runLoop, runLoopSource, runLoopObserver, lastModifiers, lastState, lastX, lastY;
@@ -304,6 +306,10 @@ public class Display extends Device {
 		{114, SWT.HELP},
 		
 	};
+	
+	final static int SWT_CLASS = 'S' << 24 | 'W' << 16 | 'T' << 8 | '-';
+	final static int SWT_OPEN_FILE_KIND = 1;
+	final static int SWT_OPEN_FILE_PARAM = 'o' << 24 | 'd' << 16 | 'o' << 8 | 'c';
 
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
@@ -900,21 +906,59 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 }
 
 int coreEventProc (int theAppleEvent, int reply, int handlerRefcon) {
-	if (!disposing) {
-		Event event = new Event ();
-		sendEvent (SWT.Close, event);
-		if (event.doit) {
-			dispose ();
-			/*
-			* When the application is closing, no SWT program can continue
-			* to run.  In order to avoid running code after the display has
-			* been disposed, exit from Java.
-			*/
-			/* This code is intentionally commented */
-//			System.exit (0);
-		} else {
-			return OS.userCanceledErr;
-		}
+	switch(handlerRefcon) {
+		case OS.kAEOpenDocuments:
+			AEDesc docList = new AEDesc();
+			int[] count = new int[1];
+		    OS.AEGetParamDesc(theAppleEvent, OS.keyDirectObject, OS.typeAEList, docList);
+			OS.AECountItems(docList, count);
+			for(int index = 1; index <= count[0]; index++) {
+				int [] theAEKeyword = new int [1];
+				int [] typeCode = new int [1];
+				int maximumSize = 80; // size of FSRef
+				int dataPtr = OS.NewPtr (maximumSize);
+				int [] actualSize = new int [1];
+				int status = OS.AEGetNthPtr (docList, 1, OS.typeFSRef, theAEKeyword, typeCode, dataPtr, maximumSize, actualSize);
+				if (status == OS.noErr && typeCode [0] == OS.typeFSRef) {
+					byte [] fsRef = new byte [actualSize [0]];
+					OS.memmove (fsRef, dataPtr, actualSize [0]);
+					int dirUrl = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
+					int dirString = OS.CFURLCopyFileSystemPath(dirUrl, OS.kCFURLPOSIXPathStyle);
+					OS.CFRelease (dirUrl);						
+					int length = OS.CFStringGetLength (dirString);
+					char [] buffer= new char [length];
+					CFRange range = new CFRange ();
+					range.length = length;
+					OS.CFStringGetCharacters (dirString, range, buffer);
+					OS.CFRelease (dirString);
+					String string = new String(buffer);
+					Event event = new Event();
+					event.type = SWT.OpenDoc;
+					event.text = string;
+					postEvent(event);
+				}
+				OS.DisposePtr (dataPtr);
+		    }
+		    OS.AEDisposeDesc(docList);
+			break;
+		case OS.kAEQuitApplication:
+			if (!disposing) {
+				Event event = new Event ();
+				sendEvent (SWT.Close, event);
+				if (event.doit) {
+					dispose ();
+					/*
+					* When the application is closing, no SWT program can continue
+					* to run.  In order to avoid running code after the display has
+					* been disposed, exit from Java.
+					*/
+					/* This code is intentionally commented */
+		//			System.exit (0);
+				} else {
+					return OS.userCanceledErr;
+				}
+			}
+			break;
 	}
 	return OS.noErr;
 }
@@ -2209,6 +2253,9 @@ void initializeCallbacks () {
 	pollingCallback = new Callback (this, "pollingProc", 2);
 	pollingProc = pollingCallback.getAddress ();
 	if (pollingProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	launcherCallback = new Callback (this, "launcherProc", 3);
+	launcherProc = launcherCallback.getAddress ();
+	if (launcherProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -2231,7 +2278,7 @@ void initializeCallbacks () {
 		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
 	};
 	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, null);
-	OS.AEInstallEventHandler(OS.kCoreEventClass, OS.kAEQuitApplication, coreEventProc, 0, false);
+	OS.AEInstallEventHandler(OS.kCoreEventClass, OS.kAEQuitApplication, coreEventProc, OS.kAEQuitApplication, false);
 
 	int [] mask4 = new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
@@ -2253,7 +2300,13 @@ void initializeCallbacks () {
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESmallSystemFontChanged, appearanceProc, 0, false);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESystemFontChanged, appearanceProc, 0, false);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAEViewsFontChanged, appearanceProc, 0, false);
-
+	
+	int[] mask6 = new int[] {
+			SWT_CLASS, SWT_OPEN_FILE_KIND,
+		};
+	OS.InstallEventHandler (appTarget, launcherProc, mask6.length / 2, mask6, 0, null);
+	OS.AEInstallEventHandler(OS.kCoreEventClass, OS.kAEOpenDocuments, coreEventProc, OS.kAEOpenDocuments, false);
+	
 	int mode = OS.kCFRunLoopCommonModes ();
 	int activities = OS.kCFRunLoopBeforeWaiting;
 	runLoopObserver = OS.CFRunLoopObserverCreate (OS.kCFAllocatorDefault, activities, true, 0, observerProc, 0);
@@ -2477,6 +2530,24 @@ int pollingProc (int inTimer, int inUserData) {
 	return 0;
 }
 
+int launcherProc (int nextHandler, int theEvent, int userData) {
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, SWT_OPEN_FILE_PARAM, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer= new char [length];
+	if (length > 0) {
+		CFRange range = new CFRange ();
+		range.length = length;
+		OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	}
+	String filePath = new String(buffer);
+	Event event = new Event();
+	event.type = SWT.OpenDoc;
+	event.text = filePath;
+	postEvent(event);
+	return OS.noErr;
+}
 /**
  * Generate a low level system event.
  * 

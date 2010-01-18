@@ -711,6 +711,52 @@ void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpSt
 }
 #endif
 
+#ifndef NO_GdkEventProperty
+typedef struct GdkEventProperty_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, atom, time, state;
+} GdkEventProperty_FID_CACHE;
+
+GdkEventProperty_FID_CACHE GdkEventPropertyFc;
+
+void cacheGdkEventPropertyFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkEventPropertyFc.cached) return;
+	cacheGdkEventFields(env, lpObject);
+	GdkEventPropertyFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkEventPropertyFc.window = (*env)->GetFieldID(env, GdkEventPropertyFc.clazz, "window", I_J);
+	GdkEventPropertyFc.send_event = (*env)->GetFieldID(env, GdkEventPropertyFc.clazz, "send_event", "B");
+	GdkEventPropertyFc.atom = (*env)->GetFieldID(env, GdkEventPropertyFc.clazz, "atom", I_J);
+	GdkEventPropertyFc.time = (*env)->GetFieldID(env, GdkEventPropertyFc.clazz, "time", "I");
+	GdkEventPropertyFc.state = (*env)->GetFieldID(env, GdkEventPropertyFc.clazz, "state", "I");
+	GdkEventPropertyFc.cached = 1;
+}
+
+GdkEventProperty *getGdkEventPropertyFields(JNIEnv *env, jobject lpObject, GdkEventProperty *lpStruct)
+{
+	if (!GdkEventPropertyFc.cached) cacheGdkEventPropertyFields(env, lpObject);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntLongField(env, lpObject, GdkEventPropertyFc.window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventPropertyFc.send_event);
+	lpStruct->atom = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GdkEventPropertyFc.atom);
+	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventPropertyFc.time);
+	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventPropertyFc.state);
+	return lpStruct;
+}
+
+void setGdkEventPropertyFields(JNIEnv *env, jobject lpObject, GdkEventProperty *lpStruct)
+{
+	if (!GdkEventPropertyFc.cached) cacheGdkEventPropertyFields(env, lpObject);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntLongField(env, lpObject, GdkEventPropertyFc.window, (jintLong)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, GdkEventPropertyFc.send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntLongField(env, lpObject, GdkEventPropertyFc.atom, (jintLong)lpStruct->atom);
+	(*env)->SetIntField(env, lpObject, GdkEventPropertyFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, GdkEventPropertyFc.state, (jint)lpStruct->state);
+}
+#endif
+
 #ifndef NO_GdkEventScroll
 typedef struct GdkEventScroll_FID_CACHE {
 	int cached;
