@@ -49,6 +49,7 @@ public static final int C_NSMutableDictionary = Cocoa.objc_getClass("NSMutableDi
 public static final int C_WebPanelAuthenticationHandler = Cocoa.objc_getClass("WebPanelAuthenticationHandler"); //$NON-NLS-1$
 public static final int C_WebScriptObject = Cocoa.objc_getClass("WebScriptObject"); //$NON-NLS-1$
 public static final int C_WebUndefined = Cocoa.objc_getClass("WebUndefined"); //$NON-NLS-1$
+public static final int C_NSFileManager = Cocoa.objc_getClass("NSFileManager"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
@@ -74,11 +75,13 @@ public static final int S_credentialWithUser = Cocoa.sel_registerName("credentia
 public static final int S_cut = Cocoa.sel_registerName("cut:"); //$NON-NLS-1$
 public static final int S_dataSource = Cocoa.sel_registerName("dataSource"); //$NON-NLS-1$
 public static final int S_defaultCenter = Cocoa.sel_registerName("defaultCenter"); //$NON-NLS-1$
+public static final int S_defaultManager = Cocoa.sel_registerName("defaultManager"); //$NON-NLS-1$
 public static final int S_deleteCookie = Cocoa.sel_registerName("deleteCookie:"); //$NON-NLS-1$
 public static final int S_dictionaryWithCapacity = Cocoa.sel_registerName("dictionaryWithCapacity:"); //$NON-NLS-1$
 public static final int S_documentSource = Cocoa.sel_registerName("documentSource"); //$NON-NLS-1$
 public static final int S_doubleValue = Cocoa.sel_registerName("doubleValue"); //$NON-NLS-1$
 public static final int S_download = Cocoa.sel_registerName("download"); //$NON-NLS-1$
+public static final int S_fileExistsAtPath = Cocoa.sel_registerName("fileExistsAtPath:"); //$NON-NLS-1$
 public static final int S_goBack = Cocoa.sel_registerName("goBack:"); //$NON-NLS-1$
 public static final int S_goForward = Cocoa.sel_registerName("goForward:"); //$NON-NLS-1$
 public static final int S_handleNotification = Cocoa.sel_registerName("handleNotification:"); //$NON-NLS-1$

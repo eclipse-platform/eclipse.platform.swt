@@ -30,7 +30,6 @@ import java.util.Vector;
 public final class Program {
 	String name, fullPath, identifier;
 
-	static final String PREFIX_FILE = "file:"; //$NON-NLS-1$
 	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 
@@ -237,6 +236,25 @@ public static Program [] getPrograms () {
 	}
 }
 
+static NSURL getURL (String fileName) {
+	NSString unescapedStr;
+	String lowercaseName = fileName.toLowerCase ();
+	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+		unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
+	} else {
+		unescapedStr = NSString.stringWith("%"); //$NON-NLS-1$
+	}
+	NSString fullPath = NSString.stringWith(fileName);
+	if (NSFileManager.defaultManager().fileExistsAtPath(fullPath)) {
+		fullPath = NSURL.fileURLWithPath(fullPath).absoluteString();
+	}
+	int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
+	NSString escapedString = new NSString(ptr);
+	NSURL url = NSURL.URLWithString(escapedString);
+	OS.CFRelease(ptr);
+	return url;
+}
+
 /**
  * Launches the operating system executable associated with the file or
  * URL (http:// or https://).  If the file is an executable then the
@@ -254,22 +272,9 @@ public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		NSString unescapedStr = NSString.stringWith("%"); //$NON-NLS-1$
-		String lowercaseName = fileName.toLowerCase ();
-		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-			unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
-		} else {
-			if (!lowercaseName.startsWith (PREFIX_FILE)) {
-				fileName = PREFIX_FILE + fileName;
-			}
-		}
-		NSString fullPath = NSString.stringWith(fileName);
-		int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
-		NSString escapedString = new NSString(ptr);
+		NSURL url = getURL(fileName);
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-		boolean result = workspace.openURL(NSURL.URLWithString(escapedString));
-		OS.CFRelease(ptr);
-		return result;
+		return workspace.openURL(url);
 	} finally {
 		pool.release();
 	}
@@ -293,22 +298,9 @@ public boolean execute (String fileName) {
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-		String lowercaseName = fileName.toLowerCase ();
-		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-			NSString fullPath = NSString.stringWith(fileName);
-			NSString unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
-			int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
-			NSString escapedString = new NSString(ptr);
-			NSArray urls = NSArray.arrayWithObject(NSURL.URLWithString(escapedString));
-			OS.CFRelease(ptr);
-			return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
-		} else {
-			if (fileName.startsWith (PREFIX_FILE)) {
-				fileName = fileName.substring (PREFIX_FILE.length ());
-			}
-			NSString fullPath = NSString.stringWith (fileName);
-			return workspace.openFile (fullPath, NSString.stringWith (name));
-		}
+		NSURL url = getURL(fileName);
+		NSArray urls = NSArray.arrayWithObject(url);
+		return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
 	} finally {
 		pool.release();
 	}

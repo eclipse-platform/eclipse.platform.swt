@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,10 @@ public static NSFileManager defaultManager() {
 public NSDirectoryEnumerator enumeratorAtPath(NSString path) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_enumeratorAtPath_, path != null ? path.id : 0);
 	return result != 0 ? new NSDirectoryEnumerator(result) : null;
+}
+
+public boolean fileExistsAtPath(NSString path) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_fileExistsAtPath_, path != null ? path.id : 0);
 }
 
 public boolean fileExistsAtPath(NSString path, int /*long*/ isDirectory) {
