@@ -3217,7 +3217,6 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 
 String getSharedData(int pid, int  handle) {
 	if (OS.IsWinCE) return null;
-	String id = Integer.toHexString(pid)+"_"+Integer.toHexString(handle);
 	int /*long*/ [] mapHandle = new int /*long*/ [1];
 	if (pid == OS.GetCurrentProcessId()) {
 		mapHandle[0] = handle;
