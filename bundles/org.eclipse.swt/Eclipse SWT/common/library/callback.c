@@ -687,7 +687,7 @@ jintLong callback(int index, ...)
 	}
 
 	/* If an exception has occurred in previous callbacks do not call into the VM. */
-	if (ex = (*env)->ExceptionOccurred(env)) {
+	if ((ex = (*env)->ExceptionOccurred(env))) {
 		(*env)->DeleteLocalRef(env, ex);
 		goto done;
 	}
@@ -729,7 +729,7 @@ jintLong callback(int index, ...)
 	
 done:
 	/* If an exception has occurred in Java, return the error result. */
-	if (ex = (*env)->ExceptionOccurred(env)) {
+	if ((ex = (*env)->ExceptionOccurred(env))) {
 		(*env)->DeleteLocalRef(env, ex);
 #ifdef DEBUG_CALL_PRINTS
 		fprintf(stderr, "* java exception occurred\n");
