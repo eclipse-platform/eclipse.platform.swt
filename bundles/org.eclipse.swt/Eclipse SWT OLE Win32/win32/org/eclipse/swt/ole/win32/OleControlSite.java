@@ -718,19 +718,6 @@ void onFocusOut(Event e) {
 private int OnFocus(int fGotFocus) {
 	return COM.S_OK;
 }
-protected int OnUIDeactivate(int fUndoable) {
-	// controls don't need to do anything for
-	// border space or menubars
-	if (frame == null || frame.isDisposed()) return COM.S_OK;
-	state = STATE_INPLACEACTIVE;
-	frame.SetActiveObject(0,0);
-	redraw();
-	Shell shell = getShell();
-	if (isFocusControl() || frame.isFocusControl()) {
-		shell.traverse(SWT.TRAVERSE_TAB_NEXT);
-	}
-	return COM.S_OK;
-}
 protected int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	int result = super.QueryInterface(riid, ppvObject);
 	if (result == COM.S_OK)
