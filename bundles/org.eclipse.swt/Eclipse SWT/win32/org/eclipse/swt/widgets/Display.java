@@ -1364,8 +1364,21 @@ int /*long*/ foregroundIdleProc (int /*long*/ code, int /*long*/ wParam, int /*l
 					runAsyncMessages (false);
 				}
 			}
+			/*
+			* Bug in Windows.  For some reason, input events can be lost
+			* when a message is posted to the queue from a foreground idle
+			* hook.  The fix is to detect that there are outstanding input
+			* events and avoid posting the wake event.
+			* 
+			* Note that PeekMessage() changes the state of events on the
+			* queue to no longer be considered new. If we peek for input
+			* events and posted messages (PM_QS_INPUT | PM_QS_POSTMESSAGE),
+			* it is possible to cause WaitMessage() to sleep until a new
+			* input event is generated causing sync runnables not to be
+			* executed.
+			*/
 			MSG msg = new MSG();
-			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT;
 			if (!OS.PeekMessage (msg, 0, 0, 0, flags)) wakeThread ();
 		}
 	}
