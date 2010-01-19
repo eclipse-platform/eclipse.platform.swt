@@ -26,7 +26,11 @@ class MozillaDelegate {
 	boolean hasFocus;
 	static Callback Callback3;
 	static Hashtable handles = new Hashtable ();
-	
+
+	static {
+		Cocoa.NSApplicationLoad ();
+	}
+
 MozillaDelegate (Browser browser) {
 	super ();
 	this.browser = browser;

@@ -67,6 +67,18 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(HIWebViewGetWebView)
 }
 #endif
 
+#ifndef NO_NSApplicationLoad
+JNIEXPORT jint JNICALL Cocoa_NATIVE(NSApplicationLoad)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, NSApplicationLoad_FUNC);
+	rc = (jint)NSApplicationLoad();
+	Cocoa_NATIVE_EXIT(env, that, NSApplicationLoad_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSDeviceRGBColorSpace
 JNIEXPORT jint JNICALL Cocoa_NATIVE(NSDeviceRGBColorSpace)
 	(JNIEnv *env, jclass that)

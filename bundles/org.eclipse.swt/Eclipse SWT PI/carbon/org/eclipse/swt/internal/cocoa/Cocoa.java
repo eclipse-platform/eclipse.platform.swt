@@ -16,7 +16,6 @@ public class Cocoa extends Platform {
 		
 static {
 	Library.loadLibrary("swt-cocoa"); //$NON-NLS-1$
-	WebInitForCarbon();
 }
 	
 /* Objective-C class ids */
@@ -400,6 +399,7 @@ public static final native void objc_msgSend_stret(NSRect result, int object, in
 /** @param selectorName cast=(const char *) */
 public static final native int sel_registerName(byte[] selectorName);
 
+public static final native int NSApplicationLoad();
 /** @method flags=const */
 public static final native int NSDeviceRGBColorSpace();
 /**

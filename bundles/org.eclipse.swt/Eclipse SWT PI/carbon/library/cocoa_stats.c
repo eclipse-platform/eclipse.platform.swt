@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,13 +14,14 @@
 
 #ifdef NATIVE_STATS
 
-int Cocoa_nativeFunctionCount = 36;
-int Cocoa_nativeFunctionCallCount[36];
+int Cocoa_nativeFunctionCount = 37;
+int Cocoa_nativeFunctionCallCount[37];
 char * Cocoa_nativeFunctionNames[] = {
 	"HICocoaViewCreate",
 	"HIJavaViewCreateWithCocoaView",
 	"HIWebViewCreate",
 	"HIWebViewGetWebView",
+	"NSApplicationLoad",
 	"NSDeviceRGBColorSpace",
 	"NSSearchPathForDirectoriesInDomains",
 	"WebInitForCarbon",

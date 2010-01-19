@@ -74,6 +74,8 @@ class Safari extends WebBrowser {
 	static final String DOMEVENT_FOCUSOUT = "DOMFocusOut"; //$NON-NLS-1$
 
 	static {
+		Cocoa.WebInitForCarbon();
+
 		NativeClearSessions = new Runnable() {
 			public void run() {
 				int storage = Cocoa.objc_msgSend (Cocoa.C_NSHTTPCookieStorage, Cocoa.S_sharedHTTPCookieStorage);
