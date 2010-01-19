@@ -117,7 +117,7 @@ public class Display extends Device {
 	int /*long*/ windowProc;
 	int threadId;
 	TCHAR windowClass, windowShadowClass, windowOwnDCClass;
-	static int WindowClassCount = 1000;
+	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
 	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
 	static final String WindowOwnDCName = "SWT_WindowOwnDC"; //$NON-NLS-1$
