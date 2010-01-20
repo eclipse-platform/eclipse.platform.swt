@@ -11,6 +11,7 @@
 package org.eclipse.swt.program;
 
 
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.LSApplicationParameters;
 import org.eclipse.swt.internal.carbon.OS;
@@ -18,6 +19,7 @@ import org.eclipse.swt.internal.cocoa.Cocoa;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -253,6 +255,29 @@ static int getURL(String fileName) {
 	return url;
 }
 
+static boolean isExecutable (String fileName) {
+	boolean result = false;
+	char[] chars = new char[fileName.length()];
+	fileName.getChars(0, chars.length, chars, 0);
+	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+	if (str != 0) {
+		int fileManager = Cocoa.objc_msgSend(Cocoa.C_NSFileManager, Cocoa.S_defaultManager);
+		int ptr = OS.malloc (1);
+		if (ptr != 0) {
+			if (fileManager != 0 && Cocoa.objc_msgSend(fileManager, Cocoa.S_fileExistsAtPath_isDirectory, str, ptr) != 0) {
+				byte[] isDirectory = new byte[1];
+				OS.memmove(isDirectory, ptr, 1);
+				if (isDirectory[0] == 0) {
+					result = Cocoa.objc_msgSend(fileManager, Cocoa.S_isExecutableFileAtPath, str) != 0;
+				}
+			}
+		}
+		OS.free(ptr);
+		OS.CFRelease(str);
+	}
+	return result;
+}
+
 /**
  * Launches the operating system executable associated with the file or
  * URL (http:// or https://).  If the file is an executable then the
@@ -267,7 +292,37 @@ static int getURL(String fileName) {
  * </ul>
  */
 public static boolean launch (String fileName) {
+	return launch (fileName, null);
+}
+
+/**
+ * Launches the operating system executable associated with the file or
+ * URL (http:// or https://).  If the file is an executable then the
+ * executable is launched.  If a valid working directory is specified
+ * it is used as working directory for the launched program.
+ * Note that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
+ *
+ * @param fileName the file or program name or URL (http:// or https://)
+ * @param workingDir the name of the working directory or null
+ * @return <code>true</code> if the file is launched, otherwise <code>false</code>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+/*public*/ static boolean launch (String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (isExecutable(fileName)) {
+		try {
+			Compatibility.exec(new String[] {fileName}, null, workingDir);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 	int rc = -1;
 	int url = getURL(fileName);
 	if (url != 0) {
