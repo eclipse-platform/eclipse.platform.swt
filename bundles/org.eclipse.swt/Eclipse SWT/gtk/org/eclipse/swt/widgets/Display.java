@@ -4175,9 +4175,8 @@ int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ u
 						while (index != -1) {
 							String file = string.substring (lastIndex, index);
 							Event event = new Event ();
-							event.type = SWT.OpenDoc;
 							event.text = file;
-							postEvent (event);
+							sendEvent (SWT.OpenDoc, event);
 							lastIndex = index+1;
 							index = string.indexOf(':', lastIndex);
 						}

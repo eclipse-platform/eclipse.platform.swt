@@ -3218,9 +3218,8 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 				String filename = getSharedData((int)/*64*/wParam, (int)/*64*/lParam);
 				if (filename != null) {
 					Event event = new Event();
-					event.type = SWT.OpenDoc;
 					event.text = filename;
-					postEvent(event);
+					sendEvent(SWT.OpenDoc, event);
 				}
 			}
 		}

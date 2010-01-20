@@ -933,9 +933,8 @@ int coreEventProc (int theAppleEvent, int reply, int handlerRefcon) {
 					OS.CFRelease (dirString);
 					String string = new String(buffer);
 					Event event = new Event();
-					event.type = SWT.OpenDoc;
 					event.text = string;
-					postEvent(event);
+					sendEvent(SWT.OpenDoc, event);
 				}
 				OS.DisposePtr (dataPtr);
 		    }
@@ -2543,9 +2542,8 @@ int launcherProc (int nextHandler, int theEvent, int userData) {
 	}
 	String filePath = new String(buffer);
 	Event event = new Event();
-	event.type = SWT.OpenDoc;
 	event.text = filePath;
-	postEvent(event);
+	sendEvent(SWT.OpenDoc, event);
 	return OS.noErr;
 }
 /**
