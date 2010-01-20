@@ -5447,6 +5447,8 @@ public static final native boolean OpenClipboard (int /*long*/ hWndNewOwner);
 public static final native int /*long*/ OpenThemeData (int /*long*/ hwnd, char[] pszClassList);
 /** @param hdc cast=(HDC) */
 public static final native boolean PatBlt (int /*long*/ hdc, int x1, int x2, int w, int h, int rop);
+/** @param szfile cast=(LPCWSTR) */
+public static final native boolean PathIsExe (int /*long*/ szfile);
 /** @param hWnd cast=(HWND) */
 public static final native boolean PeekMessageW (MSG lpMsg, int /*long*/ hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
 /** @param hWnd cast=(HWND) */

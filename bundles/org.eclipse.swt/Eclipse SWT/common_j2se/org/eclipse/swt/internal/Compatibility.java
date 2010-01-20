@@ -282,6 +282,26 @@ public static void exec(String[] progArray) throws java.io.IOException{
 	Runtime.getRuntime().exec(progArray);
 }
 
+/**
+ * Execute prog in a separate platform process if the
+ * underlying platform support this.
+ * <p>
+ * The new process inherits the environment of the caller.
+ * <p>
+ *
+ * @param prog containing the program to execute and its arguments
+ *
+ * @exception IOException
+ *  if the program cannot be executed
+ * @exception	SecurityException
+ *  if the current SecurityManager disallows program execution
+ *
+ * @since 3.6
+ */
+public static void exec(String[] prog, String[] envp, String workingDir) throws java.io.IOException{
+	Runtime.getRuntime().exec(prog, null, workingDir != null ? new File(workingDir) : null);
+}
+
 private static ResourceBundle msgs = null;
 
 /**

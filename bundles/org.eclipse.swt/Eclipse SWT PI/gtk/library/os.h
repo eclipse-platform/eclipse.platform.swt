@@ -31,6 +31,7 @@
 #include <string.h>
 #include <dlfcn.h>
 #include <locale.h>
+#include <unistd.h>
 
 #ifndef GDK_WINDOWING_X11
 

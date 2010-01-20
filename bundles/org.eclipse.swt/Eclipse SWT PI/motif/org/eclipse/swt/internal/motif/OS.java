@@ -181,6 +181,7 @@ public class OS extends C {
 	public static final int SunXK_F37 = 0x1005FF11;
 	public static final int UnmapNotify = 18;
 	public static final int Unsorted = 0x0;
+	public static final int X_OK = 0x01;
 	public static final int XA_ATOM = 4;
 	public static final int XA_FONT = 18;
 	public static final int XBufferOverflow = 0xFFFFFFFF;
@@ -827,6 +828,18 @@ public static final native void FD_ZERO(byte[] fd_set);
 public static final native int LC_CTYPE();
 /** @method flags=const */
 public static final native int MB_CUR_MAX();
+/**
+ * @param path cast=(const char*)
+ */
+public static final native int _access (byte [] path, int amode);
+public static final int access (byte [] path, int amode) {
+	lock.lock();
+	try {
+		return _access(path, amode);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=const */
 public static final native int _applicationShellWidgetClass();
 public static final int applicationShellWidgetClass() {

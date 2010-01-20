@@ -239,6 +239,7 @@
 #define g_file_info_get_modification_time_LIB "libgio-2.0.so.0"
 #define g_file_new_for_path_LIB "libgio-2.0.so.0"
 #define g_file_read_LIB "libgio-2.0.so.0"
+#define g_file_test_LIB "libgio-2.0.so.0"
 #define g_icon_to_string_LIB "libgio-2.0.so.0"
 #define g_icon_new_for_string_LIB "libgio-2.0.so.0"
 #define g_file_query_info_LIB "libgio-2.0.so.0"

@@ -40,6 +40,8 @@ public class OS extends C {
 	/** Constants */
 	public static final int /*long*/ AnyPropertyType = 0;
 	public static final int ATK_RELATION_LABELLED_BY = 4;
+	public static final int G_FILE_TEST_IS_DIR = 1 << 2;
+	public static final int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
 	public static final int G_SIGNAL_MATCH_ID = 1 << 0;
 	public static final int GDK_2BUTTON_PRESS = 0x5;
@@ -422,6 +424,7 @@ public class OS extends C {
 	public static final int RTLD_GLOBAL = 0x100;
 	public static final int RTLD_LAZY = 1;
 	public static final int RTLD_NOW = 2;
+	public static final int X_OK = 0x01;
 	public static final int XA_CARDINAL = 6;
 	public static final int XA_WINDOW = 33;
 	
@@ -2050,6 +2053,16 @@ public static final int /*long*/ g_file_read(int /*long*/ file, int /*long*/ can
 	lock.lock();
 	try {
 		return _g_file_read(file, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean /*long*/ _g_file_test(byte[] file, int test);
+public static final boolean /*long*/ g_file_test(byte[] file, int test) {
+	lock.lock();
+	try {
+		return _g_file_test(file, test);
 	} finally {
 		lock.unlock();
 	}
@@ -14840,4 +14853,17 @@ public static final boolean atk_object_add_relationship (int /*long*/ object, in
 		lock.unlock();
 	}
 }
+/**
+ * @param path cast=(const char*)
+ */
+public static final native int _access (byte [] path, int amode);
+public static final int access (byte [] path, int amode) {
+	lock.lock();
+	try {
+		return _access(path, amode);
+	} finally {
+		lock.unlock();
+	}
+}
+
 }

@@ -138,6 +138,17 @@ public static final int /*long*/ gnome_vfs_get_registered_mime_types() {
 		lock.unlock();
 	}
 }
+/** @param uri cast=(const char *) */
+public static final native int /*long*/ _gnome_vfs_get_mime_type(int /*long*/ uri);
+public static final int /*long*/ gnome_vfs_get_mime_type(int /*long*/ uri) {
+	lock.lock();
+	try {
+		return _gnome_vfs_get_mime_type(uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
 public static final native boolean _gnome_vfs_init();
 public static final boolean gnome_vfs_init() {
 	lock.lock();
@@ -176,6 +187,26 @@ public static final void gnome_vfs_mime_application_free(int /*long*/ applicatio
 	lock.lock();
 	try {
 		_gnome_vfs_mime_application_free(application);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param mimeType cast=(const char *) */
+public static final native boolean _gnome_vfs_mime_can_be_executable(int /*long*/ mimeType);
+public static final boolean gnome_vfs_mime_can_be_executable(int /*long*/ mimeType) {
+	lock.lock();
+	try {
+		return _gnome_vfs_mime_can_be_executable(mimeType);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param command_string cast=(const char *) */
+public static final native boolean _gnome_vfs_is_executable_command_string(byte[] command_string);
+public static final boolean gnome_vfs_is_executable_command_string(byte[] command_string) {
+	lock.lock();
+	try {
+		return _gnome_vfs_is_executable_command_string(command_string);
 	} finally {
 		lock.unlock();
 	}

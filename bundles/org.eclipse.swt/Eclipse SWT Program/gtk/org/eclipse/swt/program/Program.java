@@ -309,6 +309,11 @@ static boolean cde_init(Display display) {
 	return initOK;
 }
 
+static boolean cde_isExecutable(String fileName) {
+	byte [] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
+	return OS.access(fileNameBuffer, OS.X_OK) == 0;
+}
+
 static String[] parseCommand(String cmd) {
 	Vector args = new Vector();
 	int sIndex = 0;
@@ -548,6 +553,18 @@ static boolean gnome_init() {
 	} catch (Throwable e) {
 		return false;
 	}
+}
+
+static boolean gnome_isExecutable(String fileName) {
+	/* check if the file is executable */
+	byte [] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
+	if (!GNOME.gnome_vfs_is_executable_command_string(fileNameBuffer)) return false;
+	
+	/* check if the mime type is executable */
+	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
+	int /*long*/ mimeType = GNOME.gnome_vfs_get_mime_type(uri);
+	GNOME.g_free(uri);
+	return GNOME.gnome_vfs_mime_can_be_executable(mimeType);
 }
 
 /**
@@ -878,6 +895,12 @@ static Program[] gio_getPrograms(Display display) {
 	return programList;
 }
 
+static boolean gio_isExecutable(String fileName) {
+	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
+	if (OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_DIR)) return false;
+	return OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_EXECUTABLE);
+}
+
 /**
  * GNOME 2.4 - Launch the default program for the given file. 
  */
@@ -936,6 +959,16 @@ static String[] gio_getExtensions() {
 	return extStrings;
 }
 
+public static boolean isExecutable(Display display, String fileName) {
+	switch(getDesktop(display)) {
+		case DESKTOP_GIO: return gio_isExecutable(fileName);
+		case DESKTOP_GNOME_24:
+		case DESKTOP_GNOME: return gnome_isExecutable(fileName);
+		case DESKTOP_CDE: return cde_isExecutable(fileName);
+	}
+	return false;
+}
+
 /**
  * Launches the operating system executable associated with the file or
  * URL (http:// or https://).  If the file is an executable then the
@@ -950,15 +983,45 @@ static String[] gio_getExtensions() {
  * </ul>
  */
 public static boolean launch(String fileName) {
-	return launch(Display.getCurrent(), fileName);
+	return launch(Display.getCurrent(), fileName, null);
+}
+
+/**
+* Launches the operating system executable associated with the file or
+* URL (http:// or https://).  If the file is an executable then the
+* executable is launched.  If a valid working directory is specified 
+* it is used as the working directory for the launched program.
+* Note that a <code>Display</code> must already exist to guarantee
+* that this method returns an appropriate result.
+*
+* @param fileName the file or program name or URL (http:// or https://)
+* @param workingDirectory the name of the working directory or null
+* @return <code>true</code> if the file is launched, otherwise <code>false</code>
+* 
+* @exception IllegalArgumentException <ul>
+*    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+* </ul>
+* 
+* @since 3.6
+*/
+/*public*/ static boolean launch (String fileName, String workingDir) {
+	return launch(Display.getCurrent(), fileName, workingDir);
 }
 
 /*
  *  API: When support for multiple displays is added, this method will
  *       become public and the original method above can be deprecated.
  */
-static boolean launch (Display display, String fileName) {
+static boolean launch (Display display, String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (isExecutable(display, fileName)) {
+		try {
+			Compatibility.exec (new String [] {fileName}, null, workingDir);
+			return true;
+		} catch (IOException e) {
+			//
+		}
+	}
 	switch (getDesktop (display)) {
 		case DESKTOP_GIO:
 			if (gio_launch (fileName)) return true;
@@ -981,12 +1044,7 @@ static boolean launch (Display display, String fileName) {
 			}
 			break;
 	}
-	try {
-		Compatibility.exec (fileName);
-		return true;
-	} catch (IOException e) {
-		return false;
-	}
+	return false;
 }
 
 /**

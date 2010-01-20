@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 984;
-int OS_nativeFunctionCallCount[984];
+int OS_nativeFunctionCount = 985;
+int OS_nativeFunctionCallCount[985];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1167,6 +1167,7 @@ char * OS_nativeFunctionNames[] = {
 	"PRINTDLG_1sizeof",
 	"PROCESS_1INFORMATION_1sizeof",
 	"PatBlt",
+	"PathIsExe",
 	"PeekMessageA",
 	"PeekMessageW",
 	"Pie",

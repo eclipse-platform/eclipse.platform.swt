@@ -263,6 +263,29 @@ public static Program [] getPrograms () {
  * </ul>
  */
 public static boolean launch (String fileName) {
+    return launch(fileName, null);
+}
+
+/**
+ * Launches the operating system executable associated with the file or
+ * URL (http:// or https://).  If the file is an executable then the
+ * executable is launched.  If a valid working directory is specified 
+ * it is used as the working directory for the launched program.
+ * Note that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
+ *
+ * @param fileName the file or program name or URL (http:// or https://)
+ * @param workingDirectory the name of the working directory or null
+ * @return <code>true</code> if the file is launched, otherwise <code>false</code>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT when workingDirectory is not valid</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+/*public*/ static boolean launch (String fileName, String workingDirectory) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Use the character encoding for the default locale */
@@ -271,12 +294,23 @@ public static boolean launch (String fileName) {
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	int /*long*/ lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpFile, buffer, byteCount);
+	
+	int /*long*/ lpDirectory = 0;
+	if (workingDirectory != null && OS.PathIsExe(lpFile)) {
+	    TCHAR buffer1 = new TCHAR (0, workingDirectory, true);
+	    byteCount = buffer1.length () * TCHAR.sizeof;
+	    lpDirectory = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	    OS.MoveMemory (lpDirectory, buffer1, byteCount);
+	}
+	
 	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();
 	info.cbSize = SHELLEXECUTEINFO.sizeof;
 	info.lpFile = lpFile;
+	info.lpDirectory = lpDirectory;
 	info.nShow = OS.SW_SHOW;
 	boolean result = OS.ShellExecuteEx (info);
 	if (lpFile != 0) OS.HeapFree (hHeap, 0, lpFile);
+	if (lpDirectory != 0) OS.HeapFree (hHeap, 0, lpDirectory);
 	return result;
 }
 

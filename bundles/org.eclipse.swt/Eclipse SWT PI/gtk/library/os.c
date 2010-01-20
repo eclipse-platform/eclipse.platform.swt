@@ -2276,6 +2276,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XWarpPointer)
 }
 #endif
 
+#ifndef NO__1access
+JNIEXPORT jint JNICALL OS_NATIVE(_1access)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1access_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)access((const char*)lparg0, arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1access_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1atk_1object_1add_1relationship
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1add_1relationship)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
@@ -2875,6 +2891,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1read)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1file_1read_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1file_1test
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1file_1test)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1file_1test_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)g_file_test(lparg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, g_file_test)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jbyte *, jint))fp)(lparg0, arg1);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1file_1test_FUNC);
 	return rc;
 }
 #endif

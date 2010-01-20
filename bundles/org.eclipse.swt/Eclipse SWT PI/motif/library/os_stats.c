@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 466;
-int OS_nativeFunctionCallCount[466];
+int OS_nativeFunctionCount = 467;
+int OS_nativeFunctionCallCount[467];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -423,6 +423,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XtWindowToWidget",
 	"_1_1XmSetMenuTraversal",
 	"_1_1XtDefaultAppContext",
+	"_1access",
 	"_1applicationShellWidgetClass",
 	"_1dlclose",
 	"_1dlopen",

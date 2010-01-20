@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -141,6 +141,18 @@ JNIEXPORT jintLong JNICALL GNOME_NATIVE(_1gnome_1icon_1theme_1new)
 }
 #endif
 
+#ifndef NO__1gnome_1vfs_1get_1mime_1type
+JNIEXPORT jintLong JNICALL GNOME_NATIVE(_1gnome_1vfs_1get_1mime_1type)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1get_1mime_1type_FUNC);
+	rc = (jintLong)gnome_vfs_get_mime_type((const char *)arg0);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1get_1mime_1type_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gnome_1vfs_1get_1registered_1mime_1types
 JNIEXPORT jintLong JNICALL GNOME_NATIVE(_1gnome_1vfs_1get_1registered_1mime_1types)
 	(JNIEnv *env, jclass that)
@@ -161,6 +173,22 @@ JNIEXPORT jboolean JNICALL GNOME_NATIVE(_1gnome_1vfs_1init)
 	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1init_FUNC);
 	rc = (jboolean)gnome_vfs_init();
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1init_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gnome_1vfs_1is_1executable_1command_1string
+JNIEXPORT jboolean JNICALL GNOME_NATIVE(_1gnome_1vfs_1is_1executable_1command_1string)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jboolean rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1is_1executable_1command_1string_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jboolean)gnome_vfs_is_executable_command_string((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1is_1executable_1command_1string_FUNC);
 	return rc;
 }
 #endif
@@ -231,6 +259,18 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1launch)
 		}
 	}
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1application_1launch_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gnome_1vfs_1mime_1can_1be_1executable
+JNIEXPORT jboolean JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1can_1be_1executable)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1can_1be_1executable_FUNC);
+	rc = (jboolean)gnome_vfs_mime_can_be_executable((const char *)arg0);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1can_1be_1executable_FUNC);
 	return rc;
 }
 #endif

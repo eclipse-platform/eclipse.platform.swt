@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11680,6 +11680,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PatBlt)
 	OS_NATIVE_ENTER(env, that, PatBlt_FUNC);
 	rc = (jboolean)PatBlt((HDC)arg0, arg1, arg2, arg3, arg4, arg5);
 	OS_NATIVE_EXIT(env, that, PatBlt_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PathIsExe
+JNIEXPORT jboolean JNICALL OS_NATIVE(PathIsExe)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, PathIsExe_FUNC);
+	rc = (jboolean)PathIsExe((LPCWSTR)arg0);
+	OS_NATIVE_EXIT(env, that, PathIsExe_FUNC);
 	return rc;
 }
 #endif
