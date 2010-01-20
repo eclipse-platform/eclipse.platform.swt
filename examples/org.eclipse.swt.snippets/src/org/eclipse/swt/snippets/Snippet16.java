@@ -27,6 +27,7 @@ public static void main (String [] args) {
 	final int time = 500;
 	Runnable timer = new Runnable () {
 		public void run () {
+			if (shell.isDisposed()) return;
 			Point point = display.getCursorLocation ();
 			Rectangle rect = shell.getBounds ();
 			if (rect.contains (point)) {
