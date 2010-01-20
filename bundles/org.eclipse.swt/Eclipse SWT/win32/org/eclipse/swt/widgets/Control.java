@@ -2061,7 +2061,8 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 			}
 			OS.DeleteObject(rgn);
 		}
-		int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+		int bits1 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+		int bits2 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 		int /*long*/ hwndInsertAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
 		/*
 		* Bug in Windows.  For some reason, when GetWindow ()
@@ -2078,34 +2079,40 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 			int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
 			int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 			int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-			if ((bits & OS.WS_VISIBLE) != 0) {
+			int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
+			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
 			}
-			OS.SetWindowLong (hwnd, OS.GWL_STYLE, (bits & ~OS.WS_CHILD) | OS.WS_POPUP);
-			OS.SetParent (hwnd, 0);
-			int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
 			SetWindowPos (hwnd, 0, x + width, y + height, 0, 0, flags);
-			if ((bits & OS.WS_VISIBLE) != 0) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				OS.SetWindowLong (hwnd, OS.GWL_STYLE, (bits1 & ~OS.WS_CHILD) | OS.WS_POPUP);
+				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_TOOLWINDOW);
+			}
+			OS.SetParent (hwnd, 0);
+			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 			}
 		}
-		if ((bits & OS.WS_VISIBLE) == 0) {
+		if ((bits1 & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 		}
 		success = OS.PrintWindow (hwnd, hdc, 0);
-		if ((bits & OS.WS_VISIBLE) == 0) {
+		if ((bits1 & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
 		}
 		if (fixPrintWindow) {
-			if ((bits & OS.WS_VISIBLE) != 0) {
+			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
 			}
-			OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits);
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits1);
+				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits2);
+			}
 			OS.SetParent (hwnd, hwndParent);
 			OS.MapWindowPoints (0, hwndParent, rect1, 2);
-			int flags = OS.SWP_NOSIZE | OS.SWP_NOACTIVATE;
-			SetWindowPos (hwnd, hwndInsertAfter, rect1.left, rect1.top, 0, 0, flags);
-			if ((bits & OS.WS_VISIBLE) != 0) {
+			int flags = OS.SWP_NOSIZE | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
+			SetWindowPos (hwnd, hwndInsertAfter, rect1.left, rect1.top, rect1.right - rect1.left, rect1.bottom - rect1.top, flags);
+			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 			}
 		}
