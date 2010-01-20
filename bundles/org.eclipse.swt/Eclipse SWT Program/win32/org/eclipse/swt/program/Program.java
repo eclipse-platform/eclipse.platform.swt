@@ -285,7 +285,7 @@ public static boolean launch (String fileName) {
  * 
  * @since 3.6
  */
-/*public*/ static boolean launch (String fileName, String workingDirectory) {
+public static boolean launch (String fileName, String workingDirectory) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Use the character encoding for the default locale */
