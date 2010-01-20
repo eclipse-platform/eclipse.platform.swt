@@ -172,6 +172,29 @@ public static Program [] getPrograms () {
  * </ul>
  */
 public static boolean launch (String fileName) {
+    return launch(fileName, null);
+}
+
+/**
+ * Launches the operating system executable associated with the file or
+ * URL (http:// or https://).  If the file is an executable then the
+ * executable is launched.  If a valid working directory is specified 
+ * it is used as the working directory for the launched program.
+ * Note that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
+ *
+ * @param fileName the file or program name or URL (http:// or https://)
+ * @param workingDirectory the name of the working directory or null
+ * @return <code>true</code> if the file is launched, otherwise <code>false</code>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT when workingDirectory is not valid</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public static boolean launch (String fileName, String workingDirectory) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int index = fileName.lastIndexOf ('.');
 	if (index == -1) return false;
