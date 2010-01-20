@@ -69,13 +69,13 @@ public final class PrinterData extends DeviceData {
 	 * the start page of a page range, used when scope is PAGE_RANGE.
 	 * This value can be from 1 to the maximum number of pages for the platform.
 	 */
-	public int startPage = 0;
+	public int startPage = 1;
 
 	/**
 	 * the end page of a page range, used when scope is PAGE_RANGE.
 	 * This value can be from 1 to the maximum number of pages for the platform.
 	 */
-	public int endPage = 0;
+	public int endPage = 1;
 	
 	/**
 	 * whether or not the print job should go to a file
