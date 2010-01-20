@@ -1129,6 +1129,7 @@ public static final int /*long*/ sel_isEnabled = sel_registerName("isEnabled");
 public static final int /*long*/ sel_isEqual_ = sel_registerName("isEqual:");
 public static final int /*long*/ sel_isEqualTo_ = sel_registerName("isEqualTo:");
 public static final int /*long*/ sel_isEqualToString_ = sel_registerName("isEqualToString:");
+public static final int /*long*/ sel_isExecutableFileAtPath_ = sel_registerName("isExecutableFileAtPath:");
 public static final int /*long*/ sel_isFieldEditor = sel_registerName("isFieldEditor");
 public static final int /*long*/ sel_isFilePackageAtPath_ = sel_registerName("isFilePackageAtPath:");
 public static final int /*long*/ sel_isFileURL = sel_registerName("isFileURL");

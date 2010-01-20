@@ -11,11 +11,13 @@
 package org.eclipse.swt.program;
 
 
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+import java.io.IOException;
 import java.util.Vector;
 
 /**
@@ -219,6 +221,22 @@ static NSURL getURL (String fileName) {
 	return url;
 }
 
+static boolean isExecutable (String fileName) {
+	int /*long*/ ptr = OS.malloc(1);
+	NSString path = NSString.stringWith(fileName);
+	boolean result = false;
+	NSFileManager manager = NSFileManager.defaultManager();
+	if (manager.fileExistsAtPath(path, ptr)) {
+		byte[] isDirectory = new byte[1];
+		OS.memmove(isDirectory, ptr, 1);
+		if (isDirectory[0] == 0 && manager.isExecutableFileAtPath(path)) {
+			result = true;
+		}
+	}
+	OS.free(ptr);
+	return result;
+}
+
 /**
  * Launches the operating system executable associated with the file or
  * URL (http:// or https://).  If the file is an executable then the
@@ -233,9 +251,39 @@ static NSURL getURL (String fileName) {
  * </ul>
  */
 public static boolean launch (String fileName) {
+	return launch (fileName, null);
+}
+
+/**
+ * Launches the operating system executable associated with the file or
+ * URL (http:// or https://).  If the file is an executable then the
+ * executable is launched.  If a valid working directory is specified
+ * it is used as working directory for the launched program.
+ * Note that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
+ *
+ * @param fileName the file or program name or URL (http:// or https://)
+ * @param workingDir the name of the working directory or null
+ * @return <code>true</code> if the file is launched, otherwise <code>false</code>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+/*public*/ static boolean launch (String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
+		if (workingDir != null && isExecutable(fileName)) {
+			try {
+				Compatibility.exec(new String[] {fileName}, null, workingDir);
+				return true;
+			} catch (IOException e) {
+				return false;
+			}
+		}
 		NSURL url = getURL(fileName);
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 		return workspace.openURL(url);
