@@ -313,7 +313,7 @@ public static boolean launch (String fileName) {
  * 
  * @since 3.6
  */
-/*public*/ static boolean launch (String fileName, String workingDir) {
+public static boolean launch (String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (isExecutable(fileName)) {
 		try {

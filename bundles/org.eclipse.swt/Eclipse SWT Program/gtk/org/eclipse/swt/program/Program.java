@@ -1004,7 +1004,7 @@ public static boolean launch(String fileName) {
 * 
 * @since 3.6
 */
-/*public*/ static boolean launch (String fileName, String workingDir) {
+public static boolean launch (String fileName, String workingDir) {
 	return launch(Display.getCurrent(), fileName, workingDir);
 }
 
