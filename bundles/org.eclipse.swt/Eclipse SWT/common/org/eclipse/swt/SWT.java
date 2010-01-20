@@ -707,6 +707,11 @@ public class SWT {
 	 * This event is sent when SWT receives notification that a document 
 	 * should be opened.
 	 * </p>
+	 *  
+     * @see org.eclipse.swt.widgets.Display#addListener
+     * @see org.eclipse.swt.widgets.Event
+     * 
+     * @since 3.6
 	 */
 	public static final int OpenDoc = 46;
 	
