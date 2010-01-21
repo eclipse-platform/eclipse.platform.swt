@@ -209,7 +209,7 @@ public class Accessible {
 			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleAction, args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return get_nActions((int)/*64*/args[0]);}
+			public int /*long*/ method3(int /*long*/[] args) {return get_nActions(args[0]);}
 			public int /*long*/ method4(int /*long*/[] args) {return doAction((int)/*64*/args[0]);}
 			public int /*long*/ method5(int /*long*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
 			public int /*long*/ method6(int /*long*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
@@ -262,7 +262,7 @@ public class Accessible {
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			// IAccessibleAction
-			public int /*long*/ method3(int /*long*/[] args) {return get_nActions((int)/*64*/args[0]);}
+			public int /*long*/ method3(int /*long*/[] args) {return get_nActions(args[0]);}
 			public int /*long*/ method4(int /*long*/[] args) {return doAction((int)/*64*/args[0]);}
 			public int /*long*/ method5(int /*long*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
 			public int /*long*/ method6(int /*long*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
@@ -315,7 +315,7 @@ public class Accessible {
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_description(args[0]);}
-			public int /*long*/ method4(int /*long*/[] args) {return get_imagePosition(args[0], args[1], args[2]);}
+			public int /*long*/ method4(int /*long*/[] args) {return get_imagePosition((int)/*64*/args[0], args[1], args[2]);}
 			public int /*long*/ method5(int /*long*/[] args) {return get_imageSize(args[0], args[1]);}
 		};
 	}
@@ -373,20 +373,20 @@ public class Accessible {
 			public int /*long*/ method3(int /*long*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
 			public int /*long*/ method4(int /*long*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
 			public int /*long*/ method5(int /*long*/[] args) {return get_caretOffset(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_characterExtents((int)/*64*/args[0], args[1], args[2], args[3], args[4], args[5]);}
+			public int /*long*/ method6(int /*long*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
 			public int /*long*/ method7(int /*long*/[] args) {return get_nSelections(args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
+			public int /*long*/ method8(int /*long*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
 			public int /*long*/ method9(int /*long*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
 			public int /*long*/ method10(int /*long*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_textAfterOffset((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_textAtOffset((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
+			public int /*long*/ method11(int /*long*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public int /*long*/ method12(int /*long*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public int /*long*/ method13(int /*long*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
 			public int /*long*/ method14(int /*long*/[] args) {return removeSelection((int)/*64*/args[0]);}
 			public int /*long*/ method15(int /*long*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
 			public int /*long*/ method16(int /*long*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
 			public int /*long*/ method17(int /*long*/[] args) {return get_nCharacters(args[0]);}
-			public int /*long*/ method18(int /*long*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method19(int /*long*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+			public int /*long*/ method18(int /*long*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public int /*long*/ method19(int /*long*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
 			public int /*long*/ method20(int /*long*/[] args) {return get_newText(args[0]);}
 			public int /*long*/ method21(int /*long*/[] args) {return get_oldText(args[0]);}
 		};
@@ -1391,7 +1391,7 @@ public class Accessible {
 			int code = iaccessible.QueryInterface(COM.IIDIServiceProvider, ppv);
 			if (code == COM.S_OK) {
 				IServiceProvider iserviceProvider = new IServiceProvider(ppv[0]);
-				int[] ppvx = new int[1];
+				int /*long*/ [] ppvx = new int /*long*/ [1];
 				code = iserviceProvider.QueryService(service, guid, ppvx);
 				COM.MoveMemory(ppvObject, new int /*long*/[] { ppvx[0] }, OS.PTR_SIZEOF);
 				return code;
