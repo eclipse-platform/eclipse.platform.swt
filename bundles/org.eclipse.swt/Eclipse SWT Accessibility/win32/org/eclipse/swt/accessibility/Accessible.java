@@ -4003,7 +4003,7 @@ public class Accessible {
 		}
 	}
 
-	void setString(int psz, String string) {
+	void setString(int /*long*/ psz, String string) {
 		char[] data = (string + "\0").toCharArray();
 		int /*long*/ ptr = COM.SysAllocString(data);
 		COM.MoveMemory(psz, new int /*long*/ [] { ptr }, OS.PTR_SIZEOF);
