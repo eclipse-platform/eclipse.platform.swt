@@ -22,10 +22,8 @@ import org.eclipse.swt.accessibility.AccessibleTableCellListener;
 import org.eclipse.swt.accessibility.AccessibleTableListener;
 import org.eclipse.swt.accessibility.AccessibleTextExtendedListener;
 import org.eclipse.swt.accessibility.AccessibleValueListener;
-import org.eclipse.swt.accessibility.Relation;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
-import org.eclipse.swt.internal.ole.win32.COM;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -86,9 +84,6 @@ public class Accessible {
 	NSMutableArray parameterizedAttributeNames = null;
 	NSMutableArray actionNames = null;
 
-	Vector accessibleListeners = new Vector();
-	Vector accessibleControlListeners = new Vector();
-	Vector accessibleTextListeners = new Vector ();
 	Vector accessibleListeners = new Vector();
 	Vector accessibleControlListeners = new Vector();
 	Vector accessibleTextListeners = new Vector ();
