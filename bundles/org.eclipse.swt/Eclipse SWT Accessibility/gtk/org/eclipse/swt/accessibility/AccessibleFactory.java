@@ -380,7 +380,7 @@ class AccessibleFactory {
 		byte[] nameBytes = Converter.wcsToMbcs(null, swtTypeName, true);
 		int /*long*/ type = OS.g_type_from_name(nameBytes);
 		if (type == 0) {
-			if (AccessibleObject.DEBUG) System.out.println("-->New Type=" + swtTypeName); //$NON-NLS-1$
+			if (AccessibleObject.DEBUG) AccessibleObject.print("-->New Type=" + swtTypeName); //$NON-NLS-1$
 			/* define the type */
 			int /*long*/ queryPtr = OS.g_malloc (GTypeQuery.sizeof);
 			OS.g_type_query (parentType, queryPtr);
@@ -551,7 +551,7 @@ class AccessibleFactory {
 		String name = FACTORY_TYPENAME + getTypeName(widgetType);
 		byte[] factoryName = Converter.wcsToMbcs(null, name, true);
 		if (OS.g_type_from_name (factoryName) == 0) {
-			if (AccessibleObject.DEBUG) System.out.println("-->New Factory=" + name); //$NON-NLS-1$
+			if (AccessibleObject.DEBUG) AccessibleObject.print("-->New Factory=" + name); //$NON-NLS-1$
 			/* register the factory */
 			GTypeInfo typeInfo = new GTypeInfo ();
 			typeInfo.base_init = GTypeInfo_base_init_factory.getAddress ();
