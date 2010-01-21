@@ -187,8 +187,8 @@ public class Accessible {
 			public int /*long*/ method29(int /*long*/[] args) {return get_relation((int)/*64*/args[0], args[1]);}
 			public int /*long*/ method30(int /*long*/[] args) {return get_relations((int)/*64*/args[0], args[1], args[2]);}
 			public int /*long*/ method31(int /*long*/[] args) {return get_role(args[0]);}
-			public int /*long*/ method32(int /*long*/[] args) {return scrollTo(args[0]);}
-			public int /*long*/ method33(int /*long*/[] args) {return scrollToPoint(args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public int /*long*/ method32(int /*long*/[] args) {return scrollTo((int)/*64*/args[0]);}
+			public int /*long*/ method33(int /*long*/[] args) {return scrollToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
 			public int /*long*/ method34(int /*long*/[] args) {return get_groupPosition(args[0], args[1], args[2]);}
 			public int /*long*/ method35(int /*long*/[] args) {return get_states(args[0]);}
 			public int /*long*/ method36(int /*long*/[] args) {return get_extendedRole(args[0]);}
@@ -286,20 +286,20 @@ public class Accessible {
 			public int /*long*/ method3(int /*long*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
 			public int /*long*/ method4(int /*long*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
 			public int /*long*/ method5(int /*long*/[] args) {return get_caretOffset(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_characterExtents((int)/*64*/args[0], args[1], args[2], args[3], args[4], args[5]);}
+			public int /*long*/ method6(int /*long*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
 			public int /*long*/ method7(int /*long*/[] args) {return get_nSelections(args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
+			public int /*long*/ method8(int /*long*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
 			public int /*long*/ method9(int /*long*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
 			public int /*long*/ method10(int /*long*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_textAfterOffset((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_textAtOffset((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
+			public int /*long*/ method11(int /*long*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public int /*long*/ method12(int /*long*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public int /*long*/ method13(int /*long*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
 			public int /*long*/ method14(int /*long*/[] args) {return removeSelection((int)/*64*/args[0]);}
 			public int /*long*/ method15(int /*long*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
 			public int /*long*/ method16(int /*long*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
 			public int /*long*/ method17(int /*long*/[] args) {return get_nCharacters(args[0]);}
-			public int /*long*/ method18(int /*long*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method19(int /*long*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+			public int /*long*/ method18(int /*long*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public int /*long*/ method19(int /*long*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
 			public int /*long*/ method20(int /*long*/[] args) {return get_newText(args[0]);}
 			public int /*long*/ method21(int /*long*/[] args) {return get_oldText(args[0]);}
 			// IAccessibleHypertext
@@ -756,7 +756,7 @@ public class Accessible {
 		parent = null;
 	}
 
-	int getAddress() {
+	int /*long*/ getAddress() {
 		/* The address of an Accessible is the address of its IAccessible COMObject. */
 		if (objIAccessible == null) createIAccessible();
 		return objIAccessible.getAddress();
@@ -1387,7 +1387,7 @@ public class Accessible {
 
 		if (iaccessible != null) {
 			/* Forward any other GUIDs to the OS proxy. */
-			int[] ppv = new int[1];
+			int /*long*/ [] ppv = new int /*long*/ [1];
 			int code = iaccessible.QueryInterface(COM.IIDIServiceProvider, ppv);
 			if (code == COM.S_OK) {
 				IServiceProvider iserviceProvider = new IServiceProvider(ppv[0]);
@@ -1401,7 +1401,7 @@ public class Accessible {
 		return COM.E_NOINTERFACE;
 	}
 
-	int queryAccessible2Interfaces(GUID guid, int ppvObject) {
+	int queryAccessible2Interfaces(GUID guid, int /*long*/ ppvObject) {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)
 				&& (accessibleControlListeners.size() > 0 || accessibleScrollListeners.size() > 0 || accessibleAttributeListeners.size() > 0)) {
 			if (objIAccessible2 == null) createIAccessible2();
