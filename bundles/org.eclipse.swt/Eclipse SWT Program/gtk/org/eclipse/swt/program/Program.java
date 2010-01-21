@@ -959,7 +959,7 @@ static String[] gio_getExtensions() {
 	return extStrings;
 }
 
-public static boolean isExecutable(Display display, String fileName) {
+static boolean isExecutable(Display display, String fileName) {
 	switch(getDesktop(display)) {
 		case DESKTOP_GIO: return gio_isExecutable(fileName);
 		case DESKTOP_GNOME_24:
