@@ -1221,7 +1221,6 @@ public Rectangle getClientArea () {
 	NSTableHeaderView headerView = ((NSTableView) view).headerView ();
 	if (headerView != null) {
 		int height =  (int) headerView.bounds ().height;
-		rect.y -= height;
 		rect.height += height;
 	}
 	return rect;
