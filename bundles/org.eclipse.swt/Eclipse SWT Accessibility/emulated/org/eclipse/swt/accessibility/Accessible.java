@@ -20,8 +20,6 @@ import org.eclipse.swt.accessibility.AccessibleHyperlinkListener;
 import org.eclipse.swt.accessibility.AccessibleTableCellListener;
 import org.eclipse.swt.accessibility.AccessibleTableListener;
 import org.eclipse.swt.accessibility.AccessibleValueListener;
-import org.eclipse.swt.accessibility.Relation;
-import org.eclipse.swt.internal.ole.win32.COM;
 import org.eclipse.swt.widgets.Control;
 
 /**

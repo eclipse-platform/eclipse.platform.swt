@@ -22,9 +22,7 @@ import org.eclipse.swt.accessibility.AccessibleTableCellListener;
 import org.eclipse.swt.accessibility.AccessibleTableListener;
 import org.eclipse.swt.accessibility.AccessibleTextExtendedListener;
 import org.eclipse.swt.accessibility.AccessibleValueListener;
-import org.eclipse.swt.accessibility.Relation;
 import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.internal.ole.win32.COM;
 
 /**
  * Instances of this class provide a bridge between application
