@@ -344,33 +344,6 @@ public class Accessible {
 	}
 
 	/**
-	 * Adds the listener to the collection of listeners that will be
-	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleScroll</code> interface.
-	 *
-	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleScroll</code> interface properties
-	 *
-	 * @exception IllegalArgumentException <ul>
-	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-	 * </ul>
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 *
-	 * @see AccessibleScrollListener
-	 * @see #removeAccessibleScrollListener
-	 * 
-	 * @since 3.6
-	 */
-	public void addAccessibleScrollListener(AccessibleScrollListener listener) {
-		checkWidget();
-		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleScrollListeners.addElement(listener);
-	}
-
-	/**
 	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds the listener to the collection of listeners that will be
@@ -445,6 +418,7 @@ public class Accessible {
 	 * @since 3.6
 	 */
 	public void dispose () {
+		if (parent == null) return;
 		// TODO: platform-specific code to dispose a lightweight accessible
 	}
 
@@ -462,6 +436,18 @@ public class Accessible {
 	void checkWidget () {
 		if (!isValidThread ()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		if (control.isDisposed ()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
+	}
+	
+	AccessibleObject getAccessibleObject () {
+		if (accessibleObject == null) {
+			if (parent == null) {
+				AccessibleFactory.createAccessible(this);
+			} else {
+				accessibleObject = AccessibleFactory.createChildAccessible(this, ACC.CHILDID_SELF);
+				accessibleObject.id = ACC.CHILDID_SELF;
+			}
+		}
+		return accessibleObject;
 	}
 
 	int /*long*/ getControlHandle () {
@@ -722,33 +708,6 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		accessibleValueListeners.removeElement(listener);
-	}
-
-	/**
-	 * Removes the listener from the collection of listeners that will be
-	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleScroll</code> interface.
-	 *
-	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleScroll</code> interface properties
-	 *
-	 * @exception IllegalArgumentException <ul>
-	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-	 * </ul>
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 *
-	 * @see AccessibleScrollListener
-	 * @see #addAccessibleScrollListener
-	 * 
-	 * @since 3.6
-	 */
-	public void removeAccessibleScrollListener(AccessibleScrollListener listener) {
-		checkWidget();
-		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleScrollListeners.removeElement(listener);
 	}
 
 	/**

@@ -55,8 +55,7 @@ class AccessibleObject {
 	}
 	
 	void addRelation (int type, Accessible target) {
-		OS.gtk_widget_get_accessible (target.getControlHandle ());
-		OS.atk_object_add_relationship(handle, toATKRelation(type), target.accessibleObject.handle);
+		OS.atk_object_add_relationship(handle, toATKRelation(type), target.getAccessibleObject().handle);
 	}
 	
 	static AtkActionIface getActionIface (int /*long*/ atkObject) {
@@ -458,7 +457,7 @@ class AccessibleObject {
 					listener.getHyperlink(event);
 				}
 				Accessible result = event.accessible;
-				return result != null ? result.accessibleObject.handle : 0;
+				return result != null ? result.getAccessibleObject().handle : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -663,8 +662,8 @@ class AccessibleObject {
 						case ACC.ROLE_SCROLLBAR: return ATK.ATK_ROLE_SCROLL_BAR;
 						case ACC.ROLE_SEPARATOR: return ATK.ATK_ROLE_SEPARATOR;
 						case ACC.ROLE_SLIDER: return ATK.ATK_ROLE_SLIDER;
-						case ACC.ROLE_TABLE: return ATK.ATK_ROLE_LIST;
-						case ACC.ROLE_TABLECELL: return ATK.ATK_ROLE_LIST_ITEM;
+						case ACC.ROLE_TABLE: return ATK.ATK_ROLE_TABLE;
+						case ACC.ROLE_TABLECELL: return ATK.ATK_ROLE_TABLE_CELL;
 						case ACC.ROLE_TABLECOLUMNHEADER: return ATK.ATK_ROLE_TABLE_COLUMN_HEADER;
 						case ACC.ROLE_TABLEROWHEADER: return ATK.ATK_ROLE_TABLE_ROW_HEADER;
 						case ACC.ROLE_TABFOLDER: return ATK.ATK_ROLE_PAGE_TAB_LIST;
@@ -845,8 +844,9 @@ class AccessibleObject {
 			Accessible result = event.accessible;
 			if (result != null) {
 				if (parentResult != 0) OS.g_object_unref(parentResult);
-				OS.g_object_ref(result.accessibleObject.handle);
-				return result.accessibleObject.handle;
+				AccessibleObject accessibleObject = result.getAccessibleObject();
+				OS.g_object_ref(accessibleObject.handle);
+				return accessibleObject.handle;
 			}
 		}
 		return parentResult;
@@ -1053,7 +1053,7 @@ class AccessibleObject {
 					listener.getCaption(event);
 				}
 				Accessible result = event.accessible;
-				if (result != null) return result.accessibleObject.handle;
+				if (result != null) return result.getAccessibleObject().handle;
 			}
 		}
 		return parentResult;
@@ -1078,7 +1078,7 @@ class AccessibleObject {
 					listener.getSummary(event);
 				}
 				Accessible result = event.accessible;
-				if (result != null) return result.accessibleObject.handle;
+				if (result != null) return result.getAccessibleObject().handle;
 			}
 		}
 		return parentResult;
@@ -1130,7 +1130,7 @@ class AccessibleObject {
 				Accessible[] accessibles = event.accessibles;
 				if (accessibles != null) {
 					if (0 <= column && column < accessibles.length) {
-						return accessibles[(int)/*64*/column].accessibleObject.handle;
+						return accessibles[(int)/*64*/column].getAccessibleObject().handle;
 					}
 				}
 			}
@@ -1184,7 +1184,7 @@ class AccessibleObject {
 				Accessible[] accessibles = event.accessibles;
 				if (accessibles != null) {
 					if (0 <= row && row < accessibles.length) {
-						return accessibles[(int)/*64*/row].accessibleObject.handle;
+						return accessibles[(int)/*64*/row].getAccessibleObject().handle;
 					}
 				}
 			}
@@ -2778,7 +2778,7 @@ class AccessibleObject {
 	}
 	
 	void removeRelation (int type, Accessible target) {
-		OS.atk_object_remove_relationship (handle, toATKRelation(type), target.accessibleObject.handle);
+		OS.atk_object_remove_relationship (handle, toATKRelation(type), target.getAccessibleObject().handle);
 	}
 	
 	void selectionChanged () {
@@ -2867,7 +2867,7 @@ class AccessibleObject {
 				for (int i = 0; i < event.children.length; i++) {
 					AccessibleObject object = null;
 					try {
-						object = ((Accessible)event.children [i]).accessibleObject;
+						object = ((Accessible)event.children [i]).getAccessibleObject();
 					} catch (ClassCastException e) {
 						/* a non-Accessible value was given so nothing to do here */ 
 					}
