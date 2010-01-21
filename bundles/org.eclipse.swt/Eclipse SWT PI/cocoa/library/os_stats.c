@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 533;
-int OS_nativeFunctionCallCount[533];
+int OS_nativeFunctionCount = 535;
+int OS_nativeFunctionCallCount[535];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -303,6 +303,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSLinkAttributeName",
 	"NSNumberOfColorComponents",
 	"NSObliquenessAttributeName",
+	"NSOutlineViewColumnDidMoveNotification",
 	"NSParagraphStyleAttributeName",
 	"NSPointInRect",
 	"NSPoint_1sizeof",
@@ -328,6 +329,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSStrokeWidthAttributeName",
 	"NSSystemColorsDidChangeNotification",
 	"NSTIFFPboardType",
+	"NSTableViewColumnDidMoveNotification",
 	"NSTemporaryDirectory",
 	"NSToolbarCustomizeToolbarItemIdentifier",
 	"NSToolbarDidRemoveItemNotification",

@@ -3963,6 +3963,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSObliquenessAttributeName)
 }
 #endif
 
+#ifndef NO_NSOutlineViewColumnDidMoveNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSOutlineViewColumnDidMoveNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSOutlineViewColumnDidMoveNotification_FUNC);
+	rc = (jintLong)NSOutlineViewColumnDidMoveNotification;
+	OS_NATIVE_EXIT(env, that, NSOutlineViewColumnDidMoveNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSParagraphStyleAttributeName
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
 	(JNIEnv *env, jclass that)
@@ -4266,6 +4278,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSTIFFPboardType)
 	OS_NATIVE_ENTER(env, that, NSTIFFPboardType_FUNC);
 	rc = (jintLong)NSTIFFPboardType;
 	OS_NATIVE_EXIT(env, that, NSTIFFPboardType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSTableViewColumnDidMoveNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSTableViewColumnDidMoveNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSTableViewColumnDidMoveNotification_FUNC);
+	rc = (jintLong)NSTableViewColumnDidMoveNotification;
+	OS_NATIVE_EXIT(env, that, NSTableViewColumnDidMoveNotification_FUNC);
 	return rc;
 }
 #endif

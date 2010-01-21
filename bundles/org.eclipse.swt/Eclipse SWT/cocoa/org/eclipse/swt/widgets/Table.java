@@ -3036,9 +3036,17 @@ void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNo
 	nsstring.release();
 	int oldIndex = new NSNumber (nsOldIndex).intValue ();
 	int newIndex = new NSNumber (nsNewIndex).intValue ();
+	NSTableView tableView = (NSTableView)view;
+	if (checkColumn != null && newIndex == 0) {
+		newIndex = 1;
+		NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
+		defaultCenter.removeObserver(view, OS.NSTableViewColumnDidMoveNotification, null);
+		tableView.moveColumn(0, newIndex);
+		defaultCenter.addObserver(view,  OS.sel_tableViewColumnDidMove_, OS.NSTableViewColumnDidMoveNotification, null);
+		if (oldIndex == newIndex) return;
+	}
 	int startIndex = Math.min (oldIndex, newIndex);
 	int endIndex = Math.max (oldIndex, newIndex);
-	NSTableView tableView = (NSTableView)view;
 	NSArray nsColumns = tableView.tableColumns ();
 	for (int i = startIndex; i <= endIndex; i++) {
 		id columnId = nsColumns.objectAtIndex (i);

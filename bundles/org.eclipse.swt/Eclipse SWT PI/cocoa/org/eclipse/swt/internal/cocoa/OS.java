@@ -1362,6 +1362,7 @@ public static final int /*long*/ sel_removeObjectAtIndex_ = sel_registerName("re
 public static final int /*long*/ sel_removeObjectForKey_ = sel_registerName("removeObjectForKey:");
 public static final int /*long*/ sel_removeObjectIdenticalTo_ = sel_registerName("removeObjectIdenticalTo:");
 public static final int /*long*/ sel_removeObserver_ = sel_registerName("removeObserver:");
+public static final int /*long*/ sel_removeObserver_name_object_ = sel_registerName("removeObserver:name:object:");
 public static final int /*long*/ sel_removeRepresentation_ = sel_registerName("removeRepresentation:");
 public static final int /*long*/ sel_removeStatusItem_ = sel_registerName("removeStatusItem:");
 public static final int /*long*/ sel_removeTabViewItem_ = sel_registerName("removeTabViewItem:");
@@ -2442,6 +2443,9 @@ public static final NSString NSLinkAttributeName = new NSString(NSLinkAttributeN
 public static final native int /*long*/ NSObliquenessAttributeName();
 public static final NSString NSObliquenessAttributeName = new NSString(NSObliquenessAttributeName());
 /** @method flags=const */
+public static final native int /*long*/ NSOutlineViewColumnDidMoveNotification();
+public static final NSString NSOutlineViewColumnDidMoveNotification = new NSString(NSOutlineViewColumnDidMoveNotification());
+/** @method flags=const */
 public static final native int /*long*/ NSParagraphStyleAttributeName();
 public static final NSString NSParagraphStyleAttributeName = new NSString(NSParagraphStyleAttributeName());
 /** @method flags=const */
@@ -2495,6 +2499,9 @@ public static final NSString NSStrokeWidthAttributeName = new NSString(NSStrokeW
 /** @method flags=const */
 public static final native int /*long*/ NSSystemColorsDidChangeNotification();
 public static final NSString NSSystemColorsDidChangeNotification = new NSString(NSSystemColorsDidChangeNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSTableViewColumnDidMoveNotification();
+public static final NSString NSTableViewColumnDidMoveNotification = new NSString(NSTableViewColumnDidMoveNotification());
 /** @method flags=const */
 public static final native int /*long*/ NSTIFFPboardType();
 public static final NSString NSTIFFPboardType = new NSString(NSTIFFPboardType());

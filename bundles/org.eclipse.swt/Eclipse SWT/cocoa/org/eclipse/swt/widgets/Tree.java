@@ -2092,9 +2092,17 @@ void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	nsstring.release();
 	int oldIndex = new NSNumber (nsOldIndex).intValue ();
 	int newIndex = new NSNumber (nsNewIndex).intValue ();
+	NSOutlineView outlineView = (NSOutlineView)view;
+	if (checkColumn != null && newIndex == 0) {
+		newIndex = 1;
+		NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
+		defaultCenter.removeObserver(view, OS.NSOutlineViewColumnDidMoveNotification, null);
+		outlineView.moveColumn(0, newIndex);
+		defaultCenter.addObserver(view,  OS.sel_outlineViewColumnDidMove_, OS.NSOutlineViewColumnDidMoveNotification, null);
+		if (oldIndex == newIndex) return;
+	}
 	int startIndex = Math.min (oldIndex, newIndex);
 	int endIndex = Math.max (oldIndex, newIndex);
-	NSOutlineView outlineView = (NSOutlineView)view;
 	NSArray nsColumns = outlineView.tableColumns ();
 	for (int i = startIndex; i <= endIndex; i++) {
 		id columnId = nsColumns.objectAtIndex (i);
