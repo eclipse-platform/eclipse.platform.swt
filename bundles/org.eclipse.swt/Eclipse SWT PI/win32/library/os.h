@@ -409,6 +409,7 @@
 #define NO_OleInitialize
 #define NO_OleUninitialize
 #define NO_OpenThemeData
+#define NO_PathIsExe
 #define NO_PeekMessageA
 #define NO_Pie
 #define NO_PostMessageA
