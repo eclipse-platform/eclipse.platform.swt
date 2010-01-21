@@ -37,7 +37,7 @@ class AccessibleObject {
 	static int /*long*/ keybindingPtr = -1;
 	static int /*long*/ namePtr = -1;
 	static final Hashtable AccessibleObjects = new Hashtable (9);
-	static final boolean DEBUG = true;
+	static final boolean DEBUG = Device.DEBUG;
 
 	AccessibleObject (int /*long*/ type, int /*long*/ widget, Accessible accessible, boolean isLightweight) {
 		super ();
