@@ -30,6 +30,7 @@ class ClipboardProxy {
 	Object[] primaryClipboardData;
 	Transfer[] primaryClipboardDataTypes;
 
+	int /*long*/ clipboardOwner = OS.gtk_window_new(0);
 	Display display;
 	Clipboard activeClipboard = null;
 	Clipboard activePrimaryClipboard = null;
@@ -37,7 +38,6 @@ class ClipboardProxy {
 	Callback clearFunc;
 	
 	static String ID = "CLIPBOARD PROXY OBJECT"; //$NON-NLS-1$
-	static int /*long*/ clipboardOwner = OS.gtk_window_new(0);
 
 static ClipboardProxy _getInstance(final Display display) {
 	ClipboardProxy proxy = (ClipboardProxy) display.getData(ID);
@@ -99,6 +99,7 @@ void dispose () {
 	clipboardDataTypes = null;
 	primaryClipboardData = null;
 	primaryClipboardDataTypes = null;
+	if (clipboardOwner != 0) OS.gtk_widget_destroy (clipboardOwner);
 	clipboardOwner = 0;
 }
 
