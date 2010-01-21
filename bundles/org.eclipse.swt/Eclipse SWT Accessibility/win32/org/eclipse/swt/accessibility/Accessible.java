@@ -66,7 +66,7 @@ public class Accessible {
 	Control control;
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Constructs a new instance of this class given its parent.
 	 * 
@@ -539,7 +539,7 @@ public class Accessible {
 	}
 	
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -568,7 +568,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -597,7 +597,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -626,7 +626,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -655,7 +655,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -684,7 +684,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -713,7 +713,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Adds a relation with the specified type and target
 	 * to the receiver's set of relations.
@@ -732,7 +732,7 @@ public class Accessible {
 	}
 	
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Disposes of the operating system resources associated with
 	 * the receiver, and removes the receiver from its parent's
@@ -899,7 +899,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -928,7 +928,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -957,7 +957,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -986,7 +986,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -1015,7 +1015,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -1044,7 +1044,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -1073,7 +1073,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Removes the relation with the specified type and target
 	 * from the receiver's set of relations.
@@ -1096,7 +1096,7 @@ public class Accessible {
 	}
 	
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Sends a message to accessible clients indicating that something
 	 * has changed within a custom control.
@@ -1117,7 +1117,7 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
+	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Sends a message with event-specific data to accessible clients
 	 * indicating that something has changed within a custom control.

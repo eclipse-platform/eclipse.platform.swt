@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 
 /**
- * WARNING: API UNDER COSTRUCTION
+ * WARNING: API UNDER CONSTRUCTION
  * 
  * Instances of this class are sent as a result of accessibility clients
  * sending AccessibleAttribute messages to an accessible object.

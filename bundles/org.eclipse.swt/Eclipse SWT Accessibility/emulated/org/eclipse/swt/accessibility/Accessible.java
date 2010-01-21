@@ -51,6 +51,8 @@ public class Accessible {
 	Control control;
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Constructs a new instance of this class given its parent.
 	 * 
 	 * @param parent the Accessible parent, which must not be null
@@ -68,6 +70,7 @@ public class Accessible {
 
 	/**
 	 * @since 3.5
+	 * @deprecated
 	 */
 	protected Accessible() {
 	}
@@ -190,7 +193,7 @@ public class Accessible {
 	 * be notified when an accessible client asks for custom text control
 	 * specific information. The listener is notified by sending it
 	 * one of the messages defined in the <code>AccessibleTextListener</code>
-	 * interface.
+	 * and <code>AccessibleTextExtendedListener</code> interfaces.
 	 *
 	 * @param listener the listener that should be notified when the receiver
 	 * is asked for custom text control specific information
@@ -204,6 +207,7 @@ public class Accessible {
 	 * </ul>
 	 *
 	 * @see AccessibleTextListener
+	 * @see AccessibleTextExtendedListener
 	 * @see #removeAccessibleTextListener
 	 * 
 	 * @since 3.0
@@ -228,6 +232,7 @@ public class Accessible {
 	 * </ul>
 	 *
 	 * @see AccessibleTextListener
+	 * @see AccessibleTextExtendedListener
 	 * @see #addAccessibleTextListener
 	 * 
 	 * @since 3.0
@@ -236,6 +241,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAction</code> interface.
@@ -260,6 +267,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleHyperlink</code> interface.
@@ -284,6 +293,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTable</code> interface.
@@ -308,6 +319,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTableCell</code> interface.
@@ -332,6 +345,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleValue</code> interface.
@@ -356,6 +371,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAttribute</code> interface.
@@ -380,6 +397,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Adds a relation with the specified type and target
 	 * to the receiver's set of relations.
 	 * 
@@ -392,6 +411,8 @@ public class Accessible {
 	}
 	
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Disposes of the operating system resources associated with
 	 * the receiver, and removes the receiver from its parent's
 	 * list of children.
@@ -421,6 +442,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAction</code> interface.
@@ -445,6 +468,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleHyperlink</code> interface.
@@ -469,6 +494,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTable</code> interface.
@@ -493,6 +520,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTableCell</code> interface.
@@ -517,6 +546,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleValue</code> interface.
@@ -541,6 +572,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAttribute</code> interface.
@@ -565,6 +598,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Removes the relation with the specified type and target
 	 * from the receiver's set of relations.
 	 * 
@@ -577,6 +612,8 @@ public class Accessible {
 	}
 	
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Sends a message to accessible clients indicating that something
 	 * has changed within a custom control.
 	 *
@@ -594,6 +631,8 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER CONSTRUCTION
+	 * 
 	 * Sends a message with event-specific data to accessible clients
 	 * indicating that something has changed within a custom control.
 	 *

@@ -13,7 +13,7 @@ package org.eclipse.swt.accessibility;
 import org.eclipse.swt.internal.SWTEventListener;
 
 /**
- * WARNING: API UNDER COSTRUCTION
+ * WARNING: API UNDER CONSTRUCTION
  * 
  * Classes which implement this interface provide methods
  * that handle AccessibleHyperlink events.

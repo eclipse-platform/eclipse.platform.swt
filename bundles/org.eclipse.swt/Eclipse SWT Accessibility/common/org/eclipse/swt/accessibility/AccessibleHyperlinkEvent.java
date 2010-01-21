@@ -13,7 +13,7 @@ package org.eclipse.swt.accessibility;
 import org.eclipse.swt.internal.*;
 
 /**
- * WARNING: API UNDER COSTRUCTION
+ * WARNING: API UNDER CONSTRUCTION
  * 
  * Instances of this class are sent as a result of accessibility clients
  * sending AccessibleHyperlink messages to an accessible object.
