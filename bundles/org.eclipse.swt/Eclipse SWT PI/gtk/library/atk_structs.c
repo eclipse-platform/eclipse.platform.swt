@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -59,6 +59,40 @@ void setAtkActionIfaceFields(JNIEnv *env, jobject lpObject, AtkActionIface *lpSt
 	(*env)->SetIntLongField(env, lpObject, AtkActionIfaceFc.get_name, (jintLong)lpStruct->get_name);
 	(*env)->SetIntLongField(env, lpObject, AtkActionIfaceFc.get_keybinding, (jintLong)lpStruct->get_keybinding);
 	(*env)->SetIntLongField(env, lpObject, AtkActionIfaceFc.set_description, (jintLong)lpStruct->set_description);
+}
+#endif
+
+#ifndef NO_AtkAttribute
+typedef struct AtkAttribute_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID name, value;
+} AtkAttribute_FID_CACHE;
+
+AtkAttribute_FID_CACHE AtkAttributeFc;
+
+void cacheAtkAttributeFields(JNIEnv *env, jobject lpObject)
+{
+	if (AtkAttributeFc.cached) return;
+	AtkAttributeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AtkAttributeFc.name = (*env)->GetFieldID(env, AtkAttributeFc.clazz, "name", I_J);
+	AtkAttributeFc.value = (*env)->GetFieldID(env, AtkAttributeFc.clazz, "value", I_J);
+	AtkAttributeFc.cached = 1;
+}
+
+AtkAttribute *getAtkAttributeFields(JNIEnv *env, jobject lpObject, AtkAttribute *lpStruct)
+{
+	if (!AtkAttributeFc.cached) cacheAtkAttributeFields(env, lpObject);
+	lpStruct->name = (char *)(*env)->GetIntLongField(env, lpObject, AtkAttributeFc.name);
+	lpStruct->value = (char *)(*env)->GetIntLongField(env, lpObject, AtkAttributeFc.value);
+	return lpStruct;
+}
+
+void setAtkAttributeFields(JNIEnv *env, jobject lpObject, AtkAttribute *lpStruct)
+{
+	if (!AtkAttributeFc.cached) cacheAtkAttributeFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, AtkAttributeFc.name, (jintLong)lpStruct->name);
+	(*env)->SetIntLongField(env, lpObject, AtkAttributeFc.value, (jintLong)lpStruct->value);
 }
 #endif
 
@@ -352,11 +386,147 @@ void setAtkSelectionIfaceFields(JNIEnv *env, jobject lpObject, AtkSelectionIface
 }
 #endif
 
+#ifndef NO_AtkTableIface
+typedef struct AtkTableIface_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ref_at, get_index_at, get_column_at_index, get_row_at_index, get_n_columns, get_n_rows, get_column_extent_at, get_row_extent_at, get_caption, get_column_description, get_column_header, get_row_description, get_row_header, get_summary, set_caption, set_column_description, set_column_header, set_row_description, set_row_header, set_summary, get_selected_columns, get_selected_rows, is_column_selected, is_row_selected, is_selected, add_row_selection, remove_row_selection, add_column_selection, remove_column_selection, row_inserted, column_inserted, row_deleted, column_deleted, row_reordered, column_reordered, model_changed;
+} AtkTableIface_FID_CACHE;
+
+AtkTableIface_FID_CACHE AtkTableIfaceFc;
+
+void cacheAtkTableIfaceFields(JNIEnv *env, jobject lpObject)
+{
+	if (AtkTableIfaceFc.cached) return;
+	AtkTableIfaceFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AtkTableIfaceFc.ref_at = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "ref_at", I_J);
+	AtkTableIfaceFc.get_index_at = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_index_at", I_J);
+	AtkTableIfaceFc.get_column_at_index = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_column_at_index", I_J);
+	AtkTableIfaceFc.get_row_at_index = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_row_at_index", I_J);
+	AtkTableIfaceFc.get_n_columns = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_n_columns", I_J);
+	AtkTableIfaceFc.get_n_rows = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_n_rows", I_J);
+	AtkTableIfaceFc.get_column_extent_at = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_column_extent_at", I_J);
+	AtkTableIfaceFc.get_row_extent_at = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_row_extent_at", I_J);
+	AtkTableIfaceFc.get_caption = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_caption", I_J);
+	AtkTableIfaceFc.get_column_description = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_column_description", I_J);
+	AtkTableIfaceFc.get_column_header = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_column_header", I_J);
+	AtkTableIfaceFc.get_row_description = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_row_description", I_J);
+	AtkTableIfaceFc.get_row_header = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_row_header", I_J);
+	AtkTableIfaceFc.get_summary = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_summary", I_J);
+	AtkTableIfaceFc.set_caption = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "set_caption", I_J);
+	AtkTableIfaceFc.set_column_description = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "set_column_description", I_J);
+	AtkTableIfaceFc.set_column_header = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "set_column_header", I_J);
+	AtkTableIfaceFc.set_row_description = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "set_row_description", I_J);
+	AtkTableIfaceFc.set_row_header = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "set_row_header", I_J);
+	AtkTableIfaceFc.set_summary = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "set_summary", I_J);
+	AtkTableIfaceFc.get_selected_columns = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_selected_columns", I_J);
+	AtkTableIfaceFc.get_selected_rows = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "get_selected_rows", I_J);
+	AtkTableIfaceFc.is_column_selected = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "is_column_selected", I_J);
+	AtkTableIfaceFc.is_row_selected = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "is_row_selected", I_J);
+	AtkTableIfaceFc.is_selected = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "is_selected", I_J);
+	AtkTableIfaceFc.add_row_selection = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "add_row_selection", I_J);
+	AtkTableIfaceFc.remove_row_selection = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "remove_row_selection", I_J);
+	AtkTableIfaceFc.add_column_selection = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "add_column_selection", I_J);
+	AtkTableIfaceFc.remove_column_selection = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "remove_column_selection", I_J);
+	AtkTableIfaceFc.row_inserted = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "row_inserted", I_J);
+	AtkTableIfaceFc.column_inserted = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "column_inserted", I_J);
+	AtkTableIfaceFc.row_deleted = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "row_deleted", I_J);
+	AtkTableIfaceFc.column_deleted = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "column_deleted", I_J);
+	AtkTableIfaceFc.row_reordered = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "row_reordered", I_J);
+	AtkTableIfaceFc.column_reordered = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "column_reordered", I_J);
+	AtkTableIfaceFc.model_changed = (*env)->GetFieldID(env, AtkTableIfaceFc.clazz, "model_changed", I_J);
+	AtkTableIfaceFc.cached = 1;
+}
+
+AtkTableIface *getAtkTableIfaceFields(JNIEnv *env, jobject lpObject, AtkTableIface *lpStruct)
+{
+	if (!AtkTableIfaceFc.cached) cacheAtkTableIfaceFields(env, lpObject);
+	lpStruct->ref_at = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.ref_at);
+	lpStruct->get_index_at = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_index_at);
+	lpStruct->get_column_at_index = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_at_index);
+	lpStruct->get_row_at_index = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_at_index);
+	lpStruct->get_n_columns = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_n_columns);
+	lpStruct->get_n_rows = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_n_rows);
+	lpStruct->get_column_extent_at = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_extent_at);
+	lpStruct->get_row_extent_at = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_extent_at);
+	lpStruct->get_caption = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_caption);
+	lpStruct->get_column_description = (G_CONST_RETURN gchar* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_description);
+	lpStruct->get_column_header = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_header);
+	lpStruct->get_row_description = (G_CONST_RETURN gchar* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_description);
+	lpStruct->get_row_header = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_header);
+	lpStruct->get_summary = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_summary);
+	lpStruct->set_caption = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.set_caption);
+	lpStruct->set_column_description = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.set_column_description);
+	lpStruct->set_column_header = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.set_column_header);
+	lpStruct->set_row_description = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.set_row_description);
+	lpStruct->set_row_header = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.set_row_header);
+	lpStruct->set_summary = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.set_summary);
+	lpStruct->get_selected_columns = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_selected_columns);
+	lpStruct->get_selected_rows = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_selected_rows);
+	lpStruct->is_column_selected = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.is_column_selected);
+	lpStruct->is_row_selected = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.is_row_selected);
+	lpStruct->is_selected = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.is_selected);
+	lpStruct->add_row_selection = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.add_row_selection);
+	lpStruct->remove_row_selection = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.remove_row_selection);
+	lpStruct->add_column_selection = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.add_column_selection);
+	lpStruct->remove_column_selection = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.remove_column_selection);
+	lpStruct->row_inserted = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.row_inserted);
+	lpStruct->column_inserted = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.column_inserted);
+	lpStruct->row_deleted = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.row_deleted);
+	lpStruct->column_deleted = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.column_deleted);
+	lpStruct->row_reordered = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.row_reordered);
+	lpStruct->column_reordered = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.column_reordered);
+	lpStruct->model_changed = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.model_changed);
+	return lpStruct;
+}
+
+void setAtkTableIfaceFields(JNIEnv *env, jobject lpObject, AtkTableIface *lpStruct)
+{
+	if (!AtkTableIfaceFc.cached) cacheAtkTableIfaceFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.ref_at, (jintLong)lpStruct->ref_at);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_index_at, (jintLong)lpStruct->get_index_at);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_at_index, (jintLong)lpStruct->get_column_at_index);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_at_index, (jintLong)lpStruct->get_row_at_index);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_n_columns, (jintLong)lpStruct->get_n_columns);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_n_rows, (jintLong)lpStruct->get_n_rows);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_extent_at, (jintLong)lpStruct->get_column_extent_at);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_extent_at, (jintLong)lpStruct->get_row_extent_at);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_caption, (jintLong)lpStruct->get_caption);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_description, (jintLong)lpStruct->get_column_description);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_header, (jintLong)lpStruct->get_column_header);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_description, (jintLong)lpStruct->get_row_description);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_header, (jintLong)lpStruct->get_row_header);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_summary, (jintLong)lpStruct->get_summary);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.set_caption, (jintLong)lpStruct->set_caption);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.set_column_description, (jintLong)lpStruct->set_column_description);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.set_column_header, (jintLong)lpStruct->set_column_header);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.set_row_description, (jintLong)lpStruct->set_row_description);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.set_row_header, (jintLong)lpStruct->set_row_header);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.set_summary, (jintLong)lpStruct->set_summary);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_selected_columns, (jintLong)lpStruct->get_selected_columns);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.get_selected_rows, (jintLong)lpStruct->get_selected_rows);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.is_column_selected, (jintLong)lpStruct->is_column_selected);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.is_row_selected, (jintLong)lpStruct->is_row_selected);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.is_selected, (jintLong)lpStruct->is_selected);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.add_row_selection, (jintLong)lpStruct->add_row_selection);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.remove_row_selection, (jintLong)lpStruct->remove_row_selection);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.add_column_selection, (jintLong)lpStruct->add_column_selection);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.remove_column_selection, (jintLong)lpStruct->remove_column_selection);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.row_inserted, (jintLong)lpStruct->row_inserted);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.column_inserted, (jintLong)lpStruct->column_inserted);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.row_deleted, (jintLong)lpStruct->row_deleted);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.column_deleted, (jintLong)lpStruct->column_deleted);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.row_reordered, (jintLong)lpStruct->row_reordered);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.column_reordered, (jintLong)lpStruct->column_reordered);
+	(*env)->SetIntLongField(env, lpObject, AtkTableIfaceFc.model_changed, (jintLong)lpStruct->model_changed);
+}
+#endif
+
 #ifndef NO_AtkTextIface
 typedef struct AtkTextIface_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID get_text, get_text_after_offset, get_text_at_offset, get_character_at_offset, get_text_before_offset, get_caret_offset, get_run_attributes, get_default_attributes, get_character_extents, get_character_count, get_offset_at_point, get_n_selections, get_selection, add_selection, remove_selection, set_selection, set_caret_offset, text_changed, text_caret_moved, text_selection_changed;
+	jfieldID get_text, get_text_after_offset, get_text_at_offset, get_character_at_offset, get_text_before_offset, get_caret_offset, get_run_attributes, get_default_attributes, get_character_extents, get_character_count, get_offset_at_point, get_n_selections, get_selection, add_selection, remove_selection, set_selection, set_caret_offset, text_changed, text_caret_moved, text_selection_changed, get_range_extents, get_bounded_ranges;
 } AtkTextIface_FID_CACHE;
 
 AtkTextIface_FID_CACHE AtkTextIfaceFc;
@@ -385,6 +555,8 @@ void cacheAtkTextIfaceFields(JNIEnv *env, jobject lpObject)
 	AtkTextIfaceFc.text_changed = (*env)->GetFieldID(env, AtkTextIfaceFc.clazz, "text_changed", I_J);
 	AtkTextIfaceFc.text_caret_moved = (*env)->GetFieldID(env, AtkTextIfaceFc.clazz, "text_caret_moved", I_J);
 	AtkTextIfaceFc.text_selection_changed = (*env)->GetFieldID(env, AtkTextIfaceFc.clazz, "text_selection_changed", I_J);
+	AtkTextIfaceFc.get_range_extents = (*env)->GetFieldID(env, AtkTextIfaceFc.clazz, "get_range_extents", I_J);
+	AtkTextIfaceFc.get_bounded_ranges = (*env)->GetFieldID(env, AtkTextIfaceFc.clazz, "get_bounded_ranges", I_J);
 	AtkTextIfaceFc.cached = 1;
 }
 
@@ -411,6 +583,8 @@ AtkTextIface *getAtkTextIfaceFields(JNIEnv *env, jobject lpObject, AtkTextIface 
 	lpStruct->text_changed = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTextIfaceFc.text_changed);
 	lpStruct->text_caret_moved = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTextIfaceFc.text_caret_moved);
 	lpStruct->text_selection_changed = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTextIfaceFc.text_selection_changed);
+	lpStruct->get_range_extents = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTextIfaceFc.get_range_extents);
+	lpStruct->get_bounded_ranges = (AtkTextRange** (*)())(*env)->GetIntLongField(env, lpObject, AtkTextIfaceFc.get_bounded_ranges);
 	return lpStruct;
 }
 
@@ -437,6 +611,134 @@ void setAtkTextIfaceFields(JNIEnv *env, jobject lpObject, AtkTextIface *lpStruct
 	(*env)->SetIntLongField(env, lpObject, AtkTextIfaceFc.text_changed, (jintLong)lpStruct->text_changed);
 	(*env)->SetIntLongField(env, lpObject, AtkTextIfaceFc.text_caret_moved, (jintLong)lpStruct->text_caret_moved);
 	(*env)->SetIntLongField(env, lpObject, AtkTextIfaceFc.text_selection_changed, (jintLong)lpStruct->text_selection_changed);
+	(*env)->SetIntLongField(env, lpObject, AtkTextIfaceFc.get_range_extents, (jintLong)lpStruct->get_range_extents);
+	(*env)->SetIntLongField(env, lpObject, AtkTextIfaceFc.get_bounded_ranges, (jintLong)lpStruct->get_bounded_ranges);
+}
+#endif
+
+#ifndef NO_AtkTextRange
+typedef struct AtkTextRange_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID bounds, start_offset, end_offset, content;
+} AtkTextRange_FID_CACHE;
+
+AtkTextRange_FID_CACHE AtkTextRangeFc;
+
+void cacheAtkTextRangeFields(JNIEnv *env, jobject lpObject)
+{
+	if (AtkTextRangeFc.cached) return;
+	AtkTextRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AtkTextRangeFc.bounds = (*env)->GetFieldID(env, AtkTextRangeFc.clazz, "bounds", "Lorg/eclipse/swt/internal/accessibility/gtk/AtkTextRectangle;");
+	AtkTextRangeFc.start_offset = (*env)->GetFieldID(env, AtkTextRangeFc.clazz, "start_offset", "I");
+	AtkTextRangeFc.end_offset = (*env)->GetFieldID(env, AtkTextRangeFc.clazz, "end_offset", "I");
+	AtkTextRangeFc.content = (*env)->GetFieldID(env, AtkTextRangeFc.clazz, "content", I_J);
+	AtkTextRangeFc.cached = 1;
+}
+
+AtkTextRange *getAtkTextRangeFields(JNIEnv *env, jobject lpObject, AtkTextRange *lpStruct)
+{
+	if (!AtkTextRangeFc.cached) cacheAtkTextRangeFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, AtkTextRangeFc.bounds);
+	if (lpObject1 != NULL) getAtkTextRectangleFields(env, lpObject1, &lpStruct->bounds);
+	}
+	lpStruct->start_offset = (*env)->GetIntField(env, lpObject, AtkTextRangeFc.start_offset);
+	lpStruct->end_offset = (*env)->GetIntField(env, lpObject, AtkTextRangeFc.end_offset);
+	lpStruct->content = (gchar *)(*env)->GetIntLongField(env, lpObject, AtkTextRangeFc.content);
+	return lpStruct;
+}
+
+void setAtkTextRangeFields(JNIEnv *env, jobject lpObject, AtkTextRange *lpStruct)
+{
+	if (!AtkTextRangeFc.cached) cacheAtkTextRangeFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, AtkTextRangeFc.bounds);
+	if (lpObject1 != NULL) setAtkTextRectangleFields(env, lpObject1, &lpStruct->bounds);
+	}
+	(*env)->SetIntField(env, lpObject, AtkTextRangeFc.start_offset, (jint)lpStruct->start_offset);
+	(*env)->SetIntField(env, lpObject, AtkTextRangeFc.end_offset, (jint)lpStruct->end_offset);
+	(*env)->SetIntLongField(env, lpObject, AtkTextRangeFc.content, (jintLong)lpStruct->content);
+}
+#endif
+
+#ifndef NO_AtkTextRectangle
+typedef struct AtkTextRectangle_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height;
+} AtkTextRectangle_FID_CACHE;
+
+AtkTextRectangle_FID_CACHE AtkTextRectangleFc;
+
+void cacheAtkTextRectangleFields(JNIEnv *env, jobject lpObject)
+{
+	if (AtkTextRectangleFc.cached) return;
+	AtkTextRectangleFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AtkTextRectangleFc.x = (*env)->GetFieldID(env, AtkTextRectangleFc.clazz, "x", "I");
+	AtkTextRectangleFc.y = (*env)->GetFieldID(env, AtkTextRectangleFc.clazz, "y", "I");
+	AtkTextRectangleFc.width = (*env)->GetFieldID(env, AtkTextRectangleFc.clazz, "width", "I");
+	AtkTextRectangleFc.height = (*env)->GetFieldID(env, AtkTextRectangleFc.clazz, "height", "I");
+	AtkTextRectangleFc.cached = 1;
+}
+
+AtkTextRectangle *getAtkTextRectangleFields(JNIEnv *env, jobject lpObject, AtkTextRectangle *lpStruct)
+{
+	if (!AtkTextRectangleFc.cached) cacheAtkTextRectangleFields(env, lpObject);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, AtkTextRectangleFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, AtkTextRectangleFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, AtkTextRectangleFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, AtkTextRectangleFc.height);
+	return lpStruct;
+}
+
+void setAtkTextRectangleFields(JNIEnv *env, jobject lpObject, AtkTextRectangle *lpStruct)
+{
+	if (!AtkTextRectangleFc.cached) cacheAtkTextRectangleFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, AtkTextRectangleFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, AtkTextRectangleFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, AtkTextRectangleFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, AtkTextRectangleFc.height, (jint)lpStruct->height);
+}
+#endif
+
+#ifndef NO_AtkValueIface
+typedef struct AtkValueIface_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID get_current_value, get_maximum_value, get_minimum_value, set_current_value;
+} AtkValueIface_FID_CACHE;
+
+AtkValueIface_FID_CACHE AtkValueIfaceFc;
+
+void cacheAtkValueIfaceFields(JNIEnv *env, jobject lpObject)
+{
+	if (AtkValueIfaceFc.cached) return;
+	AtkValueIfaceFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AtkValueIfaceFc.get_current_value = (*env)->GetFieldID(env, AtkValueIfaceFc.clazz, "get_current_value", I_J);
+	AtkValueIfaceFc.get_maximum_value = (*env)->GetFieldID(env, AtkValueIfaceFc.clazz, "get_maximum_value", I_J);
+	AtkValueIfaceFc.get_minimum_value = (*env)->GetFieldID(env, AtkValueIfaceFc.clazz, "get_minimum_value", I_J);
+	AtkValueIfaceFc.set_current_value = (*env)->GetFieldID(env, AtkValueIfaceFc.clazz, "set_current_value", I_J);
+	AtkValueIfaceFc.cached = 1;
+}
+
+AtkValueIface *getAtkValueIfaceFields(JNIEnv *env, jobject lpObject, AtkValueIface *lpStruct)
+{
+	if (!AtkValueIfaceFc.cached) cacheAtkValueIfaceFields(env, lpObject);
+	lpStruct->get_current_value = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkValueIfaceFc.get_current_value);
+	lpStruct->get_maximum_value = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkValueIfaceFc.get_maximum_value);
+	lpStruct->get_minimum_value = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkValueIfaceFc.get_minimum_value);
+	lpStruct->set_current_value = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkValueIfaceFc.set_current_value);
+	return lpStruct;
+}
+
+void setAtkValueIfaceFields(JNIEnv *env, jobject lpObject, AtkValueIface *lpStruct)
+{
+	if (!AtkValueIfaceFc.cached) cacheAtkValueIfaceFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, AtkValueIfaceFc.get_current_value, (jintLong)lpStruct->get_current_value);
+	(*env)->SetIntLongField(env, lpObject, AtkValueIfaceFc.get_maximum_value, (jintLong)lpStruct->get_maximum_value);
+	(*env)->SetIntLongField(env, lpObject, AtkValueIfaceFc.get_minimum_value, (jintLong)lpStruct->get_minimum_value);
+	(*env)->SetIntLongField(env, lpObject, AtkValueIfaceFc.set_current_value, (jintLong)lpStruct->set_current_value);
 }
 #endif
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -25,6 +25,18 @@ void setAtkActionIfaceFields(JNIEnv *env, jobject lpObject, AtkActionIface *lpSt
 #define getAtkActionIfaceFields(a,b,c) NULL
 #define setAtkActionIfaceFields(a,b,c)
 #define AtkActionIface_sizeof() 0
+#endif
+
+#ifndef NO_AtkAttribute
+void cacheAtkAttributeFields(JNIEnv *env, jobject lpObject);
+AtkAttribute *getAtkAttributeFields(JNIEnv *env, jobject lpObject, AtkAttribute *lpStruct);
+void setAtkAttributeFields(JNIEnv *env, jobject lpObject, AtkAttribute *lpStruct);
+#define AtkAttribute_sizeof() sizeof(AtkAttribute)
+#else
+#define cacheAtkAttributeFields(a,b)
+#define getAtkAttributeFields(a,b,c) NULL
+#define setAtkAttributeFields(a,b,c)
+#define AtkAttribute_sizeof() 0
 #endif
 
 #ifndef NO_AtkComponentIface
@@ -87,6 +99,18 @@ void setAtkSelectionIfaceFields(JNIEnv *env, jobject lpObject, AtkSelectionIface
 #define AtkSelectionIface_sizeof() 0
 #endif
 
+#ifndef NO_AtkTableIface
+void cacheAtkTableIfaceFields(JNIEnv *env, jobject lpObject);
+AtkTableIface *getAtkTableIfaceFields(JNIEnv *env, jobject lpObject, AtkTableIface *lpStruct);
+void setAtkTableIfaceFields(JNIEnv *env, jobject lpObject, AtkTableIface *lpStruct);
+#define AtkTableIface_sizeof() sizeof(AtkTableIface)
+#else
+#define cacheAtkTableIfaceFields(a,b)
+#define getAtkTableIfaceFields(a,b,c) NULL
+#define setAtkTableIfaceFields(a,b,c)
+#define AtkTableIface_sizeof() 0
+#endif
+
 #ifndef NO_AtkTextIface
 void cacheAtkTextIfaceFields(JNIEnv *env, jobject lpObject);
 AtkTextIface *getAtkTextIfaceFields(JNIEnv *env, jobject lpObject, AtkTextIface *lpStruct);
@@ -97,6 +121,42 @@ void setAtkTextIfaceFields(JNIEnv *env, jobject lpObject, AtkTextIface *lpStruct
 #define getAtkTextIfaceFields(a,b,c) NULL
 #define setAtkTextIfaceFields(a,b,c)
 #define AtkTextIface_sizeof() 0
+#endif
+
+#ifndef NO_AtkTextRange
+void cacheAtkTextRangeFields(JNIEnv *env, jobject lpObject);
+AtkTextRange *getAtkTextRangeFields(JNIEnv *env, jobject lpObject, AtkTextRange *lpStruct);
+void setAtkTextRangeFields(JNIEnv *env, jobject lpObject, AtkTextRange *lpStruct);
+#define AtkTextRange_sizeof() sizeof(AtkTextRange)
+#else
+#define cacheAtkTextRangeFields(a,b)
+#define getAtkTextRangeFields(a,b,c) NULL
+#define setAtkTextRangeFields(a,b,c)
+#define AtkTextRange_sizeof() 0
+#endif
+
+#ifndef NO_AtkTextRectangle
+void cacheAtkTextRectangleFields(JNIEnv *env, jobject lpObject);
+AtkTextRectangle *getAtkTextRectangleFields(JNIEnv *env, jobject lpObject, AtkTextRectangle *lpStruct);
+void setAtkTextRectangleFields(JNIEnv *env, jobject lpObject, AtkTextRectangle *lpStruct);
+#define AtkTextRectangle_sizeof() sizeof(AtkTextRectangle)
+#else
+#define cacheAtkTextRectangleFields(a,b)
+#define getAtkTextRectangleFields(a,b,c) NULL
+#define setAtkTextRectangleFields(a,b,c)
+#define AtkTextRectangle_sizeof() 0
+#endif
+
+#ifndef NO_AtkValueIface
+void cacheAtkValueIfaceFields(JNIEnv *env, jobject lpObject);
+AtkValueIface *getAtkValueIfaceFields(JNIEnv *env, jobject lpObject, AtkValueIface *lpStruct);
+void setAtkValueIfaceFields(JNIEnv *env, jobject lpObject, AtkValueIface *lpStruct);
+#define AtkValueIface_sizeof() sizeof(AtkValueIface)
+#else
+#define cacheAtkValueIfaceFields(a,b)
+#define getAtkValueIfaceFields(a,b,c) NULL
+#define setAtkValueIfaceFields(a,b,c)
+#define AtkValueIface_sizeof() 0
 #endif
 
 #ifndef NO_GtkAccessible

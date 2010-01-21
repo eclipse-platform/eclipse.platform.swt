@@ -186,6 +186,7 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [Typical OUT] - the ID of the selected child, or CHILDID_SELF, or CHILDID_MULTIPLE, or CHILDID_NONE</li>
+	 *    <li>children [Optional OUT] - the array of childIDs for the selected children if CHILDID_MULTIPLE is returned</li>
 	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */

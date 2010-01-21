@@ -133,6 +133,22 @@ public class COM extends OS {
 	public static final GUID CGID_DocHostCommandHandler = IIDFromString("{f38bc242-b950-11d1-8918-00c04fc2c836}"); //$NON-NLS-1$
 	public static final GUID CGID_Explorer = IIDFromString("{000214D0-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 
+	// IA2 related GUIDS
+	public static final GUID IIDIAccessible2 = IIDFromString("{E89F726E-C4F4-4c19-BB19-B647D7FA8478}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleRelation = IIDFromString("{7CDF86EE-C3DA-496a-BDA4-281B336E1FDC}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleAction = IIDFromString("{B70D9F59-3B5A-4dba-AB9E-22012F607DF5}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleComponent = IIDFromString("{1546D4B0-4C98-4bda-89AE-9A64748BDDE4}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleValue = IIDFromString("{35855B5B-C566-4fd0-A7B1-E65465600394}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleText = IIDFromString("{24FD2FFB-3AAD-4a08-8335-A3AD89C0FB4B}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleEditableText = IIDFromString("{A59AA09A-7011-4b65-939D-32B1FB5547E3}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleHyperlink = IIDFromString("{01C20F2B-3DD2-400f-949F-AD00BDAB1D41}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleHypertext = IIDFromString("{6B4F8BBF-F1F2-418a-B35E-A195BC4103B9}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleTable = IIDFromString("{35AD8070-C20C-4fb4-B094-F4F7275DD469}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleTable2 = IIDFromString("{6167f295-06f0-4cdd-a1fa-02e25153d869}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleTableCell = IIDFromString("{594116B1-C99F-4847-AD06-0A7A86ECE645}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleImage = IIDFromString("{FE5ABB3D-615E-4f7b-909F-5F0EDA9E8DDE}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleApplication = IIDFromString("{D49DED83-5B25-43F4-9B95-93B44595979E}"); //$NON-NLS-1$
+	public static final GUID IIDIAccessibleContext = IIDFromString("{77A123E4-5794-44e0-B8BF-DE600C9D29BD}"); //$NON-NLS-1$
 
 	/** Constants */
 	//public static final int ADVF_DATAONSTOP = 64;
@@ -822,6 +838,8 @@ public static final int ROLE_SYSTEM_SLIDER = 0x33;
 public static final int ROLE_SYSTEM_PAGETABLIST = 0x3c;
 //public static final int ROLE_SYSTEM_CLOCK = 0x3d;
 public static final int ROLE_SYSTEM_SPLITBUTTON = 0x3e;
+//public static final int ROLE_SYSTEM_IPADDRESS = 0x3f;
+//public static final int ROLE_SYSTEM_OUTLINEBUTTON = 0x40;
 public static final int STATE_SYSTEM_NORMAL = 0;
 //public static final int STATE_SYSTEM_UNAVAILABLE = 0x1;
 public static final int STATE_SYSTEM_SELECTED = 0x2;
@@ -829,7 +847,6 @@ public static final int STATE_SYSTEM_FOCUSED = 0x4;
 public static final int STATE_SYSTEM_PRESSED = 0x8;
 public static final int STATE_SYSTEM_CHECKED = 0x10;
 public static final int STATE_SYSTEM_MIXED = 0x20;
-//public static final int STATE_SYSTEM_INDETERMINATE = STATE_SYSTEM_MIXED;
 public static final int STATE_SYSTEM_READONLY = 0x40;
 public static final int STATE_SYSTEM_HOTTRACKED = 0x80;
 //public static final int STATE_SYSTEM_DEFAULT = 0x100;
@@ -855,6 +872,10 @@ public static final int STATE_SYSTEM_MULTISELECTABLE = 0x1000000;
 //public static final int STATE_SYSTEM_ALERT_HIGH = 0x10000000;
 //public static final int STATE_SYSTEM_PROTECTED = 0x20000000;
 //public static final int STATE_SYSTEM_VALID = 0x3fffffff;
+
+/* IA2 additional constants */
+public static final int IA2_COORDTYPE_SCREEN_RELATIVE = 0;
+public static final int IA2_COORDTYPE_PARENT_RELATIVE = 1;
 
 /** Accessibility natives */
 
@@ -929,6 +950,8 @@ public static final native int /*long*/ accDoDefaultAction_CALLBACK(int /*long*/
 public static final native int /*long*/ put_accName_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ put_accValue_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen,callback_types=HRESULT;VARIANT;,callback_flags=none;struct; */
+public static final native int /*long*/ CALLBACK_setCurrentValue(int /*long*/ func);
 
 /* sizeof's */
 public static final native int CAUUID_sizeof();

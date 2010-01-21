@@ -129,6 +129,7 @@
 #define gdk_x11_screen_lookup_visual_LIB "libgdk-x11-2.0.so.0"
 
 #define atk_object_add_relationship_LIB "libatk-1.0.so.0"
+#define atk_object_remove_relationship_LIB "libatk-1.0.so.0"
 #define pango_attr_underline_color_new_LIB "libpango-1.0.so.0"
 #define pango_attr_strikethrough_color_new_LIB "libpango-1.0.so.0"
 #define pango_font_metrics_get_underline_thickness_LIB "libpango-1.0.so.0"

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1334;
-int OS_nativeFunctionCallCount[1334];
+int OS_nativeFunctionCount = 1353;
+int OS_nativeFunctionCallCount[1353];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -66,6 +66,12 @@ char * OS_nativeFunctionNames[] = {
 	"GTypeQuery_1sizeof",
 	"G_1OBJECT_1CLASS_1CONSTRUCTOR",
 	"G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR",
+	"G_1TYPE_1BOOLEAN",
+	"G_1TYPE_1DOUBLE",
+	"G_1TYPE_1FLOAT",
+	"G_1TYPE_1INT",
+	"G_1TYPE_1INT64",
+	"G_1VALUE_1TYPE",
 	"GdkColor_1sizeof",
 	"GdkDragContext_1sizeof",
 	"GdkEventAny_1sizeof",
@@ -164,8 +170,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1G_1OBJECT_1GET_1CLASS",
 	"_1G_1OBJECT_1TYPE",
 	"_1G_1OBJECT_1TYPE_1NAME",
-	"_1G_1TYPE_1BOOLEAN",
-	"_1G_1TYPE_1INT",
 	"_1G_1TYPE_1STRING",
 	"_1PANGO_1PIXELS",
 	"_1PANGO_1TYPE_1FONT_1DESCRIPTION",
@@ -205,7 +209,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1XTestFakeKeyEvent",
 	"_1XTestFakeMotionEvent",
 	"_1XWarpPointer",
+	"_1access",
 	"_1atk_1object_1add_1relationship",
+	"_1atk_1object_1remove_1relationship",
 	"_1call",
 	"_1dlclose",
 	"_1dlopen",
@@ -236,6 +242,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1file_1new_1for_1path",
 	"_1g_1file_1query_1info",
 	"_1g_1file_1read",
+	"_1g_1file_1test",
 	"_1g_1filename_1from_1uri",
 	"_1g_1filename_1from_1utf8",
 	"_1g_1filename_1to_1uri",
@@ -1367,7 +1374,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1font_1description_1from_1string",
 	"_1pango_1font_1description_1get_1family",
 	"_1pango_1font_1description_1get_1size",
+	"_1pango_1font_1description_1get_1stretch",
 	"_1pango_1font_1description_1get_1style",
+	"_1pango_1font_1description_1get_1variant",
 	"_1pango_1font_1description_1get_1weight",
 	"_1pango_1font_1description_1new",
 	"_1pango_1font_1description_1set_1family",
@@ -1433,6 +1442,16 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1tab_1array_1new",
 	"_1pango_1tab_1array_1set_1tab",
 	"g_1main_1context_1wakeup",
+	"g_1value_1get_1double",
+	"g_1value_1get_1float",
+	"g_1value_1get_1int",
+	"g_1value_1get_1int64",
+	"g_1value_1init",
+	"g_1value_1set_1double",
+	"g_1value_1set_1float",
+	"g_1value_1set_1int",
+	"g_1value_1set_1int64",
+	"g_1value_1unset",
 	"localeconv_1decimal_1point",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",

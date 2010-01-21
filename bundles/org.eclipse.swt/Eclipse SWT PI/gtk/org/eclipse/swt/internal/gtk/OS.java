@@ -1719,25 +1719,16 @@ public static final int /*long*/ G_OBJECT_TYPE_NAME (int /*long*/ object) {
 	}
 }
 /** @method flags=const */
-public static final native int /*long*/ _G_TYPE_BOOLEAN();
-public static final int /*long*/ G_TYPE_BOOLEAN() {
-	lock.lock();
-	try {
-		return _G_TYPE_BOOLEAN();
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native int /*long*/ G_TYPE_BOOLEAN();
 /** @method flags=const */
-public static final native int /*long*/ _G_TYPE_INT();
-public static final int /*long*/ G_TYPE_INT() {
-	lock.lock();
-	try {
-		return _G_TYPE_INT();
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native int /*long*/ G_TYPE_DOUBLE();
+/** @method flags=const */
+public static final native int /*long*/ G_TYPE_FLOAT();
+/** @method flags=const */
+public static final native int /*long*/ G_TYPE_INT();
+/** @method flags=const */
+public static final native int /*long*/ G_TYPE_INT64();
+public static final native int /*long*/ G_VALUE_TYPE(int /*long*/ value);
 public static final native int /*long*/ _G_OBJECT_TYPE (int /*long*/ instance);
 public static final int /*long*/ G_OBJECT_TYPE (int /*long*/ instance) {
 	lock.lock();
@@ -3262,6 +3253,29 @@ public static final int /*long*/ g_utf8_to_utf16(int /*long*/ str, int /*long*/ 
 		lock.unlock();
 	}
 }
+/**
+ * @param value cast=(GValue *)
+ * @param type cast=(GType)
+ */
+public static final native int /*long*/ g_value_init (int /*long*/ value, int /*long*/ type);
+/** @param value cast=(GValue *) */
+public static final native int g_value_get_int (int /*long*/ value);
+/** @param value cast=(GValue *) */
+public static final native void g_value_set_int (int /*long*/ value, int v);
+/** @param value cast=(GValue *) */
+public static final native double g_value_get_double (int /*long*/ value);
+/** @param value cast=(GValue *) */
+public static final native void g_value_set_double (int /*long*/ value, double v);
+/** @param value cast=(GValue *) */
+public static final native float g_value_get_float (int /*long*/ value);
+/** @param value cast=(GValue *) */
+public static final native void g_value_set_float (int /*long*/ value, float v);
+/** @param value cast=(GValue *) */
+public static final native long g_value_get_int64 (int /*long*/ value);
+/** @param value cast=(GValue *) */
+public static final native void g_value_set_int64 (int /*long*/ value, long v);
+/** @param value cast=(GValue *) */
+public static final native void g_value_unset (int /*long*/ value);
 /** @param value cast=(const GValue *) */
 public static final native int /*long*/ _g_value_peek_pointer (int /*long*/ value);
 public static final  int /*long*/ g_value_peek_pointer (int /*long*/ value) {
@@ -14113,6 +14127,26 @@ public static final int pango_font_description_get_size(int /*long*/ desc) {
 	}
 }
 /** @param desc cast=(PangoFontDescription *) */
+public static final native int _pango_font_description_get_stretch(int /*long*/ desc);
+public static final int pango_font_description_get_stretch(int /*long*/ desc) {
+	lock.lock();
+	try {
+		return _pango_font_description_get_stretch(desc);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param desc cast=(PangoFontDescription *) */
+public static final native int _pango_font_description_get_variant(int /*long*/ desc);
+public static final int pango_font_description_get_variant(int /*long*/ desc) {
+	lock.lock();
+	try {
+		return _pango_font_description_get_variant(desc);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param desc cast=(PangoFontDescription *) */
 public static final native int _pango_font_description_get_style(int /*long*/ desc);
 public static final int pango_font_description_get_style(int /*long*/ desc) {
 	lock.lock();
@@ -14854,6 +14888,21 @@ public static final boolean atk_object_add_relationship (int /*long*/ object, in
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param object cast=(AtkObject *)
+ * @param relationship cast=(AtkRelationType)
+ * @param target cast=(AtkObject *)
+ */
+public static final native boolean _atk_object_remove_relationship (int /*long*/ object, int relationship, int /*long*/ target);
+public static final boolean atk_object_remove_relationship (int /*long*/ object, int relationship, int /*long*/ target) {
+	lock.lock();
+	try {
+		return _atk_object_remove_relationship(object, relationship, target);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param path cast=(const char*)
  */
 public static final native int _access (byte [] path, int amode);
@@ -14865,5 +14914,4 @@ public static final int access (byte [] path, int amode) {
 		lock.unlock();
 	}
 }
-
 }

@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component id="org.eclipse.swt" version="2">
+<resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleActionListener.java" type="org.eclipse.swt.accessibility.AccessibleActionListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="AccessibleActionListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleAttributeListener.java" type="org.eclipse.swt.accessibility.AccessibleAttributeListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="AccessibleAttributeListener"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleControlListener.java" type="org.eclipse.swt.accessibility.AccessibleControlListener">
 <filter id="576720909">
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="AccessibleControlListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleHyperlinkListener.java" type="org.eclipse.swt.accessibility.AccessibleHyperlinkListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="AccessibleHyperlinkListener"/>
 </message_arguments>
 </filter>
 </resource>
@@ -16,11 +40,43 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleTableCellListener.java" type="org.eclipse.swt.accessibility.AccessibleTableCellListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="AccessibleTableCellListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleTableListener.java" type="org.eclipse.swt.accessibility.AccessibleTableListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="AccessibleTableListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleTextExtendedListener.java" type="org.eclipse.swt.accessibility.AccessibleTextExtendedListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="AccessibleTextExtendedListener"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleTextListener.java" type="org.eclipse.swt.accessibility.AccessibleTextListener">
 <filter id="576720909">
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="AccessibleTextListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleValueListener.java" type="org.eclipse.swt.accessibility.AccessibleValueListener">
+<filter id="576720909">
+<message_arguments>
+<message_argument value="SWTEventListener"/>
+<message_argument value="AccessibleValueListener"/>
 </message_arguments>
 </filter>
 </resource>

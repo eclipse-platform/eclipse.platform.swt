@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,11 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 184;
-int COM_nativeFunctionCallCount[184];
+int COM_nativeFunctionCount = 185;
+int COM_nativeFunctionCallCount[185];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
+	"CALLBACK_1setCurrentValue",
 	"CAUUID_1sizeof",
 	"CLSIDFromProgID",
 	"CLSIDFromString",

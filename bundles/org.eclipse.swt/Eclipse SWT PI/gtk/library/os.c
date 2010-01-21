@@ -459,6 +459,78 @@ JNIEXPORT void JNICALL OS_NATIVE(G_1OBJECT_1CLASS_1SET_1CONSTRUCTOR)
 }
 #endif
 
+#ifndef NO_G_1TYPE_1BOOLEAN
+JNIEXPORT jintLong JNICALL OS_NATIVE(G_1TYPE_1BOOLEAN)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1TYPE_1BOOLEAN_FUNC);
+	rc = (jintLong)G_TYPE_BOOLEAN;
+	OS_NATIVE_EXIT(env, that, G_1TYPE_1BOOLEAN_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1TYPE_1DOUBLE
+JNIEXPORT jintLong JNICALL OS_NATIVE(G_1TYPE_1DOUBLE)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1TYPE_1DOUBLE_FUNC);
+	rc = (jintLong)G_TYPE_DOUBLE;
+	OS_NATIVE_EXIT(env, that, G_1TYPE_1DOUBLE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1TYPE_1FLOAT
+JNIEXPORT jintLong JNICALL OS_NATIVE(G_1TYPE_1FLOAT)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1TYPE_1FLOAT_FUNC);
+	rc = (jintLong)G_TYPE_FLOAT;
+	OS_NATIVE_EXIT(env, that, G_1TYPE_1FLOAT_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1TYPE_1INT
+JNIEXPORT jintLong JNICALL OS_NATIVE(G_1TYPE_1INT)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1TYPE_1INT_FUNC);
+	rc = (jintLong)G_TYPE_INT;
+	OS_NATIVE_EXIT(env, that, G_1TYPE_1INT_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1TYPE_1INT64
+JNIEXPORT jintLong JNICALL OS_NATIVE(G_1TYPE_1INT64)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1TYPE_1INT64_FUNC);
+	rc = (jintLong)G_TYPE_INT64;
+	OS_NATIVE_EXIT(env, that, G_1TYPE_1INT64_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_G_1VALUE_1TYPE
+JNIEXPORT jintLong JNICALL OS_NATIVE(G_1VALUE_1TYPE)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, G_1VALUE_1TYPE_FUNC);
+	rc = (jintLong)G_VALUE_TYPE(arg0);
+	OS_NATIVE_EXIT(env, that, G_1VALUE_1TYPE_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GdkColor_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkColor_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -1643,30 +1715,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1G_1OBJECT_1TYPE_1NAME)
 }
 #endif
 
-#ifndef NO__1G_1TYPE_1BOOLEAN
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1G_1TYPE_1BOOLEAN)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1G_1TYPE_1BOOLEAN_FUNC);
-	rc = (jintLong)G_TYPE_BOOLEAN;
-	OS_NATIVE_EXIT(env, that, _1G_1TYPE_1BOOLEAN_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1G_1TYPE_1INT
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1G_1TYPE_1INT)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1G_1TYPE_1INT_FUNC);
-	rc = (jintLong)G_TYPE_INT;
-	OS_NATIVE_EXIT(env, that, _1G_1TYPE_1INT_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1G_1TYPE_1STRING
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1G_1TYPE_1STRING)
 	(JNIEnv *env, jclass that)
@@ -2308,6 +2356,26 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1add_1relationship)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1atk_1object_1remove_1relationship
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1remove_1relationship)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1atk_1object_1remove_1relationship_FUNC);
+/*
+	rc = (jboolean)atk_object_remove_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
+*/
+	{
+		LOAD_FUNCTION(fp, atk_object_remove_relationship)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(AtkObject *, AtkRelationType, AtkObject *))fp)((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1atk_1object_1remove_1relationship_FUNC);
 	return rc;
 }
 #endif
@@ -17061,6 +17129,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1description_1get_1size)
 }
 #endif
 
+#ifndef NO__1pango_1font_1description_1get_1stretch
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1description_1get_1stretch)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1description_1get_1stretch_FUNC);
+	rc = (jint)pango_font_description_get_stretch((PangoFontDescription *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1description_1get_1stretch_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1pango_1font_1description_1get_1style
 JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1description_1get_1style)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -17069,6 +17149,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1description_1get_1style)
 	OS_NATIVE_ENTER(env, that, _1pango_1font_1description_1get_1style_FUNC);
 	rc = (jint)pango_font_description_get_style((PangoFontDescription *)arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1font_1description_1get_1style_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1font_1description_1get_1variant
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1description_1get_1variant)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1description_1get_1variant_FUNC);
+	rc = (jint)pango_font_description_get_variant((PangoFontDescription *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1description_1get_1variant_FUNC);
 	return rc;
 }
 #endif
@@ -17930,6 +18022,116 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1main_1context_1wakeup)
 	OS_NATIVE_ENTER(env, that, g_1main_1context_1wakeup_FUNC);
 	g_main_context_wakeup((GMainContext *)arg0);
 	OS_NATIVE_EXIT(env, that, g_1main_1context_1wakeup_FUNC);
+}
+#endif
+
+#ifndef NO_g_1value_1get_1double
+JNIEXPORT jdouble JNICALL OS_NATIVE(g_1value_1get_1double)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1get_1double_FUNC);
+	rc = (jdouble)g_value_get_double((GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1get_1double_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1value_1get_1float
+JNIEXPORT jfloat JNICALL OS_NATIVE(g_1value_1get_1float)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jfloat rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1get_1float_FUNC);
+	rc = (jfloat)g_value_get_float((GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1get_1float_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1value_1get_1int
+JNIEXPORT jint JNICALL OS_NATIVE(g_1value_1get_1int)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1get_1int_FUNC);
+	rc = (jint)g_value_get_int((GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1get_1int_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1value_1get_1int64
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1value_1get_1int64)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1get_1int64_FUNC);
+	rc = (jlong)g_value_get_int64((GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1get_1int64_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1value_1init
+JNIEXPORT jintLong JNICALL OS_NATIVE(g_1value_1init)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1init_FUNC);
+	rc = (jintLong)g_value_init((GValue *)arg0, (GType)arg1);
+	OS_NATIVE_EXIT(env, that, g_1value_1init_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1value_1set_1double
+JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1double)
+	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1value_1set_1double_FUNC);
+	g_value_set_double((GValue *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, g_1value_1set_1double_FUNC);
+}
+#endif
+
+#ifndef NO_g_1value_1set_1float
+JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1float)
+	(JNIEnv *env, jclass that, jintLong arg0, jfloat arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1value_1set_1float_FUNC);
+	g_value_set_float((GValue *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, g_1value_1set_1float_FUNC);
+}
+#endif
+
+#ifndef NO_g_1value_1set_1int
+JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1int)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1value_1set_1int_FUNC);
+	g_value_set_int((GValue *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, g_1value_1set_1int_FUNC);
+}
+#endif
+
+#ifndef NO_g_1value_1set_1int64
+JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1int64)
+	(JNIEnv *env, jclass that, jintLong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1value_1set_1int64_FUNC);
+	g_value_set_int64((GValue *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, g_1value_1set_1int64_FUNC);
+}
+#endif
+
+#ifndef NO_g_1value_1unset
+JNIEXPORT void JNICALL OS_NATIVE(g_1value_1unset)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, g_1value_1unset_FUNC);
+	g_value_unset((GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1unset_FUNC);
 }
 #endif
 

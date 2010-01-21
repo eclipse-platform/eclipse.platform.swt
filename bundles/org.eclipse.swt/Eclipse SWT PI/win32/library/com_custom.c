@@ -239,6 +239,19 @@ JNIEXPORT jintLong JNICALL COM_NATIVE(put_1accValue_1CALLBACK)
 }
 #endif
 
+#ifndef NO_CALLBACK_1setCurrentValue
+static jintLong CALLBACK_setCurrentValue;
+static HRESULT CALLBACK setCurrentValue(void* ppVTable, VARIANT arg0) {
+	return ((HRESULT (CALLBACK *)(void*, VARIANT*))CALLBACK_setCurrentValue)(ppVTable, &arg0);
+}
+JNIEXPORT jintLong JNICALL COM_NATIVE(CALLBACK_1setCurrentValue)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	CALLBACK_setCurrentValue = func;
+	return (jintLong)setCurrentValue;
+}
+#endif
+
 #ifndef NO_VtblCall_1PPPPVARIANT
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall_1PPPPVARIANT)
 	(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
