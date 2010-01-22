@@ -46,7 +46,7 @@ class AccessibleObject {
 		this.accessible = accessible;
 		this.isLightweight = isLightweight;
 		AccessibleObjects.put (new LONG (handle), this);
-		if (DEBUG) print("new AccessibleObject: " + handle);
+		if (DEBUG) print("new AccessibleObject: " + handle + " control=" + accessible.control + " lw=" + isLightweight);
 	}
 	
 	static void print (String str) {

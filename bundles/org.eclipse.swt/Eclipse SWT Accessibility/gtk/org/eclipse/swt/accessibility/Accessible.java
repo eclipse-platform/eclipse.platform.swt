@@ -55,6 +55,7 @@ public class Accessible {
 	AccessibleObject accessibleObject;
 	Control control;
 	Vector relations;
+	Vector children;
 	
 	static class Relation {
 		int type;
@@ -84,7 +85,8 @@ public class Accessible {
 	public Accessible(Accessible parent) {
 		this.parent = checkNull(parent);
 		this.control = parent.control;
-		//TODO: (platform-specific?) code to add this accessible to the parent's children
+		if (parent.children == null) parent.children = new Vector();
+		parent.children.addElement(this);
 	}
 
 	/**
@@ -105,6 +107,7 @@ public class Accessible {
 		AccessibleFactory.registerAccessible (this);
 		control.addDisposeListener (new DisposeListener () {
 			public void widgetDisposed (DisposeEvent e) {
+				AccessibleFactory.unregisterAccessible (Accessible.this);
 				release ();
 			}
 		});
@@ -419,7 +422,9 @@ public class Accessible {
 	 */
 	public void dispose () {
 		if (parent == null) return;
-		// TODO: platform-specific code to dispose a lightweight accessible
+		release();
+		parent.children.removeElement(this);
+		parent = null;
 	}
 
 	/**
@@ -477,7 +482,12 @@ public class Accessible {
 	}
 	
 	void release () {
-		AccessibleFactory.unregisterAccessible (this);
+		if (children != null) {
+			for (int i = 0; i < children.size(); i++) {
+				Accessible child = (Accessible) children.elementAt(i);
+				child.dispose();
+			}
+		}
 		if (accessibleObject != null) {
 			accessibleObject.release ();
 			accessibleObject = null;

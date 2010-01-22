@@ -564,11 +564,13 @@ class AccessibleFactory {
 			ATK.atk_registry_set_factory_type (registry, widgetType, swtFactoryType);
 			Factories.put (new LONG (widgetType), new LONG (parentType));
 		}
+		if (AccessibleObject.DEBUG) AccessibleObject.print("-->Register=" + accessible.control + " " + widget); //$NON-NLS-1$
 		Accessibles.put (new LONG (widget), accessible);
 	}
 	
 	static void unregisterAccessible (Accessible accessible) {
 		int /*long*/ widget = accessible.getControlHandle ();
 		Accessibles.remove (new LONG (widget));
+		if (AccessibleObject.DEBUG) AccessibleObject.print("-->Deregister=" + accessible.control + " " + widget); //$NON-NLS-1$
 	}
 }
