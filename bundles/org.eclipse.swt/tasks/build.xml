@@ -383,7 +383,8 @@
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
-			trust="true"/>
+			trust="true"
+			command="pwd"/>
 	</target>
 	
 	<target name="check_64_compilation">
