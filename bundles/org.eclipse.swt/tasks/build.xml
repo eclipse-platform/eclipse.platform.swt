@@ -380,6 +380,7 @@
 	</target>
 	
 	<target name="check_machines">
+		<parallel>
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
@@ -435,6 +436,7 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			command="pwd"/>
+		</parallel>
 	</target>
 	
 	<target name="check_64_compilation">
