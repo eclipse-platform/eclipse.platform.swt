@@ -3489,7 +3489,7 @@ public boolean getBlockSelection() {
 	checkWidget();
 	return blockSelection;
 }
-Rectangle getBlockSelectonPosition() {
+Rectangle getBlockSelectionPosition() {
 	int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
 	int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
 	if (firstLine > lastLine) {
@@ -3536,14 +3536,14 @@ public Rectangle getBlockSelectionBounds() {
 	return rect;
 }
 Rectangle getBlockSelectionRectangle() {
-	Rectangle rect = getBlockSelectonPosition();
+	Rectangle rect = getBlockSelectionPosition();
 	rect.y = getLinePixel(rect.y);
 	rect.width = rect.width - rect.x;
 	rect.height =  getLinePixel(rect.height + 1) - rect.y;
 	return rect;
 }
 String getBlockSelectionText(String delimiter) {
-	Rectangle rect = getBlockSelectonPosition();
+	Rectangle rect = getBlockSelectionPosition();
 	int firstLine = rect.y;
 	int lastLine = rect.height;
 	int left = rect.x;
@@ -4667,7 +4667,7 @@ public Point getSelectionRange() {
 public int[] getSelectionRanges() {
 	checkWidget();
 	if (blockSelection && blockXLocation != -1) {
-		Rectangle rect = getBlockSelectonPosition();
+		Rectangle rect = getBlockSelectionPosition();
 		int firstLine = rect.y;
 		int lastLine = rect.height;
 		int left = rect.x;
@@ -5514,7 +5514,7 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 	}
 	int firstLine, lastLine, left, right;
 	if (blockXLocation != -1) {
-		Rectangle rect = getBlockSelectonPosition();
+		Rectangle rect = getBlockSelectionPosition();
 		firstLine = rect.y;
 		lastLine = rect.height;
 		left = rect.x;
@@ -5541,7 +5541,7 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 }
 void insertBlockSelectionText(char key, int action) {
 	if (key == SWT.CR || key == SWT.LF) return;
-	Rectangle rect = getBlockSelectonPosition();
+	Rectangle rect = getBlockSelectionPosition();
 	int firstLine = rect.y;
 	int lastLine = rect.height;
 	int left = rect.x;
