@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.swt.tools.feature"
       label="SWT Tools"
-      version="1.0.0.qualifier">
+      version="1.0.1.qualifier">
 
    <description url="http://www.example.com/description">
       SWT Tools Feature.
