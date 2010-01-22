@@ -379,6 +379,13 @@
 		<echo>Photon is not being built</echo>
 	</target>
 	
+	<target name="check_machines">
+		<sshexec host="${m_linux_x86}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			trust="true"/>
+	</target>
+	
 	<target name="check_64_compilation">
 		<property name="cvsRsh" value="ssh"/>
 		<property name="tmpdir" value="${tmphome}/workspace64"/>
