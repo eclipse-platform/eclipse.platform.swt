@@ -449,7 +449,6 @@ public class Accessible {
 				AccessibleFactory.createAccessible(this);
 			} else {
 				accessibleObject = AccessibleFactory.createChildAccessible(this, ACC.CHILDID_SELF);
-				accessibleObject.id = ACC.CHILDID_SELF;
 			}
 		}
 		return accessibleObject;

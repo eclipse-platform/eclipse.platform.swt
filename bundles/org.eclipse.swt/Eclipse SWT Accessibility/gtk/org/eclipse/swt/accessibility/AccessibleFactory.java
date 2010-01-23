@@ -307,8 +307,8 @@ class AccessibleFactory {
 		return object.handle;
 	}
 	
-	static AccessibleObject createChildAccessible (Accessible accessible, int childIndex) {
-		int /*long*/ childType = getType (CHILD_TYPENAME, accessible, ATK.GTK_TYPE_ACCESSIBLE(), childIndex);
+	static AccessibleObject createChildAccessible (Accessible accessible, int childId) {
+		int /*long*/ childType = getType (CHILD_TYPENAME, accessible, ATK.GTK_TYPE_ACCESSIBLE(), childId);
 		return new AccessibleObject(childType, 0, accessible, true);
 	}
 	
