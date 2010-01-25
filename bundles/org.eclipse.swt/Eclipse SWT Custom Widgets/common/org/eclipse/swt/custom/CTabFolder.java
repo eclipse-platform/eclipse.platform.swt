@@ -318,8 +318,6 @@ void init(int style) {
 	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
 	updateTabHeight(false);
 	
-	initAccessible();
-	
 	// Add all listeners
 	listener = new Listener() {
 		public void handleEvent(Event event) {
@@ -361,6 +359,8 @@ void init(int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
+	
+	initAccessible();
 }
 static int checkStyle (Composite parent, int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
@@ -1719,6 +1719,7 @@ void initAccessible() {
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {
+			if (e.childID != ACC.CHILDID_SELF) return;
 			e.detail = items.length + EXTRA_CHILD_ID_COUNT;
 		}
 		
@@ -1790,6 +1791,7 @@ void initAccessible() {
 		}
 		
 		public void getChildren(AccessibleControlEvent e) {
+			if (e.childID != ACC.CHILDID_SELF) return;
 			int childIdCount = items.length + EXTRA_CHILD_ID_COUNT;
 			Object[] children = new Object[childIdCount];
 			for (int i = 0; i < childIdCount; i++) {
