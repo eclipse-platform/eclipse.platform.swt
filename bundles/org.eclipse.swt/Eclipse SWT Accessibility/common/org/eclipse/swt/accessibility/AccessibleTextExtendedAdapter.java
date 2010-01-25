@@ -32,7 +32,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the new selection
-	 * <li>[in] end - the 0 based offset of the last character of the new selection
+	 * <li>[in] end - the 0 based offset after the last character of the new selection
 	 * </ul>
 	 */
 	public void addSelection(AccessibleTextExtendedEvent e) {}
@@ -111,7 +111,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * <li>[in] width - the width of the bounding box
 	 * <li>[in] height - the height of the bounding box
 	 * <li>[typical out] start - the 0 based offset of the first character of the substring in the bounding box
-	 * <li>[typical out] end - the 0 based offset of the last character of the substring in the bounding box
+	 * <li>[typical out] end - the 0 based offset after the last character of the substring in the bounding box
 	 * <li>[optional out] ranges - an array of pairs specifying the start and end offsets of each range,
 	 * 		if the text range is clipped
 	 * </ul>
@@ -124,7 +124,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - the 0 based index of the selection
 	 * <li>[out] start - the 0 based offset of first selected character
-	 * <li>[out] end - the 0 based offset of the last selected character
+	 * <li>[out] end - the 0 based offset after the last selected character
 	 * </ul>
 	 */
 	public void getSelection(AccessibleTextExtendedEvent e) {}
@@ -169,7 +169,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 		<li> TEXT_BOUNDARY_ALL
 	 * 		</ul>
 	 * <li>[in,out] start - the 0 based offset of first character of the substring
-	 * <li>[in,out] end - the 0 based offset of last character of the substring
+	 * <li>[in,out] end - the 0 based offset after the last character of the substring
 	 * <li>[in,out] count - the number of boundary type units to move to find the substring to return.<ul>
 	 * 		<li>in: look count units before start if count < 0, or after end if count > 0. Look at start if count == 0.
 	 * 		<li>out: the actual number of boundary type units that were moved. This may be fewer than the input count.
@@ -196,7 +196,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] start - the 0 based offset of the first character of the substring for which to get the bounding box
-	 * <li>[in] end - the 0 based offset of the last character of the substring for which to get the bounding box
+	 * <li>[in] end - the 0 based offset after the last character of the substring for which to get the bounding box
 	 * <li>[typical out] x - the X coordinate of the top left corner of the bounding box of the referenced substring
 	 * <li>[typical out] y - the Y coordinate of the top left corner of the bounding box of the referenced substring
 	 * <li>[typical out] width - the width of the bounding box of the referenced substring
@@ -214,7 +214,7 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[typical out] start - the 0 based offset of the first character of the visible substring
-	 * <li>[typical out] end - the 0 based offset of the last character of the visible substring
+	 * <li>[typical out] end - the 0 based offset after the last character of the visible substring
 	 * <li>[optional out] ranges - an array of pairs specifying the start and end offsets of each range,
 	 * 		if the visible text range is clipped
 	 * </ul>
@@ -234,8 +234,8 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * Scrolls a specific part of a substring according to the scroll type.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] start - the 0 based offset of the first character of the substring.
-	 * <li>[in] end - the 0 based offset of the last character of the substring.
+	 * <li>[in] start - the 0 based offset of the first character of the substring
+	 * <li>[in] end - the 0 based offset after the last character of the substring
 	 * <li>[in] type - a scroll type indicating where the substring should be placed
 	 * 		on the screen. One of:<ul>
 	 * 		<li>SCROLL_TYPE_TOP_LEFT
@@ -282,8 +282,8 @@ public class AccessibleTextExtendedAdapter extends AccessibleTextAdapter impleme
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - the 0 based index of the selection to change
-	 * <li>[in] start - the new 0 based starting offset
-	 * <li>[in] end - the new 0 based ending offset
+	 * <li>[in] start - the new 0 based offset of the first character of the selection
+	 * <li>[in] end - the new 0 based offset after the last character of the selection
 	 * </ul>
 	 */
 	public void setSelection(AccessibleTextExtendedEvent e) {}
