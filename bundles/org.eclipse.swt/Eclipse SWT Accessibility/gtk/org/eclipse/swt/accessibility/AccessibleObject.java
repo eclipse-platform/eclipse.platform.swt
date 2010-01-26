@@ -2001,14 +2001,12 @@ class AccessibleObject {
 			int length = listeners.size();
 			if (length > 0) {
 				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
-				if (event.start != event.end) {
-					event.start = (int)/*64*/start_offset;
-					event.end = (int)/*64*/end_offset;
-					event.type = ACC.TEXT_BOUNDARY_ALL;
-					for (int i = 0; i < length; i++) {
-						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
-						listener.getText(event);
-					}
+				event.start = (int)/*64*/start_offset;
+				event.end = (int)/*64*/end_offset;
+				event.type = ACC.TEXT_BOUNDARY_ALL;
+				for (int i = 0; i < length; i++) {
+					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+					listener.getText(event);
 				}
 				return getStringPtr (event.result);
 			}
