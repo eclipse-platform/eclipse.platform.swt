@@ -10,18 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.accessibility.Accessible;
-import org.eclipse.swt.accessibility.AccessibleActionListener;
-import org.eclipse.swt.accessibility.AccessibleAttributeListener;
-import org.eclipse.swt.accessibility.AccessibleHyperlinkListener;
-import org.eclipse.swt.accessibility.AccessibleTableCellListener;
-import org.eclipse.swt.accessibility.AccessibleTableListener;
-import org.eclipse.swt.accessibility.AccessibleTextExtendedListener;
-import org.eclipse.swt.accessibility.AccessibleValueListener;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;

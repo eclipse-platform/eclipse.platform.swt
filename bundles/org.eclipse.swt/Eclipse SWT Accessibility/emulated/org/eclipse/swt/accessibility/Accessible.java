@@ -11,16 +11,8 @@
 package org.eclipse.swt.accessibility;
 
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.accessibility.Accessible;
-import org.eclipse.swt.accessibility.AccessibleActionListener;
-import org.eclipse.swt.accessibility.AccessibleAttributeListener;
-import org.eclipse.swt.accessibility.AccessibleHyperlinkListener;
-import org.eclipse.swt.accessibility.AccessibleTableCellListener;
-import org.eclipse.swt.accessibility.AccessibleTableListener;
-import org.eclipse.swt.accessibility.AccessibleValueListener;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class provide a bridge between application
