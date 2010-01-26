@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet244 {
@@ -26,9 +27,8 @@ public class Snippet244 {
     public static void main(String[] args) {
         final Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setBounds(10,10,250,250);
+        shell.setLayout(new FillLayout());
         final StyledText text = new StyledText(shell, SWT.NONE);
-        text.setBounds(10,10,200,200);
         StyleRange style = new StyleRange();
         style.borderColor = display.getSystemColor(SWT.COLOR_RED);
         style.borderStyle = SWT.BORDER_SOLID;
@@ -40,7 +40,7 @@ public class Snippet244 {
 			text.setStyleRanges(0, 0, new int[] {index, SEARCH_STRING.length()}, styles);
 			index = contents.indexOf(SEARCH_STRING, index + 1);
 		}
-        
+        shell.pack();
         shell.open();
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) display.sleep();
