@@ -455,12 +455,15 @@
 			</commandline>
 		</cvs>
 
+		<echo>Building win32</echo>
 		<antcall target="build_64">
 			<param name="cp" value=".classpath_win32"/>
 		</antcall>
+		<echo>Building gtk</echo>
 		<antcall target="build_64">
 			<param name="cp" value=".classpath_gtk"/>
 		</antcall>
+		<echo>Building cocoa</echo>
 		<antcall target="build_64">
 			<param name="cp" value=".classpath_cocoa"/>
 		</antcall>
