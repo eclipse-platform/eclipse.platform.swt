@@ -385,7 +385,7 @@ class AccessibleObject {
 				if (event.childID == object.id) event.childID = ACC.CHILDID_SELF;
 				AccessibleObject accObj = object.getChildByID (event.childID);
 				if (accObj != null) {
-					if (parentResult > 0) OS.g_object_unref (parentResult);
+					if (parentResult != 0) OS.g_object_unref (parentResult);
 					return OS.g_object_ref (accObj.handle);	
 				}
 			}
@@ -765,7 +765,7 @@ class AccessibleObject {
 				} 
 				AccessibleObject accObj = object.getChildByID (event.childID);
 				if (accObj != null) {
-					if (parentResult > 0) OS.g_object_unref (parentResult);
+					if (parentResult != 0) OS.g_object_unref (parentResult);
 					OS.g_object_ref (accObj.handle);	
 					return accObj.handle;
 				}
