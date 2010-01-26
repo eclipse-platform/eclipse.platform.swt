@@ -41,7 +41,7 @@
 #ifdef REDUCED_CALLBACKS
 #define MAX_CALLBACKS 16
 #else
-#ifdef USE_ASSEMBLER
+#if (defined(USE_ASSEMBLER) || defined(GTK))
 #define MAX_CALLBACKS 256
 #else
 #define MAX_CALLBACKS 128
