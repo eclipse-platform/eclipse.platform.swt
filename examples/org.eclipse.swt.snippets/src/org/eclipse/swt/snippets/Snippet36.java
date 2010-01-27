@@ -33,7 +33,8 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	ToolBar toolBar = new ToolBar (shell, SWT.FLAT | SWT.BORDER);
 	for (int i=0; i<12; i++) {
-		ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
+		int style = i % 3 == 2 ? SWT.DROP_DOWN : SWT.PUSH;
+		ToolItem item = new ToolItem (toolBar, style);
 		item.setImage (image);
 	}
 	toolBar.pack ();
