@@ -458,15 +458,15 @@
 		<!-- 64 bit -->
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_win32"/>
-			<param name="is64" value=""/>
+			<param name="is64" value="64 bit"/>
 		</antcall>
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_gtk"/>
-			<param name="is64" value=""/>
+			<param name="is64" value="64 bit"/>
 		</antcall>
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_cocoa"/>
-			<param name="is64" value=""/>
+			<param name="is64" value="64 bit"/>
 		</antcall>
 		
 		<!-- 32 bit -->
@@ -500,7 +500,7 @@
 	</target>
 	
 	<target name="build_classes">
-		<echo>Building ${cp}</echo>
+		<echo>Building ${cp} ${is64}</echo>
 		<delete file="${tmpdir}/copy.xml"/>
 		<delete dir="${buildDir}"/>
 				
