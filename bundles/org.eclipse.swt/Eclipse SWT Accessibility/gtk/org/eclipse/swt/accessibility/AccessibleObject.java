@@ -1302,7 +1302,7 @@ class AccessibleObject {
 			int length = listeners.size();
 			if (length > 0) {
 				AccessibleTableEvent event = new AccessibleTableEvent(accessible);
-				event.column = (int)/*64*/row;
+				event.row = (int)/*64*/row;
 				for (int i = 0; i < length; i++) {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 					listener.selectRow(event);
