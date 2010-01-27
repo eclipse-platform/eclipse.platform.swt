@@ -500,7 +500,7 @@
 	</target>
 	
 	<target name="build_classes">
-		<echo>Building ${cp} 64bit=${is64}</echo>
+		<echo>Building ${cp}</echo>
 		<delete file="${tmpdir}/copy.xml"/>
 		<delete dir="${buildDir}"/>
 				
