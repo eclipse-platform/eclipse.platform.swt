@@ -28,6 +28,7 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.open ();
 	final Button b = new Button (shell, 0);
+	b.setText("Push to set cursor to hand");
 	b.setBounds (10, 10, 200, 200);
 	b.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
