@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
  
 /*
- * Table example snippet: remove selected items
+ * Table example snippet: remove selected items (using popup menu)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
