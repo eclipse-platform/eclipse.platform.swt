@@ -1,5 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+/*
+ * SWT skin snippet: Listen for and print out skin events
+ * 
+ * For a list of all SWT example snippets see
+ * http://www.eclipse.org/swt/snippets/
+ * 
+ * @since 3.6
+ */
 import java.util.Random;
 
 import org.eclipse.swt.SWT;
@@ -17,14 +35,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-/*
- * SWT skin snippet: Listen for and print out skin events
- * 
- * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
- * 
- * @since 3.6
- */
 public class Snippet333 {
 
 	static final int colors[] = {
