@@ -30,8 +30,8 @@ public static void main (String [] args) {
 	TabItem item0 = new TabItem (folder, 0);
 	item0.setToolTipText ("TabItem toolTip: " + string);
 	ToolBar bar = new ToolBar (shell, SWT.BORDER);
-	bar.setBounds (0, 200, 200, 64);
-	ToolItem item1 = new ToolItem (bar, 0);
+	bar.setBounds (0, 200, 200, 40);
+	ToolItem item1 = new ToolItem (bar, SWT.PUSH);
 	item1.setToolTipText ("ToolItem toolTip: " + string);
 	shell.setToolTipText ("Shell toolTip: " + string);
 	shell.open ();
