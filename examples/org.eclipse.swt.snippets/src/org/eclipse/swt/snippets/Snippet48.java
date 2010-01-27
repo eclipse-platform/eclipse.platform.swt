@@ -107,7 +107,8 @@ public static void main (String [] args) {
 			}
 		}
 	});
-	shell.setSize (200, 150);
+	Rectangle rect = image.getBounds ();
+	shell.setSize (Math.max(200, rect.width - 100), Math.max(150, rect.height - 100));
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
