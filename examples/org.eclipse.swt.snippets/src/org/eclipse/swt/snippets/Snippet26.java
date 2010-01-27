@@ -25,7 +25,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Combo combo = new Combo (shell, SWT.READ_ONLY);
-	combo.setItems (new String [] {"A", "B", "C"});
+	combo.setItems (new String [] {"Alpha", "Bravo", "Charlie"});
 	combo.setSize (200, 200);
 	shell.pack ();
 	shell.open ();
