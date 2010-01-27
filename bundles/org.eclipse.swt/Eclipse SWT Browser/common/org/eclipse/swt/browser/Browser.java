@@ -199,7 +199,7 @@ public static String getCookie (String name, String url) {
  * Sets a cookie on a URL.  Note that cookies are shared amongst all Browser instances.
  * 
  * The <code>value</code> parameter must be a cookie header string that
- * complies with <a href="http://www.ietf.org/rfc/rfc2109.txt">RFC 2109</code>.
+ * complies with <a href="http://www.ietf.org/rfc/rfc2109.txt">RFC 2109</a>.
  * The value is passed through to the native browser unchanged.
  * <p>
  * Example value strings:
