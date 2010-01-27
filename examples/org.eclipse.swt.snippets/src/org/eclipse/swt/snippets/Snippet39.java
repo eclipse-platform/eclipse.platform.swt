@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * CCombo example snippet: create a CCombo
+ * CCombo example snippet: create a CCombo (read-only, flat)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -28,7 +28,7 @@ public class Snippet39 {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		
-		CCombo combo = new CCombo(shell, SWT.FLAT | SWT.BORDER);
+		CCombo combo = new CCombo(shell, SWT.READ_ONLY | SWT.FLAT | SWT.BORDER);
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		for (int i = 0; i < 5; i++) {
 			combo.add("item" + i);
