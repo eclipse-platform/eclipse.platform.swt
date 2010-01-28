@@ -383,7 +383,8 @@ class AccessibleObject {
 					listener.getChildAtPoint (event);				
 				}
 				if (event.childID == object.id) event.childID = ACC.CHILDID_SELF;
-				AccessibleObject accObj = object.getChildByID (event.childID);
+				Accessible result = event.accessible;
+				AccessibleObject accObj = result != null ? result.getAccessibleObject() : object.getChildByID (event.childID);
 				if (accObj != null) {
 					if (parentResult != 0) OS.g_object_unref (parentResult);
 					return OS.g_object_ref (accObj.handle);	
@@ -661,7 +662,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkObject_ref_state_set (int /*long*/ atkObject) {
-		if (DEBUG) print ("-->atkObject_ref_state_set");
+		if (DEBUG) print ("-->atkObject_ref_state_set: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		int /*long*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
@@ -1993,7 +1994,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkText_get_text (int /*long*/ atkObject, int /*long*/ start_offset, int /*long*/ end_offset) {
-		if (DEBUG) print ("-->atkText_get_text: " + start_offset + "," + end_offset);
+		if (DEBUG) print ("-->atkText_get_text: " + atkObject + " " + start_offset + "," + end_offset);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -2521,6 +2522,7 @@ class AccessibleObject {
 
 	static Number getGValue (int /*long*/ value) {
 		int /*long*/ type = OS.G_VALUE_TYPE(value);
+		if (type == 0) return null;
 		if (type == OS.G_TYPE_DOUBLE()) return new Double(OS.g_value_get_double(value));
 		if (type == OS.G_TYPE_FLOAT()) return new Float(OS.g_value_get_float(value));
 		if (type == OS.G_TYPE_INT64()) return new Long(OS.g_value_get_int64(value));
