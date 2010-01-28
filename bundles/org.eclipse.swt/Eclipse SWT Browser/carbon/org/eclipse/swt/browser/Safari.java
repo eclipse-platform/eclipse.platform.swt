@@ -339,6 +339,13 @@ static int eventProc7(int webview, int userData, int selector, int arg0, int arg
 	return 0;
 }
 
+static int createNSString(String string) {
+	int length = string.length ();
+	char[] buffer = new char[length];
+	string.getChars (0, length, buffer, 0);
+	return OS.CFStringCreateWithCharacters (0, buffer, length);
+}
+
 public boolean back() {
 	html = null;
 	return Cocoa.objc_msgSend(webView, Cocoa.S_goBack) != 0;
@@ -676,7 +683,7 @@ void _setText(String html) {
 	OS.CFRelease(string);
 }
 
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String[] headers) {
 	html = null;
 
 	if (url.indexOf('/') == 0) {
@@ -702,16 +709,39 @@ public boolean setUrl(String url) {
 	}
 	if (inURL == 0) return false;
 
-	//request = [NSURLRequest requestWithURL:(NSURL*)inURL];
-	int request = Cocoa.objc_msgSend(Cocoa.C_NSURLRequest, Cocoa.S_requestWithURL, inURL);
+	int request = Cocoa.objc_msgSend(Cocoa.C_NSMutableURLRequest, Cocoa.S_requestWithURL, inURL);
 	OS.CFRelease(inURL);
 
-	//mainFrame = [webView mainFrame];
+//	if (postData != null) {
+//		int post = createNSString(POST);
+//		Cocoa.objc_msgSend(request, Cocoa.S_setHTTPMethod, post);
+//		OS.CFRelease (post);
+//		byte[] bytes = postData.getBytes();
+//		int data = Cocoa.objc_msgSend(Cocoa.C_NSData, Cocoa.S_dataWithBytes, bytes, bytes.length);
+//		Cocoa.objc_msgSend(request, Cocoa.S_setHTTPBody, data);
+//	}
+	if (headers != null) {
+		for (int i = 0; i < headers.length; i++) {
+			String current = headers[i];
+			if (current != null) {
+				int index = current.indexOf(':');
+				if (index != -1) {
+					String key = current.substring(0, index).trim();
+					String value = current.substring(index + 1).trim();
+					if (key.length() > 0 && value.length() > 0) {
+						int keyString = createNSString(key);
+						int valueString = createNSString(value);
+						Cocoa.objc_msgSend(request, Cocoa.S_setValueForHTTPHeaderField, valueString, keyString);
+						OS.CFRelease (valueString);
+						OS.CFRelease (keyString);
+					}
+				}
+			}
+		}
+	}
+
 	int mainFrame = Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
-
-	//[mainFrame loadRequest:request];
 	Cocoa.objc_msgSend(mainFrame, Cocoa.S_loadRequest, request);
-
 	return true;
 }
 

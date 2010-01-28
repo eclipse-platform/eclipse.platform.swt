@@ -865,7 +865,7 @@ public boolean setText(String html) {
 	return result;
 }
 
-public boolean setUrl(String url) {
+public boolean setUrl(String url, String postData, String headers[]) {
 	html = null;
 
 	/*
@@ -904,14 +904,46 @@ public boolean setUrl(String url) {
 		auto.invoke(rgdispid[0]);
 	}
 
-	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	navigate = true;
-	Variant[] rgvarg = new Variant[1];
-	rgvarg[0] = new Variant(url);
-	int[] rgdispidNamedArgs = new int[1];
-	rgdispidNamedArgs[0] = rgdispid[1];
+	int count = 1;
+	if (postData != null) count++;
+	if (headers != null) count++;
+	Variant[] rgvarg = new Variant[count];
+	int[] rgdispidNamedArgs = new int[count];
+	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL", "PostData", "Headers" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	int index = 0;
+	rgvarg[index] = new Variant(url);
+	rgdispidNamedArgs[index++] = rgdispid[1];
+	/* POST data is never received */
+//	if (postData != null) {
+//		rgvarg[index] = createSafeArray(postData);
+//		rgdispidNamedArgs[index++] = rgdispid[2];
+//	}
+	if (headers != null) {
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < headers.length; i++) {
+			String current = headers[i];
+			if (current != null) {
+				int sep = current.indexOf(':');
+				if (sep != -1) {
+					String key = current.substring(0, sep).trim();
+					String value = current.substring(sep + 1).trim();
+					if (key.length() > 0 && value.length() > 0) {
+						buffer.append(key);
+						buffer.append(':');
+						buffer.append(value);
+						buffer.append("\r\n");
+					}
+				}
+			}
+		}
+		rgvarg[index] = new Variant(buffer.toString());
+		rgdispidNamedArgs[index++] = rgdispid[3];
+	}
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	rgvarg[0].dispose();
+	for (int i = 0; i < count; i++) {
+		rgvarg[i].dispose();
+	}
 	if (pVarResult == null) return false;
 	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
 	pVarResult.dispose();

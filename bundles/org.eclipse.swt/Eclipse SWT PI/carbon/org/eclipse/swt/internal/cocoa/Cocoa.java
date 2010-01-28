@@ -25,6 +25,7 @@ public static final int C_NSNotificationCenter = Cocoa.objc_getClass("NSNotifica
 public static final int C_NSNumber = Cocoa.objc_getClass("NSNumber"); //$NON-NLS-1$
 public static final int C_NSURL = Cocoa.objc_getClass("NSURL"); //$NON-NLS-1$
 public static final int C_NSURLRequest = Cocoa.objc_getClass("NSURLRequest"); //$NON-NLS-1$
+public static final int C_NSMutableURLRequest = Cocoa.objc_getClass("NSMutableURLRequest"); //$NON-NLS-1$
 public static final int C_WebKitDelegate = Cocoa.objc_getClass("WebKitDelegate"); //$NON-NLS-1$
 public static final int C_WebDownload = Cocoa.objc_getClass("WebDownload"); //$NON-NLS-1$
 public static final int C_WebView = Cocoa.objc_getClass("WebView"); //$NON-NLS-1$
@@ -168,6 +169,7 @@ public static final int S_relatedTarget = Cocoa.sel_registerName("relatedTarget"
 public static final int S_shiftKey = Cocoa.sel_registerName("shiftKey"); //$NON-NLS-1$
 public static final int S_type = Cocoa.sel_registerName("type"); //$NON-NLS-1$
 public static final int S_wheelDelta = Cocoa.sel_registerName("wheelDelta"); //$NON-NLS-1$
+public static final int S_setValueForHTTPHeaderField = Cocoa.sel_registerName("setValue:forHTTPHeaderField:"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;

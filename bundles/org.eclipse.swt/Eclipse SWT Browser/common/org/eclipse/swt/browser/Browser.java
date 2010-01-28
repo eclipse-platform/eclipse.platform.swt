@@ -760,7 +760,12 @@ public boolean setText (String html) {
 public boolean setUrl (String url) {
 	checkWidget();
 	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return webBrowser.setUrl (url);
+	String[] headers = null;
+	String value = System.getProperty ("org.eclipse.swt.browser.Browser");
+	if (value != null && value.equals ("no-cache")) {
+		headers = new String[] {"Cache-Control: no-cache"};
+	}
+	return webBrowser.setUrl (url, null, headers);
 }
 
 /**

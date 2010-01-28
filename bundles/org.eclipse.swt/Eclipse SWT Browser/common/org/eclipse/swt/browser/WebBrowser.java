@@ -388,7 +388,7 @@ public void setBrowser (Browser browser) {
 
 public abstract boolean setText (String html);
 
-public abstract boolean setUrl (String url);
+public abstract boolean setUrl (String url, String postData, String[] headers);
 
 public abstract void stop ();
 
