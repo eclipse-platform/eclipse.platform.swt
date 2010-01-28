@@ -2682,7 +2682,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getChildren(event);
 		}
-		Object [] siblings = event.children;
+//TODO		Object [] siblings = event.children;
 		int indexInParent = 0;
 		COM.MoveMemory(pIndexInParent, new int [] { indexInParent }, 4);
 		return COM.S_OK;
