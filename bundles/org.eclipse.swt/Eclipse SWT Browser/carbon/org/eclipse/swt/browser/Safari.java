@@ -828,7 +828,7 @@ public boolean setUrl(String url, String postData, String[] headers) {
 					String key = current.substring(0, index).trim();
 					String value = current.substring(index + 1).trim();
 					if (key.length() > 0 && value.length() > 0) {
-						if (key.equals(USER_AGENT)) {
+						if (key.equalsIgnoreCase(USER_AGENT)) {
 							/*
 							* Feature of Safari.  The user-agent header value cannot be overridden
 							* here.  The workaround is to temporarily set the value on the WebView
@@ -840,7 +840,7 @@ public boolean setUrl(String url, String postData, String[] headers) {
 						} else {
 							int keyString = createNSString(key);
 							int valueString = createNSString(value);
-							Cocoa.objc_msgSend(request, Cocoa.S_setValueForHTTPHeaderField, keyString, valueString);
+							Cocoa.objc_msgSend(request, Cocoa.S_setValueForHTTPHeaderField, valueString, keyString);
 							OS.CFRelease (valueString);
 							OS.CFRelease (keyString);
 						}
