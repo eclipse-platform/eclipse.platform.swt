@@ -59,7 +59,8 @@ class Mozilla extends WebBrowser {
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount, NextJSFunctionIndex = 1;
-	static Hashtable AllFunctions = new Hashtable (); 
+	static Hashtable AllFunctions = new Hashtable ();
+	static Listener DisplayListener;
 	static boolean Initialized, IsPre_1_8, IsPre_1_9, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 
 	/* XULRunner detect constants */
@@ -106,6 +107,102 @@ class Mozilla extends WebBrowser {
 	static final String GRE_INITIALIZED = "org.eclipse.swt.browser.XULRunnerInitialized"; //$NON-NLS-1$
 
 	static {
+		DisplayListener = new Listener () {
+			public void handleEvent (Event event) {
+				if (BrowserCount > 0) return; /* another display is still active */
+
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;		
+				byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIObserverService observerService = new nsIObserverService (result[0]);
+				result[0] = 0;
+				buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_BEFORE_CHANGE, true);
+				int length = SHUTDOWN_PERSIST.length ();
+				char[] chars = new char [length + 1];
+				SHUTDOWN_PERSIST.getChars (0, length, chars, 0);
+				rc = observerService.NotifyObservers (0, buffer, chars);
+				if (rc != XPCOM.NS_OK) error (rc);
+				observerService.Release ();
+
+				if (LocationProvider != null) {
+					String prefsLocation = LocationProvider.profilePath + AppFileLocProvider.PREFERENCES_FILE;
+					nsEmbedString pathString = new nsEmbedString (prefsLocation);
+					rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
+					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+					pathString.dispose ();
+
+					nsILocalFile localFile = new nsILocalFile (result [0]);
+					result[0] = 0;
+				    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
+					localFile.Release ();
+
+					nsIFile prefFile = new nsIFile (result[0]);
+					result[0] = 0;
+
+					buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
+					rc = serviceManager.GetServiceByContractID (buffer, nsIPrefService.NS_IPREFSERVICE_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+					nsIPrefService prefService = new nsIPrefService (result[0]);
+					result[0] = 0;
+					rc = prefService.SavePrefFile (prefFile.getAddress ());
+					prefService.Release ();
+					prefFile.Release ();
+				}
+				serviceManager.Release ();
+
+				if (XPCOMWasGlued) {
+					/*
+					* The following is intentionally commented because it causes subsequent
+					* browser instantiations within the process to fail.  Mozilla does not
+					* support being unloaded and then re-initialized in a process, see
+					* http://www.mail-archive.com/dev-embedding@lists.mozilla.org/msg01732.html . 
+					*/
+
+//					int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
+//					/* alloc memory for two structs, the second is empty to signify the end of the list */
+//					int /*long*/ ptr = C.malloc (size * 2);
+//					C.memset (ptr, 0, size * 2);
+//					nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
+//					byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_TermEmbedding", true); //$NON-NLS-1$
+//					functionLoad.functionName = C.malloc (bytes.length);
+//					C.memmove (functionLoad.functionName, bytes, bytes.length);
+//					functionLoad.function = C.malloc (C.PTR_SIZEOF);
+//					C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
+//					XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
+//					XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+//					C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
+//					int /*long*/ functionPtr = result[0];
+//					result[0] = 0;
+//					C.free (functionLoad.function);
+//					C.free (functionLoad.functionName);
+//					C.free (ptr);
+//					XPCOM.Call (functionPtr);
+
+//					XPCOM.XPCOMGlueShutdown ();
+					XPCOMWasGlued = false;
+				}
+				if (XPCOMInitWasGlued) {
+					XPCOMInit.XPCOMGlueShutdown ();
+					XPCOMInitWasGlued = false;
+				}
+				Initialized = false;
+			}
+		};
+
 		MozillaClearSessions = new Runnable () {
 			public void run () {
 				if (!Initialized) return;
@@ -1144,102 +1241,7 @@ public void create (Composite parent, int style) {
 
 	if (display.getData (DISPOSE_LISTENER_HOOKED) == null) {
 		display.setData (DISPOSE_LISTENER_HOOKED, DISPOSE_LISTENER_HOOKED);
-		display.addListener (SWT.Dispose, new Listener () {
-			public void handleEvent (Event event) {
-				if (BrowserCount > 0) return; /* another display is still active */
-
-				int /*long*/[] result = new int /*long*/[1];
-				int rc = XPCOM.NS_GetServiceManager (result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-				result[0] = 0;		
-				byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-				nsIObserverService observerService = new nsIObserverService (result[0]);
-				result[0] = 0;
-				buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_BEFORE_CHANGE, true);
-				int length = SHUTDOWN_PERSIST.length ();
-				char[] chars = new char [length + 1];
-				SHUTDOWN_PERSIST.getChars (0, length, chars, 0);
-				rc = observerService.NotifyObservers (0, buffer, chars);
-				if (rc != XPCOM.NS_OK) error (rc);
-				observerService.Release ();
-
-				if (LocationProvider != null) {
-					String prefsLocation = LocationProvider.profilePath + AppFileLocProvider.PREFERENCES_FILE;
-					nsEmbedString pathString = new nsEmbedString (prefsLocation);
-					rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
-					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
-					pathString.dispose ();
-
-					nsILocalFile localFile = new nsILocalFile (result [0]);
-					result[0] = 0;
-				    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
-					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
-					localFile.Release ();
-
-					nsIFile prefFile = new nsIFile (result[0]);
-					result[0] = 0;
-
-					buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (buffer, nsIPrefService.NS_IPREFSERVICE_IID, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-					nsIPrefService prefService = new nsIPrefService (result[0]);
-					result[0] = 0;
-					rc = prefService.SavePrefFile (prefFile.getAddress ());
-					prefService.Release ();
-					prefFile.Release ();
-				}
-				serviceManager.Release ();
-
-				if (XPCOMWasGlued) {
-					/*
-					* The following is intentionally commented because it causes subsequent
-					* browser instantiations within the process to fail.  Mozilla does not
-					* support being unloaded and then re-initialized in a process, see
-					* http://www.mail-archive.com/dev-embedding@lists.mozilla.org/msg01732.html . 
-					*/
-
-//					int size = XPCOM.nsDynamicFunctionLoad_sizeof ();
-//					/* alloc memory for two structs, the second is empty to signify the end of the list */
-//					int /*long*/ ptr = C.malloc (size * 2);
-//					C.memset (ptr, 0, size * 2);
-//					nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
-//					byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_TermEmbedding", true); //$NON-NLS-1$
-//					functionLoad.functionName = C.malloc (bytes.length);
-//					C.memmove (functionLoad.functionName, bytes, bytes.length);
-//					functionLoad.function = C.malloc (C.PTR_SIZEOF);
-//					C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
-//					XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
-//					XPCOM.XPCOMGlueLoadXULFunctions (ptr);
-//					C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
-//					int /*long*/ functionPtr = result[0];
-//					result[0] = 0;
-//					C.free (functionLoad.function);
-//					C.free (functionLoad.functionName);
-//					C.free (ptr);
-//					XPCOM.Call (functionPtr);
-
-//					XPCOM.XPCOMGlueShutdown ();
-					XPCOMWasGlued = false;
-				}
-				if (XPCOMInitWasGlued) {
-					XPCOMInit.XPCOMGlueShutdown ();
-					XPCOMInitWasGlued = false;
-				}
-				Initialized = false;
-			}
-		});
-
+		display.addListener (SWT.Dispose, DisplayListener);
 		if (MozillaPendingCookies != null) {
 			SetPendingCookies (MozillaPendingCookies);
 		}
