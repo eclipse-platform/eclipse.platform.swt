@@ -1,4 +1,3 @@
-package org.eclipse.swt.internal.mozilla;
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1
  *
@@ -26,7 +25,7 @@ package org.eclipse.swt.internal.mozilla;
  * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
-
+package org.eclipse.swt.internal.mozilla;
 
 public class nsICookieService extends nsISupports {
 
