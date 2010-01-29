@@ -2197,18 +2197,26 @@ public void refresh () {
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);		 	
 	rc = webNavigation.Reload (nsIWebNavigation.LOAD_FLAGS_NONE);
 	webNavigation.Release ();
-	if (rc == XPCOM.NS_OK) return;
+
 	/*
-	* Feature in Mozilla.  Reload returns an error code NS_ERROR_INVALID_POINTER
-	* when it is called immediately after a request to load a new document using
-	* LoadURI.  The workaround is to ignore this error code.
-	*
-	* Feature in Mozilla.  Attempting to reload a file that no longer exists
-	* returns an error code of NS_ERROR_FILE_NOT_FOUND.  This is equivalent to
-	* attempting to load a non-existent local url, which is not a Browser error,
-	* so this error code should be ignored. 
+	* The following error conditions do not indicate unrecoverable problems:
+	* 
+	* - NS_ERROR_INVALID_POINTER: happens when Reload is called immediately
+	* after calling LoadURI.
+	* - NS_ERROR_FILE_NOT_FOUND: happens when attempting to reload a file that
+	* no longer exists.
+	* - NS_BINDING_ABORTED: happens when the user aborts the load (eg.- chooses
+	* to not resubmit a page with form data).
 	*/
-	if (rc != XPCOM.NS_ERROR_INVALID_POINTER && rc != XPCOM.NS_ERROR_FILE_NOT_FOUND) error (rc);
+	switch (rc) {
+		case XPCOM.NS_OK:
+		case XPCOM.NS_ERROR_INVALID_POINTER:
+		case XPCOM.NS_ERROR_FILE_NOT_FOUND:
+		case XPCOM.NS_BINDING_ABORTED: {
+			return;
+		}
+	}
+	error (rc);
 }
 
 void registerFunction (BrowserFunction function) {
