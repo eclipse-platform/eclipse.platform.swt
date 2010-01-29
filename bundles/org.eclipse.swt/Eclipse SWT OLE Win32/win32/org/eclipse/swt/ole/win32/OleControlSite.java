@@ -656,6 +656,9 @@ private int OnControlInfoChanged() {
 	}
 	return COM.S_OK;
 }
+protected int OnUIDeactivate(int fUndoable) {
+	return super.OnUIDeactivate(fUndoable);
+}
 void onFocusIn(Event e) {
 	String progID = getProgramID();
 	if (progID == null) return;
