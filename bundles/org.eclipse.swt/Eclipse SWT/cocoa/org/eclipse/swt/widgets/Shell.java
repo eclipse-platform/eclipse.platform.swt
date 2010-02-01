@@ -572,7 +572,7 @@ void createHandle () {
 		}
 		NSScreen screen = null;
 		NSScreen primaryScreen = new NSScreen(NSScreen.screens().objectAtIndex(0));
-		if (parent != null) screen = parent.getShell().window.screen();
+		if (parent != null) screen = parentWindow ().screen();
 		if (screen == null) screen = primaryScreen;
 		window = window.initWithContentRect(new NSRect(), styleMask, OS.NSBackingStoreBuffered, (style & SWT.ON_TOP) != 0, screen);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & (SWT.TOOL | SWT.SHEET)) != 0) {
@@ -1110,8 +1110,8 @@ void makeKeyAndOrderFront() {
 	* making the child a key window. 
 	*/
 	if (parent != null) {
-		Shell shell = (Shell) parent;
-		if (shell.window.isMiniaturized()) shell.window.deminiaturize(null);
+		NSWindow parentWindow = parentWindow ();
+		if (parentWindow.isMiniaturized()) parentWindow.deminiaturize(null);
 	}
 	window.makeKeyAndOrderFront (null);
 }
@@ -1161,10 +1161,15 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) {
 		// if the parent shell is minimized, setting focus will cause it
 		// to become unminimized.
-		if (parent == null || !((Shell)parent).window.isMiniaturized()) {
+		if (parent == null || !parentWindow ().isMiniaturized()) {
 			setFocus ();
 		}
 	}
+}
+
+NSWindow parentWindow () {
+	if (parent == null) return null;
+	return parent.view.window();
 }
 
 public boolean print (GC gc) {
@@ -1705,14 +1710,14 @@ void setWindowVisible (boolean visible, boolean key) {
 		if (window != null) {
 			if ((style & (SWT.SHEET)) != 0) {
 				NSApplication application = NSApplication.sharedApplication();
-				application.beginSheet(window, ((Shell)parent).window, null, 0, 0);
+				application.beginSheet(window, parentWindow (), null, 0, 0);
 				if (OS.VERSION <= 0x1060 && window.respondsToSelector(OS.sel__setNeedsToUseHeartBeatWindow_)) {
 					OS.objc_msgSend(window.id, OS.sel__setNeedsToUseHeartBeatWindow_, 0);
 				}
 			} else {
 				// If the parent window is miniaturized, the window will be shown
 				// when its parent is shown.
-				boolean parentMinimized = parent != null && ((Shell)parent).window.isMiniaturized();
+				boolean parentMinimized = parent != null && parentWindow ().isMiniaturized();
 				if (!parentMinimized) {
 					if (key) {
 						makeKeyAndOrderFront ();
@@ -1808,7 +1813,7 @@ void updateParent (boolean visible) {
 	if (window != null) {
 		if (visible) {
 			if (parent != null && parent.getVisible ()) {
-				((Shell)parent).window.addChildWindow (window, OS.NSWindowAbove);
+				parentWindow ().addChildWindow (window, OS.NSWindowAbove);
 				
 				/**
 				 * Feature in Cocoa: When a window is added as a child window,
