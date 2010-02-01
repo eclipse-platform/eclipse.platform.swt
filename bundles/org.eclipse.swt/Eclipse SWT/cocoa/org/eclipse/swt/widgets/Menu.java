@@ -212,7 +212,7 @@ void _setVisible (boolean visible) {
 	}
 	if (visible) {
 		Shell shell = getShell ();
-		NSWindow window = shell.window;
+		NSWindow window = shell.view.window ();
 		NSPoint location = null;
 		if (hasLocation) {
 			NSView topView = window.contentView();

@@ -133,7 +133,7 @@ public String open () {
 	panel.setCanChooseDirectories(true);
 	NSApplication application = NSApplication.sharedApplication();
 	if (parent != null && (style & SWT.SHEET) != 0) {
-		application.beginSheet(panel, parent.window, null, 0, 0);
+		application.beginSheet(panel, parent.view.window (), null, 0, 0);
 	}
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	display.setModalDialog(this);

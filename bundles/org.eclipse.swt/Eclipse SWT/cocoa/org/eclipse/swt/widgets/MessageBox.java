@@ -215,7 +215,7 @@ public int open () {
 		jniRef = OS.NewGlobalRef(this);
 		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
-		alert.beginSheetModalForWindow(parent.window, delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
+		alert.beginSheetModalForWindow(parent.view.window (), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
 		display.setModalDialog(this);
 		if ((style & SWT.APPLICATION_MODAL) != 0) {
 			response = (int)/*64*/alert.runModal();
