@@ -147,7 +147,7 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * If count is positive, then return the word that is count words after end.
 	 * If count is zero, start and end are the same, so return the word at start.
 	 * </p><p>
-	 * The whole text can be requested by passing start == 0 and end == getCharacterCount - 1,
+	 * The whole text can be requested by passing start == 0 and end == getCharacterCount,
 	 * TEXT_BOUNDARY_ALL, and 0 for count. Alternatively the whole text can be requested
 	 * by calling AccessibleControlListener.getValue().
 	 * </p><p>
