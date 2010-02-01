@@ -528,7 +528,6 @@ public boolean open () {
 		*/
 		if (!mouseDown) {
 			Rectangle bounds = display.getBounds();
-			System.out.println(bounds);
 			hwndTransparent = OS.CreateWindowEx (
 				OS.WS_EX_TRANSPARENT,
 				display.windowClass,
