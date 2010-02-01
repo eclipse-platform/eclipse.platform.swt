@@ -83,16 +83,11 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 
 	/**
 	 * Returns the offset of the character under the specified point.
-	 * <p>
-	 * The same functionality could be achieved by using the bounding
-	 * boxes for each character as returned by getCharacterBounds.
-	 * The method getOffsetAtPoint, however, can be implemented more efficiently.
-	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] x - the x value in display coordinates for which to look up the offset of the character
+	 * <li>[in] x - the X value in display coordinates for which to look up the offset of the character
 	 * 		that is rendered on the display at that point
-	 * <li>[in] y - the position's y value for which to look up the offset of the character
+	 * <li>[in] y - the position's Y value for which to look up the offset of the character
 	 * 		that is rendered on the display at that point
 	 * <li>[out] offset - the 0 based offset of the character under the given point,
 	 * 		or -1 if the point is invalid or there is no character under the point
@@ -107,14 +102,14 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] x - the X coordinate of the top left corner of the bounding box
-	 * <li>[in] y - the Y coordinate of the top left corner of the bounding box
+	 * <li>[in] x - the X coordinate of the top left corner of the bounding box, in display relative coordinates
+	 * <li>[in] y - the Y coordinate of the top left corner of the bounding box, in display relative coordinates
 	 * <li>[in] width - the width of the bounding box
 	 * <li>[in] height - the height of the bounding box
 	 * <li>[typical out] start - the 0 based offset of the first character of the substring in the bounding box
 	 * <li>[typical out] end - the 0 based offset after the last character of the substring in the bounding box
 	 * <li>[optional out] ranges - an array of pairs specifying the start and end offsets of each range,
-	 * 		if the text range is clipped
+	 * 		if the text range is clipped by the bounding box
 	 * </ul>
 	 */
 	public void getRanges(AccessibleTextExtendedEvent e);
@@ -152,7 +147,7 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * If count is positive, then return the word that is count words after end.
 	 * If count is zero, start and end are the same, so return the word at start.
 	 * </p><p>
-	 * The whole text can be requested by passing start == 0 and end == getCharacterCount,
+	 * The whole text can be requested by passing start == 0 and end == getCharacterCount - 1,
 	 * TEXT_BOUNDARY_ALL, and 0 for count. Alternatively the whole text can be requested
 	 * by calling AccessibleControlListener.getValue().
 	 * </p><p>
@@ -162,12 +157,12 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] type - the boundary type of the substring to return. One of:<ul>
-	 * 		<li> TEXT_BOUNDARY_CHAR
-	 * 		<li> TEXT_BOUNDARY_WORD
-	 * 		<li> TEXT_BOUNDARY_SENTENCE
-	 * 		<li> TEXT_BOUNDARY_PARAGRAPH
-	 * 		<li> TEXT_BOUNDARY_LINE
-	 * 		<li> TEXT_BOUNDARY_ALL
+	 * 		<li> {@link ACC#TEXT_BOUNDARY_CHAR}</li>
+	 * 		<li> {@link ACC#TEXT_BOUNDARY_WORD}</li>
+	 * 		<li> {@link ACC#TEXT_BOUNDARY_SENTENCE}</li>
+	 * 		<li> {@link ACC#TEXT_BOUNDARY_PARAGRAPH}</li>
+	 * 		<li> {@link ACC#TEXT_BOUNDARY_LINE}</li>
+	 * 		<li> {@link ACC#TEXT_BOUNDARY_ALL}</li>
 	 * 		</ul>
 	 * <li>[in,out] start - the 0 based offset of first character of the substring
 	 * <li>[in,out] end - the 0 based offset after the last character of the substring
@@ -184,6 +179,9 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	/**
 	 * Returns the bounding box(es) of the specified text range in display coordinates.
 	 * <p>
+	 * Typically, the text range will represent a single character, i.e. end - start = 1,
+	 * therefore providers should optimize for this case.
+	 * </p><p>
 	 * Note: The virtual character after the last character of the represented text,
 	 * i.e. the one at offset getCharacterCount, is a special case. It represents the
 	 * current input position and will therefore typically be queried by AT more
@@ -196,13 +194,14 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] start - the 0 based offset of the first character of the substring for which to get the bounding box
-	 * <li>[in] end - the 0 based offset after the last character of the substring for which to get the bounding box
-	 * <li>[typical out] x - the X coordinate of the top left corner of the bounding box of the referenced substring
-	 * <li>[typical out] y - the Y coordinate of the top left corner of the bounding box of the referenced substring
-	 * <li>[typical out] width - the width of the bounding box of the referenced substring
-	 * <li>[typical out] height - the height of the bounding box of the referenced substring
-	 * <li>[optional out] rectangles - a set of disjoint bounding rectangles, if the substring is clipped
+	 * <li>[in] start - the 0 based offset of the first character of the substring in the bounding box
+	 * <li>[in] end - the 0 based offset after the last character of the substring in the bounding box
+	 * <li>[typical out] x - the X coordinate of the top left corner of the bounding box of the specified substring
+	 * <li>[typical out] y - the Y coordinate of the top left corner of the bounding box of the specified substring
+	 * <li>[typical out] width - the width of the bounding box of the specified substring
+	 * <li>[typical out] height - the height of the bounding box of the specified substring
+	 * <li>[optional out] rectangles - a set of disjoint bounding rectangles, if the specified text range includes
+	 * 		partial lines
 	 * </ul>
 	 */
 	public void getTextBounds(AccessibleTextExtendedEvent e);
@@ -239,18 +238,18 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * <li>[in] end - the 0 based offset after the last character of the substring
 	 * <li>[in] type - a scroll type indicating where the substring should be placed
 	 * 		on the screen. One of:<ul>
-	 * 		<li>SCROLL_TYPE_TOP_LEFT
-	 * 		<li>SCROLL_TYPE_BOTTOM_RIGHT
-	 * 		<li>SCROLL_TYPE_TOP_EDGE
-	 * 		<li>SCROLL_TYPE_BOTTOM_EDGE
-	 * 		<li>SCROLL_TYPE_LEFT_EDGE
-	 * 		<li>SCROLL_TYPE_RIGHT_EDGE
-	 * 		<li>SCROLL_TYPE_ANYWHERE
-	 * 		<li>SCROLL_TYPE_POINT
+	 * 		<li> {@link ACC#SCROLL_TYPE_TOP_LEFT}</li>
+	 * 		<li> {@link ACC#SCROLL_TYPE_BOTTOM_RIGHT}</li>
+	 * 		<li> {@link ACC#SCROLL_TYPE_TOP_EDGE}</li>
+	 * 		<li> {@link ACC#SCROLL_TYPE_BOTTOM_EDGE}</li>
+	 * 		<li> {@link ACC#SCROLL_TYPE_LEFT_EDGE}</li>
+	 * 		<li> {@link ACC#SCROLL_TYPE_RIGHT_EDGE}</li>
+	 * 		<li> {@link ACC#SCROLL_TYPE_ANYWHERE}</li>
+	 * 		<li> {@link ACC#SCROLL_TYPE_POINT}</li>
 	 * 		</ul>
 	 * </ul>
-	 * <li>[optional in] x - for SCROLL_TYPE_POINT, the x coordinate of the destination point in display coordinates
-	 * <li>[optional in] y - for SCROLL_TYPE_POINT, the y coordinate of the destination point in display coordinates
+	 * <li>[optional in] x - for SCROLL_TYPE_POINT, the X coordinate of the destination point in display coordinates
+	 * <li>[optional in] y - for SCROLL_TYPE_POINT, the Y coordinate of the destination point in display coordinates
 	 */
 	public void scrollText(AccessibleTextExtendedEvent e);
 
