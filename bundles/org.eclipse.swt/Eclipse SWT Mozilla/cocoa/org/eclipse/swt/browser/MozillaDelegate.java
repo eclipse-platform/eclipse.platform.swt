@@ -89,6 +89,7 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 	int rc = baseWindow.Create ();
 	application.setMainMenu (mainMenu);
 	if (mainMenu != null) mainMenu.release ();
+	((Mozilla)browser.webBrowser).Activate ();
 	return rc;
 }
 
