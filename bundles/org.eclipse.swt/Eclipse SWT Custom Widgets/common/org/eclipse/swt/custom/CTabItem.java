@@ -1036,6 +1036,11 @@ public void setText (String string) {
  * tool tip, such as the Tree control on Windows, setting
  * the tool tip text to an empty string replaces the default,
  * causing no tool tip text to be shown.
+ * <p>
+ * The mnemonic indicator (character '&amp;') is not displayed in a tool tip.
+ * To display a single '&amp;' in the tool tip, the character '&amp;' can be 
+ * escaped by doubling it in the string.
+ * </p>
  *
  * @param string the new tool tip text (or null)
  *
