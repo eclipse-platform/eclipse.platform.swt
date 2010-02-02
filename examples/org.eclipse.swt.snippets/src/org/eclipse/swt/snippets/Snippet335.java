@@ -30,8 +30,8 @@ public static void main(String[] args) {
 
 	Label label = new Label(shell, SWT.WRAP | SWT.BORDER);
 	GridData labelData = new GridData();
-	labelData.widthHint = 10;					// <-- default width
-	labelData.horizontalAlignment = SWT.FILL;	// <-- grow to fill available width
+	labelData.widthHint = 10;					/* default width */
+	labelData.horizontalAlignment = SWT.FILL;	/* grow to fill available width */
 	label.setLayoutData(labelData);
 	label.setText("Snippets are minimal stand-alone programs that demonstrate specific techniques or functionality.");
 	new Button(shell, SWT.PUSH).setText("This button determines the Shell's width");
