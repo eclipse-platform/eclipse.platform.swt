@@ -16305,6 +16305,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1iconify)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1is_1active
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1window_1is_1active)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1is_1active_FUNC);
+	rc = (jboolean)gtk_window_is_active((GtkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1is_1active_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1window_1list_1toplevels
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1window_1list_1toplevels)
 	(JNIEnv *env, jclass that)

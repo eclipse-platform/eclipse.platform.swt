@@ -2050,7 +2050,18 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 }
 
 void showWidget () {
-	if ((state & FOREIGN_HANDLE) != 0) return;
+	if ((state & FOREIGN_HANDLE) != 0) {
+		/*
+		* In case of foreign handles, activeShell might not be initialised as 
+		* no focusIn events are generated on the window until the window loses
+		* and gain focus.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0) && OS.gtk_window_is_active (shellHandle)) {
+			display.activeShell = this;
+			display.activePending = true;
+		}
+		return;
+	}
 	OS.gtk_container_add (shellHandle, vboxHandle);
 	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
 	if (handle != 0) OS.gtk_widget_show (handle);

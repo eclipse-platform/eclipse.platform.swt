@@ -13143,6 +13143,16 @@ public static final int /*long*/ gtk_window_group_new() {
 	}
 }
 /** @param handle cast=(GtkWindow *) */
+public static final native boolean _gtk_window_is_active(int /*long*/ handle);
+public static final boolean gtk_window_is_active(int /*long*/ handle) {
+	lock.lock();
+	try {
+		return _gtk_window_is_active(handle);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param handle cast=(GtkWindow *) */
 public static final native void _gtk_window_iconify(int /*long*/ handle);
 public static final void gtk_window_iconify(int /*long*/ handle) {
 	lock.lock();
