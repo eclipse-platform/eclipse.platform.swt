@@ -1704,7 +1704,9 @@ public int getTopIndex () {
 	NSPoint point = new NSPoint();
 	point.x = rect.x;
 	point.y = rect.y;
-    return (int)/*64*/((NSTableView)view).rowAtPoint(point);
+	int /*64*/ rowAtPoint = (int)/*64*/((NSTableView)view).rowAtPoint(point);
+	if (rowAtPoint == -1) return 0; /* Empty table */ 
+	return rowAtPoint;	
 }
 
 void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
