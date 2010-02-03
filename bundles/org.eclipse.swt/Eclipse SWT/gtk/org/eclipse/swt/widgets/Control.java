@@ -56,6 +56,7 @@ public abstract class Control extends Widget implements Drawable {
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
+	Control labelRelation;
 
 Control () {
 }
@@ -1905,19 +1906,14 @@ public void removePaintListener(PaintListener listener) {
 }
 
 /*
- * Remove "Labelled by" relations from the receiver.
+ * Remove "Labelled by" relation from the receiver.
  */
 void removeRelation () {
 	if (!isDescribedByLabel ()) return;		/* there will not be any */
-	int /*long*/ accessible = OS.gtk_widget_get_accessible (handle);
-	if (accessible == 0) return;
-	int /*long*/ set = ATK.atk_object_ref_relation_set (accessible);
-	int count = ATK.atk_relation_set_get_n_relations (set);
-	for (int i = 0; i < count; i++) {
-		int /*long*/ relation = ATK.atk_relation_set_get_relation (set, 0);
-		ATK.atk_relation_set_remove (set, relation);
+	if (labelRelation != null) {
+		getAccessible().removeRelation (ACC.RELATION_LABELLED_BY, labelRelation.getAccessible());
+		labelRelation = null;
 	}
-	OS.g_object_unref (set);
 }
 
 /**
