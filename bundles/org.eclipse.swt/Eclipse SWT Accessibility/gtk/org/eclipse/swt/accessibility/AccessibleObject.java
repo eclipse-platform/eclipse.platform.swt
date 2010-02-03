@@ -360,11 +360,6 @@ class AccessibleObject {
 	static int /*long*/ atkComponent_ref_accessible_at_point (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_ref_accessible_at_point: " + atkObject + " " + x + "," + y);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
-		AtkComponentIface iface = getComponentIface (atkObject);
-		if (iface != null && iface.ref_accessible_at_point != 0) {
-			parentResult = ATK.call (iface.ref_accessible_at_point, atkObject, x, y, coord_type);
-		}
 		if (object != null) {
 			Accessible accessible = object.accessible;
 			Vector listeners = accessible.accessibleControlListeners;
@@ -387,10 +382,14 @@ class AccessibleObject {
 				Accessible result = event.accessible;
 				AccessibleObject accObj = result != null ? result.getAccessibleObject() : object.getChildByID (event.childID);
 				if (accObj != null) {
-					if (parentResult != 0) OS.g_object_unref (parentResult);
 					return OS.g_object_ref (accObj.handle);	
 				}
 			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkComponentIface iface = getComponentIface (atkObject);
+		if (iface != null && iface.ref_accessible_at_point != 0) {
+			parentResult = ATK.call (iface.ref_accessible_at_point, atkObject, x, y, coord_type);
 		}
 		return parentResult;
 	}	
@@ -2653,6 +2652,7 @@ class AccessibleObject {
 	
 	AccessibleObject getChildByID (int childId) {
 		if (childId == ACC.CHILDID_SELF) return this;
+		if (childId == ACC.CHILDID_NONE || childId == ACC.CHILDID_MULTIPLE) return null;
 		if (children != null) {
 			for (int i = 0; i < children.length; i++) {
 				if (children[i] != null && children[i].id == childId) return children [0];
