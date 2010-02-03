@@ -181,6 +181,92 @@ int compressRLE8Data(byte[] src, int srcOffset, int numBytes, byte[] dest, boole
 	
 	return size;
 }
+void convertPixelsToBGR(ImageData image, byte[] dest) {
+	/*
+	 * For direct palette, uncompressed image, BMP encoders expect the
+	 * pixels to be in BGR format for 24 & 32 bit and RGB 1555 for 16 bit
+	 * On Linux and MacOS, the pixels are in RGB format. Also, in
+	 * MacOS, the alpha byte may be first. 
+	 * Hence, we use the palette information of the image and convert 
+	 * the pixels to the required format. Converted pixels are stored
+	 * in dest byte array.
+	 */
+	byte[] data = image.data;
+	PaletteData palette = image.palette;
+	for (int y = 0; y < image.height; y++) {
+		int index;
+		int srcX = 0, srcY = y;
+		int numOfBytes = image.depth / 8;
+		index = (y * image.bytesPerLine);
+
+		for (int i = 0; i < image.width; i++) {
+			int pixel = 0;
+			switch (image.depth) {
+				case 32:
+					pixel = ((data[index] & 0xFF) << 24)
+							| ((data[index + 1] & 0xFF) << 16)
+							| ((data[index + 2] & 0xFF) << 8)
+							| (data[index + 3] & 0xFF);
+					break;
+				case 24:
+					pixel = ((data[index] & 0xFF) << 16)
+							| ((data[index + 1] & 0xFF) << 8)
+							| (data[index + 2] & 0xFF);
+					break;
+				case 16:
+					pixel = ((data[index + 1] & 0xFF) << 8)
+							| (data[index] & 0xFF);
+					break;
+				default:
+					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
+			}
+
+			if (image.depth == 16) {
+				/* convert to RGB 555 format */
+				int r = pixel & palette.redMask;
+				r = ((palette.redShift < 0) ? r >>> -palette.redShift
+						: r << palette.redShift);
+
+				int g = pixel & palette.greenMask;
+				g = ((palette.greenShift < 0) ? g >>> -palette.greenShift
+						: g << palette.greenShift);
+				g = (g & 0xF8);	/* In 565 format, G is 6 bit, mask it to 5 bit */
+
+				int b = pixel & palette.blueMask;
+				b = ((palette.blueShift < 0) ? b >>> -palette.blueShift
+						: b << palette.blueShift);
+
+				int modPixel = (r << 7) | (g << 2) | (b >> 3);
+				dest[index] = (byte) (modPixel & 0xFF);
+				dest[index + 1] = (byte) ((modPixel >> 8) & 0xFF);
+			} else {
+				/* convert to BGR format */
+				int b = pixel & palette.blueMask;
+				dest[index] = (byte) ((palette.blueShift < 0) ? b >>> -palette.blueShift
+						: b << palette.blueShift);
+
+				int g = pixel & palette.greenMask;
+				dest[index + 1] = (byte) ((palette.greenShift < 0) ? g >>> -palette.greenShift
+						: g << palette.greenShift);
+
+				int r = pixel & palette.redMask;
+				dest[index + 2] = (byte) ((palette.redShift < 0) ? r >>> -palette.redShift
+						: r << palette.redShift);
+
+				if (numOfBytes == 4) dest[index + 3] = 0;
+			}
+
+			srcX++;
+			if (srcX >= image.width) {
+				srcY++;
+				index = srcY * image.bytesPerLine;
+				srcX = 0;
+			} else {
+				index += numOfBytes;
+			}
+		}
+	}
+}
 void decompressData(byte[] src, byte[] dest, int stride, int cmp) {
 	if (cmp == 1) { // BMP_RLE8_COMPRESSION
 		if (decompressRLE8Data(src, src.length, stride, dest, dest.length) <= 0)
@@ -329,6 +415,21 @@ boolean isFileFormat(LEDataInputStream stream) {
 		return header[0] == 0x42 && header[1] == 0x4D && infoHeaderSize >= BMPHeaderFixedSize;
 	} catch (Exception e) {
 		return false;
+	}
+}
+boolean isPaletteBMP(PaletteData pal, int depth) {
+	switch(depth) {
+		case 32:
+		    if ((pal.redMask == 0xFF00) && (pal.greenMask == 0xFF0000) && (pal.blueMask == 0xFF000000)) return true;
+		    return false;
+		case 24:
+			if ((pal.redMask == 0xFF) && (pal.greenMask == 0xFF00) && (pal.blueMask == 0xFF0000)) return true;
+			return false;
+		case 16:
+		    if ((pal.redMask == 0x7C00) && (pal.greenMask == 0x3E0) && (pal.blueMask == 0x1F)) return true;
+		    return false;
+		default:
+			return true;
 	}
 }
 byte[] loadData(byte[] infoHeader) {
@@ -501,19 +602,20 @@ static byte[] paletteToBytes(PaletteData pal) {
  * Unload the given image's data into the given byte stream
  * using the given compression strategy. 
  * Answer the number of bytes written.
+ * Method modified to use the passed data if it is not null.
  */
-int unloadData(ImageData image, OutputStream out, int comp) {
+int unloadData(ImageData image, byte[] data, OutputStream out, int comp) {
 	int totalSize = 0;
 	try {
 		if (comp == 0)
-			return unloadDataNoCompression(image, out);
+			return unloadDataNoCompression(image, data, out);
 		int bpl = (image.width * image.depth + 7) / 8;
 		int bmpBpl = (bpl + 3) / 4 * 4; // BMP pads scanlines to multiples of 4 bytes
 		int imageBpl = image.bytesPerLine;
 		// Compression can actually take twice as much space, in worst case
 		byte[] buf = new byte[bmpBpl * 2];
 		int srcOffset = imageBpl * (image.height - 1); // Start at last line
-		byte[] data = image.data;
+		if (data == null) data = image.data;
 		totalSize = 0;
 		byte[] buf2 = new byte[32768];
 		int buf2Offset = 0;
@@ -539,15 +641,16 @@ int unloadData(ImageData image, OutputStream out, int comp) {
  * Prepare the given image's data for unloading into a byte stream
  * using no compression strategy.
  * Answer the number of bytes written.
+ * Method modified to use the passed data if it is not null.
  */
-int unloadDataNoCompression(ImageData image, OutputStream out) {
+int unloadDataNoCompression(ImageData image, byte[] data, OutputStream out) {
 	int bmpBpl = 0;
 	try {
 		int bpl = (image.width * image.depth + 7) / 8;
 		bmpBpl = (bpl + 3) / 4 * 4; // BMP pads scanlines to multiples of 4 bytes
 		int linesPerBuf = 32678 / bmpBpl;
 		byte[] buf = new byte[linesPerBuf * bmpBpl];
-		byte[] data = image.data;
+		if (data == null) data = image.data;
 		int imageBpl = image.bytesPerLine;
 		int dataIndex = imageBpl * (image.height - 1); // Start at last line
 		if (image.depth == 16) {
@@ -622,10 +725,18 @@ void unloadIntoByteStream(ImageLoader loader) {
 		fileHeader[4] += rgbs.length;
 	}
 
+	byte iData[] = null;
+	// If the pixels are not in the expected BMP format, convert them.
+	if (pal.isDirect && !isPaletteBMP(pal, image.depth)) {
+		// array to store the converted pixels
+	    iData = new byte[image.data.length];
+		convertPixelsToBGR(image, iData);
+	}
+	
 	// Prepare data. This is done first so we don't have to try to rewind
 	// the stream and fill in the details later.
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
-	unloadData(image, out, comp);
+	unloadData(image, iData, out, comp);
 	byte[] data = out.toByteArray();
 	
 	// Calculate file size
