@@ -108,14 +108,24 @@ public interface AccessibleTableListener extends SWTEventListener {
 	public void getColumnDescription(AccessibleTableEvent e);
 
 	/**
-	 * Returns the column headers as an array of accessible objects.
+	 * Returns the accessible object for the column header.
+	 * 
+	 * @param e an event object containing the following fields:<ul>
+	 * <li>[out] accessible - an accessible object representing the column header,
+	 * 	or null if there is no column header
+	 * </ul>
+	 */
+	public void getColumnHeader(AccessibleTableEvent e);
+
+	/**
+	 * Returns the column header cells as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects with role cell,
-	 * 	or null if there are no column headers
+	 * 	or null if there are no column header cells
 	 * </ul>
 	 */
-	public void getColumnHeaders(AccessibleTableEvent e);
+	public void getColumnHeaderCells(AccessibleTableEvent e);
 
 	/**
 	 * Returns the columns as an array of accessible objects.
@@ -159,14 +169,24 @@ public interface AccessibleTableListener extends SWTEventListener {
 	public void getRowDescription(AccessibleTableEvent e);
 
 	/**
-	 * Returns the row headers as an array of accessible objects.
+	 * Returns the accessible object for the row header.
+	 * 
+	 * @param e an event object containing the following fields:<ul>
+	 * <li>[out] accessible - an accessible object representing the row header,
+	 * 	or null if there is no row header
+	 * </ul>
+	 */
+	public void getRowHeader(AccessibleTableEvent e);
+
+	/**
+	 * Returns the row header cells as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] accessibles - an array of accessible objects with cell role,
-	 * 		or null if there are no row headers
+	 * 		or null if there are no row header cells
 	 * </ul>
 	 */
-	public void getRowHeaders(AccessibleTableEvent e);
+	public void getRowHeaderCells(AccessibleTableEvent e);
 
 	/**
 	 * Returns the rows as an array of accessible objects.
