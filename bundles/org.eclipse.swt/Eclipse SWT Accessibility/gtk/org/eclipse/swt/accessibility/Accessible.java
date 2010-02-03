@@ -15,6 +15,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class provide a bridge between application
@@ -449,13 +450,30 @@ public class Accessible {
 				AccessibleFactory.createAccessible(this);
 			} else {
 				accessibleObject = AccessibleFactory.createChildAccessible(this, ACC.CHILDID_SELF);
+				accessibleObject.parent = parent.accessibleObject;
 			}
 		}
 		return accessibleObject;
 	}
 
 	int /*long*/ getControlHandle () {
-		return control.handle;
+		int /*long*/ result = control.handle;
+		if (control instanceof Label) {
+			int /*long*/ list = OS.gtk_container_get_children (result);
+			if (list != 0) {
+				int /*long*/ temp = list;
+				while (temp != 0) {
+					int /*long*/ widget = OS.g_list_data( temp);
+					if (OS.GTK_WIDGET_VISIBLE (widget)) {
+						result = widget;
+						break;
+					}
+					temp = OS.g_list_next (temp);
+				}
+				OS.g_list_free (list);
+			}
+		}
+		return result;
 	}
 
 	/**

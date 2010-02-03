@@ -236,7 +236,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkComponent_get_extents (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ width, int /*long*/ height, int /*long*/ coord_type) {
-		if (DEBUG) print ("-->atkComponent_get_extents");
+		if (DEBUG) print ("-->atkComponent_get_extents: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		OS.memmove (x, new int[] {0}, 4);
 		OS.memmove (y, new int[] {0}, 4);
@@ -279,6 +279,7 @@ class AccessibleObject {
 				OS.memmove (y, new int[] {event.y}, 4);
 				OS.memmove (width, new int[] {event.width}, 4);
 				OS.memmove (height, new int[] {event.height}, 4);
+				if (DEBUG) print("--->" + event.x + "," + event.y + "," + event.width + "x" + event.height);
 			}
 		}
 		return 0;
@@ -357,7 +358,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkComponent_ref_accessible_at_point (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ coord_type) {
-		if (DEBUG) print ("-->atkComponent_ref_accessible_at_point");
+		if (DEBUG) print ("-->atkComponent_ref_accessible_at_point: " + atkObject + " " + x + "," + y);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		int /*long*/ parentResult = 0;
 		AtkComponentIface iface = getComponentIface (atkObject);
@@ -486,7 +487,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkObject_get_description (int /*long*/ atkObject) {
-		if (DEBUG) print ("-->atkObject_get_description");
+		if (DEBUG) print ("-->atkObject_get_description: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		int /*long*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
@@ -504,7 +505,8 @@ class AccessibleObject {
 				for (int i = 0; i < length; i++) {
 					AccessibleListener listener = (AccessibleListener)listeners.elementAt (i);
 					listener.getDescription (event);
-				} 
+				}
+				if (DEBUG) print ("---> " + event.result);
 				if (event.result == null) return parentResult;
 				if (descriptionPtr != -1) OS.g_free (descriptionPtr);
 				return descriptionPtr = getStringPtr (event.result);
@@ -532,7 +534,8 @@ class AccessibleObject {
 				for (int i = 0; i < length; i++) {
 					AccessibleListener listener = (AccessibleListener)listeners.elementAt (i);
 					listener.getName (event);				
-				} 
+				}
+				if (DEBUG) print ("---> " + event.result);
 				if (event.result == null) return parentResult;
 				if (namePtr != -1) OS.g_free (namePtr);
 				return namePtr = getStringPtr (event.result);
@@ -549,7 +552,7 @@ class AccessibleObject {
 		if (objectClass.get_n_children != 0) { 
 			parentResult = ATK.call (objectClass.get_n_children, atkObject);
 		}
-		if (object != null) {
+		if (object != null && object.id == ACC.CHILDID_SELF) {
 			Accessible accessible = object.accessible;
 			Vector listeners = accessible.accessibleControlListeners;
 			int length = listeners.size();
@@ -560,7 +563,8 @@ class AccessibleObject {
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
 					listener.getChildCount (event);
-				} 
+				}
+				if (DEBUG) print ("--->" + event.detail);
 				return event.detail;
 			}
 		}
@@ -568,10 +572,13 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkObject_get_index_in_parent (int /*long*/ atkObject) {
-		if (DEBUG) print ("-->atkObjectCB_get_index_in_parent.  ");
+		if (DEBUG) print ("-->atkObjectCB_get_index_in_parent: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
-			if (object.index != -1) return object.index;
+			if (object.index != -1) {
+				if (DEBUG) print ("---> " + object.index);
+				return object.index;
+			}
 		}
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_index_in_parent == 0) return 0;
@@ -582,11 +589,16 @@ class AccessibleObject {
 		if (DEBUG) print ("-->atkObject_get_parent: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
-			if (object.parent != null) return object.parent.handle;
+			if (object.parent != null) {
+				if (DEBUG) print ("---> " + object.parent.accessible.accessibleObject.handle);
+				return object.parent.handle;
+			}
 		}
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_parent == 0) return 0;
-		return ATK.call (objectClass.get_parent, atkObject);
+		int /*long*/ parentResult = ATK.call (objectClass.get_parent, atkObject);
+		if (DEBUG) print ("---> " + parentResult);
+		return parentResult;
 	}
 
 	static int /*long*/ atkObject_get_role (int /*long*/ atkObject) {
@@ -603,7 +615,8 @@ class AccessibleObject {
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
 					listener.getRole (event);				
-				} 
+				}
+				if (DEBUG) print ("---> " + event.detail);
 				if (event.detail != -1) {
 					switch (event.detail) {
 						/* Convert from win32 role values to atk role values */
@@ -637,6 +650,7 @@ class AccessibleObject {
 						case ACC.ROLE_RADIOBUTTON: return ATK.ATK_ROLE_RADIO_BUTTON;
 						case ACC.ROLE_SPLITBUTTON: return ATK.ATK_ROLE_PUSH_BUTTON;
 						case ACC.ROLE_WINDOW: return ATK.ATK_ROLE_WINDOW;
+						case ACC.ROLE_ROW: return ATK.ATK_ROLE_TABLE_CELL;
 					}
 				}
 			}
@@ -649,7 +663,7 @@ class AccessibleObject {
 	static int /*long*/ atkObject_ref_child (int /*long*/ atkObject, int /*long*/ index) {
 		if (DEBUG) print ("-->atkObject_ref_child: " + index + " of: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		if (object != null) {
+		if (object != null && object.id == ACC.CHILDID_SELF) {
 			object.updateChildren ();
 			AccessibleObject accObject = object.getChildByIndex ((int)/*64*/index);	
 			if (accObject != null) {
@@ -736,7 +750,8 @@ class AccessibleObject {
 					AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
 					listener.getSelection (event);
 				}
-				AccessibleObject accessibleObject = object.getChildByID (event.childID);
+				Accessible result = event.accessible;
+				AccessibleObject accessibleObject = result != null ? result.getAccessibleObject() : object.getChildByID (event.childID);
 				if (accessibleObject != null) { 
 					return accessibleObject.index == index ? 1 : 0;
 				}
@@ -875,7 +890,7 @@ class AccessibleObject {
 				AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 				listener.getColumnCount(event);
 			}
-			return index / event.count;
+			return event.count == 0 ? -1 : index / event.count;
 		}
 		int /*long*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
@@ -1086,7 +1101,7 @@ class AccessibleObject {
 				AccessibleTableEvent event = new AccessibleTableEvent(accessible);
 				for (int i = 0; i < length; i++) {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
-					listener.getRowHeaders(event);
+					listener.getRowHeaderCells(event);
 				}
 				Accessible[] accessibles = event.accessibles;
 				if (accessibles != null) {
@@ -1140,7 +1155,7 @@ class AccessibleObject {
 				AccessibleTableEvent event = new AccessibleTableEvent(accessible);
 				for (int i = 0; i < length; i++) {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
-					listener.getRowHeaders(event);
+					listener.getRowHeaderCells(event);
 				}
 				Accessible[] accessibles = event.accessibles;
 				if (accessibles != null) {
@@ -2825,7 +2840,6 @@ class AccessibleObject {
 	}
 	
 	void updateChildren () {
-		if (isLightweight) return;
 		Vector listeners = accessible.accessibleControlListeners;
 		int length = listeners.size();
 		AccessibleControlEvent event = new AccessibleControlEvent (accessible);
@@ -2845,7 +2859,18 @@ class AccessibleObject {
 				int id = ((Integer)child).intValue();
 				object = oldChildren != null && i < oldChildren.length ? oldChildren [i] : null;
 				if (object == null || object.id != id) {
-					object = AccessibleFactory.createChildAccessible (accessible, id);
+					event = new AccessibleControlEvent (accessible);
+					event.childID = id;
+					for (int j = 0; j < length; j++) {
+						AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (j);
+						listener.getChild (event);
+					}
+					if (event.accessible != null) {
+						object = event.accessible.getAccessibleObject();
+						if (object != null)	OS.g_object_ref(object.handle);
+					} else {
+						object = AccessibleFactory.createChildAccessible (accessible, id);
+					}
 					object.id = id;
 				} else {
 					OS.g_object_ref(object.handle);
