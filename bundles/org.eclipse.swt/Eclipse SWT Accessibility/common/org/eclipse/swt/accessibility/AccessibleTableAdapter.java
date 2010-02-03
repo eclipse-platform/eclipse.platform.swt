@@ -20,9 +20,8 @@ package org.eclipse.swt.accessibility;
  * extend this class and override only the methods that they are
  * interested in.
  * </p><p>
- * Many methods in this adapter return cell accessible objects
- * (accessible objects with role cell). These accessible objects
- * should implement <code>AccessibleTableCellListener</code>.
+ * Many methods in this adapter return cell accessible objects,
+ * which should implement <code>AccessibleTableCellListener</code>.
  * </p>
  *
  * @see AccessibleTableAdapter
@@ -118,7 +117,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * Returns the column header cells as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] accessibles - an array of accessible objects with role cell,
+	 * <li>[out] accessibles - an array of accessible objects representing column header cells,
 	 * 	or null if there are no column header cells
 	 * </ul>
 	 */
@@ -128,7 +127,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * Returns the columns as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] accessibles - an array of accessible objects with column role,
+	 * <li>[out] accessibles - an array of accessible objects representing columns,
 	 * 		or null if there are no columns
 	 * </ul>
 	 */
@@ -179,7 +178,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * Returns the row header cells as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] accessibles - an array of accessible objects with cell role,
+	 * <li>[out] accessibles - an array of accessible objects representing row header cells,
 	 * 		or null if there are no row header cells
 	 * </ul>
 	 */
@@ -189,7 +188,7 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * Returns the rows as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] accessibles - an array of accessible objects with row role,
+	 * <li>[out] accessibles - an array of accessible objects representing rows,
 	 * 		or null if there are no rows
 	 * </ul>
 	 */
@@ -263,8 +262,8 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * Returns the visible columns as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] accessibles - an array of accessible objects with column role,
-	 * 		or null if there are no columns
+	 * <li>[out] accessibles - an array of accessible objects representing visible columns,
+	 * 		or null if there are no visible columns
 	 * </ul>
 	 */
 	public void getVisibleColumns(AccessibleTableEvent e) {}
@@ -273,8 +272,8 @@ public class AccessibleTableAdapter implements AccessibleTableListener {
 	 * Returns the visible rows as an array of accessible objects.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] accessibles - an array of accessible objects with row role,
-	 * 		or null if there are no rows
+	 * <li>[out] accessibles - an array of accessible objects representing visible rows,
+	 * 		or null if there are no visible rows
 	 * </ul>
 	 */
 	public void getVisibleRows(AccessibleTableEvent e) {}
