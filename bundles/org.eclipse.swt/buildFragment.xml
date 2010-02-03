@@ -477,8 +477,6 @@
 		<copy file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
 		<antcall target="build.sources" />
 		<copy file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
-		<copy file="${plugindir}/build/.project" todir="${temp.folder}/swtdownload" />
-		<copy file="${plugindir}/build/.classpath" todir="${temp.folder}/swtdownload" />
 		<copy todir="${temp.folder}/swtdownload">
 			<fileset dir="${basedir}" includes="about.html,about_files/" />
 		</copy>
