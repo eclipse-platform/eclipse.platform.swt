@@ -126,6 +126,7 @@ public class ATK extends OS {
 	
 	/** Signals */
 	public static final byte[] selection_changed = OS.ascii ("selection_changed");
+	public static final byte[] active_descendant_changed = OS.ascii ("active_descendant_changed");
 	public static final byte[] text_changed_insert = OS.ascii ("text_changed::insert");
 	public static final byte[] text_changed_delete = OS.ascii ("text_changed::delete");
 	public static final byte[] text_caret_moved = OS.ascii ("text_caret_moved");
