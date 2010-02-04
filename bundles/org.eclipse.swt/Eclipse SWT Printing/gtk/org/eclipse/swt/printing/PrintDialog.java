@@ -110,6 +110,7 @@ public PrintDialog (Shell parent, int style) {
  * @since 3.4
  */
 public void setPrinterData(PrinterData data) {
+	if (data == null) data = new PrinterData();
 	this.printerData = data;
 }
 
