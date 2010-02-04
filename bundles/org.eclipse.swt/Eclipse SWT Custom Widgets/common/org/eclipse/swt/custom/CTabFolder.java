@@ -1719,7 +1719,6 @@ void initAccessible() {
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {
-			if (e.childID != ACC.CHILDID_SELF) return;
 			e.detail = items.length + EXTRA_CHILD_ID_COUNT;
 		}
 		
@@ -1791,7 +1790,6 @@ void initAccessible() {
 		}
 		
 		public void getChildren(AccessibleControlEvent e) {
-			if (e.childID != ACC.CHILDID_SELF) return;
 			int childIdCount = items.length + EXTRA_CHILD_ID_COUNT;
 			Object[] children = new Object[childIdCount];
 			for (int i = 0; i < childIdCount; i++) {
