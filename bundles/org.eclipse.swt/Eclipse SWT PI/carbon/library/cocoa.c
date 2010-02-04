@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,18 +63,6 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(HIWebViewGetWebView)
 	Cocoa_NATIVE_ENTER(env, that, HIWebViewGetWebView_FUNC);
 	rc = (jint)HIWebViewGetWebView((HIViewRef)arg0);
 	Cocoa_NATIVE_EXIT(env, that, HIWebViewGetWebView_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSApplicationLoad
-JNIEXPORT jint JNICALL Cocoa_NATIVE(NSApplicationLoad)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	Cocoa_NATIVE_ENTER(env, that, NSApplicationLoad_FUNC);
-	rc = (jint)NSApplicationLoad();
-	Cocoa_NATIVE_EXIT(env, that, NSApplicationLoad_FUNC);
 	return rc;
 }
 #endif

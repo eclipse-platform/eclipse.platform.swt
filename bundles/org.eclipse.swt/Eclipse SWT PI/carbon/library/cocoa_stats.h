@@ -29,7 +29,6 @@ typedef enum {
 	HIJavaViewCreateWithCocoaView_FUNC,
 	HIWebViewCreate_FUNC,
 	HIWebViewGetWebView_FUNC,
-	NSApplicationLoad_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
 	NSSearchPathForDirectoriesInDomains_FUNC,
 	WebInitForCarbon_FUNC,

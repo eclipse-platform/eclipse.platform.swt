@@ -27,10 +27,6 @@ class MozillaDelegate {
 	static Callback Callback3;
 	static Hashtable handles = new Hashtable ();
 
-	static {
-		Cocoa.NSApplicationLoad ();
-	}
-
 MozillaDelegate (Browser browser) {
 	super ();
 	this.browser = browser;
