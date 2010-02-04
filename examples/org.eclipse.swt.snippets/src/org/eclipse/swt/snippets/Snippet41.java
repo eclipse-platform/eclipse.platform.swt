@@ -28,10 +28,12 @@ public static void main (String [] args) {
 	TabFolder folder = new TabFolder (shell, SWT.BORDER);
 	folder.setSize (200, 200);
 	TabItem item0 = new TabItem (folder, 0);
+	item0.setText ("tab item");
 	item0.setToolTipText ("TabItem toolTip: " + string);
 	ToolBar bar = new ToolBar (shell, SWT.BORDER);
 	bar.setBounds (0, 200, 200, 40);
 	ToolItem item1 = new ToolItem (bar, SWT.PUSH);
+	item1.setText ("tool item");
 	item1.setToolTipText ("ToolItem toolTip: " + string);
 	shell.setToolTipText ("Shell toolTip: " + string);
 	shell.open ();
