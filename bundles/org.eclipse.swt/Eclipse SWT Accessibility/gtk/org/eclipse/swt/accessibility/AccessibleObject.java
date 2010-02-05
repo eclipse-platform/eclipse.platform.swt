@@ -571,7 +571,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkObject_get_index_in_parent (int /*long*/ atkObject) {
-		if (DEBUG) print ("-->atkObjectCB_get_index_in_parent: " + atkObject);
+		if (DEBUG) print ("-->atkObject_get_index_in_parent: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			if (object.index != -1) {
@@ -581,7 +581,9 @@ class AccessibleObject {
 		}
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_index_in_parent == 0) return 0;
-		return ATK.call (objectClass.get_index_in_parent, atkObject);
+		int /*long*/ result = ATK.call (objectClass.get_index_in_parent, atkObject);
+		if (DEBUG) print ("---*> " + result);
+		return result;
 	}
 
 	static int /*long*/ atkObject_get_parent (int /*long*/ atkObject) {
@@ -858,7 +860,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkTable_get_column_at_index (int /*long*/ atkObject, int /*long*/ index) {
-		if (DEBUG) print ("-->atkTable_get_column_at_index");
+		if (DEBUG) print ("-->atkTable_get_column_at_index: " + atkObject + " " + index);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -868,7 +870,9 @@ class AccessibleObject {
 				AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 				listener.getColumnCount(event);
 			}
-			return index % event.count;
+			int result = index % event.count;
+			if (DEBUG) print ("---> " + result);
+			return result;
 		}
 		int /*long*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
@@ -879,7 +883,7 @@ class AccessibleObject {
 	}
 
 	static int /*long*/ atkTable_get_row_at_index (int /*long*/ atkObject, int /*long*/ index) {
-		if (DEBUG) print ("-->atkTable_get_row_at_index");
+		if (DEBUG) print ("-->atkTable_get_row_at_index: " + atkObject + " " + index);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -889,7 +893,9 @@ class AccessibleObject {
 				AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 				listener.getColumnCount(event);
 			}
-			return event.count == 0 ? -1 : index / event.count;
+			int result = event.count == 0 ? -1 : index / event.count;
+			if (DEBUG) print ("---> " + result);
+			return result;
 		}
 		int /*long*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
@@ -2813,6 +2819,10 @@ class AccessibleObject {
 	
 	void selectionChanged () {
 		OS.g_signal_emit_by_name (handle, ATK.selection_changed);
+	}
+	
+	void sendEvent(int event, int childID, Object eventData) {
+		//TODO
 	}
 	
 	void setFocus (int childID) {

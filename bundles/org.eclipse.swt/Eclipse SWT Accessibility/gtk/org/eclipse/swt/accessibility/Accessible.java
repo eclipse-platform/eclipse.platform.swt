@@ -450,7 +450,7 @@ public class Accessible {
 				AccessibleFactory.createAccessible(this);
 			} else {
 				accessibleObject = AccessibleFactory.createChildAccessible(this, ACC.CHILDID_SELF);
-				accessibleObject.parent = parent.accessibleObject;
+				accessibleObject.parent = parent.getAccessibleObject();
 			}
 		}
 		return accessibleObject;
@@ -810,7 +810,9 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, int childID) {
 		checkWidget();
-		//TODO: send platform-specific event (i.e. WinEvent with EVENT_OBJECT_* or IA2_EVENT_* on Win, Signal on ATK, Notification on Mac)
+		if (accessibleObject != null) {
+			accessibleObject.sendEvent(event, childID, null);
+		}
 	}
 
 	/**
@@ -832,7 +834,9 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, int childID, Object eventData) {
 		checkWidget();
-		//TODO: send platform-specific event (i.e. WinEvent with EVENT_OBJECT_* or IA2_EVENT_* on Win, Signal on ATK, Notification on Mac)
+		if (accessibleObject != null) {
+			accessibleObject.sendEvent(event, childID, eventData);
+		}
 	}
 	
 	/**
