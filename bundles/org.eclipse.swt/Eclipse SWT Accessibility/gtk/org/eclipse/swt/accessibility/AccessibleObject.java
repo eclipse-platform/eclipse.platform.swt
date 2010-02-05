@@ -870,7 +870,7 @@ class AccessibleObject {
 				AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 				listener.getColumnCount(event);
 			}
-			int result = index % event.count;
+			int /*long*/ result = index % event.count;
 			if (DEBUG) print ("---> " + result);
 			return result;
 		}
@@ -893,7 +893,7 @@ class AccessibleObject {
 				AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 				listener.getColumnCount(event);
 			}
-			int result = event.count == 0 ? -1 : index / event.count;
+			int /*long*/ result = event.count == 0 ? -1 : index / event.count;
 			if (DEBUG) print ("---> " + result);
 			return result;
 		}
