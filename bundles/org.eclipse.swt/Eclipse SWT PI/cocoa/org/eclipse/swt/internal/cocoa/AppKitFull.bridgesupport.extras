@@ -112,6 +112,7 @@
 	<constant name="NSHTMLPboardType" swt_gen="true"></constant>
 	<constant name="NSLinkAttributeName" swt_gen="true"></constant>
 	<constant name="NSObliquenessAttributeName" swt_gen="true"></constant>
+	<constant name="NSOutlineViewColumnDidMoveNotification" swt_gen="true"></constant>
 	<constant name="NSParagraphStyleAttributeName" swt_gen="true"></constant>
 	<constant name="NSPrintAllPages" swt_gen="true"></constant>
 	<constant name="NSPrintCopies" swt_gen="true"></constant>
@@ -131,6 +132,7 @@
 	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
 	<constant name="NSSystemColorsDidChangeNotification" swt_gen="true"></constant>
 	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
+	<constant name="NSTableViewColumnDidMoveNotification" swt_gen="true"></constant>
 	<constant name="NSToolbarCustomizeToolbarItemIdentifier" swt_gen="true"></constant>
 	<constant name="NSToolbarDidRemoveItemNotification" swt_gen="true"></constant>
 	<constant name="NSToolbarFlexibleSpaceItemIdentifier" swt_gen="true"></constant>
@@ -467,6 +469,9 @@
 			<arg name="flag" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="applicationIconImage" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:" swt_gen="true">
 			<arg name="sheet" swt_gen="true"></arg>
 			<arg name="docWindow" swt_gen="true"></arg>
@@ -476,6 +481,9 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="currentEvent" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="dockTile" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="endSheet:returnCode:" swt_gen="true">
@@ -1515,6 +1523,15 @@
 	<class name="NSDatePickerCell" swt_superclass="NSActionCell">
 	</class>
 	<class name="NSDictionaryController" swt_superclass="NSArrayController">
+	</class>
+	<class name="NSDockTile" swt_gen="mixed">
+		<method selector="badgeLabel" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setBadgeLabel:" swt_gen="true">
+			<arg name="string" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSDrawer" swt_superclass="NSResponder">
 	</class>

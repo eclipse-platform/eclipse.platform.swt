@@ -491,6 +491,7 @@ public static final int /*long*/ class_NSDate = objc_getClass("NSDate");
 public static final int /*long*/ class_NSDatePicker = objc_getClass("NSDatePicker");
 public static final int /*long*/ class_NSDictionary = objc_getClass("NSDictionary");
 public static final int /*long*/ class_NSDirectoryEnumerator = objc_getClass("NSDirectoryEnumerator");
+public static final int /*long*/ class_NSDockTile = objc_getClass("NSDockTile");
 public static final int /*long*/ class_NSEnumerator = objc_getClass("NSEnumerator");
 public static final int /*long*/ class_NSError = objc_getClass("NSError");
 public static final int /*long*/ class_NSEvent = objc_getClass("NSEvent");
@@ -709,6 +710,7 @@ public static final int /*long*/ sel_application_openFiles_ = sel_registerName("
 public static final int /*long*/ sel_applicationDidBecomeActive_ = sel_registerName("applicationDidBecomeActive:");
 public static final int /*long*/ sel_applicationDidFinishLaunching_ = sel_registerName("applicationDidFinishLaunching:");
 public static final int /*long*/ sel_applicationDidResignActive_ = sel_registerName("applicationDidResignActive:");
+public static final int /*long*/ sel_applicationIconImage = sel_registerName("applicationIconImage");
 public static final int /*long*/ sel_applicationShouldHandleReopen_hasVisibleWindows_ = sel_registerName("applicationShouldHandleReopen:hasVisibleWindows:");
 public static final int /*long*/ sel_applicationShouldTerminate_ = sel_registerName("applicationShouldTerminate:");
 public static final int /*long*/ sel_applicationWillFinishLaunching_ = sel_registerName("applicationWillFinishLaunching:");
@@ -731,6 +733,7 @@ public static final int /*long*/ sel_availableFonts = sel_registerName("availabl
 public static final int /*long*/ sel_availableMembersOfFontFamily_ = sel_registerName("availableMembersOfFontFamily:");
 public static final int /*long*/ sel_availableTypeFromArray_ = sel_registerName("availableTypeFromArray:");
 public static final int /*long*/ sel_backgroundColor = sel_registerName("backgroundColor");
+public static final int /*long*/ sel_badgeLabel = sel_registerName("badgeLabel");
 public static final int /*long*/ sel_baselineOffsetInLayoutManager_glyphIndex_ = sel_registerName("baselineOffsetInLayoutManager:glyphIndex:");
 public static final int /*long*/ sel_becomeFirstResponder = sel_registerName("becomeFirstResponder");
 public static final int /*long*/ sel_becomeKeyWindow = sel_registerName("becomeKeyWindow");
@@ -928,6 +931,7 @@ public static final int /*long*/ sel_displayIfNeeded = sel_registerName("display
 public static final int /*long*/ sel_displayRectIgnoringOpacity_inContext_ = sel_registerName("displayRectIgnoringOpacity:inContext:");
 public static final int /*long*/ sel_distantFuture = sel_registerName("distantFuture");
 public static final int /*long*/ sel_doCommandBySelector_ = sel_registerName("doCommandBySelector:");
+public static final int /*long*/ sel_dockTile = sel_registerName("dockTile");
 public static final int /*long*/ sel_documentCursor = sel_registerName("documentCursor");
 public static final int /*long*/ sel_documentSource = sel_registerName("documentSource");
 public static final int /*long*/ sel_documentView = sel_registerName("documentView");
@@ -1470,6 +1474,7 @@ public static final int /*long*/ sel_setAutoresizingMask_ = sel_registerName("se
 public static final int /*long*/ sel_setAutosaveExpandedItems_ = sel_registerName("setAutosaveExpandedItems:");
 public static final int /*long*/ sel_setBackgroundColor_ = sel_registerName("setBackgroundColor:");
 public static final int /*long*/ sel_setBackgroundLayoutEnabled_ = sel_registerName("setBackgroundLayoutEnabled:");
+public static final int /*long*/ sel_setBadgeLabel_ = sel_registerName("setBadgeLabel:");
 public static final int /*long*/ sel_setBaseWritingDirection_ = sel_registerName("setBaseWritingDirection:");
 public static final int /*long*/ sel_setBaseWritingDirection_range_ = sel_registerName("setBaseWritingDirection:range:");
 public static final int /*long*/ sel_setBezelStyle_ = sel_registerName("setBezelStyle:");
@@ -2500,11 +2505,11 @@ public static final NSString NSStrokeWidthAttributeName = new NSString(NSStrokeW
 public static final native int /*long*/ NSSystemColorsDidChangeNotification();
 public static final NSString NSSystemColorsDidChangeNotification = new NSString(NSSystemColorsDidChangeNotification());
 /** @method flags=const */
-public static final native int /*long*/ NSTableViewColumnDidMoveNotification();
-public static final NSString NSTableViewColumnDidMoveNotification = new NSString(NSTableViewColumnDidMoveNotification());
-/** @method flags=const */
 public static final native int /*long*/ NSTIFFPboardType();
 public static final NSString NSTIFFPboardType = new NSString(NSTIFFPboardType());
+/** @method flags=const */
+public static final native int /*long*/ NSTableViewColumnDidMoveNotification();
+public static final NSString NSTableViewColumnDidMoveNotification = new NSString(NSTableViewColumnDidMoveNotification());
 /** @method flags=const */
 public static final native int /*long*/ NSToolbarCustomizeToolbarItemIdentifier();
 public static final NSString NSToolbarCustomizeToolbarItemIdentifier = new NSString(NSToolbarCustomizeToolbarItemIdentifier());

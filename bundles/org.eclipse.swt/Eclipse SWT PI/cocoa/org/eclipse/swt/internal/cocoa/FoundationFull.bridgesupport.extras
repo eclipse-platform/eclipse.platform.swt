@@ -615,6 +615,12 @@
 			<arg name="observer" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="removeObserver:name:object:" swt_gen="true">
+			<arg name="observer" swt_gen="true"></arg>
+			<arg name="aName" swt_gen="true"></arg>
+			<arg name="anObject" swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSNumber" swt_gen="mixed" swt_superclass="NSValue">
 		<method selector="boolValue" swt_gen="true">
