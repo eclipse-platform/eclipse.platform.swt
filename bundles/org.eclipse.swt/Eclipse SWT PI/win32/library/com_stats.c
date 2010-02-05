@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 185;
-int COM_nativeFunctionCallCount[185];
+int COM_nativeFunctionCount = 182;
+int COM_nativeFunctionCallCount[182];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
 	"CALLBACK_1setCurrentValue",
@@ -157,16 +157,6 @@ char * COM_nativeFunctionNames[] = {
 	"VariantChangeType",
 	"VariantClear",
 	"VariantInit",
-#ifndef JNI64
-	"VtblCall__IIII",
-#else
-	"VtblCall__IJII",
-#endif
-#ifndef JNI64
-	"VtblCall__IIIII",
-#else
-	"VtblCall__IJIII",
-#endif
 #ifndef JNI64
 	"VtblCall__IIIIII",
 #else
@@ -326,11 +316,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__III_3J_3J_3I_3J",
 #else
 	"VtblCall__IJI_3J_3J_3I_3J",
-#endif
-#ifndef JNI64
-	"VtblCall__IIJI",
-#else
-	"VtblCall__IJJI",
 #endif
 #ifndef JNI64
 	"VtblCall__IIJI_3I",

@@ -1659,6 +1659,11 @@ public class OS extends C {
 	public static final int TB_SETROWS = 0x427;
 	public static final int TB_SETSTATE = 0x411;
 	public static final int TB_THUMBPOSITION = 0x4;
+	public static final int TBPF_NOPROGRESS = 0x0;
+	public static final int TBPF_INDETERMINATE = 0x1;
+	public static final int TBPF_NORMAL = 0x2;
+	public static final int TBPF_ERROR = 0x4;
+	public static final int TBPF_PAUSED = 0x8;
 	public static final int TCIF_IMAGE = 0x2;
 	public static final int TCIF_TEXT = 0x1;
 	public static final int TCI_SRCCHARSET = 0x1;
@@ -6593,6 +6598,13 @@ public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, byte[] arg0, int /*long*/[] arg1);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/[] arg1, int[] arg2);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, TF_DISPLAYATTRIBUTE arg0);
+
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1, long arg2);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long arg2);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2);
+
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1);
 
 public static final native boolean WaitMessage ();
 /**

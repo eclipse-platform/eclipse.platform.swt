@@ -687,9 +687,7 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int[] arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long[] arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int[] arg2);
@@ -698,7 +696,6 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1, int[] arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int[] arg2);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, long arg2);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, DVTARGETDEVICE arg2, SIZE arg3);

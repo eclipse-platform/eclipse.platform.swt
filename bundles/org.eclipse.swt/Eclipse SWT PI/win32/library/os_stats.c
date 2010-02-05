@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 985;
-int OS_nativeFunctionCallCount[985];
+int OS_nativeFunctionCount = 990;
+int OS_nativeFunctionCallCount[990];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1758,6 +1758,16 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJI",
 #endif
 #ifndef JNI64
+	"VtblCall__IIII",
+#else
+	"VtblCall__IJII",
+#endif
+#ifndef JNI64
+	"VtblCall__IIIII",
+#else
+	"VtblCall__IJIII",
+#endif
+#ifndef JNI64
 	"VtblCall__IIIII_3I",
 #else
 	"VtblCall__IJIII_3I",
@@ -1766,6 +1776,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IIIJI_3J",
 #else
 	"VtblCall__IJIJI_3J",
+#endif
+#ifndef JNI64
+	"VtblCall__IIIJJ",
+#else
+	"VtblCall__IJIJJ",
 #endif
 #ifndef JNI64
 	"VtblCall__III_3I_3I",
@@ -1778,6 +1793,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJJ",
 #endif
 #ifndef JNI64
+	"VtblCall__IIJI",
+#else
+	"VtblCall__IJJI",
+#endif
+#ifndef JNI64
 	"VtblCall__IIJII_3J",
 #else
 	"VtblCall__IJJII_3J",
@@ -1786,6 +1806,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IIJJI_3J",
 #else
 	"VtblCall__IJJJI_3J",
+#endif
+#ifndef JNI64
+	"VtblCall__IIJJJ",
+#else
+	"VtblCall__IJJJJ",
 #endif
 #ifndef JNI64
 	"VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2",

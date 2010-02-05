@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1335,52 +1335,6 @@ JNIEXPORT void JNICALL COM_NATIVE(VariantInit)
 }
 #endif
 
-#if (!defined(NO_VtblCall__IIII) && !defined(JNI64)) || (!defined(NO_VtblCall__IJII) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIII)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3)
-#else
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJII)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3)
-#endif
-{
-	jint rc = 0;
-#ifndef JNI64
-	COM_NATIVE_ENTER(env, that, VtblCall__IIII_FUNC);
-#else
-	COM_NATIVE_ENTER(env, that, VtblCall__IJII_FUNC);
-#endif
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jint, jint))(*(jintLong **)arg1)[arg0])(arg1, arg2, arg3);
-#ifndef JNI64
-	COM_NATIVE_EXIT(env, that, VtblCall__IIII_FUNC);
-#else
-	COM_NATIVE_EXIT(env, that, VtblCall__IJII_FUNC);
-#endif
-	return rc;
-}
-#endif
-
-#if (!defined(NO_VtblCall__IIIII) && !defined(JNI64)) || (!defined(NO_VtblCall__IJIII) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIIII)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3, jint arg4)
-#else
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIII)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3, jint arg4)
-#endif
-{
-	jint rc = 0;
-#ifndef JNI64
-	COM_NATIVE_ENTER(env, that, VtblCall__IIIII_FUNC);
-#else
-	COM_NATIVE_ENTER(env, that, VtblCall__IJIII_FUNC);
-#endif
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jint, jint, jint))(*(jintLong **)arg1)[arg0])(arg1, arg2, arg3, arg4);
-#ifndef JNI64
-	COM_NATIVE_EXIT(env, that, VtblCall__IIIII_FUNC);
-#else
-	COM_NATIVE_EXIT(env, that, VtblCall__IJIII_FUNC);
-#endif
-	return rc;
-}
-#endif
-
 #if (!defined(NO_VtblCall__IIIIII) && !defined(JNI64)) || (!defined(NO_VtblCall__IJIIII) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIIIII)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5)
@@ -2278,29 +2232,6 @@ fail:
 	COM_NATIVE_EXIT(env, that, VtblCall__III_3J_3J_3I_3J_FUNC);
 #else
 	COM_NATIVE_EXIT(env, that, VtblCall__IJI_3J_3J_3I_3J_FUNC);
-#endif
-	return rc;
-}
-#endif
-
-#if (!defined(NO_VtblCall__IIJI) && !defined(JNI64)) || (!defined(NO_VtblCall__IJJI) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIJI)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jint arg3)
-#else
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJI)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jint arg3)
-#endif
-{
-	jint rc = 0;
-#ifndef JNI64
-	COM_NATIVE_ENTER(env, that, VtblCall__IIJI_FUNC);
-#else
-	COM_NATIVE_ENTER(env, that, VtblCall__IJJI_FUNC);
-#endif
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jlong, jint))(*(jintLong **)arg1)[arg0])(arg1, arg2, arg3);
-#ifndef JNI64
-	COM_NATIVE_EXIT(env, that, VtblCall__IIJI_FUNC);
-#else
-	COM_NATIVE_EXIT(env, that, VtblCall__IJJI_FUNC);
 #endif
 	return rc;
 }

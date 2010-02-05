@@ -1766,6 +1766,16 @@ typedef enum {
 	VtblCall__IJI_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIII_FUNC,
+#else
+	VtblCall__IJII_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIIII_FUNC,
+#else
+	VtblCall__IJIII_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIIII_3I_FUNC,
 #else
 	VtblCall__IJIII_3I_FUNC,
@@ -1774,6 +1784,11 @@ typedef enum {
 	VtblCall__IIIJI_3J_FUNC,
 #else
 	VtblCall__IJIJI_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIIJJ_FUNC,
+#else
+	VtblCall__IJIJJ_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__III_3I_3I_FUNC,
@@ -1786,6 +1801,11 @@ typedef enum {
 	VtblCall__IJJ_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIJI_FUNC,
+#else
+	VtblCall__IJJI_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJII_3J_FUNC,
 #else
 	VtblCall__IJJII_3J_FUNC,
@@ -1794,6 +1814,11 @@ typedef enum {
 	VtblCall__IIJJI_3J_FUNC,
 #else
 	VtblCall__IJJJI_3J_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJJJ_FUNC,
+#else
+	VtblCall__IJJJJ_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,

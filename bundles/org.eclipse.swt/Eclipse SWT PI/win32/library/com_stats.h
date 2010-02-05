@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -166,16 +166,6 @@ typedef enum {
 	VariantClear_FUNC,
 	VariantInit_FUNC,
 #ifndef JNI64
-	VtblCall__IIII_FUNC,
-#else
-	VtblCall__IJII_FUNC,
-#endif
-#ifndef JNI64
-	VtblCall__IIIII_FUNC,
-#else
-	VtblCall__IJIII_FUNC,
-#endif
-#ifndef JNI64
 	VtblCall__IIIIII_FUNC,
 #else
 	VtblCall__IJIIII_FUNC,
@@ -334,11 +324,6 @@ typedef enum {
 	VtblCall__III_3J_3J_3I_3J_FUNC,
 #else
 	VtblCall__IJI_3J_3J_3I_3J_FUNC,
-#endif
-#ifndef JNI64
-	VtblCall__IIJI_FUNC,
-#else
-	VtblCall__IJJI_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIJI_3I_FUNC,
