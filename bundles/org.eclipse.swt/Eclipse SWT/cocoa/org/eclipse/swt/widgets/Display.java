@@ -362,7 +362,7 @@ static int untranslateKey (int key) {
 void addContext (GCData context) {
 	if (contexts == null) contexts = new GCData [12];
 	for (int i=0; i<contexts.length; i++) {
-		if (contexts[i] != null || contexts [i] == context) {
+		if (contexts[i] == null || contexts [i] == context) {
 			contexts [i] = context;
 			return;
 		}
