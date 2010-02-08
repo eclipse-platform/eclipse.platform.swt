@@ -12,7 +12,6 @@
 	<classpathentry kind="src" path="Eclipse SWT/emulated/expand"/>
 	<classpathentry kind="src" path="Eclipse SWT/emulated/tooltip"/>
 	<classpathentry kind="src" path="Eclipse SWT/emulated/ime"/>
-    <classpathentry kind="src" path="Eclipse SWT/emulated/taskbar"/>
 	<classpathentry kind="src" path="Eclipse SWT/common"/>
 	<classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
 	<classpathentry kind="src" path="Eclipse SWT PI/motif">
