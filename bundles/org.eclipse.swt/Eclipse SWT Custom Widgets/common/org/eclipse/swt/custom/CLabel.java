@@ -67,13 +67,13 @@ public class CLabel extends Canvas {
 	// The appToolTip stores the tooltip set by the application.  Control.tooltiptext 
 	// contains whatever tooltip is currently being displayed.
 	private String appToolTipText;
+	private boolean ignoreDispose;
 	
 	private Image backgroundImage;
 	private Color[] gradientColors;
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	private Color background;
-	private Listener disposeListener;
 	
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -115,7 +115,7 @@ public CLabel(Composite parent, int style) {
 	if ((style & SWT.RIGHT) != 0)  align = SWT.RIGHT;
 	if ((style & SWT.LEFT) != 0)   align = SWT.LEFT;
 	
-	addPaintListener(new PaintListener(){
+	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent event) {
 			onPaint(event);
 		}
@@ -129,11 +129,11 @@ public CLabel(Composite parent, int style) {
 		}
 	});
 	
-	disposeListener = new Listener() {
+	addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event event) {
 			onDispose(event);
 		}
-	};
+	});
 	
 	initAccessible();
 
@@ -357,9 +357,14 @@ private void initAccessible() {
 	});
 }
 void onDispose(Event event) {
-	removeListener(SWT.Dispose, disposeListener);
-	notifyListeners(SWT.Dispose, event);
-	event.type = SWT.None;
+	/* make this handler run after other dispose listeners */
+	if (ignoreDispose) {
+		ignoreDispose = false;
+		return;
+	}
+	ignoreDispose = true;
+	notifyListeners (event.type, event);
+	event.type = SWT.NONE;
 
 	gradientColors = null;
 	gradientPercents = null;
