@@ -2249,9 +2249,18 @@ void doBackspace() {
 			event.start = lineOffset + content.getLine(lineIndex - 1).length();
 			event.end = caretOffset;
 		} else {
+			boolean isSurrogate = false;
+			String lineText = content.getLine(lineIndex);
+			char ch = lineText.charAt(caretOffset - lineOffset - 1);
+			if (0xDC00 <= ch && ch <= 0xDFFF) {
+				if (caretOffset - lineOffset - 2 >= 0) {
+					ch = lineText.charAt(caretOffset - lineOffset - 2);
+					isSurrogate = 0xD800 <= ch && ch <= 0xDBFF;
+				}
+			}
 			TextLayout layout = renderer.getTextLayout(lineIndex);
-			int start = layout.getPreviousOffset(caretOffset - lineOffset, SWT.MOVEMENT_CHAR);
-			renderer.disposeTextLayout(layout); 
+			int start = layout.getPreviousOffset(caretOffset - lineOffset, isSurrogate ? SWT.MOVEMENT_CLUSTER : SWT.MOVEMENT_CHAR);
+			renderer.disposeTextLayout(layout);
 			event.start = start + lineOffset;
 			event.end = caretOffset;
 		}
