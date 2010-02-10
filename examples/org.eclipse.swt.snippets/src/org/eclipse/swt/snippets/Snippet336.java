@@ -78,6 +78,7 @@ public static void main(String[] args) {
 	Label label = new Label(group, SWT.NONE);
 	label.setText("Progress");
 	final Scale scale = new Scale (group, SWT.NONE);
+	scale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	scale.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			TaskBarItem item = getTaskBarItem();
@@ -152,7 +153,6 @@ public static void main(String[] args) {
 		button.setText(images[i]);
 		button.addListener(SWT.Selection, listener3);
 	}
-	System.out.println(System.getProperties());
     shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {
