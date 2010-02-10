@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,10 @@ public DOMDocument DOMDocument() {
 public WebDataSource dataSource() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dataSource);
 	return result != 0 ? new WebDataSource(result) : null;
+}
+
+public int /*long*/ globalContext() {
+	return OS.objc_msgSend(this.id, OS.sel_globalContext);
 }
 
 public void loadHTMLString(NSString string, NSURL URL) {

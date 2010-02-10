@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9557,6 +9557,48 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsWindowVisible)
 	rc = (jboolean)IsWindowVisible((WindowRef)arg0);
 	OS_NATIVE_EXIT(env, that, IsWindowVisible_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_JSEvaluateScript
+JNIEXPORT jint JNICALL OS_NATIVE(JSEvaluateScript)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, JSEvaluateScript_FUNC);
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)JSEvaluateScript((JSContextRef)arg0, (JSStringRef)arg1, (JSObjectRef)arg2, (JSStringRef)arg3, arg4, (JSValueRef *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, JSEvaluateScript_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_JSStringCreateWithUTF8CString
+JNIEXPORT jint JNICALL OS_NATIVE(JSStringCreateWithUTF8CString)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, JSStringCreateWithUTF8CString_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)JSStringCreateWithUTF8CString((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, JSStringCreateWithUTF8CString_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_JSStringRelease
+JNIEXPORT void JNICALL OS_NATIVE(JSStringRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, JSStringRelease_FUNC);
+	JSStringRelease((JSStringRef)arg0);
+	OS_NATIVE_EXIT(env, that, JSStringRelease_FUNC);
 }
 #endif
 

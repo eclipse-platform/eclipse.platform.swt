@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 535;
-int OS_nativeFunctionCallCount[535];
+int OS_nativeFunctionCount = 538;
+int OS_nativeFunctionCallCount[538];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -167,6 +167,9 @@ char * OS_nativeFunctionNames[] = {
 	"GetThemeMetric",
 	"HIThemeDrawFocusRect",
 	"JNIGetObject",
+	"JSEvaluateScript",
+	"JSStringCreateWithUTF8CString",
+	"JSStringRelease",
 	"LMGetKbdType",
 	"LSGetApplicationForInfo",
 	"LineTo",

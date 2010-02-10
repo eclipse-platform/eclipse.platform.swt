@@ -19,6 +19,9 @@
 #include <WebKit/WebView.h>
 #import <objc/objc-runtime.h>
 
+#include <JavaScriptCore/JSBase.h>
+#include <JavaScriptCore/JSStringRef.h>
+
 #include "os_custom.h"
 
 extern jint CPSSetProcessName(void *, jintLong);

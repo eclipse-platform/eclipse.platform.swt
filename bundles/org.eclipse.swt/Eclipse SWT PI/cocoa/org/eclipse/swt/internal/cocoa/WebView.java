@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -104,11 +104,6 @@ public void setUIDelegate(id delegate) {
 
 public void stopLoading(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_stopLoading_, sender != null ? sender.id : 0);
-}
-
-public NSString stringByEvaluatingJavaScriptFromString(NSString script) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByEvaluatingJavaScriptFromString_, script != null ? script.id : 0);
-	return result != 0 ? new NSString(result) : null;
 }
 
 }

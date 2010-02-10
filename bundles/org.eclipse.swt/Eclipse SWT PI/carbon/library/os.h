@@ -18,6 +18,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <JavaScriptCore/JSBase.h>
+#include <JavaScriptCore/JSStringRef.h>
+
 #include "os_custom.h"
 
 extern jint CPSEnableForegroundOperation(jint *, jint, jint, jint, jint);

@@ -31,8 +31,8 @@ XULRUNNER_LIB=lib$(SWTXULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 #SWT_DEBUG = -g
 ARCHS = -arch i386 -arch ppc
-CFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers
-LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Carbon 
+CFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers -I /System/Library/Frameworks/JavaScriptCore.framework/Headers
+LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Carbon -framework JavaScriptCore
 COCOACFLAGS = $(CFLAGS) -xobjective-c -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
 COCOALFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa
 AGLLFLAGS = $(LFLAGS) -framework OpenGL -framework AGL

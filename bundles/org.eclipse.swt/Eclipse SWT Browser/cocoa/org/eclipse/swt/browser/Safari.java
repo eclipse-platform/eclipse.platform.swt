@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 
 import org.eclipse.swt.*;
@@ -455,7 +456,25 @@ boolean close (boolean showPrompters) {
 }
 
 public boolean execute (String script) {
-	return webView.stringByEvaluatingJavaScriptFromString (NSString.stringWith (script)) != null;
+	WebFrame frame = webView.mainFrame();
+	int /*long*/ context = frame.globalContext();
+	int /*long*/ scriptString = 0, urlString = 0;
+	try {
+		byte[] bytes = script.getBytes("UTF-8"); //$NON-NLS-1$
+		byte[] temp = new byte[bytes.length + 1]; /* null-terminate */
+		System.arraycopy(bytes, 0, temp, 0, bytes.length);
+		scriptString = OS.JSStringCreateWithUTF8CString(temp);
+		bytes = getUrl().getBytes("UTF-8"); //$NON-NLS-1$
+		temp = new byte[bytes.length + 1]; /* null-terminate */
+		System.arraycopy(bytes, 0, temp, 0, bytes.length);
+		urlString = OS.JSStringCreateWithUTF8CString(temp);
+	} catch (UnsupportedEncodingException e) {
+		return false;
+	}
+	int /*long*/ result = OS.JSEvaluateScript(context, scriptString, 0, urlString, 0, null);
+	OS.JSStringRelease(urlString);
+	OS.JSStringRelease(scriptString);
+	return result != 0;
 }
 
 public boolean forward () {

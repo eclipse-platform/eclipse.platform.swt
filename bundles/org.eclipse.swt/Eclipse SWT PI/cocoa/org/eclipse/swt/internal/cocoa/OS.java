@@ -267,6 +267,28 @@ public static final int kQDParseRegionFromRight = (1 << 3);
 public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
 public static final int kQDRegionToRectsMsgParse = 2;
 
+/** JavaScriptCore calls */
+
+/**
+ * @param ctx cast=(JSContextRef)
+ * @param script cast=(JSStringRef)
+ * @param thisObject cast=(JSObjectRef)
+ * @param sourceURL cast=(JSStringRef)
+ * @param exception cast=(JSValueRef *)
+ */
+public static final native int /*long*/ JSEvaluateScript (int /*long*/ ctx, int /*long*/ script, int /*long*/ thisObject, int /*long*/ sourceURL, int startingLineNumber, int /*long*/[] exception);
+
+/**
+ * @param string cast=(const char *)
+ */
+public static final native int /*long*/ JSStringCreateWithUTF8CString (byte[] string);
+
+/**
+ * @param string cast=(JSStringRef)
+ */
+public static final native void JSStringRelease (int /*long*/ string);
+
+
 /** Custom callbacks */
 
 /** @method flags=no_gen */
@@ -1028,6 +1050,7 @@ public static final int /*long*/ sel_getGlyphsInRange_glyphs_characterIndexes_gl
 public static final int /*long*/ sel_getIndexes_maxCount_inIndexRange_ = sel_registerName("getIndexes:maxCount:inIndexRange:");
 public static final int /*long*/ sel_getInfoForFile_application_type_ = sel_registerName("getInfoForFile:application:type:");
 public static final int /*long*/ sel_getValues_forAttribute_forVirtualScreen_ = sel_registerName("getValues:forAttribute:forVirtualScreen:");
+public static final int /*long*/ sel_globalContext = sel_registerName("globalContext");
 public static final int /*long*/ sel_glyphIndexForCharacterAtIndex_ = sel_registerName("glyphIndexForCharacterAtIndex:");
 public static final int /*long*/ sel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_ = sel_registerName("glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:");
 public static final int /*long*/ sel_glyphRangeForCharacterRange_actualCharacterRange_ = sel_registerName("glyphRangeForCharacterRange:actualCharacterRange:");
@@ -1729,7 +1752,6 @@ public static final int /*long*/ sel_stringByAppendingPathExtension_ = sel_regis
 public static final int /*long*/ sel_stringByAppendingString_ = sel_registerName("stringByAppendingString:");
 public static final int /*long*/ sel_stringByDeletingLastPathComponent = sel_registerName("stringByDeletingLastPathComponent");
 public static final int /*long*/ sel_stringByDeletingPathExtension = sel_registerName("stringByDeletingPathExtension");
-public static final int /*long*/ sel_stringByEvaluatingJavaScriptFromString_ = sel_registerName("stringByEvaluatingJavaScriptFromString:");
 public static final int /*long*/ sel_stringByReplacingOccurrencesOfString_withString_ = sel_registerName("stringByReplacingOccurrencesOfString:withString:");
 public static final int /*long*/ sel_stringForObjectValue_ = sel_registerName("stringForObjectValue:");
 public static final int /*long*/ sel_stringForType_ = sel_registerName("stringForType:");

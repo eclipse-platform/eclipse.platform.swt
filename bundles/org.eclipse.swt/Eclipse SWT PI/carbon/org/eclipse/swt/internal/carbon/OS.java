@@ -5552,6 +5552,27 @@ public static final native int HIObjectSetAuxiliaryAccessibilityAttribute(int in
  */
 public static final native int AXUIElementCopyAttributeValue (int element, int attribute, int [] value);
 
+
+/**
+ * @param ctx cast=(JSContextRef)
+ * @param script cast=(JSStringRef)
+ * @param thisObject cast=(JSObjectRef)
+ * @param sourceURL cast=(JSStringRef)
+ * @param exception cast=(JSValueRef *)
+ */
+public static final native int JSEvaluateScript (int ctx, int script, int thisObject, int sourceURL, int startingLineNumber, int[] exception);
+
+/**
+ * @param string cast=(const char *)
+ */
+public static final native int JSStringCreateWithUTF8CString (byte[] string);
+
+/**
+ * @param string cast=(JSStringRef)
+ */
+public static final native void JSStringRelease (int string);
+
+
 public static final int kEventClassAccessibility = ('a'<<24) + ('c'<<16) + ('c'<<8) + 'e';
 
 public static final int kEventAccessibleGetChildAtPoint = 1;
