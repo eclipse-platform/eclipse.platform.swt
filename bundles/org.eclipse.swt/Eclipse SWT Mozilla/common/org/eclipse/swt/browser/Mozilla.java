@@ -1005,7 +1005,7 @@ public void create (Composite parent, int style) {
 		 * without a profile.
 		 */
 		if (rc != XPCOM.NS_OK) {
-			prefCharset = "ISO-8859-1";	//$NON_NLS-1$
+			prefCharset = "ISO-8859-1";	//$NON-NLS-1$
 		} else {
 			if (result[0] == 0) {
 				browser.dispose ();
