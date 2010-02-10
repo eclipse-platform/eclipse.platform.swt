@@ -2088,6 +2088,11 @@ public Image getSystemImage (int id) {
 	return null;
 }
 
+public TaskBar getSystemTaskBar () {
+	checkDevice ();
+	return null;
+}
+
 /**
  * Returns the single instance of the system tray or null
  * when there is no system tray available for the platform.

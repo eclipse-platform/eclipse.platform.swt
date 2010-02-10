@@ -2300,6 +2300,11 @@ public Font getSystemFont () {
 	return systemFont = Font.gtk_new (this, defaultFont);
 }
 
+public TaskBar getSystemTaskBar () {
+	checkDevice ();
+	return null;
+}
+
 /**
  * Returns the single instance of the system tray or null
  * when there is no system tray available for the platform.

@@ -16,6 +16,7 @@
 	<classpathentry kind="src" path="Eclipse SWT/emulated/bidi"/>
 	<classpathentry kind="src" path="Eclipse SWT/emulated/tooltip"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/ime"/>
+    <classpathentry kind="src" path="Eclipse SWT/emulated/taskbar"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
     <classpathentry kind="src" path="Eclipse SWT AWT/emulated"/>

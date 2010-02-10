@@ -6,6 +6,7 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/tray"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/expand"/>
+    <classpathentry kind="src" path="Eclipse SWT/emulated/taskbar"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT/common_j2me"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common"/>

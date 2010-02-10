@@ -215,6 +215,9 @@ public class Display extends Device {
 	Tray tray;
 	int nextTrayId;
 	
+	/* TaskBar */
+	TaskBar taskBar;
+	
 	/* Timers */
 	int /*long*/ [] timerIds;
 	Runnable [] timerList;
@@ -2464,6 +2467,27 @@ public Image getSystemImage (int id) {
 }
 
 /**
+ * Returns the single instance of the system taskBar or null
+ * when there is no system taskBar available for the platform.
+ *
+ * @return the system taskBar or <code>null</code>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public TaskBar getSystemTaskBar () {
+	checkDevice ();
+	if (taskBar != null) return taskBar;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
+		taskBar = new TaskBar (this, SWT.NONE);
+	}
+	return taskBar;
+}
+
+/**
  * Returns the single instance of the system tray or null
  * when there is no system tray available for the platform.
  *
@@ -3628,6 +3652,8 @@ protected void release () {
 	}
 	if (tray != null) tray.dispose ();
 	tray = null;
+	if (taskBar != null) taskBar.dispose ();
+	taskBar = null;
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {

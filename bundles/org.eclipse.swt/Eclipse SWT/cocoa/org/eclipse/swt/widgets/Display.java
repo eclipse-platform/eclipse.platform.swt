@@ -179,6 +179,9 @@ public class Display extends Device {
 	TrayItem currentTrayItem;
 	Menu trayItemMenu;
 	
+	/* TaskBar */
+	TaskBar taskBar;
+	
 	/* System Resources */
 	Image errorImage, infoImage, warningImage;
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
@@ -1863,6 +1866,13 @@ public Tray getSystemTray () {
 	return tray = new Tray (this, SWT.NONE);
 }
 
+public TaskBar getSystemTaskBar () {
+	checkDevice ();
+	if (taskBar != null) return taskBar;
+	taskBar = new TaskBar (this, SWT.NONE);
+	return taskBar;
+}
+
 /**
  * Returns the user-interface thread for the receiver.
  *
@@ -3282,6 +3292,8 @@ protected void release () {
 	}
 	if (tray != null) tray.dispose ();
 	tray = null;
+	if (taskBar != null) taskBar.dispose ();
+	taskBar = null;
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {

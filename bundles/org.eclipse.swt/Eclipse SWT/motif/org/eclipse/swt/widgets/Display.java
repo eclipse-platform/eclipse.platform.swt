@@ -1951,6 +1951,10 @@ public Image getSystemImage (int style) {
 	if (imagePixmap == 0) return null;
 	return Image.motif_new (this, SWT.ICON, imagePixmap, maskPixmap);
 }
+public TaskBar getSystemTaskBar () {
+	checkDevice ();
+	return null;
+}
 /**
  * Returns the single instance of the system tray or null
  * when there is no system tray available for the platform.

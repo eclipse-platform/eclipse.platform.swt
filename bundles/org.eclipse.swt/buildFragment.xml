@@ -117,6 +117,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
@@ -189,6 +190,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/gtk/"/>
@@ -235,6 +237,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
@@ -281,6 +284,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/photon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
@@ -349,6 +353,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/tooltip/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/ime/"/>
+			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
