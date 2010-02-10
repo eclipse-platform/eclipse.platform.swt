@@ -792,7 +792,7 @@ public class StyledText extends Canvas {
 	void write(String string, int start, int end) {
 		for (int index = start; index < end; index++) {
 			char ch = string.charAt(index);
-			if (ch > 0xFF && WriteUnicode) {
+			if (ch > 0x7F && WriteUnicode) {
 				// write the sub string from the last escaped character 
 				// to the current one. Fixes bug 21698.
 				if (index > start) {
