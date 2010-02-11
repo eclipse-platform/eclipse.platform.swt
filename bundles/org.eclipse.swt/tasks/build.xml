@@ -379,6 +379,74 @@
 		<echo>Photon is not being built</echo>
 	</target>
 	
+	<target name="check_libraries" depends="get_version">
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
+		</antcall>
+	</target>
+	
+	<target name="check_fragment_libraries">
+		<sshexec host="${m_linux_x86}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			trust="true"
+			command="if cvs -d ${cvsRootAnon} rlog -h -N -R -l -r ${fragment} | grep -v Attic | grep ${swt_version}.; then echo Found libraries; else exit 1; fi"/>
+	</target>	
+	
 	<target name="check_machines">
 		<parallel>
 		<sshexec host="${m_linux_x86}" 
@@ -820,6 +888,8 @@
 	
 	<target name="tag_projects_imp" depends="get_new_tag">
 		<property name="cvsRsh" value="plink"/>
+
+		<antcall target="check_libraries"/>
 
 		<!-- update and commit the buildnotes_swt.html file -->
 		<antcall target="update_buildnotes"/>
