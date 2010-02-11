@@ -472,19 +472,22 @@ boolean close (boolean showPrompters) {
 public boolean execute(String script) {
 	int frame = Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
 	int context = Cocoa.objc_msgSend(frame, Cocoa.S_globalContext);
-	int scriptString = 0, urlString = 0;
+
+	byte[] bytes = null;
 	try {
-		byte[] bytes = script.getBytes("UTF-8"); //$NON-NLS-1$
-		byte[] temp = new byte[bytes.length + 1]; /* null-terminate */
-		System.arraycopy(bytes, 0, temp, 0, bytes.length);
-		scriptString = OS.JSStringCreateWithUTF8CString(temp);
-		bytes = getUrl().getBytes("UTF-8"); //$NON-NLS-1$
-		temp = new byte[bytes.length + 1]; /* null-terminate */
-		System.arraycopy(bytes, 0, temp, 0, bytes.length);
-		urlString = OS.JSStringCreateWithUTF8CString(temp);
+		bytes = (script + '\0').getBytes("UTF-8"); //$NON-NLS-1$
 	} catch (UnsupportedEncodingException e) {
-		return false;
+		bytes = (script + '\0').getBytes();
 	}
+	int scriptString = OS.JSStringCreateWithUTF8CString(bytes);
+
+	try {
+		bytes = (getUrl() + '\0').getBytes("UTF-8"); //$NON-NLS-1$
+	} catch (UnsupportedEncodingException e) {
+		bytes = (getUrl() + '\0').getBytes();
+	}
+	int urlString = OS.JSStringCreateWithUTF8CString(bytes);
+
 	int result = OS.JSEvaluateScript(context, scriptString, 0, urlString, 0, null);
 	OS.JSStringRelease(urlString);
 	OS.JSStringRelease(scriptString);
