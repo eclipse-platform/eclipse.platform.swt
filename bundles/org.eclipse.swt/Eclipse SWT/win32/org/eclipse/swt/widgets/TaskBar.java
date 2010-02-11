@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Tasktop Technologies - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
