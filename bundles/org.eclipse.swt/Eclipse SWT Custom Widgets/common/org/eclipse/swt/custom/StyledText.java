@@ -7985,8 +7985,8 @@ void setCaretLocation(Point location, int direction) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
- * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
+ *   <li>ERROR_INVALID_ARGUMENT when the offset is inside a multi byte line 
+ *   delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul>
  */
 public void setCaretOffset(int offset) {
