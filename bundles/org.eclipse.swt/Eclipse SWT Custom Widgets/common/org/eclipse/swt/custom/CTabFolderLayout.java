@@ -23,26 +23,32 @@ class CTabFolderLayout extends Layout {
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	CTabFolder folder = (CTabFolder)composite;
 	CTabItem[] items = folder.items;
+	CTabFolderRenderer renderer = folder.renderer;
 	// preferred width of tab area to show all tabs
 	int tabW = 0;
+	int selectedIndex = folder.selectedIndex;
+	if (selectedIndex == -1) selectedIndex = 0;
 	GC gc = new GC(folder);
 	for (int i = 0; i < items.length; i++) {
 		if (folder.single) {
-			tabW = Math.max(tabW, items[i].preferredWidth(gc, true, false));
+			tabW = Math.max(tabW, renderer.computeSize(i, SWT.SELECTED, gc).x);
 		} else {
-			tabW += items[i].preferredWidth(gc, i == folder.selectedIndex, false);
+			int state = 0;
+			if (i == selectedIndex) state |= SWT.SELECTED;
+			tabW += renderer.computeSize(i, state, gc).x;
 		}
 	}
-	gc.dispose();
 	tabW += 3;
-	if (folder.showMax) tabW += CTabFolder.BUTTON_SIZE;
-	if (folder.showMin) tabW += CTabFolder.BUTTON_SIZE;
-	if (folder.single) tabW += 3*CTabFolder.BUTTON_SIZE/2; //chevron
+	
+	if (folder.showMax) tabW += renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc).x;
+	if (folder.showMin) tabW += renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc).x;
+	if (folder.single) tabW += renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc).x;
 	if (folder.topRight != null) {
 		Point pt = folder.topRight.computeSize(SWT.DEFAULT, folder.tabHeight, flushCache);
 		tabW += 3 + pt.x;
 	}
-	if (!folder.single && !folder.simple) tabW += folder.curveWidth - 2*folder.curveIndent;
+
+	gc.dispose();
 	
 	int controlW = 0;
 	int controlH = 0;
