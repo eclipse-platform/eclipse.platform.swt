@@ -582,7 +582,7 @@ void createHandle () {
 		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 			state |= THEME_BACKGROUND;
 		}
-		windowProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
+		windowProc = OS.GetWindowLongPtr (handle, OS.GWL_WNDPROC);
 	}
 	
 	/*
