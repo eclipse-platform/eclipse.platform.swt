@@ -444,7 +444,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-			command="if cvs -d ${cvsRootAnon} rlog -h -N -R -l -r ${fragment} | grep -v Attic | grep ${swt_version}.; then echo Found libraries; else exit 1; fi"/>
+			command="export CVS_RSH=ssh; if cvs -d ${cvsRoot} rlog -h -N -R -l -r ${fragment} | grep -v Attic | grep ${swt_version}.; then echo Found libraries; else exit 1; fi"/>
 	</target>	
 	
 	<target name="check_machines">
