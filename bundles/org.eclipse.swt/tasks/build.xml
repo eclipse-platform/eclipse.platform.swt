@@ -947,8 +947,6 @@
 
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_fragment" depends="get_tag">
-		<property name="cvsRsh" value="ssh"/>
-		
 		<!-- check out classpath, fragments, and natives -->
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true">
 			<commandline>
@@ -1018,7 +1016,7 @@
 		<property name="pre_commands" value=""/>
 		<property name="build_version" value=""/>
 		<property name="extra_properties" value=""/>
-		<property name="properties" value="-Dcp=&quot;${cp}&quot; -Dfragment=${fragment} -Dbuild_target=${build_target} -DTAG=${TAG} ${extra_properties}"/>
+		<property name="properties" value="-Dcp=&quot;${cp}&quot; -Dfragment=${fragment} -DcvsRsh=ssh -Dbuild_target=${build_target} -DTAG=${TAG} ${extra_properties}"/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
