@@ -37,7 +37,6 @@
 	<import file="${basedir}/${tasks}/properties.xml"/>
 
 	<!-- CVS values -->
-	<property name="cvsRootAnon" value=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
 	<property name="TAG" value=""/>
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
@@ -508,14 +507,14 @@
 	</target>
 	
 	<target name="check_compilation">
-		<property name="cvsRsh" value="ssh"/>
+		<property name="cvsRsh" value="plink"/>
 		<property name="tmpdir" value="${tmphome}/workspace64"/>
 		<property name="project" value="org.eclipse.swt"/>
 		<property name="projectDir" value="${tmpdir}/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
 		
 		<!-- check out swt project -->
-		<cvs cvsRoot="${cvsRootAnon}" quiet="true" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" quiet="true" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -585,6 +584,7 @@
 
 	<!-- common build tasks -->
 	<target name="increment_version">
+		<property name="cvsRsh" value="plink"/>
 		<property name="tmpdir" value="${tmphome}/inc"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
@@ -593,14 +593,13 @@
 	</target>
 	
 	<target name="increment_version_imp" depends="check_natives_changed, get_version" if="natives_changed">
-		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 		<property name="version_file" value="org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 		
 		<!-- Download the files -->
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -637,7 +636,7 @@
 
     <target name="update_manifest" depends="get_version">
     	<property name="manifests" value="org.eclipse.swt.carbon.macosx/META-INF/MANIFEST.MF org.eclipse.swt.cocoa.macosx/META-INF/MANIFEST.MF org.eclipse.swt.cocoa.macosx.x86_64/META-INF/MANIFEST.MF org.eclipse.swt.gtk.linux.ppc/META-INF/MANIFEST.MF org.eclipse.swt.gtk.linux.x86/META-INF/MANIFEST.MF org.eclipse.swt.gtk.linux.x86_64/META-INF/MANIFEST.MF org.eclipse.swt.gtk.solaris.sparc/META-INF/MANIFEST.MF org.eclipse.swt.gtk.solaris.x86/META-INF/MANIFEST.MF org.eclipse.swt.motif.aix.ppc/META-INF/MANIFEST.MF org.eclipse.swt.motif.hpux.ia64_32/META-INF/MANIFEST.MF org.eclipse.swt.motif.linux.x86/META-INF/MANIFEST.MF org.eclipse.swt.motif.solaris.sparc/META-INF/MANIFEST.MF org.eclipse.swt.photon.qnx.x86/META-INF/MANIFEST.MF org.eclipse.swt.win32.wce_ppc.arm/META-INF/MANIFEST.MF org.eclipse.swt.win32.win32.ia64/META-INF/MANIFEST.MF org.eclipse.swt.win32.win32.x86/META-INF/MANIFEST.MF org.eclipse.swt.win32.win32.x86_64/META-INF/MANIFEST.MF org.eclipse.swt.wpf.win32.x86/META-INF/MANIFEST.MF"/>
-    	<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+    	<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -663,7 +662,7 @@
 	<target name="get_tag" unless="swt_tag">
 		<property name="tmpdir" value="."/>
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -686,7 +685,7 @@
 		<property name="tmpdir" value="."/>
 		<property name="rlog_file" value="org.eclipse.swt/.project"/>
 		<property name="tags_file" value="${tmpdir}/tags.txt"/>
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" output="${tags_file}">
 			<commandline>
 				<argument value="rlog"/>
 				<argument value="${rlog_file}"/>
@@ -723,8 +722,9 @@
 	<!-- Set swt_version, new_version, old_version (and min_ver, maj_ver, new_min_ver, old_min_ver) from the make_common.mak  -->
 	<target name="get_version" unless="swt_version">
 		<property name="tmpdir" value="."/>
+		<property name="cvsRsh" value="plink"/>
 		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -752,7 +752,7 @@
 	<!-- Set natives_changed if there are changes in the C code -->
 	<target name="check_natives_changed" unless="natives_changed" depends="get_tag">
 		<property name="tmpdir" value="."/>
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -767,7 +767,7 @@
 		</cvs>
 	
 		<!-- Verify for changes in the native code -->
-		<cvs cvsRoot="${cvsRootAnon}" dest="${tmpdir}" output="${tmpdir}/diff.txt">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" dest="${tmpdir}" output="${tmpdir}/diff.txt">
 			<commandline>
 				<argument value="diff"/>
 				<argument value="-u"/>
@@ -801,7 +801,7 @@
 			<format property="url.to.time" pattern="yyyy-MM-dd'+'HH'%3A'mm'%3A'ss'+%2B0000'" timezone="gmt"/>
 		</tstamp>
 		<property name="build_notes" value="org.eclipse.swt/buildnotes_swt.html"/>
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" output="${tmpdir}/rlog.txt">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" output="${tmpdir}/rlog.txt">
 			<commandline>
 				<argument value="rlog"/>
 				<argument value="-r${swt_tag}"/>
@@ -821,7 +821,7 @@
 			</filterchain>
 		</loadfile>
 		<echo> Searching bugs from "${url.from.time}" to "${url.to.time}"</echo>
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -898,7 +898,7 @@
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		<property name="map_copy" value="${tmpdir}/swt_map.txt"/>
 		<property name="map_xml" value="${tmpdir}/swt_map.xml"/>
-		<cvs cvsRoot="${cvsRootAnon}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -992,7 +992,7 @@
 		<property name="build_version" value=""/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
-		<cvs cvsRoot="${cvsRootAnon}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="checkout"/>
 				<argument line="${TAG}"/>
@@ -1024,7 +1024,7 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; cvs -d ${cvsRootAnon} checkout ${TAG} ${tasks}; if ant -f ${tasks}/build.xml build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; export CVS_RSH=ssh; cvs -d ${cvsRoot} checkout ${TAG} ${tasks}; if ant -f ${tasks}/build.xml build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
 
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
