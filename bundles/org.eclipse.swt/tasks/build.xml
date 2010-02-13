@@ -988,6 +988,7 @@
 
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_local">
+		<property name="cvsRsh" value="plink"/>
 		<property name="tmpdir" value="${tmphome}/${fragment}"/>
 		<property name="build_version" value=""/>
 		<delete dir="${tmpdir}" quiet="true"/>
@@ -1000,7 +1001,6 @@
 			</commandline>
 		</cvs>
 		<ant antfile="${tasks}/build.xml" output="${logdir}/${build_version}/${fragment}.log" dir="${tmpdir}" target="build_fragment">
-			<property name="cvsRsh" value="plink"/>
 			<property name="cp" value="${cp}"/>
 			<property name="fragment" value="${fragment}"/>
 			<property name="build_target" value="${build_target}"/>
