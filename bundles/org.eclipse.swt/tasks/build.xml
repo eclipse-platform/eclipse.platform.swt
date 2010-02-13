@@ -911,7 +911,9 @@
 	<target name="tag_projects_imp" depends="get_new_tag">
 		<property name="cvsRsh" value="plink"/>
 
-		<antcall target="check_libraries"/>
+		<!-- These two lines perform the same check. check_libraries is slower because it checks each fragment separetely  -->
+		<!--antcall target="check_libraries"/-->
+		<antcall target="check_fragment_libraries"/>
 
 		<!-- update and commit the buildnotes_swt.html file -->
 		<antcall target="update_buildnotes"/>
