@@ -48,7 +48,7 @@ class Mozilla extends WebBrowser {
 	int /*long*/ request;
 	Point location, size;
 	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage, ignoreAllMessages, untrustedText;
-	boolean updateLastNavigateUrl;
+	boolean updateLastNavigateUrl, nextTraverseDoit = true;
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
@@ -1471,6 +1471,10 @@ public void create (Composite parent, int style) {
 					});
 					break;
 				}
+				case SWT.Traverse: {
+					event.doit = nextTraverseDoit;
+					break;
+				}
 			}
 		}
 	};	
@@ -1481,7 +1485,8 @@ public void create (Composite parent, int style) {
 		SWT.Activate,
 		SWT.Deactivate,
 		SWT.Show,
-		SWT.KeyDown		// needed to make browser traversable
+		SWT.KeyDown,		// needed to make browser traversable
+		SWT.Traverse
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		browser.addListener (folderEvents[i], listener);
@@ -3885,8 +3890,7 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.keyCode = lastKeyCode;
 		keyEvent.character = (char)lastCharCode;
 		keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
-		browser.notifyListeners (keyEvent.type, keyEvent);
-		if (!keyEvent.doit || browser.isDisposed ()) {
+		if (!sendKeyEvent (keyEvent) || browser.isDisposed ()) {
 			domEvent.PreventDefault ();
 		}
 		return XPCOM.NS_OK;
@@ -4052,6 +4056,82 @@ int HandleEvent (int /*long*/ event) {
 		browser.notifyListeners (mouseEvent.type, mouseEvent);	
 	}
 	return XPCOM.NS_OK;
+}
+
+boolean sendKeyEvent (Event event) {
+	int traversal = SWT.TRAVERSE_NONE;
+	boolean all = false;
+	switch (event.keyCode) {
+		case SWT.ESC: {
+			traversal = SWT.TRAVERSE_ESCAPE;
+			all = true;
+			nextTraverseDoit = true;
+			break;
+		}
+		case SWT.CR: {
+			traversal = SWT.TRAVERSE_RETURN;
+			all = true;
+			nextTraverseDoit = false;
+			break;
+		}
+		case SWT.ARROW_DOWN:
+		case SWT.ARROW_RIGHT:
+			traversal = SWT.TRAVERSE_ARROW_NEXT;
+			nextTraverseDoit = false;
+			break;
+		case SWT.ARROW_UP:
+		case SWT.ARROW_LEFT:
+			traversal = SWT.TRAVERSE_ARROW_PREVIOUS;
+			nextTraverseDoit = false;
+			break;
+		case SWT.TAB:
+			traversal = (event.stateMask & SWT.SHIFT) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+			nextTraverseDoit = (event.stateMask & SWT.CTRL) != 0;
+			break;
+		case SWT.PAGE_DOWN:
+			if ((event.stateMask & SWT.CTRL) != 0) {
+				traversal = SWT.TRAVERSE_PAGE_NEXT;
+				all = true;
+				nextTraverseDoit = true;
+			}
+			break;
+		case SWT.PAGE_UP:
+			if ((event.stateMask & SWT.CTRL) != 0) {
+				traversal = SWT.TRAVERSE_PAGE_PREVIOUS;
+				all = true;
+				nextTraverseDoit = true;
+			}
+			break;
+	}
+	boolean doit = true;
+	if (traversal != SWT.TRAVERSE_NONE) {
+		Control control = browser;
+		Shell shell = control.getShell ();
+		final Event[] traverseEvent = new Event[1];
+		Listener listener = new Listener () {
+			public void handleEvent (Event event) {
+				traverseEvent[0] = event;
+			}
+		};
+		Display display = browser.getDisplay ();
+		display.addFilter (SWT.Traverse, listener);
+		do {
+			if (control.traverse (traversal)) {
+				doit = false;
+				break;
+			}
+			if (!traverseEvent[0].doit && control.isListening (SWT.Traverse)) break;
+			if (control == shell) break;
+			control = control.getParent ();
+		} while (all && control != null);
+		display.removeFilter (SWT.Traverse, listener);
+		nextTraverseDoit = true;
+	}
+	if (doit) {
+		browser.notifyListeners (event.type, event);
+		doit = event.doit; 
+	}
+	return doit;
 }
 
 /* nsIBadCertListener2 */
