@@ -149,7 +149,7 @@ gtk.o: gtk.c
 make_cairo: $(CAIRO_LIB)
 
 $(CAIRO_LIB): $(CAIRO_OBJECTS)
-	$(LD) $(CAIROLIBS) -o $(CAIRO_LIB) $(CAIRO_OBJECTS)
+	$(LD) -o $(CAIRO_LIB) $(CAIRO_OBJECTS) $(CAIROLIBS) 
 
 cairo.o: cairo.c cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo.c
@@ -215,7 +215,7 @@ xpcominit_stats.o: xpcominit_stats.cpp
 make_glx: $(GLX_LIB)
 
 $(GLX_LIB): $(GLX_OBJECTS)
-	$(LD) $(LIBS) $(GLXLIBS) -o $(GLX_LIB) $(GLX_OBJECTS)
+	$(LD) -o $(GLX_LIB) $(GLX_OBJECTS) $(GLXLIBS)
 
 glx.o: glx.c 
 	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx.c
