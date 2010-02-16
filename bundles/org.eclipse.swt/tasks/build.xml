@@ -606,7 +606,6 @@
 
 	<!-- common build tasks -->
 	<target name="increment_version">
-		<property name="cvsRsh" value="plink"/>
 		<property name="tmpdir" value="${tmphome}/inc"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
@@ -615,6 +614,7 @@
 	</target>
 	
 	<target name="increment_version_imp" depends="check_natives_changed, get_version" if="natives_changed">
+		<property name="cvsRsh" value="plink"/>
 		<property name="library_j2se" value="org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
 		<property name="library_j2me" value="org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 		<property name="make_common" value="org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
