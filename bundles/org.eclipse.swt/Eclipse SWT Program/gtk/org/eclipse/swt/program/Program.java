@@ -845,7 +845,7 @@ static Program gio_getProgram (Display display, int /*long*/ application) {
 	OS.memmove (buffer, applicationName, length);		
 	program.name = new String (Converter.mbcsToWcs (null, buffer));
 	int /*long*/ applicationCommand = OS.g_app_info_get_executable (application);
-	length = OS.strlen (applicationName);
+	length = OS.strlen (applicationCommand);
 	buffer = new byte [length];
 	OS.memmove (buffer, applicationCommand, length);		
 	program.command = new String (Converter.mbcsToWcs (null, buffer));
