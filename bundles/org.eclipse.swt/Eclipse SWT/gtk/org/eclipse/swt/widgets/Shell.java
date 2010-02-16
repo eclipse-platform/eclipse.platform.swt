@@ -2137,6 +2137,7 @@ int trimWidth () {
 }
 
 void updateModal () {
+	if (OS.GTK_IS_PLUG (shellHandle)) return;
 	int /*long*/ group = 0;
 	if (display.getModalDialog () == null) {
 		Shell modal = getModalShell ();
