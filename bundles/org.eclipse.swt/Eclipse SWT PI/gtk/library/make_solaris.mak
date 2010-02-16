@@ -74,7 +74,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/solaris \
 	${SWT_PTR_CFLAGS}
-MOZILLALIBS =  -G
+MOZILLALFLAGS =  -G
 MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO__1XPCOMGlueStartup \
 	-DNO__1XPCOMGlueLoadXULFunctions \
