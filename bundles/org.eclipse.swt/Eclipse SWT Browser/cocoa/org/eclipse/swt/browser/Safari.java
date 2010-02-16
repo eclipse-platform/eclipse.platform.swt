@@ -24,7 +24,7 @@ class Safari extends WebBrowser {
 	WebView webView;
 	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
-	boolean loadingText, untrustedText, nextTraverseDoit;
+	boolean loadingText, untrustedText, nextTraverseDoit = true;
 	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int /*long*/ identifier;

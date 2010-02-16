@@ -32,7 +32,7 @@ class Safari extends WebBrowser {
 	int windowBoundsHandler;
 	int preferences;
 	
-	boolean loadingText, hasNewFocusElement, untrustedText, nextTraverseDoit;
+	boolean loadingText, hasNewFocusElement, untrustedText, nextTraverseDoit = true;
 	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int identifier;
@@ -2085,6 +2085,7 @@ boolean sendKeyEvent(Event event) {
 			control = control.getParent();
 		} while (all && control != null);
 		display.removeFilter(SWT.Traverse, listener);
+		nextTraverseDoit = true;
 	}
 	if (doit) {
 		browser.notifyListeners(event.type, event);
