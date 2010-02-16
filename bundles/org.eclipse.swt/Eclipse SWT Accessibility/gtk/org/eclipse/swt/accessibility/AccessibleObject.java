@@ -1883,7 +1883,7 @@ class AccessibleObject {
 				if (text != null && text.length() > 0) return text.charAt(0);
 			}
 			String text = object.getText ();
-			if (text != null) return text.charAt ((int)/*64*/offset);
+			if (text != null && text.length() > offset) return text.charAt ((int)/*64*/offset);
 		}
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_character_at_offset != 0) {
