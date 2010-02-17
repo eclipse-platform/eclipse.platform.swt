@@ -28,13 +28,14 @@ class IE extends WebBrowser {
 	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, navigate, delaySetText, ignoreDispose, ignoreTraverse;
+	boolean back, forward, delaySetText, ignoreDispose, ignoreTraverse, initialNavigateComplete;
 	boolean installFunctionsOnDocumentComplete, untrustedText;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int /*long*/ globalDispatch;
 	String html, lastNavigateURL, uncRedirect;
+	Object[] pendingText, pendingUrl;
 	int style, lastKeyCode, lastCharCode;
 	int lastMouseMoveX, lastMouseMoveY;
 
@@ -372,7 +373,7 @@ public void create(Composite parent, int style) {
 	site.addListener(SWT.MouseWheel, listener);
 	site.addListener(SWT.Traverse, listener);
 
-	OleListener oleListener = new OleListener() {
+	final OleListener oleListener = new OleListener() {
 		public void handleEvent(OleEvent event) {
 			/* callbacks are asynchronous, auto could be disposed */
 			if (auto != null) {
@@ -876,33 +877,62 @@ public void create(Composite parent, int style) {
 			for (int i = 0; i < arguments.length; i++) arguments[i].dispose();
 		}
 	};
-	site.addEventListener(BeforeNavigate2, oleListener);
-	site.addEventListener(CommandStateChange, oleListener);
-	site.addEventListener(DocumentComplete, oleListener);
-	site.addEventListener(NavigateComplete2, oleListener);
-	site.addEventListener(NavigateError, oleListener);
-	site.addEventListener(NewWindow2, oleListener);
-	site.addEventListener(OnMenuBar, oleListener);
-	site.addEventListener(OnStatusBar, oleListener);
-	site.addEventListener(OnToolBar, oleListener);
-	site.addEventListener(OnVisible, oleListener);
-	site.addEventListener(ProgressChange, oleListener);
-	site.addEventListener(StatusTextChange, oleListener);
-	site.addEventListener(TitleChange, oleListener);
-	site.addEventListener(WindowClosing, oleListener);
-	site.addEventListener(WindowSetHeight, oleListener);
-	site.addEventListener(WindowSetLeft, oleListener);
-	site.addEventListener(WindowSetTop, oleListener);
-	site.addEventListener(WindowSetWidth, oleListener);
-	
+
 	Variant variant = new Variant(true);
 	auto.setProperty(RegisterAsBrowser, variant);
 	variant.dispose();
-	
+
 	variant = new Variant(false);
 	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
 	if (rgdispid != null) auto.setProperty(rgdispid[0], variant);
 	variant.dispose();
+
+	/*
+	* Navigate initially to about:blank, in order to be consistent with
+	* the other browser implementations which auto-navigate there on startup,
+	* and to work around IE bug http://support.microsoft.com/kb/320153.
+	* Do not add the oleListener callbacks until this navigate has completed
+	* so that clients will not receive events for this free navigation.
+	*/
+	navigate(ABOUT_BLANK, null, null, true);
+	site.addEventListener(DocumentComplete, new OleListener() {
+		public void handleEvent(OleEvent event) {
+			initialNavigateComplete = true;
+			site.removeEventListener(DocumentComplete, this);
+
+			site.addEventListener(BeforeNavigate2, oleListener);
+			site.addEventListener(CommandStateChange, oleListener);
+			site.addEventListener(DocumentComplete, oleListener);
+			site.addEventListener(NavigateComplete2, oleListener);
+			site.addEventListener(NavigateError, oleListener);
+			site.addEventListener(NewWindow2, oleListener);
+			site.addEventListener(OnMenuBar, oleListener);
+			site.addEventListener(OnStatusBar, oleListener);
+			site.addEventListener(OnToolBar, oleListener);
+			site.addEventListener(OnVisible, oleListener);
+			site.addEventListener(ProgressChange, oleListener);
+			site.addEventListener(StatusTextChange, oleListener);
+			site.addEventListener(TitleChange, oleListener);
+			site.addEventListener(WindowClosing, oleListener);
+			site.addEventListener(WindowSetHeight, oleListener);
+			site.addEventListener(WindowSetLeft, oleListener);
+			site.addEventListener(WindowSetTop, oleListener);
+			site.addEventListener(WindowSetWidth, oleListener);
+
+			/*
+			* If browser content was provided by the client before the
+			* initial navigate to about:blank completed then set it now.
+			*/
+			if (pendingText != null) {
+				setText((String)pendingText[0], ((Boolean)pendingText[1]).booleanValue());
+			} else {
+				if (pendingUrl != null) {
+					setUrl((String)pendingUrl[0], (String)pendingUrl[1], (String[])pendingUrl[2]);
+				}
+			}
+			pendingText = pendingUrl = null;
+		}
+	});
 }
 
 public boolean back() {
@@ -1108,7 +1138,6 @@ public boolean isFocusControl () {
 }
 
 boolean navigate(String url, String postData, String headers[], boolean silent) {
-	navigate = true;
 	int count = 1;
 	if (postData != null) count++;
 	if (headers != null) count++;
@@ -1242,6 +1271,16 @@ void setHTML (String string) {
 
 public boolean setText(final String html, boolean trusted) {
 	/*
+	* If the browser has not completed its initial navigate to about:blank
+	* then delay setting this text content until the navigate has completed.
+	*/
+	if (!initialNavigateComplete) {
+		pendingText = new Object[] {html, new Boolean (trusted)};
+		pendingUrl = null;
+		return true;
+	}
+
+	/*
 	* If the html field is non-null then the about:blank page is already being
 	* loaded, so no Stop or Navigate is required.  Just set the html that is to
 	* be shown.
@@ -1268,23 +1307,22 @@ public boolean setText(final String html, boolean trusted) {
 	* that instance was created.
 	*/
 	int[] rgdispid;
-	if (navigate) {
-		/*
-		* Stopping the loading of a page causes DocumentComplete events from previous
-		* requests to be received before the DocumentComplete for this page.  In such
-		* cases we must be sure to not set the html into the browser too soon, since
-		* doing so could result in its page being cleared out by a subsequent
-		* DocumentComplete.  The Browser's ReadyState can be used to determine whether
-		* these extra events will be received or not.
-		*/
-		rgdispid = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
-		Variant pVarResult = auto.getProperty(rgdispid[0]);
-		if (pVarResult == null) return false;
-		delaySetText = pVarResult.getInt() != READYSTATE_COMPLETE;
-		pVarResult.dispose();
-		rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
-		auto.invoke(rgdispid[0]);
-	}
+
+	/*
+	* Stopping the loading of a page causes DocumentComplete events from previous
+	* requests to be received before the DocumentComplete for this page.  In such
+	* cases we must be sure to not set the html into the browser too soon, since
+	* doing so could result in its page being cleared out by a subsequent
+	* DocumentComplete.  The Browser's ReadyState can be used to determine whether
+	* these extra events will be received or not.
+	*/
+	rgdispid = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
+	Variant pVarResult = auto.getProperty(rgdispid[0]);
+	if (pVarResult == null) return false;
+	delaySetText = pVarResult.getInt() != READYSTATE_COMPLETE;
+	pVarResult.dispose();
+	rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
+	auto.invoke(rgdispid[0]);
 
 	/*
 	* Feature in IE.  If the current page is about:blank then a DocumentComplete
@@ -1319,7 +1357,6 @@ public boolean setText(final String html, boolean trusted) {
 	}
 
 	rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
-	navigate = true;
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(ABOUT_BLANK);
 	int[] rgdispidNamedArgs = new int[1];
@@ -1330,7 +1367,7 @@ public boolean setText(final String html, boolean trusted) {
 		oldValue = hResult == COM.S_OK;
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 	}
-	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+	pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
 	if (!OS.IsWinCE && IEVersion >= 7) {
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 	}
@@ -1342,6 +1379,16 @@ public boolean setText(final String html, boolean trusted) {
 }
 
 public boolean setUrl(String url, String postData, String headers[]) {
+	/*
+	* If the browser has not completed its initial navigate to about:blank
+	* then delay setting this url until the navigate has completed.
+	*/
+	if (!initialNavigateComplete) {
+		pendingText = null;
+		pendingUrl = new Object[] {url, postData, headers};
+		return true;
+	}
+
 	html = uncRedirect = null;
 
 	/*
@@ -1352,15 +1399,6 @@ public boolean setUrl(String url, String postData, String headers[]) {
 	* navigating to any xml document. 
 	*/
 	if (url.endsWith(".xml")) {	//$NON-NLS-1$
-		/*
-		* Feature in Internet Explorer.  Stopping pending requests when no request has been
-		* issued causes a default 'Action cancelled' page to be displayed.  Since Stop must
-		* be issued here, the workaround is to first Navigate to the about:blank page before
-		* issuing Stop so that the 'Action cancelled' page is not displayed.
-		*/
-		if (!navigate) {
-			navigate (ABOUT_BLANK, null, null, true);
-		}
 		int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 		auto.invoke(rgdispid[0]);
 	}
@@ -1368,6 +1406,17 @@ public boolean setUrl(String url, String postData, String headers[]) {
 }
 
 public void stop() {
+	/*
+	* If the browser has not completed its initial navigate to about:blank
+	* then do not issue Stop here, as this will display the IE error page.
+	* Just clear the pending url and text fields so that any pending content
+	* will not be set into the browser when the about:blank navigate completes.
+	*/
+	if (!initialNavigateComplete) {
+		pendingText = pendingUrl = null;
+		return;
+	}
+
 	uncRedirect = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);

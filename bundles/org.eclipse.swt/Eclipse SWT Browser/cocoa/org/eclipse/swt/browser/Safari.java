@@ -506,6 +506,9 @@ public String getText() {
 }
 
 public String getUrl() {
+	/* WebKit auto-navigates to about:blank at startup */
+	if (url.length() == 0) return ABOUT_BLANK;
+
 	return url;
 }
 
@@ -697,7 +700,7 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 		 * waiting to be set into the about:blank page once it has completed loading. 
 		 */
 		if (html != null) {
-			if (url.startsWith(ABOUT_BLANK)) {
+			if (getUrl().startsWith(ABOUT_BLANK)) {
 				loadingText = true;
 				NSString string = NSString.stringWith(html);
 				NSString URLString;
@@ -735,7 +738,7 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 					TitleEvent newEvent = new TitleEvent(browser);
 					newEvent.display = display;
 					newEvent.widget = browser;
-					newEvent.title = url;
+					newEvent.title = getUrl();
 					for (int i = 0; i < titleListeners.length; i++) {
 						titleListeners[i].changed(newEvent);
 					}
