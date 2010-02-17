@@ -870,7 +870,7 @@ class AccessibleObject {
 				AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 				listener.getColumnCount(event);
 			}
-			int /*long*/ result = index % event.count;
+			int /*long*/ result = event.count == 0 ? -1 : index % event.count;
 			if (DEBUG) print ("---> " + result);
 			return result;
 		}
@@ -1880,7 +1880,7 @@ class AccessibleObject {
 					listener.getText(event);
 				}
 				String text = event.result;
-				if (text != null && text.length() > 0) return text.charAt(0);
+				return text != null && text.length() > 0 ? text.charAt(0) : 0;
 			}
 			String text = object.getText ();
 			if (text != null && text.length() > offset) return text.charAt ((int)/*64*/offset);
