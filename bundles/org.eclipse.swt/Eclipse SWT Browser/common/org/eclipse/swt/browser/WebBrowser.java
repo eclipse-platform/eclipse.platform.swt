@@ -674,8 +674,8 @@ boolean sendKeyEvent (Event event) {
 			} while (all && control != null);
 		} finally {
 			display.removeFilter (SWT.Traverse, listener);
+			nextTraverseDoit = true;
 		}
-		nextTraverseDoit = true;
 	}
 	if (doit) {
 		browser.notifyListeners (event.type, event);
