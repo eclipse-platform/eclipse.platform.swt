@@ -1557,6 +1557,7 @@ public Monitor [] getMonitors () {
 		Monitor monitor = new Monitor ();
 		screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = convertRect(screen, screen.frame());
+		monitor.handle = screen.id;
 		monitor.x = (int)frame.x;
 		monitor.y = (int)(primaryFrame.height - (frame.y + frame.height));
 		monitor.width = (int)frame.width;
@@ -1588,7 +1589,8 @@ public Monitor getPrimaryMonitor () {
 	Monitor monitor = new Monitor ();
 	NSArray screens = NSScreen.screens();
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
-	NSRect frame = convertRect(screen, screen.frame());;
+	NSRect frame = convertRect(screen, screen.frame());
+	monitor.handle = screen.id;
 	monitor.x = (int)frame.x;
 	monitor.y = (int)(frame.height - (frame.y + frame.height));
 	monitor.width = (int)frame.width;

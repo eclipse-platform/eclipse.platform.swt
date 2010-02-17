@@ -1488,7 +1488,10 @@ public void setFullScreen (boolean fullScreen) {
 			}
 		}
 		window.setFrame(fullScreenFrame, true);
-		window.contentView().setFrame(fullScreenFrame);
+		NSRect contentViewFrame = new NSRect();
+		contentViewFrame.width = fullScreenFrame.width;
+		contentViewFrame.height = fullScreenFrame.height;
+		window.contentView().setFrame(contentViewFrame);
 	} else {
 		window.setShowsResizeIndicator(true);
 		if (window.respondsToSelector(OS.sel_setMovable_)) {
@@ -1906,7 +1909,10 @@ void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification)
 void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	if (fullScreen) {
 		window.setFrame(fullScreenFrame, true);
-		window.contentView().setFrame(fullScreenFrame);
+		NSRect contentViewFrame = new NSRect();
+		contentViewFrame.width = fullScreenFrame.width;
+		contentViewFrame.height = fullScreenFrame.height;
+		window.contentView().setFrame(contentViewFrame);
 	}
 	if (fixResize ()) {
 		NSRect rect = window.frame ();
