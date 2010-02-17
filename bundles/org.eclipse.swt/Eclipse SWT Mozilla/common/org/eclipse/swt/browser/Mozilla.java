@@ -1486,10 +1486,12 @@ public void create (Composite parent, int style) {
 		SWT.Deactivate,
 		SWT.Show,
 		SWT.KeyDown,		// needed to make browser traversable
-		SWT.Traverse
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		browser.addListener (folderEvents[i], listener);
+	}
+	if (delegate.sendTraverse ()) {
+		browser.addListener (SWT.Traverse, listener);
 	}
 }
 
@@ -3890,7 +3892,14 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.keyCode = lastKeyCode;
 		keyEvent.character = (char)lastCharCode;
 		keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
-		if (!sendKeyEvent (keyEvent) || browser.isDisposed ()) {
+		boolean doit = true;
+		if (delegate.sendTraverse ()) {
+			doit = sendKeyEvent (keyEvent);
+		} else {
+			browser.notifyListeners (keyEvent.type, keyEvent);
+			doit = keyEvent.doit; 
+		}
+		if (!doit || browser.isDisposed ()) {
 			domEvent.PreventDefault ();
 		}
 		return XPCOM.NS_OK;

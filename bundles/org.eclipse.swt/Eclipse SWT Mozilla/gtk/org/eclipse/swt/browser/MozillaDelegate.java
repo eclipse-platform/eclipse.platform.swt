@@ -221,6 +221,10 @@ void onDispose (int /*long*/ embedHandle) {
 void removeWindowSubclass () {
 }
 
+boolean sendTraverse () {
+	return true;
+}
+
 void setSize (int /*long*/ embedHandle, int width, int height) {
 	OS.gtk_widget_set_size_request (embedHandle, width, height);
 }

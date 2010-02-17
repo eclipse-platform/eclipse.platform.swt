@@ -138,6 +138,10 @@ void removeWindowSubclass () {
 	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 }
 
+boolean sendTraverse () {
+	return false;
+}
+
 void setSize (int /*long*/ embedHandle, int width, int height) {
 }
 }

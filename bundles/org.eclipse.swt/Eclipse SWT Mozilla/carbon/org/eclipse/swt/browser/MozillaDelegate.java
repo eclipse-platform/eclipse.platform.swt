@@ -262,6 +262,10 @@ void onDispose (int embedHandle) {
 void removeWindowSubclass () {
 }
 
+boolean sendTraverse () {
+	return true;
+}
+
 void setSize (int embedHandle, int width, int height) {
 	// TODO
 }
