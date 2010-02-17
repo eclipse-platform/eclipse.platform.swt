@@ -22,7 +22,7 @@ public class ATK extends OS {
 	static {
 		Library.loadLibrary("swt-atk");
 	}
-	
+
 	/** Constants */
 	public static final int ATK_RELATION_NULL = 0;
 	public static final int ATK_RELATION_CONTROLLED_BY = 1;
@@ -40,6 +40,9 @@ public class ATK extends OS {
 	public static final int ATK_RELATION_PARENT_WINDOW_OF = 13;
 	public static final int ATK_RELATION_DESCRIBED_BY = 14;
 	public static final int ATK_RELATION_DESCRIPTION_FOR = 15;
+	public static final int ATK_ROLE_ALERT = 2;
+	public static final int ATK_ROLE_ANIMATION = 3;
+	public static final int ATK_ROLE_CANVAS = 6;
 	public static final int ATK_ROLE_CHECK_BOX = 7;
 	public static final int ATK_ROLE_COMBO_BOX = 11;
 	public static final int ATK_ROLE_DIALOG = 16;
@@ -53,12 +56,15 @@ public class ATK extends OS {
 	public static final int ATK_ROLE_MENU_ITEM = 34;
 	public static final int ATK_ROLE_PAGE_TAB = 36;
 	public static final int ATK_ROLE_PAGE_TAB_LIST = 37;
+	public static final int ATK_ROLE_PANEL = 38;
 	public static final int ATK_ROLE_PROGRESS_BAR = 41;
 	public static final int ATK_ROLE_PUSH_BUTTON = 42;
 	public static final int ATK_ROLE_RADIO_BUTTON = 43;
 	public static final int ATK_ROLE_SCROLL_BAR = 47;
 	public static final int ATK_ROLE_SEPARATOR = 49;
 	public static final int ATK_ROLE_SLIDER = 50;
+	public static final int ATK_ROLE_SPIN_BUTTON = 52;
+	public static final int ATK_ROLE_STATUSBAR = 53;
 	public static final int ATK_ROLE_TABLE = 54;
 	public static final int ATK_ROLE_TABLE_CELL = 55;
 	public static final int ATK_ROLE_TABLE_COLUMN_HEADER = 56;
@@ -294,6 +300,30 @@ public static final int /*long*/ atk_object_ref_relation_set (int /*long*/ acces
 	lock.lock();
 	try {
 		return _atk_object_ref_relation_set(accessible);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param name cast=(const gchar *)
+ */
+public static final native int _atk_role_register (byte[] name);
+public static final int atk_role_register (byte[] name) {
+	lock.lock();
+	try {
+		return _atk_role_register(name);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param name cast=(const gchar *)
+ */
+public static final native int _atk_text_attribute_register (byte[] name);
+public static final int atk_text_attribute_register (byte[] name) {
+	lock.lock();
+	try {
+		return _atk_text_attribute_register(name);
 	} finally {
 		lock.unlock();
 	}

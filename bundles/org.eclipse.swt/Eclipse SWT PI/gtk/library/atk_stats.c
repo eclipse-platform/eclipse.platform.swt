@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int ATK_nativeFunctionCount = 71;
-int ATK_nativeFunctionCallCount[71];
+int ATK_nativeFunctionCount = 73;
+int ATK_nativeFunctionCallCount[73];
 char * ATK_nativeFunctionNames[] = {
 	"ATK_1IS_1NO_1OP_1OBJECT_1FACTORY",
 	"ATK_1TYPE_1ACTION",
@@ -56,10 +56,12 @@ char * ATK_nativeFunctionNames[] = {
 	"_1atk_1relation_1set_1get_1n_1relations",
 	"_1atk_1relation_1set_1get_1relation",
 	"_1atk_1relation_1set_1remove",
+	"_1atk_1role_1register",
 	"_1atk_1state_1set_1add_1state",
 	"_1atk_1state_1set_1new",
 	"_1atk_1text_1attribute_1get_1name",
 	"_1atk_1text_1attribute_1get_1value",
+	"_1atk_1text_1attribute_1register",
 #ifndef JNI64
 	"_1call__II",
 #else

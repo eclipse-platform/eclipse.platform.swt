@@ -431,6 +431,22 @@ JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1relation_1set_1remove)
 }
 #endif
 
+#ifndef NO__1atk_1role_1register
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1role_1register)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1role_1register_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)atk_role_register((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	ATK_NATIVE_EXIT(env, that, _1atk_1role_1register_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1atk_1state_1set_1add_1state
 JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1state_1set_1add_1state)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -475,6 +491,22 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1text_1attribute_1get_1value)
 	ATK_NATIVE_ENTER(env, that, _1atk_1text_1attribute_1get_1value_FUNC);
 	rc = (jintLong)atk_text_attribute_get_value(arg0, arg1);
 	ATK_NATIVE_EXIT(env, that, _1atk_1text_1attribute_1get_1value_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1atk_1text_1attribute_1register
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1text_1attribute_1register)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1text_1attribute_1register_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)atk_text_attribute_register((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	ATK_NATIVE_EXIT(env, that, _1atk_1text_1attribute_1register_FUNC);
 	return rc;
 }
 #endif

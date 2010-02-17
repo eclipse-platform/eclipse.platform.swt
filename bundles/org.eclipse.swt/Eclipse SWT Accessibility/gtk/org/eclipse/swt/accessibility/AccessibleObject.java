@@ -38,6 +38,12 @@ class AccessibleObject {
 	static int /*long*/ namePtr = -1;
 	static final Hashtable AccessibleObjects = new Hashtable (9);
 	static final boolean DEBUG = Device.DEBUG;
+	
+	static final int ROW_ROLE, COLUMN_ROLE;
+	static {
+		ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true));
+		COLUMN_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "column", true));
+	}
 
 	AccessibleObject (int /*long*/ type, int /*long*/ widget, Accessible accessible, boolean isLightweight) {
 		super ();
@@ -651,7 +657,14 @@ class AccessibleObject {
 						case ACC.ROLE_RADIOBUTTON: return ATK.ATK_ROLE_RADIO_BUTTON;
 						case ACC.ROLE_SPLITBUTTON: return ATK.ATK_ROLE_PUSH_BUTTON;
 						case ACC.ROLE_WINDOW: return ATK.ATK_ROLE_WINDOW;
-						case ACC.ROLE_ROW: return ATK.ATK_ROLE_TABLE_CELL;
+						case ACC.ROLE_ROW: return ROW_ROLE;
+						case ACC.ROLE_COLUMN: return COLUMN_ROLE;
+						case ACC.ROLE_ALERT: return ATK.ATK_ROLE_ALERT;
+						case ACC.ROLE_ANIMATION: return ATK.ATK_ROLE_ANIMATION;
+						case ACC.ROLE_CANVAS: return ATK.ATK_ROLE_CANVAS;
+						case ACC.ROLE_GROUP: return ATK.ATK_ROLE_PANEL;
+						case ACC.ROLE_SPINBUTTON: return ATK.ATK_ROLE_SPIN_BUTTON;
+						case ACC.ROLE_STATUSBAR: return ATK.ATK_ROLE_STATUSBAR;
 					}
 				}
 			}
