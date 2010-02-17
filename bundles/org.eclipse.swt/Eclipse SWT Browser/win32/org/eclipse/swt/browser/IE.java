@@ -28,9 +28,8 @@ class IE extends WebBrowser {
 	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, navigate, delaySetText, ignoreDispose;
+	boolean back, forward, navigate, delaySetText, ignoreDispose, ignoreTraverse;
 	boolean installFunctionsOnDocumentComplete, untrustedText;
-	boolean nextTraverseDoit, ignoreTraverse;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -1188,82 +1187,6 @@ public void refresh() {
 
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Refresh" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
-}
-
-boolean sendKeyEvent(Event event) {
-	int traversal = SWT.TRAVERSE_NONE;
-	boolean all = false;
-	switch (event.keyCode) {
-		case SWT.ESC: {
-			traversal = SWT.TRAVERSE_ESCAPE;
-			all = true;
-			nextTraverseDoit = true;
-			break;
-		}
-		case SWT.CR: {
-			traversal = SWT.TRAVERSE_RETURN;
-			all = true;
-			nextTraverseDoit = false;
-			break;
-		}
-		case SWT.ARROW_DOWN:
-		case SWT.ARROW_RIGHT:
-			traversal = SWT.TRAVERSE_ARROW_NEXT;
-			nextTraverseDoit = false;
-			break;
-		case SWT.ARROW_UP:
-		case SWT.ARROW_LEFT:
-			traversal = SWT.TRAVERSE_ARROW_PREVIOUS;
-			nextTraverseDoit = false;
-			break;
-		case SWT.TAB:
-			traversal = (event.stateMask & SWT.SHIFT) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
-			nextTraverseDoit = (event.stateMask & SWT.CTRL) != 0;
-			break;
-		case SWT.PAGE_DOWN:
-			if ((event.stateMask & SWT.CTRL) != 0) {
-				traversal = SWT.TRAVERSE_PAGE_NEXT;
-				all = true;
-				nextTraverseDoit = true;
-			}
-			break;
-		case SWT.PAGE_UP:
-			if ((event.stateMask & SWT.CTRL) != 0) {
-				traversal = SWT.TRAVERSE_PAGE_PREVIOUS;
-				all = true;
-				nextTraverseDoit = true;
-			}
-			break;
-	}
-	boolean doit = true;
-	if (traversal != SWT.TRAVERSE_NONE) {
-		Control control = browser;
-		Shell shell = control.getShell();
-		final Event[] traverseEvent = new Event[1];
-		Listener listener = new Listener() {
-			public void handleEvent(Event event) {
-				traverseEvent[0] = event;
-			}
-		};
-		Display display = browser.getDisplay();
-		display.addFilter(SWT.Traverse, listener);
-		do {
-			if (control.traverse(traversal)) {
-				doit = false;
-				break;
-			}
-			if (!traverseEvent[0].doit && control.isListening(SWT.Traverse)) break;
-			if (control == shell) break;
-			control = control.getParent();
-		} while (all && control != null);
-		display.removeFilter(SWT.Traverse, listener);
-		nextTraverseDoit = true;
-	}
-	if (doit) {
-		browser.notifyListeners(event.type, event);
-		doit = event.doit; 
-	}
-	return doit;
 }
 
 void setHTML (String string) {
