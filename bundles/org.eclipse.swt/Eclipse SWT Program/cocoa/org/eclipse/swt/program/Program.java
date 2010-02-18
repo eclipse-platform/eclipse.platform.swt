@@ -54,31 +54,36 @@ Program () {
  *	</ul>
  */
 public static Program findProgram (String extension) {
-	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (extension.length () == 0) return null;
-	Program program = null;
-	char[] chars;
-	if (extension.charAt (0) != '.') {
-		chars = new char[extension.length()];
-		extension.getChars(0, chars.length, chars, 0);
-	} else {
-		chars = new char[extension.length() - 1];
-		extension.getChars(1, extension.length(), chars, 0);		
-	}
-	NSString ext = NSString.stringWithCharacters(chars, chars.length);
-	if (ext != null) {
-		byte[] fsRef = new byte[80];
-		if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext.id, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-			int /*long*/ url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
-			if (url != 0) {
-				NSString bundlePath = new NSURL(url).path();
-				NSBundle bundle = NSBundle.bundleWithPath(bundlePath);
-				program = getProgram(bundle);
-				OS.CFRelease(url);
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		if (extension.length () == 0) return null;
+		Program program = null;
+		char[] chars;
+		if (extension.charAt (0) != '.') {
+			chars = new char[extension.length()];
+			extension.getChars(0, chars.length, chars, 0);
+		} else {
+			chars = new char[extension.length() - 1];
+			extension.getChars(1, extension.length(), chars, 0);		
+		}
+		NSString ext = NSString.stringWithCharacters(chars, chars.length);
+		if (ext != null) {
+			byte[] fsRef = new byte[80];
+			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext.id, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
+				int /*long*/ url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
+				if (url != 0) {
+					NSString bundlePath = new NSURL(url).path();
+					NSBundle bundle = NSBundle.bundleWithPath(bundlePath);
+					program = getProgram(bundle);
+					OS.CFRelease(url);
+				}
 			}
 		}
+		return program;
+	} finally {
+		pool.release();
 	}
-	return program;
 }
 
 /**
