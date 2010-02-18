@@ -2432,6 +2432,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityActionDescription)
 }
 #endif
 
+#ifndef NO_NSAccessibilityBoundsForRangeParameterizedAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityBoundsForRangeParameterizedAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityBoundsForRangeParameterizedAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityBoundsForRangeParameterizedAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityBoundsForRangeParameterizedAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityButtonRole
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityButtonRole)
 	(JNIEnv *env, jclass that)
@@ -2468,6 +2480,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityChildrenAttribute)
 }
 #endif
 
+#ifndef NO_NSAccessibilityColorWellRole
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityColorWellRole)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityColorWellRole_FUNC);
+	rc = (jintLong)NSAccessibilityColorWellRole;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityColorWellRole_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityColumnRole
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityColumnRole)
 	(JNIEnv *env, jclass that)
@@ -2476,6 +2500,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityColumnRole)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityColumnRole_FUNC);
 	rc = (jintLong)NSAccessibilityColumnRole;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityColumnRole_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityColumnsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityColumnsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityColumnsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityColumnsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityColumnsAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -2624,6 +2660,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityGroupRole)
 }
 #endif
 
+#ifndef NO_NSAccessibilityHeaderAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityHeaderAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityHeaderAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityHeaderAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityHeaderAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityHelpAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityHelpAttribute)
 	(JNIEnv *env, jclass that)
@@ -2696,6 +2744,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityIncrementorRole)
 }
 #endif
 
+#ifndef NO_NSAccessibilityIndexAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityIndexAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityIndexAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityIndexAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityIndexAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityInsertionPointLineNumberAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityInsertionPointLineNumberAttribute)
 	(JNIEnv *env, jclass that)
@@ -2752,6 +2812,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityLinkTextAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityLinkTextAttribute_FUNC);
 	rc = (jintLong)NSAccessibilityLinkTextAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityLinkTextAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityLinkedUIElementsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityLinkedUIElementsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityLinkedUIElementsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityLinkedUIElementsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityLinkedUIElementsAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3124,6 +3196,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowRole)
 }
 #endif
 
+#ifndef NO_NSAccessibilityRowsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityRowsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityRowsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityRowsAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityScrollAreaRole
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityScrollAreaRole)
 	(JNIEnv *env, jclass that)
@@ -3180,6 +3264,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedChildrenChangedNotif
 	OS_NATIVE_ENTER(env, that, NSAccessibilitySelectedChildrenChangedNotification_FUNC);
 	rc = (jintLong)NSAccessibilitySelectedChildrenChangedNotification;
 	OS_NATIVE_EXIT(env, that, NSAccessibilitySelectedChildrenChangedNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilitySelectedColumnsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedColumnsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilitySelectedColumnsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilitySelectedColumnsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilitySelectedColumnsAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilitySelectedRowsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedRowsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilitySelectedRowsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilitySelectedRowsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilitySelectedRowsAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3660,6 +3768,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityVisibleChildrenAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityVisibleChildrenAttribute_FUNC);
 	rc = (jintLong)NSAccessibilityVisibleChildrenAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityVisibleChildrenAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityVisibleColumnsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityVisibleColumnsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityVisibleColumnsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityVisibleColumnsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityVisibleColumnsAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityVisibleRowsAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityVisibleRowsAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityVisibleRowsAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityVisibleRowsAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityVisibleRowsAttribute_FUNC);
 	return rc;
 }
 #endif

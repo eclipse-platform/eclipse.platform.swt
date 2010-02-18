@@ -29,7 +29,7 @@ class SWTAccessibleDelegate extends NSObject {
 	static Callback accessible2Args, accessible3Args, accessible4Args;
 	static int /*long*/ proc2Args, proc3Args, proc4Args;
 
-	Accessible accessibleParent;
+	Accessible accessible;
 	int /*long*/ delegateJniRef;
 	int childID;
 
@@ -88,7 +88,7 @@ class SWTAccessibleDelegate extends NSObject {
 
 	public SWTAccessibleDelegate(Accessible accessible, int childID) {
 		super(0);
-		this.accessibleParent = accessible;
+		this.accessible = accessible;
 		this.childID = childID;
 		alloc().init();
 		delegateJniRef = OS.NewGlobalRef(this);
@@ -101,7 +101,7 @@ class SWTAccessibleDelegate extends NSObject {
 		if (actionNames != null)
 			return retainedAutoreleased(actionNames);
 		
-		actionNames = accessibleParent.internal_accessibilityActionNames(childID);
+		actionNames = accessible.internal_accessibilityActionNames(childID);
 		actionNames.retain();
 		return retainedAutoreleased(actionNames);
 	}
@@ -111,13 +111,13 @@ class SWTAccessibleDelegate extends NSObject {
 		if (attributeNames != null)
 			return retainedAutoreleased(attributeNames);
 		
-		attributeNames = accessibleParent.internal_accessibilityAttributeNames(childID);
+		attributeNames = accessible.internal_accessibilityAttributeNames(childID);
 		attributeNames.retain();
 		return retainedAutoreleased(attributeNames);
 	}
 
 	id accessibilityAttributeValue(NSString attribute) {
-		return accessibleParent.internal_accessibilityAttributeValue(attribute, childID);
+		return accessible.internal_accessibilityAttributeValue(attribute, childID);
 	}
 	
 	// parameterized attribute methods
@@ -126,18 +126,18 @@ class SWTAccessibleDelegate extends NSObject {
 		if (parameterizedAttributeNames != null)
 			return retainedAutoreleased(parameterizedAttributeNames);
 		
-		parameterizedAttributeNames = accessibleParent.internal_accessibilityParameterizedAttributeNames(childID);
+		parameterizedAttributeNames = accessible.internal_accessibilityParameterizedAttributeNames(childID);
 		parameterizedAttributeNames.retain();
 		return retainedAutoreleased(parameterizedAttributeNames);
 	}
 	
 	id accessibilityAttributeValue_forParameter(NSString attribute, id parameter) {
-		return accessibleParent.internal_accessibilityAttributeValue_forParameter(attribute, parameter, childID);
+		return accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, childID);
 	}
 
 	// Return YES if the UIElement doesn't show up to the outside world - i.e. its parent should return the UIElement's children as its own - cutting the UIElement out. E.g. NSControls are ignored when they are single-celled.
 	boolean accessibilityIsIgnored() {
-		return accessibleParent.internal_accessibilityIsIgnored(childID);
+		return accessible.internal_accessibilityIsIgnored(childID);
 	}
 
 	boolean accessibilityIsAttributeSettable(NSString attribute) {
@@ -146,24 +146,24 @@ class SWTAccessibleDelegate extends NSObject {
 
 	// Returns the deepest descendant of the UIElement hierarchy that contains the point. You can assume the point has already been determined to lie within the receiver. Override this method to do deeper hit testing within a UIElement - e.g. a NSMatrix would test its cells. The point is bottom-left relative screen coordinates.
 	id accessibilityHitTest(NSPoint point) {
-		return accessibleParent.internal_accessibilityHitTest(point, childID);
+		return accessible.internal_accessibilityHitTest(point, childID);
 	}
 
 	// Returns the UI Element that has the focus. You can assume that the search for the focus has already been narrowed down to the reciever. Override this method to do a deeper search with a UIElement - e.g. a NSMatrix would determine if one of its cells has the focus.
 	id accessibilityFocusedUIElement() {
-		return accessibleParent.internal_accessibilityFocusedUIElement(childID);
+		return accessible.internal_accessibilityFocusedUIElement(childID);
 	}
 
 	void accessibilityPerformAction(NSString action) {
-		accessibleParent.internal_accessibilityPerformAction(action, childID);
+		accessible.internal_accessibilityPerformAction(action, childID);
 	}
 	
 	id accessibilityActionDescription(NSString action) {
-		return accessibleParent.internal_accessibilityActionDescription(action, childID);
+		return accessible.internal_accessibilityActionDescription(action, childID);
 	}
 	
-	
 	void accessibilitySetValue_forAttribute(id value, NSString attribute) {
+		accessible.internal_accessibilitySetValue_forAttribute(value, attribute);
 	}
 	
 	static NSArray retainedAutoreleased(NSArray inObject) {

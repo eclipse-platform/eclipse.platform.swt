@@ -163,7 +163,7 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 		NSNumber value = NSNumber.numberWithInt(selection ? 1 : 0);
 		return value.id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
-		NSNumber value = NSNumber.numberWithInt(getEnabled() ? 1 : 0);
+		NSNumber value = NSNumber.numberWithBool(getEnabled());
 		return value.id;
 	}
 

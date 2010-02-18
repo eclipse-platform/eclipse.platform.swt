@@ -15,6 +15,15 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
+#define LOAD_CFSTR(var, name) \
+		static int initialized = 0; \
+		static CFStringRef *var = NULL; \
+		if (!initialized) { \
+			CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR(name##_LIB)); \
+			if (bundle) var = CFBundleGetDataPointerForName(bundle, CFSTR(#name)); \
+			initialized = 1; \
+		} 
+
 #ifndef NO_JNIGetObject
 JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -106,16 +115,99 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(isFlipped_1CALLBACK)
 JNIEXPORT jintLong JNICALL OS_NATIVE(kTISPropertyUnicodeKeyLayoutData)
 (JNIEnv *env, jclass that)
 {
-	// Technically this CFStringRef should be CFRetain'ed but we have no opportunity to release it.
-	// The pointer won't disappear unless the Carbon framework bundle is somehow unloaded, which is unlikely to happen.
-	static int initialized = 0;
-	static CFStringRef *var = NULL;
-	if (!initialized) {
-		CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.Carbon"));
-		if (bundle) var = (CFStringRef *)CFBundleGetDataPointerForName(bundle, CFSTR("kTISPropertyUnicodeKeyLayoutData"));
-		initialized = 1;
-	} 
-	
-	return (jintLong)(*var);
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kTISPropertyUnicodeKeyLayoutData_FUNC);
+/*
+	rc = (jintLong) kTISPropertyUnicodeKeyLayoutData;
+*/
+	{
+		LOAD_CFSTR(data, kTISPropertyUnicodeKeyLayoutData)
+		if (data) {
+			rc = (jintLong)(*data);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, kTISPropertyUnicodeKeyLayoutData_FUNC);
+	return rc;
 }
 #endif
+
+#ifndef NO_NSAccessibilityCellRole
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityCellRole)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityCellRole_FUNC);
+/*
+	rc = (jintLong)NSAccessibilityCellRole;
+*/
+	{
+		LOAD_CFSTR(data, NSAccessibilityCellRole)
+		if (data) {
+			rc = (jintLong)(*data);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, NSAccessibilityCellRole_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityColumnIndexRangeAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityColumnIndexRangeAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
+/*
+	rc = (jintLong)NSAccessibilityColumnIndexRangeAttribute;
+*/
+	{
+		LOAD_CFSTR(data, NSAccessibilityColumnIndexRangeAttribute)
+		if (data) {
+			rc = (jintLong)(*data);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityCellForColumnAndRowParameterizedAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityCellForColumnAndRowParameterizedAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
+/*
+	rc = (jintLong)NSAccessibilityCellForColumnAndRowParameterizedAttribute;
+*/
+	{
+		LOAD_CFSTR(data, NSAccessibilityCellForColumnAndRowParameterizedAttribute)
+		if (data) {
+			rc = (jintLong)(*data);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityRowIndexRangeAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowIndexRangeAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
+/*
+	rc = (jintLong)NSAccessibilityRowIndexRangeAttribute;
+*/
+	{
+		LOAD_CFSTR(data, NSAccessibilityRowIndexRangeAttribute)
+		if (data) {
+			rc = (jintLong)(*data);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
+	return rc;
+}
+#endif
+

@@ -120,8 +120,21 @@ boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEv
 	return super.acceptsFirstMouse (id, sel, theEvent);
 }
 
+int /*long*/ accessibleHandle() {
+	return view.id;
+}
+
+int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	if (id == view.id && accessible != null) {
+		NSString actionName = new NSString(arg0);
+		id returnValue = accessible.internal_accessibilityActionDescription(actionName, ACC.CHILDID_SELF);
+		if (returnValue != null) return returnValue.id;
+	}
+	return super.accessibilityActionDescription(id, sel, arg0);
+}
+
 int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
-	if (accessible != null) {
+	if (id == view.id && accessible != null) {
 		NSArray returnValue = accessible.internal_accessibilityActionNames(ACC.CHILDID_SELF);
 		if (returnValue != null) return returnValue.id;
 	}
@@ -186,6 +199,14 @@ int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*lon
 	return super.accessibilityParameterizedAttributeNames(id, sel);
 }
 
+void accessibilityPerformAction(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	if (id == view.id && accessible != null) {
+		NSString action = new NSString(arg0);
+		if (accessible.internal_accessibilityPerformAction(action, ACC.CHILDID_SELF)) return;
+	}
+	super.accessibilityPerformAction(id, sel, arg0);
+}
+
 int /*long*/ accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 	id returnValue = null;
 
@@ -225,7 +246,7 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 	int /*long*/ returnValue = 0;
 	id returnObject = null;
 	
-	if (accessible != null) {
+	if (id == view.id && accessible != null) {
 		returnObject = accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF);
 	}
 
@@ -245,7 +266,7 @@ int /*long*/ accessibilityAttributeValue_forParameter(int /*long*/ id, int /*lon
 	
 	id returnValue = null;
 	
-	if (accessible != null) {
+	if (id == view.id && accessible != null) {
 		id parameter = new id(arg1);
 		returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
 	}
@@ -256,6 +277,28 @@ int /*long*/ accessibilityAttributeValue_forParameter(int /*long*/ id, int /*lon
 		return super.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	else
 		return returnValue.id;
+}
+
+boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	boolean returnValue = false;
+	if (id == view.id && accessible != null) {
+		NSString attribute = new NSString (arg0);
+		returnValue = accessible.internal_accessibilityIsAttributeSettable(attribute);
+	}
+	if (!returnValue) {
+		returnValue = super.accessibilityIsAttributeSettable(id, sel, arg0);
+	}
+	return returnValue;
+}
+
+void accessibilitySetValue_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	if (id == view.id && accessible != null) {
+		id value = new id(arg0);
+		NSString attribute = new NSString(arg1);
+		accessible.internal_accessibilitySetValue_forAttribute(value, attribute);
+	} else {
+		super.accessibilitySetValue_forAttribute(id, sel, arg0, arg1);
+	}
 }
 
 /**

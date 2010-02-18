@@ -135,6 +135,10 @@ public Widget (Widget parent, int style) {
 	reskinWidget ();
 }
 
+int /*long*/ accessibleHandle() {
+	return 0;
+}
+
 int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	return callSuperObject(id, sel, arg0);
 }
@@ -169,6 +173,10 @@ int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint poi
 	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
+boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	return callSuperBoolean(id, sel, arg0);
+}
+
 boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean(id, sel);
 }
@@ -179,6 +187,10 @@ int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*lon
 
 void accessibilityPerformAction(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	callSuper(id, sel, arg0);
+}
+
+void accessibilitySetValue_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	callSuper(id, sel, arg0, arg1);
 }
 
 String getClipboardText () {
@@ -214,6 +226,13 @@ void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0) {
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0);
+}
+
+void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
 void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1) {

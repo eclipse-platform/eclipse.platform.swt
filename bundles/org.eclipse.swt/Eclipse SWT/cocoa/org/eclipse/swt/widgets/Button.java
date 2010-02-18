@@ -98,8 +98,8 @@ public Button (Composite parent, int style) {
 
 int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
-	
-	if (accessible != null) {
+
+	if (id == view.id && accessible != null) {
 		id returnObject = accessible.internal_accessibilityAttributeValue(nsAttributeName, ACC.CHILDID_SELF);
 		if (returnObject != null) return returnObject.id;
 	}

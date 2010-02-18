@@ -47,3 +47,8 @@
 #define CancelMenuTracking_LIB "com.apple.Carbon"
 #define SetSystemUIMode_LIB "com.apple.Carbon"
 #define GetSystemUIMode_LIB "com.apple.Carbon"
+#define kTISPropertyUnicodeKeyLayoutData_LIB "com.apple.Carbon"
+#define NSAccessibilityCellForColumnAndRowParameterizedAttribute_LIB "com.apple.Cocoa"
+#define NSAccessibilityCellRole_LIB "com.apple.Cocoa"
+#define NSAccessibilityColumnIndexRangeAttribute_LIB "com.apple.Cocoa"
+#define NSAccessibilityRowIndexRangeAttribute_LIB "com.apple.Cocoa"
