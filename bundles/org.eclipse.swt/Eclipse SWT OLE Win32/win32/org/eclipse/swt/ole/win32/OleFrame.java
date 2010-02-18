@@ -65,6 +65,7 @@ final public class OleFrame extends Composite
 	private static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 	
 	private static final String CONSUME_KEY = "org.eclipse.swt.OleFrame.ConsumeKey"; //$NON-NLS-1$
+	private static final String ACCEL_KEY_HIT = "org.eclipse.swt.internal.win32.accelKeyHit"; //$NON-NLS-1$
 
 /**
  * Create an OleFrame child widget using style bits
@@ -217,7 +218,9 @@ static int /*long*/ getMsgProc(int /*long*/ code, int /*long*/ wParam, int /*lon
 					if (!rc || (lpgui.flags & mask) == 0) {
 						OleFrame frame = site.frame;
 						frame.setData(CONSUME_KEY, null);
+						display.setData(ACCEL_KEY_HIT, Boolean.TRUE);
 						consumed = frame.translateOleAccelerator(msg);
+						display.setData(ACCEL_KEY_HIT, Boolean.FALSE);
 						String value = (String)frame.getData(CONSUME_KEY); 
 						if (value != null) consumed = value.equals("true"); //$NON-NLS-1$
 						frame.setData(CONSUME_KEY, null);
