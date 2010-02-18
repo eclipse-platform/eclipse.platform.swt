@@ -1033,7 +1033,7 @@ public class Accessible {
 	}
 
 	public id internal_accessibilityAttributeValue_forParameter(NSString attribute, id parameter, int childID) {
-		if (attribute.isEqualToString(OS.NSAccessibilityStringForRangeParameterizedAttribute)) return getStringForRangeAttribute(parameter, childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityStringForRangeParameterizedAttribute)) return getStringForRangeParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForLineParameterizedAttribute)) return getRangeForLineParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityLineForIndexParameterizedAttribute)) return getLineForIndexParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityBoundsForRangeParameterizedAttribute)) return getBoundsForRangeParameterizedAttribute(parameter, childID);
@@ -1241,7 +1241,7 @@ public class Accessible {
 			AccessibleTextExtendedEvent event  = new AccessibleTextExtendedEvent(this);
 			event.childID = childID;
 			event.start = (int)/*64*/range.location;
-			event.end = (int)/*64*/(range.location + range.length - 1);
+			event.end = (int)/*64*/(range.location + range.length);
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 				listener.getTextBounds(event);
@@ -1759,6 +1759,7 @@ public class Accessible {
 			}
 			int caretOffset = event.offset;
 			event.start = caretOffset;
+			event.end = caretOffset;
 			event.count = Integer.MIN_VALUE;
 			event.type = ACC.TEXT_BOUNDARY_LINE;
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -1797,6 +1798,7 @@ public class Accessible {
 			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
 			event.childID = childID;
 			event.start = charNumber;
+			event.end = charNumber;
 			event.count = Integer.MIN_VALUE;
 			event.type = ACC.TEXT_BOUNDARY_LINE;
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -1887,7 +1889,7 @@ public class Accessible {
 			}
 			NSRange range = new NSRange();
 			range.location = event.start;
-			range.length = event.end - event.start + 1;
+			range.length = event.end - event.start;
 			returnValue = NSValue.valueWithRange(range);
 		} else {
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -1996,7 +1998,7 @@ public class Accessible {
 		return returnValue == null ? NSArray.array() : returnValue;
 	}
 	
-	id getStringForRangeAttribute (id parameter, int childID) {
+	id getStringForRangeParameterizedAttribute (id parameter, int childID) {
 		id returnValue = null;
 		
 		// Parameter is an NSRange wrapped in an NSValue. 
@@ -2049,7 +2051,7 @@ public class Accessible {
 					}				
 					NSRange range = new NSRange();
 					range.location = event.start;
-					range.length = event.end - event.start + 1;
+					range.length = event.end - event.start;
 					returnValue.addObject(NSValue.valueWithRange(range));
 				}
 			}
@@ -2085,7 +2087,7 @@ public class Accessible {
 				listener.getVisibleRanges(event);
 			}
 			range.location = event.start;
-			range.length = event.end + 1;
+			range.length = event.end - event.start;
 		} else {
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
 			event.childID = childID;
