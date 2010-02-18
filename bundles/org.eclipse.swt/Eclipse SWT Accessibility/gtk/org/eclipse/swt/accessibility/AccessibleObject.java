@@ -2884,7 +2884,6 @@ class AccessibleObject {
 	
 	void sendEvent(int event, int childID, Object eventData) {
 		//TODO
-		OS.g_signal_emit_by_name(handle, ATK.active_descendant_changed, ((Accessible)eventData).getAccessibleObject().handle);
 	}
 	
 	void setFocus (int childID) {
