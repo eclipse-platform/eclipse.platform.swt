@@ -1037,6 +1037,7 @@ public class Accessible {
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForLineParameterizedAttribute)) return getRangeForLineParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityLineForIndexParameterizedAttribute)) return getLineForIndexParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityBoundsForRangeParameterizedAttribute)) return getBoundsForRangeParameterizedAttribute(parameter, childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityRangeForPositionParameterizedAttribute)) return getRangeForPositionParameterizedAttribute(parameter, childID);
 		if (OS.VERSION >= 0x1060 && attribute.isEqualToString(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute)) return getCellForColumnAndRowParameter(parameter, childID);
 		return null;
 	}
@@ -1132,6 +1133,7 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityRangeForLineParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityLineForIndexParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityBoundsForRangeParameterizedAttribute);
+				returnValue.addObject(OS.NSAccessibilityRangeForPositionParameterizedAttribute);
 				break;
 			case ACC.ROLE_TABLE:
 				if (OS.VERSION >= 0x1060) returnValue.addObject(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute);
@@ -1278,6 +1280,30 @@ public class Accessible {
 		}
 		
 		return returnValue == null ? NSString.string() : returnValue;
+	}
+
+	id getRangeForPositionParameterizedAttribute(id parameter, int childID) {
+		id returnValue = null;
+		NSValue parameterObject = new NSValue(parameter.id);
+		NSPoint point = parameterObject.pointValue();
+		if (accessibleTextExtendedListeners.size() > 0) {
+			AccessibleTextExtendedEvent event  = new AccessibleTextExtendedEvent(this);
+			event.childID = childID;
+			event.x = (int)point.x;
+			event.y = (int)point.y;
+			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+				listener.getOffsetAtPoint(event);
+			}
+			NSRange range = new NSRange();
+			range.location = event.offset;
+			range.length = 1;
+			returnValue = NSValue.valueWithRange(range);
+		} else {
+			//FIXME???
+			//how to implement with old listener
+		}
+		return returnValue;
 	}
 	
 	NSString getRoleAttribute(int childID) {
