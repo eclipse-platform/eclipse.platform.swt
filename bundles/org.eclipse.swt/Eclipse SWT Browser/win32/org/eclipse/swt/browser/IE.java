@@ -373,12 +373,15 @@ public void create(Composite parent, int style) {
 	site.addListener(SWT.MouseWheel, listener);
 	site.addListener(SWT.Traverse, listener);
 
-	final OleListener oleListener = new OleListener() {
+	OleListener oleListener = new OleListener() {
 		public void handleEvent(OleEvent event) {
 			/* callbacks are asynchronous, auto could be disposed */
 			if (auto != null) {
 				switch (event.type) {
 					case BeforeNavigate2: {
+						/* don't send client events if the initial navigate to about:blank has not completed */
+						if (!initialNavigateComplete) break;
+
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
 
@@ -471,9 +474,25 @@ public void create(Composite parent, int style) {
 						break;
 					}
 					case DocumentComplete: {
+						if (!initialNavigateComplete) {
+							/* this event marks the completion of the initial navigate to about:blank */
+							initialNavigateComplete = true;
+
+							/* if browser content has been provided by the client then set it now */
+							if (pendingText != null) {
+								setText((String)pendingText[0], ((Boolean)pendingText[1]).booleanValue());
+							} else {
+								if (pendingUrl != null) {
+									setUrl((String)pendingUrl[0], (String)pendingUrl[1], (String[])pendingUrl[2]);
+								}
+							}
+							pendingText = pendingUrl = null;
+							break;
+						}
+
 						Variant varResult = event.arguments[0];
 						IDispatch dispatch = varResult.getDispatch();
-	
+
 						varResult = event.arguments[1];
 						String url = varResult.getString();
 						/*
@@ -773,6 +792,9 @@ public void create(Composite parent, int style) {
 						break;
 					}
 					case ProgressChange: {
+						/* don't send client events if the initial navigate to about:blank has not completed */
+						if (!initialNavigateComplete) break;
+
 						Variant arg1 = event.arguments[0];
 						int nProgress = arg1.getType() != OLE.VT_I4 ? 0 : arg1.getInt(); // may be -1
 						Variant arg2 = event.arguments[1];
@@ -790,6 +812,9 @@ public void create(Composite parent, int style) {
 						break;
 					}
 					case StatusTextChange: {
+						/* don't send client events if the initial navigate to about:blank has not completed */
+						if (!initialNavigateComplete) break;
+
 						Variant arg1 = event.arguments[0];
 						if (arg1.getType() == OLE.VT_BSTR) {
 							String text = arg1.getString();
@@ -804,6 +829,9 @@ public void create(Composite parent, int style) {
 						break;
 					}
 					case TitleChange: {
+						/* don't send client events if the initial navigate to about:blank has not completed */
+						if (!initialNavigateComplete) break;
+
 						Variant arg1 = event.arguments[0];
 						if (arg1.getType() == OLE.VT_BSTR) {
 							String title = arg1.getString();
@@ -877,6 +905,24 @@ public void create(Composite parent, int style) {
 			for (int i = 0; i < arguments.length; i++) arguments[i].dispose();
 		}
 	};
+	site.addEventListener(BeforeNavigate2, oleListener);
+	site.addEventListener(CommandStateChange, oleListener);
+	site.addEventListener(DocumentComplete, oleListener);
+	site.addEventListener(NavigateComplete2, oleListener);
+	site.addEventListener(NavigateError, oleListener);
+	site.addEventListener(NewWindow2, oleListener);
+	site.addEventListener(OnMenuBar, oleListener);
+	site.addEventListener(OnStatusBar, oleListener);
+	site.addEventListener(OnToolBar, oleListener);
+	site.addEventListener(OnVisible, oleListener);
+	site.addEventListener(ProgressChange, oleListener);
+	site.addEventListener(StatusTextChange, oleListener);
+	site.addEventListener(TitleChange, oleListener);
+	site.addEventListener(WindowClosing, oleListener);
+	site.addEventListener(WindowSetHeight, oleListener);
+	site.addEventListener(WindowSetLeft, oleListener);
+	site.addEventListener(WindowSetTop, oleListener);
+	site.addEventListener(WindowSetWidth, oleListener);
 
 	Variant variant = new Variant(true);
 	auto.setProperty(RegisterAsBrowser, variant);
@@ -890,49 +936,12 @@ public void create(Composite parent, int style) {
 	/*
 	* Navigate initially to about:blank, in order to be consistent with
 	* the other browser implementations which auto-navigate there on startup,
-	* and to work around IE bug http://support.microsoft.com/kb/320153.
-	* Do not add the oleListener callbacks until this navigate has completed
-	* so that clients will not receive events for this free navigation.
+	* and to work around IE bug http://support.microsoft.com/kb/320153.  Any
+	* content that is set via setUrl() or setText() will be held as pending
+	* until the first DocumentComplete callback is received, indicating the
+	* completion of this initial navigate to about:blank.
 	*/
 	navigate(ABOUT_BLANK, null, null, true);
-	site.addEventListener(DocumentComplete, new OleListener() {
-		public void handleEvent(OleEvent event) {
-			initialNavigateComplete = true;
-			site.removeEventListener(DocumentComplete, this);
-
-			site.addEventListener(BeforeNavigate2, oleListener);
-			site.addEventListener(CommandStateChange, oleListener);
-			site.addEventListener(DocumentComplete, oleListener);
-			site.addEventListener(NavigateComplete2, oleListener);
-			site.addEventListener(NavigateError, oleListener);
-			site.addEventListener(NewWindow2, oleListener);
-			site.addEventListener(OnMenuBar, oleListener);
-			site.addEventListener(OnStatusBar, oleListener);
-			site.addEventListener(OnToolBar, oleListener);
-			site.addEventListener(OnVisible, oleListener);
-			site.addEventListener(ProgressChange, oleListener);
-			site.addEventListener(StatusTextChange, oleListener);
-			site.addEventListener(TitleChange, oleListener);
-			site.addEventListener(WindowClosing, oleListener);
-			site.addEventListener(WindowSetHeight, oleListener);
-			site.addEventListener(WindowSetLeft, oleListener);
-			site.addEventListener(WindowSetTop, oleListener);
-			site.addEventListener(WindowSetWidth, oleListener);
-
-			/*
-			* If browser content was provided by the client before the
-			* initial navigate to about:blank completed then set it now.
-			*/
-			if (pendingText != null) {
-				setText((String)pendingText[0], ((Boolean)pendingText[1]).booleanValue());
-			} else {
-				if (pendingUrl != null) {
-					setUrl((String)pendingUrl[0], (String)pendingUrl[1], (String[])pendingUrl[2]);
-				}
-			}
-			pendingText = pendingUrl = null;
-		}
-	});
 }
 
 public boolean back() {
