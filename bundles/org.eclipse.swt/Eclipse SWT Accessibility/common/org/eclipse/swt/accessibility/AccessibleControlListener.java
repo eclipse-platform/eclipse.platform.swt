@@ -79,17 +79,21 @@ public interface AccessibleControlListener extends SWTEventListener {
 	
 	/**
 	 * Sent when an accessibility client requests the accessible object
-	 * for a child of the control.
+	 * for a child of the control by index or childID, or when a client
+	 * requests the index of a child accessible object in its parent.
 	 * <p>
-	 * Return an <code>Accessible</code> for the specified control or
-	 * child in the <code>accessible</code> field of the event object.
-	 * Return null if the specified child does not have its own
-	 * <code>Accessible</code>.
-	 * </p>
+	 * The childID field in the event object can be one of the following:<ul>
+	 *    <li>an integer child ID - return the accessible object for the specified child ID,
+	 *    	or null if the specified child does not have its own accessible</li>
+	 *    <li>CHILDID_CHILD_AT_INDEX - return the accessible object at the specified index in its parent</li>
+	 *    <li>CHILDID_CHILD_INDEX - return the index of this accessible in its parent</li>
+	 * </ul></p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>childID [IN] - an identifier specifying a child of the control</li>
-	 *    <li>accessible [OUT] - an Accessible for the specified childID, or null if one does not exist</li>
+	 *    <li>childID [IN] - an identifier specifying a child of the control, or one of the predefined CHILDID constants</li>
+	 *    <li>detail [Optional IN] - the index of the child accessible to be returned when childID = CHILDID_CHILD_AT_INDEX</li>
+	 *    <li>detail [Optional OUT] - the index of this accessible in its parent when childID = CHILDID_CHILD_INDEX</li>
+	 *    <li>accessible [Optional OUT] - an Accessible for the specified childID or index, or null if one does not exist</li>
 	 * </ul>
 	 */
 	public void getChild(AccessibleControlEvent e);
@@ -219,13 +223,18 @@ public interface AccessibleControlListener extends SWTEventListener {
 	public void getValue(AccessibleControlEvent e);
 	
 	/**
-	 * Sent when an accessibility client requests the children of the control.
+	 * Sent when an accessibility client requests the children, or visible children,
+	 * of the control.
 	 * <p>
-	 * Return the children as an array of childIDs in the <code>children</code>
-	 * field of the event object.
+	 * Return the children as an array of childIDs or accessibles in the
+	 * <code>children</code> field of the event object.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
+	 *    <li>detail [IN] - a flag that may have one of the following values:<ul>
+	 *    	<li>0 (default) - return all children</li>
+	 *    	<li>VISIBLE - return all visible children</li>
+	 *    </ul>
 	 *    <li>children [Typical OUT] - an array of childIDs</li>
 	 *    <li>children [Optional OUT] - an array of accessible objects for the children may be returned instead of the childIDs</li>
 	 * </ul>

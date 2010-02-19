@@ -126,6 +126,19 @@ public class ACC {
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
 	public static final int CHILDID_MULTIPLE = -3;
+		
+	/** @since 3.6 */
+	public static final int CHILDID_CHILD_AT_INDEX = -4;
+	
+	/** @since 3.6 */
+	public static final int CHILDID_CHILD_INDEX = -5;
+	
+	/**
+	 * A detail constant indicating visible accessible objects.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int VISIBLE = 0x01;
 	
 	public static final int TEXT_INSERT = 0;
 	public static final int TEXT_DELETE = 1;
@@ -570,5 +583,5 @@ public class ACC {
 	 * 
 	 * @since 3.6
 	 */
-	public static final int RELATION_SUBWINDOW_OF = 14;
+	public static final int RELATION_SUBWINDOW_OF = 14;	
 }
