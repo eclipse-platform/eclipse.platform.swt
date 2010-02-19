@@ -263,9 +263,9 @@ public static void clearSessions () {
 }
 
 public static String GetCookie (String name, String url) {
-	CookieName = name; CookieUrl = url;
+	CookieName = name; CookieUrl = url; CookieValue = null;
 	if (NativeGetCookie != null) NativeGetCookie.run ();
-	if (MozillaGetCookie != null) MozillaGetCookie.run ();
+	if (CookieValue == null && MozillaGetCookie != null) MozillaGetCookie.run ();
 	String result = CookieValue;
 	CookieName = CookieValue = CookieUrl = null;
 	return result;
