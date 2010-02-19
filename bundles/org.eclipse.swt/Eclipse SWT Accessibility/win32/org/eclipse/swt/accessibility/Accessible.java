@@ -13,6 +13,7 @@ package org.eclipse.swt.accessibility;
 import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -182,7 +183,7 @@ public class Accessible {
 			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessible2, args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			// We will not add the IAccessible methods here because AT's should not rely on IA inheritance
+			// We will not add the IAccessible methods here because "AT's should not rely on IA inheritance"
 			public int /*long*/ method28(int /*long*/[] args) {return get_nRelations(args[0]);}
 			public int /*long*/ method29(int /*long*/[] args) {return get_relation((int)/*64*/args[0], args[1]);}
 			public int /*long*/ method30(int /*long*/[] args) {return get_relations((int)/*64*/args[0], args[1], args[2]);}
@@ -1235,6 +1236,7 @@ public class Accessible {
 	int QueryInterface(COMObject comObject, int /*long*/ iid, int /*long*/ ppvObject) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
+//		System.out.println("QueryInterface guid=" + guidString(guid));
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
 			COM.MoveMemory(ppvObject, new int /*long*/[] { comObject.getAddress() }, OS.PTR_SIZEOF);
@@ -1364,6 +1366,7 @@ public class Accessible {
 		COM.MoveMemory(service, guidService, GUID.sizeof);
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, riid, GUID.sizeof);
+//		System.out.println("QueryService service=" + guidString(service) + " guid=" + guidString(guid));
 
 		if (COM.IsEqualGUID(service, COM.IIDIAccessible)) {
 			if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) | COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
@@ -1374,7 +1377,7 @@ public class Accessible {
 			}
 			
 			/* NOTE: The following 2 lines shouldn't work, according to the IA2 specification,
-			 * but this is what AccProbe and UnoInspect use, so we need to support it for testing.
+			 * but this is what existing AT's use, so we need to support it.
 			 */
 			int code = queryAccessible2Interfaces(guid, ppvObject);
 			if (code == COM.S_OK) return code;
@@ -1550,6 +1553,11 @@ public class Accessible {
 		final GUID IIDITypeComp = IIDFromString("{00020403-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 		final GUID IIDITypeLib = IIDFromString("{00020402-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 		final GUID IIDIViewObject = IIDFromString("{0000010D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIdentityUnmarshal = IIDFromString("{0000001b-0000-0000-c000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDInternalMSMarshaller = IIDFromString("{4c1e39e1-e3e3-4296-aa86-ec938d896e92}"); //$NON-NLS-1$
+		final GUID IIDIAccIdentity = IIDFromString("{7852B78D-1CFD-41C1-A615-9C0C85960B5F}"); //$NON-NLS-1$
+		final GUID IIDIAccPropServer = IIDFromString("{76C0DBBB-15E0-4E7B-B61B-20EEEA2001E0}"); //$NON-NLS-1$
+		final GUID IIDIAccPropServices = IIDFromString("{6E26E776-04F0-495D-80E4-3330352E3169}"); //$NON-NLS-1$
 		if (COM.IsEqualGUID(guid, COM.IID_IDropTargetHelper)) return "IID_IDropTargetHelper";
 		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper)) return "IID_IDragSourceHelper";
 		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper2)) return "IID_IDragSourceHelper2";
@@ -1682,6 +1690,11 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) return "IIDIAccessibleImage";
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) return "IIDIAccessibleApplication";
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleContext)) return "IIDIAccessibleContext";
+		if (COM.IsEqualGUID(guid, IIDIdentityUnmarshal)) return "IIDIdentityUnmarshal";
+		if (COM.IsEqualGUID(guid, IIDInternalMSMarshaller)) return "IIDInternalMSMarshaller";
+		if (COM.IsEqualGUID(guid, IIDIAccIdentity)) return "IIDIAccIdentity";
+		if (COM.IsEqualGUID(guid, IIDIAccPropServer)) return "IIDIAccPropServer";
+		if (COM.IsEqualGUID(guid, IIDIAccPropServices)) return "IIDIAccPropServices";
 		return StringFromIID(guid);
 	}
 	static GUID IIDFromString(String lpsz) {
@@ -1739,7 +1752,6 @@ public class Accessible {
 				if (v.vt == COM.VT_I4) osChild = osToChildID(v.lVal);
 				else if (v.vt == COM.VT_DISPATCH) {
 					osChildObject = v.lVal;
-					System.out.println("accHitTest: proxy returned an object with this address: " + osChildObject);
 				}
 			}
 		}
@@ -1839,6 +1851,11 @@ public class Accessible {
 	int get_accChild(int /*long*/ varChild, int /*long*/ ppdispChild) {
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
+		if (v.lVal == COM.CHILDID_SELF) {
+			AddRef();
+			COM.MoveMemory(ppdispChild, new int /*long*/[] { getAddress() }, OS.PTR_SIZEOF);
+			return COM.S_OK;
+		}
 		int code = COM.S_FALSE;
 		if (iaccessible != null) {
 			/* Get the default child from the OS. */
@@ -2816,22 +2833,16 @@ public class Accessible {
 
 	/* IAccessibleApplication::get_toolkitName([out] pbstrName) */
 	int get_toolkitName(int /*long*/ pbstrName) {
-		// TODO: use SWT for toolkit name and version
 		String toolkitName = "SWT";
-		if (toolkitName.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrName, toolkitName);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
 	}
 
 	/* IAccessibleApplication::get_toolkitVersion([out] pbstrVersion) */
 	int get_toolkitVersion(int /*long*/ pbstrVersion) {
-		// TODO: use SWT for toolkit name and version
-		String toolkitVersion = "" + SWT.getVersion();
-		if (toolkitVersion.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
+		String toolkitVersion = "" + SWT.getVersion(); //$NON-NLS-1$
 		setString(pbstrVersion, toolkitVersion);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
 	}
 
 	/* IAccessibleComponent::get_locationInParent([out] pX, [out] pY) */
@@ -2850,14 +2861,16 @@ public class Accessible {
 	/* IAccessibleComponent::get_foreground([out] pForeground) */
 	int get_foreground(int /*long*/ pForeground) {
 		// TODO: Do not support foreground for children (support transparently for controls)
-		//COM.MoveMemory(pForeground, new int [] { control.getForegroundPixel() }, 4);
+		Color color = control.getForeground();
+		if (color != null) COM.MoveMemory(pForeground, new int [] { color.handle }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleComponent::get_background([out] pBackground) */
 	int get_background(int /*long*/ pBackground) {
 		// TODO: Do not support background for children (support transparently for controls)
-		//COM.MoveMemory(pBackground, new int [] { control.getBackgroundPixel() }, 4);
+		Color color = control.getBackground();
+		if (color != null) COM.MoveMemory(pBackground, new int [] { color.handle }, 4);
 		return COM.S_OK;
 	}
 

@@ -1239,6 +1239,7 @@ public class Accessible {
 		id returnValue = null;
 		NSValue parameterObject = new NSValue(parameter.id);
 		NSRange range = parameterObject.rangeValue();
+		NSRect rect = new NSRect();
 		if (accessibleTextExtendedListeners.size() > 0) {
 			AccessibleTextExtendedEvent event  = new AccessibleTextExtendedEvent(this);
 			event.childID = childID;
@@ -1248,7 +1249,6 @@ public class Accessible {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 				listener.getTextBounds(event);
 			}
-			NSRect rect = new NSRect();
 			rect.x = event.x;
 			rect.y = event.y;
 			rect.width = event.width;
@@ -1258,6 +1258,7 @@ public class Accessible {
 			//FIXME???
 			//how to implement with old listener
 		}
+		returnValue = NSValue.valueWithRect(rect);
 		return returnValue;
 	}
 	
@@ -1286,7 +1287,12 @@ public class Accessible {
 		id returnValue = null;
 		NSValue parameterObject = new NSValue(parameter.id);
 		NSPoint point = parameterObject.pointValue();
+		NSRange range = new NSRange();
 		if (accessibleTextExtendedListeners.size() > 0) {
+			NSArray screens = NSScreen.screens();
+			NSScreen screen = new NSScreen(screens.objectAtIndex(0));
+			NSRect frame = screen.frame();
+			point.y = frame.height - point.y;
 			AccessibleTextExtendedEvent event  = new AccessibleTextExtendedEvent(this);
 			event.childID = childID;
 			event.x = (int)point.x;
@@ -1295,14 +1301,13 @@ public class Accessible {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 				listener.getOffsetAtPoint(event);
 			}
-			NSRange range = new NSRange();
 			range.location = event.offset;
 			range.length = 1;
-			returnValue = NSValue.valueWithRange(range);
 		} else {
 			//FIXME???
 			//how to implement with old listener
 		}
+		returnValue = NSValue.valueWithRange(range);
 		return returnValue;
 	}
 	
