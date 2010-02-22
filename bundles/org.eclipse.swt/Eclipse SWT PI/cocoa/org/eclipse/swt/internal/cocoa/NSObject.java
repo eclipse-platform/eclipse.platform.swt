@@ -38,10 +38,6 @@ public boolean accessibilitySetOverrideValue(id value, NSString attribute) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_accessibilitySetOverrideValue_forAttribute_, value != null ? value.id : 0, attribute != null ? attribute.id : 0);
 }
 
-public boolean applicationShouldHandleReopen(NSApplication sender, boolean flag) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, sender != null ? sender.id : 0, flag);
-}
-
 public void draggedImage(NSImage image, NSPoint screenPoint, int /*long*/ operation) {
 	OS.objc_msgSend(this.id, OS.sel_draggedImage_endedAt_operation_, image != null ? image.id : 0, screenPoint, operation);
 }

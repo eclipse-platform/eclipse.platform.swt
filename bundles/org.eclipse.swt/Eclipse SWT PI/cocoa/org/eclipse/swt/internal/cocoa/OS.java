@@ -748,6 +748,7 @@ public static final int /*long*/ sel_application_openFiles_ = sel_registerName("
 public static final int /*long*/ sel_applicationDidBecomeActive_ = sel_registerName("applicationDidBecomeActive:");
 public static final int /*long*/ sel_applicationDidFinishLaunching_ = sel_registerName("applicationDidFinishLaunching:");
 public static final int /*long*/ sel_applicationDidResignActive_ = sel_registerName("applicationDidResignActive:");
+public static final int /*long*/ sel_applicationDockMenu_ = sel_registerName("applicationDockMenu:");
 public static final int /*long*/ sel_applicationIconImage = sel_registerName("applicationIconImage");
 public static final int /*long*/ sel_applicationShouldHandleReopen_hasVisibleWindows_ = sel_registerName("applicationShouldHandleReopen:hasVisibleWindows:");
 public static final int /*long*/ sel_applicationShouldTerminate_ = sel_registerName("applicationShouldTerminate:");
@@ -3268,8 +3269,6 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
  * @param arg1 flags=struct
  */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSSize arg1, boolean arg2);
-/** @method flags=cast */
-public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, boolean arg1);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */

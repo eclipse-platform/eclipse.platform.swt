@@ -2290,11 +2290,6 @@
 			<arg name="attribute" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="applicationShouldHandleReopen:hasVisibleWindows:" swt_gen="true">
-			<arg name="sender" swt_gen="true"></arg>
-			<arg name="flag" swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="draggedImage:endedAt:operation:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg name="image" swt_gen="true"></arg>
 			<arg name="screenPoint" swt_gen="true"></arg>
@@ -4591,6 +4586,13 @@
 			<arg name="sender" swt_gen="true"></arg>
 			<arg name="filenames" swt_gen="true"></arg>
 		</method>
+		<method selector="applicationDockMenu:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+		</method>
+		<method selector="applicationShouldHandleReopen:hasVisibleWindows:" swt_gen="true">
+			<arg name="sender" swt_gen="true"></arg>
+			<arg name="flag" swt_gen="true"></arg>
+		</method>
 		<method selector="applicationShouldTerminate:" swt_gen="true">
 			<arg name="sender" swt_gen="true"></arg>
 		</method>
@@ -4933,26 +4935,26 @@
 	</informal_protocol>
 	<class name="NSSecureTextField" swt_gen="true" swt_superclass="NSTextField"></class>
 	<informal_protocol name="NSTextInput" swt_gen="true">
-		<method selector="markedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
+		<method selector="hasMarkedText" swt_gen="true"></method>
 		<method selector="insertText:" swt_gen="true">
 			<arg name="aString" swt_gen="true"></arg>
 		</method>
 		<method selector="unmarkText" swt_gen="true"></method>
-		<method selector="hasMarkedText" swt_gen="true"></method>
-		<method selector="validAttributesForMarkedText" swt_gen="true"></method>
+		<method selector="selectedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
 		<method selector="characterIndexForPoint:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="thePoint" swt_gen="true"></arg>
-		</method>
-		<method selector="attributedSubstringFromRange:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg name="theRange" swt_gen="true"></arg>
-		</method>
-		<method selector="selectedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
-		<method selector="setMarkedText:selectedRange:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg name="selRange" swt_gen="true"></arg>
-			<arg name="aString" swt_gen="true"></arg>
 		</method>
 		<method selector="firstRectForCharacterRange:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg name="theRange" swt_gen="true"></arg>
 		</method>
+		<method selector="validAttributesForMarkedText" swt_gen="true"></method>
+		<method selector="attributedSubstringFromRange:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg name="theRange" swt_gen="true"></arg>
+		</method>
+		<method selector="setMarkedText:selectedRange:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg name="selRange" swt_gen="true"></arg>
+			<arg name="aString" swt_gen="true"></arg>
+		</method>
+		<method selector="markedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
 	</informal_protocol>
 </signatures>

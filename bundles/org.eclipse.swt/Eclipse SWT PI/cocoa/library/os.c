@@ -8516,29 +8516,6 @@ fail:
 }
 #endif
 
-#if (!defined(NO_objc_1msgSend_1bool__IIIZ) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJJZ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IIIZ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jboolean arg3)
-#else
-JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJZ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jboolean arg3)
-#endif
-{
-	jboolean rc = 0;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IIIZ_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJJZ_FUNC);
-#endif
-	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jintLong, jboolean))objc_msgSend_bool)(arg0, arg1, arg2, arg3);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIIZ_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJZ_FUNC);
-#endif
-	return rc;
-}
-#endif
-
 #if (!defined(NO_objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)
