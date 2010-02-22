@@ -2185,12 +2185,12 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispParent.
 	 */
 	int get_accParent(int /*long*/ ppdispParent) {
-		// TODO: Do we need getParent API? Returning 'parent', or proxy's parent should be ok?
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
 			/* Currently, we don't expose this as API. Forward to the proxy. */
 			code = iaccessible.get_accParent(ppdispParent);
-		} else if (parent != null) {
+		}
+		if (parent != null) {
 			/* For lightweight accessibles, return the accessible's parent. */
 			parent.AddRef();
 			setPtrVARIANT(ppdispParent, COM.VT_DISPATCH, parent.getAddress());
