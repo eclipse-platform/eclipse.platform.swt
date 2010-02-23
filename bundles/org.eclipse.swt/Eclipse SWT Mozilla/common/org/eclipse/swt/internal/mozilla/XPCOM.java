@@ -44,9 +44,9 @@ public class XPCOM extends C {
 	public static final String DOMEVENT_MOUSEWHEEL = "DOMMouseScroll"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEOVER = "mouseover"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEOUT = "mouseout"; //$NON-NLS-1$
-	public static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
 	public static final String DOMEVENT_KEYDOWN = "keydown"; //$NON-NLS-1$
 	public static final String DOMEVENT_KEYPRESS = "keypress"; //$NON-NLS-1$
+	public static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
 	
 	/* CID constants */
 	public static final nsID EXTERNAL_CID = new nsID ("f2c59ad0-bd76-11dd-ad8b-0800200c9a66"); //$NON-NLS-1$
