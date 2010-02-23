@@ -256,8 +256,8 @@ int Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName,
 	gridLayout.verticalSpacing = 20;
 	shell.setLayout (gridLayout);
 	msg = Compatibility.getMessage ("SWT_Download_Location", new Object[] {filename, url}); //$NON-NLS-1$
-	new Label (shell, SWT.SIMPLE).setText (msg);
-	status = new Label (shell, SWT.SIMPLE);
+	new Label (shell, SWT.WRAP).setText (msg);
+	status = new Label (shell, SWT.WRAP);
 	msg = Compatibility.getMessage ("SWT_Download_Started"); //$NON-NLS-1$
 	status.setText (msg);
 	GridData data = new GridData ();
