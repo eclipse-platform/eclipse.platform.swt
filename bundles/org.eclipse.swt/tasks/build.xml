@@ -683,6 +683,7 @@
 	<!-- Set swt_tag to the current tag in the swt map file -->
 	<target name="get_tag" unless="swt_tag">
 		<property name="tmpdir" value="."/>
+		<property name="cvsRsh" value="plink"/>
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
