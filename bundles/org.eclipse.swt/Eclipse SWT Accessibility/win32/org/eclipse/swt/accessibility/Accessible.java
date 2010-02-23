@@ -2616,11 +2616,16 @@ public class Accessible {
 	/* IAccessible2::get_groupPosition([out] pGroupLevel, [out] pSimilarItemsInGroup, [out] pPositionInGroup) */
 	int get_groupPosition(int /*long*/ pGroupLevel, int /*long*/ pSimilarItemsInGroup, int /*long*/ pPositionInGroup) {
 		// TODO: handle where possible - maybe add AccessibleGroup later
+		//get the role
+		//if it has role tree, then the level is the value else 0 (for N/A)
 //		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
+		//get the children of the parent
+		//collect all children with the same role
 //		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
+		//find this guy's index in the collection
 //		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
 		return COM.S_OK;
-		// TODO: @retval S_OK if at least one value is valid@retval S_FALSE if no values are valid
+		// TODO: @retval S_OK if at least one value is valid @retval S_FALSE if no values are valid
 	}
 
 	/* IAccessible2::get_states([out] pStates) */
@@ -2637,43 +2642,39 @@ public class Accessible {
 
 	/* IAccessible2::get_extendedRole([out] pbstrExtendedRole) */
 	int get_extendedRole(int /*long*/ pbstrExtendedRole) {
-		// TODO: this feature is not supported.
+		/* This feature is not supported. */
 		setString(pbstrExtendedRole, null);
-		return COM.DISP_E_MEMBERNOTFOUND;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
+		return COM.S_FALSE;
 	}
 
 	/* IAccessible2::get_localizedExtendedRole([out] pbstrLocalizedExtendedRole) */
 	int get_localizedExtendedRole(int /*long*/ pbstrLocalizedExtendedRole) {
-		// TODO: this feature is not supported.
+		/* This feature is not supported. */
 		setString(pbstrLocalizedExtendedRole, null);
-		return COM.DISP_E_MEMBERNOTFOUND;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
+		return COM.S_FALSE;
 	}
 
 	/* IAccessible2::get_nExtendedStates([out] pNExtendedStates) */
 	int get_nExtendedStates(int /*long*/ pNExtendedStates) {
-		// TODO: this feature is not supported.
+		/* This feature is not supported. */
 		COM.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
-		return COM.DISP_E_MEMBERNOTFOUND;
+		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_extendedStates([in] maxExtendedStates, [out] ppbstrExtendedStates, [out] pNExtendedStates) */
 	int get_extendedStates(int maxExtendedStates, int /*long*/ ppbstrExtendedStates, int /*long*/ pNExtendedStates) {
-		// TODO: this feature is not supported.
+		/* This feature is not supported. */
 		setString(ppbstrExtendedStates, null);
 		COM.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
-		return COM.DISP_E_MEMBERNOTFOUND;
-		// TODO: @retval S_FALSE if there are no states, [out] values are NULL and 0 respectively
+		return COM.S_FALSE;
 	}
 
 	/* IAccessible2::get_localizedExtendedStates([in] maxLocalizedExtendedStates, [out] ppbstrLocalizedExtendedStates, [out] pNLocalizedExtendedStates) */
 	int get_localizedExtendedStates(int maxLocalizedExtendedStates, int /*long*/ ppbstrLocalizedExtendedStates, int /*long*/ pNLocalizedExtendedStates) {
-		// TODO: this feature is not supported.
+		/* This feature is not supported. */
 		setString(ppbstrLocalizedExtendedStates, null);
 		COM.MoveMemory(pNLocalizedExtendedStates, new int [] { 0 }, 4);
-		return COM.DISP_E_MEMBERNOTFOUND;
-		// TODO: @retval S_FALSE if there are no states, [out] values are NULL and 0 respectively
+		return COM.S_FALSE;
 	}
 
 	/* IAccessible2::get_uniqueID([out] pUniqueID) */
