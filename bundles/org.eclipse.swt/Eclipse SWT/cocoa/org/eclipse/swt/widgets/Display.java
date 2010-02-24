@@ -868,7 +868,6 @@ void createDisplay (DeviceData data) {
 		cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_quitRequested_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
@@ -878,6 +877,7 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_application_openFile_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_application_openFiles_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, appProc4, "@:@B");
+		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc4, "@:@B");
 		OS.objc_registerClassPair(cls);
 	}
 	if (!isEmbedded) {
@@ -945,7 +945,7 @@ void createMainMenu () {
 	appleMenu.addItem(NSMenuItem.separatorItem());
 	
 	title = new NSString(OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithFormat_, format.id, NSString.stringWith(SWT.getMessage("Quit")).id, appName.id));
-	menuItem = appleMenu.addItemWithTitle(title, OS.sel_quitRequested_, NSString.stringWith("q"));
+	menuItem = appleMenu.addItemWithTitle(title, OS.sel_applicationShouldTerminate_, NSString.stringWith("q"));
 	menuItem.setTarget(applicationDelegate);
 	
 	mainMenu.setSubmenu(appleMenu, appItem);
@@ -4281,7 +4281,7 @@ void updateQuitMenu () {
 		NSMenu sm = appitem.submenu();
 
 		// Normally this would be sel_terminate_ but we changed it so terminate: doesn't kill the app.
-		int /*long*/ quitIndex = sm.indexOfItemWithTarget(applicationDelegate, OS.sel_quitRequested_);
+		int /*long*/ quitIndex = sm.indexOfItemWithTarget(applicationDelegate, OS.sel_applicationShouldTerminate_);
 		
 		if (quitIndex != -1) {
 			NSMenuItem quitItem = sm.itemAtIndex(quitIndex);
@@ -4523,7 +4523,7 @@ void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*lo
 		
 		if (quitIndex != -1) {
 			NSMenuItem quitItem = sm.itemAtIndex(quitIndex);
-			quitItem.setAction(OS.sel_quitRequested_);
+			quitItem.setAction(OS.sel_applicationShouldTerminate_);
 		}
 	}
 }
@@ -4571,14 +4571,6 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 		application.hide(application);
 	} else if (sel == OS.sel_unhideAllApplications_) {
 		application.unhideAllApplications(application);
-	} else if (sel == OS.sel_quitRequested_) {
-		if (!display.disposing) {
-			Event event = new Event ();
-			display.sendEvent (SWT.Close, event);
-			if (event.doit) {
-				display.dispose();
-			}
-		}
 	} else if (sel == OS.sel_applicationDidBecomeActive_) {
 		display.applicationDidBecomeActive(id, sel, arg0);
 	} else if (sel == OS.sel_applicationDidResignActive_) {
@@ -4609,6 +4601,17 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 		} 
 		else if (sel == OS.sel_applicationShouldHandleReopen_hasVisibleWindows_) {
 			return 1;
+		}
+		else if (sel == OS.sel_applicationShouldTerminate_) {
+			if (!display.disposing) {
+				Event event = new Event ();
+				display.sendEvent (SWT.Close, event);
+				if (event.doit) {
+					display.dispose();
+					return OS.NSTerminateNow;
+				}
+			}
+			return OS.NSTerminateCancel;
 		}
 	}
 	return 0;

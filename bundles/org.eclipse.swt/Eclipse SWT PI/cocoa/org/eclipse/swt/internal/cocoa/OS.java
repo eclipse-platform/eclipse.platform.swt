@@ -51,7 +51,6 @@ public class OS extends C {
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
 	public static final int /*long*/ sel_callRunBeforeUnloadConfirmPanelWithMessage = sel_registerName("callRunBeforeUnloadConfirmPanelWithMessage:arg:");
-	public static final int /*long*/ sel_quitRequested_ = sel_registerName("quitRequested:");
 	public static final int /*long*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");
 	public static final int /*long*/ sel_panelDidEnd_returnCode_contextInfo_ = sel_registerName("panelDidEnd:returnCode:contextInfo:");
 	public static final int /*long*/ sel_updateOpenGLContext_ = sel_registerName("updateOpenGLContext:");
@@ -2085,6 +2084,8 @@ public static final int NSTableViewDropOn = 0;
 public static final int NSTableViewGridNone = 0;
 public static final int NSTableViewNoColumnAutoresizing = 0;
 public static final int NSTableViewSolidVerticalGridLineMask = 1;
+public static final int NSTerminateCancel = 0;
+public static final int NSTerminateNow = 1;
 public static final int NSTextFieldAndStepperDatePickerStyle = 0;
 public static final int NSTitledWindowMask = 1;
 public static final int NSUnderlineStyleDouble = 9;
