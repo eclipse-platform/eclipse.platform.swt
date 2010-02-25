@@ -875,6 +875,10 @@ boolean equals(float[] color1, float[] color2) {
 }
 
 void fillBackground (int control, int context, Rectangle bounds) {
+	fillBackground(control, context, bounds, 0, 0);
+}
+
+void fillBackground (int control, int context, Rectangle bounds, int tx, int ty) {
 	OS.CGContextSaveGState (context);
 	CGRect rect = new CGRect ();
 	if (bounds != null) {
@@ -889,14 +893,14 @@ void fillBackground (int control, int context, Rectangle bounds) {
 	if (widget != null && widget.backgroundImage != null) {
 		CGPoint pt = new CGPoint();
 		OS.HIViewConvertPoint (pt, control, widget.handle);
-		OS.CGContextTranslateCTM (context, -pt.x, -pt.y);
+		OS.CGContextTranslateCTM (context, -pt.x - tx, -pt.y - ty);
 		Pattern pattern = new Pattern (display, widget.backgroundImage);
 		GCData data = new GCData ();
 		data.device = display;
 		data.background = widget.getBackgroundColor ().handle;
 		GC gc = GC.carbon_new (context, data);
 		gc.setBackgroundPattern (pattern);
-		gc.fillRectangle ((int) (rect.x + pt.x), (int) (rect.y + pt.y), (int) rect.width, (int) rect.height);
+		gc.fillRectangle ((int) (rect.x + pt.x + tx), (int) (rect.y + pt.y + ty), (int) rect.width, (int) rect.height);
 		gc.dispose ();
 		pattern.dispose();
 	} else if (widget != null && widget.background != null) {

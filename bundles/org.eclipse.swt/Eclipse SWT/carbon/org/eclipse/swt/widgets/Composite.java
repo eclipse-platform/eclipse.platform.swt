@@ -268,6 +268,18 @@ void createScrolledHandle (int parentHandle) {
 	OS.HIObjectSetAccessibilityIgnored (handle, true);
 }
 
+public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Control control = findBackgroundControl ();
+	if (control != null) {
+		control.fillBackground (handle, gc.handle, new Rectangle (x, y, width, height), offsetX, offsetY);
+	} else {
+		gc.fillRectangle (x, y, width, height);
+	}
+}
+
 void drawBackground (int control, int context) {
 	if (control == scrolledHandle) {
 		Composite parent = this;
