@@ -355,32 +355,6 @@ public static void exec(String[] prog, String[] envp, String workingDir) throws 
 }
 
 /**
- * Execute progArray[0] in a separate platform process with the specified
- * environment and working directory if the underlying platform support
- * this.
- * <p>
- * If envp is null the new process inherits the environment of the caller.
- * <p>
- * 
- * @param progArray
- *            array containing the program to execute and its arguments
- * @param envp
- *            array of strings, each element of which has environment
- *            variable settings in format name=value.
- * @param dir
- *            the working directory of the new process, or null if the new
- *            process should inherit the working directory of the caller.
- * 
- * @exception IOException
- *                if the program cannot be executed
- * @exception SecurityException
- *                if the current SecurityManager disallows program execution
- */
-public static void exec(String[] prog, String[] envp, String workingDir) throws java.io.IOException{
-	throw new IOException();
-}
-
-/**
  * Returns the NLS'ed message for the given argument. This is only being
  * called from SWT.
  * 
