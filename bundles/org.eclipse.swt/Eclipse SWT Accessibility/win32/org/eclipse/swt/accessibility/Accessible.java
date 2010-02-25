@@ -2679,8 +2679,8 @@ public class Accessible {
 
 	/* IAccessible2::get_uniqueID([out] pUniqueID) */
 	int get_uniqueID(int /*long*/ pUniqueID) {
-		int uniqueID = getAddress();
-		COM.MoveMemory(pUniqueID, new int [] { uniqueID }, 4);
+		int /*long*/ uniqueID = getAddress();
+		COM.MoveMemory(pUniqueID, new int /*long*/ [] { uniqueID }, 4);
 		return COM.S_OK;
 	}
 
