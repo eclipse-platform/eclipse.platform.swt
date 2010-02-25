@@ -121,31 +121,7 @@ int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*lo
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
-	checkWidget ();
-	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	Control control = findBackgroundControl ();
-	if (control != null) {
-		NSRect rect = new NSRect();
-		rect.x = x;
-		rect.y = y;
-		rect.width = width;
-		rect.height = height;
-		int imgHeight = -1;
-		GCData data = gc.getGCData();
-		if (data.image != null) imgHeight =  data.image.getBounds().height;
-		NSGraphicsContext context = gc.handle;
-		if (data.flippedContext != null) {
-			NSGraphicsContext.static_saveGraphicsState();
-			NSGraphicsContext.setCurrentContext(context);
-		}
-		control.fillBackground (view, context, rect, imgHeight);
-		if (data.flippedContext != null) {
-			NSGraphicsContext.static_restoreGraphicsState();
-		}
-	} else {
-		gc.fillRectangle (x, y, width, height);
-	}
+	drawBackground(gc, x, y, width, height, 0, 0);
 }
 
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {

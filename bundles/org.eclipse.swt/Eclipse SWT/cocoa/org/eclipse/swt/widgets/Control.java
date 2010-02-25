@@ -1154,6 +1154,10 @@ NSView eventView () {
 }
 
 void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight) {
+	fillBackground(view, context, rect, imgHeight, 0, 0);
+}
+
+void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight, int tx, int ty) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
