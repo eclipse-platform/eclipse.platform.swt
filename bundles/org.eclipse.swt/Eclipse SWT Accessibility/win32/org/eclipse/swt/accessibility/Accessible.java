@@ -2193,7 +2193,7 @@ public class Accessible {
 		if (parent != null) {
 			/* For lightweight accessibles, return the accessible's parent. */
 			parent.AddRef();
-			setPtrVARIANT(ppdispParent, COM.VT_DISPATCH, parent.getAddress());
+			COM.MoveMemory(ppdispParent, new int /*long*/[] { parent.getAddress() }, OS.PTR_SIZEOF);
 			code = COM.S_OK;
 		}
 		return code;
@@ -2679,37 +2679,44 @@ public class Accessible {
 
 	/* IAccessible2::get_uniqueID([out] pUniqueID) */
 	int get_uniqueID(int /*long*/ pUniqueID) {
-		// TODO: just return a hash on the Accessible or something
-		//COM.MoveMemory(pUniqueID, new int [] { uniqueID }, 4);
+		int uniqueID = getAddress();
+		COM.MoveMemory(pUniqueID, new int [] { uniqueID }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_windowHandle([out] pWindowHandle) */
 	int get_windowHandle(int /*long*/ pWindowHandle) {
-		// TODO: platform-specific - return HWND on Windows
-		//COM.MoveMemory(pWindowHandle, new int /*long*/ [] { windowHandle }, OS.PTR_SIZEOF);
+		COM.MoveMemory(pWindowHandle, new int /*long*/ [] { control.handle }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_indexInParent([out] pIndexInParent) */
 	int get_indexInParent(int /*long*/ pIndexInParent) {
-		// TODO: look up index in *parent's* AccessibleControl.getChildren
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = ACC.CHILDID_SELF;
+		event.childID = ACC.CHILDID_CHILD_INDEX;
+		event.detail = -1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.getChildren(event);
+			listener.getChild(event);
 		}
-//TODO		Object [] siblings = event.children;
-		int indexInParent = 0;
+		int indexInParent = event.detail;
+		if (indexInParent == -1) {
+			/* The application did not implement CHILDID_CHILD_INDEX,
+			 * so determine the index by looping through the parent's
+			 * children looking for this Accessible. This may be slow,
+			 * so applications are strongly encouraged to implement
+			 * getChild for CHILDID_CHILD_INDEX.
+			 */
+			// TODO
+		}	
+
 		COM.MoveMemory(pIndexInParent, new int [] { indexInParent }, 4);
-		return COM.S_OK;
-		// TODO: @retval S_FALSE if no parent, [out] value is -1
+		return indexInParent == -1 ? COM.S_FALSE : COM.S_OK;
 	}
 
 	/* IAccessible2::get_locale([out] pLocale) */
 	int get_locale(int /*long*/ pLocale) {
-		// TODO: just return current locale - maybe add later in AccessibleLocale
+		// TODO: just return current locale - maybe add AccessibleLocale later
 		// Note: need to return an IA2Locale struct: String language, String country, String variant
 		//COM.MoveMemory(pLocale, new int [] { locale }, 4);
 		return COM.S_OK;
