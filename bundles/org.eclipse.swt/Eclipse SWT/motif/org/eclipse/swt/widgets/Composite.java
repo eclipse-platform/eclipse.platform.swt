@@ -300,7 +300,10 @@ void deregister () {
 	super.deregister ();
 	if (focusHandle != 0) display.removeWidget (focusHandle);
 }
-void drawBackground (GC gc, int x, int y, int width, int height) {
+public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Control control = findBackgroundControl ();
 	if (control != null) {
 		GCData data = gc.getGCData ();
@@ -313,9 +316,9 @@ void drawBackground (GC gc, int x, int y, int width, int height) {
 				short [] control_x = new short [1], control_y = new short [1];
 				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
 				int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
-				Cairo.cairo_translate (cairo, -tileX, -tileY);
-				x += tileX;
-				y += tileY;
+				Cairo.cairo_translate (cairo, -tileX - offsetX, -tileY - offsetY);
+				x += tileX + offsetX;
+				y += tileY + offsetY;
 				int xDisplay = OS.XtDisplay (handle);
 				int xVisual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
 				int xDrawable = control.backgroundImage.pixmap;				
@@ -348,8 +351,9 @@ void drawBackground (GC gc, int x, int y, int width, int height) {
 				short [] control_x = new short [1], control_y = new short [1];
 				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
 				int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
+				System.out.println(tileX + ":" + tileY);
 				OS.XSetFillStyle (xDisplay, xGC, OS.FillTiled);
-				OS.XSetTSOrigin (xDisplay, xGC, -tileX, -tileY);
+				OS.XSetTSOrigin (xDisplay, xGC, -tileX - offsetX, -tileY - offsetY);
 				OS.XSetTile (xDisplay, xGC, control.backgroundImage.pixmap);
 				OS.XFillRectangle (data.display, data.drawable, xGC, x, y, width, height);
 				OS.XSetFillStyle (xDisplay, xGC, values.fill_style);
@@ -481,6 +485,10 @@ public Control [] getChildren () {
 }
 public Rectangle getClientArea () {
 	checkWidget();
+	return _getClientArea();
+}
+
+Rectangle _getClientArea() {
 	/*
 	* Bug in Motif. For some reason, if a form has not been realized,
 	* calling XtResizeWidget () on the form does not lay out properly.
@@ -1406,7 +1414,7 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	GC paintGC = null;
 	Image image = null;
 	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
-		Rectangle client = getClientArea ();
+		Rectangle client = _getClientArea ();
 		int width = Math.max (1, Math.min (client.width, rect.x + rect.width));
 		int height = Math.max (1, Math.min (client.height, rect.y + rect.height));
 		image = new Image (display, width, height);
@@ -1421,7 +1429,7 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 			/* This code is intentionaly commented because it is too slow to copy bits from the screen */
 //			paintGC.copyArea(image, 0, 0);
 		} else {
-			drawBackground (gc, 0, 0, width, height);
+			drawBackground (gc, 0, 0, width, height, 0, 0);
 		}
 	}
 	Event event = new Event ();
