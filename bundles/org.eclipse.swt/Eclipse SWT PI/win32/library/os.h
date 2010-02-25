@@ -559,6 +559,8 @@
 #define NO_VkKeyScanA
 #define NO_VkKeyScanW
 #define NO_VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2
+#define NO_VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I
+#define NO_VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I
 #define NO_WaitMessage
 #define NO_WindowFromDC
 
