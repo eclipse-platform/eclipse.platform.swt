@@ -330,7 +330,10 @@ void deregister () {
 	if (socketHandle != 0) display.removeWidget (socketHandle);
 }
 
-void drawBackground (GC gc, int x, int y, int width, int height) {
+public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Control control = findBackgroundControl ();
 	if (control != null) {
 		GCData data = gc.getGCData ();
@@ -339,9 +342,9 @@ void drawBackground (GC gc, int x, int y, int width, int height) {
 			Cairo.cairo_save (cairo);
 			if (control.backgroundImage != null) {
 				Point pt = display.map (this, control, 0, 0);
-				Cairo.cairo_translate (cairo, -pt.x, -pt.y);
-				x += pt.x;
-				y += pt.y;
+				Cairo.cairo_translate (cairo, -pt.x - offsetX, -pt.y - offsetY);
+				x += pt.x + offsetX;
+				y += pt.y + offsetY;
 				int /*long*/ xDisplay = OS.GDK_DISPLAY ();
 				int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
 				int /*long*/ drawable = control.backgroundImage.pixmap;
@@ -374,7 +377,7 @@ void drawBackground (GC gc, int x, int y, int width, int height) {
 			if (control.backgroundImage != null) {
 				Point pt = display.map (this, control, 0, 0);
 				OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-				OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
+				OS.gdk_gc_set_ts_origin (gdkGC, -pt.x - offsetX, -pt.y - offsetY);
 				OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
 				OS.gdk_draw_rectangle (data.drawable, gdkGC, 1, x, y, width, height);
 				OS.gdk_gc_set_fill (gdkGC, values.fill);

@@ -96,10 +96,7 @@ public Canvas (Composite parent, int style) {
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
-	checkWidget ();
-	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	super.drawBackground (gc, x, y, width, height);
+	drawBackground (gc, x, y, width, height, 0, 0);
 }
 
 /**
