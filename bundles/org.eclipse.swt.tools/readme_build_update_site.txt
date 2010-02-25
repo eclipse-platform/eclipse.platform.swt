@@ -1,4 +1,4 @@
-Instructions to build the update size:
+Instructions to build the update site:
 
 1) Check out
 	:extssh:<user>@dev.eclipse.org:/cvsroot/eclipse/org.eclipse.swt.tools

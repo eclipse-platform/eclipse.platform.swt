@@ -12,7 +12,7 @@ package org.eclipse.swt.tools.internal;
 
 public interface JNIField extends JNIItem {
 	
-public static final String[] FLAGS = {FLAG_NO_GEN, FLAG_NO_WINCE};
+public static final String[] FLAGS = {FLAG_NO_GEN, FLAG_NO_WINCE, FLAG_STRUCT};
 
 public String getName();
 	

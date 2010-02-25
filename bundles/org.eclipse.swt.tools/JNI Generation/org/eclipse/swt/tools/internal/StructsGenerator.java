@@ -359,8 +359,12 @@ void generateGetFields(JNIClass clazz) {
 					output(")");
 				}
 				output(", (");
-				output(type.getTypeSignature4(!type.equals(type64), false));				
-				output(")lpStruct->");
+				output(type.getTypeSignature4(!type.equals(type64), false));
+				output(")");
+				if (field.getFlag(FLAG_STRUCT)) {
+					output("&");
+				}
+				output("lpStruct->");
 				output(accessor);
 				outputln(");");
 				output("\t}");
@@ -509,7 +513,11 @@ void generateSetFields(JNIClass clazz) {
 				}
 				output(", (");
 				output(type.getTypeSignature4(!type.equals(type64), false));				
-				output(")lpStruct->");
+				output(")");
+				if (field.getFlag(FLAG_STRUCT)) {
+					output("&");
+				}
+				output("lpStruct->");
 				output(accessor);
 				outputln(");");
 				output("\t}");
