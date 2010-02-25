@@ -1412,10 +1412,12 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ l
 				OS.SetRect (rect, rect.left, rect.top, rect.right, rect.top + height);
 				OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 			}
-			while (rect.bottom < nmcd.bottom) {
-				int top = rect.top + height;
-				OS.SetRect (rect, rect.left, top, rect.right, top + height);
-				OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+			if (height != 0) {
+				while (rect.bottom < nmcd.bottom) {
+					int top = rect.top + height;
+					OS.SetRect (rect, rect.left, top, rect.right, top + height);
+					OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+				}
 			}
 		}
 	}
