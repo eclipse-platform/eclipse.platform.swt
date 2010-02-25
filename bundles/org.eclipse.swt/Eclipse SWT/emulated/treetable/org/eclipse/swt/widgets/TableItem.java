@@ -1146,11 +1146,11 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 
 	/* draw the parent background color/image of this cell */
 	if (column == null) {
-		parent.drawBackground (gc, 0, y, clientArea.width, itemHeight);
+		parent.drawBackground (gc, 0, y, clientArea.width, itemHeight, 0, 0);
 	} else {
 		int fillWidth = cellBounds.width;
 		if (parent.linesVisible) fillWidth--;
-		parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height, 0, 0);
 	}
 
 	boolean isSelected = isSelected ();
