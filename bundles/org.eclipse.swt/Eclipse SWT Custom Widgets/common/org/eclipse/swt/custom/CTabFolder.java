@@ -298,29 +298,9 @@ static int checkStyle (Composite parent, int style) {
 	// MULTI is the default
 	if ((style & SWT.MULTI) != 0) style = style & ~SWT.SINGLE;
 	// reduce the flash by not redrawing the entire area on a Resize event
-	style |= SWT.NO_REDRAW_RESIZE;
-	//TEMPORARY CODE
-	/*
-	 * The default background on carbon and some GTK themes is not a solid color 
-	 * but a texture.  To show the correct default background, we must allow
-	 * the operating system to draw it and therefore, we can not use the 
-	 * NO_BACKGROUND style.  The NO_BACKGROUND style is not required on platforms
-	 * that use double buffering which is true in both of these cases.
-	 */
-	String platform = SWT.getPlatform();
-	if ("cocoa".equals(platform) || "carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
-	
-	//TEMPORARY CODE
-	/*
-	 * In Right To Left orientation on Windows, all GC calls that use a brush are drawing 
-	 * offset by one pixel.  This results in some parts of the CTabFolder not drawing correctly.
-	 * To alleviate some of the appearance problems, allow the OS to draw the background.
-	 * This does not draw correctly but the result is less obviously wrong.
-	 */
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) return style;
-	if ((parent.getStyle() & SWT.MIRRORED) != 0 && (style & SWT.LEFT_TO_RIGHT) == 0) return style;
-	
-	return style | SWT.NO_BACKGROUND;
+	style |= SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED;
+
+	return style;
 }
 
 /**
@@ -764,7 +744,19 @@ public boolean getMRUVisible() {
 	checkWidget();
 	return mru;
 }
-/*public*/ CTabFolderRenderer getRenderer() {
+/**
+ * WARNING: API UNDER CONSTRUCTION
+ * 
+ * Returns the receiver's renderer.
+ *
+ * @exception SWTException <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ *
+ * @since 3.6
+ */
+public CTabFolderRenderer getRenderer() {
 	checkWidget();
 	return renderer;
 }
@@ -772,7 +764,7 @@ int getRightItemEdge (GC gc){
 	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0);
 	int x = getSize().x - (trim.width + trim.x) - 3; //TODO: add setter for spacing?
 	if (showMin) x -= renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc).x;
-	if (showMax) x -= renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc).x;;
+	if (showMax) x -= renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc).x;
 	if (showChevron) x -= renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc).x;
 	if (topRight != null && topRightAlignment != SWT.FILL) {
 		Point rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -1905,6 +1897,8 @@ public void setBackground (Color color) {
 	redraw();
 }
 /**
+ * WARNING: API UNDER CONSTRUCTION
+ * 
  * Specify a gradient of colours to be drawn in the background of the unselected tabs.
  * For example to draw a gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
@@ -1929,12 +1923,14 @@ public void setBackground (Color color) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- * @since 3.0
+ * @since 3.6
  */
-void setBackground(Color[] colors, int[] percents) {
+public void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
 }
 /**
+ * WARNING: API UNDER CONSTRUCTION
+ * 
  * Specify a gradient of colours to be drawn in the background of the unselected tab.
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
@@ -1961,9 +1957,9 @@ void setBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- * @since 3.0
+ * @since 3.6
  */
-void setBackground(Color[] colors, int[] percents, boolean vertical) {
+public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
@@ -2304,7 +2300,7 @@ boolean setItemLocation(GC gc) {
 			width += item.width;
 			item.showing = i == 0 ? true : item.width > 0 && width <= maxWidth;
 		}
-		int x = 0;
+		int x = -renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0).x;
 		int defaultX = getDisplay().getBounds().width + 10; // off screen
 		firstIndex = items.length - 1;
 		for (int i = 0; i < items.length; i++) {
@@ -2619,15 +2615,36 @@ public void setMRUVisible(boolean show) {
 		if (updateItems()) redrawTabs();
 	}
 }
-/*public*/ void setRenderer(CTabFolderRenderer renderer) {
+/**
+ * WARNING: API UNDER CONSTRUCTION
+ * 
+ * Sets the renderer which is associated with the receiver to be
+ * the argument which may be null. In the case of null, the default
+ * renderer is used.
+ *
+ * @param renderer a new renderer
+ * 
+ * @exception SWTException <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ *
+ * @since 3.6
+ */
+public void setRenderer(CTabFolderRenderer renderer) {
 	checkWidget();
-	if (this.renderer != null) {
-		this.renderer.dispose();
-	}
-	if (renderer == null) {
-		renderer = new CTabFolderRenderer(this);
-	}
+	if (this.renderer == renderer) return;
+	if (this.renderer != null) this.renderer.dispose();
+	if (renderer == null) renderer = new CTabFolderRenderer(this);
 	this.renderer = renderer;
+	updateTabHeight(false);
+	Rectangle rectBefore = getClientArea();
+	updateItems();
+	Rectangle rectAfter = getClientArea();
+	if (!rectBefore.equals(rectAfter)) {
+		notifyListeners(SWT.Resize, new Event());
+	}
+	redraw();
 }
 /**
  * Set the selection to the tab at the specified item.

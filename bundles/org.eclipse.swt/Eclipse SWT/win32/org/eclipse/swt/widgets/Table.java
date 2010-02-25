@@ -652,7 +652,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ lP
 			if (control != null && control.backgroundImage != null) {
 				RECT rect = new RECT ();
 				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-				fillImageBackground (nmcd.hdc, control, rect);
+				fillImageBackground (nmcd.hdc, control, rect, 0, 0);
 			} else {
 				if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 					if (OS.IsWindowEnabled (handle)) {

@@ -14,7 +14,12 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-/*public*/ class CTabFolderRenderer {
+/**
+* WARNING: API UNDER CONSTRUCTION
+*
+* @since 3.6
+*/
+public class CTabFolderRenderer {
 	
 	protected CTabFolder parent;
 	
@@ -94,10 +99,11 @@ import org.eclipse.swt.widgets.*;
 	public static final int PART_BODY = -1;
 	public static final int PART_HEADER = -2;
 	public static final int PART_BORDER = -3;
-	public static final int PART_MAX_BUTTON = -4;
-	public static final int PART_MIN_BUTTON = -5;
-	public static final int PART_CHEVRON_BUTTON = -6;
-	public static final int PART_CLOSE_BUTTON = -7;
+	public static final int PART_BACKGROUND = -4;
+	public static final int PART_MAX_BUTTON = -5;
+	public static final int PART_MIN_BUTTON = -6;
+	public static final int PART_CHEVRON_BUTTON = -7;
+	public static final int PART_CLOSE_BUTTON = -8;
 
 	public static final int MINIMUM_SIZE = 1 << 24; //TODO: Should this be a state?
 
@@ -391,6 +397,9 @@ import org.eclipse.swt.widgets.*;
 	
 	protected void draw (int part, int state, Rectangle bounds, GC gc) {
 		switch (part) {
+			case PART_BACKGROUND:
+				this.drawBackground(gc, bounds, state);
+				break;
 			case PART_BODY:
 				drawBody(gc, bounds, state);
 				break;
@@ -419,6 +428,17 @@ import org.eclipse.swt.widgets.*;
 		}
 	}
 	
+	void drawBackground(GC gc, Rectangle bounds, int state) {
+		boolean selected = (state & SWT.SELECTED) != 0;
+		Color defaultBackground = selected ? parent.selectionBackground : parent.getBackground();
+		Image image = selected ? parent.selectionBgImage : null;
+		Color[] colors = selected ? parent.selectionGradientColors : parent.gradientColors;
+		int[] percents = selected ? parent.selectionGradientPercents : parent.gradientPercents;
+		boolean vertical = selected ? parent.selectionGradientVertical : parent.gradientVertical; 
+		
+		drawBackground(gc, null, bounds.x, bounds.y, bounds.width, bounds.height, defaultBackground, image, colors, percents, vertical);
+	}
+	
 	void drawBackground(GC gc, int[] shape, boolean selected) {
 		Color defaultBackground = selected ? parent.selectionBackground : parent.getBackground();
 		Image image = selected ? parent.selectionBgImage : null;
@@ -442,13 +462,15 @@ import org.eclipse.swt.widgets.*;
 	}
 	
 	void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
-		Region clipping = new Region();
-		gc.getClipping(clipping);
-		Region region = new Region();
-		region.add(shape);
-		region.intersect(clipping);
-		gc.setClipping(region);
-		
+		Region clipping = null, region = null;
+		if (shape != null) { 
+			clipping = new Region();
+			gc.getClipping(clipping);
+			region = new Region();
+			region.add(shape);
+			region.intersect(clipping);
+			gc.setClipping(region);
+		}
 		if (image != null) {
 			// draw the background image in shape
 			gc.setBackground(defaultBackground);
@@ -529,9 +551,11 @@ import org.eclipse.swt.widgets.*;
 				gc.fillRectangle(x, y, width, height);
 			}
 		}
-		gc.setClipping(clipping);
-		clipping.dispose();
-		region.dispose();
+		if (shape != null) {
+			gc.setClipping(clipping);
+			clipping.dispose();
+			region.dispose();
+		}
 	}
 	
 	/*

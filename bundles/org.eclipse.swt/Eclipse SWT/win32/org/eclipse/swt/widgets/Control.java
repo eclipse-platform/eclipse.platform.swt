@@ -804,14 +804,14 @@ void drawBackground (int /*long*/ hDC) {
 }
 
 void drawBackground (int /*long*/ hDC, RECT rect) {
-	drawBackground (hDC, rect, -1);
+	drawBackground (hDC, rect, -1, 0, 0);
 }
 
-void drawBackground (int /*long*/ hDC, RECT rect, int pixel) {
+void drawBackground (int /*long*/ hDC, RECT rect, int pixel, int tx, int ty) {
 	Control control = findBackgroundControl ();
 	if (control != null) {
 		if (control.backgroundImage != null) {
-			fillImageBackground (hDC, control, rect);
+			fillImageBackground (hDC, control, rect, tx, ty);
 			return;
 		}
 		pixel = control.getBackgroundPixel ();
@@ -831,14 +831,14 @@ void drawBackground (int /*long*/ hDC, RECT rect, int pixel) {
 	fillBackground (hDC, pixel, rect);
 }
 
-void drawImageBackground (int /*long*/ hDC, int /*long*/ hwnd, int /*long*/ hBitmap, RECT rect) {
+void drawImageBackground (int /*long*/ hDC, int /*long*/ hwnd, int /*long*/ hBitmap, RECT rect, int tx, int ty) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (hwnd, rect2);
 	OS.MapWindowPoints (hwnd, handle, rect2, 2);
 	int /*long*/ hBrush = findBrush (hBitmap, OS.BS_PATTERN);
 	POINT lpPoint = new POINT ();
 	OS.GetWindowOrgEx (hDC, lpPoint);
-	OS.SetBrushOrgEx (hDC, -rect2.left - lpPoint.x, -rect2.top - lpPoint.y, lpPoint);
+	OS.SetBrushOrgEx (hDC, -rect2.left - lpPoint.x - tx, -rect2.top - lpPoint.y - ty, lpPoint);
 	int /*long*/ hOldBrush = OS.SelectObject (hDC, hBrush);
 	OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 	OS.SetBrushOrgEx (hDC, lpPoint.x, lpPoint.y, null);
@@ -867,12 +867,12 @@ void fillBackground (int /*long*/ hDC, int pixel, RECT rect) {
 	OS.FillRect (hDC, rect, findBrush (pixel, OS.BS_SOLID));
 }
 
-void fillImageBackground (int /*long*/ hDC, Control control, RECT rect) {
+void fillImageBackground (int /*long*/ hDC, Control control, RECT rect, int tx, int ty) {
 	if (rect.left > rect.right || rect.top > rect.bottom) return;
 	if (control != null) {
 		Image image = control.backgroundImage;
 		if (image != null) {
-			control.drawImageBackground (hDC, handle, image.handle, rect);
+			control.drawImageBackground (hDC, handle, image.handle, rect, tx, ty);
 		}
 	}
 }

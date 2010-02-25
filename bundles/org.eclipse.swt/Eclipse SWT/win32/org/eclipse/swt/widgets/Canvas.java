@@ -112,14 +112,7 @@ void clearArea (int x, int y, int width, int height) {
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
-	checkWidget ();
-	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	RECT rect = new RECT ();
-	OS.SetRect (rect, x, y, x + width, y + height);
-	int /*long*/ hDC = gc.handle;
-	int pixel = background == -1 ? gc.getBackground ().handle : -1;
-	drawBackground (hDC, rect, pixel);
+	drawBackground(gc, x, y, width, height, 0, 0);
 }
 
 /**

@@ -719,9 +719,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 							if (i == 0) {
 								int right = Math.min (rect.right, width);
 								OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
-								if (drawBackground) fillImageBackground (hDC, control, rect);
+								if (drawBackground) fillImageBackground (hDC, control, rect, 0, 0);
 							} else {
-								if (drawBackground) fillImageBackground (hDC, control, rect);
+								if (drawBackground) fillImageBackground (hDC, control, rect, 0, 0);
 							}
 						}
 					}
@@ -984,7 +984,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 			if (clrSortBk != -1) {
-				drawBackground (hDC, cellRect, clrSortBk);
+				drawBackground (hDC, cellRect, clrSortBk, 0, 0);
 			} else {
 				if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
 					drawBackground (hDC, rect);
