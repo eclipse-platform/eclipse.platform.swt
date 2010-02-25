@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -6274,6 +6274,46 @@ void setPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMA
 	(*env)->SetIntLongField(env, lpObject, PROCESS_INFORMATIONFc.hThread, (jintLong)lpStruct->hThread);
 	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwProcessId, (jint)lpStruct->dwProcessId);
 	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwThreadId, (jint)lpStruct->dwThreadId);
+}
+#endif
+
+#ifndef NO_PROPERTYKEY
+typedef struct PROPERTYKEY_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID fmtid, pid;
+} PROPERTYKEY_FID_CACHE;
+
+PROPERTYKEY_FID_CACHE PROPERTYKEYFc;
+
+void cachePROPERTYKEYFields(JNIEnv *env, jobject lpObject)
+{
+	if (PROPERTYKEYFc.cached) return;
+	PROPERTYKEYFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PROPERTYKEYFc.fmtid = (*env)->GetFieldID(env, PROPERTYKEYFc.clazz, "fmtid", "[B");
+	PROPERTYKEYFc.pid = (*env)->GetFieldID(env, PROPERTYKEYFc.clazz, "pid", "I");
+	PROPERTYKEYFc.cached = 1;
+}
+
+PROPERTYKEY *getPROPERTYKEYFields(JNIEnv *env, jobject lpObject, PROPERTYKEY *lpStruct)
+{
+	if (!PROPERTYKEYFc.cached) cachePROPERTYKEYFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PROPERTYKEYFc.fmtid);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fmtid), (jbyte *)&lpStruct->fmtid);
+	}
+	lpStruct->pid = (*env)->GetIntField(env, lpObject, PROPERTYKEYFc.pid);
+	return lpStruct;
+}
+
+void setPROPERTYKEYFields(JNIEnv *env, jobject lpObject, PROPERTYKEY *lpStruct)
+{
+	if (!PROPERTYKEYFc.cached) cachePROPERTYKEYFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PROPERTYKEYFc.fmtid);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fmtid), (jbyte *)&lpStruct->fmtid);
+	}
+	(*env)->SetIntField(env, lpObject, PROPERTYKEYFc.pid, (jint)lpStruct->pid);
 }
 #endif
 

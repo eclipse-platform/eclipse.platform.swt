@@ -336,11 +336,6 @@ typedef enum {
 	VtblCall__IJJI_3J_FUNC,
 #endif
 #ifndef JNI64
-	VtblCall__IIJJ_FUNC,
-#else
-	VtblCall__IJJJ_FUNC,
-#endif
-#ifndef JNI64
 	VtblCall__IIJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J_FUNC,
 #else
 	VtblCall__IJJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J_FUNC,
@@ -504,16 +499,6 @@ typedef enum {
 	VtblCall__IIZ_FUNC,
 #else
 	VtblCall__IJZ_FUNC,
-#endif
-#ifndef JNI64
-	VtblCall__II_3C_FUNC,
-#else
-	VtblCall__IJ_3C_FUNC,
-#endif
-#ifndef JNI64
-	VtblCall__II_3CI_FUNC,
-#else
-	VtblCall__IJ_3CI_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__II_3CIIII_3I_FUNC,

@@ -2005,6 +2005,10 @@ public class OS extends C {
 	public static final int VK_APP4 = 0xc4;
 	public static final int VK_APP5 = 0xc5;
 	public static final int VK_APP6 = 0xc6;
+	public static final int VT_BOOL = 11;
+	public static final int VT_LPWSTR = 31;
+	public static final short VARIANT_TRUE = -1;
+	public static final short VARIANT_FALSE = 0;
 	public static final String WC_HEADER = "SysHeader32"; //$NON-NLS-1$
 	public static final String WC_LINK = "SysLink"; //$NON-NLS-1$
 	public static final String WC_LISTVIEW = "SysListView32"; //$NON-NLS-1$
@@ -2272,6 +2276,8 @@ public static final native int PANOSE_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
 public static final native int PROCESS_INFORMATION_sizeof ();
+public static final native int PROPVARIANT_sizeof ();
+public static final native int PROPERTYKEY_sizeof ();
 public static final native int REBARBANDINFO_sizeof ();
 public static final native int RECT_sizeof ();
 public static final native int SAFEARRAY_sizeof ();
@@ -5505,6 +5511,8 @@ public static final native boolean PrintDlgA (PRINTDLG lppd);
  * @param hdcBlt cast=(HDC)
  */
 public static final native boolean PrintWindow (int /*long*/ hwnd, int /*long*/ hdcBlt, int nFlags);
+/** @method flags=dynamic */
+public static final native int PSPropertyKeyFromString (char[] pszString, PROPERTYKEY pkey);
 /**
  * @param rect flags=no_out
  * @param pt flags=no_out struct
@@ -6244,6 +6252,8 @@ public static final native int /*long*/ SetCapture (int /*long*/ hWnd);
 public static final native boolean SetCaretPos (int X, int Y);
 /** @param hMem cast=(HANDLE) */
 public static final native int /*long*/ SetClipboardData (int uFormat, int /*long*/ hMem);
+/** @method flags=dynamic */
+public static final native int SetCurrentProcessExplicitAppUserModelID (char[] AppID);
 /** @param hCursor cast=(HCURSOR) */
 public static final native int /*long*/ SetCursor (int /*long*/ hCursor);
 public static final native boolean SetCursorPos (int X, int Y);
@@ -6606,6 +6616,10 @@ public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int 
 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int[] arg0, byte[] arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, char[] arg0);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, PROPERTYKEY arg0, int arg1);
 
 public static final native boolean WaitMessage ();
 /**

@@ -1174,6 +1174,9 @@ typedef enum {
 	PRIMARYLANGID_FUNC,
 	PRINTDLG_1sizeof_FUNC,
 	PROCESS_1INFORMATION_1sizeof_FUNC,
+	PROPERTYKEY_1sizeof_FUNC,
+	PROPVARIANT_1sizeof_FUNC,
+	PSPropertyKeyFromString_FUNC,
 	PatBlt_FUNC,
 	PathIsExe_FUNC,
 	PeekMessageA_FUNC,
@@ -1645,6 +1648,7 @@ typedef enum {
 	SetCapture_FUNC,
 	SetCaretPos_FUNC,
 	SetClipboardData_FUNC,
+	SetCurrentProcessExplicitAppUserModelID_FUNC,
 	SetCursor_FUNC,
 	SetCursorPos_FUNC,
 	SetDIBColorTable_FUNC,
@@ -1821,6 +1825,11 @@ typedef enum {
 	VtblCall__IJJJJ_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,
 #else
 	VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,
@@ -1836,6 +1845,16 @@ typedef enum {
 	VtblCall__IJ_3B_3J_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__II_3C_FUNC,
+#else
+	VtblCall__IJ_3C_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__II_3CI_FUNC,
+#else
+	VtblCall__IJ_3CI_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__II_3CII_3I_3I_FUNC,
 #else
 	VtblCall__IJ_3CII_3I_3I_FUNC,
@@ -1844,6 +1863,11 @@ typedef enum {
 	VtblCall__II_3I_FUNC,
 #else
 	VtblCall__IJ_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__II_3I_3B_3I_FUNC,
+#else
+	VtblCall__IJ_3I_3B_3I_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__II_3J_FUNC,

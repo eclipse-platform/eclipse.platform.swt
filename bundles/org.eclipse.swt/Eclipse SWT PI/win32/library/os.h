@@ -97,6 +97,7 @@
 #define NO_OUTLINETEXTMETRICA
 #define NO_OUTLINETEXTMETRICW
 #define NO_PANOSE
+#define NO_PROPERTYKEY
 #define NO_PRINTDLG
 #define NO_SCRIPT_ANALYSIS
 #define NO_SCRIPT_CONTROL
@@ -417,6 +418,9 @@
 #define NO_PrintDlgA
 #define NO_PrintDlgW
 #define NO_PrintWindow
+#define NO_PROPERTYKEY_1sizeof
+#define NO_PROPVARIANT_1sizeof
+#define NO_PSPropertyKeyFromString
 #define NO_RedrawWindow
 #define NO_RegEnumKeyExA
 #define NO_RegOpenKeyExA
@@ -430,6 +434,7 @@
 #define NO_RemovePropA
 #define NO_RemovePropW
 #define NO_ReplyMessage
+#define NO_SetCurrentProcessExplicitAppUserModelID
 #define NO_SetLayeredWindowAttributes
 #define NO_SetLayout
 #define NO_SetProcessDPIAware
@@ -628,6 +633,14 @@ typedef struct _BP_PAINTPARAMS {
     const RECT *prcExclude;
     const BLENDFUNCTION *pBlendFunction;
 } BP_PAINTPARAMS, *PBP_PAINTPARAMS;
+#endif
+
+#ifndef PROPERTYKEY_DEFINED
+#define PROPERTYKEY_DEFINED
+typedef struct _tagpropertykey {
+    GUID fmtid;
+    DWORD pid;
+} PROPERTYKEY;
 #endif
 
 #ifndef _DWM_BLURBEHIND

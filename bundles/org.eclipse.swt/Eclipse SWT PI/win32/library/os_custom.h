@@ -11,6 +11,7 @@
 
 /* Special sizeof's */
 #define SCRIPT_STRING_ANALYSIS_sizeof() sizeof(SCRIPT_STRING_ANALYSIS)
+#define PROPVARIANT_sizeof() sizeof(PROPVARIANT)
 
 /* Libraries for dynamic loaded functions */
 #define ActivateActCtx_LIB "kernel32.dll"
@@ -70,6 +71,8 @@
 #define NotifyWinEvent_LIB "user32.dll"
 #define OpenThemeData_LIB "uxtheme.dll"
 #define PrintWindow_LIB "user32.dll"
+#define PSPropertyKeyFromString_LIB "propsys.dll"
+#define SetCurrentProcessExplicitAppUserModelID_LIB "shell32.dll"
 #define SetLayeredWindowAttributes_LIB "user32.dll"
 #define SetLayout_LIB "gdi32.dll"
 #define SetMenuInfo_LIB "user32.dll"

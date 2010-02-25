@@ -11672,6 +11672,57 @@ JNIEXPORT jint JNICALL OS_NATIVE(PROCESS_1INFORMATION_1sizeof)
 }
 #endif
 
+#ifndef NO_PROPERTYKEY_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(PROPERTYKEY_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PROPERTYKEY_1sizeof_FUNC);
+	rc = (jint)PROPERTYKEY_sizeof();
+	OS_NATIVE_EXIT(env, that, PROPERTYKEY_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PROPVARIANT_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(PROPVARIANT_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PROPVARIANT_1sizeof_FUNC);
+	rc = (jint)PROPVARIANT_sizeof();
+	OS_NATIVE_EXIT(env, that, PROPVARIANT_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PSPropertyKeyFromString
+JNIEXPORT jint JNICALL OS_NATIVE(PSPropertyKeyFromString)
+	(JNIEnv *env, jclass that, jcharArray arg0, jobject arg1)
+{
+	jchar *lparg0=NULL;
+	PROPERTYKEY _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PSPropertyKeyFromString_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getPROPERTYKEYFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jint)PSPropertyKeyFromString(lparg0, lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, PSPropertyKeyFromString)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jchar *, PROPERTYKEY *))fp)(lparg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setPROPERTYKEYFields(env, arg1, lparg1);
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, PSPropertyKeyFromString_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PatBlt
 JNIEXPORT jboolean JNICALL OS_NATIVE(PatBlt)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
@@ -15381,6 +15432,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(SetClipboardData)
 }
 #endif
 
+#ifndef NO_SetCurrentProcessExplicitAppUserModelID
+JNIEXPORT jint JNICALL OS_NATIVE(SetCurrentProcessExplicitAppUserModelID)
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetCurrentProcessExplicitAppUserModelID_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)SetCurrentProcessExplicitAppUserModelID(lparg0);
+*/
+	{
+		LOAD_FUNCTION(fp, SetCurrentProcessExplicitAppUserModelID)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jchar *))fp)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, SetCurrentProcessExplicitAppUserModelID_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetCursor
 JNIEXPORT jintLong JNICALL OS_NATIVE(SetCursor)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -17305,6 +17380,33 @@ JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJJJJ)(JNIEnv *env, jclass that, jint
 }
 #endif
 
+#if (!defined(NO_VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I) && !defined(JNI64)) || (!defined(NO_VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jobject arg2, jint arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jobject arg2, jint arg3)
+#endif
+{
+	PROPERTYKEY _arg2, *lparg2=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC);
+#endif
+	if (arg2) if ((lparg2 = getPROPERTYKEYFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, PROPERTYKEY *, jint))(*(jintLong **)arg1)[arg0])(arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setPROPERTYKEYFields(env, arg2, lparg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2) && !defined(JNI64)) || (!defined(NO_VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jobject arg2)
@@ -17395,6 +17497,60 @@ fail:
 }
 #endif
 
+#if (!defined(NO_VtblCall__II_3C) && !defined(JNI64)) || (!defined(NO_VtblCall__IJ_3C) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3C)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jcharArray arg2)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJ_3C)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jcharArray arg2)
+#endif
+{
+	jchar *lparg2=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3C_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, VtblCall__IJ_3C_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *))(*(jintLong **)arg1)[arg0])(arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3C_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, VtblCall__IJ_3C_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_VtblCall__II_3CI) && !defined(JNI64)) || (!defined(NO_VtblCall__IJ_3CI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3CI)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jcharArray arg2, jint arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJ_3CI)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jcharArray arg2, jint arg3)
+#endif
+{
+	jchar *lparg2=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3CI_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, VtblCall__IJ_3CI_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jint))(*(jintLong **)arg1)[arg0])(arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3CI_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, VtblCall__IJ_3CI_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_VtblCall__II_3CII_3I_3I) && !defined(JNI64)) || (!defined(NO_VtblCall__IJ_3CII_3I_3I) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3CII_3I_3I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jcharArray arg2, jint arg3, jint arg4, jintArray arg5, jintArray arg6)
@@ -17450,6 +17606,39 @@ fail:
 	OS_NATIVE_EXIT(env, that, VtblCall__II_3I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, VtblCall__IJ_3I_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_VtblCall__II_3I_3B_3I) && !defined(JNI64)) || (!defined(NO_VtblCall__IJ_3I_3B_3I) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3I_3B_3I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintArray arg2, jbyteArray arg3, jintArray arg4)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJ_3I_3B_3I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintArray arg2, jbyteArray arg3, jintArray arg4)
+#endif
+{
+	jint *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3I_3B_3I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, VtblCall__IJ_3I_3B_3I_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jint *, jbyte *, jint *))(*(jintLong **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3I_3B_3I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, VtblCall__IJ_3I_3B_3I_FUNC);
 #endif
 	return rc;
 }

@@ -420,8 +420,6 @@ public class COM extends OS {
 	public static final short VT_UI4 = 19;
 	public static final short VT_UNKNOWN = 13;
 	public static final short VT_VARIANT = 12;
-	public static final short VARIANT_TRUE = -1;
-	public static final short VARIANT_FALSE = 0;
 
 	public static boolean FreeUnusedLibraries = true;
 
@@ -662,10 +660,8 @@ public static final native int VariantClear(int /*long*/ pvarg);
 /** @param pvarg cast=(VARIANTARG FAR* ) */
 public static final native void VariantInit(int /*long*/ pvarg);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, long arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, POINT arg2, int arg3);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, POINT arg2, int arg3);
@@ -688,7 +684,6 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long[] arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int[] arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 990;
-int OS_nativeFunctionCallCount[990];
+int OS_nativeFunctionCount = 998;
+int OS_nativeFunctionCallCount[998];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1166,6 +1166,9 @@ char * OS_nativeFunctionNames[] = {
 	"PRIMARYLANGID",
 	"PRINTDLG_1sizeof",
 	"PROCESS_1INFORMATION_1sizeof",
+	"PROPERTYKEY_1sizeof",
+	"PROPVARIANT_1sizeof",
+	"PSPropertyKeyFromString",
 	"PatBlt",
 	"PathIsExe",
 	"PeekMessageA",
@@ -1637,6 +1640,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetCapture",
 	"SetCaretPos",
 	"SetClipboardData",
+	"SetCurrentProcessExplicitAppUserModelID",
 	"SetCursor",
 	"SetCursorPos",
 	"SetDIBColorTable",
@@ -1813,6 +1817,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJJJJ",
 #endif
 #ifndef JNI64
+	"VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I",
+#else
+	"VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I",
+#endif
+#ifndef JNI64
 	"VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2",
 #else
 	"VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2",
@@ -1828,6 +1837,16 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJ_3B_3J",
 #endif
 #ifndef JNI64
+	"VtblCall__II_3C",
+#else
+	"VtblCall__IJ_3C",
+#endif
+#ifndef JNI64
+	"VtblCall__II_3CI",
+#else
+	"VtblCall__IJ_3CI",
+#endif
+#ifndef JNI64
 	"VtblCall__II_3CII_3I_3I",
 #else
 	"VtblCall__IJ_3CII_3I_3I",
@@ -1836,6 +1855,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__II_3I",
 #else
 	"VtblCall__IJ_3I",
+#endif
+#ifndef JNI64
+	"VtblCall__II_3I_3B_3I",
+#else
+	"VtblCall__IJ_3I_3B_3I",
 #endif
 #ifndef JNI64
 	"VtblCall__II_3J",

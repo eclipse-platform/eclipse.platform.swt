@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1281,6 +1281,18 @@ void setPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMA
 #define getPROCESS_INFORMATIONFields(a,b,c) NULL
 #define setPROCESS_INFORMATIONFields(a,b,c)
 #define PROCESS_INFORMATION_sizeof() 0
+#endif
+
+#ifndef NO_PROPERTYKEY
+void cachePROPERTYKEYFields(JNIEnv *env, jobject lpObject);
+PROPERTYKEY *getPROPERTYKEYFields(JNIEnv *env, jobject lpObject, PROPERTYKEY *lpStruct);
+void setPROPERTYKEYFields(JNIEnv *env, jobject lpObject, PROPERTYKEY *lpStruct);
+#define PROPERTYKEY_sizeof() sizeof(PROPERTYKEY)
+#else
+#define cachePROPERTYKEYFields(a,b)
+#define getPROPERTYKEYFields(a,b,c) NULL
+#define setPROPERTYKEYFields(a,b,c)
+#define PROPERTYKEY_sizeof() 0
 #endif
 
 #ifndef NO_REBARBANDINFO
