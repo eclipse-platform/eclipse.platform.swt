@@ -81,13 +81,13 @@ public abstract class AccessibleControlAdapter implements AccessibleControlListe
 	/**
 	 * Sent when an accessibility client requests the accessible object
 	 * for a child of the control by index or childID, or when a client
-	 * requests the index of a child accessible object in its parent.
-	 * The default behavior is to do nothing.
+	 * requests the index of an accessible object in its parent.
 	 * <p>
 	 * The childID field in the event object can be one of the following:<ul>
 	 *    <li>an integer child ID - return the accessible object for the specified child ID,
 	 *    	or null if the specified child does not have its own accessible</li>
-	 *    <li>CHILDID_CHILD_AT_INDEX - return the accessible object at the specified index in its parent</li>
+	 *    <li>CHILDID_CHILD_AT_INDEX - return the accessible child object at the specified index,
+	 *    	or null if this object has no children</li>
 	 *    <li>CHILDID_CHILD_INDEX - return the index of this accessible in its parent</li>
 	 * </ul></p>
 	 *
