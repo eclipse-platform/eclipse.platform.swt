@@ -300,6 +300,9 @@ void deregister () {
 	super.deregister ();
 	if (focusHandle != 0) display.removeWidget (focusHandle);
 }
+void drawBackground (GC gc, int x, int y, int width, int height) {
+	drawBackground(gc, x, y, width, height, 0, 0);
+}
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);

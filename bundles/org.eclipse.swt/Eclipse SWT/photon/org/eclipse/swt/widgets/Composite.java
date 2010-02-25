@@ -285,6 +285,10 @@ void createScrolledHandle (int parentHandle) {
 	createScrollBars ();
 }
 
+public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
+	drawBackground(gc, offsetX, offsetY, width, height);
+}
+
 void drawBackground (GC gc, int x, int y, int width, int height) {
 	Color oldColor = gc.getBackground();
 	gc.setBackground(getBackground());
