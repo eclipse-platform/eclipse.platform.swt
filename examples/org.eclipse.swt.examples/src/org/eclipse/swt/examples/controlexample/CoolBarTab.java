@@ -323,7 +323,7 @@ class CoolBarTab extends Tab {
 			// Create the menu if it has not already been created
 			if (menu == null) {
 				// Lazy create the menu.
-				menu = new Menu(shell);
+				menu = new Menu(shell, SWT.POP_UP | (coolBar.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
 				menu.addMenuListener(new MenuAdapter() {
 					public void menuHidden(MenuEvent e) {
 						visible = false;
@@ -437,7 +437,7 @@ class CoolBarTab extends Tab {
 				}
 				
 				/* Create a pop-up menu with items for each of the hidden buttons. */
-				menu = new Menu (coolBar);
+				menu = new Menu (shell, SWT.POP_UP | (coolBar.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
 				for (int j = i; j < toolCount; j++) {
 					ToolItem tool = tools[j];
 					Image image = tool.getImage();
