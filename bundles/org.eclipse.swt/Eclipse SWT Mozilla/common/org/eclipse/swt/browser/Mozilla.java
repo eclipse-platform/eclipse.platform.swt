@@ -1162,9 +1162,9 @@ public boolean execute (String script) {
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
-    char[] arg = url.toCharArray (); 
-    char[] c = new char[arg.length+1];
-    System.arraycopy (arg, 0, c, 0, arg.length);
+	char[] arg = url.toCharArray (); 
+	char[] c = new char[arg.length+1];
+	System.arraycopy (arg, 0, c, 0, arg.length);
 	rc = webNavigation.LoadURI (c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
 	webNavigation.Release ();
 	return rc == XPCOM.NS_OK;
@@ -2375,8 +2375,8 @@ public boolean setText (String html, boolean trusted) {
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 		nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
 		result[0] = 0;
-	    char[] uri = new char[ABOUT_BLANK.length () + 1];
-	    ABOUT_BLANK.getChars (0, ABOUT_BLANK.length (), uri, 0);
+		char[] uri = new char[ABOUT_BLANK.length () + 1];
+		ABOUT_BLANK.getChars (0, ABOUT_BLANK.length (), uri, 0);
 		rc = webNavigation.LoadURI (uri, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
 		if (rc != XPCOM.NS_OK) error (rc);
 		webNavigation.Release ();
@@ -2463,39 +2463,39 @@ public boolean setUrl (String url, String postData, String[] headers) {
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
 	result[0] = 0;
-    char[] uri = new char[url.length () + 1];
-    url.getChars (0, url.length (), uri, 0);
+	char[] uri = new char[url.length () + 1];
+	url.getChars (0, url.length (), uri, 0);
 
-    nsIMIMEInputStream postDataStream = null;
-    InputStream dataStream = null;
+	nsIMIMEInputStream postDataStream = null;
+	InputStream dataStream = null;
 	if (postData != null) {
-    	rc = XPCOM.NS_GetComponentManager (result);
-    	if (rc != XPCOM.NS_OK) error (rc);
-    	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-    	nsIComponentManager componentManager = new nsIComponentManager (result[0]);
-    	result[0] = 0;
-    	byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MIMEINPUTSTREAM_CONTRACTID, true);
-    	rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIMIMEInputStream.NS_IMIMEINPUTSTREAM_IID, result);
-    	componentManager.Release();
+		rc = XPCOM.NS_GetComponentManager (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
+		result[0] = 0;
+		byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_MIMEINPUTSTREAM_CONTRACTID, true);
+		rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIMIMEInputStream.NS_IMIMEINPUTSTREAM_IID, result);
+		componentManager.Release();
 
-    	if (rc == XPCOM.NS_OK && result[0] != 0) { /* nsIMIMEInputStream is not in mozilla 1.4 */
-    		byte[] bytes = MozillaDelegate.wcsToMbcs (null, postData, false);
-    		dataStream = new InputStream (bytes);
-    		dataStream.AddRef ();
-    		postDataStream = new nsIMIMEInputStream (result[0]);
-    		rc = postDataStream.SetData (dataStream.getAddress ());
-    		if (rc != XPCOM.NS_OK) error (rc);
-    		rc = postDataStream.SetAddContentLength (1);
-    		if (rc != XPCOM.NS_OK) error (rc);
-    		byte[] name = MozillaDelegate.wcsToMbcs (null, HEADER_CONTENTTYPE, true);
-    		byte[] value = MozillaDelegate.wcsToMbcs (null, MIMETYPE_FORMURLENCODED, true);
-    		rc = postDataStream.AddHeader (name, value);
-    		if (rc != XPCOM.NS_OK) error (rc);
-    	}
-    	result[0] = 0;
+		if (rc == XPCOM.NS_OK && result[0] != 0) { /* nsIMIMEInputStream is not in mozilla 1.4 */
+			byte[] bytes = MozillaDelegate.wcsToMbcs (null, postData, false);
+			dataStream = new InputStream (bytes);
+			dataStream.AddRef ();
+			postDataStream = new nsIMIMEInputStream (result[0]);
+			rc = postDataStream.SetData (dataStream.getAddress ());
+			if (rc != XPCOM.NS_OK) error (rc);
+			rc = postDataStream.SetAddContentLength (1);
+			if (rc != XPCOM.NS_OK) error (rc);
+			byte[] name = MozillaDelegate.wcsToMbcs (null, HEADER_CONTENTTYPE, true);
+			byte[] value = MozillaDelegate.wcsToMbcs (null, MIMETYPE_FORMURLENCODED, true);
+			rc = postDataStream.AddHeader (name, value);
+			if (rc != XPCOM.NS_OK) error (rc);
+		}
+		result[0] = 0;
 	}
 
-    InputStream headersStream = null;
+	InputStream headersStream = null;
     if (headers != null) {
 		StringBuffer buffer = new StringBuffer ();
 		for (int i = 0; i < headers.length; i++) {
@@ -2514,9 +2514,9 @@ public boolean setUrl (String url, String postData, String[] headers) {
 				}
 			}
 		}
-    	byte[] bytes = MozillaDelegate.wcsToMbcs (null, buffer.toString (), true);
-    	headersStream = new InputStream (bytes);
-    	headersStream.AddRef ();
+		byte[] bytes = MozillaDelegate.wcsToMbcs (null, buffer.toString (), true);
+		headersStream = new InputStream (bytes);
+		headersStream.AddRef ();
     }
 
 	rc = webNavigation.LoadURI (
