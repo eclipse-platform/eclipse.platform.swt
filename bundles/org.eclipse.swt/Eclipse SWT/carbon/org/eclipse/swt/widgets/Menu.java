@@ -213,11 +213,19 @@ void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
 		org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-		if (hasLocation) {
-			where.h = (short) x;
-			where.v = (short) y;
+		TrayItem trayItem = display.currentTrayItem;
+		if (trayItem != null) {
+			display.trayItemMenu = this;
+			Point pt = trayItem.getMenuLocation();
+			where.h = (short) pt.x;
+			where.v = (short) pt.y;
 		} else {
-			OS.GetGlobalMouse (where);
+			if (hasLocation) {
+				where.h = (short) x;
+				where.v = (short) y;
+			} else {
+				OS.GetGlobalMouse (where);
+			}
 		}
 		/*
 		* Bug in the Macintosh.  When a menu is open with ContextualMenuSelect() the

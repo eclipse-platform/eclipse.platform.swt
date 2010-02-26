@@ -187,6 +187,7 @@ public static final int S_initWithImage_hotSpot = Cocoa.sel_registerName("initWi
 public static final int S_set = Cocoa.sel_registerName("set"); //$NON-NLS-1$
 public static final int S_init = Cocoa.sel_registerName("init"); //$NON-NLS-1$
 public static final int S_frame = Cocoa.sel_registerName("frame"); //$NON-NLS-1$
+public static final int S_display = Cocoa.sel_registerName("display"); //$NON-NLS-1$
 public static final int S_window = Cocoa.sel_registerName("window"); //$NON-NLS-1$
 public static final int S_makeKeyWindow = Cocoa.sel_registerName("makeKeyWindow"); //$NON-NLS-1$
 public static final int S_addRepresentation = Cocoa.sel_registerName("addRepresentation:"); //$NON-NLS-1$
@@ -230,6 +231,7 @@ public static final int S_setHTTPBody = Cocoa.sel_registerName("setHTTPBody:"); 
 public static final int S_setHTTPMethod = Cocoa.sel_registerName("setHTTPMethod:"); //$NON-NLS-1$
 public static final int S_setCustomUserAgent = Cocoa.sel_registerName("setCustomUserAgent:"); //$NON-NLS-1$
 public static final int S_setValueForHTTPHeaderField = Cocoa.sel_registerName("setValue:forHTTPHeaderField:"); //$NON-NLS-1$
+public static final int S_locationInWindow = sel_registerName("locationInWindow");
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
@@ -251,6 +253,13 @@ public static final int NSAllApplicationsDirectory = 100;
 public static final int NSDesktopDirectory = 12;
 public static final int NSDocumentDirectory = 9;
 public static final int NSDownloadsDirectory = 15;
+
+public static final int NSRightMouseDown = 3;
+public static final int NSRightMouseDragged = 7;
+public static final int NSRightMouseUp = 4;
+public static final int NSLeftMouseDown = 1;
+public static final int NSLeftMouseDragged = 6;
+public static final int NSLeftMouseUp = 2;
 
 /* WebKit */
 /** @param outView cast=(HIViewRef *) */
@@ -392,6 +401,8 @@ public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long
  * @param selector cast=(SEL)
  */
 public static final native void objc_msgSend_stret(NSRect result, int object, int selector);
+/** @method flags=cast */
+public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel);
 /**
  * @param result cast=(void *)
  * @param object cast=(void *)
@@ -404,6 +415,11 @@ public static final native int sel_registerName(byte[] selectorName);
 
 /** @method flags=const */
 public static final native int NSDeviceRGBColorSpace();
+/**
+ * @param aPoint flags=struct
+ * @param aRect flags=struct
+ */
+public static final native boolean NSPointInRect(NSPoint aPoint, NSRect aRect);
 /**
  * @param directory cast=(NSSearchPathDirectory)
  * @param domainMask cast=(NSSearchPathDomainMask)

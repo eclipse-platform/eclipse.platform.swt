@@ -79,6 +79,25 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(NSDeviceRGBColorSpace)
 }
 #endif
 
+#ifndef NO_NSPointInRect
+JNIEXPORT jboolean JNICALL Cocoa_NATIVE(NSPointInRect)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	NSPoint _arg0, *lparg0=NULL;
+	NSRect _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, NSPointInRect_FUNC);
+	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getNSRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jboolean)NSPointInRect(*lparg0, *lparg1);
+fail:
+	if (arg1 && lparg1) setNSRectFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
+	Cocoa_NATIVE_EXIT(env, that, NSPointInRect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSSearchPathForDirectoriesInDomains
 JNIEXPORT jint JNICALL Cocoa_NATIVE(NSSearchPathForDirectoriesInDomains)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
@@ -476,6 +495,35 @@ JNIEXPORT jdouble JNICALL Cocoa_NATIVE(objc_1msgSend_1fpret)
 	rc = (jdouble)((jdouble (*)(jintLong, jintLong))objc_msgSend_fpret)(arg0, arg1);
 	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend_1fpret_FUNC);
 	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	NSPoint _arg0, *lparg0=NULL;
+#ifndef JNI64
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC);
+#else
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		*lparg0 = (*(NSPoint (*)(jintLong, jintLong))objc_msgSend_stret)(arg1, arg2);
+	} else {
+		*lparg0 = (*(NSPoint (*)(jintLong, jintLong))objc_msgSend)(arg1, arg2);
+	}
+fail:
+	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
+#ifndef JNI64
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC);
+#else
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ_FUNC);
+#endif
 }
 #endif
 

@@ -180,6 +180,23 @@ Point getLocation () {
 	return new Point ((int)rect.x, (int)rect.y);
 }
 
+Point getMenuLocation () {
+	NSRect rect = new NSRect();
+	Cocoa.objc_msgSend_stret(rect, view, Cocoa.S_frame);
+	NSRect windowRect = new NSRect();
+	Cocoa.objc_msgSend_stret(windowRect, Cocoa.objc_msgSend(view, Cocoa.S_window), Cocoa.S_frame);
+	rect.y += rect.height;
+	Cocoa.objc_msgSend_stret(rect, view, Cocoa.S_convertRect_toView, rect, 0);
+	rect.x += windowRect.x;
+	/*
+	* TODO - the carbon popup menu is not square on the top corners because
+	* NSStatusItem.popUpStatusItemMenu() is not called since it takes
+	* a NSMenu (not MenuRef). The 4 pixels offset is used to make the menu
+	* align with the bottom of the menu bar.
+	*/
+	return new Point ((int)rect.x, (int)rect.y + 4);
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Tray</code>.
  *
@@ -436,44 +453,88 @@ public void setVisible (boolean visible) {
 	if (!visible) sendEvent (SWT.Hide);
 }
 
+void displayMenu () {
+	if (highlight) {
+		Cocoa.objc_msgSend(view, Cocoa.S_display);
+		display.trayItemMenu = null;
+		showMenu();
+		if (display.trayItemMenu != null) {
+			display.trayItemMenu = null;
+			highlight = false;
+			Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
+		}
+	}
+}
+
+boolean shouldShowMenu (int event) {
+	if (!hooks(SWT.MenuDetect)) return false;
+	switch ((int)/*64*/Cocoa.objc_msgSend(event, Cocoa.S_type)) {
+		case Cocoa.NSRightMouseDown: return true;
+		case Cocoa.NSLeftMouseDown:
+			if (!(hooks(SWT.Selection) || hooks(SWT.DefaultSelection))) {
+				return true;
+			}
+			if ((Cocoa.objc_msgSend(event, Cocoa.S_modifierFlags) & Cocoa.NSDeviceIndependentModifierFlagsMask) == Cocoa.NSControlKeyMask) {
+				return true;
+			}
+			return false;
+		case Cocoa.NSLeftMouseDragged:
+		case Cocoa.NSRightMouseDragged:
+			return true;
+	}
+	return false;
+}
+
 void showMenu () {
 	_setToolTipText (null);
+	Display display = this.display;
+	display.currentTrayItem = this;
 	sendEvent (SWT.MenuDetect);
-	if (isDisposed ()) return;
-	display.runPopups ();
+	if (!isDisposed ()) display.runPopups();
+	display.currentTrayItem = null;
 	if (isDisposed ()) return;
 	_setToolTipText (toolTipText);
 }
 
 int trayItemProc (int target, int userData, int selector, int arg0) {
 	switch (selector) {
-		case 0: {
-			int mask = Cocoa.objc_msgSend (arg0, Cocoa.S_modifierFlags) & Cocoa.NSDeviceIndependentModifierFlagsMask;
-			if (mask == Cocoa.NSControlKeyMask) {
-				showMenu ();
-			} else {
-				highlight = true;
-				Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
-				int clickCount = Cocoa.objc_msgSend (arg0, Cocoa.S_clickCount);
-				sendSelectionEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
-			}
+		case 0:   //mouseDown
+		case 2: { // rightMouseDown
+			highlight = true;
+			Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
+			if (shouldShowMenu(arg0)) displayMenu();
 			break;
 		}
-		case 1: {
+		case 1:   // mouseUp
+		case 4: { // rightMouseUp
+			if (highlight) {
+				if ((int)/*64*/Cocoa.objc_msgSend(arg0, Cocoa.S_type) == Cocoa.NSLeftMouseUp) {
+					sendSelectionEvent((int)/*64*/Cocoa.objc_msgSend(arg0, Cocoa.S_clickCount) == 2 ? SWT.DefaultSelection : SWT.Selection);
+				}
+			}
 			highlight = false;
 			Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
 			break;
 		}
-		case 2: {
-			showMenu ();
-			break;
-		}
-		case 3: {
+		case 3: { // drawRect
 			NSRect rect = new NSRect ();
 			Cocoa.memcpy (rect, arg0, NSRect.sizeof);
 			Cocoa.objc_msgSend (handle, Cocoa.S_drawStatusBarBackgroundInRect_withHighlight, rect, highlight ? 1 : 0);
+			break;
+		}
+		case 5:   // mouseDragged
+		case 6: { // rightMouseDragged
+			NSRect frame = new NSRect();
+			Cocoa.objc_msgSend_stret(frame, view, Cocoa.S_frame);
+			NSPoint pt = new NSPoint();
+			Cocoa.objc_msgSend_stret(pt, arg0, Cocoa.S_locationInWindow);
+			highlight = Cocoa.NSPointInRect(pt, frame);
+			Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
+			if (shouldShowMenu(arg0)) displayMenu();
+			break;			
 		}
 	}
 	return 0;
 }
 }
+

@@ -86,6 +86,21 @@ fail:
 	proc((int)self, user_data, 3, &rect);
 	[super drawRect: rect];
 }
+
+- (void)rightMouseUp:(NSEvent *)event
+{
+	proc((int)self, user_data, 4, event);
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+	proc((int)self, user_data, 5, event);
+}
+
+- (void)rightMouseDragged:(NSEvent *)event
+{
+	proc((int)self, user_data, 6, event);
+}
 @end
 
 @interface WebKitDelegate : NSObject

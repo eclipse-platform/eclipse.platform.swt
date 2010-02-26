@@ -30,6 +30,7 @@ typedef enum {
 	HIWebViewCreate_FUNC,
 	HIWebViewGetWebView_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
+	NSPointInRect_FUNC,
 	NSSearchPathForDirectoriesInDomains_FUNC,
 	WebInitForCarbon_FUNC,
 	class_1getClassMethod_FUNC,
@@ -58,6 +59,11 @@ typedef enum {
 	objc_1msgSend__II_3C_FUNC,
 	objc_1msgSend__II_3IIIIIIIIIII_FUNC,
 	objc_1msgSend_1fpret_FUNC,
+#ifndef JNI64
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ_FUNC,
+#endif
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC,
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
 	sel_1registerName_FUNC,

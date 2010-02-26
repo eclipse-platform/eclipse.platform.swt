@@ -14,14 +14,15 @@
 
 #ifdef NATIVE_STATS
 
-int Cocoa_nativeFunctionCount = 36;
-int Cocoa_nativeFunctionCallCount[36];
+int Cocoa_nativeFunctionCount = 38;
+int Cocoa_nativeFunctionCallCount[38];
 char * Cocoa_nativeFunctionNames[] = {
 	"HICocoaViewCreate",
 	"HIJavaViewCreateWithCocoaView",
 	"HIWebViewCreate",
 	"HIWebViewGetWebView",
 	"NSDeviceRGBColorSpace",
+	"NSPointInRect",
 	"NSSearchPathForDirectoriesInDomains",
 	"WebInitForCarbon",
 	"class_1getClassMethod",
@@ -50,6 +51,11 @@ char * Cocoa_nativeFunctionNames[] = {
 	"objc_1msgSend__II_3C",
 	"objc_1msgSend__II_3IIIIIIIIIII",
 	"objc_1msgSend_1fpret",
+#ifndef JNI64
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
+#else
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ",
+#endif
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"sel_1registerName",
