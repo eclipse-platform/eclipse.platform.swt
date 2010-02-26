@@ -264,7 +264,6 @@ String computeResultClassicDialog () {
 	OS.g_free (utf16Ptr);
 	OS.g_free (utf8Ptr);
 
-	if (osAnswer == null) return null;
 	int separatorIndex = osAnswer.lastIndexOf (SEPARATOR);
 	if (separatorIndex+1 == osAnswer.length ()) return null;
 	
