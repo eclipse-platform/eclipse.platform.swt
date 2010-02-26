@@ -190,7 +190,7 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DropAccept, typedListener);
 }
 
-int /*long*/ callSuper (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+int /*long*/ dndCallSuper (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -256,7 +256,7 @@ int draggingEntered(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	}
 
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
-		return (int)/*64*/callSuper(id, sel, sender.id);
+		return (int)/*64*/dndCallSuper(id, sel, sender.id);
 	}
 	return opToOsOp(selectedOperation);
 }
@@ -273,7 +273,7 @@ void draggingExited(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	notifyListeners(DND.DragLeave, event);
 	
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
-		callSuper(id, sel, sender.id);
+		dndCallSuper(id, sel, sender.id);
 	}
 }
 
@@ -332,7 +332,7 @@ int draggingUpdated(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	}
 
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
-		return (int)/*64*/callSuper(id, sel, sender.id);
+		return (int)/*64*/dndCallSuper(id, sel, sender.id);
 	}
 
 	return opToOsOp(selectedOperation);
@@ -723,7 +723,7 @@ boolean drop(NSObject sender) {
 
 boolean performDragOperation(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
-		return callSuper(id, sel, sender.id) != 0;
+		return dndCallSuper(id, sel, sender.id) != 0;
 	}
 	
 	return drop (sender);

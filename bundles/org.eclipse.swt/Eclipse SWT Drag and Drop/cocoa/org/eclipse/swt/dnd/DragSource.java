@@ -312,21 +312,21 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragEnd, typedListener);
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2) {
+void dndCallSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2);
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+void dndCallSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
-int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+int /*long*/ dndCallSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -415,7 +415,7 @@ void dragOutlineViewStart(Event dragDetectEvent) {
 
 void draggedImage_beganAt(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
-		callSuper(id, sel, arg0, arg1);
+		dndCallSuper(id, sel, arg0, arg1);
 	}
 }
 
@@ -445,7 +445,7 @@ void draggedImage_endedAt_operation(int /*long*/ id, int /*long*/ sel, int /*lon
 		dragImageFromListener = null;
 	
 		if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
-			callSuper(id, sel, arg0, arg1, arg2);
+			dndCallSuper(id, sel, arg0, arg1, arg2);
 		}
 	} finally { 
 		OS.objc_msgSend(id, OS.sel_release);
@@ -460,7 +460,7 @@ int /*long*/ dragImageForRowsWithIndexes_tableColumns_event_offset(int /*long*/ 
 		OS.memmove(arg3, point, NSPoint.sizeof);
 		return dragImageFromListener.handle.id;
 	} else {
-		return callSuperObject(id, sel, arg0, arg1, arg2, arg3);
+		return dndCallSuperObject(id, sel, arg0, arg1, arg2, arg3);
 	}
 }
 
