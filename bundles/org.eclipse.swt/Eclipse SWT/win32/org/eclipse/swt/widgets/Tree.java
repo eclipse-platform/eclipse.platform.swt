@@ -7753,7 +7753,6 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 						int /*long*/ hFont = item [0].fontHandle (index [0]);
 						if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 						int /*long*/ oldFont = OS.SelectObject (hDC, hFont);
-						LRESULT result = null;
 						boolean drawForeground = true;
 						cellRect [0] = item [0].getBounds (index [0], true, true, false, false, false, hDC);
 						if (hooks (SWT.EraseItem)) {
@@ -7814,7 +7813,6 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 						}
 						OS.SelectObject (hDC, oldFont);
 						OS.ReleaseDC (handle, hDC);
-						if (result != null) return result;
 					}
 					break;
 				}
