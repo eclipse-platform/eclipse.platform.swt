@@ -6350,14 +6350,351 @@ void initializeAccessible() {
 			e.result = shortcut;
 		}
 	});
-	accessible.addAccessibleTextListener(new AccessibleTextAdapter() {
+	accessible.addAccessibleTextListener(new AccessibleTextExtendedAdapter() {
 		public void getCaretOffset(AccessibleTextEvent e) {
 			e.offset = StyledText.this.getCaretOffset();
+		}
+		public void setCaretOffset(AccessibleTextExtendedEvent e) {
+			StyledText.this.setCaretOffset(e.offset);
 		}
 		public void getSelectionRange(AccessibleTextEvent e) {
 			Point selection = StyledText.this.getSelectionRange();
 			e.offset = selection.x;
 			e.length = selection.y;
+		}
+		public void addSelection(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			Point point = st.getSelection();
+			if (point.x == point.y) {
+				int end = e.end;
+				if (end == -1) end = st.getCharCount();
+				st.setSelection(e.start, end);
+			}
+		}
+		public void getSelection(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			if (st.blockSelection && st.blockXLocation != -1) {
+				Rectangle rect = st.getBlockSelectionPosition();
+				int lineIndex = rect.y + e.index;
+				int linePixel = st.getLinePixel(lineIndex);
+				e.ranges = getRanges(rect.x, linePixel, rect.width, linePixel);
+				if (e.ranges.length > 0) {
+					e.start = e.ranges[0];
+					e.end = e.ranges[e.ranges.length - 1];
+				}
+			} else {
+				if (e.index == 0) {
+					Point point = st.getSelection();
+					e.start = point.x;
+					e.end = point.y;
+					if (e.start > e.end) {
+						int temp = e.start;
+						e.start = e.end;
+						e.end = temp;
+					}
+				}
+			}
+		}
+		public void getSelectionCount(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			if (st.blockSelection && st.blockXLocation != -1) {
+				Rectangle rect = st.getBlockSelectionPosition();
+				e.count = rect.height - rect.y + 1;
+			} else {
+				Point point = st.getSelection();
+				e.count = point.x == point.y ? 0 : 1; 
+			}
+		}
+		public void removeSelection(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			if (e.index == 0) {
+				if (st.blockSelection) {
+					st.clearBlockSelection(true, false);
+				} else {
+					st.clearSelection(false);
+				}
+			}
+		}
+		public void setSelection(AccessibleTextExtendedEvent e) {
+			if (e.index != 0) return;
+			StyledText st = StyledText.this;
+			Point point = st.getSelection();
+			if (point.x == point.y) return;
+			int end = e.end;
+			if (end == -1) end = st.getCharCount();
+			st.setSelection(e.start, end);
+		}
+		public void getCharacterCount(AccessibleTextExtendedEvent e) {
+			e.count = StyledText.this.getCharCount();
+		}
+		public void getOffsetAtPoint(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			Point point = new Point (e.x, e.y);
+			Display display = st.getDisplay();
+			point = display.map(null, st, point);
+			e.offset = st.getOffsetAtPoint(point.x, point.y, null, true);
+		}
+		public void getTextBounds(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			int start = e.start;
+			int end = e.end;
+			int contentLength = st.getCharCount();
+			start = Math.max(0, Math.min(start, contentLength));
+			end = Math.max(0, Math.min(end, contentLength));
+			if (start > end) {
+				int temp = start;
+				start = end;
+				end = temp;
+			}
+			int startLine = st.getLineAtOffset(start);
+			int endLine = st.getLineAtOffset(end);
+			Rectangle[] rects = new Rectangle[endLine - startLine + 1];
+			Rectangle bounds = null;
+			int index = 0;
+			Display display = st.getDisplay();
+			for (int lineIndex = startLine; lineIndex <= endLine; lineIndex++) {
+				Rectangle rect = new Rectangle(0, 0, 0, 0);
+				rect.y = st.getLinePixel(lineIndex);
+				rect.height = st.renderer.getLineHeight(lineIndex);
+				if (lineIndex == startLine) {
+					rect.x = st.getPointAtOffset(start).x;
+				} else {
+					rect.x = st.leftMargin - st.horizontalScrollOffset;
+				}
+				if (lineIndex == endLine) {
+					rect.width = st.getPointAtOffset(end).x - rect.x;
+				} else {
+					TextLayout layout = st.renderer.getTextLayout(lineIndex);
+					rect.width = layout.getBounds().width - rect.x;
+					st.renderer.disposeTextLayout(layout);
+				}
+				rects [index++] = rect = display.map(st, null, rect);
+				if (bounds == null) {
+					bounds = new Rectangle(rect.x, rect.y, rect.width, rect.height);
+				} else {
+					bounds.add(rect);
+				}
+			}
+			e.rectangles = rects;
+			if (bounds != null) {
+				e.x = bounds.x;
+				e.y = bounds.y;
+				e.width = bounds.width;
+				e.height = bounds.height;
+			}
+		}
+		int[] getRanges(int left, int top, int right, int bottom) {
+			StyledText st = StyledText.this;
+			int lineStart = st.getLineIndex(top);
+			int lineEnd = st.getLineIndex(bottom);
+			int count = lineEnd - lineStart + 1;
+			int[] ranges = new int [count * 2];
+			int index = 0;
+			for (int lineIndex = lineStart; lineIndex <= lineEnd; lineIndex++) {
+				String line = st.content.getLine(lineIndex);
+				int lineOffset = st.content.getOffsetAtLine(lineIndex);
+				int lineEndOffset = lineOffset + line.length();
+				int linePixel = st.getLinePixel(lineIndex);
+				int start = st.getOffsetAtPoint(left, linePixel, null, true);
+				if (start == -1) {
+					start = left < st.leftMargin ? lineOffset : lineEndOffset;
+				}
+				int[] trailing = new int[1];
+				int end = st.getOffsetAtPoint(right, linePixel, trailing, true);
+				if (end == -1) {
+					end = right < st.leftMargin ? lineOffset : lineEndOffset; 
+				} else {
+					end += trailing[0];
+				}
+				if (start > end) {
+					int temp = start;
+					start = end;
+					end = temp;
+				}
+				ranges[index++] = start;
+				ranges[index++] = end;
+			}
+			return ranges;
+		}
+		public void getRanges(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			Point point = new Point (e.x, e.y);
+			Display display = st.getDisplay();
+			point = display.map(null, st, point);
+			e.ranges = getRanges(point.x, point.y, point.x + e.width, point.y + e.height);
+			if (e.ranges.length > 0) {
+				e.start = e.ranges[0];
+				e.end = e.ranges[e.ranges.length - 1];
+			}
+		}
+		public void getText(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			int start = e.start;
+			int end = e.end;
+			int contentLength = st.getCharCount();
+			if (end == -1) end = contentLength;
+			start = Math.max(0, Math.min(start, contentLength));
+			end = Math.max(0, Math.min(end, contentLength));
+			if (start > end) {
+				int temp = start;
+				start = end;
+				end = temp;
+			}
+			int count = e.count;
+			switch (e.type) {
+				case ACC.TEXT_BOUNDARY_ALL:
+					//nothing to do
+					break;
+				case ACC.TEXT_BOUNDARY_CHAR: {
+					int newCount = 0;
+					if (count > 0) {
+						while (count-- > 0) {
+							int newEnd = st.getWordNext(end, SWT.MOVEMENT_CLUSTER);
+							if (newEnd == contentLength) break;
+							if (newEnd == end) break;
+							end = newEnd;
+							newCount++;
+						}
+						start = end;
+						end = st.getWordNext(end, SWT.MOVEMENT_CLUSTER);
+					} else {
+						while (count++ < 0) {
+							int newStart = st.getWordPrevious(start, SWT.MOVEMENT_CLUSTER);
+							if (newStart == start) break;
+							start = newStart;
+							newCount--;
+						}
+						end = st.getWordNext(start, SWT.MOVEMENT_CLUSTER);
+					}
+					count = newCount;
+					break;
+				}
+				case ACC.TEXT_BOUNDARY_WORD: {
+					int newCount = 0;
+					if (count > 0) {
+						while (count-- > 0) { 
+							int newEnd = st.getWordNext(end, SWT.MOVEMENT_WORD_START);
+							if (newEnd == contentLength) break;
+							if (newEnd == end) break;
+							newCount++;
+							end = newEnd;
+						}
+						start = end;
+						end = st.getWordNext(start, SWT.MOVEMENT_WORD_END);
+					} else {
+						while (count++ <= 0) {
+							int newStart = st.getWordPrevious(start, SWT.MOVEMENT_WORD_START);
+							if (newStart == start) break;
+							start = newStart;
+							if (count != 0) newCount--;
+						}
+						end = st.getWordNext(start, SWT.MOVEMENT_WORD_END);
+					}
+					count = newCount;
+					break;
+				}
+				case ACC.TEXT_BOUNDARY_LINE:
+					//TODO implement line
+				case ACC.TEXT_BOUNDARY_PARAGRAPH:
+				case ACC.TEXT_BOUNDARY_SENTENCE: {
+					int offset = count > 0 ? end : start;
+					int lineIndex = st.getLineAtOffset(offset) + count;
+					lineIndex = Math.max(0, Math.min(lineIndex, st.getLineCount() - 1));
+					start = st.getOffsetAtLine(lineIndex);
+					String line = st.getLine(lineIndex);
+					end = start + line.length();
+					count = lineIndex - st.getLineAtOffset(offset);
+					break;
+				}
+			}
+			e.start = start;
+			e.end = end;
+			e.count = count;
+			e.result = st.content.getTextRange(start, end - start);
+		}
+		public void getVisibleRanges(AccessibleTextExtendedEvent e) {
+			e.ranges = getRanges(leftMargin, topMargin, clientAreaWidth - rightMargin, clientAreaHeight - bottomMargin);
+			if (e.ranges.length > 0) {
+				e.start = e.ranges[0];
+				e.end = e.ranges[e.ranges.length - 1];
+			}
+		}
+		public void scrollText(AccessibleTextExtendedEvent e) {
+			StyledText st = StyledText.this;
+			int topPixel = getTopPixel(), horizontalPixel = st.getHorizontalPixel();
+			switch (e.type) {
+				case ACC.SCROLL_TYPE_ANYWHERE:
+				case ACC.SCROLL_TYPE_TOP_LEFT:
+				case ACC.SCROLL_TYPE_LEFT_EDGE:
+				case ACC.SCROLL_TYPE_TOP_EDGE: {
+					Rectangle rect = st.getBoundsAtOffset(e.start);
+					if (e.type != ACC.SCROLL_TYPE_TOP_EDGE) {
+						horizontalPixel = horizontalPixel + rect.x - st.leftMargin;
+					}
+					if (e.type != ACC.SCROLL_TYPE_LEFT_EDGE) {
+						topPixel = topPixel + rect.y - st.topMargin;
+					}
+					break;
+				}
+				case ACC.SCROLL_TYPE_BOTTOM_RIGHT:
+				case ACC.SCROLL_TYPE_BOTTOM_EDGE:
+				case ACC.SCROLL_TYPE_RIGHT_EDGE: {
+					Rectangle rect = st.getBoundsAtOffset(e.end - 1);
+					if (e.type != ACC.SCROLL_TYPE_BOTTOM_EDGE) {
+						horizontalPixel = horizontalPixel - st.clientAreaWidth + rect.x + rect.width + st.rightMargin;
+					}
+					if (e.type != ACC.SCROLL_TYPE_RIGHT_EDGE) {
+						topPixel = topPixel - st.clientAreaHeight + rect.y +rect.height + st.bottomMargin;
+					}
+					break;
+				}
+				case ACC.SCROLL_TYPE_POINT: {
+					Point point = new Point(e.x, e.y);
+					Display display = st.getDisplay();
+					point = display.map(null, st, point);
+					Rectangle rect = st.getBoundsAtOffset(e.start);
+					topPixel = topPixel - point.y + rect.y;
+					horizontalPixel = horizontalPixel - point.x + rect.x;
+					break;
+				}
+			}
+			st.setTopPixel(topPixel);
+			st.setHorizontalPixel(horizontalPixel);
+		}
+	});
+	accessible.addAccessibleAttributeListener(new AccessibleAttributeAdapter() {
+		public void getAttributes(AccessibleAttributeEvent e) {
+			StyledText st = StyledText.this;
+			e.leftMargin = st.getLeftMargin();
+			e.topMargin = st.getTopMargin();
+			e.rightMargin = st.getRightMargin();
+			e.bottomMargin = st.getBottomMargin();
+			e.tabStops = st.getTabsStop();
+			e.justify = st.getJustify();
+			e.alignment = st.getAlignment();
+			e.indent = st.getIndent(); 
+		}
+		public void getTextAttributes(AccessibleTextAttributeEvent e) {
+			StyledText st = StyledText.this;
+			int contentLength = st.getCharCount();
+			int offset = Math.max(0, Math.min(e.offset, contentLength - 1));
+			int lineIndex = st.getLineAtOffset(offset);
+			int lineOffset = st.getOffsetAtLine(lineIndex);
+			TextLayout layout = st.renderer.getTextLayout(lineIndex);
+			offset = offset - lineOffset;
+			e.textStyle = layout.getStyle(offset);
+			int[] ranges = layout.getRanges();
+			int index = 0;
+			while (index < ranges.length) {
+				int start = ranges[index++];
+				int end = ranges[index++];
+				if (start <= offset && offset <= end) {
+					e.start = lineOffset + start;
+					e.end = lineOffset + end + 1;
+					break;
+				}
+			}
+			st.renderer.disposeTextLayout(layout);
 		}
 	});
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
