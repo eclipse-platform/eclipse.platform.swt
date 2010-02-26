@@ -126,11 +126,21 @@ public class ACC {
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
 	public static final int CHILDID_MULTIPLE = -3;
-		
-	/** @since 3.6 */
+
+	/**
+	 * An AT is requesting the accessible child object at the specified index.
+	 * 
+	 * @see AccessibleControlListener#getChild
+	 * 
+	 * @since 3.6 */
 	public static final int CHILDID_CHILD_AT_INDEX = -4;
 	
-	/** @since 3.6 */
+	/**
+	 * An AT is requesting the index of this accessible in its parent.
+	 * 
+	 * @see AccessibleControlListener#getChild
+	 * 
+	 * @since 3.6 */
 	public static final int CHILDID_CHILD_INDEX = -5;
 	
 	/**
