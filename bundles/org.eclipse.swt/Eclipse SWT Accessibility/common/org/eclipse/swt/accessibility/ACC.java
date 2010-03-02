@@ -320,30 +320,6 @@ public class ACC {
 	public static final int SCROLL_TYPE_POINT = 7;
 
 	/**
-	 * Sent when an object is shown, for example for tool tips,
-	 * or child objects within a browser document.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_SHOW = 0x8002;
-	
-	/**
-	 * Sent when an object is hidden, for example for child objects within a browser document.
-	 * Note: do not send this for child objects when the parent object is hidden.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_HIDE = 0x8003;
-	
-	/**
-	 * Sent when the z-order of objects in a container has changed,
-	 * for example for a browser document that has been loaded or refreshed.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_REORDER = 0x8004;
-	
-	/**
 	 * Sent when the selection within a container changes.
 	 * 
 	 * @since 3.6
@@ -355,14 +331,14 @@ public class ACC {
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_TEXTSELECTIONCHANGED = 0x8014;
+	public static final int EVENT_TEXT_SELECTION_CHANGED = 0x8014;
 	
 	/**
 	 * Sent when an object's state has changed, for example enabled/disabled, pressed/released, or checked/unchecked.
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_STATECHANGE = 0x800A;
+	public static final int EVENT_STATE_CHANGED = 0x800A;
 	
 	/**
 	 * Sent when an object moves.
@@ -372,56 +348,28 @@ public class ACC {
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_LOCATIONCHANGE = 0x800B;
+	public static final int EVENT_LOCATION_CHANGED = 0x800B;
 	
 	/**
 	 * Sent when an object's name has changed.
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_NAMECHANGE = 0x800C;
+	public static final int EVENT_NAME_CHANGED = 0x800C;
 	
 	/**
 	 * Sent when an object's description has changed.
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_DESCRIPTIONCHANGE = 0x800D;
+	public static final int EVENT_DESCRIPTION_CHANGED = 0x800D;
 	
 	/**
 	 * Sent when an object's value has changed.
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_VALUECHANGE = 0x800E;
-	
-	/**
-	 * Sent when entering into menu mode.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_MENUSTART = 0x0004;
-	
-	/**
-	 * Sent when leaving from menu mode.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_MENUEND = 0x0005;
-	
-	/**
-	 * Sent when a popup menu comes up.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_MENUPOPUPSTART = 0x0006;
-	
-	/**
-	 * Sent just before a popup menu is taken down.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_MENUPOPUPEND = 0x0007;
+	public static final int EVENT_VALUE_CHANGED = 0x800E;
 
 	/**
 	 * Sent when the loading of a document has completed.
@@ -513,7 +461,7 @@ public class ACC {
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_HYPERTEXT_NLINKS_CHANGED = 0x10f;
+	public static final int EVENT_HYPERTEXT_LINK_COUNT_CHANGED = 0x10f;
 
 	/**
 	 * Sent when an object's attributes changed.
@@ -522,7 +470,7 @@ public class ACC {
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_OBJECT_ATTRIBUTE_CHANGED = 0x200;
+	public static final int EVENT_ATTRIBUTE_CHANGED = 0x200;
 
 	/**
 	 * Sent when a table caption changed.
