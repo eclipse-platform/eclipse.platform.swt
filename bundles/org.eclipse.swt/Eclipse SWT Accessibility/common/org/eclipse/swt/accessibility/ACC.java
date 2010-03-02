@@ -150,8 +150,20 @@ public class ACC {
 	 */
 	public static final int VISIBLE = 0x01;
 	
+	/**
+	 * A type constant specifying that insertion occurred.
+	 * 
+	 * @since 3.6
+	 */
 	public static final int INSERT = 0;
+
+	/**
+	 * A type constant specifying that deletion occurred.
+	 * 
+	 * @since 3.6
+	 */
 	public static final int DELETE = 1;
+	
 	public static final int TEXT_INSERT = INSERT;
 	public static final int TEXT_DELETE = DELETE;
 
