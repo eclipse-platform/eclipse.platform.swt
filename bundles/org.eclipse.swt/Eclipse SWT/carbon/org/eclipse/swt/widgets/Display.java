@@ -936,7 +936,7 @@ int coreEventProc (int theAppleEvent, int reply, int handlerRefcon) {
 					String string = new String(buffer);
 					Event event = new Event();
 					event.text = string;
-					sendEvent(SWT.OpenDoc, event);
+					sendEvent(SWT.OpenDocument, event);
 				}
 				OS.DisposePtr (dataPtr);
 		    }
@@ -2550,7 +2550,7 @@ int launcherProc (int nextHandler, int theEvent, int userData) {
 	String filePath = new String(buffer);
 	Event event = new Event();
 	event.text = filePath;
-	sendEvent(SWT.OpenDoc, event);
+	sendEvent(SWT.OpenDocument, event);
 	return OS.noErr;
 }
 /**

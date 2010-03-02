@@ -4181,7 +4181,7 @@ int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ u
 							String file = string.substring (lastIndex, index);
 							Event event = new Event ();
 							event.text = file;
-							sendEvent (SWT.OpenDoc, event);
+							sendEvent (SWT.OpenDocument, event);
 							lastIndex = index+1;
 							index = string.indexOf(':', lastIndex);
 						}

@@ -713,7 +713,7 @@ public class SWT {
      * 
      * @since 3.6
 	 */
-	public static final int OpenDoc = 46;
+	public static final int OpenDocument = 46;
 	
 	/* Event Details */
 	

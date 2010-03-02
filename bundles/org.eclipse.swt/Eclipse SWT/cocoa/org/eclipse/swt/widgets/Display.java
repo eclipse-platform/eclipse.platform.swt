@@ -4586,7 +4586,7 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 			String file = new NSString(arg1).getString();
 			Event event = new Event();
 			event.text = file;
-			display.sendEvent(SWT.OpenDoc, event);
+			display.sendEvent(SWT.OpenDocument, event);
 			return 1;
 		} else if (sel == OS.sel_application_openFiles_) {
 			NSArray files = new NSArray(arg1);
@@ -4595,7 +4595,7 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 				String file = new NSString(files.objectAtIndex(i)).getString();
 				Event event = new Event();
 				event.text = file;
-				display.sendEvent(SWT.OpenDoc, event);
+				display.sendEvent(SWT.OpenDocument, event);
 			}
 			new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
 		} 

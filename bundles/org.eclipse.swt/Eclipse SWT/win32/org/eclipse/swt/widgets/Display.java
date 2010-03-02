@@ -3247,7 +3247,7 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 				if (filename != null) {
 					Event event = new Event();
 					event.text = filename;
-					sendEvent(SWT.OpenDoc, event);
+					sendEvent(SWT.OpenDocument, event);
 				}
 			}
 		}
