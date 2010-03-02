@@ -28,8 +28,8 @@ public class Snippet336 {
 static TaskItem getTaskBarItem () {
 	TaskBar bar = display.getSystemTaskBar();
 	if (bar == null) return null;
-	TaskItem item = bar.getItem(null);
-	if (item == null) item = bar.getItem(shell);
+	TaskItem item = bar.getItem(shell);
+	if (item == null) item = bar.getItem(null);
 	return item;
 }
 	
