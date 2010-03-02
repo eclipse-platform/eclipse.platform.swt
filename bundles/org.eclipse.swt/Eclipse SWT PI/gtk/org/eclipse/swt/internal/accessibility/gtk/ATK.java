@@ -44,6 +44,7 @@ public class ATK extends OS {
 	public static final int ATK_ROLE_ANIMATION = 3;
 	public static final int ATK_ROLE_CANVAS = 6;
 	public static final int ATK_ROLE_CHECK_BOX = 7;
+	public static final int ATK_ROLE_CHECK_MENU_ITEM = 8;
 	public static final int ATK_ROLE_COMBO_BOX = 11;
 	public static final int ATK_ROLE_DIALOG = 16;
 	public static final int ATK_ROLE_DRAWING_AREA = 18;
@@ -60,6 +61,7 @@ public class ATK extends OS {
 	public static final int ATK_ROLE_PROGRESS_BAR = 41;
 	public static final int ATK_ROLE_PUSH_BUTTON = 42;
 	public static final int ATK_ROLE_RADIO_BUTTON = 43;
+	public static final int ATK_ROLE_RADIO_MENU_ITEM = 44;
 	public static final int ATK_ROLE_SCROLL_BAR = 47;
 	public static final int ATK_ROLE_SEPARATOR = 49;
 	public static final int ATK_ROLE_SLIDER = 50;
