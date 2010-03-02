@@ -109,9 +109,9 @@ public class ACC {
 	/** @since 3.6 */
 	public static final int ROLE_STATUSBAR = 0x17;
 	/** @since 3.6 */
-	public static final int ROLE_CHECK_MENU_ITEM = 0x403; // maybe ??
+	public static final int ROLE_CHECKMENUITEM = 0x403;
 	/** @since 3.6 */
-	public static final int ROLE_RADIO_MENU_ITEM = 0x431; // maybe ??
+	public static final int ROLE_RADIOMENUITEM = 0x431;
 	/** @since 3.6 */
 	public static final int ROLE_CLOCK = 0x3d; // maybe ??
 	/** @since 3.6 */
