@@ -38,7 +38,7 @@ public class ACC {
 	public static final int STATE_SIZEABLE = 0x20000;
 	public static final int STATE_LINKED = 0x400000;
 	/** @since 3.6 */
-	public static final int STATE_ENABLED = 0x1; // Note: map to STATE_SYSTEM_UNAVAILABLE
+	public static final int STATE_DISABLED = 0x1;
 //	public static final int STATE_DEFAULT = 0x100;
 //	public static final int STATE_FLOATING = 0x1000;
 //	public static final int STATE_MARQUEED = 0x2000;
