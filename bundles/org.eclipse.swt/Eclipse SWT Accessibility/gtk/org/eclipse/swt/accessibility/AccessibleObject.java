@@ -665,6 +665,16 @@ class AccessibleObject {
 						case ACC.ROLE_GROUP: return ATK.ATK_ROLE_PANEL;
 						case ACC.ROLE_SPINBUTTON: return ATK.ATK_ROLE_SPIN_BUTTON;
 						case ACC.ROLE_STATUSBAR: return ATK.ATK_ROLE_STATUSBAR;
+						case ACC.ROLE_CHECKMENUITEM: return ATK.ATK_ROLE_CHECK_MENU_ITEM;
+						case ACC.ROLE_RADIOMENUITEM: return ATK.ATK_ROLE_RADIO_MENU_ITEM;
+						/*TODO
+						* ROLE_HEADING
+						* ROLE_CLOCK
+						* ROLE_DATE_EDITOR
+						* ROLE_COLOR_CHOOSER
+						* ROLE_FILE_CHOOSER
+						* ROLE_FONT_CHOOSER
+						*/
 					}
 				}
 			}
