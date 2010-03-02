@@ -25,10 +25,10 @@ public class Snippet336 {
 	static Display display;
 	static Shell shell;
 	
-static TaskBarItem getTaskBarItem () {
+static TaskItem getTaskBarItem () {
 	TaskBar bar = display.getSystemTaskBar();
 	if (bar == null) return null;
-	TaskBarItem item = bar.getItem(null);
+	TaskItem item = bar.getItem(null);
 	if (item == null) item = bar.getItem(shell);
 	return item;
 }
@@ -50,7 +50,7 @@ public static void main(String[] args) {
 		public void handleEvent(Event event) {
 			Button button = (Button)event.widget;
 			if (!button.getSelection()) return;
-			TaskBarItem item = getTaskBarItem();
+			TaskItem item = getTaskBarItem();
 			if (item != null) {
 				int state = ((Integer)button.getData()).intValue();
 				item.setProgressState(state);
@@ -81,7 +81,7 @@ public static void main(String[] args) {
 	scale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	scale.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
-			TaskBarItem item = getTaskBarItem();
+			TaskItem item = getTaskBarItem();
 			if (item != null) item.setProgress(scale.getSelection());
 		}
 	});
@@ -104,7 +104,7 @@ public static void main(String[] args) {
 	button.setText("Set");
 	button.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
-			TaskBarItem item = getTaskBarItem();
+			TaskItem item = getTaskBarItem();
 			if (item != null) item.setOverlayText(text.getText());
 		}
 	});
@@ -113,7 +113,7 @@ public static void main(String[] args) {
 	button.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			text.setText("");
-			TaskBarItem item = getTaskBarItem();
+			TaskItem item = getTaskBarItem();
 			if (item != null) item.setOverlayText("");
 		}
 	});
@@ -128,7 +128,7 @@ public static void main(String[] args) {
 		public void handleEvent(Event event) {
 			Button button = (Button)event.widget;
 			if (!button.getSelection()) return;
-			TaskBarItem item = getTaskBarItem();
+			TaskItem item = getTaskBarItem();
 			if (item != null) {
 				String text = button.getText();
 				Image image = null;
