@@ -715,7 +715,7 @@ class AccessibleObject {
 					int state = event.detail;
 					if ((state & ACC.STATE_BUSY) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_BUSY);
 					if ((state & ACC.STATE_CHECKED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_CHECKED);
-					if ((state & ACC.STATE_ENABLED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ENABLED);
+					if ((state & ACC.STATE_DISABLED) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ENABLED);
 					if ((state & ACC.STATE_EXPANDED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_EXPANDED);
 					if ((state & ACC.STATE_FOCUSABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSABLE);
 					if ((state & ACC.STATE_FOCUSED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSED);
