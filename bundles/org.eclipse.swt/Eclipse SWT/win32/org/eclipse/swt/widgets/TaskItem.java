@@ -38,6 +38,7 @@ public class TaskItem extends Item {
 	int progress, progressState = SWT.DEFAULT;
 	Image overlayImage;
 	String overlayText = "";
+	Menu menu;
 	
 	static final int PROGRESS_MAX = 100;
 	
@@ -85,6 +86,11 @@ void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
 }
+
+public Menu getMenu () {
+	checkWidget ();
+	return menu;
+} 
 
 /**
  * Returns the receiver's overlay image if it has one, or null
@@ -175,6 +181,19 @@ void releaseWidget () {
 	overlayText = null;
 }
 
+public void setMenu (Menu menu) {
+	checkWidget ();
+	if (menu != null) {
+		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if ((menu.style & SWT.POP_UP) == 0) {
+			error (SWT.ERROR_MENU_NOT_POP_UP);
+		}
+	}
+	if (shell != null) return;
+	this.menu = menu;
+	parent.setMenu (menu);
+}
+
 /**
  * Sets the receiver's overlay image, which may be null
  * indicating that no image should be displayed. The bounds
@@ -194,6 +213,7 @@ void releaseWidget () {
 public void setOverlayImage (Image overlayImage) {
 	checkWidget ();
 	if (overlayImage != null && overlayImage.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (shell == null) return;
 	this.overlayImage = overlayImage;
 	if (overlayImage != null) {
 		updateImage ();
@@ -227,6 +247,7 @@ public void setOverlayImage (Image overlayImage) {
 public void setOverlayText (String overlayText) {
 	checkWidget ();
 	if (overlayText == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (shell == null) return;
 	this.overlayText = overlayText;
 	if (overlayText.length () != 0) {
 		updateText ();
@@ -258,6 +279,7 @@ public void setOverlayText (String overlayText) {
  */
 public void setProgress (int progress) {
 	checkWidget ();
+	if (shell == null) return;
 	progress = Math.max (0, Math.min (progress, PROGRESS_MAX));
 	if (this.progress == progress) return;
 	this.progress = progress;
@@ -295,6 +317,7 @@ public void setProgress (int progress) {
  */
 public void setProgressState (int progressState) {
 	checkWidget ();
+	if (shell == null) return;
 	if (this.progressState == progressState) return;
 	this.progressState = progressState;
 	int tbpFlags = OS.TBPF_NOPROGRESS;

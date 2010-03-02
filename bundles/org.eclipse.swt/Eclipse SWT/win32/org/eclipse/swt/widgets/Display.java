@@ -109,7 +109,7 @@ public class Display extends Device {
 	 */
 	public MSG msg = new MSG ();
 
-	static String APP_NAME = "SWT";
+	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	
 	/* Windows and Events */
 	Event [] eventQueue;
@@ -218,6 +218,8 @@ public class Display extends Device {
 	
 	/* TaskBar */
 	TaskBar taskBar;
+	static final String TASKBAR_EVENT = "/SWTINTERNAL_ID"; //$NON-NLS-1$
+	static final String LAUNCHER_PREFIX = "--launcher.openFile "; //$NON-NLS-1$
 	
 	/* Timers */
 	int /*long*/ [] timerIds;
@@ -2599,7 +2601,17 @@ public int /*long*/ internal_new_GC (GCData data) {
  */
 protected void init () {
 	super.init ();
-		
+	
+	/* Set the application user model ID */
+	if (APP_NAME != null) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
+			int length = APP_NAME.length ();
+			char [] buffer = new char [length + 1];
+			APP_NAME.getChars (0, length, buffer, 0);
+			OS.SetCurrentProcessExplicitAppUserModelID (buffer);
+		}
+	}
+	
 	/* Create the callbacks */
 	windowCallback = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc = windowCallback.getAddress ();
@@ -3245,6 +3257,15 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			if ((int)/*64*/msg == SWT_OPENDOC) {
 				String filename = getSharedData((int)/*64*/wParam, (int)/*64*/lParam);
 				if (filename != null) {
+					if (filename.startsWith (TASKBAR_EVENT)) {
+						String text = filename.substring (TASKBAR_EVENT.length ());
+						int id = Integer.parseInt (text);
+						MenuItem item = getMenuItem (id);
+						if (item != null) {
+							item.sendSelectionEvent (SWT.Selection);
+						}
+						break;
+					}
 					Event event = new Event();
 					event.text = filename;
 					sendEvent(SWT.OpenDocument, event);
