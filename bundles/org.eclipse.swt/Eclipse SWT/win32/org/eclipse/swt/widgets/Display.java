@@ -3264,11 +3264,12 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 						if (item != null) {
 							item.sendSelectionEvent (SWT.Selection);
 						}
-						break;
+					} else {
+						Event event = new Event();
+						event.text = filename;
+						sendEvent(SWT.OpenDocument, event);
 					}
-					Event event = new Event();
-					event.text = filename;
-					sendEvent(SWT.OpenDocument, event);
+					wakeThread ();
 				}
 			}
 		}
