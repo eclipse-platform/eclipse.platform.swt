@@ -32,7 +32,7 @@ import org.eclipse.swt.*;
  */
 public class TaskBar extends Widget {
 	int itemCount;
-	TaskBarItem [] items = new TaskBarItem [4];
+	TaskItem [] items = new TaskItem [4];
 
 TaskBar (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
@@ -44,11 +44,11 @@ TaskBar (Display display, int style) {
 	reskinWidget ();
 }
 
-void createItem (TaskBarItem item, int index) {
+void createItem (TaskItem item, int index) {
 	if (index == -1) index = itemCount;
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
-		TaskBarItem [] newItems = new TaskBarItem [items.length + 4];
+		TaskItem [] newItems = new TaskItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
@@ -59,7 +59,7 @@ void createItem (TaskBarItem item, int index) {
 void createItems () {
 }
 
-void destroyItem (TaskBarItem item) {
+void destroyItem (TaskItem item) {
 	int index = 0;
 	while (index < itemCount) {
 		if (items [index] == item) break;
@@ -85,7 +85,7 @@ void destroyItem (TaskBarItem item) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public TaskBarItem getItem (int index) {
+public TaskItem getItem (int index) {
 	checkWidget ();
 	createItems ();
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
@@ -108,7 +108,7 @@ public int getItemCount () {
 	return itemCount;
 }
 
-public TaskBarItem getItem (Shell shell) {
+public TaskItem getItem (Shell shell) {
 	checkWidget ();
 	return null;
 }
@@ -129,10 +129,10 @@ public TaskBarItem getItem (Shell shell) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public TaskBarItem [] getItems () {
+public TaskItem [] getItems () {
 	checkWidget ();
 	createItems ();
-	TaskBarItem [] result = new TaskBarItem [itemCount];
+	TaskItem [] result = new TaskItem [itemCount];
 	System.arraycopy (items, 0, result, 0, result.length);
 	return result;
 }
@@ -140,7 +140,7 @@ public TaskBarItem [] getItems () {
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
-			TaskBarItem item = items [i];
+			TaskItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -158,7 +158,7 @@ void releaseParent () {
 void reskinChildren (int flags) {	
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
-			TaskBarItem item = items [i];
+			TaskItem item = items [i];
 			if (item != null) item.reskin (flags);
 		}
 	}
