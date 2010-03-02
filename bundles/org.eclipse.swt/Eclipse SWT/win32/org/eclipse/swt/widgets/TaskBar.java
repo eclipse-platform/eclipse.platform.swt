@@ -267,7 +267,7 @@ String getDirectory (char[] appName) {
 		}
 	}
 	String result = null;
-	int /*long*/ [] ppv = new int  /*long*/ [1];
+	int /*long*/ [] ppv = new int /*long*/ [1];
 	int hr = OS.SHCreateItemInKnownFolder (FOLDERID_LocalAppData, 0, null, IID_IShellItem, ppv);
 	if (hr == OS.S_OK) {
 		int  /*long*/ psiRoot = ppv [0];
