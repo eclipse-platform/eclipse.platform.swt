@@ -17576,6 +17576,33 @@ fail:
 }
 #endif
 
+#if (!defined(NO_VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2J) && !defined(JNI64)) || (!defined(NO_VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2J)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jobject arg2, jlong arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jobject arg2, jlong arg3)
+#endif
+{
+	PROPERTYKEY _arg2, *lparg2=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC);
+#endif
+	if (arg2) if ((lparg2 = getPROPERTYKEYFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, PROPERTYKEY *, jlong))(*(jintLong **)arg1)[arg0])(arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setPROPERTYKEYFields(env, arg2, lparg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2) && !defined(JNI64)) || (!defined(NO_VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jobject arg2)

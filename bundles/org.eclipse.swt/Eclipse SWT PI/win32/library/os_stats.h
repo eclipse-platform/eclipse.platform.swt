@@ -1849,6 +1849,11 @@ typedef enum {
 	VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,
 #else
 	VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,

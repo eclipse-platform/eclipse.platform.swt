@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1005;
-int OS_nativeFunctionCallCount[1005];
+int OS_nativeFunctionCount = 1006;
+int OS_nativeFunctionCallCount[1006];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1839,6 +1839,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I",
 #else
 	"VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2I",
+#endif
+#ifndef JNI64
+	"VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2J",
+#else
+	"VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J",
 #endif
 #ifndef JNI64
 	"VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2",
