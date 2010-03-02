@@ -36,8 +36,6 @@ typedef enum {
 	CoFreeUnusedLibraries_FUNC,
 	CoGetClassObject_FUNC,
 	CoLockObjectExternal_FUNC,
-	CoTaskMemAlloc_FUNC,
-	CoTaskMemFree_FUNC,
 	CreateStdAccessibleObject_FUNC,
 	DISPPARAMS_1sizeof_FUNC,
 	DVTARGETDEVICE_1sizeof_FUNC,
@@ -296,11 +294,6 @@ typedef enum {
 	VtblCall__IJIZ_FUNC,
 #endif
 #ifndef JNI64
-	VtblCall__III_3I_FUNC,
-#else
-	VtblCall__IJI_3I_FUNC,
-#endif
-#ifndef JNI64
 	VtblCall__III_3II_3I_FUNC,
 #else
 	VtblCall__IJI_3II_3I_FUNC,
@@ -309,11 +302,6 @@ typedef enum {
 	VtblCall__III_3I_3I_3I_3I_FUNC,
 #else
 	VtblCall__IJI_3I_3I_3I_3I_FUNC,
-#endif
-#ifndef JNI64
-	VtblCall__III_3J_FUNC,
-#else
-	VtblCall__IJI_3J_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__III_3JI_3I_FUNC,

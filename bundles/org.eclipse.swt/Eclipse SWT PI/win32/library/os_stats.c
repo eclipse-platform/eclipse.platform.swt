@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 998;
-int OS_nativeFunctionCallCount[998];
+int OS_nativeFunctionCount = 1005;
+int OS_nativeFunctionCallCount[1005];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -74,6 +74,8 @@ char * OS_nativeFunctionNames[] = {
 	"CoCreateInstance",
 	"CoInternetIsFeatureEnabled",
 	"CoInternetSetFeatureEnabled",
+	"CoTaskMemAlloc",
+	"CoTaskMemFree",
 	"CombineRgn",
 	"CommDlgExtendedError",
 	"CommandBar_1AddAdornments",
@@ -1248,6 +1250,8 @@ char * OS_nativeFunctionNames[] = {
 	"SHACTIVATEINFO_1sizeof",
 	"SHBrowseForFolderA",
 	"SHBrowseForFolderW",
+	"SHCreateItemFromRelativeName",
+	"SHCreateItemInKnownFolder",
 	"SHCreateMenuBar",
 	"SHDRAGIMAGE_1sizeof",
 	"SHELLEXECUTEINFO_1sizeof",
@@ -1777,6 +1781,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJIII_3I",
 #endif
 #ifndef JNI64
+	"VtblCall__IIII_3C_3CI",
+#else
+	"VtblCall__IJJI_3C_3CJ",
+#endif
+#ifndef JNI64
 	"VtblCall__IIIJI_3J",
 #else
 	"VtblCall__IJIJI_3J",
@@ -1787,9 +1796,19 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJIJJ",
 #endif
 #ifndef JNI64
+	"VtblCall__III_3I",
+#else
+	"VtblCall__IJI_3I",
+#endif
+#ifndef JNI64
 	"VtblCall__III_3I_3I",
 #else
 	"VtblCall__IJI_3J_3I",
+#endif
+#ifndef JNI64
+	"VtblCall__III_3J",
+#else
+	"VtblCall__IJI_3J",
 #endif
 #ifndef JNI64
 	"VtblCall__IIJ",

@@ -455,10 +455,6 @@ public static final native int CoGetClassObject(GUID rclsid, int dwClsContext, i
  * @param fLastUnlockReleases cast=(BOOL)
  */
 public static final native int CoLockObjectExternal(int /*long*/ pUnk, boolean fLock, boolean fLastUnlockReleases);
-/** @param cb cast=(ULONG) */
-public static final native int /*long*/ CoTaskMemAlloc(int cb);
-/** @param pv cast=(LPVOID) */
-public static final native void CoTaskMemFree(int /*long*/ pv);
 /**
  * @param pDataObject cast=(IDataObject *)
  * @param pDropSource cast=(IDropSource *)
@@ -678,8 +674,6 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int arg4, int [] arg5);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, long arg1, int arg2, int arg3, int arg4, long[] arg5);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int[] arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long[] arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int[] arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long[] arg1);
 

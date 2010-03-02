@@ -182,28 +182,6 @@ JNIEXPORT jint JNICALL COM_NATIVE(CoLockObjectExternal)
 }
 #endif
 
-#ifndef NO_CoTaskMemAlloc
-JNIEXPORT jintLong JNICALL COM_NATIVE(CoTaskMemAlloc)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jintLong rc = 0;
-	COM_NATIVE_ENTER(env, that, CoTaskMemAlloc_FUNC);
-	rc = (jintLong)CoTaskMemAlloc((ULONG)arg0);
-	COM_NATIVE_EXIT(env, that, CoTaskMemAlloc_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CoTaskMemFree
-JNIEXPORT void JNICALL COM_NATIVE(CoTaskMemFree)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	COM_NATIVE_ENTER(env, that, CoTaskMemFree_FUNC);
-	CoTaskMemFree((LPVOID)arg0);
-	COM_NATIVE_EXIT(env, that, CoTaskMemFree_FUNC);
-}
-#endif
-
 #ifndef NO_CreateStdAccessibleObject
 JNIEXPORT jint JNICALL COM_NATIVE(CreateStdAccessibleObject)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2, jintLongArray arg3)
@@ -2051,33 +2029,6 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIZ)(JNIEnv *env, jclass that, jint
 }
 #endif
 
-#if (!defined(NO_VtblCall__III_3I) && !defined(JNI64)) || (!defined(NO_VtblCall__IJI_3I) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__III_3I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jintArray arg3)
-#else
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI_3I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jintArray arg3)
-#endif
-{
-	jint *lparg3=NULL;
-	jint rc = 0;
-#ifndef JNI64
-	COM_NATIVE_ENTER(env, that, VtblCall__III_3I_FUNC);
-#else
-	COM_NATIVE_ENTER(env, that, VtblCall__IJI_3I_FUNC);
-#endif
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jint, jint *))(*(jintLong **)arg1)[arg0])(arg1, arg2, lparg3);
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-#ifndef JNI64
-	COM_NATIVE_EXIT(env, that, VtblCall__III_3I_FUNC);
-#else
-	COM_NATIVE_EXIT(env, that, VtblCall__IJI_3I_FUNC);
-#endif
-	return rc;
-}
-#endif
-
 #if (!defined(NO_VtblCall__III_3II_3I) && !defined(JNI64)) || (!defined(NO_VtblCall__IJI_3II_3I) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__III_3II_3I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5)
@@ -2139,33 +2090,6 @@ fail:
 	COM_NATIVE_EXIT(env, that, VtblCall__III_3I_3I_3I_3I_FUNC);
 #else
 	COM_NATIVE_EXIT(env, that, VtblCall__IJI_3I_3I_3I_3I_FUNC);
-#endif
-	return rc;
-}
-#endif
-
-#if (!defined(NO_VtblCall__III_3J) && !defined(JNI64)) || (!defined(NO_VtblCall__IJI_3J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__III_3J)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jlongArray arg3)
-#else
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI_3J)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jlongArray arg3)
-#endif
-{
-	jlong *lparg3=NULL;
-	jint rc = 0;
-#ifndef JNI64
-	COM_NATIVE_ENTER(env, that, VtblCall__III_3J_FUNC);
-#else
-	COM_NATIVE_ENTER(env, that, VtblCall__IJI_3J_FUNC);
-#endif
-	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jint, jlong *))(*(jintLong **)arg1)[arg0])(arg1, arg2, lparg3);
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
-#ifndef JNI64
-	COM_NATIVE_EXIT(env, that, VtblCall__III_3J_FUNC);
-#else
-	COM_NATIVE_EXIT(env, that, VtblCall__IJI_3J_FUNC);
 #endif
 	return rc;
 }

@@ -464,6 +464,7 @@ public class OS extends C {
 	public static final int CLR_NONE = 0xffffffff;
 	public static final int CLSCTX_INPROC_SERVER = 1;
 	public static final int CSIDL_APPDATA = 0x1a;
+	public static final int CSIDL_LOCAL_APPDATA = 0x1c;
 	public static final int COLORONCOLOR = 0x3;
 	public static final int COLOR_3DDKSHADOW = 0x15 | SYS_COLOR_INDEX_FLAG;
 	public static final int COLOR_3DFACE = 0xf | SYS_COLOR_INDEX_FLAG;
@@ -670,10 +671,16 @@ public class OS extends C {
 	public static final int FCONTROL = 0x8;
 	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
 	public static final int FEATURE_DISABLE_NAVIGATION_SOUNDS = 21;
+	public static final int FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
 	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080;
 	public static final int FILE_MAP_READ = 4;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FNERR_BUFFERTOOSMALL = 0x3003;
+	public static final int FOF_SILENT = 0x0004;
+	public static final int FOF_NOCONFIRMATION = 0x0010;
+	public static final int FOF_NOCONFIRMMKDIR = 0x0200;
+	public static final int FOF_NOERRORUI = 0x0400;
+	public static final int FOF_NO_UI = (FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR); 
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
 	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
@@ -1462,6 +1469,7 @@ public class OS extends C {
 	public static final int SHMBOF_NODEFAULT = 0x1;
 	public static final int SHMBOF_NOTIFY = 0x2;
 	public static final int SHRG_RETURNCMD = 0x1;
+	public static final int SIGDN_FILESYSPATH = 0x80058000;
 	public static final int SIF_ALL = 0x17;
 	public static final int SIF_DISABLENOSCROLL = 0x8;
 	public static final int SIF_PAGE = 0x2;
@@ -3565,6 +3573,10 @@ public static final native boolean CommandBar_Show (int /*long*/ hwndCB, boolean
 public static final native int CommDlgExtendedError ();
 /** @param hImage cast=(HANDLE) */
 public static final native int /*long*/ CopyImage (int /*long*/ hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
+/** @param cb cast=(ULONG) */
+public static final native int /*long*/ CoTaskMemAlloc(int cb);
+/** @param pv cast=(LPVOID) */
+public static final native void CoTaskMemFree(int /*long*/ pv);
 /** @param lpaccl cast=(LPACCEL) */
 public static final native int /*long*/ CreateAcceleratorTableW (byte [] lpaccl, int cEntries); 
 /** @param lpaccl cast=(LPACCEL) */
@@ -6474,6 +6486,10 @@ public static final native boolean SHGetPathFromIDListW (int /*long*/ pidl, char
  * @param pszPath cast=(LPSTR)
  */
 public static final native boolean SHGetPathFromIDListA (int /*long*/ pidl, byte [] pszPath);
+/** @method flags=dynamic */
+public static final native int SHCreateItemInKnownFolder (byte [] kfid, int dwKFFlags, char [] pszItem, byte [] riid, int /*long*/ [] ppv);
+/** @method flags=dynamic */
+public static final native int SHCreateItemFromRelativeName (int /*long*/ psiParent, char [] pszName, int /*long*/ pbc, byte [] riid, int /*long*/ [] ppv);
 /**
  * @param bVk cast=(BYTE)
  * @param hwnd cast=(HWND)
@@ -6620,6 +6636,9 @@ public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int[
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, char[] arg0);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, PROPERTYKEY arg0, int arg1);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int arg1, char[] arg2, char[] arg3, int /*long*/ arg4);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int [] arg1);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, long [] arg1);
 
 public static final native boolean WaitMessage ();
 /**

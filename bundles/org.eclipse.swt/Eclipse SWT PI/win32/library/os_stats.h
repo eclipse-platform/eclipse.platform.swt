@@ -82,6 +82,8 @@ typedef enum {
 	CoCreateInstance_FUNC,
 	CoInternetIsFeatureEnabled_FUNC,
 	CoInternetSetFeatureEnabled_FUNC,
+	CoTaskMemAlloc_FUNC,
+	CoTaskMemFree_FUNC,
 	CombineRgn_FUNC,
 	CommDlgExtendedError_FUNC,
 	CommandBar_1AddAdornments_FUNC,
@@ -1256,6 +1258,8 @@ typedef enum {
 	SHACTIVATEINFO_1sizeof_FUNC,
 	SHBrowseForFolderA_FUNC,
 	SHBrowseForFolderW_FUNC,
+	SHCreateItemFromRelativeName_FUNC,
+	SHCreateItemInKnownFolder_FUNC,
 	SHCreateMenuBar_FUNC,
 	SHDRAGIMAGE_1sizeof_FUNC,
 	SHELLEXECUTEINFO_1sizeof_FUNC,
@@ -1785,6 +1789,11 @@ typedef enum {
 	VtblCall__IJIII_3I_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIII_3C_3CI_FUNC,
+#else
+	VtblCall__IJJI_3C_3CJ_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIIJI_3J_FUNC,
 #else
 	VtblCall__IJIJI_3J_FUNC,
@@ -1795,9 +1804,19 @@ typedef enum {
 	VtblCall__IJIJJ_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__III_3I_FUNC,
+#else
+	VtblCall__IJI_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__III_3I_3I_FUNC,
 #else
 	VtblCall__IJI_3J_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__III_3J_FUNC,
+#else
+	VtblCall__IJI_3J_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIJ_FUNC,

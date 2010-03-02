@@ -184,6 +184,8 @@
 #define NO_CoInternetIsFeatureEnabled
 #define NO_CoInternetSetFeatureEnabled
 #define NO_CopyImage
+#define NO_CoTaskMemAlloc
+#define NO_CoTaskMemFree
 #define NO_CreateAcceleratorTableA
 #define NO_CreateActCtxA
 #define NO_CreateActCtxW
@@ -446,6 +448,8 @@
 #define NO_SHGetFolderPathW
 #define NO_SHGetPathFromIDListA
 #define NO_SHGetPathFromIDListW
+#define NO_SHCreateItemFromRelativeName
+#define NO_SHCreateItemInKnownFolder
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2

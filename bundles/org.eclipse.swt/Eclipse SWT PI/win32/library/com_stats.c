@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 179;
-int COM_nativeFunctionCallCount[179];
+int COM_nativeFunctionCount = 175;
+int COM_nativeFunctionCallCount[175];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
 	"CALLBACK_1setCurrentValue",
@@ -28,8 +28,6 @@ char * COM_nativeFunctionNames[] = {
 	"CoFreeUnusedLibraries",
 	"CoGetClassObject",
 	"CoLockObjectExternal",
-	"CoTaskMemAlloc",
-	"CoTaskMemFree",
 	"CreateStdAccessibleObject",
 	"DISPPARAMS_1sizeof",
 	"DVTARGETDEVICE_1sizeof",
@@ -288,11 +286,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJIZ",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3I",
-#else
-	"VtblCall__IJI_3I",
-#endif
-#ifndef JNI64
 	"VtblCall__III_3II_3I",
 #else
 	"VtblCall__IJI_3II_3I",
@@ -301,11 +294,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__III_3I_3I_3I_3I",
 #else
 	"VtblCall__IJI_3I_3I_3I_3I",
-#endif
-#ifndef JNI64
-	"VtblCall__III_3J",
-#else
-	"VtblCall__IJI_3J",
 #endif
 #ifndef JNI64
 	"VtblCall__III_3JI_3I",

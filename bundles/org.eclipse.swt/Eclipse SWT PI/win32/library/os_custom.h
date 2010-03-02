@@ -78,5 +78,7 @@
 #define SetMenuInfo_LIB "user32.dll"
 #define SetProcessDPIAware_LIB "user32.dll"
 #define SetWindowTheme_LIB "uxtheme.dll"
+#define SHCreateItemFromRelativeName_LIB "shell32.dll"
+#define SHCreateItemInKnownFolder_LIB "shell32.dll"
 #define TransparentBlt_LIB "msimg32.dll"
 #define UpdateLayeredWindow_LIB "user32.dll"
