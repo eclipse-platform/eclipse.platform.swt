@@ -696,8 +696,8 @@ public class Accessible {
 				case ACC.ROLE_CHECKBUTTON:
 				case ACC.ROLE_TABITEM:
 				case ACC.ROLE_LINK:
-				case ACC.ROLE_CHECK_MENU_ITEM:
-				case ACC.ROLE_RADIO_MENU_ITEM:
+				case ACC.ROLE_CHECKMENUITEM:
+				case ACC.ROLE_RADIOMENUITEM:
 				case ACC.ROLE_SPLITBUTTON:
 					returnValue.addObject(OS.NSAccessibilityPressAction);
 					break;
@@ -940,9 +940,9 @@ public class Accessible {
 				break;
 			case ACC.ROLE_STATUSBAR:
 				break;
-			case ACC.ROLE_CHECK_MENU_ITEM:
+			case ACC.ROLE_CHECKMENUITEM:
 				break;
-			case ACC.ROLE_RADIO_MENU_ITEM:
+			case ACC.ROLE_RADIOMENUITEM:
 				break;
 			case ACC.ROLE_CLOCK:
 				break;
@@ -1508,7 +1508,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getState(event);
 		}
-		boolean enabled = (event.detail & ACC.STATE_ENABLED) != 0;
+		boolean enabled = (event.detail & ACC.STATE_DISABLED) == 0;
 		if (!enabled && delegate == null) enabled = control.isEnabled();
 		return NSNumber.numberWithBool(enabled);
 	}
@@ -2690,8 +2690,8 @@ public class Accessible {
 			//CLIENT_AREA uses NSAccessibilityGroupRole already
 			case ACC.ROLE_GROUP: nsReturnValue = OS.NSAccessibilityGroupRole; break;  
 			//SPLIT_BUTTON uses NSAccessibilityMenuButtonRole already
-			case ACC.ROLE_CHECK_MENU_ITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
-			case ACC.ROLE_RADIO_MENU_ITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
+			case ACC.ROLE_CHECKMENUITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
+			case ACC.ROLE_RADIOMENUITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
 			//don't know the right answer for these:
 			case ACC.ROLE_ALERT: 
 			case ACC.ROLE_ANIMATION: 
@@ -2744,8 +2744,8 @@ public class Accessible {
 		if (osRole.isEqualToString(OS.NSAccessibilityGroupRole)) return ACC.ROLE_CANVAS;
 		if (osRole.isEqualToString(OS.NSAccessibilityGroupRole)) return ACC.ROLE_GROUP;
 		if (osRole.isEqualToString(OS.NSAccessibilityImageRole)) return ACC.ROLE_GRAPHIC;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_CHECK_MENU_ITEM;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_RADIO_MENU_ITEM;
+		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_CHECKMENUITEM;
+		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_RADIOMENUITEM;
 		if (osRole.isEqualToString(OS.NSAccessibilityColorWellRole)) return ACC.ROLE_COLOR_CHOOSER;
 		if (OS.VERSION >= 0x1060 && osRole.isEqualToString(OS.NSAccessibilityCellRole)) return ACC.ROLE_TABLECELL;
 		return ACC.ROLE_CLIENT_AREA;
