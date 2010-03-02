@@ -874,6 +874,7 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationDockMenu_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_application_openFile_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_application_openFiles_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, appProc4, "@:@B");
@@ -4588,6 +4589,17 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 		display.applicationDidBecomeActive(id, sel, arg0);
 	} else if (sel == OS.sel_applicationDidResignActive_) {
 		display.applicationDidResignActive(id, sel, arg0);
+	} else if (sel == OS.sel_applicationDockMenu_) {
+		TaskBar taskbar = display.taskBar;
+		if (taskbar != null && taskbar.itemCount != 0) {
+			TaskItem item = taskbar.getItem(null);
+			if (item != null) {
+				Menu menu = item.getMenu();
+				if (menu != null && !menu.isDisposed()) {
+					return menu.nsMenu.id;
+				}
+			}
+		}
 	}
 	return 0;
 }

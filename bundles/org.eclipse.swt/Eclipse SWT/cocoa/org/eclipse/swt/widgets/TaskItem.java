@@ -38,6 +38,7 @@ public class TaskItem extends Item {
 	int progress, iProgress, progressState = SWT.DEFAULT;
 	Image overlayImage;
 	String overlayText = "";
+	Menu menu;
 	
 	static final int PROGRESS_MAX = 100;
 	static final int PROGRESS_TIMER = 350;
@@ -95,6 +96,11 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+public Menu getMenu () {
+	checkWidget ();
+	return menu;
+} 
+
 public Image getOverlayImage () {
 	checkWidget ();
 	return overlayImage;
@@ -143,6 +149,17 @@ void releaseWidget () {
 	overlayImage = null;
 	overlayText = null;
 	shell = null;
+}
+
+public void setMenu (Menu menu) {
+	checkWidget ();
+	if (menu != null) {
+		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if ((menu.style & SWT.POP_UP) == 0) {
+			error (SWT.ERROR_MENU_NOT_POP_UP);
+		}
+	}
+	this.menu = menu;
 }
 
 public void setOverlayImage (Image image) {
