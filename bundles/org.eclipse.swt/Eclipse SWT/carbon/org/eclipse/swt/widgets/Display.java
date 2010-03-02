@@ -3764,6 +3764,19 @@ void sendEvent (int eventType, Event event) {
 }
 
 /**
+ * Returns the application name.
+ *
+ * @return the application name
+ * 
+ * @see #setAppName(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppName () {
+	return APP_NAME;
+}
+
+/**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
  * to set the name used for resource lookup.  Specifying

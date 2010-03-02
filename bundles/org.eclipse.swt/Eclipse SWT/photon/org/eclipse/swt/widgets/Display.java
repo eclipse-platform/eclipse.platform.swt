@@ -142,6 +142,8 @@ public class Display extends Device {
 	/* Keyboard */
 	int lastKey, lastAscii;
 	
+	static String APP_NAME = "SWT";
+
 	/* Key Mappings. */
 	private static final int [] [] KeyTable = {
 		
@@ -901,6 +903,19 @@ public static Display getDefault () {
 }
 
 /**
+ * Returns the application name.
+ *
+ * @return the application name
+ * 
+ * @see #setAppName(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppName () {
+	return APP_NAME;
+}
+
+/**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
  * to set the name used for resource lookup.  Specifying
@@ -909,7 +924,7 @@ public static Display getDefault () {
  * @param name the new app name or <code>null</code>
  */
 public static void setAppName (String name) {
-	/* Do nothing */
+	APP_NAME = name;
 }
 
 /**

@@ -108,8 +108,8 @@ public class Display extends Device {
 	 * </p>
 	 */
 	public MSG msg = new MSG ();
-	
-	static String APP_NAME;
+
+	static String APP_NAME = "SWT";
 	
 	/* Windows and Events */
 	Event [] eventQueue;
@@ -4349,6 +4349,19 @@ public void setData (String key, Object value) {
 public void setData (Object data) {
 	checkDevice ();
 	this.data = data;
+}
+
+/**
+ * Returns the application name.
+ *
+ * @return the application name
+ * 
+ * @see #setAppName(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppName () {
+	return APP_NAME;
 }
 
 /**

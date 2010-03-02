@@ -3616,6 +3616,19 @@ boolean runSkin () {
 	}	
 	return false;
 }
+
+/**
+ * Returns the application name.
+ *
+ * @return the application name
+ * 
+ * @see #setAppName(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppName () {
+	return APP_NAME;
+}
 	
 /**
  * On platforms which support it, sets the application name

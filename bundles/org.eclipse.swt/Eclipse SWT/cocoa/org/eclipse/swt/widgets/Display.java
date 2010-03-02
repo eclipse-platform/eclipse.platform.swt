@@ -817,7 +817,7 @@ void createDisplay (DeviceData data) {
 	int [] psn = new int [2];
 	if (OS.GetCurrentProcess (psn) == OS.noErr) {
 		int pid = OS.getpid ();
-		int /*long*/ ptr = getAppName().UTF8String();
+		int /*long*/ ptr = getApplicationName().UTF8String();
 		if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
 		if (!isBundled ()) {
 			OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
@@ -894,7 +894,7 @@ void createDisplay (DeviceData data) {
 }
 
 void createMainMenu () {
-	NSString appName = getAppName();
+	NSString appName = getApplicationName();
 	NSString emptyStr = NSString.string();
 	NSMenu mainMenu = (NSMenu)new NSMenu().alloc();
 	mainMenu.initWithTitle(emptyStr);
@@ -3727,7 +3727,7 @@ void sendEvent (EventTable table, Event event) {
 	}
 }
 
-static NSString getAppName() {
+static NSString getApplicationName() {
 	NSString name = null;
 	int pid = OS.getpid ();
 	int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + pid));
@@ -3741,6 +3741,19 @@ static NSString getAppName() {
 	}
 	if (name == null) name = NSString.stringWith("SWT");
 	return name;
+}
+
+/**
+ * Returns the application name.
+ *
+ * @return the application name
+ * 
+ * @see #setAppName(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppName () {
+	return APP_NAME;
 }
 
 /**
@@ -4508,7 +4521,7 @@ void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*lo
 	NSMenu mainmenu = application.mainMenu();
 	NSMenuItem appitem = mainmenu.itemAtIndex(0);
 	if (appitem != null) {
-		NSString name = getAppName();
+		NSString name = getApplicationName();
 		NSString match = NSString.stringWith("%@");
 		appitem.setTitle(name);
 		NSMenu sm = appitem.submenu();
